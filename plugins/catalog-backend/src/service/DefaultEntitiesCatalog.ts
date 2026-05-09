@@ -124,27 +124,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const { limit, offset } = parsePagination(request?.pagination);
     const primaryOrder = request?.order?.[0];
 
-    // When an order field is specified we run a two-phase fetch:
+    // When exactly one order field is specified we run a two-phase fetch
+    // that drives from the search-by-key index for that field. The index
+    // walks rows in already-sorted order, so the planner can short-circuit
+    // on LIMIT instead of having to materialise and sort the full filtered
+    // set. Phase 2 appends entities that lack the order field (NULLS LAST)
+    // and is skipped when phase 1 already fills the request.
     //
-    //   1. A "with-field" phase that drives from the search-by-key index for
-    //      the order column. Because that index walks rows already in sort
-    //      order, the planner can short-circuit on LIMIT instead of having
-    //      to materialize and sort the full filtered set. Entities that
-    //      lack the order field are *excluded* from this phase.
-    //
-    //   2. A "without-field" phase that picks up the entities that lack the
-    //      order field, in entity_id order, to preserve the established
-    //      `NULLS LAST` semantics. This phase is only consulted when the
-    //      first phase did not produce enough rows to satisfy
-    //      `offset + limit + 1` -- in the common UI case where every entity
-    //      has the order field (e.g. `metadata.name`), the second phase is
-    //      never run.
-    //
-    // The previous shape used a LEFT OUTER JOIN to side-fetch the order
-    // column and sorted afterwards, which on broad filters was orders of
-    // magnitude slower because the planner could not short-circuit on LIMIT.
+    // Multi-field ordering falls back to the original LEFT JOIN shape
+    // because tie-breaking on a second field requires materialisation of
+    // the full set anyway.
+    const useFastPath = primaryOrder && (request?.order?.length ?? 0) <= 1;
     let rows: DbFinalEntitiesRow[];
-    if (primaryOrder) {
+    if (useFastPath) {
       rows = await this.runOrderedEntitiesQuery(
         request!,
         primaryOrder,
@@ -152,10 +144,22 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         offset,
       );
     } else {
-      let entitiesQuery: Knex.QueryBuilder<DbFinalEntitiesRow> =
-        db<DbFinalEntitiesRow>('final_entities')
-          .select('final_entities.*')
-          .whereNotNull('final_entities.final_entity');
+      let entitiesQuery =
+        db<DbFinalEntitiesRow>('final_entities').select('final_entities.*');
+
+      request?.order?.forEach(({ field }, index) => {
+        const alias = `order_${index}`;
+        entitiesQuery = entitiesQuery.leftOuterJoin(
+          { [alias]: 'search' },
+          function search(inner) {
+            inner
+              .on(`${alias}.entity_id`, 'final_entities.entity_id')
+              .andOn(`${alias}.key`, db.raw('?', [field]));
+          },
+        );
+      });
+
+      entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
 
       if (request?.filter) {
         entitiesQuery = applyEntityFilterToQuery({
@@ -166,7 +170,30 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         });
       }
 
-      entitiesQuery = entitiesQuery.orderBy('final_entities.entity_ref', 'asc');
+      if (request?.order) {
+        request.order.forEach(({ order }, index) => {
+          if (db.client.config.client === 'pg') {
+            entitiesQuery = entitiesQuery.orderBy([
+              { column: `order_${index}.value`, order, nulls: 'last' },
+            ]);
+          } else {
+            entitiesQuery = entitiesQuery.orderBy([
+              {
+                column: `order_${index}.value`,
+                order: undefined,
+                nulls: 'last',
+              },
+              { column: `order_${index}.value`, order },
+            ]);
+          }
+        });
+        entitiesQuery.orderBy('final_entities.entity_id', 'asc');
+      } else {
+        entitiesQuery = entitiesQuery.orderBy(
+          'final_entities.entity_ref',
+          'asc',
+        );
+      }
 
       if (limit !== undefined) {
         entitiesQuery = entitiesQuery.limit(limit + 1);
@@ -279,7 +306,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .whereNotExists(qb =>
         qb
           .from('search')
-          .where('search.entity_id', db.raw('"final_entities"."entity_id"'))
+          .where('search.entity_id', db.ref('final_entities.entity_id'))
           .andWhere('search.key', primaryOrder.field),
       );
     withoutField = applyFilter(withoutField);
