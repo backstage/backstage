@@ -44,6 +44,12 @@ describe('useFormDecorators', () => {
   });
 
   const manifest: TemplateParameterSchema = {
+    formDecorators: [{ id: 'test', input: { test: 'hello' } }],
+    steps: [],
+    title: 'test',
+  };
+
+  const legacyManifest: TemplateParameterSchema = {
     EXPERIMENTAL_formDecorators: [{ id: 'test', input: { test: 'hello' } }],
     steps: [],
     title: 'test',
@@ -76,6 +82,39 @@ describe('useFormDecorators', () => {
         formState: {},
         secrets: {},
         manifest,
+      });
+
+      expect(mockApiImplementation.test).toHaveBeenCalledWith('hello');
+    });
+  });
+
+  it('should still run the form decorators when defined under the deprecated EXPERIMENTAL_formDecorators field', async () => {
+    const renderedHook = renderHook(() => useFormDecorators(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [mockApiRef, mockApiImplementation],
+            [
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                decorators: [mockDecorator],
+              }),
+            ],
+            [errorApiRef, { post: () => {} }],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+
+    await waitFor(async () => {
+      const result = renderedHook.result.current!;
+
+      await result.run({
+        formState: {},
+        secrets: {},
+        manifest: legacyManifest,
       });
 
       expect(mockApiImplementation.test).toHaveBeenCalledWith('hello');

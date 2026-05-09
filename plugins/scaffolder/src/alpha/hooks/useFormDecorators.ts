@@ -74,7 +74,9 @@ export const useFormDecorators = () => {
       let formState: Record<string, JsonValue> = { ...opts.formState };
       let secrets: Record<string, string> = { ...opts.secrets };
 
-      const formDecorators = opts.manifest?.EXPERIMENTAL_formDecorators;
+      const formDecorators =
+        opts.manifest?.formDecorators ??
+        opts.manifest?.EXPERIMENTAL_formDecorators;
       if (formDecorators) {
         // for each of the form decorators, go and call the decorator with the context
         await Promise.all(
