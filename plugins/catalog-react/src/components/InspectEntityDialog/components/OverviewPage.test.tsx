@@ -100,4 +100,29 @@ describe('OverviewPage', () => {
     expect(await screen.findByText('java')).toBeInTheDocument();
     expect(screen.getByText('data')).toBeInTheDocument();
   });
+
+  it('renders without crashing when annotations or labels carry non-string values', async () => {
+    const entityWithNullAnnotation = {
+      ...entity,
+      metadata: {
+        ...entity.metadata,
+        annotations: {
+          ...entity.metadata.annotations,
+          'my-custom-annotation': null,
+        },
+        labels: {
+          ...entity.metadata.labels,
+          'numeric-label': 42,
+        },
+      },
+    } as any;
+
+    await renderInTestApp(<OverviewPage entity={entityWithNullAnnotation} />, {
+      mountedRoutes,
+    });
+
+    const terms = screen.getAllByRole('term').map(el => el.textContent);
+    expect(terms).toContain('my-custom-annotation');
+    expect(terms).toContain('numeric-label');
+  });
 });
