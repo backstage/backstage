@@ -14,20 +14,37 @@
  * limitations under the License.
  */
 
-import { Table, TableColumn } from '@backstage/core-components';
+import { useCallback, useMemo } from 'react';
+import {
+  CellText,
+  Column,
+  Table,
+  useTable,
+  type ColumnConfig,
+  type SortDescriptor,
+  type TableItem,
+} from '@backstage/ui';
 import { PackageDependency } from '@backstage/plugin-devtools-common';
 
-const columns: TableColumn[] = [
+type PackageDependencyRow = PackageDependency & TableItem;
+
+const columnConfig: ColumnConfig<PackageDependencyRow>[] = [
   {
-    title: 'Name',
-    width: 'auto',
-    field: 'name',
-    defaultSort: 'asc',
+    id: 'name',
+    label: 'Name',
+    isRowHeader: true,
+    isSortable: true,
+    header: () => (
+      <Column id="name" isRowHeader allowsSorting>
+        Name
+      </Column>
+    ),
+    cell: item => <CellText title={item.name} />,
   },
   {
-    title: 'Versions',
-    width: 'auto',
-    field: 'versions',
+    id: 'versions',
+    label: 'Versions',
+    cell: item => <CellText title={item.versions} />,
   },
 ];
 
@@ -36,18 +53,35 @@ export const InfoDependenciesTable = ({
 }: {
   infoDependencies: PackageDependency[] | undefined;
 }) => {
-  return (
-    <Table
-      title="Package Dependencies"
-      options={{
-        paging: true,
-        pageSize: 15,
-        pageSizeOptions: [15, 30, 100],
-        loadingType: 'linear',
-        padding: 'dense',
-      }}
-      columns={columns}
-      data={infoDependencies || []}
-    />
+  const data = useMemo<PackageDependencyRow[]>(
+    () =>
+      (infoDependencies ?? []).map(dep => ({
+        ...dep,
+        id: dep.name,
+      })),
+    [infoDependencies],
   );
+
+  const sortFn = useCallback(
+    (items: PackageDependencyRow[], sort: SortDescriptor) => {
+      if (sort.column !== 'name') return items;
+      const direction = sort.direction === 'descending' ? -1 : 1;
+      return [...items].sort(
+        (a, b) => a.name.localeCompare(b.name) * direction,
+      );
+    },
+    [],
+  );
+
+  const { tableProps } = useTable({
+    mode: 'complete',
+    data,
+    sortFn,
+    paginationOptions: {
+      pageSize: 15,
+      pageSizeOptions: [15, 30, 100],
+    },
+  });
+
+  return <Table columnConfig={columnConfig} {...tableProps} />;
 };

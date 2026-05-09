@@ -63,3 +63,56 @@ backend.start(
 ```
 
 This information is mostly useful if you want to add additional monitoring or debugging tools to your backend. The information is a structured representation of what is already logged during startup.
+
+### Startup Failure Behavior
+
+By default, the backend treats all plugin and module boot failures as fatal and aborts startup. You can control this behavior using the `backend.startup` configuration in your `app-config.yaml`.
+
+#### Default behavior
+
+You can change the default behavior for all plugins and modules using `backend.startup.default`:
+
+```yaml
+backend:
+  startup:
+    default:
+      onPluginBootFailure: continue # 'abort' (default) or 'continue'
+      onPluginModuleBootFailure: continue # 'abort' (default) or 'continue'
+```
+
+When set to `continue`, the backend will proceed with startup even if a plugin or module fails to boot. This is useful for non-critical plugins where you want to keep the backend running even if they are unavailable.
+
+#### Per-plugin configuration
+
+You can override the default behavior for individual plugins and their modules:
+
+```yaml
+backend:
+  startup:
+    plugins:
+      catalog:
+        onPluginBootFailure: abort # always fatal, regardless of default
+      scaffolder:
+        onPluginBootFailure: continue # non-fatal for this plugin
+        modules:
+          github:
+            onPluginModuleBootFailure: continue # non-fatal for this module
+```
+
+This granular control allows you to mark some plugins as required while allowing others to fail gracefully. For example, you might want the catalog plugin to be required (`abort`) while allowing optional enrichment modules to continue on failure (`continue`).
+
+#### Combining default and per-plugin
+
+When both `default` and per-plugin settings are present, the per-plugin setting takes precedence:
+
+```yaml
+backend:
+  startup:
+    default:
+      onPluginBootFailure: continue # most plugins can fail gracefully
+    plugins:
+      catalog:
+        onPluginBootFailure: abort # catalog is required, must succeed
+      auth:
+        onPluginBootFailure: abort # auth is required, must succeed
+```

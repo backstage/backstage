@@ -15,17 +15,7 @@
  */
 
 import { Progress } from '@backstage/core-components';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import { Alert, Box, Button, Flex, Text } from '@backstage/ui';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -34,24 +24,6 @@ import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paperStyle: {
-      display: 'flex',
-      marginBottom: theme.spacing(2),
-    },
-    flexContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      padding: 0,
-    },
-    copyButton: {
-      float: 'left',
-      margin: theme.spacing(2),
-    },
-  }),
-);
 
 const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
   if (about) {
@@ -66,76 +38,66 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
   }
 };
 
+interface InfoItemProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string | undefined;
+}
+
+const InfoItem = ({ icon, label, value }: InfoItemProps) => (
+  <Flex direction="column" gap="1" style={{ minWidth: '160px' }}>
+    <Flex gap="2" alignItems="center">
+      {icon}
+      <Text variant="label" weight="bold">
+        {label}
+      </Text>
+    </Flex>
+    <Text as="p">{value}</Text>
+  </Flex>
+);
+
 /** @public */
 export const InfoContent = () => {
-  const classes = useStyles();
   const { about, loading, error } = useInfo();
 
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <Alert status="danger" description={error.message} />;
   }
   return (
     <Box>
-      <Paper className={classes.paperStyle}>
-        <List className={classes.flexContainer}>
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <DeveloperBoardIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary="Operating System"
-              secondary={about?.operatingSystem}
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <MemoryIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary="Resource utilization"
-              secondary={about?.resourceUtilization}
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <DescriptionIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary="NodeJS Version"
-              secondary={about?.nodeJsVersion}
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <BackstageLogoIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary="Backstage Version"
-              secondary={about?.backstageVersion}
-            />
-          </ListItem>
-        </List>
-        <Divider orientation="vertical" variant="middle" flexItem />
-        <Button
-          onClick={() => {
-            copyToClipboard({ about });
-          }}
-          className={classes.copyButton}
-          startIcon={<FileCopyIcon />}
-        >
-          Copy Info to Clipboard
-        </Button>
-      </Paper>
+      <Box pb="4">
+        <Flex wrap="wrap" gap="6" alignItems="flex-start">
+          <InfoItem
+            icon={<DeveloperBoardIcon fontSize="small" />}
+            label="Operating System"
+            value={about?.operatingSystem}
+          />
+          <InfoItem
+            icon={<MemoryIcon fontSize="small" />}
+            label="Resource utilization"
+            value={about?.resourceUtilization}
+          />
+          <InfoItem
+            icon={<DescriptionIcon fontSize="small" />}
+            label="NodeJS Version"
+            value={about?.nodeJsVersion}
+          />
+          <InfoItem
+            icon={<BackstageLogoIcon />}
+            label="Backstage Version"
+            value={about?.backstageVersion}
+          />
+          <Button
+            variant="secondary"
+            iconStart={<FileCopyIcon fontSize="small" />}
+            onPress={() => copyToClipboard({ about })}
+          >
+            Copy Info to Clipboard
+          </Button>
+        </Flex>
+      </Box>
       <InfoDependenciesTable infoDependencies={about?.dependencies} />
     </Box>
   );

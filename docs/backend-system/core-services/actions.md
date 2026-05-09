@@ -45,24 +45,76 @@ backend:
 
 In addition to plugin-level restrictions, the Actions Service supports filtering actions using include and exclude rules. This allows fine-grained control over which actions are exposed or runnable in a Backstage instance.
 
-#### Include specific actions
+Each filter rule can match by `id` (a [minimatch](https://github.com/isaacs/minimatch) glob against the full `pluginId:actionName` action ID), by `attributes`, or both. All specified fields in a rule must match for the rule to apply. Exclude rules take precedence — an action is excluded if it matches any exclude rule. When include rules are specified, only actions that match at least one include rule are kept.
+
+#### Include actions from a specific plugin
 
 ```yaml
 backend:
   actions:
     filter:
       include:
-        - 'catalog.*'
+        - id: 'catalog:*'
 ```
 
-#### Exclude specific actions
+#### Include actions matching multiple patterns
+
+```yaml
+backend:
+  actions:
+    filter:
+      include:
+        - id: 'catalog:*'
+        - id: 'scaffolder:*'
+```
+
+#### Exclude specific actions by ID
 
 ```yaml
 backend:
   actions:
     filter:
       exclude:
-        - 'scaffolder.internal.*'
+        - id: 'scaffolder:internal-*'
+```
+
+#### Exclude all destructive actions
+
+```yaml
+backend:
+  actions:
+    filter:
+      exclude:
+        - attributes:
+            destructive: true
+```
+
+#### Include only read-only actions
+
+```yaml
+backend:
+  actions:
+    filter:
+      include:
+        - attributes:
+            readOnly: true
+```
+
+#### Combine ID and attribute matching
+
+A rule matches only if all specified conditions are met. The example below includes catalog actions that are idempotent, and excludes any destructive action regardless of plugin:
+
+```yaml
+backend:
+  actions:
+    filter:
+      include:
+        - id: 'catalog:*'
+          attributes:
+            idempotent: true
+      exclude:
+        - attributes:
+            destructive: true
 ```
 
 ### Permissions

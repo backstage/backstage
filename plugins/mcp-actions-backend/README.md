@@ -116,6 +116,8 @@ When `mcpActions.servers` is not configured, the plugin behaves exactly as befor
 
 Include and exclude filter rules support glob patterns on action IDs and attribute matching. Exclude rules take precedence over include rules. When include rules are specified, actions must match at least one include rule to be exposed.
 
+**Filter by plugin using glob patterns:**
+
 ```yaml
 mcpActions:
   servers:
@@ -124,6 +126,66 @@ mcpActions:
       filter:
         include:
           - id: 'catalog:*'
+        exclude:
+          - attributes:
+              destructive: true
+```
+
+**Filter to read-only actions only:**
+
+```yaml
+mcpActions:
+  servers:
+    readonly:
+      name: 'Read-only Actions'
+      filter:
+        include:
+          - attributes:
+              readOnly: true
+```
+
+**Combine multiple include rules** (an action matches if it satisfies _any_ rule):
+
+```yaml
+mcpActions:
+  servers:
+    safe:
+      name: 'Safe Actions'
+      filter:
+        include:
+          - id: 'catalog:*'
+            attributes:
+              readOnly: true
+          - id: 'scaffolder:*'
+            attributes:
+              idempotent: true
+```
+
+**Exclude destructive and non-idempotent actions from a server:**
+
+```yaml
+mcpActions:
+  servers:
+    scaffolder:
+      name: 'Backstage Scaffolder'
+      filter:
+        include:
+          - id: 'scaffolder:*'
+        exclude:
+          - attributes:
+              destructive: true
+          - attributes:
+              idempotent: false
+```
+
+**Global exclude without an include list** (exposes all actions except those matching exclude rules):
+
+```yaml
+mcpActions:
+  servers:
+    all-safe:
+      name: 'All Safe Actions'
+      filter:
         exclude:
           - attributes:
               destructive: true
