@@ -7169,20 +7169,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-backend-module-explore@workspace:^, @backstage/plugin-search-backend-module-explore@workspace:plugins/search-backend-module-explore":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-search-backend-module-explore@workspace:plugins/search-backend-module-explore"
-  dependencies:
-    "@backstage-community/plugin-explore-common": "npm:^0.12.0"
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
-    "@backstage/plugin-search-backend-node": "workspace:^"
-    "@backstage/plugin-search-common": "workspace:^"
-    msw: "npm:^1.2.1"
-  languageName: unknown
-  linkType: soft
+
 
 "@backstage/plugin-search-backend-module-pg@workspace:plugins/search-backend-module-pg":
   version: 0.0.0-use.local
@@ -29112,7 +29099,6 @@ __metadata:
     "@backstage/plugin-search-backend": "workspace:^"
     "@backstage/plugin-search-backend-module-catalog": "workspace:^"
     "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^"
-    "@backstage/plugin-search-backend-module-explore": "workspace:^"
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"

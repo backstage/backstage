@@ -214,6 +214,7 @@ nav:
       - Component Design Guidelines: 'dls/component-design-guidelines.md'
       - Contributing to Storybook: 'dls/contributing-to-storybook.md'
       - Figma: 'dls/figma.md'
+      - MUI to BUI Theme Migration: 'dls/mui-to-bui.md'
   - API Reference:
       - Guides:
           - Utility APIs: 'api/utility-apis.md'

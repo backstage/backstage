@@ -68,4 +68,3 @@ The plugin reads your installed themes via the `appThemeApiRef` API and maps eac
 ## Related Resources
 
 - [Backstage UI (BUI) Storybook](https://backstage.io/storybook) — browse BUI components and their available CSS custom properties
-- [MUI to BUI migration analytics script](../../scripts/mui-to-bui/README.md) — a CLI tool that reports migration progress across the monorepo
