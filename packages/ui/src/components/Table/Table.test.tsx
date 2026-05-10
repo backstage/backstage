@@ -19,22 +19,15 @@ import { Table } from './components/Table';
 import { CellText } from './components/CellText';
 import type { ColumnConfig, InfiniteScrollPagination } from '.';
 
-class MockIntersectionObserver implements IntersectionObserver {
-  root: Element | null = null;
-  rootMargin = '';
-  thresholds: ReadonlyArray<number> = [];
-  constructor(
-    _callback: IntersectionObserverCallback,
-    _options?: IntersectionObserverInit,
-  ) {}
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-  takeRecords(): IntersectionObserverEntry[] {
-    return [];
-  }
-}
-globalThis.IntersectionObserver = MockIntersectionObserver;
+globalThis.IntersectionObserver = jest.fn(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+  takeRecords: jest.fn().mockReturnValue([]),
+  root: null,
+  rootMargin: '',
+  thresholds: [],
+}));
 
 type Item = { id: string; name: string };
 
@@ -52,7 +45,7 @@ const data: Item[] = [
   { id: '2', name: 'beta' },
 ];
 
-function infinitePagination(
+function createMockInfinitePagination(
   overrides: Partial<InfiniteScrollPagination> = {},
 ): InfiniteScrollPagination {
   return {
@@ -72,7 +65,7 @@ describe('Table (infinite mode)', () => {
       <Table<Item>
         columnConfig={columns}
         data={data}
-        pagination={infinitePagination({ hasMoreItems: true })}
+        pagination={createMockInfinitePagination({ hasMoreItems: true })}
         virtualized
         style={{ height: 300 }}
       />,
@@ -95,7 +88,7 @@ describe('Table (infinite mode)', () => {
       <Table<Item>
         columnConfig={columns}
         data={data}
-        pagination={infinitePagination()}
+        pagination={createMockInfinitePagination()}
       />,
     );
 

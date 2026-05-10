@@ -148,24 +148,11 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     sortFn,
   ]);
 
-  const processedDataRef = useRef(processedData);
-  useEffect(() => {
-    if (
-      paginationOptions.infinite &&
-      processedData !== processedDataRef.current
-    ) {
-      processedDataRef.current = processedData;
-      setOffset(0);
-    }
-  }, [processedData, paginationOptions.infinite]);
-
   const totalCount = processedData?.length ?? 0;
 
   // Paginate the processed data
   const paginatedData = useMemo(() => {
-    if (noPagination) {
-      return processedData;
-    }
+    if (noPagination) return processedData;
     const start = paginationOptions.infinite ? 0 : offset;
     return processedData?.slice(start, offset + pageSize);
   }, [

@@ -63,12 +63,10 @@ function useTableProps<T extends TableItem>(
           paginationResult.onNextPage();
           onNextPageCallback?.();
         },
-        onLoadPrevious: paginationResult.hasPreviousPage
-          ? () => {
-              paginationResult.onPreviousPage();
-              onPreviousPageCallback?.();
-            }
-          : () => {},
+        onLoadPrevious: () => {
+          paginationResult.onPreviousPage();
+          onPreviousPageCallback?.();
+        },
         isLoading: paginationResult.isPending,
         hasMoreItems: paginationResult.hasNextPage,
         hasPreviousPages: paginationResult.hasPreviousPage,

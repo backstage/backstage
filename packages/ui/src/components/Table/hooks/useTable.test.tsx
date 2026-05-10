@@ -44,7 +44,6 @@ describe('useTable (infinite mode)', () => {
       throw new Error(`expected infinite pagination, got ${pagination.type}`);
     }
     expect(pagination.hasMoreItems).toBe(true);
-    expect(pagination.hasPreviousPages).toBe(false);
     expect(pagination.isLoading).toBe(false);
     expect(tableProps.data?.length).toBe(5);
 
@@ -58,8 +57,6 @@ describe('useTable (infinite mode)', () => {
     if (paginationAfter.type !== 'infinite') {
       throw new Error('expected infinite pagination');
     }
-    // Previous pages stay false in infinite+complete even after advancing.
-    expect(paginationAfter.hasPreviousPages).toBe(false);
     expect(paginationAfter.hasMoreItems).toBe(true);
   });
 

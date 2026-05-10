@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 const FIRST_PAGE_CURSOR = Symbol('firstPage');
 
@@ -65,7 +65,6 @@ type Direction = 'mount' | 'reset' | 'refresh' | 'next' | 'prev';
 
 class PageCacheStore<T, TCursor extends CursorType> {
   private cache = new Map<InternalCursor<TCursor>, PageEntry<T, TCursor>>();
-  version = 0;
 
   get(cursor: InternalCursor<TCursor>): PageEntry<T, TCursor> | undefined {
     return this.cache.get(cursor);
@@ -82,13 +81,11 @@ class PageCacheStore<T, TCursor extends CursorType> {
       prevCursor: undefined,
     };
     this.cache.set(cursor, entry);
-    this.version++;
     return entry;
   }
 
   clear() {
     this.cache.clear();
-    this.version++;
   }
 
   getTargetCursor(
@@ -126,7 +123,6 @@ class PageCacheStore<T, TCursor extends CursorType> {
     } else if (direction === 'prev') {
       entry.nextCursor = currentCursor;
     }
-    this.version++;
   }
 
   markDataLoaded(
@@ -142,7 +138,6 @@ class PageCacheStore<T, TCursor extends CursorType> {
     if (entry.prevCursor === undefined && prevCursor !== undefined) {
       entry.prevCursor = prevCursor;
     }
-    this.version++;
   }
 
   getAllData(startCursor: InternalCursor<TCursor>): T[] | undefined {
@@ -217,11 +212,7 @@ export function usePageCache<T, TCursor extends CursorType = string>(
   const hasPreviousPage = currentPage?.prevCursor !== undefined;
 
   const firstCursor = cacheStore.getFirstCursor(currentCursor);
-  const cacheVersion = cacheStore.version;
-  const allData = useMemo(
-    () => cacheStore.getAllData(firstCursor),
-    [cacheStore, firstCursor, cacheVersion],
-  );
+  const allData = cacheStore.getAllData(firstCursor);
 
   const goToPage = useCallback(
     async (direction: Direction) => {
