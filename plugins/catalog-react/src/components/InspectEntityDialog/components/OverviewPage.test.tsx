@@ -102,6 +102,7 @@ describe('OverviewPage', () => {
   });
 
   it('renders without crashing when annotations or labels carry non-string values', async () => {
+    const bigintValue = BigInt('9007199254740993');
     const entityWithNullAnnotation = {
       ...entity,
       metadata: {
@@ -109,6 +110,8 @@ describe('OverviewPage', () => {
         annotations: {
           ...entity.metadata.annotations,
           'my-custom-annotation': null,
+          // BigInt makes JSON.stringify throw — exercise the catch path.
+          'bigint-annotation': bigintValue,
         },
         labels: {
           ...entity.metadata.labels,
@@ -123,6 +126,15 @@ describe('OverviewPage', () => {
 
     const terms = screen.getAllByRole('term').map(el => el.textContent);
     expect(terms).toContain('my-custom-annotation');
+    expect(terms).toContain('bigint-annotation');
     expect(terms).toContain('numeric-label');
+
+    // Non-string values must still surface to the user, not silently disappear.
+    const definitions = screen
+      .getAllByRole('definition')
+      .map(el => el.textContent);
+    expect(definitions).toContain('null');
+    expect(definitions).toContain('42');
+    expect(definitions).toContain(String(bigintValue));
   });
 });

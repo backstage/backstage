@@ -127,7 +127,18 @@ function renderEntryValue(value: unknown): ReactNode {
   if (typeof value === 'string') {
     return value;
   }
-  return JSON.stringify(value);
+  // JSON.stringify can return undefined (e.g. for symbol/function/undefined)
+  // and can throw (BigInt, circular references). Fall back to String() so the
+  // value stays visible and the dialog never crashes.
+  try {
+    const stringified = JSON.stringify(value);
+    if (stringified === undefined) {
+      return String(value);
+    }
+    return stringified;
+  } catch {
+    return String(value);
+  }
 }
 
 function entriesToItems(entries: [string, unknown][]) {
