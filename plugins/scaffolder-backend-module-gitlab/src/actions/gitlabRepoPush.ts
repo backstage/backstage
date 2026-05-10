@@ -174,6 +174,18 @@ export const createGitlabRepoPushAction = (options: {
           execute_filemode: file.executable,
         }));
 
+      if (actions.length === 0) {
+        ctx.logger.info(
+          `No changes detected for ${repoID} on branch ${branchName}, skipping commit.`,
+        );
+
+        ctx.output('projectid', repoID);
+        ctx.output('projectPath', repoID);
+        ctx.output('commitHash', '');
+
+        return;
+      }
+
       const branchExists = await ctx.checkpoint({
         key: `branch.exists.${repoID}.${branchName}`,
         fn: async () => {
