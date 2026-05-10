@@ -119,7 +119,7 @@ describe('gitlab:repo:push', () => {
       mockDir.setContent({
         [workspacePath]: {
           'abcd.txt': 'Test message',
-          source: {
+          src: {
             'abcd.txt': 'Test message',
           },
         },
@@ -135,7 +135,7 @@ describe('gitlab:repo:push', () => {
         [
           {
             action: 'create',
-            filePath: 'abcd.txt',
+            filePath: 'dest/abcd.txt',
             content: 'VGVzdCBtZXNzYWdl',
             encoding: 'base64',
             execute_filemode: false,
