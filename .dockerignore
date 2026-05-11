@@ -1,9 +1,26 @@
-.git
-.yarn/cache
-.yarn/install-state.gz
-docs
-microsite
-node_modules
-packages/*/src
-packages/*/node_modules
-plugins
+# Exclude everything by default
+**
+
+# Yarn
+!.yarn/
+!.yarn/releases/
+!.yarn/releases/**
+!.yarnrc.yml
+!yarn.lock
+!package.json
+
+# Pre-built backend artifacts
+!packages/
+!packages/backend/
+!packages/backend/dist/
+!packages/backend/dist/skeleton.tar.gz
+!packages/backend/dist/bundle.tar.gz
+
+# Frontend app config (loaded at runtime by the backend)
+!packages/app/
+!packages/app/app-config.yaml
+
+# App configs and catalog
+!app-config.yaml
+!app-config.railway.yaml
+!catalog-blitzy-sandbox.yaml

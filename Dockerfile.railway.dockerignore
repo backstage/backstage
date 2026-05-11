@@ -1,2 +1,17 @@
 .git
 node_modules
+packages/*/node_modules
+
+# Large source directories not needed for pre-built deployment
+plugins
+microsite
+docs
+docs-ui
+dist-types
+blitzy/screenshots
+contrib
+
+# Package source (dist artifacts already built)
+packages/app/src
+packages/app/public
+packages/*/src
