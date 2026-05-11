@@ -7,6 +7,7 @@ on:
       - 'microsite/**'
       - 'beps/**'
       - 'mkdocs.yml'
+      - 'mkdocs-ci.yml'
       - 'docs/**'
 
 permissions:
@@ -284,7 +285,7 @@ jobs:
           clean: false
 
       - name: Build MkDocs for TechDocs
-        run: mkdocs build --strict
+        run: mkdocs build --strict --config-file mkdocs-ci.yml
 
       - name: download next OpenAPI API docs
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
