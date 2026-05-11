@@ -73,9 +73,9 @@ Present this inventory to the user before writing any spec. Misreading the route
 
 Create `<plugin-dir>/src/schema/openapi.yaml` modeled on existing onboarded plugins:
 
-- `plugins/events-backend/src/schema/openapi.yaml` — small, modern reference.
-- `plugins/scaffolder-backend/src/schema/openapi.yaml` — larger, with more parameter and schema reuse.
-- `plugins/catalog-backend/src/schema/openapi.yaml` — largest, good for query-param-heavy endpoints.
+- [`plugins/events-backend/src/schema/openapi.yaml`](https://github.com/backstage/backstage/blob/master/plugins/events-backend/src/schema/openapi.yaml) — small, modern reference.
+- [`plugins/scaffolder-backend/src/schema/openapi.yaml`](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/schema/openapi.yaml) — larger, with more parameter and schema reuse.
+- [`plugins/catalog-backend/src/schema/openapi.yaml`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/schema/openapi.yaml) — largest, good for query-param-heavy endpoints.
 
 Conventions to follow:
 
@@ -141,7 +141,7 @@ In the existing router file:
 3. Keep all middleware in the same order (cookie parsers, body parsers, auth, error handlers). Auth/permissions logic is NOT generated and must remain in the router code.
 4. Preserve the function signature and exports of `createRouter`/`router` exactly so callers (the plugin's `*Plugin.ts`) need no change.
 
-`plugins/events-backend/src/service/hub/createEventBusRouter.ts` is the canonical example.
+[`plugins/events-backend/src/service/hub/createEventBusRouter.ts`](https://github.com/backstage/backstage/blob/master/plugins/events-backend/src/service/hub/createEventBusRouter.ts) is the canonical example.
 
 ### Step 7 — Verify
 
@@ -157,7 +157,14 @@ If a test fails because the spec is wrong, edit `openapi.yaml` and rerun `yarn -
 
 Only do this if the user explicitly asked for it.
 
-1. Confirm the client package directory. If it does not yet exist as a workspace package, scaffold it with `yarn new` (`backend-plugin-node` or similar template) before continuing. Confirm naming with the user first.
+1. Decide which package will host the client. There are three common shapes — ask the user which one fits:
+
+   - **Backend-only client** (`*-node` package, e.g. `plugins/foo-node`) — when only other backend plugins call this API.
+   - **Frontend-only client** (`*-react` package, or a frontend plugin package like `plugins/foo`) — when only browser code calls this API.
+   - **Shared client** (`*-common` package, e.g. `plugins/foo-common`) — when both backend and frontend need it. The `*-common` package is the safest default when in doubt because it's reachable from either side.
+
+   If the chosen package does not yet exist as a workspace package, scaffold it with `yarn new` first (`backend-plugin-node` for `*-node`, `plugin-common` for `*-common`, etc.). Confirm naming and template with the user before scaffolding.
+
 2. Update the `generate` script in the plugin's `package.json`:
    ```json
    "generate": "backstage-repo-tools package schema openapi generate --server --client-package <client-pkg-dir>"
@@ -167,7 +174,7 @@ Only do this if the user explicitly asked for it.
 5. `yarn tsc` again from the repo root.
 6. Lint the client package: `yarn lint --fix <client-pkg-dir>`.
 
-`plugins/events-node/src/generated/` is a reference for what a client output looks like.
+[`plugins/events-node/src/generated/`](https://github.com/backstage/backstage/tree/master/plugins/events-node/src/generated) is a reference for what a client output looks like.
 
 ## Optional: migrate router tests to `wrapServer`
 
@@ -191,7 +198,7 @@ For each router test file (`router.test.ts`, `createRouter.test.ts`):
 4. Do not change assertions. The wrapper validates every request and response against the spec at test time — assertion failures that surface as `Response did not match schema` mean the spec or the handler disagree; fix whichever is wrong.
 5. Re-run `CI=1 yarn test <plugin-dir>/src/service`.
 
-`plugins/scaffolder-backend/src/service/router.test.ts` and `plugins/catalog-backend/src/service/createRouter.test.ts` are reference migrations.
+[`plugins/scaffolder-backend/src/service/router.test.ts`](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/service/router.test.ts) and [`plugins/catalog-backend/src/service/createRouter.test.ts`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/service/createRouter.test.ts) are reference migrations.
 
 ## Optional: changesets
 
@@ -203,18 +210,20 @@ Only if the user wants to land this as a PR. Create changesets in `.changeset/` 
 
 Do not run `yarn changesets version`. Write the changeset markdown files directly.
 
-## Reference files in this repo
+## Reference files in the upstream Backstage repo
 
-| What you need                      | Where to read                                                       |
-| ---------------------------------- | ------------------------------------------------------------------- |
-| Spec example (small)               | `plugins/events-backend/src/schema/openapi.yaml`                    |
-| Spec example (large)               | `plugins/catalog-backend/src/schema/openapi.yaml`                   |
-| Router using `createOpenApiRouter` | `plugins/events-backend/src/service/hub/createEventBusRouter.ts`    |
-| Test using `wrapServer`            | `plugins/scaffolder-backend/src/service/router.test.ts`             |
-| Generate command source            | `packages/repo-tools/src/commands/package/schema/openapi/generate/` |
-| Spec lint command source           | `packages/repo-tools/src/commands/repo/schema/openapi/lint.ts`      |
-| `wrapServer` implementation        | `packages/backend-openapi-utils/src/testUtils.ts`                   |
-| Client output reference            | `plugins/events-node/src/generated/`                                |
+These all live in [`backstage/backstage`](https://github.com/backstage/backstage); the user's workspace likely doesn't contain them. Browse via the links below.
+
+| What you need                      | Where to read                                                                                                                                                                              |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Spec example (small)               | [`plugins/events-backend/src/schema/openapi.yaml`](https://github.com/backstage/backstage/blob/master/plugins/events-backend/src/schema/openapi.yaml)                                      |
+| Spec example (large)               | [`plugins/catalog-backend/src/schema/openapi.yaml`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/schema/openapi.yaml)                                    |
+| Router using `createOpenApiRouter` | [`plugins/events-backend/src/service/hub/createEventBusRouter.ts`](https://github.com/backstage/backstage/blob/master/plugins/events-backend/src/service/hub/createEventBusRouter.ts)      |
+| Test using `wrapServer`            | [`plugins/scaffolder-backend/src/service/router.test.ts`](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/service/router.test.ts)                        |
+| Generate command source            | [`packages/repo-tools/src/commands/package/schema/openapi/generate/`](https://github.com/backstage/backstage/tree/master/packages/repo-tools/src/commands/package/schema/openapi/generate) |
+| Spec lint command source           | [`packages/repo-tools/src/commands/repo/schema/openapi/lint.ts`](https://github.com/backstage/backstage/blob/master/packages/repo-tools/src/commands/repo/schema/openapi/lint.ts)          |
+| `wrapServer` implementation        | [`packages/backend-openapi-utils/src/testUtils.ts`](https://github.com/backstage/backstage/blob/master/packages/backend-openapi-utils/src/testUtils.ts)                                    |
+| Client output reference            | [`plugins/events-node/src/generated/`](https://github.com/backstage/backstage/tree/master/plugins/events-node/src/generated)                                                               |
 
 ## Things to refuse / hand back to the user
 
