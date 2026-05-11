@@ -484,9 +484,6 @@ export async function createRouter(
             formDecorators:
               template.spec.formDecorators ??
               template.spec.EXPERIMENTAL_formDecorators,
-            EXPERIMENTAL_formDecorators:
-              template.spec.EXPERIMENTAL_formDecorators ??
-              template.spec.formDecorators,
           });
         } catch (err) {
           await auditorEvent?.fail({ error: err });
