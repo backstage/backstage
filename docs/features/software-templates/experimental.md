@@ -80,12 +80,13 @@ Form decorators provide the ability to run arbitrary code before the form is sub
 Define which decorators run in each template using the `formDecorators` key in the template's `spec`:
 
 ```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: my-template
 spec:
   formDecorators:
-    - id: myDecorator
+    - id: mockDecorator
       input:
         test: something funky
 
@@ -103,6 +104,7 @@ Create a decorator with `createScaffolderFormDecorator` and register it as an ex
 
 ```ts
 import { createScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
 
 const mockDecorator = createScaffolderFormDecorator({
   id: 'mockDecorator',
@@ -118,8 +120,9 @@ const mockDecorator = createScaffolderFormDecorator({
     { setSecrets, setFormState, input: { test } },
     { githubApi },
   ) => {
-    setFormState(state => ({ ...state, test, mock: 'MOCK' }));
-    setSecrets(state => ({ ...state, GITHUB_TOKEN: 'MOCK_TOKEN' }));
+    const token = await githubApi.getAccessToken(['repo']);
+    setFormState(state => ({ ...state, test }));
+    setSecrets(state => ({ ...state, GITHUB_TOKEN: token }));
   },
 });
 ```
