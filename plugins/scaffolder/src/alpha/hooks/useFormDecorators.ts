@@ -138,6 +138,7 @@ export const useFormDecorators = () => {
                 formState = { ...handler(formState) };
               },
               formState,
+              parameters: opts.manifest?.steps.map(step => step.schema) ?? [],
               input: decorator.input ?? {},
             });
           }),

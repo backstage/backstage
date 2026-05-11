@@ -260,6 +260,77 @@ describe('useFormDecorators', () => {
     });
   });
 
+  it('should expose the parameter schemas from the manifest on the context', async () => {
+    const seenParameters = jest.fn();
+    const parametersDecorator = createScaffolderFormDecorator({
+      id: 'parameters',
+      async decorator({ parameters }) {
+        seenParameters(parameters);
+      },
+    });
+
+    const parametersManifest: TemplateParameterSchema = {
+      formDecorators: [{ id: 'parameters' }],
+      steps: [
+        {
+          title: 'First',
+          schema: {
+            title: 'First',
+            properties: { name: { type: 'string' } },
+            required: ['name'],
+          },
+        },
+        {
+          title: 'Second',
+          schema: {
+            title: 'Second',
+            properties: { count: { type: 'number' } },
+          },
+        },
+      ],
+      title: 'test',
+    };
+
+    const renderedHook = renderHook(() => useFormDecorators(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                decorators: [parametersDecorator],
+              }),
+            ],
+            [errorApiRef, { post: () => {} }],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+
+    await waitFor(async () => {
+      const result = renderedHook.result.current!;
+      await result.run({
+        formState: {},
+        secrets: {},
+        manifest: parametersManifest,
+      });
+
+      expect(seenParameters).toHaveBeenCalledWith([
+        {
+          title: 'First',
+          properties: { name: { type: 'string' } },
+          required: ['name'],
+        },
+        {
+          title: 'Second',
+          properties: { count: { type: 'number' } },
+        },
+      ]);
+    });
+  });
+
   it('should allow merging of existing secrets and formstate', async () => {
     const secretAndFormDataModifier = createScaffolderFormDecorator({
       id: 'test',
