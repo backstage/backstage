@@ -128,7 +128,7 @@ export const Form: (
   props: PropsWithChildren<ScaffolderRJSFFormProps>,
 ) => JSX_2.Element;
 
-// @alpha
+// @public
 export const FormDecoratorBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-decorator';
   params: {
@@ -257,7 +257,7 @@ export interface ScaffolderFieldProps {
   required?: boolean;
 }
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type ScaffolderFormDecorator<TInput extends JsonObject = JsonObject> = {
   readonly $$type: '@backstage/scaffolder/FormDecorator';
   readonly id: string;
