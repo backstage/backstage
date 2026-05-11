@@ -37,6 +37,7 @@ export { CheckboxDefinition } from './components/Checkbox/definition';
 export { CheckboxGroupDefinition } from './components/CheckboxGroup/definition';
 export { ComboboxDefinition } from './components/Combobox/definition';
 export { ContainerDefinition } from './components/Container/definition';
+export { DatePickerDefinition } from './components/DatePicker/definition';
 export { DateRangePickerDefinition } from './components/DateRangePicker/definition';
 export { DialogDefinition } from './components/Dialog/definition';
 export { FieldErrorDefinition } from './components/FieldError/definition';
