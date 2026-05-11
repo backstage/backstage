@@ -1218,6 +1218,25 @@ export const DatePicker: ForwardRefExoticComponent<
 >;
 
 // @public
+export const DatePickerCalendarDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePickerCalendar';
+    readonly header: 'bui-DatePickerCalendarHeader';
+    readonly heading: 'bui-DatePickerCalendarHeading';
+    readonly navButton: 'bui-DatePickerCalendarNavButton';
+    readonly grid: 'bui-DatePickerCalendarGrid';
+    readonly gridHeader: 'bui-DatePickerCalendarGridHeader';
+    readonly headerCell: 'bui-DatePickerCalendarHeaderCell';
+    readonly gridBody: 'bui-DatePickerCalendarGridBody';
+    readonly cell: 'bui-DatePickerCalendarCell';
+  };
+  readonly propDefs: {};
+};
+
+// @public
 export const DatePickerDefinition: {
   readonly styles: {
     readonly [key: string]: string;
@@ -1235,6 +1254,21 @@ export const DatePickerDefinition: {
     readonly description: {};
     readonly secondaryLabel: {};
   };
+};
+
+// @public
+export const DatePickerGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePickerGroup';
+    readonly dateInput: 'bui-DatePickerDateInput';
+    readonly segment: 'bui-DatePickerSegment';
+    readonly button: 'bui-DatePickerButton';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {};
 };
 
 // @public (undocumented)

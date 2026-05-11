@@ -16,4 +16,8 @@
 
 export * from './DatePicker';
 export * from './types';
-export { DatePickerDefinition } from './definition';
+export {
+  DatePickerDefinition,
+  DatePickerGroupDefinition,
+  DatePickerCalendarDefinition,
+} from './definition';

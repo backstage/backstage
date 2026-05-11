@@ -38,7 +38,7 @@ export const DatePickerDefinition = defineComponent<DatePickerOwnProps>()({
 
 /**
  * Component definition for DatePickerGroup
- * @internal
+ * @public
  */
 export const DatePickerGroupDefinition = defineComponent<
   Record<string, never>
@@ -56,7 +56,7 @@ export const DatePickerGroupDefinition = defineComponent<
 
 /**
  * Component definition for DatePickerCalendar
- * @internal
+ * @public
  */
 export const DatePickerCalendarDefinition = defineComponent<
   Record<string, never>
