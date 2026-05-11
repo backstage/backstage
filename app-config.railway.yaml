@@ -1,0 +1,42 @@
+app:
+  baseUrl: https://${RAILWAY_PUBLIC_DOMAIN}
+  listen:
+    host: 0.0.0.0
+
+backend:
+  baseUrl: https://${RAILWAY_PUBLIC_DOMAIN}
+  listen:
+    port: 7007
+    host: 0.0.0.0
+  database:
+    client: better-sqlite3
+    connection:
+      directory: /data
+  cors:
+    origin:
+      - https://${RAILWAY_PUBLIC_DOMAIN}
+    methods: [GET, HEAD, OPTIONS, POST]
+    credentials: true
+
+catalog:
+  readonly: true
+
+auth:
+  environment: production
+  providers:
+    google: {}
+    github:
+      production:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+    gitlab: {}
+    okta: {}
+    oauth2: {}
+    oidc: {}
+    auth0: {}
+    microsoft: {}
+    onelogin: {}
+    bitbucket: {}
+    atlassian: {}
+    guest:
+      dangerouslyAllowOutsideDevelopment: true

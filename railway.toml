@@ -1,0 +1,9 @@
+[build]
+  builder = "DOCKERFILE"
+  dockerfilePath = "Dockerfile.railway"
+
+[deploy]
+  healthcheckPath = "/api/catalog/entities?limit=1"
+  healthcheckTimeout = 300
+  restartPolicyType = "ON_FAILURE"
+  restartPolicyMaxRetries = 3
