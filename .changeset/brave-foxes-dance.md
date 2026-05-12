@@ -5,12 +5,12 @@
 
 Added experimental BUI (Backstage UI) form theme for scaffolder forms. All default field extensions render BUI variants when enabled.
 
-**Page extension config:**
+**Extension config:**
 
 ```yaml
 app:
   extensions:
-    - page:scaffolder:
+    - sub-page:scaffolder/templates:
         config:
           enableBackstageUi: true
 ```

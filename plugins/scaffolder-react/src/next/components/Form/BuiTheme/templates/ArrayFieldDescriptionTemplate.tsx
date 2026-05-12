@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { isValidElement } from 'react';
 import {
   ArrayFieldDescriptionProps,
   FormContextType,
   RJSFSchema,
   StrictRJSFSchema,
 } from '@rjsf/utils';
-import { Text } from '@backstage/ui';
+import { MarkdownContent } from '@backstage/core-components';
 
 export default function ArrayFieldDescriptionTemplate<
   T = any,
@@ -30,9 +31,10 @@ export default function ArrayFieldDescriptionTemplate<
   if (!description) {
     return null;
   }
-  return (
-    <Text variant="body-small" color="secondary">
-      {description}
-    </Text>
-  );
+
+  if (isValidElement(description)) {
+    return <>{description}</>;
+  }
+
+  return <MarkdownContent content={description as string} linkTarget="_blank" />;
 }

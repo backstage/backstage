@@ -50,11 +50,19 @@ export const SecretInput = (props: ScaffolderRJSFFieldProps) => {
     [setSecrets, name],
   );
 
+  // Persist any in-flight value on unmount so the secret isn't lost if the
+  // user navigates away within the debounce window.
   useEffect(() => {
     return () => {
-      debouncedSetSecrets.cancel();
+      debouncedSetSecrets.flush();
     };
   }, [debouncedSetSecrets]);
+
+  // Mirror external changes to secrets back into the input so resets or
+  // programmatic updates aren't shadowed by stale local state.
+  useEffect(() => {
+    setLocalValue(secrets[name] ?? '');
+  }, [secrets, name]);
 
   const handleChange = (value: string) => {
     setLocalValue(value);

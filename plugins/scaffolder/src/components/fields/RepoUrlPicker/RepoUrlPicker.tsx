@@ -269,11 +269,7 @@ export const RepoUrlPicker = (
             {schema.title}
           </Text>
         )}
-        {description && (
-          <Text as="p" variant="body-medium" color="secondary">
-            {description}
-          </Text>
-        )}
+        {description && <MarkdownContent content={description} />}
         {subComponents}
       </Flex>
     );

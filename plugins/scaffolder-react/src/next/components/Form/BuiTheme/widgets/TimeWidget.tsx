@@ -19,12 +19,12 @@ import {
   StrictRJSFSchema,
   WidgetProps,
 } from '@rjsf/utils';
-import BaseInputTemplate from './BaseInputTemplate';
+import DateInput from './DateInput';
 
 export default function TimeWidget<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
 >(props: WidgetProps<T, S, F>) {
-  return <BaseInputTemplate {...props} type="time" />;
+  return <DateInput {...props} inputType="time" />;
 }

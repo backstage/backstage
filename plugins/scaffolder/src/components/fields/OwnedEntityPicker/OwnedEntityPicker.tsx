@@ -59,13 +59,19 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
   if (loading) {
     if (theme === 'bui') {
       return (
-        <BuiAutocomplete
-          label={title}
-          isRequired={required}
-          isLoading
-          options={[]}
-          isDisabled
-        />
+        <ScaffolderField
+          rawDescription={uiSchema['ui:description'] ?? description}
+          required={required}
+          disabled={uiSchema['ui:disabled']}
+        >
+          <BuiAutocomplete
+            label={title}
+            isRequired={required}
+            isLoading
+            options={[]}
+            isDisabled
+          />
+        </ScaffolderField>
       );
     }
     return (
