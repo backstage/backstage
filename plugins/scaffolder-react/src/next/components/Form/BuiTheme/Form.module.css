@@ -22,11 +22,13 @@
 
 @layer components {
   .form :global(.bui-Input:not([data-focused]):not([data-invalid])),
-  .form :global(.bui-ComboboxInput:not([data-focus-within]):not([data-invalid])) {
+  .form
+    :global(.bui-ComboboxInput:not([data-focus-within]):not([data-invalid])) {
     box-shadow: inset 0 0 0 1px var(--bui-border-2);
   }
 
-  .form :global(.bui-SelectTrigger:not([data-focus-visible]):not([data-invalid])) {
+  .form
+    :global(.bui-SelectTrigger:not([data-focus-visible]):not([data-invalid])) {
     box-shadow: inset 0 0 0 1px var(--bui-border-2);
   }
 }
