@@ -1,17 +1,26 @@
-.git
-node_modules
-packages/*/node_modules
+# Exclude everything, then allowlist only what the Dockerfile needs
+**
 
-# Large source directories not needed for pre-built deployment
-plugins
-microsite
-docs
-docs-ui
-dist-types
-blitzy/screenshots
-contrib
+# Yarn (needed for `yarn workspaces focus --production`)
+!.yarn/
+!.yarn/releases/
+!.yarn/releases/**
+!.yarnrc.yml
+!yarn.lock
+!package.json
 
-# Package source (dist artifacts already built)
-packages/app/src
-packages/app/public
-packages/*/src
+# Pre-built backend artifacts
+!packages/
+!packages/backend/
+!packages/backend/dist/
+!packages/backend/dist/skeleton.tar.gz
+!packages/backend/dist/bundle.tar.gz
+
+# Frontend app config (loaded at runtime by the backend)
+!packages/app/
+!packages/app/app-config.yaml
+
+# App configs and catalog
+!app-config.yaml
+!app-config.railway.yaml
+!catalog-blitzy-sandbox.yaml

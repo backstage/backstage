@@ -15,6 +15,7 @@
  */
 
 import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ProxiedSignInIdentity } from '../../core-components/src/layout/ProxiedSignInPage/ProxiedSignInIdentity';
@@ -36,6 +37,7 @@ function SignInPage({
 }) {
   const discoveryApi = useApi(discoveryApiRef);
   const githubAuthApi = useApi(githubAuthApiRef);
+  const navigate = useNavigate();
   const [error, setError] = useState<string>();
   const [signingIn, setSigningIn] = useState(false);
 
@@ -50,7 +52,10 @@ function SignInPage({
 
     identity
       .start()
-      .then(() => onSignInSuccess(identity))
+      .then(() => {
+        onSignInSuccess(identity);
+        navigate('/catalog');
+      })
       .catch(err => {
         // eslint-disable-next-line no-console
         console.warn(
@@ -58,8 +63,9 @@ function SignInPage({
           err.message,
         );
         onSignInSuccess(new GuestUserIdentity());
+        navigate('/catalog');
       });
-  }, [discoveryApi, onSignInSuccess]);
+  }, [discoveryApi, onSignInSuccess, navigate]);
 
   const handleGitHubSignIn = useCallback(async () => {
     setSigningIn(true);
@@ -83,11 +89,12 @@ function SignInPage({
           authApi: githubAuthApi,
         }),
       );
+      navigate('/catalog');
     } catch (err: any) {
       setSigningIn(false);
       setError(err.message || 'GitHub sign-in failed');
     }
-  }, [githubAuthApi, onSignInSuccess]);
+  }, [githubAuthApi, onSignInSuccess, navigate]);
 
   /* GitHub mark as a data URI — renders at exactly 20×20, immune to CSS sizing bugs */
   const gitHubIcon = (

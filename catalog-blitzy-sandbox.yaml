@@ -1,5 +1,15 @@
 ---
 apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: ajay-blitzy
+spec:
+  profile:
+    displayName: Ajay
+  memberOf:
+    - blitzy-sandbox
+---
+apiVersion: backstage.io/v1alpha1
 kind: Group
 metadata:
   name: blitzy-sandbox
