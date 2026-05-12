@@ -413,13 +413,25 @@ export class OidcRouter {
             throw new OidcError('access_denied', description, 400);
           }
 
-          const signInProviderId = this.config.getOptionalString(
-            'auth.experimentalRefreshToken.signInProviderId',
-          );
+          const session = await this.oidc.getAuthorizationSessionById({
+            sessionId,
+          });
+          if (!session?.userEntityRef) {
+            throw new OidcError(
+              'invalid_request',
+              'Authorization session not found or has no user',
+              400,
+            );
+          }
+
+          const signInProviderId =
+            await this.upstreamRefreshRegistry?.getProviderForUser(
+              session.userEntityRef,
+            );
           if (!signInProviderId) {
             throw new OidcError(
               'server_error',
-              'signInProviderId not configured',
+              'Cannot determine sign-in provider for user',
               500,
             );
           }

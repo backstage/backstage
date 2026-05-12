@@ -145,6 +145,19 @@ export async function createRouter(
 
   const upstreamRefreshRegistry = new UpstreamRefreshRegistry();
 
+  upstreamRefreshRegistry.setOnSignIn(async (userEntityRef, providerId) => {
+    const existing = await userInfo.getUserInfo(userEntityRef);
+    const claims = existing?.claims ?? { sub: userEntityRef };
+    await userInfo.addUserInfo({
+      claims: { ...claims, authProviderId: providerId },
+    });
+  });
+
+  upstreamRefreshRegistry.setProviderLookup(async userEntityRef => {
+    const info = await userInfo.getUserInfo(userEntityRef);
+    return info?.claims?.authProviderId as string | undefined;
+  });
+
   bindProviderRouters(router, {
     providers: providerFactories,
     appUrl,

@@ -8,9 +8,7 @@ Upstream refresh tokens are protected by a split-knowledge encryption scheme: th
 
 This is a breaking change for existing CIMD/DCR offline sessions - they will be rejected on next refresh and users will need to re-authenticate.
 
-New configuration:
-
-- `auth.experimentalRefreshToken.signInProviderId`: The auth provider ID to use for upstream validation (e.g., `"google"`, `"oidc"`). Required when `offline_access` scope is used.
+The sign-in provider is automatically detected from the user's web session - no configuration needed. Users must sign in via a web browser before approving offline sessions.
 
 New callback URL that must be registered with the upstream auth provider:
 

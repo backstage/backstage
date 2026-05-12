@@ -469,6 +469,12 @@ export type OAuthStateTransform = (
   state: OAuthState;
 }>;
 
+// @public
+export type OnSignInCallback = (
+  userEntityRef: string,
+  providerId: string,
+) => Promise<void>;
+
 // @public (undocumented)
 export type PassportDoneCallback<TResult, TPrivateInfo = never> = (
   err?: Error,
@@ -746,9 +752,19 @@ export class UpstreamRefreshRegistry {
   // (undocumented)
   get(providerId: string): UpstreamProviderEntry | undefined;
   // (undocumented)
+  getProviderForUser(userEntityRef: string): Promise<string | undefined>;
+  // (undocumented)
   has(providerId: string): boolean;
   // (undocumented)
+  recordSignIn(userEntityRef: string, providerId: string): Promise<void>;
+  // (undocumented)
   register(providerId: string, entry: UpstreamProviderEntry): void;
+  // (undocumented)
+  setOnSignIn(callback: OnSignInCallback): void;
+  // (undocumented)
+  setProviderLookup(
+    lookup: (userEntityRef: string) => Promise<string | undefined>,
+  ): void;
 }
 
 // @public

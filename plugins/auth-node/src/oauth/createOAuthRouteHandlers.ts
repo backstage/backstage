@@ -264,6 +264,17 @@ export function createOAuthRouteHandlers<TProfile>(
           origin,
         });
 
+        const backstageIdentity = signInResult
+          ? prepareBackstageIdentityResponse(signInResult)
+          : undefined;
+
+        if (backstageIdentity && options.upstreamRefreshRegistry) {
+          await options.upstreamRefreshRegistry.recordSignIn(
+            backstageIdentity.identity.userEntityRef,
+            providerId,
+          );
+        }
+
         const response: ClientOAuthResponse = {
           profile,
           providerInfo: {
@@ -272,9 +283,7 @@ export function createOAuthRouteHandlers<TProfile>(
             scope: grantedScopes,
             expiresInSeconds: result.session.expiresInSeconds,
           },
-          ...(signInResult && {
-            backstageIdentity: prepareBackstageIdentityResponse(signInResult),
-          }),
+          ...(backstageIdentity && { backstageIdentity }),
         };
 
         if (result.session.refreshToken) {
@@ -430,8 +439,15 @@ export function createOAuthRouteHandlers<TProfile>(
             { profile, result },
             resolverContext,
           );
-          response.backstageIdentity =
-            prepareBackstageIdentityResponse(identity);
+          const backstageIdentity = prepareBackstageIdentityResponse(identity);
+          response.backstageIdentity = backstageIdentity;
+
+          if (options.upstreamRefreshRegistry) {
+            await options.upstreamRefreshRegistry.recordSignIn(
+              backstageIdentity.identity.userEntityRef,
+              providerId,
+            );
+          }
         }
 
         res.status(200).json(response);

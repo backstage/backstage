@@ -452,13 +452,13 @@ export class OidcService {
       upstreamCallbackUrl;
 
     if (needsUpstream) {
-      const signInProviderId = this.config.getOptionalString(
-        'auth.experimentalRefreshToken.signInProviderId',
-      );
+      const signInProviderId =
+        await this.upstreamRefreshRegistry!.getProviderForUser(userEntityRef);
 
       if (!signInProviderId) {
         throw new InputError(
-          'auth.experimentalRefreshToken.signInProviderId must be configured for offline_access',
+          `Cannot determine sign-in provider for user '${userEntityRef}'. ` +
+            'The user must sign in via a web browser before approving offline sessions.',
         );
       }
 
@@ -498,14 +498,20 @@ export class OidcService {
       throw new AuthenticationError('No user associated with session');
     }
 
-    const signInProviderId = this.config.getOptionalString(
-      'auth.experimentalRefreshToken.signInProviderId',
-    );
+    const authProviderId =
+      await this.upstreamRefreshRegistry?.getProviderForUser(
+        session.userEntityRef,
+      );
+    if (!authProviderId) {
+      throw new AuthenticationError(
+        'Cannot determine sign-in provider for user',
+      );
+    }
 
     return this.#issueOfflineTokens({
       session,
       upstreamRefreshToken,
-      authProviderId: signInProviderId!,
+      authProviderId,
     });
   }
 
@@ -550,6 +556,12 @@ export class OidcService {
     }
 
     return redirectUrl.toString();
+  }
+
+  public async getAuthorizationSessionById(opts: {
+    sessionId: string;
+  }): Promise<AuthorizationSession | null> {
+    return await this.oidc.getAuthorizationSession({ id: opts.sessionId });
   }
 
   public async getAuthorizationSession(opts: { sessionId: string }) {
