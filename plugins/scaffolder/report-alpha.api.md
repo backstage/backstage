@@ -553,11 +553,23 @@ const _default: OverridableFrontendPlugin<
     'sub-page:scaffolder/templates': OverridableExtensionDefinition<{
       config: {
         enableBackstageUi: boolean;
+        groups:
+          | {
+              title: string;
+              filter: FilterPredicate;
+            }[]
+          | undefined;
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
         enableBackstageUi?: boolean | undefined;
+        groups?:
+          | {
+              title: string;
+              filter: FilterPredicate;
+            }[]
+          | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };
