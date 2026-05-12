@@ -21,7 +21,7 @@ import {
   StrictRJSFSchema,
   WidgetProps,
 } from '@rjsf/utils';
-import { Checkbox, FieldLabel, Flex } from '@backstage/ui';
+import { Checkbox, CheckboxGroup } from '@backstage/ui';
 
 export default function CheckboxesWidget<
   T = any,
@@ -40,49 +40,41 @@ export default function CheckboxesWidget<
 }: WidgetProps<T, S, F>) {
   const { enumOptions, enumDisabled } = options;
 
-  const handleChange = (optionValue: any) => (checked: boolean) => {
-    const currentValue = Array.isArray(value) ? value : [];
-    if (checked) {
-      onFieldChange([...currentValue, optionValue]);
-    } else {
-      onFieldChange(currentValue.filter((v: any) => v !== optionValue));
-    }
-  };
-
+  const selectedKeys = Array.isArray(value) ? value.map(String) : [];
   const hasError = rawErrors.length > 0;
 
+  const handleChange = (keys: string[]) => {
+    const next =
+      enumOptions
+        ?.filter(option => keys.includes(String(option.value)))
+        .map(option => option.value) ?? [];
+    onFieldChange(next as T);
+  };
+
   return (
-    <Flex
-      direction="column"
-      gap="2"
+    <CheckboxGroup
+      label={label}
+      isRequired={required}
+      isInvalid={hasError}
+      isDisabled={disabled || readonly}
+      value={selectedKeys}
+      onChange={handleChange}
       aria-describedby={ariaDescribedByIds<T>(id)}
     >
-      {label && (
-        <FieldLabel
-          label={label}
-          secondaryLabel={required ? 'Required' : undefined}
-        />
-      )}
       {enumOptions?.map((option, index) => {
-        const checked = Array.isArray(value) && value.includes(option.value);
         const itemDisabled =
           Array.isArray(enumDisabled) &&
           enumDisabled.indexOf(option.value) !== -1;
-        const checkboxId = optionId(id, index);
-
         return (
           <Checkbox
-            key={checkboxId}
-            name={checkboxId}
-            isSelected={checked}
-            isDisabled={disabled || readonly || itemDisabled}
-            isInvalid={hasError}
-            onChange={handleChange(option.value)}
+            key={optionId(id, index)}
+            value={String(option.value)}
+            isDisabled={itemDisabled}
           >
             {option.label}
           </Checkbox>
         );
       })}
-    </Flex>
+    </CheckboxGroup>
   );
 }
