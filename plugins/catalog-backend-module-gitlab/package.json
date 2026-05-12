@@ -62,8 +62,7 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@gitbeaker/rest": "^40.0.3",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.7.0",
-    "minimatch": "^10.2.1",
+    "minimatch": "^10.2.1"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
