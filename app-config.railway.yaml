@@ -20,6 +20,11 @@ backend:
 
 catalog:
   readonly: true
+  locations:
+    - type: url
+      target: https://github.com/Blitzy-Sandbox/blitzy-sandbox-backstage/blob/master/catalog-blitzy-sandbox.yaml
+      rules:
+        - allow: [Component, Group, System, User]
 
 auth:
   environment: production

@@ -169,6 +169,8 @@ catalog:
         - System
         - Domain
         - Location
+        - Group
+        - User
   providers:
     azureBlob:
       accountName: ${ACCOUNT_NAME}

@@ -19,5 +19,6 @@ metadata:
     lighthouse.com/website-url: https://backstage.io
 spec:
   type: library
-  owner: CNCF
+  owner: blitzy-sandbox
+  system: blitzy-typescript
   lifecycle: production
