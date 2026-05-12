@@ -34,7 +34,7 @@ import Autocomplete, {
   AutocompleteChangeReason,
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
-import { useCallback, useEffect, useState } from 'react';
+import { type Key, useCallback, useEffect, useMemo, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { FieldValidation } from '@rjsf/utils';
 import {
@@ -44,9 +44,14 @@ import {
   MultiEntityPickerFilterQuery,
 } from './schema';
 import { VirtualizedListbox } from '../VirtualizedListbox';
-import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  ScaffolderField,
+  useScaffolderTheme,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
+import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
+import { chipStyle, chipRemoveStyle } from '../buiChipStyles';
 
 export { MultiEntityPickerSchema } from './schema';
 
@@ -61,6 +66,7 @@ const FREE_SOLO_EVENTS: readonly AutocompleteChangeReason[] = [
  * field extension.
  */
 export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
+  const theme = useScaffolderTheme();
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
     onChange,
@@ -81,6 +87,10 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
+  const allowArbitraryValues =
+    uiSchema['ui:options']?.allowArbitraryValues ?? true;
+  const maxItems = props.schema.maxItems;
+
   const [noOfItemsSelected, setNoOfItemsSelected] = useState(0);
 
   const catalogApi = useApi(catalogApiRef);
@@ -106,11 +116,6 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     );
     return { entities: items, entityRefToPresentation };
   });
-  const allowArbitraryValues =
-    uiSchema['ui:options']?.allowArbitraryValues ?? true;
-
-  // if not specified, maxItems defaults to undefined
-  const maxItems = props.schema.maxItems;
 
   const onSelect = useCallback(
     (_: any, refs: (string | Entity)[], reason: AutocompleteChangeReason) => {
@@ -156,11 +161,139 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
   );
 
+  // BUI: options and selection state
+  const allOptions = useMemo(
+    () =>
+      (entities?.entities || []).map(entity => {
+        const entityRef = stringifyEntityRef(entity);
+        const presentation = entities?.entityRefToPresentation.get(entityRef);
+        return {
+          value: entityRef,
+          label: presentation?.primaryTitle || entityRef,
+        };
+      }),
+    [entities],
+  );
+
+  const selectedValues = useMemo(() => formData || [], [formData]);
+  const availableOptions = useMemo(
+    () => allOptions.filter(o => !selectedValues.includes(o.value)),
+    [allOptions, selectedValues],
+  );
+
+  const [inputValue, setInputValue] = useState('');
+
+  const atMaxItems =
+    maxItems !== undefined && selectedValues.length >= maxItems;
+
+  const handleSelectionChange = useCallback(
+    (key: Key | null) => {
+      if (atMaxItems) return;
+
+      if (key !== null) {
+        const newValue = String(key);
+        if (!selectedValues.includes(newValue)) {
+          onChange([...selectedValues, newValue]);
+        }
+      } else if (allowArbitraryValues && inputValue) {
+        let entityRef = inputValue;
+        try {
+          entityRef = stringifyEntityRef(
+            parseEntityRef(inputValue, { defaultKind, defaultNamespace }),
+          );
+        } catch {
+          // If the input isn't a valid entity ref, use it as-is
+        }
+        if (!selectedValues.includes(entityRef)) {
+          onChange([...selectedValues, entityRef]);
+        }
+      }
+      setInputValue('');
+    },
+    [
+      atMaxItems,
+      selectedValues,
+      onChange,
+      allowArbitraryValues,
+      inputValue,
+      defaultKind,
+      defaultNamespace,
+    ],
+  );
+
+  const handleRemove = useCallback(
+    (value: string) => {
+      onChange(selectedValues.filter(v => v !== value));
+    },
+    [selectedValues, onChange],
+  );
+
   useEffect(() => {
     if (required && !allowArbitraryValues && entities?.entities?.length === 1) {
-      onChange([stringifyEntityRef(entities?.entities[0])]);
+      onChange([stringifyEntityRef(entities.entities[0])]);
     }
   }, [entities, onChange, required, allowArbitraryValues]);
+
+  if (theme === 'bui') {
+    const isAutoSelected =
+      required && !allowArbitraryValues && entities?.entities?.length === 1;
+
+    return (
+      <ScaffolderField
+        rawErrors={rawErrors}
+        rawDescription={uiSchema['ui:description'] ?? description}
+        required={required}
+        disabled={isDisabled}
+        errors={errors}
+      >
+        <div>
+          {selectedValues.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 'var(--bui-space-1)',
+                marginBottom: 'var(--bui-space-2)',
+              }}
+            >
+              {selectedValues.map(value => {
+                const opt = allOptions.find(o => o.value === value);
+                return (
+                  <span key={value} style={chipStyle}>
+                    {opt?.label || value}
+                    {!isDisabled && !isAutoSelected && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemove(value)}
+                        style={chipRemoveStyle}
+                        aria-label={`Remove ${opt?.label || value}`}
+                      >
+                        &times;
+                      </button>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+          <BuiAutocomplete
+            id={idSchema?.$id}
+            label={title}
+            isRequired={required}
+            isDisabled={isDisabled || isAutoSelected || atMaxItems}
+            selectedKey={null}
+            inputValue={inputValue}
+            onInputChange={setInputValue}
+            onSelectionChange={handleSelectionChange}
+            isLoading={loading}
+            options={availableOptions}
+            allowsCustomValue={allowArbitraryValues}
+            isInvalid={rawErrors && rawErrors.length > 0}
+          />
+        </div>
+      </ScaffolderField>
+    );
+  }
 
   return (
     <ScaffolderField

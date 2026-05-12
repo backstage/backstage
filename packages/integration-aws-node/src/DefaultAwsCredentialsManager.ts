@@ -30,6 +30,7 @@ import {
   fromIni,
   fromNodeProviderChain,
   fromTemporaryCredentials,
+  fromTokenFile,
 } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { parse } from '@aws-sdk/util-arn-parser';
@@ -93,11 +94,12 @@ function getDefaultCredentialsChain(
  * Constructs the credential provider needed by the AWS SDK from the given account config
  *
  * Order of precedence:
- * 1. Assume role with static creds
- * 2. Assume role with main account creds
- * 3. Static creds
- * 4. Profile creds
- * 5. Default AWS SDK creds chain
+ * 1. Assume role with web identity token file (no static creds)
+ * 2. Assume role with static creds
+ * 3. Assume role with main account creds
+ * 4. Static creds
+ * 5. Profile creds
+ * 6. Default AWS SDK creds chain
  */
 function getSdkCredentialProvider(
   config: AwsIntegrationAccountConfig,
@@ -106,13 +108,42 @@ function getSdkCredentialProvider(
   if (config.roleName) {
     const region = config.region ?? 'us-east-1';
     const partition = config.partition ?? 'aws';
+    const roleArn = `arn:${partition}:iam::${config.accountId}:role/${config.roleName}`;
+
+    if (config.webIdentityTokenFile) {
+      // Defensive: same combinations the parser rejects.
+      if (config.accessKeyId) {
+        throw new Error(
+          `AWS integration account ${config.accountId} has both a web identity token file and static credentials configured, but only one must be specified`,
+        );
+      }
+      if (config.profile) {
+        throw new Error(
+          `AWS integration account ${config.accountId} has both a web identity token file and a profile configured, but only one must be specified`,
+        );
+      }
+      if (config.externalId) {
+        throw new Error(
+          `AWS integration account ${config.accountId} has both a web identity token file and an external ID configured; AssumeRoleWithWebIdentity does not support external IDs.`,
+        );
+      }
+      return fromTokenFile({
+        webIdentityTokenFile: config.webIdentityTokenFile,
+        roleArn,
+        roleSessionName: 'backstage',
+        clientConfig: {
+          region,
+          customUserAgent: 'backstage-aws-credentials-manager',
+        },
+      });
+    }
 
     return fromTemporaryCredentials({
       masterCredentials: config.accessKeyId
         ? getStaticCredentials(config.accessKeyId!, config.secretAccessKey!)
         : mainAccountCredProvider,
       params: {
-        RoleArn: `arn:${partition}:iam::${config.accountId}:role/${config.roleName}`,
+        RoleArn: roleArn,
         RoleSessionName: 'backstage',
         ExternalId: config.externalId,
       },
@@ -267,6 +298,7 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
         partition: this.accountDefaults.partition,
         region: this.accountDefaults.region,
         externalId: this.accountDefaults.externalId,
+        webIdentityTokenFile: this.accountDefaults.webIdentityTokenFile,
       };
       const sdkCredentialProvider = getSdkCredentialProvider(
         config,

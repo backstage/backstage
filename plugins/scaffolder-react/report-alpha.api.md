@@ -125,10 +125,12 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
 
 // @alpha
 export const Form: (
-  props: PropsWithChildren<ScaffolderRJSFFormProps>,
+  props: PropsWithChildren<
+    ScaffolderRJSFFormProps & Pick<FormProps, 'EXPERIMENTAL_theme'>
+  >,
 ) => JSX_2.Element;
 
-// @alpha
+// @public
 export const FormDecoratorBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-decorator';
   params: {
@@ -257,7 +259,7 @@ export interface ScaffolderFieldProps {
   required?: boolean;
 }
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type ScaffolderFormDecorator<TInput extends JsonObject = JsonObject> = {
   readonly $$type: '@backstage/scaffolder/FormDecorator';
   readonly id: string;
@@ -331,6 +333,9 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'templateOutputs.title': 'Text Output';
   }
 >;
+
+// @alpha (undocumented)
+export type ScaffolderTheme = 'mui' | 'bui';
 
 // @alpha
 export const SecretWidget: (
@@ -461,6 +466,9 @@ export const useFilteredSchemaProperties: (
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
+
+// @alpha (undocumented)
+export const useScaffolderTheme: () => ScaffolderTheme;
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {

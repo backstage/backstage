@@ -707,7 +707,17 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         knex: this.database,
       });
 
-      query.whereIn('search.entity_id', entityIdSubquery);
+      // Use INNER JOIN rather than `WHERE search.entity_id IN (...)`. The
+      // results are the same but the JOIN form gives the planner more
+      // freedom in join shape and ordering. On PostgreSQL with large
+      // search tables, the IN form tends to materialize the full filtered
+      // entity set up front and spill to temp; the JOIN form lets the
+      // planner pick a much cheaper plan based on actual selectivities.
+      query.innerJoin(
+        entityIdSubquery.as('filtered_entities'),
+        'search.entity_id',
+        'filtered_entities.entity_id',
+      );
     }
 
     const rows = await query;

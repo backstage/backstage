@@ -3250,7 +3250,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@jest/environment-jsdom-abstract": "npm:^30.0.0"
+    "@jest/environment-jsdom-abstract": "npm:~30.2.0"
     "@manypkg/get-packages": "npm:^1.1.3"
     "@spotify/eslint-config-base": "npm:^15.0.0"
     "@spotify/eslint-config-react": "npm:^15.0.0"
@@ -3277,7 +3277,7 @@ __metadata:
     eslint-plugin-unused-imports: "npm:^4.1.4"
     fs-extra: "npm:^11.2.0"
     glob: "npm:^13.0.0"
-    jest: "npm:^30.2.0"
+    jest: "npm:~30.2.0"
     jest-css-modules: "npm:^2.1.0"
     jsdom: "npm:^27.1.0"
     nodemon: "npm:^3.0.1"
@@ -6994,11 +6994,13 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@backstage/ui": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
     "@react-hookz/web": "npm:^24.0.0"
+    "@remixicon/react": "npm:^4.6.0"
     "@rjsf/core": "npm:5.24.13"
     "@rjsf/material-ui": "npm:5.24.13"
     "@rjsf/utils": "npm:5.24.13"
@@ -7022,6 +7024,7 @@ __metadata:
     luxon: "npm:^3.0.0"
     qs: "npm:^6.9.4"
     react: "npm:^18.0.2"
+    react-aria-components: "npm:^1.14.0"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
@@ -7107,6 +7110,7 @@ __metadata:
     luxon: "npm:^3.0.0"
     qs: "npm:^6.9.4"
     react: "npm:^18.0.2"
+    react-aria-components: "npm:^1.14.0"
     react-dom: "npm:^18.0.2"
     react-resizable: "npm:^3.0.5"
     react-resizable-panels: "npm:^3.0.4"
@@ -9826,11 +9830,11 @@ __metadata:
   linkType: hard
 
 "@hono/node-server@npm:^1.19.9":
-  version: 1.19.10
-  resolution: "@hono/node-server@npm:1.19.10"
+  version: 1.19.13
+  resolution: "@hono/node-server@npm:1.19.13"
   peerDependencies:
     hono: ^4
-  checksum: 10/3f4a386bf51d2eb0224522e7485052f8ca6485e9f59fb46cef8fe9578c0d2f35ae26900ed69b6c368250e79944239c70934912f85b833045b14ef19be557aa13
+  checksum: 10/67e453b0f6c0854244f3985eecbcf657b7d0247eb9404f2f507fec9242d8f8077ab8b0a212de1ac147290e76167e3598ca0df38940f6b63bde67f58526aba253
   languageName: node
   linkType: hard
 
@@ -10357,7 +10361,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/environment-jsdom-abstract@npm:^30, @jest/environment-jsdom-abstract@npm:^30.0.0":
+"@jest/environment-jsdom-abstract@npm:~30.2.0":
   version: 30.2.0
   resolution: "@jest/environment-jsdom-abstract@npm:30.2.0"
   dependencies:
@@ -22539,7 +22543,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.11.0, acorn@npm:^8.14.1, acorn@npm:^8.15.0, acorn@npm:^8.16.0, acorn@npm:^8.4.1, acorn@npm:^8.8.2, acorn@npm:^8.9.0":
+"acorn@npm:^8.11.0, acorn@npm:^8.15.0, acorn@npm:^8.16.0, acorn@npm:^8.4.1, acorn@npm:^8.8.2, acorn@npm:^8.9.0":
   version: 8.16.0
   resolution: "acorn@npm:8.16.0"
   bin:
@@ -24137,12 +24141,12 @@ __metadata:
   linkType: hard
 
 "brace-expansion@npm:^1.1.7":
-  version: 1.1.12
-  resolution: "brace-expansion@npm:1.1.12"
+  version: 1.1.13
+  resolution: "brace-expansion@npm:1.1.13"
   dependencies:
     balanced-match: "npm:^1.0.0"
     concat-map: "npm:0.0.1"
-  checksum: 10/12cb6d6310629e3048cadb003e1aca4d8c9bb5c67c3c321bafdd7e7a50155de081f78ea3e0ed92ecc75a9015e784f301efc8132383132f4f7904ad1ac529c562
+  checksum: 10/b5f4329fdbe9d2e25fa250c8f866ebd054ba946179426e99b86dcccddabdb1d481f0e40ee5430032e62a7d0a6c2837605ace6783d015aa1d65d85ca72154d936
   languageName: node
   linkType: hard
 
@@ -34062,7 +34066,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^30, jest@npm:^30.2.0":
+"jest@npm:~30.2.0":
   version: 30.2.0
   resolution: "jest@npm:30.2.0"
   dependencies:
@@ -41522,7 +41526,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-aria-components@npm:~1.17.0":
+"react-aria-components@npm:^1.14.0, react-aria-components@npm:~1.17.0":
   version: 1.17.0
   resolution: "react-aria-components@npm:1.17.0"
   dependencies:
@@ -43404,7 +43408,7 @@ __metadata:
     "@backstage/eslint-plugin": "workspace:*"
     "@backstage/repo-tools": "workspace:*"
     "@changesets/cli": "npm:^2.14.0"
-    "@jest/environment-jsdom-abstract": "npm:^30"
+    "@jest/environment-jsdom-abstract": "npm:~30.2.0"
     "@manypkg/get-packages": "npm:^1.1.3"
     "@octokit/rest": "npm:^19.0.3"
     "@playwright/test": "npm:^1.32.3"
@@ -43436,7 +43440,7 @@ __metadata:
     eslint-plugin-testing-library: "npm:^7.0.0"
     fs-extra: "npm:^11.2.0"
     husky: "npm:^9.0.0"
-    jest: "npm:^30"
+    jest: "npm:~30.2.0"
     js-yaml: "npm:^4.1.1"
     jsdom: "npm:^27"
     lint-staged: "npm:^16.0.0"
@@ -48151,14 +48155,14 @@ __metadata:
   linkType: hard
 
 "vm2@npm:^3.10.0":
-  version: 3.10.3
-  resolution: "vm2@npm:3.10.3"
+  version: 3.11.2
+  resolution: "vm2@npm:3.11.2"
   dependencies:
-    acorn: "npm:^8.14.1"
+    acorn: "npm:^8.15.0"
     acorn-walk: "npm:^8.3.4"
   bin:
     vm2: bin/vm2
-  checksum: 10/015edd8adda9530b081dacc0eff1e1c7118a03a204337b7ab4b708f435c625aedb0b95637a171fe1022b434ca655dc2b92372784b2c26347d3fc57264fab5824
+  checksum: 10/d4d643b5b3df6cf67fd86206ed2b108c5451c743d4f92503d871dec8ed70e152b242f56611a5161d64878dbbc79e72f7168b9dbe130c049fca493dc696503ab9
   languageName: node
   linkType: hard
 

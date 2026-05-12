@@ -39,6 +39,7 @@ import {
 } from '@backstage/plugin-scaffolder-react/alpha';
 import {
   FieldExtensionOptions,
+  FormProps,
   SecretsContextProvider,
   useCustomFieldExtensions,
   useCustomLayouts,
@@ -159,7 +160,10 @@ function TemplateListContent() {
  *
  * @internal
  */
-export function TemplatesSubPage(props: { formFields?: Array<FormField> }) {
+export function TemplatesSubPage(props: {
+  formFields?: Array<FormField>;
+  formProps?: FormProps;
+}) {
   const customFieldExtensions = useCustomFieldExtensions(undefined);
   const customLayouts = useCustomLayouts(undefined);
 
@@ -185,6 +189,7 @@ export function TemplatesSubPage(props: { formFields?: Array<FormField> }) {
             <TemplateWizardPageContent
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
+              formProps={props.formProps}
             />
           </SecretsContextProvider>
         }

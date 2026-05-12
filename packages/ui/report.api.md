@@ -15,6 +15,7 @@ import type { ComponentProps } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import type { CSSProperties } from 'react';
+import type { DatePickerProps as DatePickerProps_2 } from 'react-aria-components';
 import type { DateRangePickerProps as DateRangePickerProps_2 } from 'react-aria-components';
 import type { DateValue } from '@internationalized/date';
 import type { DialogTriggerProps as DialogTriggerProps_2 } from 'react-aria-components';
@@ -1210,6 +1211,79 @@ export interface CursorResponse<T> {
   // (undocumented)
   totalCount?: number;
 }
+
+// @public
+export const DatePicker: ForwardRefExoticComponent<
+  DatePickerProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const DatePickerCalendarDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePickerCalendar';
+    readonly header: 'bui-DatePickerCalendarHeader';
+    readonly heading: 'bui-DatePickerCalendarHeading';
+    readonly navButton: 'bui-DatePickerCalendarNavButton';
+    readonly grid: 'bui-DatePickerCalendarGrid';
+    readonly gridHeader: 'bui-DatePickerCalendarGridHeader';
+    readonly headerCell: 'bui-DatePickerCalendarHeaderCell';
+    readonly gridBody: 'bui-DatePickerCalendarGridBody';
+    readonly cell: 'bui-DatePickerCalendarCell';
+  };
+  readonly propDefs: {};
+};
+
+// @public
+export const DatePickerDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePicker';
+  };
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
+  };
+};
+
+// @public
+export const DatePickerGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePickerGroup';
+    readonly dateInput: 'bui-DatePickerDateInput';
+    readonly segment: 'bui-DatePickerSegment';
+    readonly button: 'bui-DatePickerButton';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {};
+};
+
+// @public (undocumented)
+export type DatePickerOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  className?: string;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+};
+
+// @public (undocumented)
+export interface DatePickerProps
+  extends Omit<DatePickerProps_2<DateValue>, 'className' | 'children'>,
+    DatePickerOwnProps {}
 
 // @public
 export const DateRangePicker: ForwardRefExoticComponent<
