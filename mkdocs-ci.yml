@@ -3,23 +3,31 @@ site_description: 'Main documentation for Backstage features and framework APIs'
 repo_url: https://github.com/backstage/backstage
 edit_uri: edit/master/docs
 
-docs_dir: docs/overview
+# Use the full docs tree so relative links between documentation pages
+# continue to resolve correctly during strict CI validation.
+docs_dir: docs
 
 plugins:
   - techdocs-core
 
-# Truncated config used in CI to validate TechDocs builds quickly.
-# The full nav is in mkdocs.yml; the main hosted site uses Docusaurus.
+# This CI-specific config validates only a small subset of pages.
+# Ignore documentation files intentionally omitted from this truncated nav.
+validation:
+  nav:
+    omitted_files: ignore
+
+# Minimal MkDocs configuration used by CI to validate core overview pages
+# without building the complete documentation site defined in mkdocs.yml.
 nav:
   - Overview:
-      - What is Backstage?: 'what-is-backstage.md'
-      - Technical overview: 'technical-overview.md'
-      - Architecture overview: 'architecture-overview.md'
-      - Project Roadmap: 'roadmap.md'
-      - Vision: 'vision.md'
-      - The Spotify Story: 'background.md'
-      - Strategies for adopting: 'adopting.md'
-      - Release & Versioning Policy: 'versioning-policy.md'
-      - Backstage Threat Model: 'threat-model.md'
-      - Support and community: 'support.md'
-      - Logo assets: 'logos.md'
+      - What is Backstage?: 'overview/what-is-backstage.md'
+      - Technical overview: 'overview/technical-overview.md'
+      - Architecture overview: 'overview/architecture-overview.md'
+      - Project Roadmap: 'overview/roadmap.md'
+      - Vision: 'overview/vision.md'
+      - The Spotify Story: 'overview/background.md'
+      - Strategies for adopting: 'overview/adopting.md'
+      - Release & Versioning Policy: 'overview/versioning-policy.md'
+      - Backstage Threat Model: 'overview/threat-model.md'
+      - Support and community: 'overview/support.md'
+      - Logo assets: 'overview/logos.md'
