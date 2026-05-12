@@ -23,12 +23,14 @@ import {
 } from '@rjsf/utils';
 import { FieldLabel } from '@backstage/ui';
 
-const textareaStyle: CSSProperties = {
+// Matches the outlined style used by BUI PasswordField: sits on the same
+// neutral-1 surface as the form and uses a visible border to read as an input.
+const baseStyle: CSSProperties = {
   display: 'flex',
   alignItems: 'flex-start',
   padding: 'var(--bui-space-3)',
   borderRadius: 'var(--bui-radius-3)',
-  border: '1px solid var(--bui-border-1)',
+  border: '1px solid var(--bui-border-2)',
   backgroundColor: 'var(--bui-bg-neutral-1)',
   fontSize: 'var(--bui-font-size-3)',
   fontFamily: 'var(--bui-font-regular)',
@@ -99,7 +101,7 @@ export default function TextareaWidget<
         aria-describedby={ariaDescribedByIds<T>(id)}
         aria-invalid={hasError}
         style={{
-          ...textareaStyle,
+          ...baseStyle,
           ...(disabled && {
             opacity: 0.5,
             cursor: 'not-allowed',

@@ -29,6 +29,7 @@ import {
   ScaffolderThemeProvider,
   type ScaffolderTheme,
 } from './ScaffolderThemeContext';
+import styles from './BuiTheme/Form.module.css';
 
 const MuiForm = withTheme(MuiTheme);
 const BuiForm = withTheme(generateBuiTheme());
@@ -82,13 +83,13 @@ export const Form = (
     [formProps.templates, theme],
   );
 
+  const form = (
+    <WrappedForm {...formProps} templates={templates} fields={wrappedFields} />
+  );
+
   return (
     <ScaffolderThemeProvider value={theme}>
-      <WrappedForm
-        {...formProps}
-        templates={templates}
-        fields={wrappedFields}
-      />
+      {theme === 'bui' ? <div className={styles.form}>{form}</div> : form}
     </ScaffolderThemeProvider>
   );
 };
