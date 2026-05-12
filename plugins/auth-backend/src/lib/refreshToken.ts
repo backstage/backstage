@@ -53,27 +53,35 @@ async function hashToken(token: string): Promise<string> {
 
 /**
  * Generate a cryptographically secure refresh token with embedded session ID
+ * and optional encrypted upstream token.
  *
  * @param id - The session ID to embed in the token
+ * @param encryptedUpstreamToken - Optional base64url-encoded encrypted upstream refresh token
  * @returns Object containing the token and its hash
  * @internal
  */
-export async function generateRefreshToken(id: string): Promise<{
+export async function generateRefreshToken(
+  id: string,
+  encryptedUpstreamToken?: string,
+): Promise<{
   token: string;
   hash: string;
 }> {
   // Generate 32 bytes of random data
   const randomPart = randomBytes(32).toString('base64url');
 
-  // Format: <id>.<random_bytes>
-  const token = `${id}.${randomPart}`;
+  // Format: <id>.<random_bytes> or <id>.<random_bytes>.<encrypted_upstream_token>
+  const token = encryptedUpstreamToken
+    ? `${id}.${randomPart}.${encryptedUpstreamToken}`
+    : `${id}.${randomPart}`;
   const hash = await hashToken(token);
 
   return { token, hash };
 }
 
 /**
- * Extract the session ID from a refresh token
+ * Extract the session ID from a refresh token.
+ * Supports both 2-part (legacy) and 3-part (with upstream token) formats.
  *
  * @param token - The refresh token
  * @returns The session ID
@@ -86,11 +94,32 @@ export function getRefreshTokenId(token: string): string {
   }
 
   const parts = token.split('.');
-  if (parts.length !== 2 || !parts[0] || !parts[1]) {
+  if ((parts.length !== 2 && parts.length !== 3) || !parts[0] || !parts[1]) {
     throw new Error('Invalid refresh token format');
   }
 
   return parts[0];
+}
+
+/**
+ * Extract the encrypted upstream token from a 3-part refresh token.
+ *
+ * @param token - The refresh token
+ * @returns The encrypted upstream token, or undefined if not present (legacy format)
+ * @throws Error if token format is invalid
+ * @internal
+ */
+export function getEncryptedUpstreamToken(token: string): string | undefined {
+  if (!token || typeof token !== 'string') {
+    throw new Error('Invalid refresh token format');
+  }
+
+  const parts = token.split('.');
+  if ((parts.length !== 2 && parts.length !== 3) || !parts[0] || !parts[1]) {
+    throw new Error('Invalid refresh token format');
+  }
+
+  return parts.length === 3 ? parts[2] : undefined;
 }
 
 /**

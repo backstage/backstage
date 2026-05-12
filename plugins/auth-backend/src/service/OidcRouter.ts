@@ -30,6 +30,7 @@ import { json } from 'express';
 import { z } from 'zod/v4';
 import { fromZodError } from 'zod-validation-error/v4';
 import { OidcError } from './OidcError';
+import { UpstreamRefreshRegistry } from '@backstage/plugin-auth-node';
 
 function ensureTrailingSlash(url: string): string {
   return url.endsWith('/') ? url : `${url}/`;
@@ -146,6 +147,7 @@ export class OidcRouter {
   private readonly httpAuth: HttpAuthService;
   private readonly config: RootConfigService;
   private readonly baseUrl: string;
+  private readonly upstreamRefreshRegistry?: UpstreamRefreshRegistry;
 
   private constructor(
     oidc: OidcService,
@@ -155,6 +157,7 @@ export class OidcRouter {
     httpAuth: HttpAuthService,
     config: RootConfigService,
     baseUrl: string,
+    upstreamRefreshRegistry?: UpstreamRefreshRegistry,
   ) {
     this.oidc = oidc;
     this.logger = logger;
@@ -163,6 +166,7 @@ export class OidcRouter {
     this.httpAuth = httpAuth;
     this.config = config;
     this.baseUrl = baseUrl;
+    this.upstreamRefreshRegistry = upstreamRefreshRegistry;
   }
 
   static create(options: {
@@ -176,15 +180,20 @@ export class OidcRouter {
     httpAuth: HttpAuthService;
     config: RootConfigService;
     offlineAccess?: OfflineAccessService;
+    upstreamRefreshRegistry?: UpstreamRefreshRegistry;
   }) {
     return new OidcRouter(
-      OidcService.create(options),
+      OidcService.create({
+        ...options,
+        upstreamRefreshRegistry: options.upstreamRefreshRegistry,
+      }),
       options.logger,
       options.auth,
       options.appUrl,
       options.httpAuth,
       options.config,
       options.baseUrl,
+      options.upstreamRefreshRegistry,
     );
   }
 
@@ -342,7 +351,9 @@ export class OidcRouter {
       });
 
       // Authorization Session approval endpoint
-      // Handles user approval of Authorization Session requests and generates authorization codes
+      // Handles user approval of Authorization Session requests and generates authorization codes.
+      // When offline_access is requested with an upstream provider configured,
+      // returns an upstream auth URL instead of the CLI redirect URL.
       router.post('/v1/sessions/:sessionId/approve', async (req, res) => {
         const { sessionId } = validateRequest(sessionIdParamSchema, req.params);
 
@@ -359,14 +370,85 @@ export class OidcRouter {
 
           const { userEntityRef } = httpCredentials.principal;
 
+          const upstreamCallbackUrl = `${this.baseUrl}/v1/sessions/upstream-callback`;
           const result = await this.oidc.approveAuthorizationSession({
             sessionId,
             userEntityRef,
+            upstreamCallbackUrl,
           });
+
+          if ('upstreamAuthUrl' in result) {
+            return res.json({
+              upstreamAuthUrl: result.upstreamAuthUrl,
+            });
+          }
 
           return res.json({
             redirectUrl: result.redirectUrl,
           });
+        } catch (error) {
+          throw OidcError.fromError(error);
+        }
+      });
+
+      // Upstream auth callback endpoint
+      // Handles the redirect from the upstream auth provider during CIMD/DCR
+      // approval. Exchanges the upstream code for tokens, creates the offline
+      // session, and redirects the browser to the CLI's redirect URI.
+      router.get('/v1/sessions/upstream-callback', async (req, res) => {
+        try {
+          const sessionId = req.query.state?.toString();
+          if (!sessionId) {
+            throw new OidcError(
+              'invalid_request',
+              'Missing state parameter',
+              400,
+            );
+          }
+
+          const error = req.query.error?.toString();
+          if (error) {
+            const description =
+              req.query.error_description?.toString() ?? 'Unknown error';
+            throw new OidcError('access_denied', description, 400);
+          }
+
+          const signInProviderId = this.config.getOptionalString(
+            'auth.experimentalRefreshToken.signInProviderId',
+          );
+          if (!signInProviderId) {
+            throw new OidcError(
+              'server_error',
+              'signInProviderId not configured',
+              500,
+            );
+          }
+
+          const entry = this.upstreamRefreshRegistry?.get(signInProviderId);
+          if (!entry) {
+            throw new OidcError(
+              'server_error',
+              `No auth provider '${signInProviderId}' registered`,
+              500,
+            );
+          }
+
+          const upstreamResult = await entry.authenticate(req);
+          if (!upstreamResult.refreshToken) {
+            throw new OidcError(
+              'access_denied',
+              'Upstream provider did not issue a refresh token. ' +
+                'The provider must support offline_access/refresh tokens.',
+              400,
+            );
+          }
+
+          const redirectUrl = await this.oidc.completeUpstreamCallback({
+            sessionId,
+            upstreamRefreshToken: upstreamResult.refreshToken,
+          });
+
+          res.redirect(redirectUrl);
         } catch (error) {
           throw OidcError.fromError(error);
         }

@@ -27,11 +27,12 @@ import {
 } from '@backstage/errors';
 import { decodeJwt } from 'jose';
 import crypto from 'node:crypto';
-import { OidcDatabase } from '../database/OidcDatabase';
+import { OidcDatabase, AuthorizationSession } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
+import { UpstreamRefreshRegistry } from '@backstage/plugin-auth-node';
 
 function validateRedirectUri(
   redirectUri: string,
@@ -95,6 +96,7 @@ export class OidcService {
   private readonly config: RootConfigService;
   private readonly logger: LoggerService;
   private readonly offlineAccess?: OfflineAccessService;
+  private readonly upstreamRefreshRegistry?: UpstreamRefreshRegistry;
 
   private constructor(
     auth: AuthService,
@@ -105,6 +107,7 @@ export class OidcService {
     config: RootConfigService,
     logger: LoggerService,
     offlineAccess?: OfflineAccessService,
+    upstreamRefreshRegistry?: UpstreamRefreshRegistry,
   ) {
     this.auth = auth;
     this.tokenIssuer = tokenIssuer;
@@ -114,6 +117,7 @@ export class OidcService {
     this.config = config;
     this.logger = logger;
     this.offlineAccess = offlineAccess;
+    this.upstreamRefreshRegistry = upstreamRefreshRegistry;
   }
 
   static create(options: {
@@ -125,6 +129,7 @@ export class OidcService {
     config: RootConfigService;
     logger: LoggerService;
     offlineAccess?: OfflineAccessService;
+    upstreamRefreshRegistry?: UpstreamRefreshRegistry;
   }) {
     return new OidcService(
       options.auth,
@@ -135,6 +140,7 @@ export class OidcService {
       options.config,
       options.logger,
       options.offlineAccess,
+      options.upstreamRefreshRegistry,
     );
   }
 
@@ -427,8 +433,9 @@ export class OidcService {
   public async approveAuthorizationSession(opts: {
     sessionId: string;
     userEntityRef: string;
-  }) {
-    const { sessionId, userEntityRef } = opts;
+    upstreamCallbackUrl?: string;
+  }): Promise<{ redirectUrl: string } | { upstreamAuthUrl: string }> {
+    const { sessionId, userEntityRef, upstreamCallbackUrl } = opts;
     const session = await this.getValidPendingSession(sessionId);
 
     await this.oidc.updateAuthorizationSession({
@@ -437,6 +444,96 @@ export class OidcService {
       status: 'approved',
     });
 
+    const scopes = session.scope?.split(' ') ?? [];
+    const needsUpstream =
+      scopes.includes('offline_access') &&
+      this.offlineAccess &&
+      this.upstreamRefreshRegistry &&
+      upstreamCallbackUrl;
+
+    if (needsUpstream) {
+      const signInProviderId = this.config.getOptionalString(
+        'auth.experimentalRefreshToken.signInProviderId',
+      );
+
+      if (!signInProviderId) {
+        throw new InputError(
+          'auth.experimentalRefreshToken.signInProviderId must be configured for offline_access',
+        );
+      }
+
+      const entry = this.upstreamRefreshRegistry!.get(signInProviderId);
+      if (!entry) {
+        throw new InputError(
+          `No auth provider '${signInProviderId}' registered for upstream refresh`,
+        );
+      }
+
+      const { url } = await entry.start({
+        scope: 'openid offline_access',
+        state: session.id,
+        callbackUrl: upstreamCallbackUrl,
+      });
+
+      return { upstreamAuthUrl: url };
+    }
+
+    return { redirectUrl: await this.#createAuthCodeRedirect(session) };
+  }
+
+  public async completeUpstreamCallback(opts: {
+    sessionId: string;
+    upstreamRefreshToken: string;
+  }): Promise<string> {
+    const { sessionId, upstreamRefreshToken } = opts;
+
+    const session = await this.oidc.getAuthorizationSession({ id: sessionId });
+    if (!session) {
+      throw new NotFoundError('Authorization session not found');
+    }
+    if (session.status !== 'approved') {
+      throw new AuthenticationError('Authorization session not approved');
+    }
+    if (!session.userEntityRef) {
+      throw new AuthenticationError('No user associated with session');
+    }
+
+    const signInProviderId = this.config.getOptionalString(
+      'auth.experimentalRefreshToken.signInProviderId',
+    );
+
+    return this.#issueOfflineTokens({
+      session,
+      upstreamRefreshToken,
+      authProviderId: signInProviderId!,
+    });
+  }
+
+  async #issueOfflineTokens(opts: {
+    session: AuthorizationSession;
+    upstreamRefreshToken: string;
+    authProviderId: string;
+  }): Promise<string> {
+    const { session, upstreamRefreshToken, authProviderId } = opts;
+
+    if (!this.offlineAccess) {
+      throw new InputError('Refresh tokens are not enabled');
+    }
+
+    // Issue a refresh token backed by the upstream provider
+    await this.offlineAccess.issueRefreshToken({
+      userEntityRef: session.userEntityRef!,
+      oidcClientId: session.clientId,
+      upstreamRefreshToken,
+      authProviderId,
+    });
+
+    return await this.#createAuthCodeRedirect(session);
+  }
+
+  async #createAuthCodeRedirect(
+    session: AuthorizationSession,
+  ): Promise<string> {
     const authorizationCode = crypto.randomBytes(32).toString('base64url');
     const codeExpiresAt = DateTime.now().plus({ minutes: 10 }).toJSDate();
 
@@ -447,15 +544,12 @@ export class OidcService {
     });
 
     const redirectUrl = new URL(session.redirectUri);
-
     redirectUrl.searchParams.append('code', authorizationCode);
     if (session.state) {
       redirectUrl.searchParams.append('state', session.state);
     }
 
-    return {
-      redirectUrl: redirectUrl.toString(),
-    };
+    return redirectUrl.toString();
   }
 
   public async getAuthorizationSession(opts: { sessionId: string }) {
@@ -607,11 +701,23 @@ export class OidcService {
       throw new InputError('Refresh tokens are not enabled');
     }
 
+    const registry = this.upstreamRefreshRegistry;
     const { accessToken, refreshToken } =
       await this.offlineAccess.refreshAccessToken({
         refreshToken: params.refreshToken,
         tokenIssuer: this.tokenIssuer,
         clientId: params.clientId,
+        upstreamRefresh: registry
+          ? async ({ authProviderId, refreshToken: upstreamToken }) => {
+              const entry = registry.get(authProviderId);
+              if (!entry) {
+                throw new AuthenticationError(
+                  `No upstream refresh available for provider '${authProviderId}'`,
+                );
+              }
+              return entry.refresh(upstreamToken);
+            }
+          : undefined,
       });
 
     return {

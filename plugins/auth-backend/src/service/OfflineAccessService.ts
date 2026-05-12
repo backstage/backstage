@@ -30,9 +30,33 @@ import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
 import {
   generateRefreshToken,
   getRefreshTokenId,
+  getEncryptedUpstreamToken,
   verifyRefreshToken,
 } from '../lib/refreshToken';
+import {
+  generateEncryptionKey,
+  encryptToken,
+  decryptToken,
+} from '../lib/tokenEncryption';
 import { TokenIssuer } from '../identity/types';
+
+/**
+ * Result of refreshing a token against the upstream auth provider.
+ * @internal
+ */
+export type UpstreamRefreshResult = {
+  /** The new upstream refresh token, if the provider rotated it. */
+  refreshToken?: string;
+};
+
+/**
+ * Function that refreshes a token against the upstream auth provider.
+ * @internal
+ */
+export type UpstreamRefreshFn = (options: {
+  authProviderId: string;
+  refreshToken: string;
+}) => Promise<UpstreamRefreshResult>;
 
 /**
  * Service for managing offline access (refresh tokens)
@@ -172,22 +196,44 @@ export class OfflineAccessService {
   }
 
   /**
-   * Issue a new refresh token for a user
+   * Issue a new refresh token for a user, optionally backed by an upstream
+   * provider's refresh token using split-knowledge encryption.
    */
   async issueRefreshToken(options: {
     userEntityRef: string;
     oidcClientId?: string;
+    upstreamRefreshToken?: string;
+    authProviderId?: string;
   }): Promise<string> {
-    const { userEntityRef, oidcClientId } = options;
+    const {
+      userEntityRef,
+      oidcClientId,
+      upstreamRefreshToken,
+      authProviderId,
+    } = options;
 
     const sessionId = uuid();
-    const { token, hash } = await generateRefreshToken(sessionId);
+
+    let encryptedUpstream: string | undefined;
+    let upstreamTokenKey: string | undefined;
+
+    if (upstreamRefreshToken) {
+      upstreamTokenKey = generateEncryptionKey();
+      encryptedUpstream = encryptToken(upstreamRefreshToken, upstreamTokenKey);
+    }
+
+    const { token, hash } = await generateRefreshToken(
+      sessionId,
+      encryptedUpstream,
+    );
 
     await this.#offlineSessionDb.createSession({
       id: sessionId,
       userEntityRef,
       oidcClientId,
       tokenHash: hash,
+      upstreamTokenKey,
+      authProviderId,
     });
 
     this.#logger.debug(
@@ -198,14 +244,17 @@ export class OfflineAccessService {
   }
 
   /**
-   * Refresh an access token using a refresh token
+   * Refresh an access token using a refresh token.
+   * If the session is backed by an upstream provider, validates against
+   * the upstream provider before issuing a new token.
    */
   async refreshAccessToken(options: {
     refreshToken: string;
     tokenIssuer: TokenIssuer;
     clientId?: string;
+    upstreamRefresh?: UpstreamRefreshFn;
   }): Promise<{ accessToken: string; refreshToken: string }> {
-    const { refreshToken, tokenIssuer, clientId } = options;
+    const { refreshToken, tokenIssuer, clientId, upstreamRefresh } = options;
 
     let sessionId: string;
     try {
@@ -231,13 +280,66 @@ export class OfflineAccessService {
       );
     }
 
-    // Verify the caller actually holds a valid token, not just the session ID
     const isValid = await verifyRefreshToken(refreshToken, session.tokenHash);
     if (!isValid) {
       throw new AuthenticationError('Invalid refresh token');
     }
 
-    if (!this.#dangerouslyDisableCatalogPresenceCheck) {
+    // If the session has an upstream token, validate against the upstream provider.
+    // Otherwise fall back to the catalog presence check for non-OAuth providers.
+    let newEncryptedUpstream: string | undefined;
+    let newUpstreamTokenKey: string | undefined;
+
+    if (session.upstreamTokenKey && session.authProviderId) {
+      if (!upstreamRefresh) {
+        throw new AuthenticationError(
+          'Upstream refresh not available for this session',
+        );
+      }
+
+      const encryptedUpstream = getEncryptedUpstreamToken(refreshToken);
+      if (!encryptedUpstream) {
+        await this.#offlineSessionDb.deleteSession(sessionId);
+        throw new AuthenticationError('Invalid refresh token');
+      }
+
+      let upstreamRefreshToken: string;
+      try {
+        upstreamRefreshToken = decryptToken(
+          encryptedUpstream,
+          session.upstreamTokenKey,
+        );
+      } catch (error) {
+        this.#logger.debug('Failed to decrypt upstream token', error);
+        await this.#offlineSessionDb.deleteSession(sessionId);
+        throw new AuthenticationError('Invalid refresh token');
+      }
+
+      let upstreamResult: UpstreamRefreshResult;
+      try {
+        upstreamResult = await upstreamRefresh({
+          authProviderId: session.authProviderId,
+          refreshToken: upstreamRefreshToken,
+        });
+      } catch (error) {
+        this.#logger.info(
+          `Upstream refresh failed for user ${session.userEntityRef} ` +
+            `(provider: ${session.authProviderId}, session: ${sessionId}), ` +
+            `deleting session`,
+        );
+        await this.#offlineSessionDb.deleteSession(sessionId);
+        throw new AuthenticationError('Upstream session is no longer valid');
+      }
+
+      // Re-encrypt the upstream token (may have been rotated by the provider)
+      const currentUpstreamToken =
+        upstreamResult.refreshToken ?? upstreamRefreshToken;
+      newUpstreamTokenKey = generateEncryptionKey();
+      newEncryptedUpstream = encryptToken(
+        currentUpstreamToken,
+        newUpstreamTokenKey,
+      );
+    } else if (!this.#dangerouslyDisableCatalogPresenceCheck) {
       try {
         const entity = await this.#catalog.getEntityByRef(
           session.userEntityRef,
@@ -253,7 +355,7 @@ export class OfflineAccessService {
           );
         }
       } catch (error) {
-        if (error.name === 'AuthenticationError') {
+        if ((error as { name?: string }).name === 'AuthenticationError') {
           throw error;
         }
         this.#logger.warn(
@@ -265,13 +367,14 @@ export class OfflineAccessService {
     }
 
     const { token: newRefreshToken, hash: newHash } =
-      await generateRefreshToken(sessionId);
+      await generateRefreshToken(sessionId, newEncryptedUpstream);
 
-    // Atomically swap the hash so a concurrent request with the same token fails
+    // Atomically swap the hash (and upstream key if applicable)
     const rotatedSession = await this.#offlineSessionDb.getAndRotateToken(
       sessionId,
       session.tokenHash,
       newHash,
+      newUpstreamTokenKey,
     );
 
     if (!rotatedSession) {

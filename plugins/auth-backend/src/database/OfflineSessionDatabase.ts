@@ -24,6 +24,8 @@ type DbOfflineSessionRow = {
   user_entity_ref: string;
   oidc_client_id: string | null;
   token_hash: string;
+  upstream_token_key: string | null;
+  auth_provider_id: string | null;
   created_at: Date;
   last_used_at: Date;
 };
@@ -37,6 +39,8 @@ export type OfflineSession = {
   userEntityRef: string;
   oidcClientId: string | null;
   tokenHash: string;
+  upstreamTokenKey: string | null;
+  authProviderId: string | null;
   createdAt: Date;
   lastUsedAt: Date;
 };
@@ -50,6 +54,8 @@ export type CreateOfflineSessionOptions = {
   userEntityRef: string;
   oidcClientId?: string;
   tokenHash: string;
+  upstreamTokenKey?: string;
+  authProviderId?: string;
 };
 
 /**
@@ -129,6 +135,8 @@ export class OfflineSessionDatabase {
         user_entity_ref: userEntityRef,
         oidc_client_id: oidcClientId ?? null,
         token_hash: tokenHash,
+        upstream_token_key: options.upstreamTokenKey ?? null,
+        auth_provider_id: options.authProviderId ?? null,
         created_at: trx.fn.now(),
         last_used_at: trx.fn.now(),
       });
@@ -165,6 +173,7 @@ export class OfflineSessionDatabase {
     id: string,
     expectedTokenHash: string,
     newTokenHash: string,
+    newUpstreamTokenKey?: string,
   ): Promise<OfflineSession | undefined> {
     const now = DateTime.utc();
     const tokenLifetimeThreshold = now
@@ -188,11 +197,17 @@ export class OfflineSessionDatabase {
         return undefined;
       }
 
-      // Update token hash atomically
-      await trx<DbOfflineSessionRow>(TABLE_NAME).where('id', id).update({
+      // Update token hash (and optionally the upstream key) atomically
+      const updateFields: Partial<DbOfflineSessionRow> = {
         token_hash: newTokenHash,
-        last_used_at: trx.fn.now(),
-      });
+        last_used_at: trx.fn.now() as unknown as Date,
+      };
+      if (newUpstreamTokenKey !== undefined) {
+        updateFields.upstream_token_key = newUpstreamTokenKey;
+      }
+      await trx<DbOfflineSessionRow>(TABLE_NAME)
+        .where('id', id)
+        .update(updateFields);
 
       return this.#mapRow(row);
     });
@@ -257,6 +272,8 @@ export class OfflineSessionDatabase {
       userEntityRef: row.user_entity_ref,
       oidcClientId: row.oidc_client_id,
       tokenHash: row.token_hash,
+      upstreamTokenKey: row.upstream_token_key,
+      authProviderId: row.auth_provider_id,
       createdAt: new Date(row.created_at),
       lastUsedAt: new Date(row.last_used_at),
     };

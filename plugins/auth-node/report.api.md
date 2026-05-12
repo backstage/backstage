@@ -55,6 +55,7 @@ export type AuthProviderFactory = (options: {
   appUrl: string;
   isOriginAllowed: (origin: string) => boolean;
   cookieConfigurer?: CookieConfigurer;
+  upstreamRefreshRegistry?: UpstreamRefreshRegistry;
 }) => AuthProviderRouteHandlers;
 
 // @public (undocumented)
@@ -425,6 +426,8 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
   // (undocumented)
   stateTransform?: OAuthStateTransform;
+  // (undocumented)
+  upstreamRefreshRegistry?: UpstreamRefreshRegistry;
 }
 
 // @public (undocumented)
@@ -708,6 +711,51 @@ export const tokenTypes: Readonly<{
     typParam: 'vnd.backstage.plugin';
   }>;
 }>;
+
+// @public
+export interface UpstreamAuthenticateResult {
+  // (undocumented)
+  accessToken: string;
+  // (undocumented)
+  refreshToken?: string;
+}
+
+// @public
+export interface UpstreamProviderEntry {
+  // (undocumented)
+  authenticate: (req: Request_2) => Promise<UpstreamAuthenticateResult>;
+  // (undocumented)
+  refresh: UpstreamRefreshFn;
+  // (undocumented)
+  start: (options: {
+    scope: string;
+    state: string;
+    callbackUrl: string;
+  }) => Promise<{
+    url: string;
+  }>;
+}
+
+// @public
+export type UpstreamRefreshFn = (
+  refreshToken: string,
+) => Promise<UpstreamRefreshResult>;
+
+// @public
+export class UpstreamRefreshRegistry {
+  // (undocumented)
+  get(providerId: string): UpstreamProviderEntry | undefined;
+  // (undocumented)
+  has(providerId: string): boolean;
+  // (undocumented)
+  register(providerId: string, entry: UpstreamProviderEntry): void;
+}
+
+// @public
+export interface UpstreamRefreshResult {
+  // (undocumented)
+  refreshToken?: string;
+}
 
 // @public
 export type WebMessageResponse =

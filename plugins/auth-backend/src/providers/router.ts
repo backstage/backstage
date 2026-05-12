@@ -20,6 +20,7 @@ import { NotFoundError, toError } from '@backstage/errors';
 import {
   AuthOwnershipResolver,
   AuthProviderFactory,
+  UpstreamRefreshRegistry,
 } from '@backstage/plugin-auth-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import express from 'express';
@@ -44,6 +45,7 @@ export function bindProviderRouters(
     userInfo: UserInfoDatabase;
     ownershipResolver?: AuthOwnershipResolver;
     catalog: CatalogService;
+    upstreamRefreshRegistry?: UpstreamRefreshRegistry;
   },
 ) {
   const {
@@ -87,6 +89,7 @@ export function bindProviderRouters(
             ownershipResolver,
             userInfo,
           }),
+          upstreamRefreshRegistry: options.upstreamRefreshRegistry,
         });
 
         const r = Router();

@@ -43,6 +43,7 @@ import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcRouter } from './OidcRouter';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
+import { UpstreamRefreshRegistry } from '@backstage/plugin-auth-node';
 
 interface RouterOptions {
   logger: LoggerService;
@@ -142,6 +143,8 @@ export async function createRouter(
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
+  const upstreamRefreshRegistry = new UpstreamRefreshRegistry();
+
   bindProviderRouters(router, {
     providers: providerFactories,
     appUrl,
@@ -150,6 +153,7 @@ export async function createRouter(
     ...options,
     auth: options.auth,
     userInfo,
+    upstreamRefreshRegistry,
   });
 
   const oidc = await OidcDatabase.create({ database });
@@ -165,6 +169,7 @@ export async function createRouter(
     httpAuth,
     config,
     offlineAccess: options.offlineAccess,
+    upstreamRefreshRegistry,
   });
 
   router.use(oidcRouter.getRouter());

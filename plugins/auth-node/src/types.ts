@@ -320,6 +320,9 @@ export type AuthProviderFactory = (options: {
    * The function used to resolve cookie configuration based on the auth provider options.
    */
   cookieConfigurer?: CookieConfigurer;
+
+  /** @public */
+  upstreamRefreshRegistry?: import('./oauth/UpstreamRefreshRegistry').UpstreamRefreshRegistry;
 }) => AuthProviderRouteHandlers;
 
 /** @public */

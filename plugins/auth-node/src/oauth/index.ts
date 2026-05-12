@@ -44,3 +44,10 @@ export {
   type OAuthAuthenticatorStartInput,
   type OAuthSession,
 } from './types';
+export {
+  UpstreamRefreshRegistry,
+  type UpstreamRefreshFn,
+  type UpstreamRefreshResult,
+  type UpstreamAuthenticateResult,
+  type UpstreamProviderEntry,
+} from './UpstreamRefreshRegistry';

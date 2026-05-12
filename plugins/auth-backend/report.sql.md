@@ -27,14 +27,16 @@
 
 ## Table `offline_sessions`
 
-| Column            | Type                       | Nullable | Max Length | Default             |
-| ----------------- | -------------------------- | -------- | ---------- | ------------------- |
-| `created_at`      | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
-| `id`              | `character varying`        | false    | 255        | -                   |
-| `last_used_at`    | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
-| `oidc_client_id`  | `character varying`        | true     | 255        | -                   |
-| `token_hash`      | `text`                     | false    | -          | -                   |
-| `user_entity_ref` | `character varying`        | false    | 255        | -                   |
+| Column               | Type                       | Nullable | Max Length | Default             |
+| -------------------- | -------------------------- | -------- | ---------- | ------------------- |
+| `auth_provider_id`   | `character varying`        | true     | 255        | -                   |
+| `created_at`         | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
+| `id`                 | `character varying`        | false    | 255        | -                   |
+| `last_used_at`       | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
+| `oidc_client_id`     | `character varying`        | true     | 255        | -                   |
+| `token_hash`         | `text`                     | false    | -          | -                   |
+| `upstream_token_key` | `text`                     | true     | -          | -                   |
+| `user_entity_ref`    | `character varying`        | false    | 255        | -                   |
 
 ### Indices
 

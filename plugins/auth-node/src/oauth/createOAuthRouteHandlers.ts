@@ -46,6 +46,7 @@ import {
 } from './types';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { CookieScopeManager } from './CookieScopeManager';
+import { UpstreamRefreshRegistry } from './UpstreamRefreshRegistry';
 
 /** @public */
 export interface OAuthRouteHandlersOptions<TProfile> {
@@ -61,6 +62,8 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   cookieConfigurer?: CookieConfigurer;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
+  /** @public */
+  upstreamRefreshRegistry?: UpstreamRefreshRegistry;
 }
 
 /** @internal */
@@ -126,6 +129,53 @@ export function createOAuthRouteHandlers<TProfile>(
     cookieManager,
     additionalScopes: options.additionalScopes,
   });
+
+  if (options.upstreamRefreshRegistry) {
+    options.upstreamRefreshRegistry.register(providerId, {
+      async refresh(refreshToken) {
+        const result = await authenticator.refresh(
+          {
+            refreshToken,
+            scope: '',
+            req: {} as express.Request,
+          },
+          authenticatorCtx,
+        );
+        return { refreshToken: result.session.refreshToken };
+      },
+      async start({ scope, state, callbackUrl: upstreamCallbackUrl }) {
+        // Use the provider's authenticator to generate the upstream auth URL.
+        // We pass a custom callback URL that points to the CIMD upstream callback endpoint.
+        const startCtx = authenticator.initialize({
+          config,
+          callbackUrl: upstreamCallbackUrl,
+        });
+        const { url } = await authenticator.start(
+          {
+            scope,
+            state,
+            req: {} as express.Request,
+          },
+          startCtx,
+        );
+        return { url };
+      },
+      async authenticate(req) {
+        const authCallbackUrl = `${req.protocol}://${req.get('host')}${
+          req.path
+        }`;
+        const authCtx = authenticator.initialize({
+          config,
+          callbackUrl: authCallbackUrl,
+        });
+        const result = await authenticator.authenticate({ req }, authCtx);
+        return {
+          refreshToken: result.session.refreshToken,
+          accessToken: result.session.accessToken,
+        };
+      },
+    });
+  }
 
   return {
     async start(
