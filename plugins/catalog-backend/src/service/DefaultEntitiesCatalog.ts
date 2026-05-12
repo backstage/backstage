@@ -265,7 +265,12 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       });
     };
 
-    // Phase 1 -- entities that have the order field, walked in sort order.
+    // Phase 1 -- entities that have a non-NULL value for the order field.
+    // Rows where the key exists but value IS NULL (e.g. the entity field is
+    // explicitly null, or exceeded MAX_VALUE_LENGTH in buildEntitySearch) are
+    // excluded here so they fall through to Phase 2 and sort in the same
+    // NULLS-LAST bucket as entities that have no row for the key at all —
+    // preserving the semantics of the previous LEFT JOIN approach.
     let withField = db('search as order_0')
       .innerJoin(
         'final_entities',
@@ -273,6 +278,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         'order_0.entity_id',
       )
       .where('order_0.key', primaryOrder.field)
+      .whereNotNull('order_0.value')
       .whereNotNull('final_entities.final_entity')
       .select<DbFinalEntitiesRow[]>('final_entities.*');
     withField = applyFilter(withField);
@@ -307,7 +313,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         qb
           .from('search')
           .where('search.entity_id', db.ref('final_entities.entity_id'))
-          .andWhere('search.key', primaryOrder.field),
+          .andWhere('search.key', primaryOrder.field)
+          .whereNotNull('search.value'),
       );
     withoutField = applyFilter(withoutField);
     withoutField = withoutField.orderBy(

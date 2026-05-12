@@ -869,6 +869,57 @@ describe('DefaultEntitiesCatalog', () => {
         ]);
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'treats a null sort-field value the same as a missing sort field, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        // n1 has spec.b with a real value (Phase 1)
+        // n2 has spec.b explicitly set to null — buildEntitySearch stores value=NULL
+        // n3 has no spec.b at all
+        // n2 and n3 must both end up in the NULLS-LAST bucket (Phase 2),
+        // ordered by entity_id, regardless of primary sort direction.
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n1' },
+          spec: { b: 'alpha' },
+        });
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n2', uid: 'aaaa-n2' },
+          spec: { b: null },
+        });
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n3', uid: 'bbbb-n3' },
+        });
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        async function page(order: 'asc' | 'desc'): Promise<string[]> {
+          const r = await catalog.entities({
+            order: [{ field: 'spec.b', order }],
+            credentials: mockCredentials.none(),
+          });
+          return entitiesResponseToObjects(r.entities).map(
+            e => e!.metadata.name,
+          );
+        }
+
+        // n2 (null value) and n3 (missing key) must sort together after n1,
+        // ordered by entity_id ASC, regardless of primary direction
+        await expect(page('asc')).resolves.toEqual(['n1', 'n2', 'n3']);
+        await expect(page('desc')).resolves.toEqual(['n1', 'n2', 'n3']);
+      },
+    );
   });
 
   describe('entitiesBatch', () => {
