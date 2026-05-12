@@ -98,9 +98,9 @@ export const buildTechDocsURL = (
   }
 
   const url = routeFunc({
-    namespace,
-    kind,
-    name,
+    namespace: namespace.toLocaleLowerCase('en-US'),
+    kind: kind.toLocaleLowerCase('en-US'),
+    name: name.toLocaleLowerCase('en-US'),
   });
 
   // Add on the external entity path to the url if one exists. This allows deep linking into another
