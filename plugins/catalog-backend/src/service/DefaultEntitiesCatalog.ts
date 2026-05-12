@@ -312,7 +312,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     withoutField = applyFilter(withoutField);
     withoutField = withoutField.orderBy(
       'final_entities.entity_id',
-      primaryOrder.order,
+      'asc',  // NULL group always stable-sorted ASC regardless of primary direction
     );
     if (limit !== undefined) {
       // Phase 2 only contributes the rows that phase 1 didn't cover.
