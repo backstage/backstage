@@ -324,7 +324,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const combined = [...withFieldRows, ...withoutFieldRows];
     if (limit === undefined) {
-      return combined;
+      return combined.slice(offset ?? 0);
     }
     const skip = offset ?? 0;
     return combined.slice(skip, skip + limit + 1);
