@@ -26,12 +26,16 @@ import { DatePickerGroupDefinition } from './definition';
  * @internal
  */
 export const DatePickerGroup = ({ dataSize }: { dataSize?: string }) => {
-  const { ownProps } = useDefinition(DatePickerGroupDefinition, {});
+  const { ownProps, dataAttributes } = useDefinition(
+    DatePickerGroupDefinition,
+    {},
+  );
   const { classes } = ownProps;
 
   return (
     <Group
       className={classes.root}
+      {...dataAttributes}
       {...(dataSize ? { 'data-size': dataSize } : {})}
     >
       <DateInput className={classes.dateInput}>
