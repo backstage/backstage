@@ -55,5 +55,5 @@ export interface TextFieldProps
    * Use `SearchField` for
    * search inputs and `PasswordField` for password inputs.
    */
-  type?: 'text' | 'email' | 'tel' | 'url';
+  type?: 'text' | 'email' | 'tel' | 'url' | 'number';
 }

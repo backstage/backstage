@@ -3444,7 +3444,7 @@ export type TextFieldOwnProps = {
 export interface TextFieldProps
   extends Omit<TextFieldProps_2, 'className' | 'description'>,
     TextFieldOwnProps {
-  type?: 'text' | 'email' | 'tel' | 'url';
+  type?: 'text' | 'email' | 'tel' | 'url' | 'number';
 }
 
 // @public (undocumented)
