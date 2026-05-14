@@ -369,6 +369,43 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         locationKey,
       });
       if (conflictingKey) {
+        // If the entity has no parent references in refresh_state_references,
+        // the source that originally set the conflicting location_key has been
+        // removed (e.g. a catalog-info.yaml was moved via `git mv` — the old
+        // Location row is deleted, which cascade-deletes its outgoing
+        // references). The child entity is orphaned: it still carries the old
+        // location_key but no active source owns it anymore. Reclaim it for
+        // the new location immediately, rather than waiting for two orphan
+        // cleanup cycles (~60 s each) to cascade-delete the entity first.
+        if (locationKey) {
+          const parentRef = await tx<DbRefreshStateReferencesRow>(
+            'refresh_state_references',
+          )
+            .where('target_entity_ref', entityRef)
+            .first();
+
+          if (!parentRef) {
+            const reclaimed = await tx<DbRefreshStateRow>('refresh_state')
+              .where('entity_ref', entityRef)
+              .update({
+                unprocessed_entity: JSON.stringify(entity),
+                unprocessed_hash: hash,
+                location_key: locationKey,
+                last_discovery_at: tx.fn.now(),
+                next_update_at: tx.fn.now(),
+              });
+            if (reclaimed === 1) {
+              stateReferences.push(entityRef);
+              this.options.logger.info(
+                `Reclaimed orphaned entityRef ${entityRef}: no active source ` +
+                  `owns it (old location_key ${conflictingKey}), new location ` +
+                  `${locationKey} now claims it`,
+              );
+              continue;
+            }
+          }
+        }
+
         this.options.logger.warn(
           `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );

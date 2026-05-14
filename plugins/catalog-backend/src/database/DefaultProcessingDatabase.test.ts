@@ -483,6 +483,238 @@ describe('DefaultProcessingDatabase', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'reclaims entity whose location_key is stale because the owning source was deleted (rename scenario), %p',
+      async databaseId => {
+        // Simulate a catalog-info.yaml being moved via `git mv`:
+        // The child entity exists in refresh_state with the OLD location_key,
+        // but the source that originally set it has already been removed (the
+        // cascade-delete on refresh_state also removes its outgoing
+        // refresh_state_references rows). The new Location entity tries to
+        // register the same entityRef with a new location_key — this should
+        // succeed without a conflict warning.
+        const OLD_LOCATION_KEY =
+          'url:https://github.com/org/repo/blob/main/old-path/catalog-info.yaml';
+        const NEW_LOCATION_KEY =
+          'url:https://github.com/org/repo/blob/main/new-path/catalog-info.yaml';
+
+        const mockLogger = {
+          debug: jest.fn(),
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+        };
+        const { knex, db } = await createDatabase(
+          databaseId,
+          mockLogger as unknown as Logger,
+        );
+
+        // The "new" parent location entity that is currently being processed
+        await insertRefreshStateRow(knex, {
+          entity_id: id,
+          entity_ref: 'location:default/new-location',
+          unprocessed_entity: '{}',
+          unprocessed_hash: generateStableHash({} as any),
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        // Pre-insert the child entity with the OLD location_key.
+        // Crucially, it has no parent reference in refresh_state_references —
+        // the old source was deleted and its outgoing references were
+        // cascade-deleted with it.
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: uuid(),
+          entity_ref: 'component:default/my-service',
+          unprocessed_entity: JSON.stringify({
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: { name: 'my-service' },
+          }),
+          unprocessed_hash: 'old-hash',
+          errors: '',
+          location_key: OLD_LOCATION_KEY,
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        // Verify the child has no parent references (old source was removed)
+        const existingRefs = await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        )
+          .where('target_entity_ref', 'component:default/my-service')
+          .select();
+        expect(existingRefs).toHaveLength(0);
+
+        // Process the new Location entity — it emits the same child with the
+        // new location_key
+        await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id,
+            processedEntity: {
+              apiVersion: '1',
+              kind: 'Location',
+              metadata: { name: 'new-location' },
+            } as Entity,
+            resultHash: '',
+            relations: [],
+            refreshKeys: [],
+            deferredEntities: [
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'my-service' },
+                },
+                locationKey: NEW_LOCATION_KEY,
+              },
+            ],
+          }),
+        );
+
+        // No conflict warning — entity was reclaimed, not blocked
+        expect(mockLogger.warn).not.toHaveBeenCalled();
+        expect(mockLogger.info).toHaveBeenCalledWith(
+          expect.stringMatching(
+            /^Reclaimed orphaned entityRef.*no active source/,
+          ),
+        );
+
+        // Child entity should now have the NEW location_key
+        const childRow = await knex<DbRefreshStateRow>('refresh_state')
+          .where('entity_ref', 'component:default/my-service')
+          .first();
+        expect(childRow?.location_key).toBe(NEW_LOCATION_KEY);
+
+        // refresh_state_references should point from new location to child
+        const refs = await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        ).select();
+        expect(refs).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              source_entity_ref: 'location:default/new-location',
+              target_entity_ref: 'component:default/my-service',
+            }),
+          ]),
+        );
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'does not reclaim entity when the old source still has a parent reference (genuine conflict), %p',
+      async databaseId => {
+        // Simulate a genuine two-source conflict: both source A and source B
+        // attempt to own the same entityRef, and source A is still active
+        // (its refresh_state_references row still exists).
+        const OLD_LOCATION_KEY =
+          'url:https://github.com/org/repo/blob/main/path-a/catalog-info.yaml';
+        const NEW_LOCATION_KEY =
+          'url:https://github.com/org/repo/blob/main/path-b/catalog-info.yaml';
+
+        const mockLogger = {
+          debug: jest.fn(),
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+        };
+        const { knex, db } = await createDatabase(
+          databaseId,
+          mockLogger as unknown as Logger,
+        );
+
+        // Source A (old location) is still alive in refresh_state
+        const oldLocationId = uuid();
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: oldLocationId,
+          entity_ref: 'location:default/old-location',
+          unprocessed_entity: '{}',
+          unprocessed_hash: 'h',
+          errors: '',
+          location_key: OLD_LOCATION_KEY,
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        // Source B (new location) is the entity being processed
+        await insertRefreshStateRow(knex, {
+          entity_id: id,
+          entity_ref: 'location:default/new-location',
+          unprocessed_entity: '{}',
+          unprocessed_hash: generateStableHash({} as any),
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        // The child entity, owned by source A
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: uuid(),
+          entity_ref: 'component:default/my-service',
+          unprocessed_entity: JSON.stringify({
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: { name: 'my-service' },
+          }),
+          unprocessed_hash: 'old-hash',
+          errors: '',
+          location_key: OLD_LOCATION_KEY,
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        // Source A still has an active reference to the child
+        await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        ).insert({
+          source_entity_ref: 'location:default/old-location',
+          target_entity_ref: 'component:default/my-service',
+        });
+
+        // Source B tries to claim the same child — should warn, not reclaim
+        await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id,
+            processedEntity: {
+              apiVersion: '1',
+              kind: 'Location',
+              metadata: { name: 'new-location' },
+            } as Entity,
+            resultHash: '',
+            relations: [],
+            refreshKeys: [],
+            deferredEntities: [
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'my-service' },
+                },
+                locationKey: NEW_LOCATION_KEY,
+              },
+            ],
+          }),
+        );
+
+        // Should warn about the conflict, never reclaim
+        expect(mockLogger.warn).toHaveBeenCalledWith(
+          expect.stringMatching(/^Detected conflicting entityRef/),
+        );
+        expect(mockLogger.info).not.toHaveBeenCalledWith(
+          expect.stringMatching(/^Reclaimed/),
+        );
+
+        // Child entity retains the old location_key
+        const childRow = await knex<DbRefreshStateRow>('refresh_state')
+          .where('entity_ref', 'component:default/my-service')
+          .first();
+        expect(childRow?.location_key).toBe(OLD_LOCATION_KEY);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
       'stores the refresh keys for the entity where key length is 255 chars or less',
       async databaseId => {
         const mockLogger = {
