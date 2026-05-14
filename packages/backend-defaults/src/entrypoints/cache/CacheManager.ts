@@ -538,21 +538,37 @@ export class CacheManager {
           // Disconnects the client to force a new connection on the next request after errors.
           const store = stores[pluginId];
           if (store) {
-            try {
-              (store as { disconnect?: () => void }).disconnect?.();
-              (store as { quit?: () => void }).quit?.();
-            } catch (closeError) {
-              this.logger?.warn(
-                'Failed to close redis cache client after error',
-                closeError,
-              );
-            }
-            // Clear the store from the cache manager to force a new connection on the next request.
-            // Drops the client connection object, but does not lose the underlying cached data.
-            this.logger?.info(
-              `Clearing redis cache client for plugin ${pluginId} after error`,
-            );
-            delete stores[pluginId];
+            void (async () => {
+              try {
+                const closePromises: Array<Promise<unknown>> = [];
+                const disconnect = (store as { disconnect?: () => unknown })
+                  .disconnect;
+                const quit = (store as { quit?: () => unknown }).quit;
+
+                if (disconnect) {
+                  closePromises.push(Promise.resolve(disconnect()));
+                }
+                if (quit) {
+                  closePromises.push(Promise.resolve(quit()));
+                }
+
+                if (closePromises.length > 0) {
+                  await Promise.allSettled(closePromises);
+                }
+              } catch (closeError) {
+                this.logger?.warn(
+                  'Failed to close redis cache client after error',
+                  closeError,
+                );
+              } finally {
+                // Clear the store from the cache manager to force a new connection on the next request.
+                // Drops the client connection object, but does not lose the underlying cached data.
+                this.logger?.info(
+                  `Clearing redis cache client for plugin ${pluginId} after error`,
+                );
+                delete stores[pluginId];
+              }
+            })();
           }
         });
       }
