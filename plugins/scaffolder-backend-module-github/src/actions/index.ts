@@ -19,6 +19,7 @@ export { createGithubIssuesLabelAction } from './githubIssuesLabel';
 export { createGithubIssuesCreateAction } from './githubIssuesCreate';
 export { createGithubRepoCreateAction } from './githubRepoCreate';
 export { createGithubRepoPushAction } from './githubRepoPush';
+export { createGithubRulesetCreateAction } from './githubRulesetCreate';
 export { createGithubWebhookAction } from './githubWebhook';
 export { createGithubDeployKeyAction } from './githubDeployKey';
 export { createGithubEnvironmentAction } from './githubEnvironment';

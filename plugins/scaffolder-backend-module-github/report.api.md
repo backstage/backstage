@@ -365,6 +365,50 @@ export function createGithubRepoPushAction(options: {
 >;
 
 // @public
+export function createGithubRulesetCreateAction(options: {
+  integrations: ScmIntegrations;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    name: string;
+    enforcement: 'active' | 'disabled' | 'evaluate';
+    rules: Record<string, any>[];
+    target?: 'push' | 'tag' | 'branch' | undefined;
+    bypassActors?:
+      | {
+          actorType:
+            | 'Team'
+            | 'Integration'
+            | 'User'
+            | 'OrganizationAdmin'
+            | 'RepositoryRole'
+            | 'DeployKey';
+          actorId?: number | null | undefined;
+          bypassMode?: 'always' | 'pull_request' | 'exempt' | undefined;
+        }[]
+      | undefined;
+    conditions?:
+      | {
+          refName?:
+            | {
+                include: string[];
+                exclude: string[];
+              }
+            | undefined;
+        }
+      | undefined;
+    token?: string | undefined;
+  },
+  {
+    rulesetId: number;
+    rulesetName: string;
+    rulesetUrl?: string | undefined;
+  },
+  'v2'
+>;
+
+// @public
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
