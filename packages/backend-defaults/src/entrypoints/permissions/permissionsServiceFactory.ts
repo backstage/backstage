@@ -19,6 +19,10 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+import {
+  CachedPermissionsService,
+  PermissionDecisionCacheEntry,
+} from './CachedPermissionsService';
 
 /**
  * Permission system integration for authorization of user actions.
@@ -36,10 +40,13 @@ export const permissionsServiceFactory = createServiceFactory({
     config: coreServices.rootConfig,
     discovery: coreServices.discovery,
   },
-  async factory({ auth, config, discovery }) {
-    return ServerPermissionClient.fromConfig(config, {
-      auth,
-      discovery,
-    });
+  createRootContext() {
+    return new Map<string, PermissionDecisionCacheEntry>();
+  },
+  async factory({ auth, config, discovery }, entries) {
+    return new CachedPermissionsService(
+      ServerPermissionClient.fromConfig(config, { auth, discovery }),
+      { entries },
+    );
   },
 });
