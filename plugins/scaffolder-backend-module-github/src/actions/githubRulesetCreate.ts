@@ -197,14 +197,18 @@ export function createGithubRulesetCreateAction(options: {
             rules: rules as CreateRepoRulesetParams['rules'],
           });
 
-          return response.data;
+          return {
+            id: response.data.id,
+            name: response.data.name,
+            rulesetUrl: response.data._links?.self?.href,
+          };
         },
       });
 
       ctx.output('rulesetId', ruleset.id);
       ctx.output('rulesetName', ruleset.name);
-      if (ruleset._links?.self?.href) {
-        ctx.output('rulesetUrl', ruleset._links.self.href);
+      if (ruleset.rulesetUrl) {
+        ctx.output('rulesetUrl', ruleset.rulesetUrl);
       }
     },
   });
