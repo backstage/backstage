@@ -52,6 +52,7 @@ export * from './components/TablePagination';
 export * from './components/Tabs';
 export * from './components/TagGroup';
 export * from './components/Text';
+export * from './components/NumberField';
 export * from './components/TextField';
 export * from './components/PasswordField';
 export * from './components/Tooltip';
