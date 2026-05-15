@@ -18,6 +18,11 @@
 
 @layer components {
   .bui-Switch {
+    --switch-track: var(--bui-bg-neutral-1);
+    --switch-thumb: var(--bui-fg-secondary);
+    --switch-track-border: var(--bui-border-1);
+    --switch-thumb-border: transparent;
+
     display: flex;
     /* This is needed so the HiddenInput is positioned correctly */
     position: relative;
@@ -32,26 +37,30 @@
       color: var(--bui-fg-disabled);
     }
 
-    &[data-pressed] .bui-SwitchIndicator {
-      &:before {
-        background: var(--bui-fg-solid);
-      }
+    &[data-on-bg='neutral-1'] {
+      --switch-track: var(--bui-bg-neutral-2);
+    }
+
+    &[data-on-bg='neutral-2'] {
+      --switch-track: var(--bui-bg-neutral-3);
+    }
+
+    &[data-on-bg='neutral-3'] {
+      --switch-track: var(--bui-bg-neutral-4);
     }
 
     &[data-selected] {
-      .bui-SwitchIndicator {
-        background: var(--bui-bg-solid);
+      --switch-track: var(--bui-bg-solid);
+      --switch-track-border: transparent;
+      --switch-thumb: var(--bui-fg-solid);
+      --switch-thumb-border: transparent;
 
-        &:before {
-          background: var(--bui-fg-solid);
-          transform: translateX(100%);
-        }
+      .bui-SwitchIndicator:before {
+        transform: translateX(100%);
       }
 
       &[data-pressed] {
-        .indicator {
-          background: var(--bui-bg-neutral-3);
-        }
+        --switch-track: var(--bui-bg-solid-pressed);
       }
     }
 
@@ -64,8 +73,8 @@
   .bui-SwitchIndicator {
     width: 2rem;
     height: 1.143rem;
-    border: 2px;
-    background: var(--bui-bg-neutral-3);
+    background: var(--switch-track);
+    box-shadow: inset 0 0 0 1px var(--switch-track-border);
     border-radius: 1.143rem;
     transition: all 200ms;
 
@@ -75,7 +84,8 @@
       margin: 0.143rem;
       width: 0.857rem;
       height: 0.857rem;
-      background: var(--bui-fg-solid);
+      background: var(--switch-thumb);
+      box-shadow: inset 0 0 0 1px var(--switch-thumb-border);
       border-radius: 16px;
       transition: all 200ms;
     }

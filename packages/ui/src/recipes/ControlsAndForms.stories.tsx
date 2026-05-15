@@ -25,12 +25,16 @@ import { BUIProvider } from '../provider';
 import {
   Box,
   Button,
+  Checkbox,
   Combobox,
   DatePicker,
   DateRangePicker,
   Flex,
+  Radio,
+  RadioGroup,
   SearchField,
   Select,
+  Switch,
   Text,
   TextField,
   PasswordField,
@@ -131,6 +135,19 @@ const ServiceRequestForm = () => (
           name="related-entity"
           placeholder="Search catalog"
         />
+        <RadioGroup
+          label="Visibility"
+          name="visibility"
+          defaultValue="internal"
+          description="Choose who can discover this service."
+        >
+          <Radio value="internal">Internal</Radio>
+          <Radio value="restricted">Restricted</Radio>
+          <Radio value="public">Public</Radio>
+        </RadioGroup>
+        <Checkbox name="terms" isSelected>
+          Include this service in catalog search
+        </Checkbox>
       </FieldStack>
       <Flex justify="start" gap="2">
         <Button variant="secondary" type="reset">
@@ -173,6 +190,10 @@ const AccessSettingsForm = () => (
           placeholder="Select a team"
           isDisabled
         />
+        <Switch label="Enable production access" defaultSelected />
+        <Checkbox name="notifications" defaultSelected>
+          Send access change notifications
+        </Checkbox>
       </FieldStack>
       <Flex justify="start" align="center" gap="2">
         <Button variant="secondary">Preview access</Button>
@@ -224,6 +245,20 @@ const ValidationForm = () => (
             end: parseDate('2026-07-06'),
           }}
         />
+        <RadioGroup
+          label="Release approval"
+          name="approval"
+          isInvalid
+          defaultValue="none"
+        >
+          <Radio value="none">No approval</Radio>
+          <Radio value="team">Team approval</Radio>
+          <Radio value="security">Security approval</Radio>
+        </RadioGroup>
+        <Checkbox name="confirm" isInvalid>
+          Confirm these changes have been reviewed
+        </Checkbox>
+        <Switch label="Force deployment" isDisabled />
       </FieldStack>
       <Flex justify="start" gap="2">
         <Button variant="secondary" destructive iconStart={<RiDeleteBinLine />}>
