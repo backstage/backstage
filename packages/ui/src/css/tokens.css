@@ -78,27 +78,27 @@
     --bui-bg-solid-disabled: #163a66;
 
     /* Neutral background colors */
-    --bui-bg-app: #f8f8f8;
+    --bui-bg-app: #f5f5f5;
 
     --bui-bg-neutral-1: #fff;
-    --bui-bg-neutral-1-hover: oklch(0% 0 0 / 6%);
-    --bui-bg-neutral-1-pressed: oklch(0% 0 0 / 12%);
-    --bui-bg-neutral-1-disabled: oklch(0% 0 0 / 6%);
+    --bui-bg-neutral-1-hover: #e6e6e6;
+    --bui-bg-neutral-1-pressed: var(--bui-bg-neutral-1);
+    --bui-bg-neutral-1-disabled: #f0f0f0;
 
-    --bui-bg-neutral-2: oklch(0% 0 0 / 6%);
-    --bui-bg-neutral-2-hover: oklch(0% 0 0 / 12%);
-    --bui-bg-neutral-2-pressed: oklch(0% 0 0 / 16%);
-    --bui-bg-neutral-2-disabled: oklch(0% 0 0 / 6%);
+    --bui-bg-neutral-2: #f7f7f7;
+    --bui-bg-neutral-2-hover: #ececec;
+    --bui-bg-neutral-2-pressed: var(--bui-bg-neutral-2);
+    --bui-bg-neutral-2-disabled: #e8e8e8;
 
-    --bui-bg-neutral-3: oklch(0% 0 0 / 6%);
-    --bui-bg-neutral-3-hover: oklch(0% 0 0 / 12%);
-    --bui-bg-neutral-3-pressed: oklch(0% 0 0 / 16%);
-    --bui-bg-neutral-3-disabled: oklch(0% 0 0 / 6%);
+    --bui-bg-neutral-3: #ffffff;
+    --bui-bg-neutral-3-hover: #e6e6e6;
+    --bui-bg-neutral-3-pressed: var(--bui-bg-neutral-3);
+    --bui-bg-neutral-3-disabled: #dadada;
 
-    --bui-bg-neutral-4: oklch(0% 0 0 / 6%);
-    --bui-bg-neutral-4-hover: oklch(0% 0 0 / 12%);
-    --bui-bg-neutral-4-pressed: oklch(0% 0 0 / 16%);
-    --bui-bg-neutral-4-disabled: oklch(0% 0 0 / 6%);
+    --bui-bg-neutral-4: #f7f7f7;
+    --bui-bg-neutral-4-hover: #ececec;
+    --bui-bg-neutral-4-pressed: var(--bui-bg-neutral-4);
+    --bui-bg-neutral-4-disabled: #cdcdcd;
 
     /* Status background colors */
     --bui-bg-danger: #ffe2e2;
@@ -154,25 +154,21 @@
     /* Neutral background colors */
     --bui-bg-app: #333333;
 
-    --bui-bg-neutral-1: oklch(100% 0 0 / 10%);
-    --bui-bg-neutral-1-hover: oklch(100% 0 0 / 14%);
-    --bui-bg-neutral-1-pressed: oklch(100% 0 0 / 20%);
-    --bui-bg-neutral-1-disabled: oklch(100% 0 0 / 10%);
+    --bui-bg-neutral-1: #1a1a1a;
+    --bui-bg-neutral-1-hover: #3a3a3a;
+    --bui-bg-neutral-1-disabled: #313131;
 
-    --bui-bg-neutral-2: oklch(100% 0 0 / 6%);
-    --bui-bg-neutral-2-hover: oklch(100% 0 0 / 10%);
-    --bui-bg-neutral-2-pressed: oklch(100% 0 0 / 16%);
-    --bui-bg-neutral-2-disabled: oklch(100% 0 0 / 6%);
+    --bui-bg-neutral-2: #282828;
+    --bui-bg-neutral-2-hover: #3e3e3e;
+    --bui-bg-neutral-2-disabled: #353535;
 
-    --bui-bg-neutral-3: oklch(100% 0 0 / 8%);
-    --bui-bg-neutral-3-hover: oklch(100% 0 0 / 12%);
-    --bui-bg-neutral-3-pressed: oklch(100% 0 0 / 20%);
-    --bui-bg-neutral-3-disabled: oklch(100% 0 0 / 8%);
+    --bui-bg-neutral-3: #393939;
+    --bui-bg-neutral-3-hover: #515151;
+    --bui-bg-neutral-3-disabled: #494949;
 
-    --bui-bg-neutral-4: oklch(100% 0 0 / 8%);
-    --bui-bg-neutral-4-hover: oklch(100% 0 0 / 12%);
-    --bui-bg-neutral-4-pressed: oklch(100% 0 0 / 20%);
-    --bui-bg-neutral-4-disabled: oklch(100% 0 0 / 8%);
+    --bui-bg-neutral-4: #494949;
+    --bui-bg-neutral-4-hover: #5f5f5f;
+    --bui-bg-neutral-4-disabled: #585858;
 
     /* Status background colors */
     --bui-bg-danger: #300c0c;
