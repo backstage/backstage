@@ -29,6 +29,8 @@ export const NumberFieldDefinition = defineComponent<NumberFieldOwnProps>()({
     inputWrapper: 'bui-InputWrapper',
     input: 'bui-Input',
     inputIcon: 'bui-InputIcon',
+    stepperButtons: 'bui-StepperButtons',
+    stepperButton: 'bui-StepperButton',
   },
   bg: 'consumer',
   propDefs: {

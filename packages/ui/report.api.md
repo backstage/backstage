@@ -2345,6 +2345,8 @@ export const NumberFieldDefinition: {
     readonly inputWrapper: 'bui-InputWrapper';
     readonly input: 'bui-Input';
     readonly inputIcon: 'bui-InputIcon';
+    readonly stepperButtons: 'bui-StepperButtons';
+    readonly stepperButton: 'bui-StepperButton';
   };
   readonly bg: 'consumer';
   readonly propDefs: {

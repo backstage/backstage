@@ -20,8 +20,10 @@ import {
   Input,
   NumberField as AriaNumberField,
 } from 'react-aria-components';
+import { RiAddLine, RiSubtractLine } from '@remixicon/react';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
+import { ButtonIcon } from '../ButtonIcon';
 import type { NumberFieldProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { NumberFieldDefinition } from './definition';
@@ -91,6 +93,24 @@ export const NumberField = forwardRef<HTMLDivElement, NumberFieldProps>(
             {...(icon && { 'data-icon': true })}
             placeholder={placeholder}
           />
+          <div className={classes.stepperButtons}>
+            <ButtonIcon
+              slot="decrement"
+              variant="tertiary"
+              size={ownProps.size}
+              className={classes.stepperButton}
+              icon={<RiSubtractLine />}
+              aria-label="Decrease"
+            />
+            <ButtonIcon
+              slot="increment"
+              variant="tertiary"
+              size={ownProps.size}
+              className={classes.stepperButton}
+              icon={<RiAddLine />}
+              aria-label="Increase"
+            />
+          </div>
         </Group>
         <FieldError />
       </AriaNumberField>

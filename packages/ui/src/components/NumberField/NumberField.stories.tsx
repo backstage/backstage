@@ -158,6 +158,18 @@ export const CustomField = meta.story({
   ),
 });
 
+export const StepIncrement = meta.story({
+  args: {
+    ...WithLabel.input.args,
+    label: 'Quantity',
+    defaultValue: 5,
+    minValue: 0,
+    maxValue: 20,
+    step: 5,
+  },
+  render: args => <NumberField {...args} style={{ maxWidth: '200px' }} />,
+});
+
 export const AutoBg = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
