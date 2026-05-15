@@ -143,6 +143,40 @@ components:
           description: Optional additional customizable metadata.
           additionalProperties: true
 
+    NotificationResponsePayload:
+      description: Response variant of NotificationPayload. Optional string fields may be returned as null when unset.
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+        description:
+          type:
+            - string
+            - 'null'
+        link:
+          type:
+            - string
+            - 'null'
+        severity:
+          $ref: '#/components/schemas/NotificationSeverity'
+        topic:
+          type:
+            - string
+            - 'null'
+        scope:
+          type:
+            - string
+            - 'null'
+        icon:
+          type:
+            - string
+            - 'null'
+        metadata:
+          type: object
+          additionalProperties: true
+
     Notification:
       type: object
       required:
@@ -164,19 +198,25 @@ components:
           type: string
           format: date-time
         saved:
-          type: string
+          type:
+            - string
+            - 'null'
           format: date-time
         read:
-          type: string
+          type:
+            - string
+            - 'null'
           format: date-time
         updated:
-          type: string
+          type:
+            - string
+            - 'null'
           format: date-time
         origin:
           type: string
           description: Origin of the notification (the sender's reference).
         payload:
-          $ref: '#/components/schemas/NotificationPayload'
+          $ref: '#/components/schemas/NotificationResponsePayload'
 
     NotificationStatus:
       type: object

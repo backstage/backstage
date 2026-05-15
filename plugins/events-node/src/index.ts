@@ -22,4 +22,5 @@
 
 export * from './api';
 export * from './deprecated';
+export { DefaultApiClient } from './generated';
 export { eventsServiceRef, eventsServiceFactory } from './service';

@@ -205,6 +205,39 @@ export const spec = {
           },
         },
       },
+      NotificationResponsePayload: {
+        description:
+          'Response variant of NotificationPayload. Optional string fields may be returned as null when unset.',
+        type: 'object',
+        required: ['title'],
+        properties: {
+          title: {
+            type: 'string',
+          },
+          description: {
+            type: ['string', 'null'],
+          },
+          link: {
+            type: ['string', 'null'],
+          },
+          severity: {
+            $ref: '#/components/schemas/NotificationSeverity',
+          },
+          topic: {
+            type: ['string', 'null'],
+          },
+          scope: {
+            type: ['string', 'null'],
+          },
+          icon: {
+            type: ['string', 'null'],
+          },
+          metadata: {
+            type: 'object',
+            additionalProperties: true,
+          },
+        },
+      },
       Notification: {
         type: 'object',
         required: ['id', 'user', 'created', 'origin', 'payload'],
@@ -223,15 +256,15 @@ export const spec = {
             format: 'date-time',
           },
           saved: {
-            type: 'string',
+            type: ['string', 'null'],
             format: 'date-time',
           },
           read: {
-            type: 'string',
+            type: ['string', 'null'],
             format: 'date-time',
           },
           updated: {
-            type: 'string',
+            type: ['string', 'null'],
             format: 'date-time',
           },
           origin: {
@@ -239,7 +272,7 @@ export const spec = {
             description: "Origin of the notification (the sender's reference).",
           },
           payload: {
-            $ref: '#/components/schemas/NotificationPayload',
+            $ref: '#/components/schemas/NotificationResponsePayload',
           },
         },
       },

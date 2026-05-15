@@ -27,6 +27,7 @@ export * from '../models/NotificationPayload.model';
 export * from '../models/NotificationRecipients.model';
 export * from '../models/NotificationRecipientsOneOf.model';
 export * from '../models/NotificationRecipientsOneOf1.model';
+export * from '../models/NotificationResponsePayload.model';
 export * from '../models/NotificationSendOptions.model';
 export * from '../models/NotificationSettings.model';
 export * from '../models/NotificationSeverity.model';

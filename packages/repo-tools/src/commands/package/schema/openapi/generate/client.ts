@@ -105,12 +105,12 @@ async function generate(
   }
 
   // Deduplicate imports in generated files
-  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
-  for (const file of generatedFiles) {
-    if (file.endsWith('.ts')) {
-      deduplicateImports(resolve(resolvedOutputDirectory, file));
-    }
-  }
+  // const generatedFiles = await fs.readdir(resolvedOutputDirectory);
+  // for (const file of generatedFiles) {
+  //   if (file.endsWith('.ts')) {
+  //     deduplicateImports(resolve(resolvedOutputDirectory, file));
+  //   }
+  // }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
   fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));

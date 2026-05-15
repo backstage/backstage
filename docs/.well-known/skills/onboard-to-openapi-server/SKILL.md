@@ -1,5 +1,5 @@
 ---
-name: onboard-to-openapi-router
+name: onboard-to-openapi-server
 description: Use this skill when the user wants to migrate an existing Backstage backend plugin's hand-written Express router to the typed OpenAPI tooling. Optionally, can also add typed client generation and migrate router tests to the OpenAPI test wrapper.
 ---
 
@@ -137,7 +137,7 @@ In the existing router file:
    const router = await createOpenApiRouter();
    ```
    (Adjust the import path to the router's location.) The function is async — propagate the `await` up to where the router is constructed.
-2. Move route handlers onto the new router unchanged. The OpenAPI router enforces request/response shapes against the spec at runtime; if a handler reads `req.body.foo` where the spec says it is `req.body.event.foo`, the spec is wrong, not the handler — go fix the spec and regenerate.
+2. Move route handlers onto the new router unchanged. The OpenAPI router validates incoming requests against the spec at runtime (response shapes are validated separately via `wrapServer` in tests); if a handler reads `req.body.foo` where the spec says it is `req.body.event.foo`, the spec is wrong, not the handler — go fix the spec and regenerate.
 3. Keep all middleware in the same order (cookie parsers, body parsers, auth, error handlers). Auth/permissions logic is NOT generated and must remain in the router code.
 4. Preserve the function signature and exports of `createRouter`/`router` exactly so callers (the plugin's `*Plugin.ts`) need no change.
 
