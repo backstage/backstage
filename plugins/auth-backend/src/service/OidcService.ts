@@ -46,6 +46,14 @@ function validateRedirectUri(
 }
 
 const LOOPBACK_HOSTS = ['localhost', '127.0.0.1', '[::1]'];
+const LOOPBACK_REDIRECT_PATTERNS = [
+  'http://localhost:*',
+  'http://localhost/*',
+  'http://127.0.0.1:*',
+  'http://127.0.0.1/*',
+  'http://[::1]:*',
+  'http://[::1]/*',
+];
 
 /**
  * RFC 8252 Section 7.3: For loopback redirect URIs, the authorization server
@@ -211,9 +219,14 @@ export class OidcService {
     const generatedClientId = crypto.randomUUID();
     const generatedClientSecret = crypto.randomUUID();
 
-    const allowedRedirectUriPatterns = this.config.getOptionalStringArray(
-      'auth.experimentalDynamicClientRegistration.allowedRedirectUriPatterns',
-    ) ?? ['*'];
+    const dcrEnabled =
+      this.config.getOptionalBoolean(
+        'auth.experimentalDynamicClientRegistration.enabled',
+      ) ?? false;
+    const allowedRedirectUriPatterns =
+      this.config.getOptionalStringArray(
+        'auth.experimentalDynamicClientRegistration.allowedRedirectUriPatterns',
+      ) ?? (dcrEnabled ? ['cursor://*', ...LOOPBACK_REDIRECT_PATTERNS] : ['*']);
 
     for (const redirectUri of opts.redirectUris ?? []) {
       validateRedirectUri(redirectUri, allowedRedirectUriPatterns);
@@ -297,17 +310,26 @@ export class OidcService {
   }
 
   private getCimdConfig() {
+    const enabled =
+      this.config.getOptionalBoolean(
+        'auth.experimentalClientIdMetadataDocuments.enabled',
+      ) ?? false;
+
+    const cliClientId = `${this.baseUrl}/.well-known/oauth-client/*`;
+
     return {
-      enabled:
-        this.config.getOptionalBoolean(
-          'auth.experimentalClientIdMetadataDocuments.enabled',
-        ) ?? false,
-      allowedClientIdPatterns: this.config.getOptionalStringArray(
-        'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
-      ) ?? ['*'],
-      allowedRedirectUriPatterns: this.config.getOptionalStringArray(
-        'auth.experimentalClientIdMetadataDocuments.allowedRedirectUriPatterns',
-      ) ?? ['*'],
+      enabled,
+      allowedClientIdPatterns:
+        this.config.getOptionalStringArray(
+          'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
+        ) ??
+        (enabled
+          ? ['https://claude.ai/*', 'https://vscode.dev/*', cliClientId]
+          : ['*']),
+      allowedRedirectUriPatterns:
+        this.config.getOptionalStringArray(
+          'auth.experimentalClientIdMetadataDocuments.allowedRedirectUriPatterns',
+        ) ?? (enabled ? LOOPBACK_REDIRECT_PATTERNS : ['*']),
     };
   }
 

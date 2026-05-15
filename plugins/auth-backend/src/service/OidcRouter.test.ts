@@ -98,6 +98,7 @@ describe('OidcRouter', () => {
         auth: {
           experimentalDynamicClientRegistration: {
             enabled: true,
+            allowedRedirectUriPatterns: ['*'],
           },
         },
       },
@@ -182,6 +183,7 @@ describe('OidcRouter', () => {
         auth: {
           experimentalDynamicClientRegistration: {
             enabled: true,
+            allowedRedirectUriPatterns: ['*'],
           },
           experimentalRefreshToken: {
             enabled: true,
@@ -1349,6 +1351,8 @@ describe('OidcRouter', () => {
               auth: {
                 experimentalClientIdMetadataDocuments: {
                   enabled: true,
+                  allowedClientIdPatterns: ['*'],
+                  allowedRedirectUriPatterns: ['*'],
                 },
               },
             },
@@ -1441,6 +1445,8 @@ describe('OidcRouter', () => {
             auth: {
               experimentalClientIdMetadataDocuments: {
                 enabled: true,
+                allowedClientIdPatterns: ['*'],
+                allowedRedirectUriPatterns: ['*'],
               },
               // DCR is NOT enabled
             },

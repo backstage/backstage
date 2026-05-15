@@ -258,6 +258,7 @@ LocalStack
 lockdown
 lockfile
 lockfiles
+loopback
 lookbehind
 lookup
 lookups
