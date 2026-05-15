@@ -96,14 +96,7 @@ export const WithIcon = meta.story({
   args: {
     ...Default.input.args,
   },
-  render: args => (
-    <NumberField
-      {...args}
-      placeholder="Minutes"
-      size="small"
-      icon={<RiTimeLine />}
-    />
-  ),
+  render: args => <NumberField {...args} size="small" icon={<RiTimeLine />} />,
 });
 
 export const DisabledWithIcon = WithIcon.extend({
@@ -134,7 +127,6 @@ export const MinMaxStep = meta.story({
   args: {
     ...Default.input.args,
     label: 'Minutes',
-    placeholder: '0',
     minValue: 0,
     maxValue: 59,
     step: 1,

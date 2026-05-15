@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useMemo } from 'react';
 import {
   Group,
   Input,
@@ -51,10 +51,13 @@ export const NumberField = forwardRef<HTMLDivElement, NumberFieldProps>(
     const secondaryLabelText =
       secondaryLabel || (restProps.isRequired ? 'Required' : null);
 
-    const formatOptions = {
-      useGrouping: false,
-      ...restProps.formatOptions,
-    };
+    const formatOptions = useMemo(
+      () => ({
+        useGrouping: false,
+        ...restProps.formatOptions,
+      }),
+      [restProps.formatOptions],
+    );
 
     return (
       <AriaNumberField

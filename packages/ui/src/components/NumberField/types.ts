@@ -23,7 +23,7 @@ import type { FieldLabelProps } from '../FieldLabel/types';
 export type NumberFieldOwnProps = {
   /**
    * The size of the number field
-   * @defaultValue 'medium'
+   * @defaultValue 'small'
    */
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 
