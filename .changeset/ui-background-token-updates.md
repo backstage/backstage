@@ -2,4 +2,6 @@
 '@backstage/ui': patch
 ---
 
-Updated the neutral background color tokens for light and dark themes.
+Updated the neutral background color tokens for light and dark themes. Buttons
+and fields now also render light theme borders, with fields using a stronger
+border on hover.

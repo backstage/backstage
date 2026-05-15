@@ -46,6 +46,17 @@
     transition: box-shadow 0.2s ease-in-out;
     cursor: text;
 
+    [data-theme-mode='light'] & {
+      box-shadow: inset 0 0 0 1px var(--bui-border-1);
+    }
+
+    [data-theme-mode='light']
+      &:hover:not([data-focus-within]):not([data-invalid]):not(
+        [data-disabled]
+      ) {
+      box-shadow: inset 0 0 0 1px var(--bui-border-2);
+    }
+
     /* bg consumer — auto-increment background based on parent context */
     &[data-on-bg='neutral-1'] {
       background-color: var(--bui-bg-neutral-2);

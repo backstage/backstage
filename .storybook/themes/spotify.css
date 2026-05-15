@@ -123,8 +123,13 @@
   --bui-font-regular: CircularSp, CircularSp-Arab, CircularSp-Hebr,
     CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva;
 
-  .bui-Button {
+  .bui-Button,
+  .bui-ButtonIcon,
+  .bui-ButtonLink {
     border-radius: var(--bui-radius-3);
+  }
+
+  .bui-Button {
     padding-inline: var(--bui-space-3);
   }
 
@@ -183,7 +188,13 @@
     font-weight: var(--bui-font-weight-regular);
   }
 
-  .bui-Input {
+  .bui-Input,
+  .bui-PasswordFieldInput,
+  .bui-SearchFieldInputWrapper,
+  .bui-SelectTrigger,
+  .bui-ComboboxInput,
+  .bui-DatePickerGroup,
+  .bui-DateRangePickerGroup {
     border-radius: var(--bui-radius-3);
   }
 
