@@ -753,6 +753,13 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       return this.catalogFileMatcher.match(filePath);
     }
 
-    return path.basename(filePath) === this.config.catalogFile;
+    const configuredCatalogFile = this.config.catalogFile;
+    const hasPathSeparator =
+      configuredCatalogFile.includes('/') ||
+      configuredCatalogFile.includes('\\');
+    if (hasPathSeparator) {
+      return filePath === configuredCatalogFile;
+    }
+    return path.basename(filePath) === configuredCatalogFile;
   }
 }
