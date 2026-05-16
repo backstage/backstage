@@ -425,7 +425,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         );
       } catch (error) {
         this.logger.warn(
-          `Skipping project ${project.path_with_namespace} due to error while scanning catalog files: ${error}`,
+          `Skipping project ${project.path_with_namespace} due to error while scanning catalog files`,
+          error,
         );
         continue;
       }
