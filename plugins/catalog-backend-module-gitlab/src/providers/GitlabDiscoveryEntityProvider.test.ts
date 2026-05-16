@@ -558,6 +558,40 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
       ),
     });
   });
+
+  it('should throw error when useSearch is combined with glob patterns', async () => {
+    const config = new ConfigReader({
+      integrations: mock.integrations,
+      catalog: {
+        providers: {
+          gitlab: {
+            testProvider: {
+              host: 'gitlab.com',
+              entityFilename: '**/catalog-info.y?(a)ml', // glob pattern
+              useSearch: true, // This combination should error
+            },
+          },
+        },
+      },
+    });
+
+    const schedule = new PersistingTaskRunner();
+    const testLogger = mockServices.logger.mock();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+    };
+
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger: testLogger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await expect(provider.refresh(testLogger)).rejects.toThrow(
+      'useSearch=true does not support glob patterns in entityFilename',
+    );
+  });
 });
 describe('GitlabDiscoveryEntityProvider - events', () => {
   it('should ignore push event if project is forked', async () => {
