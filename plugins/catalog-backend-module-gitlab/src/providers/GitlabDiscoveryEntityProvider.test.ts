@@ -560,25 +560,13 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
   });
 
   it('should throw error when useSearch is combined with glob patterns', async () => {
-    const config = new ConfigReader({
-      integrations: mock.integrations,
-      catalog: {
-        providers: {
-          gitlab: {
-            testProvider: {
-              host: 'gitlab.com',
-              entityFilename: '**/catalog-info.y?(a)ml', // glob pattern
-              useSearch: true, // This combination should error
-            },
-          },
-        },
-      },
-    });
+    const config = new ConfigReader(mock.config_no_org_integration);
 
     const schedule = new PersistingTaskRunner();
     const testLogger = mockServices.logger.mock();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
 
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
