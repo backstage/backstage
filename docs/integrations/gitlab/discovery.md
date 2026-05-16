@@ -104,7 +104,7 @@ For large installations (100+ projects with 1000+ files each), this can mean the
 - Use glob patterns only when necessary for monorepo discovery or matching multiple file extensions
 - Consider [GitLab REST API rate limits](https://docs.gitlab.com/ee/api/rest/index.html#rate-limits) which may be hit with extensive tree scanning
 - Schedule glob-based refreshes during off-peak hours to avoid impacting other GitLab operations
-:::
+  :::
 
 ## Alternative processor
 
