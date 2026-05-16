@@ -218,20 +218,22 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       );
     }
 
+    // Validate that useSearch and glob patterns are not used together
+    if (this.config.useSearch && this.catalogFileMatcher.hasMagic()) {
+      throw new Error(
+        `useSearch=true does not support glob patterns in entityFilename. ` +
+          `Either set useSearch=false or use an exact filename without glob patterns. ` +
+          `Current entityFilename: '${this.config.catalogFile}'`,
+      );
+    }
+
     this.logger.info(
       `Refreshing Gitlab entity discovery using ${
         this.config.useSearch ? 'search' : 'discovery'
       } mode`,
     );
 
-    const shouldUseSearch =
-      this.config.useSearch && !this.catalogFileMatcher.hasMagic();
-
-    if (this.config.useSearch && this.catalogFileMatcher.hasMagic()) {
-      this.logger.warn(
-        `useSearch=true does not support glob patterns in entityFilename, falling back to discovery mode for '${this.config.catalogFile}'.`,
-      );
-    }
+    const shouldUseSearch = this.config.useSearch;
 
     const locations = shouldUseSearch
       ? await this.searchEntities()

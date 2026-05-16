@@ -76,7 +76,7 @@ catalog:
           - '^somegroup$'
           - 'anothergroup'
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`. Supports glob patterns like `**/catalog-info.yaml` and `**/catalog-info.y?(a)ml` (to match both `.yaml` and `.yml`)
-        useSearch: false # Optional. Whether to use the GitLab group search API to find files. Requires Gitlab 'Premium' or 'Ultimate' licenses.  Defaults to `false`
+        useSearch: false # Optional. Whether to use the GitLab group search API to find files. Requires Gitlab 'Premium' or 'Ultimate' licenses. Defaults to `false`. **Note: Cannot be used with glob patterns in entityFilename**
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
         schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System
@@ -85,6 +85,14 @@ catalog:
           # supports ISO duration, "human duration" as used in code
           timeout: { minutes: 3 }
 ```
+
+:::caution Important Limitations
+
+- **Glob patterns and `useSearch` are incompatible**: When `useSearch: true` is enabled, the provider uses GitLab's search API which does not support glob patterns. If you need glob pattern support (e.g., `**/catalog-info.y?(a)ml`), you must set `useSearch: false`. Attempting to use both will result in an error.
+
+- **Performance considerations**: Glob patterns require scanning repository trees recursively, which can be significantly more resource-intensive than exact filename matching or search API usage, especially for large monorepos or instances with many projects.
+
+:::
 
 ## Alternative processor
 
