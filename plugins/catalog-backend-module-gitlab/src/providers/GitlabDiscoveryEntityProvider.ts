@@ -500,21 +500,9 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     }
 
     // Get array of added, removed or modified files from the push event
-    const added = this.getFilesMatchingConfig(
-      event,
-      'added',
-      this.catalogFileMatcher,
-    );
-    const removed = this.getFilesMatchingConfig(
-      event,
-      'removed',
-      this.catalogFileMatcher,
-    );
-    const modified = this.getFilesMatchingConfig(
-      event,
-      'modified',
-      this.catalogFileMatcher,
-    );
+    const added = this.getFilesMatchingConfig(event, 'added');
+    const removed = this.getFilesMatchingConfig(event, 'removed');
+    const modified = this.getFilesMatchingConfig(event, 'modified');
 
     // Modified files will be scheduled to a refresh
     const addedEntities = this.createLocationSpecCommittedFiles(
@@ -576,7 +564,6 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private getFilesMatchingConfig(
     event: WebhookPushEventSchema,
     action: 'added' | 'removed' | 'modified',
-    catalogFileMatcher: Minimatch,
   ): string[] {
     if (!event.commits) {
       return [];
@@ -588,7 +575,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 
     if (matchingFiles.length === 0) {
       this.logger.debug(
-        `No files matching '${catalogFileMatcher.pattern}' found in the commits.`,
+        `No files matching '${this.catalogFileMatcher.pattern}' found in the commits.`,
       );
     }
 
