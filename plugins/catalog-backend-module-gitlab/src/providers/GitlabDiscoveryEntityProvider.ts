@@ -369,10 +369,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   }
 
   /**
-   * Deduplicate a list of projects based on their id.
+   * Deduplicate a list of catalog locations based on their target.
    *
-   * @param projects - a list of projects to be deduplicated
-   * @returns a list of projects with unique id
+   * @param locations - a list of locations to be deduplicated
+   * @returns a list of locations with unique targets
    */
   private deduplicateLocations(locations: LocationSpec[]): LocationSpec[] {
     const uniqueLocations = new Map<string, LocationSpec>();
@@ -554,12 +554,14 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   }
 
   /**
-   * Gets files matching the specified commit action and catalog file name.
+   * Gets files matching the specified commit action using the instance's catalog file matcher.
+   *
+   * For glob patterns: matches full file paths against the pattern.
+   * For exact filenames: matches basenames against the configured filename.
    *
    * @param event - The push event payload.
    * @param action - The action type ('added', 'removed', or 'modified').
-   * @param catalogFile - The catalog file name.
-   * @returns An array of file paths.
+   * @returns An array of file paths that match the configured catalog file pattern.
    */
   private getFilesMatchingConfig(
     event: WebhookPushEventSchema,
