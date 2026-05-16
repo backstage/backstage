@@ -90,8 +90,20 @@ catalog:
 
 - **Glob patterns and `useSearch` are incompatible**: When `useSearch: true` is enabled, the provider uses GitLab's search API which does not support glob patterns. If you need glob pattern support (e.g., `**/catalog-info.y?(a)ml`), you must set `useSearch: false`. Attempting to use both will result in an error.
 
-- **Performance considerations**: Glob patterns require scanning repository trees recursively, which can be significantly more resource-intensive than exact filename matching or search API usage, especially for large monorepos or instances with many projects.
+- **Performance considerations**: Glob patterns significantly change the API call pattern and resource usage:
 
+  - **Exact filename** (e.g., `catalog-info.yaml`): `O(projects)` - Makes one HEAD request per project to check file existence
+  - **Glob patterns** (e.g., `**/catalog-info.y?(a)ml`): `O(projects × files)` - Requires recursive tree scanning of entire repository structure
+
+For large installations (100+ projects with 1000+ files each), this can mean the difference between hundreds and tens of thousands of API calls per refresh.
+
+**Recommendations:**
+
+- Use exact filenames (`catalog-info.yaml`) for most cases
+- GitLab Premium/Ultimate users should consider setting `useSearch: true` with exact filenames over glob patterns, to avoid performance degradation
+- Use glob patterns only when necessary for monorepo discovery or matching multiple file extensions
+- Consider [GitLab REST API rate limits](https://docs.gitlab.com/ee/api/rest/index.html#rate-limits) which may be hit with extensive tree scanning
+- Schedule glob-based refreshes during off-peak hours to avoid impacting other GitLab operations
 :::
 
 ## Alternative processor
