@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { ConflictError, InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   createTemplateAction,
   fetchContents,
 } from '@backstage/plugin-scaffolder-node';
-import { InputError, ConflictError } from '@backstage/errors';
-import { NodeHtmlMarkdown } from 'node-html-markdown';
 import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
+import { NodeHtmlMarkdown } from 'node-html-markdown';
 import YAML from 'yaml';
+import { examples } from './confluenceToMarkdown.examples';
 import {
-  readFileAsString,
+  createConfluenceVariables,
   fetchConfluence,
   getAndWriteAttachments,
-  createConfluenceVariables,
   getConfluenceConfig,
+  readFileAsString,
 } from './helpers';
-import { examples } from './confluenceToMarkdown.examples';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -63,7 +63,7 @@ export const createConfluenceToMarkdownAction = (options: {
         repoUrl: z =>
           z.string({
             description:
-              'mkdocs.yml file location inside the github repo you want to store the document',
+              'mkdocs.yml file location inside the github/bitbucket repo you want to store the documentation on. In case no mkdocs.yml is present it will create a default one.',
           }),
       },
       output: {
@@ -85,12 +85,13 @@ export const createConfluenceToMarkdownAction = (options: {
       const confluenceConfig = getConfluenceConfig(config);
       const { confluenceUrls, repoUrl } = ctx.input;
       const parsedRepoUrl = parseGitUrl(repoUrl);
-      const filePathToMkdocs = parsedRepoUrl.filepath.substring(
+      const mkdocsFilePath = parsedRepoUrl.filepath || 'mkdocs.yml';
+      const filePathToMkdocs = mkdocsFilePath.substring(
         0,
-        parsedRepoUrl.filepath.lastIndexOf('/') + 1,
+        mkdocsFilePath.lastIndexOf('/') + 1,
       );
       const dirPath = ctx.workspacePath;
-      const repoFileDir = `${dirPath}/${parsedRepoUrl.filepath}`;
+      const repoFileDir = `${dirPath}/${mkdocsFilePath}`;
       let productArray: string[][] = [];
 
       ctx.logger.info(`Fetching the mkdocs.yml catalog from ${repoUrl}`);
@@ -103,6 +104,16 @@ export const createConfluenceToMarkdownAction = (options: {
         fetchUrl: `https://${parsedRepoUrl.resource}/${parsedRepoUrl.owner}/${parsedRepoUrl.name}`,
         outputPath: ctx.workspacePath,
       });
+
+      if (!(await fs.pathExists(repoFileDir))) {
+        ctx.logger.info(
+          `mkdocs.yml not found at ${repoFileDir}, creating a default`,
+        );
+        await fs.outputFile(
+          repoFileDir,
+          YAML.stringify({ site_name: 'Documentation', nav: [] }),
+        );
+      }
 
       for (const url of confluenceUrls) {
         const { spacekey, title, titleWithSpaces } =

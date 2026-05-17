@@ -26,6 +26,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import fs from 'fs-extra';
 
 describe('confluence:transform:markdown', () => {
   const baseUrl = `https://nodomain.confluence.com`;
@@ -240,6 +241,57 @@ describe('confluence:transform:markdown', () => {
     }).rejects.toThrow(
       'Could not find document https://nodomain.confluence.com/display/testing/mkdocs. Please check your input.',
     );
+  });
+
+  it('should create a default mkdocs.yml when repoUrl does not point to a mkdocs.yml file', async () => {
+    await fs.remove(`${workspacePath}/mkdocs.yml`);
+    const noMkdocsContext = createMockActionContext({
+      input: {
+        confluenceUrls: [
+          'https://nodomain.confluence.com/display/testing/mkdocs',
+        ],
+        repoUrl: 'https://notreal.github.com/space/backstage/blob/main',
+      },
+      workspacePath,
+    });
+    jest.spyOn(noMkdocsContext.logger, 'info');
+
+    const options = { reader, integrations, config };
+    const responseBody = {
+      results: [
+        {
+          id: '4444444',
+          type: 'page',
+          title: 'Testing',
+          body: {
+            export_view: {
+              value: '<p>hello world</p>',
+            },
+          },
+        },
+      ],
+    };
+    const responseBodyTwo = { results: [] };
+
+    worker.use(
+      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
+        res(ctx.status(200, 'OK'), ctx.json(responseBody)),
+      ),
+      rest.get(
+        `${baseUrl}/rest/api/content/4444444/child/attachment`,
+        (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.json(responseBodyTwo)),
+      ),
+    );
+
+    const action = createConfluenceToMarkdownAction(options);
+    await action.handler(noMkdocsContext);
+
+    expect(noMkdocsContext.logger.info).toHaveBeenCalledWith(
+      `mkdocs.yml not found at ${workspacePath}/mkdocs.yml, creating a default`,
+    );
+    expect(mockDir.content({ path: 'workspace/docs' })).toEqual({
+      'mkdocs.md': 'hello world',
+    });
   });
 
   it('should fail on the second fetch call to confluence', async () => {
