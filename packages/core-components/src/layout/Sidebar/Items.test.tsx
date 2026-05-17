@@ -129,6 +129,22 @@ describe('Items', () => {
       );
       expect(analyticsApiMock.captureEvent).not.toHaveBeenCalled();
     });
+
+    it('should not highlight parent sidebar item when child route is active and end is set', async () => {
+      await renderInTestApp(
+        <Sidebar>
+          <SidebarItem text="Test" icon={HomeIcon} to="/test" end />
+          <SidebarItem text="Test Again" icon={HomeIcon} to="/test/again" />
+        </Sidebar>,
+        { routeEntries: ['/test/again'] },
+      );
+
+      const parentItem = await screen.findByRole('link', { name: 'Test' });
+      const childItem = await screen.findByRole('link', { name: 'Test Again' });
+
+      expect(parentItem.className).not.toContain('selected');
+      expect(childItem.className).toContain('selected');
+    });
   });
 
   describe('SidebarSearchField', () => {
