@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { createHash } from 'node:crypto';
-import stableStringify from 'fast-json-stable-stringify';
-
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
 // errors in the underlying engine due to exceeding query limits, but large
@@ -29,9 +25,3 @@ export const BATCH_SIZE = 50;
 // COALESCE, JS dedup keys). It cannot appear in real entity metadata values
 // since they are human-readable strings.
 export const NULL_SENTINEL = '\x01';
-
-export function generateStableHash(entity: Entity) {
-  return createHash('sha1')
-    .update(stableStringify({ ...entity }))
-    .digest('hex');
-}

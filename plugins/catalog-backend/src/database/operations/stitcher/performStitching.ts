@@ -18,11 +18,14 @@ import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_VIEW_URL,
+  Entity,
   EntityRelation,
 } from '@backstage/catalog-model';
 import { AlphaEntity, EntityStatusItem } from '@backstage/catalog-model/alpha';
 import { SerializedError } from '@backstage/errors';
 import { Knex } from 'knex';
+import { createHash } from 'node:crypto';
+import stableStringify from 'fast-json-stable-stringify';
 import { StitchingStrategy } from '../../../stitching/types';
 import {
   DbFinalEntitiesRow,
@@ -32,11 +35,16 @@ import {
 import { buildEntitySearch } from './buildEntitySearch';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
 import { syncSearchRows } from './syncSearchRows';
-import { generateStableHash } from './util';
 import {
   LoggerService,
   isDatabaseConflictError,
 } from '@backstage/backend-plugin-api';
+
+function generateStableHash(entity: Entity) {
+  return createHash('sha1')
+    .update(stableStringify({ ...entity }))
+    .digest('hex');
+}
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
 const scriptProtocolPattern =
