@@ -52,7 +52,8 @@ catalog:
           # Optional filter for user, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
-          # This filter is combined with the base `accountEnabled eq true` filter.
+          # This is combined with the base `accountEnabled eq true` filter
+          # that is always applied automatically.
           filter: userType eq 'member'
           # Set to false to not load user photos.
           loadPhotos: true
@@ -100,7 +101,7 @@ catalog:
           initialDelay: { seconds: 15},
 ```
 
-By default, all users are loaded. If you want to filter users based on their attributes, use `user.filter`. `userGroupMember.filter` can be used if you want to load users based on their group membership.
+By default, all enabled users are loaded (disabled accounts are automatically filtered out). If you want to further filter users based on their attributes, use `user.filter`. `userGroupMember.filter` can be used if you want to load users based on their group membership.
 
 3. The package is not installed by default, therefore you have to add a
    dependency to `@backstage/plugin-catalog-backend-module-msgraph` to your

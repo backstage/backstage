@@ -61,9 +61,10 @@ export type MicrosoftGraphProviderConfig = {
    */
   clientSecret?: string;
   /**
-   * The filter to apply to extract users.
+   * The filter to apply to extract users. This is combined with the base
+   * `accountEnabled eq true` filter that is always applied automatically.
    *
-   * E.g. "accountEnabled eq true and userType eq 'member'"
+   * E.g. "userType eq 'member'"
    */
   userFilter?: string;
   /**
