@@ -807,7 +807,7 @@ export const myCustomHeader = EntityHeaderBlueprint.make({
 Notes:
 
 - If you use loader instead of `componentLoader` you will not receive the `contextMenu` prop. Use `componentLoader` whenever you want to keep the menu button and contributed menu items.
-- You can register multiple headers and select which one applies using filter and order. The first matching header by order is used.
+- You can register multiple headers and select which one applies using `filter` and `order`. The first matching header by order is used.
 
 ### Customize the entire entity layout
 
