@@ -23,6 +23,10 @@ import {
   opsFromCatalogModelKind,
 } from './modelActions/addKind';
 import {
+  type CatalogModelKindVersionAddition,
+  opsFromCatalogModelKindVersion,
+} from './modelActions/addKindVersion';
+import {
   type CatalogModelLabelDefinition,
   opsFromCatalogModelLabel,
 } from './modelActions/addLabel';
@@ -59,6 +63,10 @@ import {
   opsFromCatalogModelUpdateKind,
 } from './modelActions/updateKind';
 import {
+  type CatalogModelKindVersionUpdate,
+  opsFromCatalogModelUpdateKindVersion,
+} from './modelActions/updateKindVersion';
+import {
   type CatalogModelUpdateLabelDefinition,
   opsFromCatalogModelUpdateLabel,
 } from './modelActions/updateLabel';
@@ -88,9 +96,17 @@ export interface CatalogModelLayerBuilder {
    */
   addKind(kind: CatalogModelKindDefinition): void;
   /**
+   * Adds a new version to an existing kind.
+   */
+  addKindVersion(addition: CatalogModelKindVersionAddition): void;
+  /**
    * Updates an existing kind in the model.
    */
   updateKind(kind: CatalogModelUpdateKindDefinition): void;
+  /**
+   * Updates an existing version of a kind in the model.
+   */
+  updateKindVersion(update: CatalogModelKindVersionUpdate): void;
   /**
    * Removes a kind entirely from the model.
    */
@@ -169,8 +185,18 @@ export class DefaultCatalogModelLayerBuilder
     this.#ops.push(...ops);
   }
 
+  addKindVersion(addition: CatalogModelKindVersionAddition): void {
+    const ops = opsFromCatalogModelKindVersion(addition);
+    this.#ops.push(...ops);
+  }
+
   updateKind(kind: CatalogModelUpdateKindDefinition): void {
     const ops = opsFromCatalogModelUpdateKind(kind);
+    this.#ops.push(...ops);
+  }
+
+  updateKindVersion(update: CatalogModelKindVersionUpdate): void {
+    const ops = opsFromCatalogModelUpdateKindVersion(update);
     this.#ops.push(...ops);
   }
 

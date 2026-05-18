@@ -136,6 +136,254 @@ describe('compileCatalogModel', () => {
       model.getKind({ kind: 'Unknown', apiVersion: 'example.com/v1alpha1' }),
     ).toBeUndefined();
   });
+
+  it('should support adding a new version to an existing kind via addKindVersion', () => {
+    const baseLayer = createCatalogModelLayer({
+      layerId: 'Base',
+      builder: model => {
+        model.addKind({
+          group: 'example.com',
+          names: { kind: 'Widget', singular: 'widget', plural: 'widgets' },
+          description: 'A widget',
+          versions: [
+            {
+              name: 'v1alpha1',
+              schema: {
+                jsonSchema: {
+                  type: 'object',
+                  properties: {
+                    spec: {
+                      type: 'object',
+                      properties: { size: { type: 'number' } },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        });
+      },
+    });
+
+    const extensionLayer = createCatalogModelLayer({
+      layerId: 'Extension',
+      builder: model => {
+        model.addKindVersion({
+          kind: 'Widget',
+          version: {
+            name: 'v1beta1',
+            schema: {
+              jsonSchema: {
+                type: 'object',
+                properties: {
+                  spec: {
+                    type: 'object',
+                    required: ['color'],
+                    properties: { color: { type: 'string' } },
+                  },
+                },
+              },
+            },
+          },
+        });
+      },
+    });
+
+    const model = compileCatalogModel([baseLayer, extensionLayer]);
+
+    const v1alpha1 = model.getKind({
+      kind: 'Widget',
+      apiVersion: 'example.com/v1alpha1',
+    });
+    expect(v1alpha1).toBeDefined();
+
+    const v1beta1 = model.getKind({
+      kind: 'Widget',
+      apiVersion: 'example.com/v1beta1',
+    });
+    expect(v1beta1).toBeDefined();
+
+    const ajv = new Ajv({ allowUnionTypes: true, allErrors: true });
+    const validate = ajv.compile(v1beta1!.jsonSchema);
+    expect(
+      validate({
+        apiVersion: 'example.com/v1beta1',
+        kind: 'Widget',
+        metadata: { name: 'my-widget' },
+        spec: { color: 'red' },
+      }),
+    ).toBe(true);
+    expect(
+      validate({
+        apiVersion: 'example.com/v1beta1',
+        kind: 'Widget',
+        metadata: { name: 'my-widget' },
+        spec: {},
+      }),
+    ).toBe(false);
+  });
+
+  it('should support updating an existing version via updateKindVersion', () => {
+    const baseLayer = createCatalogModelLayer({
+      layerId: 'Base',
+      builder: model => {
+        model.addKind({
+          group: 'example.com',
+          names: { kind: 'Widget', singular: 'widget', plural: 'widgets' },
+          description: 'A widget',
+          versions: [
+            {
+              name: 'v1alpha1',
+              schema: {
+                jsonSchema: {
+                  type: 'object',
+                  properties: {
+                    spec: {
+                      type: 'object',
+                      properties: { size: { type: 'number' } },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        });
+      },
+    });
+
+    const updateLayer = createCatalogModelLayer({
+      layerId: 'Update',
+      builder: model => {
+        model.updateKindVersion({
+          kind: 'Widget',
+          name: 'v1alpha1',
+          schema: {
+            jsonSchema: {
+              type: 'object',
+              properties: {
+                spec: {
+                  type: 'object',
+                  properties: { weight: { type: 'number' } },
+                },
+              },
+            },
+          },
+        });
+      },
+    });
+
+    const model = compileCatalogModel([baseLayer, updateLayer]);
+    const kind = model.getKind({
+      kind: 'Widget',
+      apiVersion: 'example.com/v1alpha1',
+    });
+    expect(kind).toBeDefined();
+
+    const ajv = new Ajv({ allowUnionTypes: true, allErrors: true });
+    const validate = ajv.compile(kind!.jsonSchema);
+
+    // Original field still works
+    expect(
+      validate({
+        apiVersion: 'example.com/v1alpha1',
+        kind: 'Widget',
+        metadata: { name: 'w' },
+        spec: { size: 42 },
+      }),
+    ).toBe(true);
+
+    // Merged field also works
+    expect(
+      validate({
+        apiVersion: 'example.com/v1alpha1',
+        kind: 'Widget',
+        metadata: { name: 'w' },
+        spec: { size: 42, weight: 10 },
+      }),
+    ).toBe(true);
+
+    // Wrong type for merged field fails
+    expect(
+      validate({
+        apiVersion: 'example.com/v1alpha1',
+        kind: 'Widget',
+        metadata: { name: 'w' },
+        spec: { size: 42, weight: 'heavy' },
+      }),
+    ).toBe(false);
+  });
+
+  it('should support adding a spec type variant via addKindVersion', () => {
+    const baseLayer = createCatalogModelLayer({
+      layerId: 'Base',
+      builder: model => {
+        model.addKind({
+          group: 'example.com',
+          names: { kind: 'Widget', singular: 'widget', plural: 'widgets' },
+          description: 'A widget',
+          versions: [
+            {
+              name: 'v1alpha1',
+              specType: 'basic',
+              schema: {
+                jsonSchema: {
+                  type: 'object',
+                  properties: {
+                    spec: {
+                      type: 'object',
+                      properties: { size: { type: 'number' } },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        });
+      },
+    });
+
+    const variantLayer = createCatalogModelLayer({
+      layerId: 'Variant',
+      builder: model => {
+        model.addKindVersion({
+          kind: 'Widget',
+          version: {
+            name: 'v1alpha1',
+            specType: 'fancy',
+            schema: {
+              jsonSchema: {
+                type: 'object',
+                properties: {
+                  spec: {
+                    type: 'object',
+                    required: ['sparkle'],
+                    properties: { sparkle: { type: 'boolean' } },
+                  },
+                },
+              },
+            },
+          },
+        });
+      },
+    });
+
+    const model = compileCatalogModel([baseLayer, variantLayer]);
+
+    const basic = model.getKind({
+      kind: 'Widget',
+      apiVersion: 'example.com/v1alpha1',
+      spec: { type: 'basic' },
+    });
+    const fancy = model.getKind({
+      kind: 'Widget',
+      apiVersion: 'example.com/v1alpha1',
+      spec: { type: 'fancy' },
+    });
+
+    expect(basic).toBeDefined();
+    expect(fancy).toBeDefined();
+    expect(basic!.jsonSchema).not.toEqual(fancy!.jsonSchema);
+  });
 });
 
 describe('compileCatalogModel specType', () => {

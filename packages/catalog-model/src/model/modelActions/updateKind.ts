@@ -58,6 +58,10 @@ export interface CatalogModelUpdateKindDefinition {
 
   /**
    * Update one or more versions of the kind's actual schema shape.
+   *
+   * @deprecated Use the separate `addKindVersion` and `updateKindVersion`
+   * methods on the builder instead. This field will be removed in a future
+   * release.
    */
   versions?: CatalogModelUpdateKindVersionDefinition[];
 }

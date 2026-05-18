@@ -163,12 +163,30 @@ export interface CatalogModelKindSummary {
 }
 
 // @alpha
+export interface CatalogModelKindVersionAddition {
+  kind: string;
+  version: CatalogModelKindVersionDefinition;
+}
+
+// @alpha
 export interface CatalogModelKindVersionDefinition {
   description?: string;
   name: string | string[];
   relationFields?: CatalogModelKindRelationFieldDefinition[];
   // (undocumented)
   schema: {
+    jsonSchema: JsonObject;
+  };
+  specType?: string | string[];
+}
+
+// @alpha
+export interface CatalogModelKindVersionUpdate {
+  description?: string;
+  kind: string;
+  name: string | string[];
+  relationFields?: CatalogModelKindRelationFieldDefinition[];
+  schema?: {
     jsonSchema: JsonObject;
   };
   specType?: string | string[];
@@ -202,6 +220,7 @@ export interface CatalogModelLayer {
 export interface CatalogModelLayerBuilder {
   addAnnotation(annotation: CatalogModelAnnotationDefinition): void;
   addKind(kind: CatalogModelKindDefinition): void;
+  addKindVersion(addition: CatalogModelKindVersionAddition): void;
   addLabel(label: CatalogModelLabelDefinition): void;
   addRelationPair(relation: CatalogModelRelationPairDefinition): void;
   addTag(tag: CatalogModelTagDefinition): void;
@@ -212,6 +231,7 @@ export interface CatalogModelLayerBuilder {
   removeTag(tag: CatalogModelRemoveTagDefinition): void;
   updateAnnotation(annotation: CatalogModelUpdateAnnotationDefinition): void;
   updateKind(kind: CatalogModelUpdateKindDefinition): void;
+  updateKindVersion(update: CatalogModelKindVersionUpdate): void;
   updateLabel(label: CatalogModelUpdateLabelDefinition): void;
   updateRelationPair(relation: CatalogModelUpdateRelationPairDefinition): void;
   updateTag(tag: CatalogModelUpdateTagDefinition): void;
@@ -333,6 +353,7 @@ export interface CatalogModelUpdateKindDefinition {
     singular?: string;
     plural?: string;
   };
+  // @deprecated
   versions?: CatalogModelUpdateKindVersionDefinition[];
 }
 

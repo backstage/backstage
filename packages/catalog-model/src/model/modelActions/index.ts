@@ -20,6 +20,7 @@ export {
   type CatalogModelKindRelationFieldDefinition,
   type CatalogModelKindVersionDefinition,
 } from './addKind';
+export { type CatalogModelKindVersionAddition } from './addKindVersion';
 export { type CatalogModelLabelDefinition } from './addLabel';
 export { type CatalogModelRelationPairDefinition } from './addRelationPair';
 export { type CatalogModelRemoveAnnotationDefinition } from './removeAnnotation';
@@ -32,6 +33,7 @@ export {
   type CatalogModelUpdateKindDefinition,
   type CatalogModelUpdateKindVersionDefinition,
 } from './updateKind';
+export { type CatalogModelKindVersionUpdate } from './updateKindVersion';
 export { type CatalogModelUpdateLabelDefinition } from './updateLabel';
 export { type CatalogModelUpdateRelationPairDefinition } from './updateRelationPair';
 export { type CatalogModelUpdateTagDefinition } from './updateTag';
