@@ -2,7 +2,7 @@
 '@backstage/plugin-auth-backend': minor
 ---
 
-Hardened the default allowed patterns for CIMD and DCR to replace the previous permissive `['*']` wildcards with specific defaults for known MCP clients.
+**BREAKING**: Hardened the default allowed patterns for CIMD and DCR to replace the previous permissive `['*']` wildcards with specific defaults for known MCP clients. If you previously relied on the default `['*']` patterns, you will need to explicitly configure the patterns you need in your `app-config.yaml`.
 
 **CIMD (`experimentalClientIdMetadataDocuments`):**
 

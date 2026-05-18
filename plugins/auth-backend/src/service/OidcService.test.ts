@@ -287,6 +287,33 @@ describe('OidcService', () => {
         );
       });
 
+      it('should accept IPv6 loopback redirect URI', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: [
+                  'http://[::1]:*',
+                  'http://[::1]/*',
+                ],
+              },
+            },
+          },
+        });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://[::1]:3000/callback'],
+        });
+
+        expect(client).toEqual(
+          expect.objectContaining({
+            redirectUris: ['http://[::1]:3000/callback'],
+          }),
+        );
+      });
+
       it('should reject redirect URIs containing userinfo', async () => {
         const { service } = await createOidcService({
           databaseId,
@@ -1165,6 +1192,82 @@ describe('OidcService', () => {
               ...pkceParams,
             }),
           ).rejects.toThrow('Redirect URI not registered');
+        });
+
+        it('should accept IPv6 loopback redirect_uri with a different port per RFC 8252', async () => {
+          mockFetchCimdMetadata.mockResolvedValue({
+            ...cimdMetadata,
+            redirectUris: ['http://[::1]/callback'],
+          });
+
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['*'],
+                  allowedRedirectUriPatterns: [
+                    'http://[::1]:*',
+                    'http://[::1]/*',
+                  ],
+                },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://[::1]:54321/callback',
+            responseType: 'code',
+            scope: 'openid',
+            ...pkceParams,
+          });
+
+          expect(authSession).toEqual({
+            id: expect.any(String),
+            clientName: 'CIMD Test Client',
+            scope: 'openid',
+            redirectUri: 'http://[::1]:54321/callback',
+          });
+        });
+
+        it('should accept 127.0.0.1 loopback redirect_uri with a different port per RFC 8252', async () => {
+          mockFetchCimdMetadata.mockResolvedValue({
+            ...cimdMetadata,
+            redirectUris: ['http://127.0.0.1/callback'],
+          });
+
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['*'],
+                  allowedRedirectUriPatterns: [
+                    'http://127.0.0.1:*',
+                    'http://127.0.0.1/*',
+                  ],
+                },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://127.0.0.1:54321/callback',
+            responseType: 'code',
+            scope: 'openid',
+            ...pkceParams,
+          });
+
+          expect(authSession).toEqual({
+            id: expect.any(String),
+            clientName: 'CIMD Test Client',
+            scope: 'openid',
+            redirectUri: 'http://127.0.0.1:54321/callback',
+          });
         });
 
         it('should reject redirect_uri when CIMD metadata uses wildcard patterns', async () => {
