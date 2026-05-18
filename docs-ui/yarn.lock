@@ -4570,20 +4570,20 @@ __metadata:
   linkType: hard
 
 "next-mdx-remote-client@npm:^2.1.2":
-  version: 2.1.9
-  resolution: "next-mdx-remote-client@npm:2.1.9"
+  version: 2.1.10
+  resolution: "next-mdx-remote-client@npm:2.1.10"
   dependencies:
     "@babel/code-frame": "npm:^7.29.0"
     "@mdx-js/mdx": "npm:^3.1.1"
     "@mdx-js/react": "npm:^3.1.1"
-    remark-mdx-remove-esm: "npm:^1.2.3"
+    remark-mdx-remove-esm: "npm:^1.3.1"
     serialize-error: "npm:^13.0.1"
     vfile: "npm:^6.0.3"
     vfile-matter: "npm:^5.0.1"
   peerDependencies:
     react: ">= 19.1.0"
     react-dom: ">= 19.1.0"
-  checksum: 10/cb75c6c162addcb45b6597ef1b4e3b681ab11b74b414722f56d715ed135b10bf3e31cde00a9a3d8154fd700d3a993e653e0335d99514692529aa371e58fff353
+  checksum: 10/d31eff6584adc3c2647ee7ebb1dc1b673a3d5a0eb28f51f2f35252807d1acc23b4448a5131f7df47911d3370c01c37eeb87a3bbb887e65c9242f4ec644e86c7a
   languageName: node
   linkType: hard
 
@@ -5122,16 +5122,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remark-mdx-remove-esm@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "remark-mdx-remove-esm@npm:1.2.3"
+"remark-mdx-remove-esm@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "remark-mdx-remove-esm@npm:1.3.1"
   dependencies:
     "@types/mdast": "npm:^4.0.4"
     mdast-util-mdxjs-esm: "npm:^2.0.1"
     unist-util-remove: "npm:^4.0.0"
   peerDependencies:
     unified: ^11
-  checksum: 10/3ba2257b376cfe589da851f8df0c45ae78fea8b6090e2825cb009c87f81f4f3738aba682123eb380f5c658cfdd6bb84bf3b6158ed41adaac750728be9e78e672
+  checksum: 10/bdc7edb00ce80c5bed48b9a445d66a390a44e244b2c6da4ea9c7946d968520835a8b749705ada486f78108e13ac22af21ef3df36df4d9995a0b063f3f834b578
   languageName: node
   linkType: hard
 
