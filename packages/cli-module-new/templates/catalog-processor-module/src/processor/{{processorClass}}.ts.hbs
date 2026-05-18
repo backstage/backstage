@@ -1,0 +1,45 @@
+import { Config } from '@backstage/config';
+import { Entity } from '@backstage/catalog-model';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  LocationSpec,
+} from '@backstage/plugin-catalog-node';
+
+export class {{processorClass}} implements CatalogProcessor {
+  static fromConfig(_config: Config): {{processorClass}} {
+    return new {{processorClass}}();
+  }
+
+  getProcessorName(): string {
+    return '{{processorClass}}';
+  }
+
+  async preProcessEntity(
+    entity: Entity,
+    _location: LocationSpec,
+    _emit: CatalogProcessorEmit,
+    _originLocation: LocationSpec,
+  ): Promise<Entity> {
+    // TODO: Implement entity pre-processing logic, for example:
+    // entity.metadata.annotations = {
+    //   ...entity.metadata.annotations,
+    //   'example.com/my-annotation': 'my-value',
+    // };
+    return entity;
+  }
+
+  // Uncomment if you need to validate entities of a specific kind:
+  // async validateEntityKind(entity: Entity): Promise<boolean> {
+  //   return entity.kind === 'MyKind';
+  // }
+
+  // Uncomment if you need to enrich or mutate entities after validation:
+  // async postProcessEntity(
+  //   entity: Entity,
+  //   _location: LocationSpec,
+  //   _emit: CatalogProcessorEmit,
+  // ): Promise<Entity> {
+  //   return entity;
+  // }
+}
