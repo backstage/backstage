@@ -150,7 +150,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             filter: header.get(EntityHeaderBlueprint.dataRefs.filterFunction),
             order: header.get(EntityHeaderBlueprint.dataRefs.order),
           })),
-          [({ order }) => order, ({ filter }) => filter],
+          [({ order }) => order, ({ filter }) => (filter ? 1 : 0)],
         );
 
         let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
@@ -193,7 +193,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             filter: header.get(EntityLayoutBlueprint.dataRefs.filterFunction),
             order: header.get(EntityLayoutBlueprint.dataRefs.order),
           })),
-          [({ order }) => order, ({ filter }) => filter],
+          [({ order }) => order, ({ filter }) => (filter ? 0 : 1)],
         );
 
         const Component = () => {
@@ -223,8 +223,8 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           );
 
           const Layout =
-            layouts.find(l => !l.filter || l.filter(entity!))?.component ??
-            EntityLayout;
+            layouts.find(l => !l.filter || (entity && l.filter(entity)))
+              ?.component ?? EntityLayout;
 
           const groupedRoutes = useMemo(
             () =>

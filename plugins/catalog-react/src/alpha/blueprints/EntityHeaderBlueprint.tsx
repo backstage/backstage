@@ -94,7 +94,7 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
       );
     }
 
-    if (order) {
+    if (order !== undefined) {
       yield entityLayoutOrderRef(order);
     }
   },
