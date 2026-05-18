@@ -206,7 +206,7 @@ auth:
     # allowedClientIdPatterns:
     #   - 'https://claude.ai/*'
     #   - 'https://vscode.dev/*'
-    #   - 'http://localhost:7007/.well-known/oauth-client/cli.json'
+    #   - '${backend.baseUrl}/.well-known/oauth-client/cli.json'
     #   - 'https://my-custom-client.example.com/*'
     # Optional: override which redirect URIs are allowed.
     # Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).

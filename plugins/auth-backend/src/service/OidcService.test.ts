@@ -314,6 +314,47 @@ describe('OidcService', () => {
         );
       });
 
+      it('should accept loopback redirect URIs with default patterns', async () => {
+        const { service } = await createOidcService({ databaseId });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://localhost:3000/callback'],
+        });
+
+        expect(client).toEqual(
+          expect.objectContaining({
+            redirectUris: ['http://localhost:3000/callback'],
+          }),
+        );
+      });
+
+      it('should accept cursor redirect URIs with default patterns', async () => {
+        const { service } = await createOidcService({ databaseId });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['cursor://callback'],
+        });
+
+        expect(client).toEqual(
+          expect.objectContaining({
+            redirectUris: ['cursor://callback'],
+          }),
+        );
+      });
+
+      it('should reject non-loopback redirect URIs with default patterns', async () => {
+        const { service } = await createOidcService({ databaseId });
+
+        await expect(
+          service.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['https://example.com/callback'],
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+      });
+
       it('should reject redirect URIs containing userinfo', async () => {
         const { service } = await createOidcService({
           databaseId,
@@ -981,6 +1022,58 @@ describe('OidcService', () => {
       });
 
       describe('createAuthorizationSession with CIMD', () => {
+        it('should accept loopback redirect URIs with default CIMD patterns', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['*'],
+                },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            scope: 'openid',
+            ...pkceParams,
+          });
+
+          expect(authSession).toEqual({
+            id: expect.any(String),
+            clientName: 'CIMD Test Client',
+            scope: 'openid',
+            redirectUri: 'http://localhost:8080/callback',
+          });
+        });
+
+        it('should reject non-loopback redirect URIs with default CIMD patterns', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['*'],
+                },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'https://example.com/callback',
+              responseType: 'code',
+              ...pkceParams,
+            }),
+          ).rejects.toThrow('Invalid redirect_uri');
+        });
+
         it('should create authorization session for CIMD client', async () => {
           const { service } = await createOidcService({
             databaseId,
