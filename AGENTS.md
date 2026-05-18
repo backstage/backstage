@@ -29,7 +29,7 @@ The following files contain guidelines for the project:
 - `/SECURITY.md`: guidelines for security.
 - `/docs/architecture-decisions/`: contains the architecture decisions for the project.
 
-All new source files must include an Apache 2.0 copyright header with the current year. Do NOT update the copyright year on existing files — leave the original year as-is.
+All new source files (`.ts`, `.tsx`, `.js`, `.jsx`) must include an Apache 2.0 copyright header with the current year. This does not apply to generated files, configuration files (JSON, YAML), or documentation files. Do NOT update the copyright year on existing files — leave the original year as-is.
 
 When writing or generating code, always match the existing coding style of each individual package and file. Different packages in the monorepo may have different conventions — consistency within a package is more important than consistency across the repo.
 

@@ -2,7 +2,13 @@ See `/AGENTS.md` for full repository structure, code standards, development flow
 
 ## Pull Request Reviews
 
-When reviewing a pull request you MUST calculate a priority score between 0 and 100, where a higher score indicates higher priority. You MUST include the score as an HTML comment at the very beginning of the "PR Overview" section, using the following format: `<!-- priority: <score> -->`.
+When reviewing a pull request you MUST calculate a priority score between 0 and 100, where a higher score indicates higher priority. You MUST include the score as an HTML comment immediately after the `## PR Overview` heading, before any other content, using the following format:
+
+```markdown
+## PR Overview
+
+<!-- priority: <score> -->
+```
 
 The score MUST be calculated as a sum of the following:
 
@@ -14,12 +20,12 @@ Higher priority pull requests (higher scores) are those that are both well-craft
 
 ### Do NOT Review Automated PRs
 
-Skip reviews entirely for pull requests authored by any of these bot accounts:
+Skip reviews entirely for pull requests authored by any of these accounts:
 
-- **renovate** / **Renovate** (dependency update bot)
-- **dependabot** / **Dependabot** (dependency update bot)
-- **backstage-service** (automated Backstage service account)
-- **backstage-goalie[bot]** (automated Backstage service account)
+- `renovate[bot]` (dependency update bot)
+- `dependabot[bot]` (dependency update bot)
+- `backstage-service` (automated Backstage service account)
+- `backstage-goalie[bot]` (automated Backstage service account)
 
 These PRs are managed through their own automated workflows and do not require code review from Copilot.
 
