@@ -253,8 +253,16 @@ export interface KubernetesFetcher {
     labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
   /**
-   * Watch Kubernetes resources for changes
-   * Returns an async iterator that yields watch events
+   * Watch Kubernetes resources for changes.
+   *
+   * Returns an AsyncGenerator whose three type parameters are:
+   *   - Yield (`KubernetesWatchEvent`): each `yield` produces a watch event.
+   *     Errors are yielded as `{ type: 'ERROR', error }` (errors-as-data),
+   *     not thrown, so consumers handle them in the same `for await` loop.
+   *   - Return (`void`): the generator never produces a meaningful completion
+   *     value — it ends with bare `return` or by exhausting the stream.
+   *   - Next (`undefined`): the consumer cannot send values into the generator
+   *     via `.next(value)`; this is a produce-only stream.
    *
    * @param clusterDetails - Cluster connection details
    * @param credential - Authentication credentials

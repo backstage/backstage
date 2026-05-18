@@ -182,6 +182,13 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return this.handleUnsuccessfulResponse(clusterDetails.name, podMetrics);
   }
 
+  /**
+   * {@inheritDoc @backstage/plugin-kubernetes-node#KubernetesFetcher.watchResource}
+   *
+   * Note: `async *` declares an async generator — a function that can both
+   * `await` promises and `yield` values incrementally. This is what enables
+   * `for await (const event of fetcher.watchResource(...))` consumption.
+   */
   async *watchResource(
     clusterDetails: ClusterDetails,
     credential: KubernetesCredential,
@@ -196,6 +203,8 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       resourceVersion,
       timeoutSeconds,
       allowWatchBookmarks,
+      sendInitialEvents,
+      resourceVersionMatch,
     } = options || {};
 
     // Build resource path
@@ -242,6 +251,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     if (resourceVersion) queryParams.resourceVersion = resourceVersion;
     if (timeoutSeconds) queryParams.timeoutSeconds = timeoutSeconds.toString();
     if (allowWatchBookmarks) queryParams.allowWatchBookmarks = 'true';
+    if (sendInitialEvents) queryParams.sendInitialEvents = 'true';
+    if (resourceVersionMatch)
+      queryParams.resourceVersionMatch = resourceVersionMatch;
 
     url.search = new URLSearchParams(queryParams).toString();
 

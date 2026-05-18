@@ -2182,6 +2182,55 @@ describe('KubernetesFetcher', () => {
       expect(allowWatchBookmarksParam).toBe('true');
     });
 
+    it('should respect sendInitialEvents and resourceVersionMatch options', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '100' },
+      };
+
+      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
+
+      let sendInitialEventsParam = '';
+      let resourceVersionMatchParam = '';
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          sendInitialEventsParam =
+            req.url.searchParams.get('sendInitialEvents') || '';
+          resourceVersionMatchParam =
+            req.url.searchParams.get('resourceVersionMatch') || '';
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        {
+          sendInitialEvents: true,
+          resourceVersionMatch: 'NotOlderThan',
+          allowWatchBookmarks: true,
+        },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(sendInitialEventsParam).toBe('true');
+      expect(resourceVersionMatchParam).toBe('NotOlderThan');
+    });
+
     it('should watch custom resources', async () => {
       const customResource = {
         apiVersion: 'example.com/v1',

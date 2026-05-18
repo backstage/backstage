@@ -372,4 +372,18 @@ export interface KubernetesWatchOptions {
   timeoutSeconds?: number;
   /** Allow watch bookmarks (for efficient resource version tracking) */
   allowWatchBookmarks?: boolean;
+  /**
+   * When true, the watch stream begins with synthetic events that reproduce
+   * the current state of the collection, followed by a bookmark with the
+   * annotation `k8s.io/initial-events-end`. Requires `allowWatchBookmarks`
+   * and `resourceVersionMatch` set to `'NotOlderThan'`.
+   * See KEP-3157 (watch-list). Supported in Kubernetes 1.32+ (Beta).
+   */
+  sendInitialEvents?: boolean;
+  /**
+   * How the resourceVersion constraint is applied. Set to `'NotOlderThan'`
+   * when using `sendInitialEvents` so the server can serve from its watch
+   * cache rather than quorum-reading etcd.
+   */
+  resourceVersionMatch?: string;
 }
