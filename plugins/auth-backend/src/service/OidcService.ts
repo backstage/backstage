@@ -315,7 +315,10 @@ export class OidcService {
         'auth.experimentalClientIdMetadataDocuments.enabled',
       ) ?? false;
 
-    const cliClientId = `${this.baseUrl}/.well-known/oauth-client/*`;
+    const cliClientId = `${this.baseUrl.replace(
+      /\/$/,
+      '',
+    )}/.well-known/oauth-client/cli.json`;
 
     return {
       enabled,

@@ -206,12 +206,14 @@ auth:
     # allowedClientIdPatterns:
     #   - 'https://claude.ai/*'
     #   - 'https://vscode.dev/*'
+    #   - 'http://localhost:7007/.well-known/oauth-client/cli.json'
     #   - 'https://my-custom-client.example.com/*'
     # Optional: override which redirect URIs are allowed.
     # Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
     # allowedRedirectUriPatterns:
     #   - 'http://localhost:*'
     #   - 'http://127.0.0.1:*'
+    #   - 'http://[::1]:*'
 ```
 
 #### Dynamic Client Registration
@@ -229,11 +231,12 @@ auth:
   experimentalDynamicClientRegistration:
     enabled: true
     # Optional: restrict which redirect URIs are allowed.
-    # Defaults to Cursor, localhost, and 127.0.0.1.
+    # Defaults to Cursor and loopback addresses (localhost, 127.0.0.1, [::1]).
     # allowedRedirectUriPatterns:
     #   - 'cursor://*'
     #   - 'http://localhost:*'
     #   - 'http://127.0.0.1:*'
+    #   - 'http://[::1]:*'
 ```
 
 ## Configuring MCP Clients
