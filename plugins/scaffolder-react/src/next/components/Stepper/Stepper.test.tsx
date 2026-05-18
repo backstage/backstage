@@ -839,4 +839,204 @@ describe('Stepper', () => {
       );
     });
   });
+
+  describe('conditional steps with if', () => {
+    it('should hide steps whose if condition evaluates to false', async () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Conditional Steps',
+        steps: [
+          {
+            title: 'Choose Provider',
+            schema: {
+              properties: {
+                cloudProvider: {
+                  type: 'string',
+                  enum: ['AWS', 'GCP'],
+                },
+              },
+            },
+          },
+          {
+            title: 'AWS Config',
+            if: "${{ parameters.cloudProvider === 'AWS' }}",
+            schema: {
+              properties: {
+                awsRegion: { type: 'string' },
+              },
+            },
+          },
+          {
+            title: 'GCP Config',
+            if: "${{ parameters.cloudProvider === 'GCP' }}",
+            schema: {
+              properties: {
+                gcpProjectId: { type: 'string' },
+              },
+            },
+          },
+        ],
+      };
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        </SecretsContextProvider>,
+      );
+
+      expect(getByText('Choose Provider')).toBeInTheDocument();
+      expect(queryByText('AWS Config')).not.toBeInTheDocument();
+      expect(queryByText('GCP Config')).not.toBeInTheDocument();
+    });
+
+    it('should show conditional steps when their condition becomes true', async () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Conditional Steps',
+        steps: [
+          {
+            title: 'Choose Provider',
+            schema: {
+              properties: {
+                cloudProvider: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          {
+            title: 'AWS Config',
+            if: "${{ parameters.cloudProvider === 'AWS' }}",
+            schema: {
+              properties: {
+                awsRegion: { type: 'string' },
+              },
+            },
+          },
+        ],
+      };
+
+      const { getByText, queryByText, getByRole } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        </SecretsContextProvider>,
+      );
+
+      expect(queryByText('AWS Config')).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.change(getByRole('textbox'), {
+          target: { value: 'AWS' },
+        });
+      });
+
+      expect(getByText('AWS Config')).toBeInTheDocument();
+    });
+
+    it('should exclude hidden step data from submission', async () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Conditional Steps',
+        steps: [
+          {
+            title: 'Choose Provider',
+            schema: {
+              properties: {
+                cloudProvider: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          {
+            title: 'AWS Config',
+            if: "${{ parameters.cloudProvider === 'AWS' }}",
+            schema: {
+              properties: {
+                awsRegion: { type: 'string' },
+              },
+            },
+          },
+        ],
+      };
+
+      const onCreate = jest.fn();
+
+      const { getByRole } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            extensions={[]}
+            onCreate={onCreate}
+            initialState={{ cloudProvider: 'GCP', awsRegion: 'us-east-1' }}
+          />
+        </SecretsContextProvider>,
+      );
+
+      await act(async () => {
+        fireEvent.click(getByRole('button', { name: 'Review' }));
+      });
+
+      await act(async () => {
+        fireEvent.click(getByRole('button', { name: 'Create' }));
+      });
+
+      expect(onCreate).toHaveBeenCalledWith(
+        expect.not.objectContaining({ awsRegion: expect.anything() }),
+      );
+      expect(onCreate).toHaveBeenCalledWith(
+        expect.objectContaining({ cloudProvider: 'GCP' }),
+      );
+    });
+
+    it('should show steps with boolean if: true', async () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Boolean Condition',
+        steps: [
+          {
+            title: 'Always Shown',
+            if: true,
+            schema: { properties: { name: { type: 'string' } } },
+          },
+          {
+            title: 'Never Shown',
+            if: false,
+            schema: { properties: { hidden: { type: 'string' } } },
+          },
+        ],
+      };
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        </SecretsContextProvider>,
+      );
+
+      expect(getByText('Always Shown')).toBeInTheDocument();
+      expect(queryByText('Never Shown')).not.toBeInTheDocument();
+    });
+
+    it('should show steps without an if condition', async () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Mixed Steps',
+        steps: [
+          {
+            title: 'Unconditional Step',
+            schema: { properties: { name: { type: 'string' } } },
+          },
+          {
+            title: 'Conditional Step',
+            if: false,
+            schema: { properties: { other: { type: 'string' } } },
+          },
+        ],
+      };
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        </SecretsContextProvider>,
+      );
+
+      expect(getByText('Unconditional Step')).toBeInTheDocument();
+      expect(queryByText('Conditional Step')).not.toBeInTheDocument();
+    });
+  });
 });

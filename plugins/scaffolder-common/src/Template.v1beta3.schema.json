@@ -129,6 +129,10 @@
                     "type": "object",
                     "description": "The JSONSchema describing the inputs for the template.",
                     "properties": {
+                      "if": {
+                        "type": ["string", "boolean"],
+                        "description": "A condition that controls whether this parameter step is shown in the wizard. When the condition evaluates to false, the step is skipped. Supports ${{ parameters.fieldName === 'value' }} syntax to reference values from earlier steps."
+                      },
                       "backstage:permissions": {
                         "type": "object",
                         "description": "Object used for authorizing the parameter",

@@ -1,0 +1,138 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: conditional-parameters-demo
+  title: Conditional Parameters Demo
+  description: Demonstrates conditional if on parameter steps to show or hide wizard pages based on earlier answers
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Choose Cloud Provider
+      required:
+        - name
+        - cloudProvider
+      properties:
+        name:
+          title: Component Name
+          type: string
+          description: Name of the component to create
+          ui:autofocus: true
+        cloudProvider:
+          title: Cloud Provider
+          type: string
+          enum:
+            - AWS
+            - GCP
+            - Azure
+          description: Select the cloud provider for deployment
+
+    - title: AWS Configuration
+      if: ${{ parameters.cloudProvider === 'AWS' }}
+      required:
+        - awsRegion
+      properties:
+        awsRegion:
+          title: AWS Region
+          type: string
+          enum:
+            - us-east-1
+            - us-west-2
+            - eu-west-1
+            - ap-southeast-1
+          description: The AWS region to deploy to
+        awsAccountId:
+          title: AWS Account ID
+          type: string
+          description: The AWS account ID (optional)
+
+    - title: GCP Configuration
+      if: ${{ parameters.cloudProvider === 'GCP' }}
+      required:
+        - gcpProjectId
+      properties:
+        gcpProjectId:
+          title: GCP Project ID
+          type: string
+          description: The GCP project to deploy to
+        gcpRegion:
+          title: GCP Region
+          type: string
+          enum:
+            - us-central1
+            - europe-west1
+            - asia-east1
+          default: us-central1
+
+    - title: Azure Configuration
+      if: ${{ parameters.cloudProvider === 'Azure' }}
+      required:
+        - azureSubscriptionId
+      properties:
+        azureSubscriptionId:
+          title: Azure Subscription ID
+          type: string
+          description: The Azure subscription to deploy to
+        azureRegion:
+          title: Azure Region
+          type: string
+          enum:
+            - eastus
+            - westeurope
+            - southeastasia
+          default: eastus
+
+    - title: Advanced Options
+      properties:
+        enableMonitoring:
+          title: Enable Monitoring
+          type: boolean
+          default: false
+          description: Set up monitoring dashboards
+
+    - title: Monitoring Configuration
+      if: ${{ parameters.enableMonitoring }}
+      properties:
+        alertEmail:
+          title: Alert Email
+          type: string
+          format: email
+          description: Email address for monitoring alerts
+        alertThreshold:
+          title: Alert Threshold (%)
+          type: integer
+          minimum: 50
+          maximum: 100
+          default: 90
+
+  steps:
+    - id: log
+      name: Log
+      action: debug:log
+      input:
+        message: |
+          Creating ${{ parameters.name }} on ${{ parameters.cloudProvider }}.
+          Monitoring enabled: ${{ parameters.enableMonitoring }}
+
+  output:
+    text:
+      - title: Summary
+        content: |
+          **Component:** `${{ parameters.name }}`
+          **Cloud Provider:** ${{ parameters.cloudProvider }}
+      - if: ${{ parameters.cloudProvider === 'AWS' }}
+        title: AWS Details
+        content: |
+          **Region:** ${{ parameters.awsRegion }}
+          **Account ID:** ${{ parameters.awsAccountId }}
+      - if: ${{ parameters.cloudProvider === 'GCP' }}
+        title: GCP Details
+        content: |
+          **Project ID:** ${{ parameters.gcpProjectId }}
+          **Region:** ${{ parameters.gcpRegion }}
+      - if: ${{ parameters.cloudProvider === 'Azure' }}
+        title: Azure Details
+        content: |
+          **Subscription ID:** ${{ parameters.azureSubscriptionId }}
+          **Region:** ${{ parameters.azureRegion }}

@@ -26,6 +26,12 @@ export type Action = {
 };
 
 // @public
+export function evaluateCondition(
+  condition: string | boolean | undefined,
+  formState: Record<string, JsonValue>,
+): boolean;
+
+// @public
 export const isTemplateEntityV1beta3: (
   entity: Entity,
 ) => entity is TemplateEntityV1beta3;
@@ -483,6 +489,7 @@ export type TemplateParameterSchema = {
   steps: Array<{
     title: string;
     description?: string;
+    if?: string | boolean;
     schema: JsonObject;
   }>;
   formDecorators?: {

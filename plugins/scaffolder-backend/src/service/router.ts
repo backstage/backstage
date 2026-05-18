@@ -51,6 +51,7 @@ import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
+  evaluateCondition,
 } from '@backstage/plugin-scaffolder-common';
 import {
   scaffolderActionPermissions,
@@ -80,7 +81,7 @@ import {
   scaffolderTemplatePermissionResourceRef,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { HumanDuration, JsonObject } from '@backstage/types';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'node:url';
@@ -474,13 +475,20 @@ export async function createRouter(
             ...(presentation ? { presentation } : {}),
             description: template.metadata.description,
             'ui:options': template.metadata['ui:options'],
-            steps: parameters.map(schema => ({
-              title:
-                (schema.title as string) ??
-                'Please enter the following information',
-              description: schema.description as string,
-              schema,
-            })),
+            steps: parameters.map(param => {
+              const condition = param.if;
+              const isStepCondition =
+                typeof condition === 'string' || typeof condition === 'boolean';
+              const { if: _, ...schema } = param as Record<string, unknown>;
+              return {
+                title:
+                  (param.title as string) ??
+                  'Please enter the following information',
+                description: param.description as string,
+                ...(isStepCondition ? { if: condition } : {}),
+                schema: isStepCondition ? schema : param,
+              };
+            }),
             formDecorators:
               template.spec.formDecorators ??
               template.spec.EXPERIMENTAL_formDecorators,
@@ -565,7 +573,18 @@ export async function createRouter(
         );
 
         for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(values, parameters);
+          const { if: condition, ...schema } = parameters as Record<
+            string,
+            unknown
+          >;
+          if (
+            !evaluateCondition(
+              condition as string | boolean | undefined,
+              values as Record<string, JsonValue>,
+            )
+          )
+            continue;
+          const result = validate(values, schema);
 
           if (!result.valid) {
             await auditorEvent?.fail({
@@ -1043,7 +1062,18 @@ export async function createRouter(
         }/${template.metadata.name}`;
 
         for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(body.values, parameters);
+          const { if: condition, ...schema } = parameters as Record<
+            string,
+            unknown
+          >;
+          if (
+            !evaluateCondition(
+              condition as string | boolean | undefined,
+              body.values as Record<string, JsonValue>,
+            )
+          )
+            continue;
+          const result = validate(body.values, schema);
           if (!result.valid) {
             await auditorEvent?.fail({
               // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet

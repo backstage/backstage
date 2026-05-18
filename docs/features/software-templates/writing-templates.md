@@ -444,6 +444,55 @@ spec:
         ...
 ```
 
+### Conditionally showing parameter steps
+
+When `spec.parameters` is an array of steps, you can use the `if` field to conditionally show or hide entire steps based on values from earlier steps. This is useful when different inputs require different follow-up configuration, such as cloud-provider-specific settings.
+
+The `if` field uses the same `${{ }}` expression syntax used elsewhere in templates and supports comparisons against parameter values:
+
+```yaml
+spec:
+  parameters:
+    - title: Choose Cloud Provider
+      properties:
+        cloudProvider:
+          type: string
+          enum: [AWS, GCP, Azure]
+
+    - title: AWS Configuration
+      if: ${{ parameters.cloudProvider === 'AWS' }}
+      properties:
+        awsRegion:
+          type: string
+
+    - title: GCP Configuration
+      if: ${{ parameters.cloudProvider === 'GCP' }}
+      properties:
+        gcpProjectId:
+          type: string
+
+    - title: Azure Configuration
+      if: ${{ parameters.cloudProvider === 'Azure' }}
+      properties:
+        azureSubscriptionId:
+          type: string
+```
+
+In this example, only the step matching the selected provider is shown in the wizard. The other steps are hidden, and their fields are excluded from the submitted parameters.
+
+The `if` field supports:
+
+- **Equality comparisons:** `${{ parameters.field === 'value' }}` and `${{ parameters.field !== 'value' }}`
+- **Truthiness checks:** `${{ parameters.field }}` evaluates to true when the field is set and non-empty
+- **Negation:** `${{ !parameters.field }}`
+- **Boolean values:** `if: true` or `if: false`
+
+When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, they can re-enter values.
+
+:::note
+This `if` field controls the visibility of wizard steps in the frontend. It is different from the `if` field on `spec.steps`, which controls whether a backend action is executed.
+:::
+
 ### The Repository Picker
 
 In order to make working with repository providers easier, we've built a custom
