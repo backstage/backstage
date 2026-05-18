@@ -224,7 +224,7 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
           responseTypes: ['code'],
           grantTypes: ['authorization_code'],
           scope: 'openid',
@@ -233,7 +233,7 @@ describe('OidcService', () => {
         expect(client).toEqual(
           expect.objectContaining({
             clientName: 'Test Client',
-            redirectUris: ['https://example.com/callback'],
+            redirectUris: ['http://localhost:8080/callback'],
             responseTypes: ['code'],
             grantTypes: ['authorization_code'],
             scope: 'openid',
@@ -365,12 +365,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           scope: 'openid',
           state: 'test-state',
@@ -380,7 +380,7 @@ describe('OidcService', () => {
           id: expect.any(String),
           clientName: 'Test Client',
           scope: 'openid',
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
         });
       });
 
@@ -390,7 +390,7 @@ describe('OidcService', () => {
         await expect(
           service.createAuthorizationSession({
             clientId: 'invalid-client',
-            redirectUri: 'https://example.com/callback',
+            redirectUri: 'http://localhost:8080/callback',
             responseType: 'code',
           }),
         ).rejects.toThrow('Invalid client_id');
@@ -401,7 +401,7 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         await expect(
@@ -418,13 +418,13 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         await expect(
           service.createAuthorizationSession({
             clientId: client.clientId,
-            redirectUri: 'https://example.com/callback',
+            redirectUri: 'http://localhost:8080/callback',
             responseType: 'token',
           }),
         ).rejects.toThrow('Only authorization code flow is supported');
@@ -435,12 +435,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           codeChallenge: 'test-challenge',
           codeChallengeMethod: 'S256',
@@ -454,13 +454,13 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         await expect(
           service.createAuthorizationSession({
             clientId: client.clientId,
-            redirectUri: 'https://example.com/callback',
+            redirectUri: 'http://localhost:8080/callback',
             responseType: 'code',
             codeChallenge: 'test-challenge',
             codeChallengeMethod: 'invalid',
@@ -475,12 +475,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           state: 'test-state',
         });
@@ -491,7 +491,7 @@ describe('OidcService', () => {
         });
 
         expect(result.redirectUrl).toMatch(
-          /^https:\/\/example\.com\/callback\?code=.+&state=test-state$/,
+          /^http:\/\/localhost:8080\/callback\?code=.+&state=test-state$/,
         );
       });
 
@@ -511,12 +511,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
         });
 
@@ -538,12 +538,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
         });
 
@@ -567,12 +567,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           scope: 'openid',
           state: 'test-state',
@@ -587,7 +587,7 @@ describe('OidcService', () => {
             id: authSession.id,
             clientId: client.clientId,
             clientName: 'Test Client',
-            redirectUri: 'https://example.com/callback',
+            redirectUri: 'http://localhost:8080/callback',
             scope: 'openid',
             state: 'test-state',
             responseType: 'code',
@@ -600,12 +600,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
         });
 
@@ -626,12 +626,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
         });
 
@@ -654,12 +654,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
         });
 
@@ -691,12 +691,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
         });
 
@@ -718,12 +718,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
         });
 
@@ -749,12 +749,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           scope: 'openid',
         });
@@ -768,7 +768,7 @@ describe('OidcService', () => {
 
         const tokenResult = await service.exchangeCodeForToken({
           code,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           grantType: 'authorization_code',
         });
 
@@ -787,7 +787,7 @@ describe('OidcService', () => {
         await expect(
           service.exchangeCodeForToken({
             code: 'test-code',
-            redirectUri: 'https://example.com/callback',
+            redirectUri: 'http://localhost:8080/callback',
             grantType: 'client_credentials',
           }),
         ).rejects.toThrow('Unsupported grant type');
@@ -800,7 +800,7 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const codeVerifier = 'test-code-verifier';
@@ -811,7 +811,7 @@ describe('OidcService', () => {
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           codeChallenge,
           codeChallengeMethod: 'S256',
@@ -826,7 +826,7 @@ describe('OidcService', () => {
 
         const tokenResult = await service.exchangeCodeForToken({
           code,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           grantType: 'authorization_code',
           codeVerifier,
         });
@@ -839,13 +839,13 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const codeChallenge = 'test-challenge';
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           codeChallenge,
           codeChallengeMethod: 'S256',
@@ -861,7 +861,7 @@ describe('OidcService', () => {
         await expect(
           service.exchangeCodeForToken({
             code,
-            redirectUri: 'https://example.com/callback',
+            redirectUri: 'http://localhost:8080/callback',
             grantType: 'authorization_code',
             codeVerifier: 'invalid-verifier',
           }),
@@ -884,12 +884,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           scope: 'openid offline_access',
         });
@@ -903,7 +903,7 @@ describe('OidcService', () => {
 
         const tokenResult = await service.exchangeCodeForToken({
           code,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           grantType: 'authorization_code',
         });
 
@@ -1515,13 +1515,13 @@ describe('OidcService', () => {
           // Register a DCR client
           const dcrClient = await service.registerClient({
             clientName: 'DCR Client',
-            redirectUris: ['https://example.com/callback'],
+            redirectUris: ['http://localhost:8080/callback'],
           });
 
           // Create session with DCR client
           const authSession = await service.createAuthorizationSession({
             clientId: dcrClient.clientId,
-            redirectUri: 'https://example.com/callback',
+            redirectUri: 'http://localhost:8080/callback',
             responseType: 'code',
           });
 

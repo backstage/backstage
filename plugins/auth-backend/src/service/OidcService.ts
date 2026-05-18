@@ -219,14 +219,9 @@ export class OidcService {
     const generatedClientId = crypto.randomUUID();
     const generatedClientSecret = crypto.randomUUID();
 
-    const dcrEnabled =
-      this.config.getOptionalBoolean(
-        'auth.experimentalDynamicClientRegistration.enabled',
-      ) ?? false;
-    const allowedRedirectUriPatterns =
-      this.config.getOptionalStringArray(
-        'auth.experimentalDynamicClientRegistration.allowedRedirectUriPatterns',
-      ) ?? (dcrEnabled ? ['cursor://*', ...LOOPBACK_REDIRECT_PATTERNS] : ['*']);
+    const allowedRedirectUriPatterns = this.config.getOptionalStringArray(
+      'auth.experimentalDynamicClientRegistration.allowedRedirectUriPatterns',
+    ) ?? ['cursor://*', ...LOOPBACK_REDIRECT_PATTERNS];
 
     for (const redirectUri of opts.redirectUris ?? []) {
       validateRedirectUri(redirectUri, allowedRedirectUriPatterns);
@@ -322,17 +317,13 @@ export class OidcService {
 
     return {
       enabled,
-      allowedClientIdPatterns:
-        this.config.getOptionalStringArray(
-          'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
-        ) ??
-        (enabled
-          ? ['https://claude.ai/*', 'https://vscode.dev/*', cliClientId]
-          : ['*']),
+      allowedClientIdPatterns: this.config.getOptionalStringArray(
+        'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
+      ) ?? ['https://claude.ai/*', 'https://vscode.dev/*', cliClientId],
       allowedRedirectUriPatterns:
         this.config.getOptionalStringArray(
           'auth.experimentalClientIdMetadataDocuments.allowedRedirectUriPatterns',
-        ) ?? (enabled ? LOOPBACK_REDIRECT_PATTERNS : ['*']),
+        ) ?? LOOPBACK_REDIRECT_PATTERNS,
     };
   }
 
