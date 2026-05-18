@@ -45,7 +45,7 @@
       window.LOGLEVEL = 'info';
       window.FRAMEWORK_OPTIONS = {};
       window.CHANNEL_OPTIONS = {};
-      window.FEATURES = {"argTypeTargetsV7":true,"legacyDecoratorFileOrder":false,"disallowImplicitActionsInRenderV8":true,"viewport":true,"highlight":true,"controls":true,"interactions":true,"actions":true,"backgrounds":true,"outline":true,"measure":true,"sidebarOnboardingChecklist":true,"componentsManifest":true};
+      window.FEATURES = {"actions":true,"argTypeTargetsV7":true,"backgrounds":true,"changeDetection":true,"componentsManifest":true,"controls":true,"disallowImplicitActionsInRenderV8":true,"highlight":true,"interactions":true,"legacyDecoratorFileOrder":false,"measure":true,"outline":true,"sidebarOnboardingChecklist":true,"viewport":true};
       window.STORIES = [{"titlePrefix":"","directory":"./packages/ui/src","files":"**/*.stories.@(js|jsx|mjs|ts|tsx)","importPathMatcher":"^\\.[\\\\/](?:packages\\/ui\\/src(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)\\/|\\/|$)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|jsx|mjs|ts|tsx))$"},{"titlePrefix":"","directory":"./packages/core-components/src","files":"**/*.stories.@(js|jsx|mjs|ts|tsx)","importPathMatcher":"^\\.[\\\\/](?:packages\\/core-components\\/src(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)\\/|\\/|$)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|jsx|mjs|ts|tsx))$"},{"titlePrefix":"","directory":"./packages/app/src","files":"**/*.stories.@(js|jsx|mjs|ts|tsx)","importPathMatcher":"^\\.[\\\\/](?:packages\\/app\\/src(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)\\/|\\/|$)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|jsx|mjs|ts|tsx))$"},{"titlePrefix":"","directory":"./plugins/app/src","files":"**/*.stories.@(js|jsx|mjs|ts|tsx)","importPathMatcher":"^\\.[\\\\/](?:plugins\\/app\\/src(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)\\/|\\/|$)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|jsx|mjs|ts|tsx))$"},{"titlePrefix":"","directory":"./plugins/org/src","files":"**/*.stories.@(js|jsx|mjs|ts|tsx)","importPathMatcher":"^\\.[\\\\/](?:plugins\\/org\\/src(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)\\/|\\/|$)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|jsx|mjs|ts|tsx))$"},{"titlePrefix":"","directory":"./plugins/search/src","files":"**/*.stories.@(js|jsx|mjs|ts|tsx)","importPathMatcher":"^\\.[\\\\/](?:plugins\\/search\\/src(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)\\/|\\/|$)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|jsx|mjs|ts|tsx))$"},{"titlePrefix":"","directory":"./plugins/search-react/src","files":"**/*.stories.@(js|jsx|mjs|ts|tsx)","importPathMatcher":"^\\.[\\\\/](?:plugins\\/search-react\\/src(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)\\/|\\/|$)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|jsx|mjs|ts|tsx))$"},{"titlePrefix":"","directory":"./plugins/home/src","files":"**/*.stories.@(js|jsx|mjs|ts|tsx)","importPathMatcher":"^\\.[\\\\/](?:plugins\\/home\\/src(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)\\/|\\/|$)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|jsx|mjs|ts|tsx))$"},{"titlePrefix":"","directory":"./plugins/catalog-react/src","files":"**/*.stories.@(js|jsx|mjs|ts|tsx)","importPathMatcher":"^\\.[\\\\/](?:plugins\\/catalog-react\\/src(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)\\/|\\/|$)(?!\\.)(?=.)[^/]*?\\.stories\\.(js|jsx|mjs|ts|tsx))$"}];
       window.DOCS_OPTIONS = {"defaultName":"Docs"};
       window.TAGS_OPTIONS = {};
@@ -171,11 +171,11 @@
     border-radius: 10px;
     background: rgb(247, 247, 247);
     color: rgb(46, 52, 56);
+  }
 
-    & * {
-      background: rgb(247, 247, 247);
-      color: rgb(46, 52, 56);
-    }
+  .sb-nopreview_main * {
+    background: rgb(247, 247, 247);
+    color: rgb(46, 52, 56);
   }
 
   .sb-nopreview_heading {
@@ -206,84 +206,89 @@
     border: 1px solid #ff0000;
     box-shadow: 0 0 64px rgba(0, 0, 0, 0.1);
     gap: 24px;
+  }
 
-    & ol {
-      padding-left: 18px;
-      margin: 0;
-    }
+  .sb-errordisplay_main ol {
+    padding-left: 18px;
+    margin: 0;
+  }
 
-    /* Redefine colors to ensure readability regardless of user-provided * selectors. */
-    * {
-      background: white;
-      color: black;
-    }
+  /* Redefine colors to ensure readability regardless of user-provided * selectors. */
+  .sb-errordisplay_main * {
+    background: white;
+    color: black;
+  }
 
-    & h1 {
-      font-family: Nunito Sans;
-      font-size: 22px;
-      font-weight: 400;
-      line-height: 30px;
-      font-weight: normal;
-      margin: 0;
+  /* Exclude error code block from the universal reset to preserve ANSI colors and dark theme */
+  .sb-errordisplay_main .sb-errordisplay_code,
+  .sb-errordisplay_main .sb-errordisplay_code * {
+    background: #242424;
+    color: #c6c6c6;
+  }
 
-      &::before {
-        content: '';
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        background: #ff4400;
-        border-radius: 50%;
-        margin-right: 8px;
-      }
-    }
+  .sb-errordisplay_main h1 {
+    font-family: inherit;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 30px;
+    margin: 0;
+  }
 
-    & p,
-    & ol {
-      font-family: Nunito Sans;
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 19px;
-      margin: 0;
-    }
+  .sb-errordisplay_main h1::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: #ff4400;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
 
-    & li + li {
-      margin: 0;
-      padding: 0;
-      padding-top: 12px;
-    }
+  .sb-errordisplay_main p,
+  .sb-errordisplay_main ol {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 19px;
+    margin: 0;
+  }
 
-    & a {
-      color: currentColor;
-    }
+  .sb-errordisplay_main li + li {
+    margin: 0;
+    padding: 0;
+    padding-top: 12px;
+  }
 
-    & .sb-errordisplay_code {
-      padding: 10px;
-      flex: 1;
-      background: #242424;
-      color: #c6c6c6;
-      box-sizing: border-box;
+  .sb-errordisplay_main a {
+    color: currentColor;
+  }
 
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 19px;
-      border-radius: 4px;
+  .sb-errordisplay_main .sb-errordisplay_code {
+    padding: 10px;
+    flex: 1;
+    background: #242424;
+    color: #c6c6c6;
+    box-sizing: border-box;
 
-      font-family:
-        'Operator Mono', 'Fira Code Retina', 'Fira Code', 'FiraCode-Retina', 'Andale Mono',
-        'Lucida Console', Consolas, Monaco, monospace;
-      margin: 0;
-      overflow: auto;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 19px;
+    border-radius: 4px;
 
-      & code {
-        background-color: inherit;
-        color: inherit;
-      }
-    }
+    font-family:
+      'Operator Mono', 'Fira Code Retina', 'Fira Code', 'FiraCode-Retina', 'Andale Mono',
+      'Lucida Console', Consolas, Monaco, monospace;
+    margin: 0;
+    overflow: auto;
+  }
 
-    & .sb-errordisplay pre {
-      white-space: pre-wrap;
-      white-space: revert;
-    }
+  .sb-errordisplay_main .sb-errordisplay_code code {
+    background-color: inherit;
+    color: inherit;
+  }
+
+  .sb-errordisplay_main .sb-errordisplay_code {
+    white-space: pre-wrap;
   }
 
   @-webkit-keyframes sb-rotate360 {
@@ -547,7 +552,7 @@
   }
 </script>
 
-    <script type="module" crossorigin src="./assets/iframe-nLmXqEf7.js"></script>
+    <script type="module" crossorigin src="./assets/iframe-t9H7a1GP.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/preload-helper-PPVm8Dsz.js">
     <link rel="stylesheet" crossorigin href="./assets/iframe-DIi-HZAQ.css">
   </head>
@@ -681,10 +686,10 @@
         if (hostname !== 'localhost' && globalThis.CONFIG_TYPE === 'DEVELOPMENT') {
           const message = `Failed to load the Storybook preview file 'vite-app.js':
 
-It looks like you're visiting the Storybook development server on another hostname than localhost: '${hostname}', but you haven't configured the necessary security features to support this.
-Please re-run your Storybook development server with the '--host ${hostname}' flag, or manually configure your Vite allowedHosts configuration with viteFinal.
+      It looks like you're visiting the Storybook development server on another hostname than localhost: '${hostname}', but you haven't configured the necessary security features to support this.
+      Please re-run your Storybook development server with the '--host ${hostname}' flag, or manually configure your Vite allowedHosts configuration with viteFinal.
 
-See:`;
+      See:`;
           const docs = [
             'https://storybook.js.org/docs/api/cli-options#dev',
             'https://storybook.js.org/docs/api/main-config/main-config-vite-final',
@@ -696,7 +701,7 @@ See:`;
             `<p style="color: red; max-width: 70ch">${message.replaceAll(
               '\n',
               '<br/>'
-            )}<ul>${docs.map((doc) => `<li><a href='${doc}' target='_blank'>${doc}</a></li>`).join('')}<ul></p>`;
+            )}<ul>${docs.map((doc) => `<li><a href='${doc}' target='_blank'>${doc}</a></li>`).join('')}</ul></p>`;
           return;
         }
       }

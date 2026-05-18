@@ -250,6 +250,7 @@
       .tg-info:checked + label.as-toggle,
       .tg-stories:checked + label.as-toggle,
       .tg-docs:checked + label.as-toggle,
+      .tg-subcomponents:checked + label.as-toggle,
       .tg-content:checked + label.as-toggle,
       .tg-props:checked + label.as-toggle {
           box-shadow: 0 0 0 var(--active-ring) currentColor;
@@ -281,6 +282,11 @@
       }
 
       .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-subcomponents:checked ~ .panels .panel-subcomponents {
           display: grid;
           gap: 8px;
       }
@@ -507,6 +513,10 @@
           display: grid;
       }
 
+      .card > .tg-subcomponents:checked ~ .panels .panel-subcomponents {
+          display: grid;
+      }
+
       .card > .tg-content:checked ~ .panels .panel-content {
           display: grid;
       }
@@ -516,6 +526,7 @@
       .card > .tg-info:checked ~ .panels,
       .card > .tg-stories:checked ~ .panels,
       .card > .tg-docs:checked ~ .panels,
+      .card > .tg-subcomponents:checked ~ .panels,
       .card > .tg-content:checked ~ .panels,
       .card > .tg-props:checked ~ .panels {
           margin: 10px 0;
@@ -527,6 +538,7 @@
           .card:has(.tg-info:checked) label[for$='-info'],
           .card:has(.tg-stories:checked) label[for$='-stories'],
           .card:has(.tg-docs:checked) label[for$='-docs'],
+          .card:has(.tg-subcomponents:checked) label[for$='-subcomponents'],
           .card:has(.tg-content:checked) label[for$='-content'],
           .card:has(.tg-props:checked) label[for$='-props'] {
               box-shadow: 0 0 0 1px currentColor;
@@ -576,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/52 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">1/52 info</a><span class="filter-pill ok" aria-disabled="true">505 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">52 components ok</span><span class="filter-pill ok" aria-disabled="true">505 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.4s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.3s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -608,6 +620,7 @@
         
         <label for="c-0-backstage-ui-accordion-stories" class="badge ok as-toggle">7 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Accordion/Accordion.stories.tsx">backstage-ui-accordion · ./packages/ui/src/components/Accordion/Accordion.stories.tsx</div>
@@ -620,6 +633,7 @@
   
   
   <input id="c-0-backstage-ui-accordion-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-0-backstage-ui-accordion-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -909,6 +923,7 @@ className?: string</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -927,6 +942,7 @@ className?: string</code></pre>
         
         <label for="c-1-backstage-ui-alert-stories" class="badge ok as-toggle">13 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Alert/Alert.stories.tsx">backstage-ui-alert · ./packages/ui/src/components/Alert/Alert.stories.tsx</div>
@@ -939,6 +955,7 @@ className?: string</code></pre>
   
   
   <input id="c-1-backstage-ui-alert-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-1-backstage-ui-alert-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -1370,6 +1387,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -1388,6 +1406,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
         
         <label for="c-2-backstage-ui-avatar-stories" class="badge ok as-toggle">4 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Avatar/Avatar.stories.tsx">backstage-ui-avatar · ./packages/ui/src/components/Avatar/Avatar.stories.tsx</div>
@@ -1400,6 +1419,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-2-backstage-ui-avatar-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-2-backstage-ui-avatar-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -1530,6 +1550,7 @@ src: string</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -1548,6 +1569,7 @@ src: string</code></pre>
         
         <label for="c-3-backstage-ui-badge-stories" class="badge ok as-toggle">3 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Badge/Badge.stories.tsx">backstage-ui-badge · ./packages/ui/src/components/Badge/Badge.stories.tsx</div>
@@ -1560,6 +1582,7 @@ src: string</code></pre>
   
   
   <input id="c-3-backstage-ui-badge-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-3-backstage-ui-badge-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -1647,6 +1670,7 @@ import { RiBugLine } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -1665,6 +1689,7 @@ import { RiBugLine } from "@remixicon/react";</code></pre>
         
         <label for="c-4-backstage-ui-box-stories" class="badge ok as-toggle">12 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Box/Box.stories.tsx">backstage-ui-box · ./packages/ui/src/components/Box/Box.stories.tsx</div>
@@ -1677,6 +1702,7 @@ import { RiBugLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-4-backstage-ui-box-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-4-backstage-ui-box-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -2117,6 +2143,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -2135,6 +2162,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         
         <label for="c-5-backstage-ui-button-stories" class="badge ok as-toggle">11 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Button/Button.stories.tsx">backstage-ui-button · ./packages/ui/src/components/Button/Button.stories.tsx</div>
@@ -2147,6 +2175,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
   
   
   <input id="c-5-backstage-ui-button-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-5-backstage-ui-button-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -2561,6 +2590,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -2579,6 +2609,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         
         <label for="c-6-backstage-ui-buttonicon-stories" class="badge ok as-toggle">7 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/ButtonIcon/ButtonIcon.stories.tsx">backstage-ui-buttonicon · ./packages/ui/src/components/ButtonIcon/ButtonIcon.stories.tsx</div>
@@ -2591,6 +2622,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-6-backstage-ui-buttonicon-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-6-backstage-ui-buttonicon-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -2807,6 +2839,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -2825,6 +2858,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
         
         <label for="c-7-backstage-ui-buttonlink-stories" class="badge ok as-toggle">7 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/ButtonLink/ButtonLink.stories.tsx">backstage-ui-buttonlink · ./packages/ui/src/components/ButtonLink/ButtonLink.stories.tsx</div>
@@ -2837,6 +2871,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-7-backstage-ui-buttonlink-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-7-backstage-ui-buttonlink-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -3011,6 +3046,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -3029,6 +3065,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         
         <label for="c-8-backstage-ui-card-stories" class="badge ok as-toggle">17 stories</label>
         
+        <label for="c-8-backstage-ui-card-subcomponents" class="badge ok as-toggle">3 subcomponents</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Card/Card.stories.tsx">backstage-ui-card · ./packages/ui/src/components/Card/Card.stories.tsx</div>
@@ -3042,6 +3079,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
   
   <input id="c-8-backstage-ui-card-stories" class="tg tg-stories" type="checkbox" hidden />
   
+  <input id="c-8-backstage-ui-card-subcomponents" class="tg tg-subcomponents" type="checkbox" hidden />
   <input id="c-8-backstage-ui-card-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -3501,6 +3539,70 @@ style?: CSSProperties</code></pre>
             </div>
         </div>
     
+    
+        <div class="panel panel-subcomponents">
+          
+    <div class="note ok">
+      <div class="row">
+        <span class="ex-name">CardHeader</span>
+        <span class="badge ok">
+          2 prop types
+        </span>
+      </div>
+      <div class="hint">/home/runner/work/backstage/backstage/packages/ui/src/components/Card/Card.tsx</div>
+      
+      <div class="hint">CardHeader component.</div>
+      <div class="kv"><span class="chip">public:  </span></div>
+      <pre><code>import { CardHeader } from &quot;@backstage/ui&quot;;</code></pre>
+      
+      
+          <pre><code>Component: packages/ui/src/components/Card/Card.tsx::CardHeader (react-docgen)</code></pre>
+          <pre><code>children?: ReactNode
+
+className?: string</code></pre>
+    </div>
+  
+    <div class="note ok">
+      <div class="row">
+        <span class="ex-name">CardBody</span>
+        <span class="badge ok">
+          2 prop types
+        </span>
+      </div>
+      <div class="hint">/home/runner/work/backstage/backstage/packages/ui/src/components/Card/Card.tsx</div>
+      
+      <div class="hint">CardBody component.</div>
+      <div class="kv"><span class="chip">public:  </span></div>
+      <pre><code>import { CardBody } from &quot;@backstage/ui&quot;;</code></pre>
+      
+      
+          <pre><code>Component: packages/ui/src/components/Card/Card.tsx::CardBody (react-docgen)</code></pre>
+          <pre><code>children?: ReactNode
+
+className?: string</code></pre>
+    </div>
+  
+    <div class="note ok">
+      <div class="row">
+        <span class="ex-name">CardFooter</span>
+        <span class="badge ok">
+          2 prop types
+        </span>
+      </div>
+      <div class="hint">/home/runner/work/backstage/backstage/packages/ui/src/components/Card/Card.tsx</div>
+      
+      <div class="hint">CardFooter component.</div>
+      <div class="kv"><span class="chip">public:  </span></div>
+      <pre><code>import { CardFooter } from &quot;@backstage/ui&quot;;</code></pre>
+      
+      
+          <pre><code>Component: packages/ui/src/components/Card/Card.tsx::CardFooter (react-docgen)</code></pre>
+          <pre><code>children?: ReactNode
+
+className?: string</code></pre>
+    </div>
+  
+        </div>
   </div>
 </article>
 <article
@@ -3519,6 +3621,7 @@ style?: CSSProperties</code></pre>
         
         <label for="c-9-recipes-cards-with-list-stories" class="badge ok as-toggle">3 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/recipes/CardsWithList.stories.tsx">recipes-cards-with-list · ./packages/ui/src/recipes/CardsWithList.stories.tsx</div>
@@ -3531,6 +3634,7 @@ style?: CSSProperties</code></pre>
   
   
   <input id="c-9-recipes-cards-with-list-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-9-recipes-cards-with-list-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -3663,6 +3767,7 @@ import {
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -3681,6 +3786,7 @@ import {
         
         <label for="c-10-guidelines-cards-with-table-stories" class="badge ok as-toggle">1 story</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/guidelines/CardsWithTable.stories.tsx">guidelines-cards-with-table · ./packages/ui/src/guidelines/CardsWithTable.stories.tsx</div>
@@ -3693,6 +3799,7 @@ import {
   
   
   <input id="c-10-guidelines-cards-with-table-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-10-guidelines-cards-with-table-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -3770,6 +3877,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -3788,6 +3896,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-11-backstage-ui-checkbox-stories" class="badge ok as-toggle">6 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Checkbox/Checkbox.stories.tsx">backstage-ui-checkbox · ./packages/ui/src/components/Checkbox/Checkbox.stories.tsx</div>
@@ -3800,6 +3909,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   
   <input id="c-11-backstage-ui-checkbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-11-backstage-ui-checkbox-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -3913,6 +4023,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -3931,6 +4042,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-12-backstage-ui-checkboxgroup-stories" class="badge ok as-toggle">11 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/CheckboxGroup/CheckboxGroup.stories.tsx">backstage-ui-checkboxgroup · ./packages/ui/src/components/CheckboxGroup/CheckboxGroup.stories.tsx</div>
@@ -3943,6 +4055,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   
   <input id="c-12-backstage-ui-checkboxgroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-12-backstage-ui-checkboxgroup-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -4148,6 +4261,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -4166,6 +4280,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
         
         <label for="c-13-backstage-ui-combobox-stories" class="badge ok as-toggle">18 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Combobox/Combobox.stories.tsx">backstage-ui-combobox · ./packages/ui/src/components/Combobox/Combobox.stories.tsx</div>
@@ -4178,6 +4293,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
   
   
   <input id="c-13-backstage-ui-combobox-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-13-backstage-ui-combobox-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -4502,6 +4618,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -4520,6 +4637,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
         
         <label for="c-14-backstage-ui-container-stories" class="badge ok as-toggle">8 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Container/Container.stories.tsx">backstage-ui-container · ./packages/ui/src/components/Container/Container.stories.tsx</div>
@@ -4532,6 +4650,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-14-backstage-ui-container-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-14-backstage-ui-container-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -4657,6 +4776,7 @@ style?: React.CSSProperties</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -4675,6 +4795,7 @@ style?: React.CSSProperties</code></pre>
         
         <label for="c-15-backstage-ui-datepicker-stories" class="badge ok as-toggle">10 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/DatePicker/DatePicker.stories.tsx">backstage-ui-datepicker · ./packages/ui/src/components/DatePicker/DatePicker.stories.tsx</div>
@@ -4687,6 +4808,7 @@ style?: React.CSSProperties</code></pre>
   
   
   <input id="c-15-backstage-ui-datepicker-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-15-backstage-ui-datepicker-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -4874,6 +4996,7 @@ import { Form } from "react-aria-components";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -4892,6 +5015,7 @@ import { Form } from "react-aria-components";</code></pre>
         
         <label for="c-16-backstage-ui-daterangepicker-stories" class="badge ok as-toggle">10 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/DateRangePicker/DateRangePicker.stories.tsx">backstage-ui-daterangepicker · ./packages/ui/src/components/DateRangePicker/DateRangePicker.stories.tsx</div>
@@ -4904,6 +5028,7 @@ import { Form } from "react-aria-components";</code></pre>
   
   
   <input id="c-16-backstage-ui-daterangepicker-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-16-backstage-ui-daterangepicker-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -5100,6 +5225,7 @@ import { Form } from "react-aria-components";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -5118,6 +5244,7 @@ import { Form } from "react-aria-components";</code></pre>
         
         <label for="c-17-backstage-ui-table-dev-stories" class="badge ok as-toggle">25 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Table/stories/Table.dev.stories.tsx">backstage-ui-table-dev · ./packages/ui/src/components/Table/stories/Table.dev.stories.tsx</div>
@@ -5130,6 +5257,7 @@ import { Form } from "react-aria-components";</code></pre>
   
   
   <input id="c-17-backstage-ui-table-dev-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-17-backstage-ui-table-dev-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -6478,6 +6606,7 @@ import { Fragment } from "react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -6496,6 +6625,7 @@ import { Fragment } from "react";</code></pre>
         
         <label for="c-18-backstage-ui-dialog-stories" class="badge ok as-toggle">12 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Dialog/Dialog.stories.tsx">backstage-ui-dialog · ./packages/ui/src/components/Dialog/Dialog.stories.tsx</div>
@@ -6508,6 +6638,7 @@ import { Fragment } from "react";</code></pre>
   
   
   <input id="c-18-backstage-ui-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-18-backstage-ui-dialog-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -6798,6 +6929,7 @@ width?: number | string</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -6816,6 +6948,7 @@ width?: number | string</code></pre>
         
         <label for="c-19-backstage-ui-fielderror-stories" class="badge ok as-toggle">3 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/FieldError/FieldError.stories.tsx">backstage-ui-fielderror · ./packages/ui/src/components/FieldError/FieldError.stories.tsx</div>
@@ -6828,6 +6961,7 @@ width?: number | string</code></pre>
   
   
   <input id="c-19-backstage-ui-fielderror-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-19-backstage-ui-fielderror-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -6934,6 +7068,7 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -6952,6 +7087,7 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
         
         <label for="c-20-backstage-ui-fieldlabel-stories" class="badge ok as-toggle">4 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/FieldLabel/FieldLabel.stories.tsx">backstage-ui-fieldlabel · ./packages/ui/src/components/FieldLabel/FieldLabel.stories.tsx</div>
@@ -6964,6 +7100,7 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
   
   
   <input id="c-20-backstage-ui-fieldlabel-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-20-backstage-ui-fieldlabel-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -7068,6 +7205,7 @@ secondaryLabel?: string | null</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -7086,6 +7224,7 @@ secondaryLabel?: string | null</code></pre>
         
         <label for="c-21-backstage-ui-flex-stories" class="badge ok as-toggle">16 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Flex/Flex.stories.tsx">backstage-ui-flex · ./packages/ui/src/components/Flex/Flex.stories.tsx</div>
@@ -7098,6 +7237,7 @@ secondaryLabel?: string | null</code></pre>
   
   
   <input id="c-21-backstage-ui-flex-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-21-backstage-ui-flex-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -7445,6 +7585,7 @@ style?: CSSProperties</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -7463,6 +7604,7 @@ style?: CSSProperties</code></pre>
         
         <label for="c-22-backstage-ui-fullpage-stories" class="badge ok as-toggle">3 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/FullPage/FullPage.stories.tsx">backstage-ui-fullpage · ./packages/ui/src/components/FullPage/FullPage.stories.tsx</div>
@@ -7475,6 +7617,7 @@ style?: CSSProperties</code></pre>
   
   
   <input id="c-22-backstage-ui-fullpage-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-22-backstage-ui-fullpage-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -7577,6 +7720,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -7595,6 +7739,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-23-backstage-ui-header-stories" class="badge ok as-toggle">19 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Header/Header.stories.tsx">backstage-ui-header · ./packages/ui/src/components/Header/Header.stories.tsx</div>
@@ -7607,6 +7752,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   
   <input id="c-23-backstage-ui-header-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-23-backstage-ui-header-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -8120,6 +8266,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -8138,6 +8285,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
         
         <label for="c-24-backstage-ui-link-stories" class="badge ok as-toggle">9 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Link/Link.stories.tsx">backstage-ui-link · ./packages/ui/src/components/Link/Link.stories.tsx</div>
@@ -8150,6 +8298,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
   
   
   <input id="c-24-backstage-ui-link-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-24-backstage-ui-link-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -8457,6 +8606,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -8475,6 +8625,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-25-backstage-ui-list-stories" class="badge ok as-toggle">11 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/List/List.stories.tsx">backstage-ui-list · ./packages/ui/src/components/List/List.stories.tsx</div>
@@ -8487,6 +8638,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   
   <input id="c-25-backstage-ui-list-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-25-backstage-ui-list-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -8763,6 +8915,7 @@ import {
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -8781,6 +8934,7 @@ import {
         
         <label for="c-26-backstage-ui-menu-stories" class="badge ok as-toggle">16 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/Menu.stories.tsx">backstage-ui-menu · ./packages/ui/src/components/Menu/Menu.stories.tsx</div>
@@ -8793,6 +8947,7 @@ import {
   
   
   <input id="c-26-backstage-ui-menu-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   
 
@@ -9244,6 +9399,7 @@ import {
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -9262,6 +9418,7 @@ import {
         
         <label for="c-27-backstage-ui-menuautocomplete-stories" class="badge ok as-toggle">5 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/MenuAutocomplete.stories.tsx">backstage-ui-menuautocomplete · ./packages/ui/src/components/Menu/MenuAutocomplete.stories.tsx</div>
@@ -9274,6 +9431,7 @@ import {
   
   
   <input id="c-27-backstage-ui-menuautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   
 
@@ -9461,6 +9619,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -9479,6 +9638,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-28-backstage-ui-menuautocompletelistbox-stories" class="badge ok as-toggle">6 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/MenuAutocompleteListBox.stories.tsx">backstage-ui-menuautocompletelistbox · ./packages/ui/src/components/Menu/MenuAutocompleteListBox.stories.tsx</div>
@@ -9491,6 +9651,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   
   <input id="c-28-backstage-ui-menuautocompletelistbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   
 
@@ -9745,6 +9906,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -9763,6 +9925,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-29-backstage-ui-menulistbox-stories" class="badge ok as-toggle">4 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/MenuListBox.stories.tsx">backstage-ui-menulistbox · ./packages/ui/src/components/Menu/MenuListBox.stories.tsx</div>
@@ -9775,6 +9938,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   
   <input id="c-29-backstage-ui-menulistbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   
 
@@ -9928,6 +10092,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -9946,6 +10111,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-30-backstage-ui-passwordfield-stories" class="badge ok as-toggle">12 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/PasswordField/PasswordField.stories.tsx">backstage-ui-passwordfield · ./packages/ui/src/components/PasswordField/PasswordField.stories.tsx</div>
@@ -9958,6 +10124,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   
   <input id="c-30-backstage-ui-passwordfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-30-backstage-ui-passwordfield-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -10147,6 +10314,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -10165,6 +10333,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
         
         <label for="c-31-backstage-ui-pluginheader-stories" class="badge ok as-toggle">10 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/PluginHeader/PluginHeader.stories.tsx">backstage-ui-pluginheader · ./packages/ui/src/components/PluginHeader/PluginHeader.stories.tsx</div>
@@ -10177,6 +10346,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-31-backstage-ui-pluginheader-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-31-backstage-ui-pluginheader-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -10511,79 +10681,86 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
   class="card 
-  has-error 
-  has-info 
+  no-error 
+  no-info 
   no-story-error
   no-doc-error"
   role="listitem"
   aria-label="PluginHeaderandHeader">
   <div class="head">
     <div class="title">
-      <h2><span class="status-dot dot-err"></span> PluginHeaderandHeader</h2>
+      <h2><span class="status-dot dot-ok"></span> PluginHeaderandHeader</h2>
       <div class="badges">
-        <label for="c-32-recipes-pluginheader-and-header-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-32-recipes-pluginheader-and-header-info" class="badge info as-toggle">1 info</label>
+        <label for="c-32-recipes-pluginheader-and-header-props" class="badge ok as-toggle">10 prop types</label>
+        
         <label for="c-32-recipes-pluginheader-and-header-stories" class="badge ok as-toggle">9 stories</label>
+        
         
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/recipes/PluginHeaderAndHeader.stories.tsx">recipes-pluginheader-and-header · ./packages/ui/src/recipes/PluginHeaderAndHeader.stories.tsx</div>
     
-    
-    
+    <div class="hint">A secondary header with title, breadcrumbs, tabs, and actions.</div>
+    <div class="kv"><span class="chip">public:  </span></div>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-32-recipes-pluginheader-and-header-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-32-recipes-pluginheader-and-header-info" class="tg tg-info" type="checkbox" hidden />
+  
+  
   <input id="c-32-recipes-pluginheader-and-header-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
+  <input id="c-32-recipes-pluginheader-and-header-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
-        <div class="panel panel-err">
-          
-    <div class="note err">
-      <div class="note-title">Prop type error</div>
-      <div class="note-body"><pre><code>File: /home/runner/work/backstage/backstage/node_modules/@backstage/core-components/src/index.ts
-Error:
-Component files in node_modules are not supported.
-The distributed files in node_modules usually don&#39;t contain the necessary comments or types needed to analyze component information.
-Configure TypeScript path aliases to map your package name to the source file instead.
-
-Example (tsconfig.json):
-{
-  &quot;compilerOptions&quot;: {
-    &quot;baseUrl&quot;: &quot;.&quot;,
-    &quot;paths&quot;: {
-      &quot;@design-system/button&quot;: [&quot;src/components/Button.tsx&quot;],
-      &quot;@design-system/*&quot;: [&quot;src/components/*&quot;]
-    }
-  }
-}
-
-Then import using:
-import { Button } from &#39;@design-system/button&#39;
-
-Storybook resolves tsconfig paths automatically.
-Code:
-/* File in node_modules */</code></pre></div>
-    </div>
-        </div>
     
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
     
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">10 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/Header/Header.tsx::Header</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>activeTabId?: string | null
+
+/**
+ * @deprecated The breadcrumbs prop will be removed in a future release.
+ */
+breadcrumbs?: HeaderBreadcrumb[]
+
+className?: string
+
+customActions?: React.ReactNode
+
+/**
+ * Markdown string rendered below the title. Only inline links are supported.
+ * Bold, italic, and block-level markdown are not rendered.
+ */
+description?: string
+
+metadata?: HeaderMetadataItem[]
+
+/**
+ * Makes the title-and-actions row stick to the top of its nearest scroll
+ * container while the rest of the header content scrolls away.
+ */
+sticky?: boolean
+
+tabs?: HeaderNavTabItem[]
+
+tags?: HeaderTag[]
+
+title?: string</code></pre>
+          </div>
+        </div>
     
         <div class="panel panel-stories">
           
@@ -10599,15 +10776,14 @@ Code:
     ButtonIcon,
     Card,
     Container,
-    Header as CoreHeader,
-    Page as CorePage,
     Flex,
     Header,
     Menu,
     MenuItem,
     MenuTrigger,
     PluginHeader,
-} from "@backstage/core-components";
+} from "@backstage/ui";
+import { Header as CoreHeader, Page as CorePage } from "@backstage/core-components";
 import { MemoryRouter } from "react-router-dom";
 import {
     RiBox3Line,
@@ -10939,6 +11115,7 @@ import {
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -10957,6 +11134,7 @@ import {
         
         <label for="c-33-backstage-ui-popover-stories" class="badge ok as-toggle">13 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Popover/Popover.stories.tsx">backstage-ui-popover · ./packages/ui/src/components/Popover/Popover.stories.tsx</div>
@@ -10969,6 +11147,7 @@ import {
   
   
   <input id="c-33-backstage-ui-popover-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-33-backstage-ui-popover-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -11341,6 +11520,7 @@ hideArrow?: boolean</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -11359,6 +11539,7 @@ hideArrow?: boolean</code></pre>
         
         <label for="c-34-backstage-ui-radiogroup-stories" class="badge ok as-toggle">9 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/RadioGroup/RadioGroup.stories.tsx">backstage-ui-radiogroup · ./packages/ui/src/components/RadioGroup/RadioGroup.stories.tsx</div>
@@ -11371,6 +11552,7 @@ hideArrow?: boolean</code></pre>
   
   
   <input id="c-34-backstage-ui-radiogroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-34-backstage-ui-radiogroup-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -11538,6 +11720,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -11556,6 +11739,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
         
         <label for="c-35-backstage-ui-searchautocomplete-stories" class="badge ok as-toggle">9 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/SearchAutocomplete/SearchAutocomplete.stories.tsx">backstage-ui-searchautocomplete · ./packages/ui/src/components/SearchAutocomplete/SearchAutocomplete.stories.tsx</div>
@@ -11568,6 +11752,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
   
   
   <input id="c-35-backstage-ui-searchautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-35-backstage-ui-searchautocomplete-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -12054,6 +12239,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -12072,6 +12258,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
         
         <label for="c-36-backstage-ui-searchfield-stories" class="badge ok as-toggle">21 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/SearchField/SearchField.stories.tsx">backstage-ui-searchfield · ./packages/ui/src/components/SearchField/SearchField.stories.tsx</div>
@@ -12084,6 +12271,7 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-36-backstage-ui-searchfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-36-backstage-ui-searchfield-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -12496,6 +12684,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -12514,6 +12703,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
         
         <label for="c-37-backstage-ui-select-stories" class="badge ok as-toggle">24 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Select/Select.stories.tsx">backstage-ui-select · ./packages/ui/src/components/Select/Select.stories.tsx</div>
@@ -12526,6 +12716,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
   
   
   <input id="c-37-backstage-ui-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-37-backstage-ui-select-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -12953,6 +13144,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -12971,6 +13163,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
         
         <label for="c-38-backstage-ui-skeleton-stories" class="badge ok as-toggle">4 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Skeleton/Skeleton.stories.tsx">backstage-ui-skeleton · ./packages/ui/src/components/Skeleton/Skeleton.stories.tsx</div>
@@ -12983,6 +13176,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-38-backstage-ui-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-38-backstage-ui-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -13079,6 +13273,7 @@ width?: number | string</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -13097,6 +13292,7 @@ width?: number | string</code></pre>
         
         <label for="c-39-backstage-ui-slider-stories" class="badge ok as-toggle">10 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Slider/Slider.stories.tsx">backstage-ui-slider · ./packages/ui/src/components/Slider/Slider.stories.tsx</div>
@@ -13109,6 +13305,7 @@ width?: number | string</code></pre>
   
   
   <input id="c-39-backstage-ui-slider-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-39-backstage-ui-slider-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -13270,6 +13467,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -13288,6 +13486,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
         
         <label for="c-40-backstage-ui-switch-stories" class="badge ok as-toggle">2 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Switch/Switch.stories.tsx">backstage-ui-switch · ./packages/ui/src/components/Switch/Switch.stories.tsx</div>
@@ -13300,6 +13499,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
   
   
   <input id="c-40-backstage-ui-switch-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-40-backstage-ui-switch-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -13356,6 +13556,7 @@ label?: string</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -13374,6 +13575,7 @@ label?: string</code></pre>
         
         <label for="c-41-backstage-ui-tablepagination-stories" class="badge ok as-toggle">8 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TablePagination/TablePagination.stories.tsx">backstage-ui-tablepagination · ./packages/ui/src/components/TablePagination/TablePagination.stories.tsx</div>
@@ -13386,6 +13588,7 @@ label?: string</code></pre>
   
   
   <input id="c-41-backstage-ui-tablepagination-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-41-backstage-ui-tablepagination-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -13533,6 +13736,7 @@ totalCount?: number</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -13551,6 +13755,7 @@ totalCount?: number</code></pre>
         
         <label for="c-42-backstage-ui-tabs-stories" class="badge ok as-toggle">14 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Tabs/Tabs.stories.tsx">backstage-ui-tabs · ./packages/ui/src/components/Tabs/Tabs.stories.tsx</div>
@@ -13563,6 +13768,7 @@ totalCount?: number</code></pre>
   
   
   <input id="c-42-backstage-ui-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-42-backstage-ui-tabs-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -14179,6 +14385,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -14197,6 +14404,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-43-backstage-ui-taggroup-stories" class="badge ok as-toggle">9 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TagGroup/TagGroup.stories.tsx">backstage-ui-taggroup · ./packages/ui/src/components/TagGroup/TagGroup.stories.tsx</div>
@@ -14209,6 +14417,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   
   <input id="c-43-backstage-ui-taggroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-43-backstage-ui-taggroup-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -14430,6 +14639,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -14448,6 +14658,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
         
         <label for="c-44-backstage-ui-text-stories" class="badge ok as-toggle">9 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Text/Text.stories.tsx">backstage-ui-text · ./packages/ui/src/components/Text/Text.stories.tsx</div>
@@ -14460,6 +14671,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
   
   
   <input id="c-44-backstage-ui-text-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-44-backstage-ui-text-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -14681,6 +14893,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -14699,6 +14912,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
         
         <label for="c-45-backstage-ui-textfield-stories" class="badge ok as-toggle">13 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TextField/TextField.stories.tsx">backstage-ui-textfield · ./packages/ui/src/components/TextField/TextField.stories.tsx</div>
@@ -14711,6 +14925,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
   
   
   <input id="c-45-backstage-ui-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-45-backstage-ui-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -14957,6 +15172,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -14975,6 +15191,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
         
         <label for="c-46-app-toast-stories" class="badge ok as-toggle">11 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./plugins/app/src/components/Toast/Toast.stories.tsx">app-toast · ./plugins/app/src/components/Toast/Toast.stories.tsx</div>
@@ -14987,6 +15204,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-46-app-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-46-app-toast-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -15487,6 +15705,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -15505,6 +15724,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-47-backstage-ui-togglebutton-stories" class="badge ok as-toggle">10 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/ToggleButton/ToggleButton.stories.tsx">backstage-ui-togglebutton · ./packages/ui/src/components/ToggleButton/ToggleButton.stories.tsx</div>
@@ -15517,6 +15737,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   
   <input id="c-47-backstage-ui-togglebutton-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-47-backstage-ui-togglebutton-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -15848,6 +16069,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -15866,6 +16088,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
         
         <label for="c-48-backstage-ui-togglebuttongroup-stories" class="badge ok as-toggle">10 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.stories.tsx">backstage-ui-togglebuttongroup · ./packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.stories.tsx</div>
@@ -15878,6 +16101,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
   
   
   <input id="c-48-backstage-ui-togglebuttongroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-48-backstage-ui-togglebuttongroup-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -16136,6 +16360,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -16154,6 +16379,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
         
         <label for="c-49-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Tooltip/Tooltip.stories.tsx">backstage-ui-tooltip · ./packages/ui/src/components/Tooltip/Tooltip.stories.tsx</div>
@@ -16166,6 +16392,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
   
   
   <input id="c-49-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   
 
@@ -16302,6 +16529,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -16320,6 +16548,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
         
         <label for="c-50-backstage-ui-table-visual-stories" class="badge ok as-toggle">9 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Table/stories/Table.visual.stories.tsx">backstage-ui-table-visual · ./packages/ui/src/components/Table/stories/Table.visual.stories.tsx</div>
@@ -16332,6 +16561,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
   
   
   <input id="c-50-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-50-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -16769,6 +16999,7 @@ virtualized?: | boolean
             </div>
         </div>
     
+    
   </div>
 </article>
 <article
@@ -16787,6 +17018,7 @@ virtualized?: | boolean
         
         <label for="c-51-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
         
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories.tsx">backstage-ui-visuallyhidden · ./packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories.tsx</div>
@@ -16799,6 +17031,7 @@ virtualized?: | boolean
   
   
   <input id="c-51-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
   <input id="c-51-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
@@ -16879,448 +17112,11 @@ virtualized?: | boolean
             </div>
         </div>
     
+    
   </div>
 </article>
     </div>
-    <div class="error-groups" role="region" aria-label="Prop type error groups">
-        <section class="group">
-          <input id="component-file-in-node-modules-toggle" class="group-tg" type="checkbox" hidden />
-          <label for="component-file-in-node-modules-toggle" class="group-header">
-            <span class="caret">▸</span>
-            <span class="group-title">Component file in node_modules</span>
-            <span class="group-count">1</span>
-          </label>
-          <div class="group-cards">
-<article
-  class="card 
-  has-error 
-  has-info 
-  no-story-error
-  no-doc-error"
-  role="listitem"
-  aria-label="PluginHeaderandHeader">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-err"></span> PluginHeaderandHeader</h2>
-      <div class="badges">
-        <label for="c-error-0-recipes-pluginheader-and-header-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-0-recipes-pluginheader-and-header-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-0-recipes-pluginheader-and-header-stories" class="badge ok as-toggle">9 stories</label>
-        
-      </div>
-    </div>
-    <div class="meta" title="./packages/ui/src/recipes/PluginHeaderAndHeader.stories.tsx">recipes-pluginheader-and-header · ./packages/ui/src/recipes/PluginHeaderAndHeader.stories.tsx</div>
     
-    
-    
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-0-recipes-pluginheader-and-header-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-0-recipes-pluginheader-and-header-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-0-recipes-pluginheader-and-header-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-  
-
-  <div class="panels">
-    
-        <div class="panel panel-err">
-          
-    <div class="note err">
-      <div class="note-title">Prop type error</div>
-      <div class="note-body"><pre><code>File: /home/runner/work/backstage/backstage/node_modules/@backstage/core-components/src/index.ts
-Error:
-Component files in node_modules are not supported.
-The distributed files in node_modules usually don&#39;t contain the necessary comments or types needed to analyze component information.
-Configure TypeScript path aliases to map your package name to the source file instead.
-
-Example (tsconfig.json):
-{
-  &quot;compilerOptions&quot;: {
-    &quot;baseUrl&quot;: &quot;.&quot;,
-    &quot;paths&quot;: {
-      &quot;@design-system/button&quot;: [&quot;src/components/Button.tsx&quot;],
-      &quot;@design-system/*&quot;: [&quot;src/components/*&quot;]
-    }
-  }
-}
-
-Then import using:
-import { Button } from &#39;@design-system/button&#39;
-
-Storybook resolves tsconfig paths automatically.
-Code:
-/* File in node_modules */</code></pre></div>
-    </div>
-        </div>
-    
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
-    
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import {
-    BUIProvider,
-    Button,
-    ButtonIcon,
-    Card,
-    Container,
-    Header as CoreHeader,
-    Page as CorePage,
-    Flex,
-    Header,
-    Menu,
-    MenuItem,
-    MenuTrigger,
-    PluginHeader,
-} from "@backstage/core-components";
-import { MemoryRouter } from "react-router-dom";
-import {
-    RiBox3Line,
-    RiCodeSSlashLine,
-    RiDownloadLine,
-    RiEdit2Line,
-    RiGitBranchLine,
-    RiMore2Line,
-    RiPlayLine,
-    RiRefreshLine,
-    RiSettings4Line,
-    RiShareBoxLine,
-} from "@remixicon/react";</code></pre>
-              </div>
-          
-          
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">No Header</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const NoHeader = () =&gt; (
-  &lt;&gt;
-    &lt;PluginHeader icon={&lt;RiCodeSSlashLine /&gt;} title=&quot;APIs&quot; /&gt;
-    &lt;PageContent /&gt;
-  &lt;/&gt;
-);</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">No Header With Tabs</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const NoHeaderWithTabs = () =&gt; (
-  &lt;&gt;
-    &lt;PluginHeader
-      icon={&lt;RiCodeSSlashLine /&gt;}
-      title=&quot;APIs&quot;
-      tabs={[
-        { id: &#39;overview&#39;, label: &#39;Overview&#39;, href: &#39;/apis&#39; },
-        {
-          id: &#39;definitions&#39;,
-          label: &#39;Definitions&#39;,
-          href: &#39;/apis/definitions&#39;,
-        },
-        { id: &#39;consumers&#39;, label: &#39;Consumers&#39;, href: &#39;/apis/consumers&#39; },
-      ]}
-    /&gt;
-    &lt;PageContent /&gt;
-  &lt;/&gt;
-);</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Simple Header</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SimpleHeader = () =&gt; (
-  &lt;&gt;
-    &lt;PluginHeader icon={&lt;RiCodeSSlashLine /&gt;} title=&quot;APIs&quot; /&gt;
-    &lt;Header title=&quot;payments-api&quot; /&gt;
-    &lt;PageContent /&gt;
-  &lt;/&gt;
-);</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Core Components Header</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const CoreComponentsHeader = () =&gt; (
-  &lt;&gt;
-    &lt;PluginHeader icon={&lt;RiCodeSSlashLine /&gt;} title=&quot;APIs&quot; /&gt;
-    &lt;CorePage themeId=&quot;home&quot;&gt;
-      &lt;CoreHeader title=&quot;payments-api&quot; /&gt;
-      &lt;PageContent /&gt;
-    &lt;/CorePage&gt;
-  &lt;/&gt;
-);</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Core Components Header With Tabs</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const CoreComponentsHeaderWithTabs = () =&gt; (
-  &lt;&gt;
-    &lt;PluginHeader
-      icon={&lt;RiCodeSSlashLine /&gt;}
-      title=&quot;APIs&quot;
-      tabs={[
-        { id: &#39;overview&#39;, label: &#39;Overview&#39;, href: &#39;/apis&#39; },
-        {
-          id: &#39;definitions&#39;,
-          label: &#39;Definitions&#39;,
-          href: &#39;/apis/definitions&#39;,
-        },
-        { id: &#39;consumers&#39;, label: &#39;Consumers&#39;, href: &#39;/apis/consumers&#39; },
-      ]}
-    /&gt;
-    &lt;CorePage themeId=&quot;home&quot;&gt;
-      &lt;CoreHeader title=&quot;payments-api&quot; /&gt;
-      &lt;PageContent /&gt;
-    &lt;/CorePage&gt;
-  &lt;/&gt;
-);</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">With Tabs</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithTabs = () =&gt; (
-  &lt;&gt;
-    &lt;PluginHeader
-      icon={&lt;RiBox3Line /&gt;}
-      title=&quot;Catalog&quot;
-      titleLink=&quot;/&quot;
-      tabs={[
-        { id: &#39;catalog&#39;, label: &#39;Catalog&#39;, href: &#39;/catalog&#39; },
-        { id: &#39;apis&#39;, label: &#39;APIs&#39;, href: &#39;/apis&#39; },
-        { id: &#39;resources&#39;, label: &#39;Resources&#39;, href: &#39;/resources&#39; },
-        { id: &#39;templates&#39;, label: &#39;Templates&#39;, href: &#39;/templates&#39; },
-        { id: &#39;docs&#39;, label: &#39;Docs&#39;, href: &#39;/docs&#39; },
-      ]}
-      customActions={
-        &lt;&gt;
-          &lt;ButtonIcon
-            variant=&quot;secondary&quot;
-            icon={&lt;RiSettings4Line /&gt;}
-            aria-label=&quot;Settings&quot;
-          /&gt;
-          &lt;MenuTrigger&gt;
-            &lt;ButtonIcon
-              variant=&quot;secondary&quot;
-              icon={&lt;RiMore2Line /&gt;}
-              aria-label=&quot;More options&quot;
-            /&gt;
-            &lt;Menu placement=&quot;bottom end&quot;&gt;
-              &lt;MenuItem href=&quot;/catalog/import&quot;&gt;Import component&lt;/MenuItem&gt;
-              &lt;MenuItem href=&quot;/catalog/register&quot;&gt;Register existing&lt;/MenuItem&gt;
-              &lt;MenuItem href=&quot;/catalog/docs&quot;&gt;View documentation&lt;/MenuItem&gt;
-            &lt;/Menu&gt;
-          &lt;/MenuTrigger&gt;
-        &lt;/&gt;
-      }
-    /&gt;
-    &lt;Header
-      title=&quot;payment-service&quot;
-      customActions={
-        &lt;&gt;
-          &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiEdit2Line /&gt;}&gt;
-            Edit
-          &lt;/Button&gt;
-          &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiShareBoxLine /&gt;}&gt;
-            Unregister
-          &lt;/Button&gt;
-        &lt;/&gt;
-      }
-    /&gt;
-    &lt;PageContent /&gt;
-  &lt;/&gt;
-);</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">With Sub Tabs</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithSubTabs = () =&gt; {
-  return (
-    &lt;&gt;
-      &lt;PluginHeader
-        icon={&lt;RiGitBranchLine /&gt;}
-        title=&quot;CI/CD&quot;
-        titleLink=&quot;/&quot;
-        tabs={[
-          { id: &#39;builds&#39;, label: &#39;Builds&#39;, href: &#39;/builds&#39; },
-          { id: &#39;pipelines&#39;, label: &#39;Pipelines&#39;, href: &#39;/pipelines&#39; },
-          { id: &#39;deployments&#39;, label: &#39;Deployments&#39;, href: &#39;/deployments&#39; },
-          { id: &#39;settings&#39;, label: &#39;Settings&#39;, href: &#39;/settings&#39; },
-        ]}
-        customActions={
-          &lt;&gt;
-            &lt;ButtonIcon
-              variant=&quot;secondary&quot;
-              icon={&lt;RiRefreshLine /&gt;}
-              aria-label=&quot;Refresh&quot;
-            /&gt;
-          &lt;/&gt;
-        }
-      /&gt;
-      &lt;Header
-        title=&quot;Production deployment pipeline run&quot;
-        tabs={subTabs}
-        customActions={
-          &lt;&gt;
-            &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiDownloadLine /&gt;}&gt;
-              Download logs
-            &lt;/Button&gt;
-            &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiPlayLine /&gt;}&gt;
-              Re-run pipeline
-            &lt;/Button&gt;
-          &lt;/&gt;
-        }
-      /&gt;
-      &lt;PageContent /&gt;
-    &lt;/&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">With Sub Tabs And Tags</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithSubTabsAndTags = () =&gt; {
-  return (
-    &lt;&gt;
-      &lt;PluginHeader
-        icon={&lt;RiGitBranchLine /&gt;}
-        title=&quot;CI/CD&quot;
-        titleLink=&quot;/&quot;
-        tabs={[
-          { id: &#39;builds&#39;, label: &#39;Builds&#39;, href: &#39;/builds&#39; },
-          { id: &#39;pipelines&#39;, label: &#39;Pipelines&#39;, href: &#39;/pipelines&#39; },
-          { id: &#39;deployments&#39;, label: &#39;Deployments&#39;, href: &#39;/deployments&#39; },
-          { id: &#39;settings&#39;, label: &#39;Settings&#39;, href: &#39;/settings&#39; },
-        ]}
-        customActions={
-          &lt;&gt;
-            &lt;ButtonIcon
-              variant=&quot;secondary&quot;
-              icon={&lt;RiRefreshLine /&gt;}
-              aria-label=&quot;Refresh&quot;
-            /&gt;
-          &lt;/&gt;
-        }
-      /&gt;
-      &lt;Header
-        title=&quot;Production deployment pipeline run&quot;
-        tabs={subTabs}
-        tags={[
-          { label: &#39;Production&#39; },
-          { label: &#39;Owner: Platform&#39;, href: &#39;/catalog?owner=platform&#39; },
-          { label: &#39;Tier 1&#39; },
-        ]}
-        customActions={
-          &lt;&gt;
-            &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiDownloadLine /&gt;}&gt;
-              Download logs
-            &lt;/Button&gt;
-            &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiPlayLine /&gt;}&gt;
-              Re-run pipeline
-            &lt;/Button&gt;
-          &lt;/&gt;
-        }
-      /&gt;
-      &lt;PageContent /&gt;
-    &lt;/&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">With Sticky Header</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithStickyHeader = () =&gt; {
-  return (
-    &lt;&gt;
-      &lt;PluginHeader
-        icon={&lt;RiGitBranchLine /&gt;}
-        title=&quot;CI/CD&quot;
-        titleLink=&quot;/&quot;
-        tabs={[
-          { id: &#39;builds&#39;, label: &#39;Builds&#39;, href: &#39;/builds&#39; },
-          { id: &#39;pipelines&#39;, label: &#39;Pipelines&#39;, href: &#39;/pipelines&#39; },
-          { id: &#39;deployments&#39;, label: &#39;Deployments&#39;, href: &#39;/deployments&#39; },
-          { id: &#39;settings&#39;, label: &#39;Settings&#39;, href: &#39;/settings&#39; },
-        ]}
-        customActions={
-          &lt;&gt;
-            &lt;ButtonIcon
-              variant=&quot;secondary&quot;
-              icon={&lt;RiRefreshLine /&gt;}
-              aria-label=&quot;Refresh&quot;
-            /&gt;
-          &lt;/&gt;
-        }
-      /&gt;
-      &lt;Header
-        title=&quot;Production deployment pipeline run&quot;
-        sticky
-        tabs={subTabs}
-        customActions={
-          &lt;&gt;
-            &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiDownloadLine /&gt;}&gt;
-              Download logs
-            &lt;/Button&gt;
-            &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiPlayLine /&gt;}&gt;
-              Re-run pipeline
-            &lt;/Button&gt;
-          &lt;/&gt;
-        }
-      /&gt;
-      &lt;LongPageContent /&gt;
-    &lt;/&gt;
-  );
-};</code></pre>
-            </div>
-        </div>
-    
-  </div>
-</article></div>
-        </section>
-      </div>
     
     
   </div>

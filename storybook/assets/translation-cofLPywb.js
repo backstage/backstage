@@ -1,0 +1,1 @@
+import{a5 as l}from"./iframe-t9H7a1GP.js";const s=l({id:"search",messages:{searchModal:{viewFullResults:"View Full Results"},searchType:{allResults:"All Results",tabs:{allTitle:"All"},accordion:{allTitle:"All",collapse:"Collapse",numberOfResults:"{{number}} results"}},sidebarSearchModal:{title:"Search"}}});export{s};

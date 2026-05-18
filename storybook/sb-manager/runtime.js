@@ -152,7 +152,7 @@ var require_prop_types = __commonJS({
 var require_react_fast_compare = __commonJS({
   "../../node_modules/react-fast-compare/index.js"(exports, module) {
     var hasElementType = typeof Element < "u", hasMap = typeof Map == "function", hasSet = typeof Set == "function", hasArrayBuffer = typeof ArrayBuffer == "function" && !!ArrayBuffer.isView;
-    function equal4(a2, b2) {
+    function equal3(a2, b2) {
       if (a2 === b2) return !0;
       if (a2 && b2 && typeof a2 == "object" && typeof b2 == "object") {
         if (a2.constructor !== b2.constructor) return !1;
@@ -160,7 +160,7 @@ var require_react_fast_compare = __commonJS({
         if (Array.isArray(a2)) {
           if (length = a2.length, length != b2.length) return !1;
           for (i2 = length; i2-- !== 0; )
-            if (!equal4(a2[i2], b2[i2])) return !1;
+            if (!equal3(a2[i2], b2[i2])) return !1;
           return !0;
         }
         var it;
@@ -169,7 +169,7 @@ var require_react_fast_compare = __commonJS({
           for (it = a2.entries(); !(i2 = it.next()).done; )
             if (!b2.has(i2.value[0])) return !1;
           for (it = a2.entries(); !(i2 = it.next()).done; )
-            if (!equal4(i2.value[1], b2.get(i2.value[0]))) return !1;
+            if (!equal3(i2.value[1], b2.get(i2.value[0]))) return !1;
           return !0;
         }
         if (hasSet && a2 instanceof Set && b2 instanceof Set) {
@@ -192,7 +192,7 @@ var require_react_fast_compare = __commonJS({
           if (!Object.prototype.hasOwnProperty.call(b2, keys[i2])) return !1;
         if (hasElementType && a2 instanceof Element) return !1;
         for (i2 = length; i2-- !== 0; )
-          if (!((keys[i2] === "_owner" || keys[i2] === "__v" || keys[i2] === "__o") && a2.$$typeof) && !equal4(a2[keys[i2]], b2[keys[i2]]))
+          if (!((keys[i2] === "_owner" || keys[i2] === "__v" || keys[i2] === "__o") && a2.$$typeof) && !equal3(a2[keys[i2]], b2[keys[i2]]))
             return !1;
         return !0;
       }
@@ -200,7 +200,7 @@ var require_react_fast_compare = __commonJS({
     }
     module.exports = function(a2, b2) {
       try {
-        return equal4(a2, b2);
+        return equal3(a2, b2);
       } catch (error) {
         if ((error.message || "").match(/stack|recursion/i))
           return console.warn("react-fast-compare cannot handle circular refs"), !1;
@@ -442,79 +442,14 @@ var require_memoizerific = __commonJS({
   }
 });
 
-// ../../node_modules/toggle-selection/index.js
-var require_toggle_selection = __commonJS({
-  "../../node_modules/toggle-selection/index.js"(exports, module) {
-    module.exports = function() {
-      var selection = document.getSelection();
-      if (!selection.rangeCount)
-        return function() {
-        };
-      for (var active = document.activeElement, ranges = [], i2 = 0; i2 < selection.rangeCount; i2++)
-        ranges.push(selection.getRangeAt(i2));
-      switch (active.tagName.toUpperCase()) {
-        // .toUpperCase handles XHTML
-        case "INPUT":
-        case "TEXTAREA":
-          active.blur();
-          break;
-        default:
-          active = null;
-          break;
-      }
-      return selection.removeAllRanges(), function() {
-        selection.type === "Caret" && selection.removeAllRanges(), selection.rangeCount || ranges.forEach(function(range) {
-          selection.addRange(range);
-        }), active && active.focus();
-      };
+// ../../node_modules/picocolors/picocolors.browser.js
+var require_picocolors_browser = __commonJS({
+  "../../node_modules/picocolors/picocolors.browser.js"(exports, module) {
+    var x2 = String, create4 = function() {
+      return { isColorSupported: !1, reset: x2, bold: x2, dim: x2, italic: x2, underline: x2, inverse: x2, hidden: x2, strikethrough: x2, black: x2, red: x2, green: x2, yellow: x2, blue: x2, magenta: x2, cyan: x2, white: x2, gray: x2, bgBlack: x2, bgRed: x2, bgGreen: x2, bgYellow: x2, bgBlue: x2, bgMagenta: x2, bgCyan: x2, bgWhite: x2, blackBright: x2, redBright: x2, greenBright: x2, yellowBright: x2, blueBright: x2, magentaBright: x2, cyanBright: x2, whiteBright: x2, bgBlackBright: x2, bgRedBright: x2, bgGreenBright: x2, bgYellowBright: x2, bgBlueBright: x2, bgMagentaBright: x2, bgCyanBright: x2, bgWhiteBright: x2 };
     };
-  }
-});
-
-// ../../node_modules/copy-to-clipboard/index.js
-var require_copy_to_clipboard = __commonJS({
-  "../../node_modules/copy-to-clipboard/index.js"(exports, module) {
-    "use strict";
-    var deselectCurrent = require_toggle_selection(), clipboardToIE11Formatting = {
-      "text/plain": "Text",
-      "text/html": "Url",
-      default: "Text"
-    }, defaultMessage = "Copy to clipboard: #{key}, Enter";
-    function format(message) {
-      var copyKey = (/mac os x/i.test(navigator.userAgent) ? "\u2318" : "Ctrl") + "+C";
-      return message.replace(/#{\s*key\s*}/g, copyKey);
-    }
-    function copy3(text, options2) {
-      var debug, message, reselectPrevious, range, selection, mark, success = !1;
-      options2 || (options2 = {}), debug = options2.debug || !1;
-      try {
-        reselectPrevious = deselectCurrent(), range = document.createRange(), selection = document.getSelection(), mark = document.createElement("span"), mark.textContent = text, mark.ariaHidden = "true", mark.style.all = "unset", mark.style.position = "fixed", mark.style.top = 0, mark.style.clip = "rect(0, 0, 0, 0)", mark.style.whiteSpace = "pre", mark.style.webkitUserSelect = "text", mark.style.MozUserSelect = "text", mark.style.msUserSelect = "text", mark.style.userSelect = "text", mark.addEventListener("copy", function(e2) {
-          if (e2.stopPropagation(), options2.format)
-            if (e2.preventDefault(), typeof e2.clipboardData > "u") {
-              debug && console.warn("unable to use e.clipboardData"), debug && console.warn("trying IE specific stuff"), window.clipboardData.clearData();
-              var format2 = clipboardToIE11Formatting[options2.format] || clipboardToIE11Formatting.default;
-              window.clipboardData.setData(format2, text);
-            } else
-              e2.clipboardData.clearData(), e2.clipboardData.setData(options2.format, text);
-          options2.onCopy && (e2.preventDefault(), options2.onCopy(e2.clipboardData));
-        }), document.body.appendChild(mark), range.selectNodeContents(mark), selection.addRange(range);
-        var successful = document.execCommand("copy");
-        if (!successful)
-          throw new Error("copy command was unsuccessful");
-        success = !0;
-      } catch (err) {
-        debug && console.error("unable to copy using execCommand: ", err), debug && console.warn("trying IE specific stuff");
-        try {
-          window.clipboardData.setData(options2.format || "text", text), options2.onCopy && options2.onCopy(window.clipboardData), success = !0;
-        } catch (err2) {
-          debug && console.error("unable to copy using clipboardData: ", err2), debug && console.error("falling back to prompt"), message = format("message" in options2 ? options2.message : defaultMessage), window.prompt(message, text);
-        }
-      } finally {
-        selection && (typeof selection.removeRange == "function" ? selection.removeRange(range) : selection.removeAllRanges()), mark && document.body.removeChild(mark), reselectPrevious();
-      }
-      return success;
-    }
-    module.exports = copy3;
+    module.exports = create4();
+    module.exports.createColors = create4;
   }
 });
 
@@ -1317,7 +1252,7 @@ init_react();
 var channels_default = __STORYBOOK_CHANNELS__, { Channel, HEARTBEAT_INTERVAL, HEARTBEAT_MAX_LATENCY, PostMessageTransport, WebsocketTransport, createBrowserChannel } = __STORYBOOK_CHANNELS__;
 
 // global-externals:storybook/internal/core-events
-var core_events_default = __STORYBOOK_CORE_EVENTS__, { ARGTYPES_INFO_REQUEST, ARGTYPES_INFO_RESPONSE, CHANNEL_CREATED, CHANNEL_WS_DISCONNECT, CONFIG_ERROR, CREATE_NEW_STORYFILE_REQUEST, CREATE_NEW_STORYFILE_RESPONSE, CURRENT_STORY_WAS_SET, DOCS_PREPARED, DOCS_RENDERED, FILE_COMPONENT_SEARCH_REQUEST, FILE_COMPONENT_SEARCH_RESPONSE, FORCE_REMOUNT, FORCE_RE_RENDER, GHOST_STORIES_REQUEST, GHOST_STORIES_RESPONSE, GLOBALS_UPDATED, MANAGER_INERT_ATTRIBUTE_CHANGED, NAVIGATE_URL, OPEN_IN_EDITOR_REQUEST, OPEN_IN_EDITOR_RESPONSE, PLAY_FUNCTION_THREW_EXCEPTION, PRELOAD_ENTRIES, PREVIEW_BUILDER_PROGRESS, PREVIEW_INITIALIZED, PREVIEW_KEYDOWN, REGISTER_SUBSCRIPTION, REQUEST_WHATS_NEW_DATA, RESET_STORY_ARGS, RESULT_WHATS_NEW_DATA, SAVE_STORY_REQUEST, SAVE_STORY_RESPONSE, SELECT_STORY, SET_CONFIG, SET_CURRENT_STORY, SET_FILTER, SET_GLOBALS, SET_INDEX, SET_STORIES, SET_WHATS_NEW_CACHE, SHARED_STATE_CHANGED, SHARED_STATE_SET, SHARE_ISOLATE_MODE, SHARE_POPOVER_OPENED, SHARE_STORY_LINK, STORIES_COLLAPSE_ALL, STORIES_EXPAND_ALL, STORY_ARGS_UPDATED, STORY_CHANGED, STORY_ERRORED, STORY_FINISHED, STORY_HOT_UPDATED, STORY_INDEX_INVALIDATED, STORY_MISSING, STORY_PREPARED, STORY_RENDERED, STORY_RENDER_PHASE_CHANGED, STORY_SPECIFIED, STORY_THREW_EXCEPTION, STORY_UNCHANGED, TELEMETRY_ERROR, TOGGLE_WHATS_NEW_NOTIFICATIONS, UNHANDLED_ERRORS_WHILE_PLAYING, UPDATE_GLOBALS, UPDATE_QUERY_PARAMS, UPDATE_STORY_ARGS } = __STORYBOOK_CORE_EVENTS__;
+var core_events_default = __STORYBOOK_CORE_EVENTS__, { AI_PROMPT_NUDGE, AI_SETUP_ANALYTICS_REQUEST, AI_SETUP_ANALYTICS_RESPONSE, ARGTYPES_INFO_REQUEST, ARGTYPES_INFO_RESPONSE, CHANNEL_CREATED, CHANNEL_WS_DISCONNECT, CONFIG_ERROR, CREATE_NEW_STORYFILE_REQUEST, CREATE_NEW_STORYFILE_RESPONSE, CURRENT_STORY_WAS_SET, DOCS_PREPARED, DOCS_RENDERED, FILE_COMPONENT_SEARCH_REQUEST, FILE_COMPONENT_SEARCH_RESPONSE, FORCE_REMOUNT, FORCE_RE_RENDER, GHOST_STORIES_REQUEST, GHOST_STORIES_RESPONSE, GLOBALS_UPDATED, MANAGER_INERT_ATTRIBUTE_CHANGED, NAVIGATE_URL, OPEN_IN_EDITOR_REQUEST, OPEN_IN_EDITOR_RESPONSE, PLAY_FUNCTION_THREW_EXCEPTION, PRELOAD_ENTRIES, PREVIEW_BUILDER_PROGRESS, PREVIEW_INITIALIZED, PREVIEW_KEYDOWN, REGISTER_SUBSCRIPTION, REQUEST_WHATS_NEW_DATA, RESET_STORY_ARGS, RESULT_WHATS_NEW_DATA, SAVE_STORY_REQUEST, SAVE_STORY_RESPONSE, SELECT_STORY, SET_CONFIG, SET_CURRENT_STORY, SET_FILTER, SET_GLOBALS, SET_INDEX, SET_STORIES, SET_WHATS_NEW_CACHE, SHARED_STATE_CHANGED, SHARED_STATE_SET, SHARE_ISOLATE_MODE, SIDEBAR_FILTER_CHANGED, STORIES_COLLAPSE_ALL, STORIES_EXPAND_ALL, STORY_ARGS_UPDATED, STORY_CHANGED, STORY_ERRORED, STORY_FINISHED, STORY_HOT_UPDATED, STORY_INDEX_INVALIDATED, STORY_MISSING, STORY_PREPARED, STORY_RENDERED, STORY_RENDER_PHASE_CHANGED, STORY_SPECIFIED, STORY_THREW_EXCEPTION, STORY_UNCHANGED, TELEMETRY_ERROR, TOGGLE_WHATS_NEW_NOTIFICATIONS, UNHANDLED_ERRORS_WHILE_PLAYING, UPDATE_GLOBALS, UPDATE_QUERY_PARAMS, UPDATE_STORY_ARGS } = __STORYBOOK_CORE_EVENTS__;
 
 // ../../node_modules/@storybook/global/dist/index.mjs
 var scope = (() => {
@@ -1378,6 +1313,7 @@ __export(icons_exports, {
   ChangedIcon: () => ChangedIcon,
   ChatIcon: () => ChatIcon,
   CheckIcon: () => CheckIcon,
+  ChecklistIcon: () => ChecklistIcon,
   ChevronDownIcon: () => ChevronDownIcon,
   ChevronLeftIcon: () => ChevronLeftIcon,
   ChevronRightIcon: () => ChevronRightIcon,
@@ -1437,6 +1373,7 @@ __export(icons_exports, {
   FailedIcon: () => FailedIcon,
   FastForwardIcon: () => FastForwardIcon,
   FigmaIcon: () => FigmaIcon,
+  FilesIcon: () => FilesIcon,
   FilterIcon: () => FilterIcon,
   FlagIcon: () => FlagIcon,
   FolderIcon: () => FolderIcon,
@@ -1502,6 +1439,7 @@ __export(icons_exports, {
   PlusIcon: () => PlusIcon,
   PointerDefaultIcon: () => PointerDefaultIcon,
   PointerHandIcon: () => PointerHandIcon,
+  PopOutIcon: () => PopOutIcon,
   PowerIcon: () => PowerIcon,
   PrintIcon: () => PrintIcon,
   ProceedIcon: () => ProceedIcon,
@@ -1535,6 +1473,7 @@ __export(icons_exports, {
   StarIcon: () => StarIcon,
   StatusFailIcon: () => StatusFailIcon,
   StatusIcon: () => StatusIcon,
+  StatusNewIcon: () => StatusNewIcon,
   StatusPassIcon: () => StatusPassIcon,
   StatusWarnIcon: () => StatusWarnIcon,
   StickerIcon: () => StickerIcon,
@@ -1582,7 +1521,7 @@ __export(icons_exports, {
   default: () => icons_default,
   iconList: () => iconList
 });
-var icons_default = __STORYBOOK_ICONS__, { AccessibilityAltIcon, AccessibilityIcon, AccessibilityIgnoredIcon, AddIcon, AdminIcon, AlertAltIcon, AlertIcon, AlignLeftIcon, AlignRightIcon, AppleIcon, ArrowBottomLeftIcon, ArrowBottomRightIcon, ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowSolidDownIcon, ArrowSolidLeftIcon, ArrowSolidRightIcon, ArrowSolidUpIcon, ArrowTopLeftIcon, ArrowTopRightIcon, ArrowUpIcon, AzureDevOpsIcon, BackIcon, BasketIcon, BatchAcceptIcon, BatchDenyIcon, BeakerIcon, BellIcon, BitbucketIcon, BoldIcon, BookIcon, BookmarkHollowIcon, BookmarkIcon, BottomBarIcon, BottomBarToggleIcon, BoxIcon, BranchIcon, BrowserIcon, BugIcon, ButtonIcon, CPUIcon, CalendarIcon, CameraIcon, CameraStabilizeIcon, CategoryIcon, CertificateIcon, ChangedIcon, ChatIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronSmallDownIcon, ChevronSmallLeftIcon, ChevronSmallRightIcon, ChevronSmallUpIcon, ChevronUpIcon, ChromaticIcon, ChromeIcon, CircleHollowIcon, CircleIcon, ClearIcon, CloseAltIcon, CloseIcon, CloudHollowIcon, CloudIcon, CogIcon, CollapseIcon, CommandIcon, CommentAddIcon, CommentIcon, CommentsIcon, CommitIcon, CompassIcon, ComponentDrivenIcon, ComponentIcon, ContrastIcon, ContrastIgnoredIcon, ControlsIcon, CopyIcon, CreditIcon, CrossIcon, DashboardIcon, DatabaseIcon, DeleteIcon, DiamondIcon, DirectionIcon, DiscordIcon, DocChartIcon, DocListIcon, DocumentIcon, DownloadIcon, DragIcon, EditIcon, EditorIcon, EllipsisIcon, EmailIcon, ExpandAltIcon, ExpandIcon, EyeCloseIcon, EyeIcon, FaceHappyIcon, FaceNeutralIcon, FaceSadIcon, FacebookIcon, FailedIcon, FastForwardIcon, FigmaIcon, FilterIcon, FlagIcon, FolderIcon, FormIcon, GDriveIcon, GiftIcon, GithubIcon, GitlabIcon, GlobeIcon, GoogleIcon, GraphBarIcon, GraphLineIcon, GraphqlIcon, GridAltIcon, GridIcon, GrowIcon, HeartHollowIcon, HeartIcon, HomeIcon, HourglassIcon, InfoIcon, ItalicIcon, JumpToIcon, KeyIcon, LightningIcon, LightningOffIcon, LinkBrokenIcon, LinkIcon, LinkedinIcon, LinuxIcon, ListOrderedIcon, ListUnorderedIcon, LocationIcon, LockIcon, MarkdownIcon, MarkupIcon, MediumIcon, MemoryIcon, MenuIcon, MergeIcon, MirrorIcon, MobileIcon, MoonIcon, NutIcon, OutboxIcon, OutlineIcon, PaintBrushAltIcon, PaintBrushIcon, PaperClipIcon, ParagraphIcon, PassedIcon, PhoneIcon, PhotoDragIcon, PhotoIcon, PhotoStabilizeIcon, PinAltIcon, PinIcon, PlayAllHollowIcon, PlayBackIcon, PlayHollowIcon, PlayIcon, PlayNextIcon, PlusIcon, PointerDefaultIcon, PointerHandIcon, PowerIcon, PrintIcon, ProceedIcon, ProfileIcon, PullRequestIcon, QuestionIcon, RSSIcon, RedirectIcon, ReduxIcon, RefreshIcon, ReplyIcon, RepoIcon, RequestChangeIcon, RewindIcon, RulerIcon, SaveIcon, SearchIcon, ShareAltIcon, ShareIcon, ShieldIcon, SideBySideIcon, SidebarAltIcon, SidebarAltToggleIcon, SidebarIcon, SidebarToggleIcon, SortDownIcon, SortUpIcon, SpeakerIcon, StackedIcon, StarHollowIcon, StarIcon, StatusFailIcon, StatusIcon, StatusPassIcon, StatusWarnIcon, StickerIcon, StopAltHollowIcon, StopAltIcon, StopIcon, StorybookIcon, StructureIcon, SubtractIcon, SunIcon, SupportIcon, SweepIcon, SwitchAltIcon, SyncIcon, TabletIcon, ThumbsUpIcon, TimeIcon, TimerIcon, TransferIcon, TrashIcon, TwitterIcon, TypeIcon, UbuntuIcon, UndoIcon, UnfoldIcon, UnlockIcon, UnpinIcon, UploadIcon, UserAddIcon, UserAltIcon, UserIcon, UsersIcon, VSCodeIcon, VerifiedIcon, VideoIcon, WandIcon, WatchIcon, WindowsIcon, WrenchIcon, XIcon, YoutubeIcon, ZoomIcon, ZoomOutIcon, ZoomResetIcon, iconList } = __STORYBOOK_ICONS__;
+var icons_default = __STORYBOOK_ICONS__, { AccessibilityAltIcon, AccessibilityIcon, AccessibilityIgnoredIcon, AddIcon, AdminIcon, AlertAltIcon, AlertIcon, AlignLeftIcon, AlignRightIcon, AppleIcon, ArrowBottomLeftIcon, ArrowBottomRightIcon, ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowSolidDownIcon, ArrowSolidLeftIcon, ArrowSolidRightIcon, ArrowSolidUpIcon, ArrowTopLeftIcon, ArrowTopRightIcon, ArrowUpIcon, AzureDevOpsIcon, BackIcon, BasketIcon, BatchAcceptIcon, BatchDenyIcon, BeakerIcon, BellIcon, BitbucketIcon, BoldIcon, BookIcon, BookmarkHollowIcon, BookmarkIcon, BottomBarIcon, BottomBarToggleIcon, BoxIcon, BranchIcon, BrowserIcon, BugIcon, ButtonIcon, CPUIcon, CalendarIcon, CameraIcon, CameraStabilizeIcon, CategoryIcon, CertificateIcon, ChangedIcon, ChatIcon, CheckIcon, ChecklistIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronSmallDownIcon, ChevronSmallLeftIcon, ChevronSmallRightIcon, ChevronSmallUpIcon, ChevronUpIcon, ChromaticIcon, ChromeIcon, CircleHollowIcon, CircleIcon, ClearIcon, CloseAltIcon, CloseIcon, CloudHollowIcon, CloudIcon, CogIcon, CollapseIcon, CommandIcon, CommentAddIcon, CommentIcon, CommentsIcon, CommitIcon, CompassIcon, ComponentDrivenIcon, ComponentIcon, ContrastIcon, ContrastIgnoredIcon, ControlsIcon, CopyIcon, CreditIcon, CrossIcon, DashboardIcon, DatabaseIcon, DeleteIcon, DiamondIcon, DirectionIcon, DiscordIcon, DocChartIcon, DocListIcon, DocumentIcon, DownloadIcon, DragIcon, EditIcon, EditorIcon, EllipsisIcon, EmailIcon, ExpandAltIcon, ExpandIcon, EyeCloseIcon, EyeIcon, FaceHappyIcon, FaceNeutralIcon, FaceSadIcon, FacebookIcon, FailedIcon, FastForwardIcon, FigmaIcon, FilesIcon, FilterIcon, FlagIcon, FolderIcon, FormIcon, GDriveIcon, GiftIcon, GithubIcon, GitlabIcon, GlobeIcon, GoogleIcon, GraphBarIcon, GraphLineIcon, GraphqlIcon, GridAltIcon, GridIcon, GrowIcon, HeartHollowIcon, HeartIcon, HomeIcon, HourglassIcon, InfoIcon, ItalicIcon, JumpToIcon, KeyIcon, LightningIcon, LightningOffIcon, LinkBrokenIcon, LinkIcon, LinkedinIcon, LinuxIcon, ListOrderedIcon, ListUnorderedIcon, LocationIcon, LockIcon, MarkdownIcon, MarkupIcon, MediumIcon, MemoryIcon, MenuIcon, MergeIcon, MirrorIcon, MobileIcon, MoonIcon, NutIcon, OutboxIcon, OutlineIcon, PaintBrushAltIcon, PaintBrushIcon, PaperClipIcon, ParagraphIcon, PassedIcon, PhoneIcon, PhotoDragIcon, PhotoIcon, PhotoStabilizeIcon, PinAltIcon, PinIcon, PlayAllHollowIcon, PlayBackIcon, PlayHollowIcon, PlayIcon, PlayNextIcon, PlusIcon, PointerDefaultIcon, PointerHandIcon, PopOutIcon, PowerIcon, PrintIcon, ProceedIcon, ProfileIcon, PullRequestIcon, QuestionIcon, RSSIcon, RedirectIcon, ReduxIcon, RefreshIcon, ReplyIcon, RepoIcon, RequestChangeIcon, RewindIcon, RulerIcon, SaveIcon, SearchIcon, ShareAltIcon, ShareIcon, ShieldIcon, SideBySideIcon, SidebarAltIcon, SidebarAltToggleIcon, SidebarIcon, SidebarToggleIcon, SortDownIcon, SortUpIcon, SpeakerIcon, StackedIcon, StarHollowIcon, StarIcon, StatusFailIcon, StatusIcon, StatusNewIcon, StatusPassIcon, StatusWarnIcon, StickerIcon, StopAltHollowIcon, StopAltIcon, StopIcon, StorybookIcon, StructureIcon, SubtractIcon, SunIcon, SupportIcon, SweepIcon, SwitchAltIcon, SyncIcon, TabletIcon, ThumbsUpIcon, TimeIcon, TimerIcon, TransferIcon, TrashIcon, TwitterIcon, TypeIcon, UbuntuIcon, UndoIcon, UnfoldIcon, UnlockIcon, UnpinIcon, UploadIcon, UserAddIcon, UserAltIcon, UserIcon, UsersIcon, VSCodeIcon, VerifiedIcon, VideoIcon, WandIcon, WatchIcon, WindowsIcon, WrenchIcon, XIcon, YoutubeIcon, ZoomIcon, ZoomOutIcon, ZoomResetIcon, iconList } = __STORYBOOK_ICONS__;
 
 // global-externals:storybook/manager-api
 var manager_api_default = __STORYBOOK_API__, { ActiveTabs, Consumer, ManagerContext, Provider, RequestResponseError, Tag, addons, combineParameters, controlOrMetaKey, controlOrMetaSymbol, eventMatchesShortcut, eventToShortcut, experimental_MockUniversalStore, experimental_UniversalStore, experimental_getStatusStore, experimental_getTestProviderStore, experimental_requestResponse, experimental_useStatusStore, experimental_useTestProviderStore, experimental_useUniversalStore, internal_checklistStore, internal_fullStatusStore, internal_fullTestProviderStore, internal_universalChecklistStore, internal_universalStatusStore, internal_universalTestProviderStore, isMacLike, isShortcutTaken, keyToSymbol, merge, mockChannel, optionOrAltSymbol, shortcutMatchesShortcut, shortcutToAriaKeyshortcuts, shortcutToHumanString, types, useAddonState, useArgTypes, useArgs, useChannel, useGlobalTypes, useGlobals, useParameter, useSharedState, useStoryPrepared, useStorybookApi, useStorybookState } = __STORYBOOK_API__;
@@ -2424,19 +2363,19 @@ function _wrapNativeSuper(t2) {
     if (typeof t3 != "function") throw new TypeError("Super expression must either be null or a function");
     if (r4 !== void 0) {
       if (r4.has(t3)) return r4.get(t3);
-      r4.set(t3, Wrapper8);
+      r4.set(t3, Wrapper9);
     }
-    function Wrapper8() {
+    function Wrapper9() {
       return _construct(t3, arguments, _getPrototypeOf(this).constructor);
     }
-    return Wrapper8.prototype = Object.create(t3.prototype, {
+    return Wrapper9.prototype = Object.create(t3.prototype, {
       constructor: {
-        value: Wrapper8,
+        value: Wrapper9,
         enumerable: !1,
         writable: !0,
         configurable: !0
       }
-    }), _setPrototypeOf(Wrapper8, t3);
+    }), _setPrototypeOf(Wrapper9, t3);
   }, _wrapNativeSuper(t2);
 }
 
@@ -4645,9 +4584,12 @@ var useFullStoryName = () => {
   let { index, refs } = useStorybookState(), api = useStorybookApi(), currentStory = api.getCurrentStoryData();
   if (!currentStory)
     return "";
-  let combinedIndex = combineIndexes(index, refs || {}), fullStoryName = currentStory.renderLabel?.(currentStory, api) || currentStory.name, node = combinedIndex[currentStory.id];
-  for (; node && "parent" in node && node.parent && combinedIndex[node.parent] && fullStoryName.length < 24; )
-    node = combinedIndex[node.parent], fullStoryName = `${node.renderLabel?.(node, api) || node.name}/${fullStoryName}`;
+  let combinedIndex = combineIndexes(index, refs || {}), storyLabel = currentStory.renderLabel?.(currentStory, api), fullStoryName = typeof storyLabel == "string" ? storyLabel : currentStory.name, node = combinedIndex[currentStory.id];
+  for (; node && "parent" in node && node.parent && combinedIndex[node.parent] && fullStoryName.length < 24; ) {
+    node = combinedIndex[node.parent];
+    let parentLabel = node.renderLabel?.(node, api);
+    fullStoryName = `${typeof parentLabel == "string" ? parentLabel : node.name}/${fullStoryName}`;
+  }
   return fullStoryName;
 }, MobileNavigation = ({
   menu,
@@ -10210,10 +10152,10 @@ var layoutStateIsEqual = (state, other) => state.navSize === other.navSize && st
 init_react();
 
 // global-externals:storybook/internal/types
-var types_default = __STORYBOOK_TYPES__, { Addon_TypesEnum, CoreWebpackCompiler, Feature, SupportedBuilder, SupportedFramework, SupportedLanguage, SupportedRenderer } = __STORYBOOK_TYPES__;
+var types_default = __STORYBOOK_TYPES__, { Addon_TypesEnum, CHANGE_DETECTION_STATUS_TYPE_ID, CoreWebpackCompiler, Feature, SupportedBuilder, SupportedFramework, SupportedLanguage, SupportedRenderer } = __STORYBOOK_TYPES__;
 
 // src/core-events/index.ts
-var events = /* @__PURE__ */ ((events2) => (events2.CHANNEL_WS_DISCONNECT = "channelWSDisconnect", events2.CHANNEL_CREATED = "channelCreated", events2.CONFIG_ERROR = "configError", events2.STORY_INDEX_INVALIDATED = "storyIndexInvalidated", events2.STORY_SPECIFIED = "storySpecified", events2.SET_CONFIG = "setConfig", events2.SET_STORIES = "setStories", events2.SET_INDEX = "setIndex", events2.SET_CURRENT_STORY = "setCurrentStory", events2.CURRENT_STORY_WAS_SET = "currentStoryWasSet", events2.FORCE_RE_RENDER = "forceReRender", events2.FORCE_REMOUNT = "forceRemount", events2.PRELOAD_ENTRIES = "preloadStories", events2.STORY_PREPARED = "storyPrepared", events2.DOCS_PREPARED = "docsPrepared", events2.STORY_CHANGED = "storyChanged", events2.STORY_UNCHANGED = "storyUnchanged", events2.STORY_RENDERED = "storyRendered", events2.STORY_FINISHED = "storyFinished", events2.STORY_MISSING = "storyMissing", events2.STORY_ERRORED = "storyErrored", events2.STORY_THREW_EXCEPTION = "storyThrewException", events2.STORY_RENDER_PHASE_CHANGED = "storyRenderPhaseChanged", events2.STORY_HOT_UPDATED = "storyHotUpdated", events2.PLAY_FUNCTION_THREW_EXCEPTION = "playFunctionThrewException", events2.UNHANDLED_ERRORS_WHILE_PLAYING = "unhandledErrorsWhilePlaying", events2.UPDATE_STORY_ARGS = "updateStoryArgs", events2.STORY_ARGS_UPDATED = "storyArgsUpdated", events2.RESET_STORY_ARGS = "resetStoryArgs", events2.SET_FILTER = "setFilter", events2.SET_GLOBALS = "setGlobals", events2.UPDATE_GLOBALS = "updateGlobals", events2.GLOBALS_UPDATED = "globalsUpdated", events2.REGISTER_SUBSCRIPTION = "registerSubscription", events2.PREVIEW_INITIALIZED = "previewInitialized", events2.PREVIEW_KEYDOWN = "previewKeydown", events2.PREVIEW_BUILDER_PROGRESS = "preview_builder_progress", events2.SELECT_STORY = "selectStory", events2.STORIES_COLLAPSE_ALL = "storiesCollapseAll", events2.STORIES_EXPAND_ALL = "storiesExpandAll", events2.DOCS_RENDERED = "docsRendered", events2.SHARED_STATE_CHANGED = "sharedStateChanged", events2.SHARED_STATE_SET = "sharedStateSet", events2.NAVIGATE_URL = "navigateUrl", events2.UPDATE_QUERY_PARAMS = "updateQueryParams", events2.REQUEST_WHATS_NEW_DATA = "requestWhatsNewData", events2.RESULT_WHATS_NEW_DATA = "resultWhatsNewData", events2.SET_WHATS_NEW_CACHE = "setWhatsNewCache", events2.TOGGLE_WHATS_NEW_NOTIFICATIONS = "toggleWhatsNewNotifications", events2.TELEMETRY_ERROR = "telemetryError", events2.FILE_COMPONENT_SEARCH_REQUEST = "fileComponentSearchRequest", events2.FILE_COMPONENT_SEARCH_RESPONSE = "fileComponentSearchResponse", events2.SAVE_STORY_REQUEST = "saveStoryRequest", events2.SAVE_STORY_RESPONSE = "saveStoryResponse", events2.ARGTYPES_INFO_REQUEST = "argtypesInfoRequest", events2.ARGTYPES_INFO_RESPONSE = "argtypesInfoResponse", events2.CREATE_NEW_STORYFILE_REQUEST = "createNewStoryfileRequest", events2.CREATE_NEW_STORYFILE_RESPONSE = "createNewStoryfileResponse", events2.GHOST_STORIES_REQUEST = "ghostStoriesRequest", events2.GHOST_STORIES_RESPONSE = "ghostStoriesResponse", events2.OPEN_IN_EDITOR_REQUEST = "openInEditorRequest", events2.OPEN_IN_EDITOR_RESPONSE = "openInEditorResponse", events2.MANAGER_INERT_ATTRIBUTE_CHANGED = "managerInertAttributeChanged", events2.SHARE_STORY_LINK = "shareStoryLink", events2.SHARE_ISOLATE_MODE = "shareIsolateMode", events2.SHARE_POPOVER_OPENED = "sharePopoverOpened", events2))(events || {});
+var events = /* @__PURE__ */ ((events2) => (events2.CHANNEL_WS_DISCONNECT = "channelWSDisconnect", events2.CHANNEL_CREATED = "channelCreated", events2.CONFIG_ERROR = "configError", events2.STORY_INDEX_INVALIDATED = "storyIndexInvalidated", events2.STORY_SPECIFIED = "storySpecified", events2.SET_CONFIG = "setConfig", events2.SET_STORIES = "setStories", events2.SET_INDEX = "setIndex", events2.SET_CURRENT_STORY = "setCurrentStory", events2.CURRENT_STORY_WAS_SET = "currentStoryWasSet", events2.FORCE_RE_RENDER = "forceReRender", events2.FORCE_REMOUNT = "forceRemount", events2.PRELOAD_ENTRIES = "preloadStories", events2.STORY_PREPARED = "storyPrepared", events2.DOCS_PREPARED = "docsPrepared", events2.STORY_CHANGED = "storyChanged", events2.STORY_UNCHANGED = "storyUnchanged", events2.STORY_RENDERED = "storyRendered", events2.STORY_FINISHED = "storyFinished", events2.STORY_MISSING = "storyMissing", events2.STORY_ERRORED = "storyErrored", events2.STORY_THREW_EXCEPTION = "storyThrewException", events2.STORY_RENDER_PHASE_CHANGED = "storyRenderPhaseChanged", events2.STORY_HOT_UPDATED = "storyHotUpdated", events2.PLAY_FUNCTION_THREW_EXCEPTION = "playFunctionThrewException", events2.UNHANDLED_ERRORS_WHILE_PLAYING = "unhandledErrorsWhilePlaying", events2.UPDATE_STORY_ARGS = "updateStoryArgs", events2.STORY_ARGS_UPDATED = "storyArgsUpdated", events2.RESET_STORY_ARGS = "resetStoryArgs", events2.SET_FILTER = "setFilter", events2.SET_GLOBALS = "setGlobals", events2.UPDATE_GLOBALS = "updateGlobals", events2.GLOBALS_UPDATED = "globalsUpdated", events2.REGISTER_SUBSCRIPTION = "registerSubscription", events2.PREVIEW_INITIALIZED = "previewInitialized", events2.PREVIEW_KEYDOWN = "previewKeydown", events2.PREVIEW_BUILDER_PROGRESS = "preview_builder_progress", events2.SELECT_STORY = "selectStory", events2.STORIES_COLLAPSE_ALL = "storiesCollapseAll", events2.STORIES_EXPAND_ALL = "storiesExpandAll", events2.DOCS_RENDERED = "docsRendered", events2.SHARED_STATE_CHANGED = "sharedStateChanged", events2.SHARED_STATE_SET = "sharedStateSet", events2.NAVIGATE_URL = "navigateUrl", events2.UPDATE_QUERY_PARAMS = "updateQueryParams", events2.REQUEST_WHATS_NEW_DATA = "requestWhatsNewData", events2.RESULT_WHATS_NEW_DATA = "resultWhatsNewData", events2.SET_WHATS_NEW_CACHE = "setWhatsNewCache", events2.TOGGLE_WHATS_NEW_NOTIFICATIONS = "toggleWhatsNewNotifications", events2.TELEMETRY_ERROR = "telemetryError", events2.FILE_COMPONENT_SEARCH_REQUEST = "fileComponentSearchRequest", events2.FILE_COMPONENT_SEARCH_RESPONSE = "fileComponentSearchResponse", events2.SAVE_STORY_REQUEST = "saveStoryRequest", events2.SAVE_STORY_RESPONSE = "saveStoryResponse", events2.ARGTYPES_INFO_REQUEST = "argtypesInfoRequest", events2.ARGTYPES_INFO_RESPONSE = "argtypesInfoResponse", events2.CREATE_NEW_STORYFILE_REQUEST = "createNewStoryfileRequest", events2.CREATE_NEW_STORYFILE_RESPONSE = "createNewStoryfileResponse", events2.GHOST_STORIES_REQUEST = "ghostStoriesRequest", events2.GHOST_STORIES_RESPONSE = "ghostStoriesResponse", events2.AI_SETUP_ANALYTICS_RESPONSE = "aiSetupAnalyticsResponse", events2.AI_SETUP_ANALYTICS_REQUEST = "aiSetupAnalyticsRequest", events2.OPEN_IN_EDITOR_REQUEST = "openInEditorRequest", events2.OPEN_IN_EDITOR_RESPONSE = "openInEditorResponse", events2.MANAGER_INERT_ATTRIBUTE_CHANGED = "managerInertAttributeChanged", events2.SHARE_ISOLATE_MODE = "shareIsolateMode", events2.AI_PROMPT_NUDGE = "aiPromptNudge", events2.SIDEBAR_FILTER_CHANGED = "sidebarFilterChanged", events2))(events || {});
 var {
   CHANNEL_WS_DISCONNECT: CHANNEL_WS_DISCONNECT2,
   CHANNEL_CREATED: CHANNEL_CREATED2,
@@ -10275,16 +10217,176 @@ var {
   ARGTYPES_INFO_RESPONSE: ARGTYPES_INFO_RESPONSE2,
   GHOST_STORIES_REQUEST: GHOST_STORIES_REQUEST2,
   GHOST_STORIES_RESPONSE: GHOST_STORIES_RESPONSE2,
+  AI_SETUP_ANALYTICS_RESPONSE: AI_SETUP_ANALYTICS_RESPONSE2,
+  AI_SETUP_ANALYTICS_REQUEST: AI_SETUP_ANALYTICS_REQUEST2,
   OPEN_IN_EDITOR_REQUEST: OPEN_IN_EDITOR_REQUEST2,
   OPEN_IN_EDITOR_RESPONSE: OPEN_IN_EDITOR_RESPONSE2,
   MANAGER_INERT_ATTRIBUTE_CHANGED: MANAGER_INERT_ATTRIBUTE_CHANGED2,
-  SHARE_STORY_LINK: SHARE_STORY_LINK2,
   SHARE_ISOLATE_MODE: SHARE_ISOLATE_MODE2,
-  SHARE_POPOVER_OPENED: SHARE_POPOVER_OPENED2
+  AI_PROMPT_NUDGE: AI_PROMPT_NUDGE2,
+  SIDEBAR_FILTER_CHANGED: SIDEBAR_FILTER_CHANGED2
 } = events;
+
+// ../../node_modules/es-toolkit/dist/compat/_internal/getSymbols.mjs
+function getSymbols(object) {
+  return Object.getOwnPropertySymbols(object).filter((symbol) => Object.prototype.propertyIsEnumerable.call(object, symbol));
+}
+
+// ../../node_modules/es-toolkit/dist/compat/_internal/getTag.mjs
+function getTag(value) {
+  return value == null ? value === void 0 ? "[object Undefined]" : "[object Null]" : Object.prototype.toString.call(value);
+}
+
+// ../../node_modules/es-toolkit/dist/compat/_internal/tags.mjs
+var regexpTag = "[object RegExp]", stringTag = "[object String]", numberTag = "[object Number]", booleanTag = "[object Boolean]", argumentsTag = "[object Arguments]", symbolTag = "[object Symbol]", dateTag = "[object Date]", mapTag = "[object Map]", setTag = "[object Set]", arrayTag = "[object Array]", functionTag = "[object Function]", arrayBufferTag = "[object ArrayBuffer]", objectTag = "[object Object]", errorTag = "[object Error]", dataViewTag = "[object DataView]", uint8ArrayTag = "[object Uint8Array]", uint8ClampedArrayTag = "[object Uint8ClampedArray]", uint16ArrayTag = "[object Uint16Array]", uint32ArrayTag = "[object Uint32Array]", bigUint64ArrayTag = "[object BigUint64Array]", int8ArrayTag = "[object Int8Array]", int16ArrayTag = "[object Int16Array]", int32ArrayTag = "[object Int32Array]", bigInt64ArrayTag = "[object BigInt64Array]", float32ArrayTag = "[object Float32Array]", float64ArrayTag = "[object Float64Array]";
+
+// ../../node_modules/es-toolkit/dist/predicate/isPlainObject.mjs
+function isPlainObject(value) {
+  if (!value || typeof value != "object")
+    return !1;
+  let proto = Object.getPrototypeOf(value);
+  return proto === null || proto === Object.prototype || Object.getPrototypeOf(proto) === null ? Object.prototype.toString.call(value) === "[object Object]" : !1;
+}
 
 // ../../node_modules/es-toolkit/dist/string/words.mjs
 var CASE_SPLIT_PATTERN = new RegExp("\\p{Lu}?\\p{Ll}+|[0-9]+|\\p{Lu}+(?!\\p{Ll})|\\p{Emoji_Presentation}|\\p{Extended_Pictographic}|\\p{L}+", "gu");
+
+// ../../node_modules/es-toolkit/dist/compat/util/eq.mjs
+function eq(value, other) {
+  return value === other || Number.isNaN(value) && Number.isNaN(other);
+}
+
+// ../../node_modules/es-toolkit/dist/predicate/isEqualWith.mjs
+function isEqualWith(a2, b2, areValuesEqual) {
+  return isEqualWithImpl(a2, b2, void 0, void 0, void 0, void 0, areValuesEqual);
+}
+function isEqualWithImpl(a2, b2, property, aParent, bParent, stack, areValuesEqual) {
+  let result = areValuesEqual(a2, b2, property, aParent, bParent, stack);
+  if (result !== void 0)
+    return result;
+  if (typeof a2 == typeof b2)
+    switch (typeof a2) {
+      case "bigint":
+      case "string":
+      case "boolean":
+      case "symbol":
+      case "undefined":
+        return a2 === b2;
+      case "number":
+        return a2 === b2 || Object.is(a2, b2);
+      case "function":
+        return a2 === b2;
+      case "object":
+        return areObjectsEqual(a2, b2, stack, areValuesEqual);
+    }
+  return areObjectsEqual(a2, b2, stack, areValuesEqual);
+}
+function areObjectsEqual(a2, b2, stack, areValuesEqual) {
+  if (Object.is(a2, b2))
+    return !0;
+  let aTag = getTag(a2), bTag = getTag(b2);
+  if (aTag === argumentsTag && (aTag = objectTag), bTag === argumentsTag && (bTag = objectTag), aTag !== bTag)
+    return !1;
+  switch (aTag) {
+    case stringTag:
+      return a2.toString() === b2.toString();
+    case numberTag: {
+      let x2 = a2.valueOf(), y2 = b2.valueOf();
+      return eq(x2, y2);
+    }
+    case booleanTag:
+    case dateTag:
+    case symbolTag:
+      return Object.is(a2.valueOf(), b2.valueOf());
+    case regexpTag:
+      return a2.source === b2.source && a2.flags === b2.flags;
+    case functionTag:
+      return a2 === b2;
+  }
+  stack = stack ?? /* @__PURE__ */ new Map();
+  let aStack = stack.get(a2), bStack = stack.get(b2);
+  if (aStack != null && bStack != null)
+    return aStack === b2;
+  stack.set(a2, b2), stack.set(b2, a2);
+  try {
+    switch (aTag) {
+      case mapTag: {
+        if (a2.size !== b2.size)
+          return !1;
+        for (let [key, value] of a2.entries())
+          if (!b2.has(key) || !isEqualWithImpl(value, b2.get(key), key, a2, b2, stack, areValuesEqual))
+            return !1;
+        return !0;
+      }
+      case setTag: {
+        if (a2.size !== b2.size)
+          return !1;
+        let aValues = Array.from(a2.values()), bValues = Array.from(b2.values());
+        for (let i2 = 0; i2 < aValues.length; i2++) {
+          let aValue = aValues[i2], index = bValues.findIndex((bValue) => isEqualWithImpl(aValue, bValue, void 0, a2, b2, stack, areValuesEqual));
+          if (index === -1)
+            return !1;
+          bValues.splice(index, 1);
+        }
+        return !0;
+      }
+      case arrayTag:
+      case uint8ArrayTag:
+      case uint8ClampedArrayTag:
+      case uint16ArrayTag:
+      case uint32ArrayTag:
+      case bigUint64ArrayTag:
+      case int8ArrayTag:
+      case int16ArrayTag:
+      case int32ArrayTag:
+      case bigInt64ArrayTag:
+      case float32ArrayTag:
+      case float64ArrayTag: {
+        if (typeof Buffer < "u" && Buffer.isBuffer(a2) !== Buffer.isBuffer(b2) || a2.length !== b2.length)
+          return !1;
+        for (let i2 = 0; i2 < a2.length; i2++)
+          if (!isEqualWithImpl(a2[i2], b2[i2], i2, a2, b2, stack, areValuesEqual))
+            return !1;
+        return !0;
+      }
+      case arrayBufferTag:
+        return a2.byteLength !== b2.byteLength ? !1 : areObjectsEqual(new Uint8Array(a2), new Uint8Array(b2), stack, areValuesEqual);
+      case dataViewTag:
+        return a2.byteLength !== b2.byteLength || a2.byteOffset !== b2.byteOffset ? !1 : areObjectsEqual(new Uint8Array(a2), new Uint8Array(b2), stack, areValuesEqual);
+      case errorTag:
+        return a2.name === b2.name && a2.message === b2.message;
+      case objectTag: {
+        if (!(areObjectsEqual(a2.constructor, b2.constructor, stack, areValuesEqual) || isPlainObject(a2) && isPlainObject(b2)))
+          return !1;
+        let aKeys = [...Object.keys(a2), ...getSymbols(a2)], bKeys = [...Object.keys(b2), ...getSymbols(b2)];
+        if (aKeys.length !== bKeys.length)
+          return !1;
+        for (let i2 = 0; i2 < aKeys.length; i2++) {
+          let propKey = aKeys[i2], aProp = a2[propKey];
+          if (!Object.hasOwn(b2, propKey))
+            return !1;
+          let bProp = b2[propKey];
+          if (!isEqualWithImpl(aProp, bProp, propKey, a2, b2, stack, areValuesEqual))
+            return !1;
+        }
+        return !0;
+      }
+      default:
+        return !1;
+    }
+  } finally {
+    stack.delete(a2), stack.delete(b2);
+  }
+}
+
+// ../../node_modules/es-toolkit/dist/function/noop.mjs
+function noop() {
+}
+
+// ../../node_modules/es-toolkit/dist/predicate/isEqual.mjs
+function isEqual(a2, b2) {
+  return isEqualWith(a2, b2, noop);
+}
 
 // global-externals:storybook/theming/create
 var create_default = __STORYBOOK_THEMING_CREATE__, { create: create3, themes: themes2 } = __STORYBOOK_THEMING_CREATE__;
@@ -10384,7 +10486,7 @@ var PreRenderAddons = ({ panels }) => Object.entries(panels).map(([k2, v2]) => r
   return react_default.createElement(Aside, { ref: asideRef, id: focusableUIElements.addonPanel, ...landmarkProps }, react_default.createElement("h2", { id: "storybook-panel-heading", className: "sb-sr-only" }, "Addon panel"), react_default.createElement(
     StatelessTabsView,
     {
-      id: "storybook-panel-root",
+      id: focusableUIElements.storyPanelRoot,
       showToolsWhenEmpty: !0,
       emptyState,
       selected: selectedPanel ?? void 0,
@@ -11651,35 +11753,32 @@ var SHOW_ADDON_PANEL_BUTTON_ID = "storybook-show-addon-panel", menuMapper = ({ a
   isVisible: api.getIsPanelShown(),
   singleStory: state.singleStory,
   panelPosition: state.layout.panelPosition,
-  showPanel: async (animateLandmark) => {
-    api.togglePanel(!0), await api.focusOnUIElement(focusableUIElements.addonPanel, {
-      forceFocus: !0,
+  showPanel: async (forceFocus) => {
+    api.togglePanel(!0), api.focusOnUIElement(focusableUIElements.addonPanel, {
+      forceFocus,
       poll: !0
-    }) && animateLandmark?.(document.getElementById(focusableUIElements.addonPanel));
+    });
   }
 }), addonsTool = {
   title: "addons",
   id: "addons",
   type: types.TOOL,
   match: ({ viewMode, tabId }) => viewMode === "story" && !tabId,
-  render: () => {
-    let animateLandmark = useRegionFocusAnimation();
-    return react_default.createElement(Consumer, { filter: menuMapper }, ({ isVisible, showPanel, singleStory, panelPosition }) => !singleStory && !isVisible && react_default.createElement(react_default.Fragment, null, react_default.createElement(
-      Button,
-      {
-        padding: "small",
-        variant: "ghost",
-        ariaLabel: "Show addon panel",
-        id: SHOW_ADDON_PANEL_BUTTON_ID,
-        key: "addons",
-        onClick: () => showPanel(),
-        onKeyDown: (e2) => {
-          (e2.key === "Enter" || e2.key === " ") && (e2.preventDefault(), showPanel(animateLandmark));
-        }
-      },
-      panelPosition === "bottom" ? react_default.createElement(BottomBarIcon, null) : react_default.createElement(SidebarAltIcon, null)
-    )));
-  }
+  render: () => react_default.createElement(Consumer, { filter: menuMapper }, ({ isVisible, showPanel, singleStory, panelPosition }) => !singleStory && !isVisible && react_default.createElement(react_default.Fragment, null, react_default.createElement(
+    Button,
+    {
+      padding: "small",
+      variant: "ghost",
+      ariaLabel: "Show addon panel",
+      id: SHOW_ADDON_PANEL_BUTTON_ID,
+      key: "addons",
+      onClick: () => showPanel(!1),
+      onKeyDown: (e2) => {
+        (e2.key === "Enter" || e2.key === " ") && (e2.preventDefault(), showPanel(!0));
+      }
+    },
+    panelPosition === "bottom" ? react_default.createElement(BottomBarIcon, null) : react_default.createElement(SidebarAltIcon, null)
+  )))
 };
 
 // src/manager/components/preview/tools/menu.tsx
@@ -11688,11 +11787,11 @@ var menuMapper2 = ({ api, state }) => ({
   isVisible: api.getIsNavShown(),
   singleStory: state.singleStory,
   viewMode: state.viewMode,
-  showSidebar: async (animateLandmark) => {
-    api.toggleNav(!0), await api.focusOnUIElement(focusableUIElements.sidebarRegion, {
-      forceFocus: !0,
+  showSidebar: async (forceFocus) => {
+    api.toggleNav(!0), api.focusOnUIElement(focusableUIElements.sidebarRegion, {
+      forceFocus,
       poll: !0
-    }) && animateLandmark?.(document.getElementById(focusableUIElements.sidebarRegion));
+    });
   }
 }), menuTool = {
   title: "menu",
@@ -11700,24 +11799,21 @@ var menuMapper2 = ({ api, state }) => ({
   type: types.TOOL,
   // @ts-expect-error (non strict)
   match: ({ viewMode }) => ["story", "docs"].includes(viewMode),
-  render: () => {
-    let animateLandmark = useRegionFocusAnimation();
-    return react_default.createElement(Consumer, { filter: menuMapper2 }, ({ isVisible, showSidebar, singleStory }) => !singleStory && !isVisible && react_default.createElement(react_default.Fragment, null, react_default.createElement(
-      Button,
-      {
-        padding: "small",
-        variant: "ghost",
-        ariaLabel: "Show sidebar",
-        id: focusableUIElements.showSidebar,
-        key: "menu",
-        onClick: () => showSidebar(),
-        onKeyDown: (e2) => {
-          (e2.key === "Enter" || e2.key === " ") && (e2.preventDefault(), showSidebar(animateLandmark));
-        }
-      },
-      react_default.createElement(MenuIcon, null)
-    ), react_default.createElement(Separator, null)));
-  }
+  render: () => react_default.createElement(Consumer, { filter: menuMapper2 }, ({ isVisible, showSidebar, singleStory }) => !singleStory && !isVisible && react_default.createElement(react_default.Fragment, null, react_default.createElement(
+    Button,
+    {
+      padding: "small",
+      variant: "ghost",
+      ariaLabel: "Show sidebar",
+      id: focusableUIElements.showSidebar,
+      key: "menu",
+      onClick: () => showSidebar(!1),
+      onKeyDown: (e2) => {
+        (e2.key === "Enter" || e2.key === " ") && (e2.preventDefault(), showSidebar(!0));
+      }
+    },
+    react_default.createElement(MenuIcon, null)
+  ), react_default.createElement(Separator, null)))
 };
 
 // src/manager/components/preview/tools/open-in-editor.tsx
@@ -11797,7 +11893,6 @@ var StyledAnimatedButton = styled(Button)(({ theme, animating, disabled }) => ({
 
 // src/manager/components/preview/tools/share.tsx
 init_react();
-var import_copy_to_clipboard = __toESM(require_copy_to_clipboard(), 1);
 
 // ../../node_modules/qrcode.react/lib/esm/index.js
 init_react();
@@ -12627,91 +12722,79 @@ QRCodeSVG.displayName = "QRCodeSVG";
 var mapper3 = ({ api, state }) => {
   let { storyId, refId } = state;
   return { api, refId, storyId };
-}, QRContainer = styled.div(() => ({
+}, QRContainer = styled.div(
+  () => ({
+    display: "flex",
+    flexDirection: "column",
+    padding: 8,
+    width: 300,
+    maxWidth: 300,
+    gap: 8
+  })
+), QRRow = styled.div(() => ({
   display: "flex",
-  alignItems: "center",
-  padding: 8,
-  maxWidth: 200
+  alignItems: "center"
+})), ShareLinkInput = styled.input(({ theme }) => ({
+  width: "100%",
+  border: `1px solid ${theme.appBorderColor}`,
+  borderRadius: 4,
+  padding: "6px 8px",
+  fontSize: theme.typography.size.s1,
+  color: theme.color.defaultText,
+  backgroundColor: theme.background.app,
+  outline: "none",
+  textOverflow: "ellipsis",
+  overflow: "hidden",
+  whiteSpace: "nowrap",
+  "&:focus": {
+    borderColor: theme.color.secondary
+  }
 })), QRImageContainer = styled.div(() => ({
   width: 64,
   height: 64,
   marginRight: 12,
   backgroundColor: "white",
   padding: 2
-})), QRImage = ({ value }) => {
-  let theme = useTheme();
-  return react_default.createElement(QRImageContainer, null, react_default.createElement(QRCodeSVG, { value, marginSize: 0, size: 60, fgColor: theme.color.darkest }));
-}, QRContent = styled.div(() => ({})), QRTitle = styled.div(({ theme }) => ({
+}));
+var QRContent = styled.div(() => ({})), QRTitle = styled.div(({ theme }) => ({
   fontWeight: theme.typography.weight.bold,
   fontSize: theme.typography.size.s1,
   marginBottom: 4
 })), QRDescription = styled.div(({ theme }) => ({
   fontSize: theme.typography.size.s1,
   color: theme.textMutedColor
-})), ShareMenu = react_default.memo(function({
-  api,
-  storyId,
-  refId
-}) {
-  let shortcutKeys = api.getShortcutKeys(), enableShortcuts = !!shortcutKeys, [copied, setCopied] = useState(!1), copyStoryLink = shortcutKeys?.copyStoryLink, openInIsolation = shortcutKeys?.openInIsolation;
-  useEffect(() => {
-    api.emit(SHARE_POPOVER_OPENED);
-  }, [api]);
-  let links = useMemo(() => {
-    let copyTitle = copied ? "Copied!" : "Copy story link", originHrefs = api.getStoryHrefs(storyId, { base: "origin", refId }), networkHrefs = api.getStoryHrefs(storyId, { base: "network", refId });
-    return [
-      [
-        {
-          id: "copy-link",
-          title: copyTitle,
-          icon: react_default.createElement(LinkIcon, null),
-          right: enableShortcuts ? react_default.createElement(Shortcut, { keys: copyStoryLink }) : null,
-          onClick: () => {
-            api.emit(SHARE_STORY_LINK, originHrefs.managerHref), (0, import_copy_to_clipboard.default)(originHrefs.managerHref), setCopied(!0), setTimeout(() => setCopied(!1), 2e3);
-          }
-        },
-        {
-          id: "open-new-tab",
-          title: "Open in isolation mode",
-          icon: react_default.createElement(ShareAltIcon, null),
-          right: enableShortcuts ? react_default.createElement(Shortcut, { keys: openInIsolation }) : null,
-          onClick: () => {
-            api.emit(SHARE_ISOLATE_MODE, originHrefs.previewHref);
-          },
-          href: originHrefs.previewHref,
-          target: "_blank",
-          rel: "noopener noreferrer"
-        }
-      ],
-      [
-        {
-          id: "qr-section",
-          content: react_default.createElement(QRContainer, null, react_default.createElement(QRImage, { value: networkHrefs.managerHref }), react_default.createElement(QRContent, null, react_default.createElement(QRTitle, null, "Scan to open"), react_default.createElement(QRDescription, null, scope.CONFIG_TYPE === "DEVELOPMENT" ? "Device must be on the same network." : "View story on another device.")))
-        }
-      ]
-    ];
-  }, [api, storyId, refId, copied, enableShortcuts, copyStoryLink, openInIsolation]);
-  return react_default.createElement(TooltipLinkList, { links, style: { width: 240 } });
-}), shareTool = {
-  title: "share",
-  id: "share",
-  type: types.TOOL,
+})), isolationModeTool = {
+  title: "isolation mode",
+  id: "isolationMode",
+  type: types.TOOLEXTRA,
   match: ({ viewMode, tabId }) => viewMode === "story" && !tabId,
-  render: () => react_default.createElement(Consumer, { filter: mapper3 }, ({ api, storyId, refId }) => storyId ? react_default.createElement(
-    PopoverProvider,
-    {
-      ariaLabel: "Share this story",
-      hasChrome: !0,
-      placement: "bottom",
-      padding: 0,
-      popover: react_default.createElement(ShareMenu, { api, storyId, refId })
-    },
-    react_default.createElement(Button, { padding: "small", variant: "ghost", ariaLabel: "Share", tooltip: "Share..." }, react_default.createElement(ShareIcon, null))
-  ) : null)
+  render: () => react_default.createElement(Consumer, { filter: mapper3 }, ({ api, storyId, refId }) => {
+    if (!storyId) return null;
+    let originHrefs = api.getStoryHrefs(storyId, { base: "origin", refId });
+    return react_default.createElement(
+      Button,
+      {
+        padding: "small",
+        variant: "ghost",
+        ariaLabel: "Open in isolation mode",
+        tooltip: "Open in isolation mode",
+        onClick: () => {
+          window.open(originHrefs.previewHref, "_blank", "noopener,noreferrer"), api.emit(SHARE_ISOLATE_MODE, originHrefs.previewHref);
+        }
+      },
+      react_default.createElement(PopOutIcon, null)
+    );
+  })
 };
 
 // src/manager/container/Preview.tsx
-var defaultTabs = [createCanvasTab()], defaultTools = [menuTool, remountTool], defaultToolsExtra = [zoomTool, addonsTool, fullScreenTool, shareTool, openInEditorTool], emptyTabsList = [], memoizedTabs = (0, import_memoizerific2.default)(1)(
+var defaultTabs = [createCanvasTab()], defaultTools = [menuTool, remountTool], defaultToolsExtra = [
+  isolationModeTool,
+  zoomTool,
+  addonsTool,
+  fullScreenTool,
+  openInEditorTool
+], emptyTabsList = [], memoizedTabs = (0, import_memoizerific2.default)(1)(
   (_2, tabElements, parameters, showTabs) => showTabs ? filterTabs([...defaultTabs, ...Object.values(tabElements)], parameters) : emptyTabsList
 ), memoizedTools = (0, import_memoizerific2.default)(1)(
   (_2, toolElements, filterProps) => filterToolsSide([...defaultTools, ...Object.values(toolElements)], ...filterProps)
@@ -13058,6 +13141,7 @@ var storeOptions = {
       componentTestStatuses: [],
       a11yStatuses: [],
       a11yReports: {},
+      reports: {},
       componentTestCount: {
         success: 0,
         error: 0
@@ -13079,6 +13163,306 @@ var storeOptions = {
 var STORE_CHANNEL_EVENT_NAME = `UNIVERSAL_STORE:${storeOptions.id}`;
 var TRIGGER_TEST_RUN_REQUEST = `${ADDON_ID5}/trigger-test-run-request`, TRIGGER_TEST_RUN_RESPONSE = `${ADDON_ID5}/trigger-test-run-response`;
 
+// src/storybook-error.ts
+function parseErrorCode({
+  code,
+  category
+}) {
+  let paddedCode = String(code).padStart(4, "0");
+  return `SB_${category}_${paddedCode}`;
+}
+function appendErrorRef(url) {
+  if (/^(?!.*storybook\.js\.org)|[?&]ref=error\b/.test(url))
+    return url;
+  try {
+    let urlObj = new URL(url);
+    return urlObj.searchParams.set("ref", "error"), urlObj.toString();
+  } catch {
+    return url;
+  }
+}
+var StorybookError = class _StorybookError extends Error {
+  constructor(props) {
+    super(
+      _StorybookError.getFullMessage(props),
+      props.cause === void 0 ? void 0 : { cause: props.cause }
+    );
+    /**
+     * Data associated with the error. Used to provide additional information in the error message or
+     * to be passed to telemetry.
+     */
+    this.data = {};
+    /** Flag used to easily determine if the error originates from Storybook. */
+    this.fromStorybook = !0;
+    /**
+     * Flag used to determine if the error is handled by us and should therefore not be shown to the
+     * user.
+     */
+    this.isHandledError = !1;
+    /**
+     * A collection of sub errors which relate to a parent error.
+     *
+     * Sub-errors are used to represent multiple related errors that occurred together. When a
+     * StorybookError with sub-errors is sent to telemetry, both the parent error and each sub-error
+     * are sent as separate telemetry events. This allows for better error tracking and debugging.
+     *
+     * @example
+     *
+     * ```ts
+     * const error1 = new SomeError();
+     * const error2 = new AnotherError();
+     * const parentError = new ParentError({
+     *   // ... other props
+     *   subErrors: [error1, error2],
+     * });
+     * ```
+     */
+    this.subErrors = [];
+    this.category = props.category, this.documentation = props.documentation ?? !1, this.code = props.code, this.isHandledError = props.isHandledError ?? !1, this.name = props.name, this.subErrors = props.subErrors ?? [];
+  }
+  get fullErrorCode() {
+    return parseErrorCode({ code: this.code, category: this.category });
+  }
+  /** Overrides the default `Error.name` property in the format: SB_<CATEGORY>_<CODE>. */
+  get name() {
+    let errorName = this._name || this.constructor.name;
+    return `${this.fullErrorCode} (${errorName})`;
+  }
+  set name(name) {
+    this._name = name;
+  }
+  /** Generates the error message along with additional documentation link (if applicable). */
+  static getFullMessage({
+    documentation,
+    code,
+    category,
+    message
+  }) {
+    let page;
+    return documentation === !0 ? page = `https://storybook.js.org/error/${parseErrorCode({ code, category })}?ref=error` : typeof documentation == "string" ? page = appendErrorRef(documentation) : Array.isArray(documentation) && (page = `
+${documentation.map((doc) => `	- ${appendErrorRef(doc)}`).join(`
+`)}`), `${message}${page != null ? `
+
+More info: ${page}
+` : ""}`;
+  }
+};
+
+// src/manager-errors.ts
+var StatusTypeIdMismatchError2 = class extends StorybookError {
+  constructor(data) {
+    super({
+      name: "StatusTypeIdMismatchError",
+      category: "MANAGER_API" /* MANAGER_API */,
+      code: 1,
+      message: `Status has typeId "${data.status.typeId}" but was added to store with typeId "${data.typeId}". Full status: ${JSON.stringify(
+        data.status,
+        null,
+        2
+      )}`
+    });
+    this.data = data;
+  }
+};
+
+// ../../node_modules/ts-dedent/esm/index.js
+function dedent(templ) {
+  for (var values = [], _i = 1; _i < arguments.length; _i++)
+    values[_i - 1] = arguments[_i];
+  var strings = Array.from(typeof templ == "string" ? [templ] : templ);
+  strings[strings.length - 1] = strings[strings.length - 1].replace(/\r?\n([\t ]*)$/, "");
+  var indentLengths = strings.reduce(function(arr, str) {
+    var matches = str.match(/\n([\t ]+|(?!\s).)/g);
+    return matches ? arr.concat(matches.map(function(match) {
+      var _a2, _b;
+      return (_b = (_a2 = match.match(/[\t ]/g)) === null || _a2 === void 0 ? void 0 : _a2.length) !== null && _b !== void 0 ? _b : 0;
+    })) : arr;
+  }, []);
+  if (indentLengths.length) {
+    var pattern_1 = new RegExp(`
+[	 ]{` + Math.min.apply(Math, indentLengths) + "}", "g");
+    strings = strings.map(function(str) {
+      return str.replace(pattern_1, `
+`);
+    });
+  }
+  strings[0] = strings[0].replace(/^\r?\n/, "");
+  var string = strings[0];
+  return values.forEach(function(value, i2) {
+    var endentations = string.match(/(?:^|\n)( *)$/), endentation = endentations ? endentations[1] : "", indentedValue = value;
+    typeof value == "string" && value.includes(`
+`) && (indentedValue = String(value).split(`
+`).map(function(str, i3) {
+      return i3 === 0 ? str : "" + endentation + str;
+    }).join(`
+`)), string += indentedValue + strings[i2 + 1];
+  }), string;
+}
+
+// src/preview-errors.ts
+var StatusTypeIdMismatchError3 = class extends StorybookError {
+  constructor(data) {
+    super({
+      name: "StatusTypeIdMismatchError",
+      category: "PREVIEW_API" /* PREVIEW_API */,
+      code: 16,
+      message: `Status has typeId "${data.status.typeId}" but was added to store with typeId "${data.typeId}". Full status: ${JSON.stringify(
+        data.status,
+        null,
+        2
+      )}`
+    });
+    this.data = data;
+  }
+};
+
+// src/server-errors.ts
+var import_picocolors = __toESM(require_picocolors_browser(), 1);
+var StatusTypeIdMismatchError4 = class extends StorybookError {
+  constructor(data) {
+    super({
+      name: "StatusTypeIdMismatchError",
+      category: "CORE-SERVER" /* CORE_SERVER */,
+      code: 16,
+      message: `Status has typeId "${data.status.typeId}" but was added to store with typeId "${data.typeId}". Full status: ${JSON.stringify(
+        data.status,
+        null,
+        2
+      )}`
+    });
+    this.data = data;
+  }
+};
+
+// src/shared/status-store/index.ts
+var STATUS_VALUE_PREFIX = "status-value:";
+var statusValueShortName = (value) => value === "status-value:affected" ? "related" : value.slice(STATUS_VALUE_PREFIX.length), statusValueDescription = (value) => ({
+  "status-value:pending": "Stories with pending status",
+  "status-value:success": "Stories with passing tests",
+  "status-value:new": "Newly added stories",
+  "status-value:modified": "Stories closely linked to code changes",
+  "status-value:affected": "Stories likely to be affected by code changes",
+  "status-value:warning": "Stories with warnings",
+  "status-value:error": "Stories with failing tests",
+  "status-value:unknown": "Stories with unknown status"
+})[value];
+var UNIVERSAL_STATUS_STORE_OPTIONS = {
+  id: "storybook/status",
+  leader: !0,
+  initialState: {}
+}, StatusStoreEventType = {
+  SELECT: "select"
+};
+function countStatusesByValue(allStatuses) {
+  let counts = {};
+  for (let statusByTypeId of Object.values(allStatuses))
+    for (let status of Object.values(statusByTypeId))
+      counts[status.value] = (counts[status.value] ?? 0) + 1;
+  return counts;
+}
+function createStatusStore({
+  universalStatusStore: universalStatusStore2,
+  useUniversalStore: useUniversalStore2,
+  environment
+}) {
+  let fullStatusStore2 = {
+    getAll() {
+      return universalStatusStore2.getState();
+    },
+    set(statuses) {
+      universalStatusStore2.setState((state) => {
+        let newState = { ...state };
+        for (let status of statuses) {
+          let { storyId, typeId } = status;
+          newState[storyId] = { ...newState[storyId] ?? {}, [typeId]: status };
+        }
+        return newState;
+      });
+    },
+    onAllStatusChange(listener) {
+      return universalStatusStore2.onStateChange((state, prevState) => {
+        listener(state, prevState);
+      });
+    },
+    onSelect(listener) {
+      return universalStatusStore2.subscribe(StatusStoreEventType.SELECT, (event) => {
+        listener(event.payload);
+      });
+    },
+    selectStatuses: (statuses) => {
+      universalStatusStore2.send({ type: StatusStoreEventType.SELECT, payload: statuses });
+    },
+    unset(storyIds) {
+      if (!storyIds) {
+        universalStatusStore2.setState({});
+        return;
+      }
+      universalStatusStore2.setState((state) => {
+        let newState = { ...state };
+        for (let storyId of storyIds)
+          delete newState[storyId];
+        return newState;
+      });
+    },
+    typeId: void 0
+  }, getStatusStoreByTypeId2 = (typeId) => ({
+    getAll: fullStatusStore2.getAll,
+    set(statuses) {
+      universalStatusStore2.setState((state) => {
+        let newState = { ...state };
+        for (let status of statuses) {
+          let { storyId } = status;
+          if (status.typeId !== typeId)
+            switch (environment) {
+              case "server":
+                throw new StatusTypeIdMismatchError4({
+                  status,
+                  typeId
+                });
+              case "manager":
+                throw new StatusTypeIdMismatchError2({
+                  status,
+                  typeId
+                });
+              case "preview":
+              default:
+                throw new StatusTypeIdMismatchError3({
+                  status,
+                  typeId
+                });
+            }
+          newState[storyId] = { ...newState[storyId] ?? {}, [typeId]: status };
+        }
+        return newState;
+      });
+    },
+    onAllStatusChange: fullStatusStore2.onAllStatusChange,
+    onSelect(listener) {
+      return universalStatusStore2.subscribe(StatusStoreEventType.SELECT, (event) => {
+        event.payload.some((status) => status.typeId === typeId) && listener(event.payload);
+      });
+    },
+    unset(storyIds) {
+      universalStatusStore2.setState((state) => {
+        let newState = { ...state };
+        for (let storyId in newState)
+          if (newState[storyId]?.[typeId] && (!storyIds || storyIds?.includes(storyId))) {
+            let { [typeId]: omittedStatus, ...storyStatusesWithoutTypeId } = newState[storyId];
+            newState[storyId] = storyStatusesWithoutTypeId;
+          }
+        return newState;
+      });
+    },
+    typeId
+  });
+  return useUniversalStore2 ? {
+    getStatusStoreByTypeId: getStatusStoreByTypeId2,
+    fullStatusStore: fullStatusStore2,
+    universalStatusStore: universalStatusStore2,
+    useStatusStore: (selector) => useUniversalStore2(universalStatusStore2, selector)[0]
+  } : { getStatusStoreByTypeId: getStatusStoreByTypeId2, fullStatusStore: fullStatusStore2, universalStatusStore: universalStatusStore2 };
+}
+
 // src/cli/AddonVitestService.constants.ts
 var SUPPORTED_FRAMEWORKS = [
   "html-vite" /* HTML_VITE */,
@@ -13090,7 +13474,8 @@ var SUPPORTED_FRAMEWORKS = [
   "svelte-vite" /* SVELTE_VITE */,
   "sveltekit" /* SVELTEKIT */,
   "vue3-vite" /* VUE3_VITE */,
-  "web-components-vite" /* WEB_COMPONENTS_VITE */
+  "web-components-vite" /* WEB_COMPONENTS_VITE */,
+  "tanstack-react" /* TANSTACK_REACT */
 ];
 
 // src/docs-tools/shared.ts
@@ -17240,6 +17625,11 @@ var LocationMonitor = {
   return useEffect(() => LocationMonitor.subscribe((location2) => setHash(location2.hash)), []), hash.slice(1);
 };
 
+// src/shared/utils/ai-prompts.ts
+function getAiSetupPrompt(executor = "npx storybook") {
+  return `Run \`${executor} ai setup\` and follow its instructions precisely.`;
+}
+
 // src/shared/checklist-store/checklistData.tsx
 var CodeWrapper = styled.div(({ theme }) => ({
   alignSelf: "stretch",
@@ -17268,6 +17658,21 @@ var CodeWrapper = styled.div(({ theme }) => ({
       id: "basics",
       title: "Storybook basics",
       items: [
+        {
+          id: "aiSetup",
+          label: "Set up with AI",
+          icon: WandIcon,
+          available: ({ storeState }) => !!storeState.aiOptIn && storeState.items.aiSetup?.status !== "done",
+          criteria: "ai setup command has not been run yet",
+          showOnGuidePage: !1,
+          action: {
+            label: "Copy prompt",
+            copyContent: getAiSetupPrompt(),
+            onClick: ({ api }) => {
+              api.emit(AI_PROMPT_NUDGE, { id: "setup", origin: "onboarding-checklist-side" });
+            }
+          }
+        },
         {
           id: "guidedTour",
           label: "Take the guided tour",
@@ -17534,6 +17939,48 @@ export default {
             },
             "story organization documentation"
           ), " ", "to learn:"), react_default.createElement("ul", null, react_default.createElement("li", null, "The full hierarchy available"), react_default.createElement("li", null, "How to configure the sorting of your stories")))
+        }
+      ]
+    },
+    {
+      id: "share",
+      title: "Share",
+      items: [
+        {
+          id: "shareStorybook",
+          label: "Share your Storybook for feedback",
+          available: () => addons.experimental_getRegisteredAddons(Addon_TypesEnum.TOOLEXTRA).includes("chromaui/addon-visual-tests/share-tool"),
+          criteria: "User has shared their Storybook",
+          subscribe: ({ api, done }) => {
+            let SHARE_PROGRESS_KEY = "chromaui/addon-visual-tests/shareProgress";
+            return api.on("experimental_useSharedState_setValue", (key, value) => {
+              key === SHARE_PROGRESS_KEY && value?.status === "complete" && done();
+            });
+          },
+          action: {
+            label: "Share",
+            onClick: () => document.getElementById("chromatic-share-button")?.click()
+          },
+          content: () => react_default.createElement(react_default.Fragment, null, react_default.createElement("p", null, "Share your Storybook with your team in one click using Chromatic. Click the", " ", react_default.createElement("strong", null, "Share"), " button in the toolbar to publish and get a shareable link."), react_default.createElement("strong", null, "Take it further"), react_default.createElement("p", null, "Read the", " ", react_default.createElement(Link, { href: "https://www.chromatic.com/docs/sharing", target: "_blank", withArrow: !0 }, "sharing documentation")))
+        },
+        {
+          id: "publishStorybook",
+          label: "Publish your Storybook for feedback",
+          available: () => !addons.experimental_getRegisteredAddons(Addon_TypesEnum.TOOLEXTRA).includes("chromaui/addon-visual-tests/share-tool"),
+          criteria: "User has published their Storybook",
+          content: ({ api }) => react_default.createElement(react_default.Fragment, null, react_default.createElement("p", null, "Publishing your Storybook is easy and unlocks super clear review cycles and other collaborative workflows."), react_default.createElement("p", null, "Run ", react_default.createElement("code", null, "npx storybook build"), " in CI and deploy it using services like", " ", react_default.createElement(Link, { href: "https://chromatic.com", target: "_blank" }, "Chromatic"), ",", " ", react_default.createElement(Link, { href: "https://vercel.com", target: "_blank", rel: "noopener noreferrer" }, "Vercel"), ", or", " ", react_default.createElement(Link, { href: "https://www.netlify.com", target: "_blank", rel: "noopener noreferrer" }, "Netlify"), "."), react_default.createElement("strong", null, "Take it further"), react_default.createElement("p", null, "Read the", " ", react_default.createElement(
+            Link,
+            {
+              href: api.getDocsUrl({
+                subpath: "sharing/publish-storybook",
+                renderer: !0,
+                ref: "guide"
+              }),
+              target: "_blank",
+              withArrow: !0
+            },
+            "publishing documentation"
+          )))
         }
       ]
     },
@@ -17972,7 +18419,7 @@ export default meta;`), react_default.createElement("p", null, "That tag can als
             },
             "doc blocks"
           ), ") write a usage guide for your project."), react_default.createElement(CodeSnippet, { language: "jsx" }, `{ /* introduction.mdx */ }
-import { Meta, Title, Subtitle, Description } from '@storybook/addon-docs/blocks';
+import { Meta, Title, Subtitle } from '@storybook/addon-docs/blocks';
 
 <Meta title="Get started" />
  
@@ -17980,10 +18427,8 @@ import { Meta, Title, Subtitle, Description } from '@storybook/addon-docs/blocks
 
 <Subtitle>It's really awesome</Subtitle>
 
-<Description>
-  My Awesome Project is designed to work with Your Awesome Project seamlessly.
-  Follow this guide and you'll be ready in no time.
-</Description>
+My Awesome Project is designed to work with Your Awesome Project seamlessly.
+Follow this guide and you'll be ready in no time.
 
 ## Install
 
@@ -18001,32 +18446,6 @@ npm install @my/awesome-project
             },
             "MDX documentation"
           ), " ", "to learn:"), react_default.createElement("ul", null, react_default.createElement("li", null, "How to reference stories in your content"), react_default.createElement("li", null, "How to import and display markdown files, such as READMEs")))
-        },
-        {
-          id: "publishStorybook",
-          label: "Publish your Storybook to share",
-          criteria: "Have some form of `storybook build` in the project's CI config",
-          content: ({ api }) => react_default.createElement(react_default.Fragment, null, react_default.createElement("p", null, "Publishing your Storybook is easy and unlocks super clear review cycles and other collaborative workflows."), react_default.createElement("p", null, "Run ", react_default.createElement("code", null, "npx storybook build"), " in CI and deploy it using services like", " ", react_default.createElement(Link, { href: "https://chromatic.com", target: "_blank" }, "Chromatic"), ",", " ", react_default.createElement(Link, { href: "https://vercel.com", target: "_blank", rel: "noopener noreferrer" }, "Vercel"), ", or", " ", react_default.createElement(Link, { href: "https://www.netlify.com", target: "_blank", rel: "noopener noreferrer" }, "Netlify"), "."), react_default.createElement(
-            "img",
-            {
-              src: api.getDocsUrl({
-                asset: "sharing/prbadge-publish.png",
-                ref: "guide"
-              }),
-              alt: "PR check for publish action"
-            }
-          ), react_default.createElement("strong", null, "Take it further"), react_default.createElement("p", null, "Read the", " ", react_default.createElement(
-            Link,
-            {
-              href: api.getDocsUrl({
-                subpath: "sharing/publish-storybook",
-                renderer: !0,
-                ref: "guide"
-              }),
-              target: "_blank"
-            },
-            "publishing documentation"
-          ), " ", "to learn:"), react_default.createElement("ul", null, react_default.createElement("li", null, "How to configure the built Storybook (e.g. performance optimizations)"), react_default.createElement("li", null, "How to use your published Storybook to collaborate with colleagues")))
         }
       ]
     }
@@ -18062,7 +18481,7 @@ var subscriptions = /* @__PURE__ */ new Map(), useStoryIndex = () => {
       ({ items: items2, id: sectionId, title: sectionTitle }, sectionIndex) => items2.map(({ id, ...item }, itemIndex) => [id, { id, itemIndex, sectionId, sectionIndex, sectionTitle, ...item }])
     )
   ), []), allItems = useMemo(() => Object.values(itemsById).map((item) => {
-    let { status: status2, mutedAt } = items[item.id], isOpen = status2 === "open", isAccepted = status2 === "accepted", isDone = status2 === "done", isCompleted = isAccepted || isDone, isSkipped = !isCompleted && checkSkipped(item, itemsById, items), isMuted = !!mutedAt || !!widget.disable, isAvailable = isCompleted ? item.afterCompletion !== "unavailable" : checkAvailable(item, itemsById, { api, index, item }), isLockedBy = checkLockedBy(item, itemsById, items), isImmutable = isCompleted && item.afterCompletion === "immutable";
+    let { status: status2, mutedAt } = items[item.id], isOpen = status2 === "open", isAccepted = status2 === "accepted", isDone = status2 === "done", isCompleted = isAccepted || isDone, isSkipped = !isCompleted && checkSkipped(item, itemsById, items), isMuted = !!mutedAt || !!widget.disable, isAvailable = isCompleted ? item.afterCompletion !== "unavailable" : checkAvailable(item, itemsById, { api, index, item, storeState: checklistState }), isLockedBy = checkLockedBy(item, itemsById, items), isImmutable = isCompleted && item.afterCompletion === "immutable";
     return {
       ...item,
       isAvailable,
@@ -18076,7 +18495,7 @@ var subscriptions = /* @__PURE__ */ new Map(), useStoryIndex = () => {
       isSkipped,
       isMuted
     };
-  }), [itemsById, items, widget, api, index]), itemCollections = useMemo(() => {
+  }), [itemsById, items, widget, api, index, checklistState]), itemCollections = useMemo(() => {
     let availableItems = allItems.filter((item) => item.isAvailable), openItems = availableItems.filter((item) => item.isOpen), readyItems = openItems.filter((item) => item.isReady), nextItems = Object.values(
       readyItems.reduce((acc, item) => (acc[item.sectionId] ??= [], acc[item.sectionId].push({ ...item, itemIndex: acc[item.sectionId].length }), acc), {})
     ).flat().sort((a2, b2) => a2.itemIndex - b2.itemIndex).slice(0, 3).sort((a2, b2) => a2.sectionIndex - b2.sectionIndex), progress = availableItems.length ? Math.round((availableItems.length - openItems.length) / availableItems.length * 100) : 100;
@@ -18119,6 +18538,100 @@ var subscriptions = /* @__PURE__ */ new Map(), useStoryIndex = () => {
     ...checklistState
   };
 };
+
+// src/shared/useCopyButton.ts
+init_react();
+
+// ../../node_modules/@react-aria/live-announcer/dist/LiveAnnouncer.mjs
+var $319e236875307eab$var$liveAnnouncer = null;
+function $319e236875307eab$export$a9b970dcc4ae71a9(message, assertiveness = "assertive", timeout = 7e3) {
+  $319e236875307eab$var$liveAnnouncer ? $319e236875307eab$var$liveAnnouncer.announce(message, assertiveness, timeout) : ($319e236875307eab$var$liveAnnouncer = new $319e236875307eab$var$LiveAnnouncer(), (typeof IS_REACT_ACT_ENVIRONMENT == "boolean" ? IS_REACT_ACT_ENVIRONMENT : typeof jest < "u") ? $319e236875307eab$var$liveAnnouncer.announce(message, assertiveness, timeout) : setTimeout(() => {
+    $319e236875307eab$var$liveAnnouncer?.isAttached() && $319e236875307eab$var$liveAnnouncer?.announce(message, assertiveness, timeout);
+  }, 100));
+}
+function $319e236875307eab$export$d10ae4f68404609a(assertiveness) {
+  $319e236875307eab$var$liveAnnouncer && $319e236875307eab$var$liveAnnouncer.clear(assertiveness);
+}
+var $319e236875307eab$var$LiveAnnouncer = class {
+  isAttached() {
+    var _this_node;
+    return (_this_node = this.node) === null || _this_node === void 0 ? void 0 : _this_node.isConnected;
+  }
+  createLog(ariaLive) {
+    let node = document.createElement("div");
+    return node.setAttribute("role", "log"), node.setAttribute("aria-live", ariaLive), node.setAttribute("aria-relevant", "additions"), node;
+  }
+  destroy() {
+    this.node && (document.body.removeChild(this.node), this.node = null);
+  }
+  announce(message, assertiveness = "assertive", timeout = 7e3) {
+    var _this_assertiveLog, _this_politeLog;
+    if (!this.node) return;
+    let node = document.createElement("div");
+    typeof message == "object" ? (node.setAttribute("role", "img"), node.setAttribute("aria-labelledby", message["aria-labelledby"])) : node.textContent = message, assertiveness === "assertive" ? (_this_assertiveLog = this.assertiveLog) === null || _this_assertiveLog === void 0 || _this_assertiveLog.appendChild(node) : (_this_politeLog = this.politeLog) === null || _this_politeLog === void 0 || _this_politeLog.appendChild(node), message !== "" && setTimeout(() => {
+      node.remove();
+    }, timeout);
+  }
+  clear(assertiveness) {
+    this.node && ((!assertiveness || assertiveness === "assertive") && this.assertiveLog && (this.assertiveLog.innerHTML = ""), (!assertiveness || assertiveness === "polite") && this.politeLog && (this.politeLog.innerHTML = ""));
+  }
+  constructor() {
+    this.node = null, this.assertiveLog = null, this.politeLog = null, typeof document < "u" && (this.node = document.createElement("div"), this.node.dataset.liveAnnouncer = "true", Object.assign(this.node.style, {
+      border: 0,
+      clip: "rect(0 0 0 0)",
+      clipPath: "inset(50%)",
+      height: "1px",
+      margin: "-1px",
+      overflow: "hidden",
+      padding: 0,
+      position: "absolute",
+      width: "1px",
+      whiteSpace: "nowrap"
+    }), this.assertiveLog = this.createLog("assertive"), this.node.appendChild(this.assertiveLog), this.politeLog = this.createLog("polite"), this.node.appendChild(this.politeLog), document.body.prepend(this.node));
+  }
+};
+
+// src/shared/useCopyButton.ts
+function useCopyButton({
+  children = "Copy",
+  childrenOnCopy = "Copied!",
+  content,
+  onCopy,
+  ariaLabel = !1,
+  ariaLabelOnCopy = !1,
+  duration = 3e3
+}) {
+  let [copied, setCopied] = useState(!1), timerRef = useRef(null);
+  useEffect(
+    () => () => {
+      timerRef.current && clearTimeout(timerRef.current);
+    },
+    []
+  );
+  let handleClick = useCallback(
+    (e2) => {
+      timerRef.current && clearTimeout(timerRef.current);
+      let announcement = typeof ariaLabelOnCopy == "string" ? ariaLabelOnCopy : "Copied to clipboard";
+      navigator.clipboard?.writeText(content).then(() => {
+        onCopy?.(e2), setCopied(!0), $319e236875307eab$export$a9b970dcc4ae71a9(announcement, "polite"), timerRef.current = setTimeout(() => {
+          setCopied(!1), $319e236875307eab$export$d10ae4f68404609a("polite"), timerRef.current = null;
+        }, duration);
+      });
+    },
+    [content, onCopy, ariaLabelOnCopy, duration]
+  );
+  return {
+    // @ts-expect-error - TypeScript is not realising T is constrained identically in both interfaces.
+    children: copied ? childrenOnCopy : children,
+    buttonProps: useMemo(
+      () => ({
+        onClick: handleClick,
+        ariaLabel: copied ? ariaLabelOnCopy : ariaLabel
+      }),
+      [handleClick, copied, ariaLabelOnCopy, ariaLabel]
+    )
+  };
+}
 
 // src/manager/components/sidebar/ChecklistWidget.tsx
 var fadeScaleIn = keyframes`
@@ -18221,6 +18734,19 @@ var fadeScaleIn = keyframes`
     react_default.createElement(ActionList.Icon, null, react_default.createElement(ListUnorderedIcon, null)),
     children
   );
+}, CopyButton = ({
+  label,
+  copyContent,
+  onClick,
+  ...props
+}) => {
+  let { children: copyChildren, buttonProps: copyButtonProps } = useCopyButton({
+    children: label,
+    childrenOnCopy: react_default.createElement(react_default.Fragment, null, react_default.createElement(CheckIcon, null), " Copied!"),
+    onCopy: onClick,
+    content: copyContent
+  });
+  return react_default.createElement(ActionList.Button, { ...props, ...copyButtonProps }, copyChildren);
 }, ChecklistWidget = () => {
   let api = useStorybookApi(), { loaded, ready, allItems, nextItems, progress, accept, mute, items } = useChecklist(), [renderItems, setRenderItems] = useState(nextItems), [animated, setAnimated] = useState(!1);
   useEffect(() => {
@@ -18319,9 +18845,22 @@ var fadeScaleIn = keyframes`
           ariaLabel: `Open onboarding guide for ${item.label}`,
           onClick: () => api.navigate(`/settings/guide#${item.id}`)
         },
-        react_default.createElement(ActionList.Icon, null, item.isCompleted && animated ? react_default.createElement(Particles, { anchor: Checked, key: item.id }) : react_default.createElement(StatusFailIcon, null)),
+        react_default.createElement(ActionList.Icon, null, item.isCompleted && animated ? react_default.createElement(Particles, { anchor: Checked, key: item.id }) : item.icon ? react_default.createElement(item.icon, null) : react_default.createElement(CircleHollowIcon, null)),
         react_default.createElement(ActionList.Text, null, react_default.createElement(ItemLabel, { isCompleted: item.isCompleted, isSkipped: item.isSkipped }, item.label))
-      ), item.action && react_default.createElement(
+      ), item.action && (item.action.copyContent ? react_default.createElement(
+        CopyButton,
+        {
+          "data-target-id": item.id,
+          label: item.action.label,
+          copyContent: item.action.copyContent,
+          onClick: (e2) => {
+            e2.stopPropagation(), item.action?.onClick({
+              api,
+              accept: () => accept(item.id)
+            });
+          }
+        }
+      ) : react_default.createElement(
         ActionList.Button,
         {
           "data-target-id": item.id,
@@ -18334,7 +18873,7 @@ var fadeScaleIn = keyframes`
           }
         },
         item.action.label
-      ))
+      )))
     ))
   ))) : null;
 };
@@ -19509,14 +20048,14 @@ var MODAL_HEIGHT = 418, ModalStyled = styled(Modal)(() => ({
   );
 };
 
-// src/manager/components/sidebar/FileSearchModal.utils.tsx
-async function trySelectNewStory(selectStory, storyId, attempt = 1) {
+// src/manager/utils/trySelectStory.ts
+async function trySelectStory(selectStory, storyId, attempt = 1) {
   if (attempt > 10)
     throw new Error("We could not select the new story. Please try again.");
   try {
-    await selectStory(storyId);
+    selectStory(storyId);
   } catch {
-    return await new Promise((resolve) => setTimeout(resolve, 500)), trySelectNewStory(selectStory, storyId, attempt + 1);
+    return await new Promise((resolve) => setTimeout(resolve, 500)), trySelectStory(selectStory, storyId, attempt + 1);
   }
 }
 
@@ -19575,12 +20114,12 @@ var isRendererReact = scope.STORYBOOK_RENDERER === "react", CreateNewStoryFileMo
         });
         setError(null);
         let storyId = createNewStoryResult.storyId;
-        await trySelectNewStory(api.selectStory, storyId), handleSuccessfullyCreatedStory(componentExportName), handleFileSearch();
+        await trySelectStory(api.selectStory, storyId), handleSuccessfullyCreatedStory(componentExportName), handleFileSearch();
       } catch (e2) {
         switch (e2?.payload?.type) {
           case "STORY_FILE_EXISTS":
             let err = e2;
-            await trySelectNewStory(api.selectStory, err.payload.kind), handleStoryAlreadyExists();
+            await trySelectStory(api.selectStory, err.payload.kind), handleStoryAlreadyExists();
             break;
           default:
             setError({ selectedItemId, error: e2?.message });
@@ -19644,6 +20183,14 @@ var HighlightStyles = ({ refId, itemId }) => react_default.createElement(
 
 // src/manager/components/sidebar/Refs.tsx
 init_react();
+
+// src/shared/utils/story-index-filters.ts
+var getActiveFilterCount = ({
+  includedTagFilters,
+  excludedTagFilters,
+  includedStatusFilters,
+  excludedStatusFilters
+}) => (includedTagFilters?.length ?? 0) + (excludedTagFilters?.length ?? 0) + (includedStatusFilters?.length ?? 0) + (excludedStatusFilters?.length ?? 0);
 
 // src/manager/utils/tree.ts
 var import_memoizerific3 = __toESM(require_memoizerific(), 1);
@@ -19742,6 +20289,10 @@ var NoResults2 = styled.div(({ theme }) => ({
   small: {
     color: theme.textMutedColor,
     fontSize: `${theme.typography.size.s1}px`
+  },
+  button: {
+    marginTop: 8,
+    alignSelf: "center"
   }
 }));
 
@@ -19805,23 +20356,42 @@ var { window: globalWindow2 } = scope, TextStyle = styled.div(({ theme }) => ({
   display: "flex"
 }), WideSpaced = styled(Spaced)({
   flex: 1
-}), EmptyBlock = ({ isMain, hasEntries }) => react_default.createElement(Contained, null, react_default.createElement(FlexSpaced, { col: 1 }, react_default.createElement(WideSpaced, null, hasEntries ? react_default.createElement(NoResults2, null, react_default.createElement("strong", null, "No stories found"), react_default.createElement("small", null, "Your selected filters did not match any stories.")) : isMain ? react_default.createElement(Text3, null, "Oh no! Your Storybook is empty. This can happen when:", react_default.createElement("ul", null, react_default.createElement("li", null, "Your", " ", react_default.createElement(
-  Link,
-  {
-    href: "https://storybook.js.org/docs/api/main-config/main-config-stories?ref=ui",
-    cancel: !1,
-    target: "_blank"
-  },
-  "stories glob configuration"
-), " ", "does not match any files.", " "), react_default.createElement("li", null, "You have", " ", react_default.createElement(
-  Link,
-  {
-    href: "https://storybook.js.org/docs/writing-stories?ref=ui",
-    cancel: !1,
-    target: "_blank"
-  },
-  "no stories defined"
-), " ", "in your story files.", " "))) : react_default.createElement(Text3, null, "This composed Storybook is empty. Perhaps no stories match your selected filters.")))), LoaderBlock = ({ isMain }) => react_default.createElement(Contained, null, react_default.createElement(Loader2, { size: isMain ? 17 : 5 }));
+}), EmptyBlock = ({
+  isMain,
+  hasEntries,
+  activeFilterCount
+}) => {
+  let api = useStorybookApi();
+  return react_default.createElement(Contained, null, react_default.createElement(FlexSpaced, { col: 1 }, react_default.createElement(WideSpaced, null, hasEntries ? react_default.createElement(NoResults2, null, react_default.createElement("strong", null, "No stories found"), activeFilterCount > 0 ? react_default.createElement("small", null, "Your selected filters did not match any stories.") : react_default.createElement("small", null, "Try adding some stories!"), activeFilterCount > 0 ? react_default.createElement(
+    Button,
+    {
+      ariaLabel: !1,
+      size: "small",
+      variant: "outline",
+      onClick: async () => {
+        await api.setAllTagFilters([], []), await api.resetStatusFilters();
+      }
+    },
+    react_default.createElement(SweepIcon, null),
+    "Clear filters"
+  ) : null) : isMain ? react_default.createElement(Text3, null, "Oh no! Your Storybook is empty. This can happen when:", react_default.createElement("ul", null, react_default.createElement("li", null, "Your", " ", react_default.createElement(
+    Link,
+    {
+      href: "https://storybook.js.org/docs/api/main-config/main-config-stories?ref=ui",
+      cancel: !1,
+      target: "_blank"
+    },
+    "stories glob configuration"
+  ), " ", "does not match any files.", " "), react_default.createElement("li", null, "You have", " ", react_default.createElement(
+    Link,
+    {
+      href: "https://storybook.js.org/docs/writing-stories?ref=ui",
+      cancel: !1,
+      target: "_blank"
+    },
+    "no stories defined"
+  ), " ", "in your story files.", " "))) : react_default.createElement(Text3, null, "This composed Storybook is empty. Perhaps no stories match your selected filters."))));
+}, LoaderBlock = ({ isMain }) => react_default.createElement(Contained, null, react_default.createElement(Loader2, { size: isMain ? 17 : 5 }));
 
 // src/manager/components/sidebar/RefIndicator.tsx
 init_react();
@@ -19997,7 +20567,7 @@ var Svg2 = styled.svg`
   display: inline-block;
   shape-rendering: inherit;
   vertical-align: middle;
-`, GROUP_ID = "icon--group", COMPONENT_ID = "icon--component", DOCUMENT_ID = "icon--document", STORY_ID = "icon--story", TEST_ID = "icon--test", SUCCESS_ID = "icon--success", ERROR_ID = "icon--error", WARNING_ID = "icon--warning", DOT_ID = "icon--dot", IconSymbols = () => react_default.createElement(Svg2, { "data-chromatic": "ignore" }, react_default.createElement("symbol", { id: GROUP_ID }, react_default.createElement(
+`, GROUP_ID = "icon--group", COMPONENT_ID = "icon--component", DOCUMENT_ID = "icon--document", STORY_ID = "icon--story", TEST_ID = "icon--test", SUCCESS_ID = "icon--success", ERROR_ID = "icon--error", WARNING_ID = "icon--warning", DOT_ID = "icon--dot", NEW_ID = "icon--new", MODIFIED_ID = "icon--modified", AFFECTED_ID = "icon--affected", IconSymbols = () => react_default.createElement(Svg2, { "data-chromatic": "ignore" }, react_default.createElement("symbol", { id: GROUP_ID }, react_default.createElement(
   "path",
   {
     fillRule: "evenodd",
@@ -20067,7 +20637,39 @@ var Svg2 = styled.svg`
     d: "M7.206 3.044a.498.498 0 01.23.212l3.492 5.985a.494.494 0 01.006.507.497.497 0 01-.443.252H3.51a.499.499 0 01-.437-.76l3.492-5.984a.497.497 0 01.642-.212zM7 4.492L4.37 9h5.26L7 4.492z",
     fill: "currentColor"
   }
-)), react_default.createElement("symbol", { id: DOT_ID }, react_default.createElement("circle", { cx: "3", cy: "3", r: "3", fill: "currentColor" }))), UseSymbol = ({ type }) => type === "group" ? react_default.createElement("use", { xlinkHref: `#${GROUP_ID}` }) : type === "component" ? react_default.createElement("use", { xlinkHref: `#${COMPONENT_ID}` }) : type === "document" ? react_default.createElement("use", { xlinkHref: `#${DOCUMENT_ID}` }) : type === "story" ? react_default.createElement("use", { xlinkHref: `#${STORY_ID}` }) : type === "test" ? react_default.createElement("use", { xlinkHref: `#${TEST_ID}` }) : type === "success" ? react_default.createElement("use", { xlinkHref: `#${SUCCESS_ID}` }) : type === "error" ? react_default.createElement("use", { xlinkHref: `#${ERROR_ID}` }) : type === "warning" ? react_default.createElement("use", { xlinkHref: `#${WARNING_ID}` }) : type === "dot" ? react_default.createElement("use", { xlinkHref: `#${DOT_ID}` }) : null;
+)), react_default.createElement("symbol", { id: DOT_ID }, react_default.createElement("circle", { cx: "3", cy: "3", r: "3", fill: "currentColor" })), react_default.createElement("symbol", { id: NEW_ID }, react_default.createElement(
+  "path",
+  {
+    d: "M7 3.5L6.96971 3.68173C6.68873 5.36762 5.36762 6.68873 3.68173 6.96971L3.5 7",
+    stroke: "currentColor",
+    strokeLinecap: "round",
+    fill: "none"
+  }
+), react_default.createElement(
+  "path",
+  {
+    d: "M7 3.5L7.03029 3.68173C7.31127 5.36762 8.63238 6.68873 10.3183 6.96971L10.5 7",
+    stroke: "currentColor",
+    strokeLinecap: "round",
+    fill: "none"
+  }
+), react_default.createElement(
+  "path",
+  {
+    d: "M7 10.5L6.96971 10.3183C6.68873 8.63238 5.36762 7.31127 3.68173 7.03029L3.5 7",
+    stroke: "currentColor",
+    strokeLinecap: "round",
+    fill: "none"
+  }
+), react_default.createElement(
+  "path",
+  {
+    d: "M7 10.5L7.03029 10.3183C7.31127 8.63238 8.63238 7.31127 10.3183 7.03029L10.5 7",
+    stroke: "currentColor",
+    strokeLinecap: "round",
+    fill: "none"
+  }
+), react_default.createElement("path", { d: "M7 4.5L4.5 7L7 9.5L9.5 7L7 4.5Z", fill: "currentColor" })), react_default.createElement("symbol", { id: MODIFIED_ID }, react_default.createElement("circle", { cx: "7", cy: "7", r: "3", fill: "currentColor" })), react_default.createElement("symbol", { id: AFFECTED_ID }, react_default.createElement("circle", { cx: "7", cy: "7", r: "3", fill: "currentColor" }))), UseSymbol = ({ type }) => type === "group" ? react_default.createElement("use", { xlinkHref: `#${GROUP_ID}` }) : type === "component" ? react_default.createElement("use", { xlinkHref: `#${COMPONENT_ID}` }) : type === "document" ? react_default.createElement("use", { xlinkHref: `#${DOCUMENT_ID}` }) : type === "story" ? react_default.createElement("use", { xlinkHref: `#${STORY_ID}` }) : type === "test" ? react_default.createElement("use", { xlinkHref: `#${TEST_ID}` }) : type === "success" ? react_default.createElement("use", { xlinkHref: `#${SUCCESS_ID}` }) : type === "error" ? react_default.createElement("use", { xlinkHref: `#${ERROR_ID}` }) : type === "warning" ? react_default.createElement("use", { xlinkHref: `#${WARNING_ID}` }) : type === "dot" ? react_default.createElement("use", { xlinkHref: `#${DOT_ID}` }) : type === "new" ? react_default.createElement("use", { xlinkHref: `#${NEW_ID}` }) : type === "modified" ? react_default.createElement("use", { xlinkHref: `#${MODIFIED_ID}` }) : type === "affected" ? react_default.createElement("use", { xlinkHref: `#${AFFECTED_ID}` }) : null;
 
 // src/manager/utils/status.tsx
 var SmallIcons = styled(CircleIcon)({
@@ -20083,24 +20685,64 @@ var SmallIcons = styled(CircleIcon)({
   "status-value:unknown",
   "status-value:pending",
   "status-value:success",
+  "status-value:affected",
+  "status-value:modified",
+  "status-value:new",
   "status-value:warning",
   "status-value:error"
-], getStatus = (0, import_memoizerific4.default)(5)((theme, status) => ({
-  "status-value:unknown": [null, null],
-  "status-value:pending": [react_default.createElement(LoadingIcons, { key: "icon" }), "currentColor"],
-  "status-value:success": [
-    react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "success" })),
-    "currentColor"
-  ],
-  "status-value:warning": [
-    react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "warning" })),
-    theme.fgColor.warning
-  ],
-  "status-value:error": [
-    react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "error" })),
-    theme.fgColor.negative
-  ]
-})[status]), getMostCriticalStatusValue = (statusValues) => statusPriority.reduce(
+], getStatus = (0, import_memoizerific4.default)(10)((theme, status) => {
+  let defaultIconColor = theme.base === "light" ? curriedTransparentize$1(0.3, theme.color.defaultText) : curriedTransparentize$1(0.6, theme.color.defaultText);
+  return {
+    "status-value:unknown": {
+      icon: null,
+      iconColor: defaultIconColor,
+      textColor: null
+    },
+    "status-value:pending": {
+      icon: react_default.createElement(LoadingIcons, { key: "icon" }),
+      iconColor: defaultIconColor,
+      textColor: "currentColor"
+    },
+    "status-value:success": {
+      icon: react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "success" })),
+      iconColor: theme.color.positive,
+      textColor: "currentColor"
+    },
+    "status-value:new": {
+      icon: react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "new" })),
+      iconColor: theme.fgColor.accent,
+      textColor: null
+    },
+    "status-value:modified": {
+      icon: react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "modified" })),
+      iconColor: theme.fgColor.accent,
+      textColor: null
+    },
+    "status-value:affected": {
+      icon: react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "affected" })),
+      iconColor: theme.fgColor.accent,
+      textColor: null
+    },
+    "status-value:warning": {
+      icon: react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "warning" })),
+      iconColor: theme.color.warning,
+      textColor: theme.fgColor.warning
+    },
+    "status-value:error": {
+      icon: react_default.createElement("svg", { key: "icon", viewBox: "0 0 14 14", width: "14", height: "14" }, react_default.createElement(UseSymbol, { type: "error" })),
+      iconColor: theme.color.negative,
+      textColor: theme.fgColor.negative
+    }
+  }[status];
+});
+function getChangeDetectionStatus(statuses) {
+  let changeValues = Object.values(statuses).filter((status) => status.typeId === CHANGE_DETECTION_STATUS_TYPE_ID).map((status) => status.value), testValues = Object.values(statuses).filter((status) => status.typeId !== CHANGE_DETECTION_STATUS_TYPE_ID).map((status) => status.value);
+  return {
+    changeStatus: getMostCriticalStatusValue(changeValues),
+    testStatus: getMostCriticalStatusValue(testValues)
+  };
+}
+var getMostCriticalStatusValue = (statusValues) => statusPriority.reduce(
   (acc, value) => statusValues.includes(value) ? value : acc,
   "status-value:unknown"
 );
@@ -20116,25 +20758,29 @@ function getGroupStatus(collapsedData, allStatuses) {
     return acc;
   }, {});
 }
+function getGroupDualStatus(collapsedData, allStatuses) {
+  return Object.values(collapsedData).reduce((acc, item) => {
+    if (item.type === "group" || item.type === "component" || item.type === "story") {
+      let allDescendantStatuses = getDescendantIds(collapsedData, item.id, !1).map((id) => collapsedData[id]).filter((i2) => i2.type === "story").flatMap(
+        (story) => Object.values(allStatuses[story.id] || {})
+      ), changeValues = allDescendantStatuses.filter((s2) => s2.typeId === CHANGE_DETECTION_STATUS_TYPE_ID).map((s2) => s2.value), testValues = allDescendantStatuses.filter((s2) => s2.typeId !== CHANGE_DETECTION_STATUS_TYPE_ID).map((s2) => s2.value);
+      acc[item.id] = {
+        change: getMostCriticalStatusValue(changeValues),
+        test: getMostCriticalStatusValue(testValues)
+      };
+    }
+    return acc;
+  }, {});
+}
 
 // src/manager/components/sidebar/ContextMenu.tsx
 init_react();
-var import_copy_to_clipboard2 = __toESM(require_copy_to_clipboard(), 1);
 
 // src/manager/components/sidebar/StatusButton.tsx
 init_react();
-var withStatusColor = ({ theme, status }) => {
-  let defaultColor = theme.base === "light" ? curriedTransparentize$1(0.3, theme.color.defaultText) : curriedTransparentize$1(0.6, theme.color.defaultText);
-  return {
-    color: {
-      "status-value:pending": defaultColor,
-      "status-value:success": theme.color.positive,
-      "status-value:error": theme.color.negative,
-      "status-value:warning": theme.color.warning,
-      "status-value:unknown": defaultColor
-    }[status]
-  };
-}, StatusLabel = styled.div(withStatusColor, {
+var withStatusColor = ({ theme, status }) => ({
+  color: getStatus(theme, status).iconColor ?? void 0
+}), StatusLabel = styled.div(withStatusColor, {
   margin: 3
 }), StyledButton = styled(Button)(
   withStatusColor,
@@ -20193,7 +20839,10 @@ var empty = {
     outlineOffset: -2
   }
 }), useContextMenu = (context, links, api) => {
-  let [hoverCount, setHoverCount] = useState(0), [isOpen, setIsOpen] = useState(!1), [copyText, setCopyText] = react_default.useState("Copy story name"), { allStatuses, groupStatus } = useContext(StatusContext), shortcutKeys = api.getShortcutKeys(), enableShortcuts = !!shortcutKeys, topLinks = useMemo(() => {
+  let [hoverCount, setHoverCount] = useState(0), [isOpen, setIsOpen] = useState(!1), { allStatuses, groupStatus } = useContext(StatusContext), exportName = context && "exportName" in context ? context.exportName ?? "" : "", { children: copyText, buttonProps: copyButtonProps } = useCopyButton({
+    children: "Copy story name",
+    content: exportName
+  }), shortcutKeys = api.getShortcutKeys(), enableShortcuts = !!shortcutKeys, topLinks = useMemo(() => {
     let defaultLinks = [];
     return context && "importPath" in context && context.importPath && defaultLinks.push({
       id: "open-in-editor",
@@ -20213,12 +20862,10 @@ var empty = {
       //     <Shortcut keys={shortcutKeys.copyStoryName} />
       //   ) : null,
       onClick: (e2) => {
-        e2.preventDefault(), (0, import_copy_to_clipboard2.default)(context.exportName), setCopyText("Copied!"), setTimeout(() => {
-          setCopyText("Copy story name");
-        }, 2e3);
+        e2.preventDefault(), copyButtonProps.onClick(e2);
       }
     }), defaultLinks;
-  }, [api, context, copyText, enableShortcuts, shortcutKeys]), handlers = useMemo(() => ({
+  }, [api, context, copyText, copyButtonProps, enableShortcuts, shortcutKeys]), handlers = useMemo(() => ({
     onMouseEnter: () => {
       setHoverCount((c2) => c2 + 1);
     },
@@ -20612,36 +21259,15 @@ var CollapseButton = styled(Button)(({ theme }) => ({
       width: "auto"
     }
   }
-})), SuccessStatusIcon = (props) => {
-  let theme = useTheme();
-  return react_default.createElement(StatusPassIcon, { ...props, color: theme.color.positive });
-}, ErrorStatusIcon = (props) => {
-  let theme = useTheme();
-  return react_default.createElement(StatusFailIcon, { ...props, color: theme.color.negative });
-}, WarnStatusIcon = (props) => {
-  let theme = useTheme();
-  return react_default.createElement(StatusWarnIcon, { ...props, color: theme.color.warning });
-}, PendingStatusIcon = (props) => {
-  let theme = useTheme();
-  return react_default.createElement(SyncIcon, { ...props, size: 12, color: theme.color.defaultText });
-}, StatusIconMap = {
-  "status-value:success": react_default.createElement(SuccessStatusIcon, null),
-  "status-value:error": react_default.createElement(ErrorStatusIcon, null),
-  "status-value:warning": react_default.createElement(WarnStatusIcon, null),
-  "status-value:pending": react_default.createElement(PendingStatusIcon, null),
-  "status-value:unknown": null
-};
-var statusOrder = [
-  "status-value:success",
-  "status-value:error",
-  "status-value:warning",
-  "status-value:pending",
-  "status-value:unknown"
-], Node2 = react_default.memo(function(props) {
+})), StatusSlots = styled.div({
+  display: "flex",
+  alignItems: "center"
+});
+var getStatusLabel = (status) => status.split(":")[1].replace(/^./, (char) => char.toUpperCase()), Node2 = react_default.memo(function(props) {
   let {
     item,
     statuses,
-    groupStatus,
+    groupDualStatus,
     refId,
     docsMode,
     isOrphan,
@@ -20652,25 +21278,23 @@ var statusOrder = [
     isExpanded,
     setExpanded,
     onSelectStoryId,
-    api
-  } = props, theme = useTheme(), { isDesktop, isMobile: isMobile2, setMobileMenuOpen } = useLayout();
-  if (!isDisplayed)
-    return null;
-  let statusLinks = useMemo(() => item.type === "story" || item.type === "docs" ? Object.entries(statuses).filter(([, status]) => status.sidebarContextMenu !== !1).sort((a2, b2) => statusOrder.indexOf(a2[1].value) - statusOrder.indexOf(b2[1].value)).map(([typeId, status]) => ({
+    api,
+    isModifiedFilterActive
+  } = props, theme = useTheme(), { isDesktop, isMobile: isMobile2, setMobileMenuOpen } = useLayout(), statusLinks = useMemo(() => item.type === "story" || item.type === "docs" ? Object.entries(statuses).filter(([, status]) => status.sidebarContextMenu !== !1).sort((a2, b2) => statusPriority.indexOf(a2[1].value) - statusPriority.indexOf(b2[1].value)).map(([typeId, status]) => ({
     id: typeId,
     title: status.title,
     description: status.description,
     "aria-label": `Test status for ${status.title}: ${status.value}`,
-    icon: StatusIconMap[status.value],
+    icon: getStatus(theme, status.value).icon,
     onClick: () => {
       onSelectStoryId(item.id), internal_fullStatusStore.selectStatuses([status]);
     }
-  })) : [], [item.id, item.type, onSelectStoryId, statuses]), id = createId(item.id, refId), contextMenu = refId === "storybook_internal" ? useContextMenu(item, statusLinks, api) : { node: null, onMouseEnter: () => {
-  } };
+  })) : [], [item.id, item.type, onSelectStoryId, statuses, theme]), contextMenu = useContextMenu(item, statusLinks, api);
+  refId !== "storybook_internal" && (contextMenu = { node: null, onMouseEnter: () => {
+  } });
+  let id = createId(item.id, refId);
   if (item.type === "story" && !("children" in item && item.children) && (!("subtype" in item) || item.subtype !== "test") || item.type === "docs") {
-    let LeafNode3 = item.type === "docs" ? DocumentNode : StoryLeafNode, statusValue = getMostCriticalStatusValue(
-      Object.values(statuses || {}).map((s2) => s2.value)
-    ), [icon, textColor] = getStatus(theme, statusValue);
+    let LeafNode3 = item.type === "docs" ? DocumentNode : StoryLeafNode, { changeStatus, testStatus } = getChangeDetectionStatus(statuses || {}), leafChangeIcon = changeStatus === "status-value:unknown" || changeStatus === "status-value:affected" || changeStatus === "status-value:modified" && !isModifiedFilterActive ? null : getStatus(theme, changeStatus).icon, { icon: testIcon } = getStatus(theme, testStatus), overallStoryStatus = getMostCriticalStatusValue([changeStatus, testStatus]), { textColor } = getStatus(theme, overallStoryStatus);
     return react_default.createElement(
       LeafNodeStyleWrapper,
       {
@@ -20700,16 +21324,46 @@ var statusOrder = [
       ),
       isSelected && react_default.createElement(SkipToContentLink, { asChild: !0, ariaLabel: !1 }, react_default.createElement("a", { href: "#storybook-preview-wrapper" }, "Skip to content")),
       contextMenu.node,
-      icon ? react_default.createElement(
+      leafChangeIcon && testIcon ? react_default.createElement(StatusSlots, null, react_default.createElement(
         StatusButton,
         {
-          ariaLabel: `Test status: ${statusValue.replace("status-value:", "")}`,
-          "data-testid": "tree-status-button",
+          ariaLabel: `Change status: ${getStatusLabel(changeStatus)}`,
+          "data-testid": "tree-change-status-button",
           type: "button",
-          status: statusValue,
+          status: changeStatus,
           selectedItem: isSelected
         },
-        icon
+        leafChangeIcon
+      ), react_default.createElement(
+        StatusButton,
+        {
+          ariaLabel: `Test status: ${getStatusLabel(testStatus)}`,
+          "data-testid": "tree-status-button",
+          type: "button",
+          status: testStatus,
+          selectedItem: isSelected
+        },
+        testIcon
+      )) : leafChangeIcon ? react_default.createElement(
+        StatusButton,
+        {
+          ariaLabel: `Change status: ${getStatusLabel(changeStatus)}`,
+          "data-testid": "tree-change-status-button",
+          type: "button",
+          status: changeStatus,
+          selectedItem: isSelected
+        },
+        leafChangeIcon
+      ) : testIcon ? react_default.createElement(
+        StatusButton,
+        {
+          ariaLabel: `Test status: ${getStatusLabel(testStatus)}`,
+          "data-testid": "tree-status-button",
+          type: "button",
+          status: testStatus,
+          selectedItem: isSelected
+        },
+        testIcon
       ) : null
     );
   }
@@ -20754,20 +21408,13 @@ var statusOrder = [
         isFullyExpanded ? react_default.createElement(CollapseIcon, null) : react_default.createElement(ExpandAltIcon, null)
       )
     );
-  let itemStatus = getMostCriticalStatusValue(Object.values(statuses || {}).map((s2) => s2.value)), [itemIcon, itemColor] = getStatus(theme, itemStatus), itemStatusButton = itemIcon ? react_default.createElement(
-    StatusButton,
-    {
-      ariaLabel: `Test status: ${itemStatus.replace("status-value:", "")}`,
-      "data-testid": "tree-status-button",
-      role: "status",
-      type: "button",
-      status: itemStatus,
-      selectedItem: isSelected
-    },
-    itemIcon
-  ) : null;
   if (item.type === "component" || item.type === "group" || item.type === "story" && "children" in item && item.children) {
-    let { children = [] } = item, BranchNode2 = { component: ComponentNode, group: GroupNode, story: StoryBranchNode }[item.type], status = getMostCriticalStatusValue([itemStatus, groupStatus?.[item.id]]), color2 = status ? getStatus(theme, status)[1] : null, showBranchStatus = status === "status-value:error" || status === "status-value:warning";
+    let { children = [] } = item, BranchNode2 = { component: ComponentNode, group: GroupNode, story: StoryBranchNode }[item.type], { changeStatus: localChange, testStatus: localTest } = getChangeDetectionStatus(
+      statuses || {}
+    ), groupDual = groupDualStatus?.[item.id] || {
+      change: "status-value:unknown",
+      test: "status-value:unknown"
+    }, branchChange = getMostCriticalStatusValue([localChange, groupDual.change]), branchTest = getMostCriticalStatusValue([localTest, groupDual.test]), branchChangeIcon = branchChange !== "status-value:unknown" && branchChange !== "status-value:affected" && (branchChange !== "status-value:modified" || isModifiedFilterActive) ? getStatus(theme, branchChange).icon : null, branchTestIcon = getStatus(theme, branchTest).icon, overallStatus = getMostCriticalStatusValue([branchChange, branchTest]), color2 = overallStatus ? getStatus(theme, overallStatus).textColor : null;
     return react_default.createElement(
       LeafNodeStyleWrapper,
       {
@@ -20805,20 +21452,65 @@ var statusOrder = [
       ),
       isSelected && react_default.createElement(SkipToContentLink, { asChild: !0, ariaLabel: !1 }, react_default.createElement("a", { href: "#storybook-preview-wrapper" }, "Skip to content")),
       contextMenu.node,
-      showBranchStatus ? react_default.createElement(
+      branchChangeIcon && branchTestIcon ? react_default.createElement(StatusSlots, null, react_default.createElement(
         StatusButton,
         {
-          ariaLabel: `Test status: ${status.replace("status-value:", "")}`,
-          "data-testid": "tree-status-button",
+          ariaLabel: `Change status: ${getStatusLabel(branchChange)}`,
+          "data-testid": "tree-change-status-button",
           type: "button",
-          status,
+          status: branchChange,
           selectedItem: isSelected
         },
-        react_default.createElement("svg", { key: "icon", viewBox: "0 0 6 6", width: "6", height: "6", type: "dot" }, react_default.createElement(UseSymbol, { type: "dot" }))
-      ) : itemStatusButton
+        branchChangeIcon
+      ), react_default.createElement(
+        StatusButton,
+        {
+          ariaLabel: `Test status: ${getStatusLabel(branchTest)}`,
+          "data-testid": "tree-status-button",
+          type: "button",
+          status: branchTest,
+          selectedItem: isSelected
+        },
+        branchTestIcon
+      )) : branchChangeIcon ? react_default.createElement(
+        StatusButton,
+        {
+          ariaLabel: `Change status: ${getStatusLabel(branchChange)}`,
+          "data-testid": "tree-change-status-button",
+          type: "button",
+          status: branchChange,
+          selectedItem: isSelected
+        },
+        branchChangeIcon
+      ) : branchTestIcon ? react_default.createElement(
+        StatusButton,
+        {
+          ariaLabel: `Test status: ${getStatusLabel(branchTest)}`,
+          "data-testid": "tree-status-button",
+          type: "button",
+          status: branchTest,
+          selectedItem: isSelected
+        },
+        branchTestIcon
+      ) : null
     );
   }
-  let isTest = item.type === "story" && item.subtype === "test", LeafNode2 = isTest ? TestNode : { docs: DocumentNode, story: StoryLeafNode }[item.type], nodeType = isTest ? "test" : { docs: "document", story: "story" }[item.type];
+  let isTest = item.type === "story" && item.subtype === "test", LeafNode2 = isTest ? TestNode : { docs: DocumentNode, story: StoryLeafNode }[item.type], nodeType = isTest ? "test" : { docs: "document", story: "story" }[item.type], leafStatuses = Object.fromEntries(
+    Object.entries(statuses || {}).filter(
+      ([, status]) => status.typeId !== CHANGE_DETECTION_STATUS_TYPE_ID || status.value === "status-value:new"
+    )
+  ), leafStatus = getMostCriticalStatusValue(Object.values(leafStatuses).map((s2) => s2.value)), { icon: leafIcon, textColor: leafColor } = getStatus(theme, leafStatus), leafStatusButton = leafIcon ? react_default.createElement(
+    StatusButton,
+    {
+      ariaLabel: `Status: ${getStatusLabel(leafStatus)}`,
+      "data-testid": "tree-status-button",
+      role: "status",
+      type: "button",
+      status: leafStatus,
+      selectedItem: isSelected
+    },
+    leafIcon
+  ) : null;
   return react_default.createElement(
     LeafNodeStyleWrapper,
     {
@@ -20835,7 +21527,7 @@ var statusOrder = [
     react_default.createElement(
       LeafNode2,
       {
-        style: itemColor && !isSelected ? { color: itemColor } : {},
+        style: leafColor && !isSelected ? { color: leafColor } : {},
         href: getLink(item, refId),
         id,
         depth: isOrphan ? item.depth : item.depth - 1,
@@ -20847,7 +21539,7 @@ var statusOrder = [
     ),
     isSelected && react_default.createElement(SkipToContentLink, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "#storybook-preview-wrapper" }, "Skip to content")),
     contextMenu.node,
-    itemStatusButton
+    leafStatusButton
   );
 }), Root = react_default.memo(function({
   setExpanded,
@@ -20879,7 +21571,7 @@ var statusOrder = [
   selectedStoryId,
   onSelectStoryId
 }) {
-  let containerRef = useRef(null), api = useStorybookApi(), [rootIds, orphanIds, initialExpanded] = useMemo(
+  let containerRef = useRef(null), api = useStorybookApi(), isModifiedFilterActive = (useStorybookState().includedStatusFilters ?? []).includes("status-value:modified"), [rootIds, orphanIds, initialExpanded] = useMemo(
     () => Object.keys(data).reduce(
       (acc, id) => {
         let item = data[id];
@@ -20938,6 +21630,9 @@ var statusOrder = [
   }), groupStatus = useMemo(
     () => getGroupStatus(collapsedData, allStatuses ?? {}),
     [collapsedData, allStatuses]
+  ), groupDualStatus = useMemo(
+    () => getGroupDualStatus(collapsedData, allStatuses ?? {}),
+    [collapsedData, allStatuses]
   ), treeItems = useMemo(() => collapsedItems.map((itemId) => {
     let item = collapsedData[itemId], id = createId(itemId, refId);
     if (item.type === "root") {
@@ -20959,7 +21654,8 @@ var statusOrder = [
             setExpanded,
             isFullyExpanded,
             expandableDescendants: descendants,
-            onSelectStoryId
+            onSelectStoryId,
+            isModifiedFilterActive
           }
         )
       );
@@ -20973,7 +21669,7 @@ var statusOrder = [
         key: id,
         item,
         statuses: allStatuses?.[itemId] ?? {},
-        groupStatus,
+        groupDualStatus,
         refId,
         docsMode,
         isOrphan: orphanIds.some((oid) => itemId === oid || itemId.startsWith(`${oid}-`)),
@@ -20981,7 +21677,8 @@ var statusOrder = [
         isSelected: selectedStoryId === itemId,
         isExpanded: !!expanded[itemId],
         setExpanded,
-        onSelectStoryId
+        onSelectStoryId,
+        isModifiedFilterActive
       }
     );
   }), [
@@ -20992,7 +21689,8 @@ var statusOrder = [
     docsMode,
     expandableDescendants,
     expanded,
-    groupStatus,
+    groupDualStatus,
+    isModifiedFilterActive,
     onSelectStoryId,
     orphanIds,
     refId,
@@ -21044,7 +21742,7 @@ var Wrapper6 = styled.div(({ isMain }) => ({
     }
   }
 })), Ref = react_default.memo(function(props) {
-  let { docsOptions } = useStorybookState(), api = useStorybookApi(), {
+  let storybookState = useStorybookState(), api = useStorybookApi(), {
     filteredIndex: index,
     id: refId,
     title: title2 = refId,
@@ -21060,11 +21758,11 @@ var Wrapper6 = styled.div(({ isMain }) => ({
     indexError,
     previewInitialized,
     allStatuses
-  } = props, length = useMemo(() => index ? Object.keys(index).length : 0, [index]), indicatorRef = useRef(null), isMain = refId === DEFAULT_REF_ID, isLoading = isLoadingMain || (type === "auto-inject" && !previewInitialized || type === "server-checked") || type === "unknown", state = getStateType(isLoading, !!loginUrl && length === 0, !!indexError, !isLoading && length === 0), [isExpanded, setExpanded] = useState(expanded);
+  } = props, length = useMemo(() => index ? Object.keys(index).length : 0, [index]), indicatorRef = useRef(null), isMain = refId === DEFAULT_REF_ID, isLoading = isLoadingMain || (type === "auto-inject" && !previewInitialized || type === "server-checked") || type === "unknown", isError2 = !!indexError, isEmpty = !isLoading && length === 0, isAuthRequired = !!loginUrl && length === 0, activeFilterCount = getActiveFilterCount(storybookState), state = getStateType(isLoading, isAuthRequired, isError2, isEmpty), [isExpanded, setExpanded] = useState(expanded);
   useEffect(() => {
     index && selectedStoryId && index[selectedStoryId] && setExpanded(!0);
-  }, [setExpanded, index, selectedStoryId]);
-  let handleClick = useCallback(() => setExpanded((value) => !value), [setExpanded]), setHighlightedItemId = useCallback(
+  }, [index, selectedStoryId]);
+  let handleClick = useCallback(() => setExpanded((value) => !value), []), setHighlightedItemId = useCallback(
     (itemId) => setHighlighted({ itemId, refId }),
     [setHighlighted, refId]
   ), onSelectStoryId = useCallback(
@@ -21079,7 +21777,14 @@ var Wrapper6 = styled.div(({ isMain }) => ({
     },
     react_default.createElement(CollapseButton2, { "data-action": "collapse-ref", onClick: handleClick }, react_default.createElement(CollapseIcon2, { isExpanded }), react_default.createElement(RefTitle, { title: title2 }, title2)),
     react_default.createElement(RefIndicator, { ...props, state, ref: indicatorRef })
-  ), isExpanded && react_default.createElement(Wrapper6, { "data-title": title2, isMain }, state === "auth" && react_default.createElement(AuthBlock, { id: refId, loginUrl }), state === "error" && react_default.createElement(ErrorBlock, { error: indexError }), state === "loading" && react_default.createElement(LoaderBlock, { isMain }), state === "empty" && react_default.createElement(EmptyBlock, { isMain, hasEntries }), state === "ready" && react_default.createElement(
+  ), isExpanded && react_default.createElement(Wrapper6, { "data-title": title2, isMain }, state === "auth" && react_default.createElement(AuthBlock, { id: refId, loginUrl }), state === "error" && react_default.createElement(ErrorBlock, { error: indexError }), state === "loading" && react_default.createElement(LoaderBlock, { isMain }), state === "empty" && react_default.createElement(
+    EmptyBlock,
+    {
+      isMain,
+      hasEntries,
+      activeFilterCount
+    }
+  ), state === "ready" && react_default.createElement(
     Tree,
     {
       allStatuses,
@@ -21087,7 +21792,7 @@ var Wrapper6 = styled.div(({ isMain }) => ({
       isMain,
       refId,
       data: index,
-      docsMode: docsOptions.docsMode,
+      docsMode: storybookState.docsOptions.docsMode,
       selectedStoryId,
       onSelectStoryId,
       highlightedRef,
@@ -23616,7 +24321,8 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
   getLastViewed,
   initialQuery = "",
   searchBarContent,
-  searchFieldContent
+  searchFieldContent,
+  belowSearchContent
 }) {
   let api = useStorybookApi(), inputRef = useRef(null), [inputPlaceholder, setPlaceholder] = useState("Find components"), [allComponents, showAllComponents] = useState(!1), searchShortcut = api ? shortcutToHumanString(api.getShortcutKeys().search) : "/", makeFuse = useCallback(() => {
     let list = dataset.entries.reduce((acc, [refId, { index, allStatuses }]) => {
@@ -23754,7 +24460,7 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
             },
             react_default.createElement(CloseIcon, null)
           ), searchFieldContent)
-        ), searchBarContent), react_default.createElement(FocusContainer, { tabIndex: 0, id: "storybook-explorer-menu" }, children({
+        ), searchBarContent), !isOpen && belowSearchContent, react_default.createElement(FocusContainer, { tabIndex: 0, id: "storybook-explorer-menu" }, children({
           query: input,
           results,
           isNavVisible: !isOpen && document7.activeElement !== inputRef.current,
@@ -23881,7 +24587,7 @@ var { document: document8 } = scope, ResultsList = styled.ol({
   useEffect(() => {
     api && props.isHighlighted && item.type === "component" && api.emit(PRELOAD_ENTRIES, { ids: [item.children[0]] }, { options: { target: item.refId } });
   }, [api, props.isHighlighted, item]);
-  let nameMatch = matches.find((match) => match.key === "name"), pathMatches = matches.filter((match) => match.key === "path"), [icon] = item.status ? getStatus(theme, item.status) : [];
+  let nameMatch = matches.find((match) => match.key === "name"), pathMatches = matches.filter((match) => match.key === "path"), icon = item.status ? getStatus(theme, item.status).icon : null;
   return react_default.createElement(ResultRow, { ...props, onClick: click }, react_default.createElement(IconWrapper2, null, item.type === "component" && react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: "component" }, react_default.createElement(UseSymbol, { type: "component" })), item.type === "story" && react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: item.subtype }, react_default.createElement(UseSymbol, { type: item.subtype })), !(item.type === "component" || item.type === "story") && react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: "document" }, react_default.createElement(UseSymbol, { type: "document" }))), react_default.createElement(ResultRowContent, { className: "search-result-item--label" }, react_default.createElement(Title, null, react_default.createElement(Highlight, { match: nameMatch }, item.name)), react_default.createElement(Path, null, item.path.map((group, index) => react_default.createElement("span", { key: index }, react_default.createElement(Highlight, { match: pathMatches.find((match) => match.arrayIndex === index) }, group))))), item.status ? react_default.createElement(StatusLabel, { status: item.status }, icon) : null);
 }), SearchResults = react_default.memo(function({
   query,
@@ -24276,7 +24982,7 @@ var SIDEBAR_BOTTOM_SPACER_ID = "sidebar-bottom-spacer", SIDEBAR_BOTTOM_WRAPPER_I
       },
       hasStatuses,
       clearStatuses: () => {
-        internal_fullStatusStore.unset(), internal_fullTestProviderStore.clearAll(), setErrorsActive(!1), setWarningsActive(!1);
+        api.clearStatuses(), setErrorsActive(!1), setWarningsActive(!1);
       },
       errorCount,
       errorsActive,
@@ -24313,11 +25019,56 @@ var SIDEBAR_BOTTOM_SPACER_ID = "sidebar-bottom-spacer", SIDEBAR_BOTTOM_WRAPPER_I
   );
 };
 
-// src/manager/components/sidebar/TagsFilter.tsx
+// src/manager/components/sidebar/Filter.tsx
 init_react();
 
-// src/manager/components/sidebar/TagsFilterPanel.tsx
+// src/manager/components/sidebar/FilterPanel.tsx
 init_react();
+
+// src/manager/components/sidebar/FilterPanelLink.tsx
+init_react();
+var MutedText = styled.span(({ theme }) => ({
+  color: theme.textMutedColor
+})), StatusIcon2 = styled.span(({ $iconColor }) => ({
+  display: "contents",
+  color: $iconColor ?? void 0,
+  "> svg": {
+    transform: "scale(1.3)"
+  }
+})), createFilterLink = ({
+  id,
+  type,
+  title: title2,
+  tooltip,
+  count,
+  icon,
+  isIncluded,
+  isExcluded,
+  onCheckboxChange,
+  onInvert
+}) => {
+  let isChecked = isIncluded || isExcluded, toggleLabel = `${type} filter: ${isExcluded ? `exclude ${title2}` : title2}`, toggleTooltip = tooltip ?? `${isChecked ? "Remove" : "Add"} ${type} filter: ${title2}`, invertButtonLabel = `${isExcluded ? "Include" : "Exclude"} ${type}: ${title2}`;
+  return {
+    id: `filter-${type}-${id}`,
+    content: react_default.createElement(ActionList.HoverItem, { targetId: `filter-${type}-${id}` }, react_default.createElement(ActionList.Action, { as: "label", ariaLabel: !1, tabIndex: -1, tooltip: toggleTooltip }, react_default.createElement(ActionList.Icon, null, isExcluded ? react_default.createElement(DeleteIcon, null) : isIncluded ? null : icon, react_default.createElement(
+      Form.Checkbox,
+      {
+        checked: isChecked,
+        onChange: onCheckboxChange,
+        "data-tag": title2,
+        "aria-label": toggleLabel
+      }
+    )), react_default.createElement(ActionList.Text, null, react_default.createElement("span", null, title2, isExcluded && react_default.createElement(MutedText, null, " (excluded)"))), isExcluded ? react_default.createElement("s", null, count) : react_default.createElement("span", null, count)), react_default.createElement(
+      ActionList.Button,
+      {
+        "data-target-id": `filter-${type}-${id}`,
+        ariaLabel: invertButtonLabel,
+        onClick: onInvert
+      },
+      react_default.createElement("span", { style: { minWidth: 45 } }, isExcluded ? "Include" : "Exclude")
+    ))
+  };
+};
 
 // src/shared/constants/tags.ts
 var Tag2 = {
@@ -24343,21 +25094,8 @@ var Tag2 = {
   _test: (entry, excluded) => excluded ? entry.type !== "story" || entry.subtype !== "test" : entry.type === "story" && entry.subtype === "test"
 }, USER_TAG_FILTER = (tag) => (entry, excluded) => excluded ? !entry.tags?.includes(tag) : !!entry.tags?.includes(tag);
 
-// src/manager/components/sidebar/TagsFilterPanel.tsx
-var groupByType = (filters) => filters.filter(Boolean).reduce(
-  (acc, filter) => (acc[filter.type] ??= [], acc[filter.type].push(filter), acc),
-  {}
-), Wrapper7 = styled.div({
-  minWidth: 240,
-  maxWidth: 300,
-  maxHeight: 15.5 * 32 + 8,
-  // 15.5 items at 32px each + 8px padding
-  overflow: "hidden",
-  overflowY: "auto",
-  scrollbarWidth: "thin"
-}), MutedText = styled.span(({ theme }) => ({
-  color: theme.textMutedColor
-})), BUILT_IN_TAGS = /* @__PURE__ */ new Set([
+// src/manager/components/sidebar/FilterPanel.utils.ts
+var BUILT_IN_TAGS = /* @__PURE__ */ new Set([
   "dev",
   "test",
   "autodocs",
@@ -24366,90 +25104,128 @@ var groupByType = (filters) => filters.filter(Boolean).reduce(
   "play-fn",
   "test-fn",
   "manifest"
-]), equal3 = (left, right) => left.length === right.length && (/* @__PURE__ */ new Set([...left, ...right])).size === left.length, getFilterFunction = (tag) => Object.hasOwn(BUILT_IN_FILTERS, tag) ? BUILT_IN_FILTERS[tag] : USER_TAG_FILTER(tag), TagsFilterPanel = ({
+]), STATUS_DISPLAY_ORDER = [
+  "status-value:new",
+  "status-value:modified",
+  "status-value:affected"
+], areFiltersEqual = (left, right) => left.length === right.length && (/* @__PURE__ */ new Set([...left, ...right])).size === left.length, getFilterFunction = (tag) => Object.hasOwn(BUILT_IN_FILTERS, tag) ? BUILT_IN_FILTERS[tag] : USER_TAG_FILTER(tag);
+
+// src/manager/components/sidebar/useFilterData.tsx
+init_react();
+var BUILT_IN_FILTER_DEFS = [
+  { id: "_docs", title: "Documentation", icon: react_default.createElement(DocumentIcon, { color: color.gold }), tag: "_docs" },
+  { id: "_play", title: "Play", icon: react_default.createElement(PlayHollowIcon, { color: color.seafoam }), tag: "_play" },
+  { id: "_test", title: "Testing", icon: react_default.createElement(BeakerIcon, { color: color.green }), tag: "_test" }
+];
+function useTagFilterEntries(indexJson) {
+  return useMemo(() => {
+    let entries = Object.values(indexJson.entries), userTagsCounts = entries.reduce((acc, entry) => (entry.tags?.forEach((tag) => {
+      BUILT_IN_TAGS.has(tag) || (acc[tag] = (acc[tag] || 0) + 1);
+    }), acc), {}), tagEntries = Object.entries(userTagsCounts).map(([tag, count]) => ({
+      id: tag,
+      type: "tag",
+      title: tag,
+      count,
+      icon: null
+    })), getBuiltInCount = (filterFn) => entries.filter((entry) => filterFn?.(entry)).length;
+    return { builtInEntries: BUILT_IN_FILTER_DEFS.map((def) => ({
+      id: def.id,
+      type: "built-in",
+      title: def.title,
+      icon: def.icon,
+      count: getBuiltInCount(getFilterFunction(def.tag))
+    })), tagEntries };
+  }, [indexJson.entries]);
+}
+function useStatusFilterEntries(allStatuses) {
+  return useMemo(() => {
+    if (!globalThis?.FEATURES?.changeDetection)
+      return [];
+    let counts = countStatusesByValue(allStatuses);
+    return STATUS_DISPLAY_ORDER.map((statusValue) => ({
+      statusValue,
+      shortName: statusValueShortName(statusValue),
+      description: statusValueDescription(statusValue),
+      count: counts[statusValue] ?? 0
+    }));
+  }, [allStatuses]);
+}
+
+// src/manager/components/sidebar/FilterPanel.tsx
+var Wrapper7 = styled.div({
+  minWidth: 240,
+  maxWidth: 300,
+  maxHeight: 15.5 * 32 + 8,
+  // 15.5 items at 32px each + 8px padding
+  overflow: "hidden",
+  overflowY: "auto",
+  scrollbarWidth: "thin"
+}), FilterPanel = ({
   api,
   indexJson,
   defaultIncludedFilters,
   defaultExcludedFilters,
   includedFilters,
-  excludedFilters
+  excludedFilters,
+  allStatuses,
+  includedStatusFilters,
+  excludedStatusFilters
 }) => {
-  let ref = useRef(null), filtersById = useMemo(() => {
-    let userTagsCounts = Object.values(indexJson.entries).reduce(
-      (acc, entry) => (entry.tags?.forEach((tag) => {
-        BUILT_IN_TAGS.has(tag) || (acc[tag] = (acc[tag] || 0) + 1);
-      }), acc),
-      {}
-    ), userFilters = Object.fromEntries(
-      Object.entries(userTagsCounts).map(([tag, count]) => [tag, { id: tag, type: "tag", title: tag, count }])
-    ), getBuiltInCount = (filterFn) => Object.values(indexJson.entries).filter((entry) => filterFn?.(entry)).length, builtInFilters = {
-      _docs: {
-        id: "_docs",
-        type: "built-in",
-        title: "Documentation",
-        icon: react_default.createElement(DocumentIcon, { color: color.gold }),
-        count: getBuiltInCount(getFilterFunction("_docs"))
-      },
-      _play: {
-        id: "_play",
-        type: "built-in",
-        title: "Play",
-        icon: react_default.createElement(PlayHollowIcon, { color: color.seafoam }),
-        count: getBuiltInCount(getFilterFunction("_play"))
-      },
-      _test: {
-        id: "_test",
-        type: "built-in",
-        title: "Testing",
-        icon: react_default.createElement(BeakerIcon, { color: color.green }),
-        count: getBuiltInCount(getFilterFunction("_test"))
-      }
-    };
-    return { ...userFilters, ...builtInFilters };
-  }, [indexJson.entries]), toggleFilter = useCallback(
-    (id, selected, excluded) => {
-      excluded !== void 0 ? api.addTagFilters([id], excluded) : selected ? api.addTagFilters([id], !1) : api.removeTagFilters([id]);
-    },
-    [api]
-  ), setAllFilters = useCallback(
-    (selected) => {
-      api.setAllTagFilters(selected ? Object.keys(filtersById) : [], []);
-    },
-    [api, filtersById]
-  ), isDefaultSelection = useMemo(() => equal3(includedFilters, defaultIncludedFilters) && equal3(excludedFilters, defaultExcludedFilters), [includedFilters, excludedFilters, defaultIncludedFilters, defaultExcludedFilters]), hasDefaultSelection = useMemo(() => defaultIncludedFilters.length > 0 || defaultExcludedFilters.length > 0, [defaultIncludedFilters, defaultExcludedFilters]), builtInFilterIcons = useMemo(
-    () => ({
-      _docs: react_default.createElement(DocumentIcon, { color: color.gold }),
-      _play: react_default.createElement(PlayHollowIcon, { color: color.seafoam }),
-      _test: react_default.createElement(BeakerIcon, { color: color.green })
-    }),
-    []
-  ), renderLink = ({ id, type, title: title2, count }) => {
-    let onToggle = (selected, excluded) => toggleFilter(id, selected, excluded), isIncluded = includedFilters.includes(id), isExcluded = excludedFilters.includes(id), isChecked = isIncluded || isExcluded, toggleLabel = `${type} filter: ${isExcluded ? `exclude ${title2}` : title2}`, toggleTooltip = `${isChecked ? "Remove" : "Add"} ${type} filter: ${title2}`, invertButtonLabel = `${isExcluded ? "Include" : "Exclude"} ${type}: ${title2}`, icon = type === "built-in" ? builtInFilterIcons[id] : null;
-    if (!(count === 0 && type === "built-in"))
+  let theme = useTheme(), { builtInEntries, tagEntries } = useTagFilterEntries(indexJson), statusEntries = useStatusFilterEntries(allStatuses), toTagFilterItem = useCallback(
+    (entry) => {
+      if (entry.count === 0 && entry.type === "built-in") return null;
+      let isIncluded = includedFilters.includes(entry.id), isExcluded = excludedFilters.includes(entry.id), isChecked = isIncluded || isExcluded;
       return {
-        id: `filter-${type}-${id}`,
-        content: react_default.createElement(ActionList.HoverItem, { targetId: `filter-${type}-${id}` }, react_default.createElement(ActionList.Action, { as: "label", ariaLabel: !1, tabIndex: -1, tooltip: toggleTooltip }, react_default.createElement(ActionList.Icon, null, isExcluded ? react_default.createElement(DeleteIcon, null) : isIncluded ? null : icon, react_default.createElement(
-          Form.Checkbox,
-          {
-            checked: isChecked,
-            onChange: () => onToggle(!isChecked),
-            "data-tag": title2,
-            "aria-label": toggleLabel
-          }
-        )), react_default.createElement(ActionList.Text, null, react_default.createElement("span", null, title2, isExcluded && react_default.createElement(MutedText, null, " (excluded)"))), isExcluded ? react_default.createElement("s", null, count) : react_default.createElement("span", null, count)), react_default.createElement(
-          ActionList.Button,
-          {
-            "data-target-id": `filter-${type}-${id}`,
-            ariaLabel: invertButtonLabel,
-            onClick: () => onToggle(!0, !isExcluded)
-          },
-          react_default.createElement("span", { style: { minWidth: 45 } }, isExcluded ? "Include" : "Exclude")
-        ))
+        id: entry.id,
+        type: entry.type,
+        title: entry.title,
+        count: entry.count,
+        icon: entry.icon,
+        isIncluded,
+        isExcluded,
+        onCheckboxChange: () => {
+          isChecked ? api.removeTagFilters([entry.id]) : api.addTagFilters([entry.id], !1);
+        },
+        onInvert: () => api.addTagFilters([entry.id], !isExcluded)
       };
-  }, groups = groupByType(Object.values(filtersById)), links = Object.values(groups).map(
-    (group) => group.sort((a2, b2) => a2.id.localeCompare(b2.id)).map((filter) => renderLink(filter)).filter((value) => !!value)
-  ).filter((value) => value.length > 0), hasItems = links.length > 0, hasUserTags = Object.values(filtersById).some(({ type }) => type === "tag"), isNothingSelectedYet = includedFilters.length === 0 && excludedFilters.length === 0;
-  return react_default.createElement(Wrapper7, { ref }, hasItems && react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, isNothingSelectedYet ? react_default.createElement(
+    },
+    [api, includedFilters, excludedFilters]
+  ), toStatusFilterItem = useCallback(
+    (entry) => {
+      let shortName = entry.shortName === "affected" ? "related" : entry.shortName, isIncluded = includedStatusFilters.includes(entry.statusValue), isExcluded = excludedStatusFilters.includes(entry.statusValue), isChecked = isIncluded || isExcluded, { icon: statusIconEl, iconColor } = getStatus(theme, entry.statusValue), showIcon = statusIconEl && entry.statusValue !== "status-value:affected";
+      return {
+        id: shortName,
+        type: "status",
+        title: shortName.charAt(0).toUpperCase() + shortName.slice(1),
+        tooltip: entry.description,
+        count: entry.count,
+        icon: showIcon ? react_default.createElement(StatusIcon2, { $iconColor: iconColor }, statusIconEl) : null,
+        isIncluded,
+        isExcluded,
+        onCheckboxChange: () => {
+          isChecked ? api.removeStatusFilters([entry.statusValue]) : api.addStatusFilters([entry.statusValue], !1);
+        },
+        onInvert: () => api.addStatusFilters([entry.statusValue], !isExcluded)
+      };
+    },
+    [api, includedStatusFilters, excludedStatusFilters, theme]
+  ), builtInItems = useMemo(
+    () => builtInEntries.sort((a2, b2) => a2.id.localeCompare(b2.id)).map(toTagFilterItem).filter((f2) => f2 !== null),
+    [builtInEntries, toTagFilterItem]
+  ), tagItems = useMemo(
+    () => tagEntries.sort((a2, b2) => a2.id.localeCompare(b2.id)).map(toTagFilterItem).filter((f2) => f2 !== null),
+    [tagEntries, toTagFilterItem]
+  ), statusItems = useMemo(
+    () => statusEntries.map(toStatusFilterItem),
+    [statusEntries, toStatusFilterItem]
+  ), filterIds = useMemo(
+    () => [...builtInEntries.map((e2) => e2.id), ...tagEntries.map((e2) => e2.id)],
+    [builtInEntries, tagEntries]
+  ), setAllFilters = useCallback(
+    (selected) => api.setAllTagFilters(selected ? filterIds : [], []),
+    [api, filterIds]
+  ), isDefaultSelection = areFiltersEqual(includedFilters, defaultIncludedFilters) && areFiltersEqual(excludedFilters, defaultExcludedFilters), hasDefaultSelection = defaultIncludedFilters.length > 0 || defaultExcludedFilters.length > 0, isNothingSelectedYet = includedFilters.length === 0 && excludedFilters.length === 0 && includedStatusFilters.length === 0 && excludedStatusFilters.length === 0, hasItems = builtInItems.length > 0 || tagItems.length > 0;
+  return react_default.createElement(Wrapper7, null, hasItems && react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, isNothingSelectedYet ? react_default.createElement(
     ActionList.Button,
     {
       ariaLabel: !1,
@@ -24465,7 +25241,9 @@ var groupByType = (filters) => filters.filter(Boolean).reduce(
       ariaLabel: !1,
       id: "deselect-all",
       key: "deselect-all",
-      onClick: () => setAllFilters(!1)
+      onClick: async () => {
+        await setAllFilters(!1), await api.resetStatusFilters();
+      }
     },
     react_default.createElement(SweepIcon, null),
     react_default.createElement(ActionList.Text, null, "Clear filters")
@@ -24480,7 +25258,16 @@ var groupByType = (filters) => filters.filter(Boolean).reduce(
       disabled: isDefaultSelection
     },
     react_default.createElement(UndoIcon, null)
-  ))), links.map((group) => react_default.createElement(ActionList, { key: group.map((link) => link.id).join("_") }, group.map((link) => react_default.createElement(Fragment, { key: link.id }, link.content)))), !hasUserTags && react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, react_default.createElement(
+  ))), builtInItems.length > 0 && react_default.createElement(ActionList, null, builtInItems.map((item) => {
+    let link = createFilterLink(item);
+    return react_default.createElement(Fragment, { key: link.id }, link.content);
+  })), statusItems.length > 0 && react_default.createElement(ActionList, null, statusItems.map((item) => {
+    let link = createFilterLink(item);
+    return react_default.createElement(Fragment, { key: link.id }, link.content);
+  })), tagItems.length > 0 && react_default.createElement(ActionList, null, tagItems.map((item) => {
+    let link = createFilterLink(item);
+    return react_default.createElement(Fragment, { key: link.id }, link.content);
+  })), tagItems.length === 0 && react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, react_default.createElement(
     ActionList.Link,
     {
       ariaLabel: !1,
@@ -24493,7 +25280,7 @@ var groupByType = (filters) => filters.filter(Boolean).reduce(
   ))));
 };
 
-// src/manager/components/sidebar/TagsFilter.tsx
+// src/manager/components/sidebar/Filter.tsx
 var StyledButton2 = styled(Button)(({ $isHighlighted, theme }) => ({
   "&:focus-visible": {
     outlineOffset: 4
@@ -24518,24 +25305,28 @@ var StyledButton2 = styled(Button)(({ $isHighlighted, theme }) => ({
   fontSize: theme.typography.size.s1 - 1,
   background: theme.barSelectedColor,
   color: theme.color.inverseText
-})), tagsFilterMapper = ({ api, state }) => ({
+})), filterMapper = ({ api, state }) => ({
   api,
   indexJson: state.internal_index,
-  activeFilterCount: (state.includedTagFilters?.length ?? 0) + (state.excludedTagFilters?.length ?? 0),
+  activeFilterCount: getActiveFilterCount(state),
   defaultIncludedFilters: state.defaultIncludedTagFilters,
   defaultExcludedFilters: state.defaultExcludedTagFilters,
   includedFilters: state.includedTagFilters,
-  excludedFilters: state.excludedTagFilters
-}), TagsFilterInner = ({
+  excludedFilters: state.excludedTagFilters,
+  includedStatusFilters: state.includedStatusFilters ?? [],
+  excludedStatusFilters: state.excludedStatusFilters ?? []
+}), FilterInner = ({
   api,
   indexJson,
   activeFilterCount,
   defaultIncludedFilters,
   defaultExcludedFilters,
   includedFilters,
-  excludedFilters
+  excludedFilters,
+  includedStatusFilters,
+  excludedStatusFilters
 }) => {
-  let [expanded, setExpanded] = useState(!1), handleToggleExpand = useCallback(
+  let [expanded, setExpanded] = useState(!1), allStatuses = experimental_useStatusStore(), handleToggleExpand = useCallback(
     (event) => {
       event.preventDefault(), setExpanded(!expanded);
     },
@@ -24550,14 +25341,17 @@ var StyledButton2 = styled(Button)(({ $isHighlighted, theme }) => ({
       offset: 8,
       padding: 0,
       popover: () => react_default.createElement(
-        TagsFilterPanel,
+        FilterPanel,
         {
           api,
           indexJson,
           defaultIncludedFilters,
           defaultExcludedFilters,
           includedFilters,
-          excludedFilters
+          excludedFilters,
+          allStatuses,
+          includedStatusFilters,
+          excludedStatusFilters
         }
       )
     },
@@ -24576,16 +25370,18 @@ var StyledButton2 = styled(Button)(({ $isHighlighted, theme }) => ({
       activeFilterCount > 0 && react_default.createElement(TagSelected, null)
     )
   );
-}, TagsFilter = () => react_default.createElement(Consumer, { filter: tagsFilterMapper }, ({
+}, Filter = () => react_default.createElement(Consumer, { filter: filterMapper }, ({
   api,
   indexJson,
   activeFilterCount,
   defaultIncludedFilters,
   defaultExcludedFilters,
   includedFilters,
-  excludedFilters
+  excludedFilters,
+  includedStatusFilters,
+  excludedStatusFilters
 }) => indexJson ? react_default.createElement(
-  TagsFilterInner,
+  FilterInner,
   {
     api,
     indexJson,
@@ -24593,9 +25389,526 @@ var StyledButton2 = styled(Button)(({ $isHighlighted, theme }) => ({
     defaultIncludedFilters,
     defaultExcludedFilters,
     includedFilters,
-    excludedFilters
+    excludedFilters,
+    includedStatusFilters,
+    excludedStatusFilters
   }
 ) : null);
+
+// src/manager/components/sidebar/ReviewChangesButton.tsx
+init_react();
+
+// src/shared/universal-store/instances.ts
+var instances = /* @__PURE__ */ new Map();
+
+// src/shared/universal-store/index.ts
+var CHANNEL_EVENT_PREFIX = "UNIVERSAL_STORE:", ProgressState = {
+  PENDING: "PENDING",
+  RESOLVED: "RESOLVED",
+  REJECTED: "REJECTED"
+}, _UniversalStore = class _UniversalStore {
+  constructor(options2, environmentOverrides) {
+    /** Enable debug logs for this store */
+    this.debugging = !1;
+    // TODO: narrow type of listeners based on event type
+    this.listeners = /* @__PURE__ */ new Map([["*", /* @__PURE__ */ new Set()]]);
+    /** Gets the current state */
+    this.getState = () => (this.debug("getState", { state: this.state }), this.state);
+    /**
+     * Subscribes to store events
+     *
+     * @returns A function to unsubscribe
+     */
+    this.subscribe = (eventTypeOrListener, maybeListener) => {
+      let subscribesToAllEvents = typeof eventTypeOrListener == "function", eventType = subscribesToAllEvents ? "*" : eventTypeOrListener, listener = subscribesToAllEvents ? eventTypeOrListener : maybeListener;
+      if (this.debug("subscribe", { eventType, listener }), !listener)
+        throw new TypeError(
+          `Missing first subscribe argument, or second if first is the event type, when subscribing to a UniversalStore with id '${this.id}'`
+        );
+      return this.listeners.has(eventType) || this.listeners.set(eventType, /* @__PURE__ */ new Set()), this.listeners.get(eventType).add(listener), () => {
+        this.debug("unsubscribe", { eventType, listener }), this.listeners.has(eventType) && (this.listeners.get(eventType).delete(listener), this.listeners.get(eventType)?.size === 0 && this.listeners.delete(eventType));
+      };
+    };
+    /** Sends a custom event to the other stores */
+    this.send = (event) => {
+      if (this.debug("send", { event }), this.status !== _UniversalStore.Status.READY)
+        throw new TypeError(
+          dedent`Cannot send event before store is ready. You can get the current status with store.status,
+        or await store.readyPromise to wait for the store to be ready before sending events.
+        ${JSON.stringify(
+            {
+              event,
+              id: this.id,
+              actor: this.actor,
+              environment: this.environment
+            },
+            null,
+            2
+          )}`
+        );
+      this.emitToListeners(event, { actor: this.actor }), this.emitToChannel(event, { actor: this.actor });
+    };
+    if (this.debugging = options2.debug ?? !1, !_UniversalStore.isInternalConstructing)
+      throw new TypeError(
+        "UniversalStore is not constructable - use UniversalStore.create() instead"
+      );
+    if (_UniversalStore.isInternalConstructing = !1, this.id = options2.id, this.actorId = Date.now().toString(36) + Math.random().toString(36).substring(2), this.actorType = options2.leader ? _UniversalStore.ActorType.LEADER : _UniversalStore.ActorType.FOLLOWER, this.state = options2.initialState, this.channelEventName = `${CHANNEL_EVENT_PREFIX}${this.id}`, this.debug("constructor", {
+      options: options2,
+      environmentOverrides,
+      channelEventName: this.channelEventName
+    }), this.actor.type === _UniversalStore.ActorType.LEADER)
+      this.syncing = {
+        state: ProgressState.RESOLVED,
+        promise: Promise.resolve()
+      };
+    else {
+      let syncingResolve, syncingReject, syncingPromise = new Promise((resolve, reject) => {
+        syncingResolve = () => {
+          this.syncing.state === ProgressState.PENDING && (this.syncing.state = ProgressState.RESOLVED, resolve());
+        }, syncingReject = (reason) => {
+          this.syncing.state === ProgressState.PENDING && (this.syncing.state = ProgressState.REJECTED, reject(reason));
+        };
+      });
+      this.syncing = {
+        state: ProgressState.PENDING,
+        promise: syncingPromise,
+        resolve: syncingResolve,
+        reject: syncingReject
+      };
+    }
+    this.getState = this.getState.bind(this), this.setState = this.setState.bind(this), this.subscribe = this.subscribe.bind(this), this.onStateChange = this.onStateChange.bind(this), this.send = this.send.bind(this), this.emitToChannel = this.emitToChannel.bind(this), this.prepareThis = this.prepareThis.bind(this), this.emitToListeners = this.emitToListeners.bind(this), this.handleChannelEvents = this.handleChannelEvents.bind(this), this.debug = this.debug.bind(this), this.channel = environmentOverrides?.channel ?? _UniversalStore.preparation.channel, this.environment = environmentOverrides?.environment ?? _UniversalStore.preparation.environment, this.channel && this.environment ? (_UniversalStore.preparation.resolve({ channel: this.channel, environment: this.environment }), this.prepareThis({ channel: this.channel, environment: this.environment })) : _UniversalStore.preparation.promise.then(this.prepareThis);
+  }
+  static setupPreparationPromise() {
+    let resolveRef, rejectRef, promise = new Promise(
+      (resolve, reject) => {
+        resolveRef = (args) => {
+          resolve(args);
+        }, rejectRef = (...args) => {
+          reject(args);
+        };
+      }
+    );
+    _UniversalStore.preparation = {
+      resolve: resolveRef,
+      reject: rejectRef,
+      promise
+    };
+  }
+  /** The actor object representing the store instance with a unique ID and a type */
+  get actor() {
+    return Object.freeze({
+      id: this.actorId,
+      type: this.actorType,
+      environment: this.environment ?? _UniversalStore.Environment.UNKNOWN
+    });
+  }
+  /**
+   * The current state of the store, that signals both if the store is prepared by Storybook and
+   * also - in the case of a follower - if the state has been synced with the leader's state.
+   */
+  get status() {
+    if (!this.channel || !this.environment)
+      return _UniversalStore.Status.UNPREPARED;
+    switch (this.syncing?.state) {
+      case ProgressState.PENDING:
+      case void 0:
+        return _UniversalStore.Status.SYNCING;
+      case ProgressState.REJECTED:
+        return _UniversalStore.Status.ERROR;
+      case ProgressState.RESOLVED:
+      default:
+        return _UniversalStore.Status.READY;
+    }
+  }
+  /**
+   * A promise that resolves when the store is fully ready. A leader will be ready when the store
+   * has been prepared by Storybook, which is almost instantly.
+   *
+   * A follower will be ready when the state has been synced with the leader's state, within a few
+   * hundred milliseconds.
+   */
+  untilReady() {
+    return Promise.all([_UniversalStore.preparation.promise, this.syncing?.promise]);
+  }
+  /** Creates a new instance of UniversalStore */
+  static create(options2) {
+    if (!options2 || typeof options2?.id != "string")
+      throw new TypeError("id is required and must be a string, when creating a UniversalStore");
+    options2.debug && console.debug(
+      dedent`[UniversalStore]
+        create`,
+      { options: options2 }
+    );
+    let existing = instances.get(options2.id);
+    if (existing)
+      return console.warn(dedent`UniversalStore with id "${options2.id}" already exists in this environment, re-using existing.
+        You should reuse the existing instance instead of trying to create a new one.`), existing;
+    _UniversalStore.isInternalConstructing = !0;
+    let store2 = new _UniversalStore(options2);
+    return instances.set(options2.id, store2), store2;
+  }
+  /**
+   * Used by Storybook to set the channel for all instances of UniversalStore in the given
+   * environment.
+   *
+   * @internal
+   */
+  static __prepare(channel, environment) {
+    _UniversalStore.preparation.channel = channel, _UniversalStore.preparation.environment = environment, _UniversalStore.preparation.resolve({ channel, environment });
+  }
+  /**
+   * Updates the store's state
+   *
+   * Either a new state or a state updater function can be passed to the method.
+   */
+  setState(updater) {
+    let previousState = this.state, newState = typeof updater == "function" ? updater(previousState) : updater;
+    if (this.debug("setState", { newState, previousState, updater }), this.status !== _UniversalStore.Status.READY)
+      throw new TypeError(
+        dedent`Cannot set state before store is ready. You can get the current status with store.status,
+        or await store.readyPromise to wait for the store to be ready before sending events.
+        ${JSON.stringify(
+          {
+            newState,
+            id: this.id,
+            actor: this.actor,
+            environment: this.environment
+          },
+          null,
+          2
+        )}`
+      );
+    this.state = newState;
+    let event = {
+      type: _UniversalStore.InternalEventType.SET_STATE,
+      payload: {
+        state: newState,
+        previousState
+      }
+    };
+    this.emitToChannel(event, { actor: this.actor }), this.emitToListeners(event, { actor: this.actor });
+  }
+  /**
+   * Subscribes to state changes
+   *
+   * @returns Unsubscribe function
+   */
+  onStateChange(listener) {
+    return this.debug("onStateChange", { listener }), this.subscribe(
+      _UniversalStore.InternalEventType.SET_STATE,
+      ({ payload }, eventInfo) => {
+        listener(payload.state, payload.previousState, eventInfo);
+      }
+    );
+  }
+  emitToChannel(event, eventInfo) {
+    this.debug("emitToChannel", { event, eventInfo, channel: !!this.channel }), this.channel?.emit(this.channelEventName, {
+      event,
+      eventInfo
+    });
+  }
+  prepareThis({
+    channel,
+    environment
+  }) {
+    this.channel = channel, this.environment = environment, this.debug("prepared", { channel: !!channel, environment }), this.channel.on(this.channelEventName, this.handleChannelEvents), this.actor.type === _UniversalStore.ActorType.LEADER ? this.emitToChannel(
+      { type: _UniversalStore.InternalEventType.LEADER_CREATED },
+      { actor: this.actor }
+    ) : (this.emitToChannel(
+      { type: _UniversalStore.InternalEventType.FOLLOWER_CREATED },
+      { actor: this.actor }
+    ), this.emitToChannel(
+      { type: _UniversalStore.InternalEventType.EXISTING_STATE_REQUEST },
+      { actor: this.actor }
+    ), setTimeout(() => {
+      this.syncing.reject(
+        new TypeError(
+          `No existing state found for follower with id: '${this.id}'. Make sure a leader with the same id exists before creating a follower.`
+        )
+      );
+    }, 1e3));
+  }
+  emitToListeners(event, eventInfo) {
+    let eventTypeListeners = this.listeners.get(event.type), everythingListeners = this.listeners.get("*");
+    this.debug("emitToListeners", {
+      event,
+      eventInfo,
+      eventTypeListeners,
+      everythingListeners
+    }), [...eventTypeListeners ?? [], ...everythingListeners ?? []].forEach(
+      (listener) => listener(event, eventInfo)
+    );
+  }
+  handleChannelEvents(channelEvent) {
+    let { event, eventInfo } = channelEvent;
+    if ([eventInfo.actor.id, eventInfo.forwardingActor?.id].includes(this.actor.id)) {
+      this.debug("handleChannelEvents: Ignoring event from self", { channelEvent });
+      return;
+    } else if (this.syncing?.state === ProgressState.PENDING && event.type !== _UniversalStore.InternalEventType.EXISTING_STATE_RESPONSE) {
+      this.debug("handleChannelEvents: Ignoring event while syncing", { channelEvent });
+      return;
+    }
+    if (this.debug("handleChannelEvents", { channelEvent }), this.actor.type === _UniversalStore.ActorType.LEADER) {
+      let shouldForwardEvent = !0;
+      switch (event.type) {
+        case _UniversalStore.InternalEventType.EXISTING_STATE_REQUEST:
+          shouldForwardEvent = !1;
+          let responseEvent = {
+            type: _UniversalStore.InternalEventType.EXISTING_STATE_RESPONSE,
+            payload: this.state
+          };
+          this.debug("handleChannelEvents: responding to existing state request", {
+            responseEvent
+          }), this.emitToChannel(responseEvent, { actor: this.actor }), this.emitToListeners(responseEvent, { actor: this.actor });
+          break;
+        case _UniversalStore.InternalEventType.LEADER_CREATED:
+          shouldForwardEvent = !1, this.syncing.state = ProgressState.REJECTED, this.debug("handleChannelEvents: erroring due to second leader being created", {
+            event
+          }), console.error(
+            dedent`Detected multiple UniversalStore leaders created with the same id "${this.id}".
+            Only one leader can exists at a time, your stores are now in an invalid state.
+            Leaders detected:
+            this: ${JSON.stringify(this.actor, null, 2)}
+            other: ${JSON.stringify(eventInfo.actor, null, 2)}`
+          );
+          break;
+      }
+      shouldForwardEvent && (this.debug("handleChannelEvents: forwarding event", { channelEvent }), this.emitToChannel(event, { actor: eventInfo.actor, forwardingActor: this.actor }));
+    }
+    if (this.actor.type === _UniversalStore.ActorType.FOLLOWER)
+      switch (event.type) {
+        case _UniversalStore.InternalEventType.EXISTING_STATE_RESPONSE:
+          if (this.debug("handleChannelEvents: Setting state from leader's existing state response", {
+            event
+          }), this.syncing?.state !== ProgressState.PENDING)
+            break;
+          this.syncing.resolve?.();
+          let setStateEvent = {
+            type: _UniversalStore.InternalEventType.SET_STATE,
+            payload: {
+              state: event.payload,
+              previousState: this.state
+            }
+          };
+          this.state = event.payload, this.emitToListeners(setStateEvent, eventInfo);
+          break;
+      }
+    switch (event.type) {
+      case _UniversalStore.InternalEventType.SET_STATE:
+        this.debug("handleChannelEvents: Setting state", { event }), this.state = event.payload.state;
+        break;
+    }
+    this.emitToListeners(event, { actor: eventInfo.actor });
+  }
+  debug(message, data) {
+    this.debugging && console.debug(
+      dedent`[UniversalStore::${this.id}::${this.environment ?? _UniversalStore.Environment.UNKNOWN}]
+        ${message}`,
+      JSON.stringify(
+        {
+          data,
+          actor: this.actor,
+          state: this.state,
+          status: this.status
+        },
+        null,
+        2
+      )
+    );
+  }
+  /**
+   * Used to reset the static fields of the UniversalStore class when cleaning up tests
+   *
+   * @internal
+   */
+  static __reset() {
+    _UniversalStore.preparation.reject(new Error("reset")), _UniversalStore.setupPreparationPromise(), _UniversalStore.isInternalConstructing = !1;
+  }
+};
+/**
+ * Defines the possible actor types in the store system
+ *
+ * @readonly
+ */
+_UniversalStore.ActorType = {
+  LEADER: "LEADER",
+  FOLLOWER: "FOLLOWER"
+}, /**
+ * Defines the possible environments the store can run in
+ *
+ * @readonly
+ */
+_UniversalStore.Environment = {
+  SERVER: "SERVER",
+  MANAGER: "MANAGER",
+  PREVIEW: "PREVIEW",
+  UNKNOWN: "UNKNOWN",
+  MOCK: "MOCK"
+}, /**
+ * Internal event types used for store synchronization
+ *
+ * @readonly
+ */
+_UniversalStore.InternalEventType = {
+  EXISTING_STATE_REQUEST: "__EXISTING_STATE_REQUEST",
+  EXISTING_STATE_RESPONSE: "__EXISTING_STATE_RESPONSE",
+  SET_STATE: "__SET_STATE",
+  LEADER_CREATED: "__LEADER_CREATED",
+  FOLLOWER_CREATED: "__FOLLOWER_CREATED"
+}, _UniversalStore.Status = {
+  UNPREPARED: "UNPREPARED",
+  SYNCING: "SYNCING",
+  READY: "READY",
+  ERROR: "ERROR"
+}, // This is used to check if constructor was called from the static factory create()
+_UniversalStore.isInternalConstructing = !1, _UniversalStore.setupPreparationPromise();
+var UniversalStore = _UniversalStore;
+
+// src/shared/universal-store/use-universal-store-manager.ts
+init_react();
+var useUniversalStore = (universalStore, selector) => {
+  let snapshotRef = useRef(
+    selector ? selector(universalStore.getState()) : universalStore.getState()
+  ), subscribe = useCallback(
+    (listener) => universalStore.onStateChange((state2, previousState) => {
+      if (!selector) {
+        snapshotRef.current = state2, listener();
+        return;
+      }
+      let selectedState = selector(state2), selectedPreviousState = selector(previousState);
+      !isEqual(selectedState, selectedPreviousState) && (snapshotRef.current = selectedState, listener());
+    }),
+    [universalStore, selector]
+  ), getSnapshot = useCallback(() => {
+    let currentState = universalStore.getState(), selectedState = selector ? selector(currentState) : currentState;
+    return isEqual(selectedState, snapshotRef.current) || (snapshotRef.current = selectedState), snapshotRef.current;
+  }, [universalStore, selector]);
+  return [useSyncExternalStore(subscribe, getSnapshot), universalStore.setState];
+};
+
+// src/manager-api/stores/status.ts
+var statusStore = createStatusStore({
+  universalStatusStore: UniversalStore.create({
+    ...UNIVERSAL_STATUS_STORE_OPTIONS,
+    leader: globalThis.CONFIG_TYPE === "PRODUCTION"
+  }),
+  useUniversalStore,
+  environment: "manager"
+}), { fullStatusStore, getStatusStoreByTypeId, useStatusStore, universalStatusStore } = statusStore;
+
+// src/manager-api/modules/statuses.ts
+var computeStatusFilterFn = (includedStatusFilters, excludedStatusFilters) => (entry) => {
+  if (!includedStatusFilters.length && !excludedStatusFilters.length)
+    return !0;
+  let storyStatuses = (fullStatusStore.getAll() ?? {})[entry.id], storyStatusValues = storyStatuses ? Object.values(storyStatuses).map((s2) => s2.value) : [], passesInclude = !includedStatusFilters.length || includedStatusFilters.some((v2) => storyStatusValues.includes(v2)), passesExclude = !excludedStatusFilters.length || excludedStatusFilters.every((v2) => !storyStatusValues.includes(v2));
+  return passesInclude && passesExclude;
+};
+
+// src/manager-api/modules/tags.ts
+var import_memoizerific5 = __toESM(require_memoizerific(), 1);
+var getDefaultTagsFromPreset = (0, import_memoizerific5.default)(1)((presets) => {
+  let presetEntries = Object.entries(presets);
+  return {
+    included: presetEntries.filter(([, option]) => option.defaultFilterSelection === "include").map(([tag]) => tag),
+    excluded: presetEntries.filter(([, option]) => option.defaultFilterSelection === "exclude").map(([tag]) => tag)
+  };
+});
+var computeTagsFilterFn = (includedTagFilters, excludedTagFilters) => {
+  let computeFilterFunctions = (set) => Object.values(
+    set.reduce(
+      (acc, tag) => (Object.hasOwn(BUILT_IN_FILTERS, tag) ? acc["built-in"].push(BUILT_IN_FILTERS[tag]) : acc.user.push(USER_TAG_FILTER(tag)), acc),
+      { "built-in": [], user: [] }
+    )
+  ).filter((group) => group.length > 0);
+  return (item) => {
+    let included = computeFilterFunctions(includedTagFilters), excluded = computeFilterFunctions(excludedTagFilters);
+    return (!included.length || included.every((group) => group.some((filterFn) => filterFn(item, !1)))) && (!excluded.length || excluded.every((group) => group.every((filterFn) => filterFn(item, !0))));
+  };
+};
+
+// src/manager/components/sidebar/ReviewChangesButton.tsx
+var Wrapper8 = styled.div({
+  display: "flex",
+  alignItems: "center",
+  gap: 4,
+  marginTop: -8
+}), StyledCTA = styled(ToggleButton)({
+  flex: 1,
+  justifyContent: "flex-start"
+}), StyledIcon = styled.svg(({ theme }) => ({
+  color: theme.fgColor.accent
+})), NEW = "status-value:new", MOD = "status-value:modified", ReviewChangesButton = () => {
+  let api = useStorybookApi(), {
+    internal_index: index,
+    includedStatusFilters: rawIncludedStatusFilters,
+    excludedStatusFilters: rawExcludedStatusFilters,
+    includedTagFilters: rawIncludedTagFilters,
+    excludedTagFilters: rawExcludedTagFilters
+  } = useStorybookState(), allStatuses = experimental_useStatusStore(), { newCount, modifiedCount } = useMemo(() => {
+    if (!index)
+      return { newCount: 0, modifiedCount: 0 };
+    let includedStatusFilters2 = rawIncludedStatusFilters ?? [], excludedStatusFilters2 = rawExcludedStatusFilters ?? [], includedTagFilters = rawIncludedTagFilters ?? [], excludedTagFilters = rawExcludedTagFilters ?? [], contextualIncludedStatuses = includedStatusFilters2.filter((s2) => s2 !== NEW && s2 !== MOD), contextualExcludedStatuses = excludedStatusFilters2.filter((s2) => s2 !== NEW && s2 !== MOD), tagFilterFn = computeTagsFilterFn(includedTagFilters, excludedTagFilters), statusFilterFn = computeStatusFilterFn(
+      contextualIncludedStatuses,
+      contextualExcludedStatuses
+    ), next = 0, modified = 0, entries = index.entries ?? {};
+    for (let [storyId, statusesByType] of Object.entries(allStatuses)) {
+      let entry = entries[storyId];
+      if (!entry)
+        continue;
+      let entryWithStatuses = { ...entry, statuses: statusesByType };
+      if (!tagFilterFn(entryWithStatuses) || !statusFilterFn(entryWithStatuses))
+        continue;
+      let statuses = Object.values(statusesByType);
+      statuses.some(({ value }) => value === NEW) && (next += 1), statuses.some(({ value }) => value === MOD) && (modified += 1);
+    }
+    return { newCount: next, modifiedCount: modified };
+  }, [
+    index,
+    allStatuses,
+    rawIncludedStatusFilters,
+    rawExcludedStatusFilters,
+    rawIncludedTagFilters,
+    rawExcludedTagFilters
+  ]), includedStatusFilters = rawIncludedStatusFilters ?? [], excludedStatusFilters = rawExcludedStatusFilters ?? [], isReviewActive = includedStatusFilters.includes(NEW) && includedStatusFilters.includes(MOD);
+  if (!globalThis.FEATURES?.changeDetection || newCount === 0 && modifiedCount === 0)
+    return null;
+  let clearReview = () => {
+    let nextIncluded = includedStatusFilters.filter((s2) => s2 !== NEW && s2 !== MOD), nextExcluded = excludedStatusFilters.filter((s2) => s2 !== NEW && s2 !== MOD);
+    api.setAllStatusFilters(nextIncluded, nextExcluded);
+  }, onClick = () => {
+    if (isReviewActive)
+      clearReview();
+    else {
+      let nextIncluded = Array.from(/* @__PURE__ */ new Set([...includedStatusFilters, NEW, MOD])), nextExcluded = excludedStatusFilters.filter((s2) => s2 !== NEW && s2 !== MOD);
+      api.setAllStatusFilters(nextIncluded, nextExcluded);
+    }
+  }, onClearClick = (e2) => {
+    e2.stopPropagation(), clearReview();
+  }, changeKinds = newCount > 0 && modifiedCount > 0 ? "new and modified" : newCount > 0 ? "new" : "modified", label = `${isReviewActive ? "Reviewing" : "Review"} ${changeKinds} stories`;
+  return react_default.createElement(Wrapper8, null, react_default.createElement(
+    StyledCTA,
+    {
+      variant: "ghost",
+      padding: "small",
+      pressed: isReviewActive,
+      ariaLabel: label,
+      onClick
+    },
+    react_default.createElement(StyledIcon, { viewBox: "0 0 14 14", width: "14", height: "14", "aria-hidden": !0 }, react_default.createElement(UseSymbol, { type: "new" })),
+    label
+  ), isReviewActive && react_default.createElement(
+    Button,
+    {
+      variant: "ghost",
+      padding: "small",
+      size: "small",
+      onClick: onClearClick,
+      ariaLabel: "Clear",
+      tooltip: "Clear"
+    },
+    react_default.createElement(CloseIcon, null)
+  ));
+}, ReviewChangesButton_default = ReviewChangesButton;
 
 // src/manager/components/sidebar/useLastViewed.ts
 init_react();
@@ -24731,7 +26044,8 @@ var DEFAULT_REF_ID = "storybook_internal", Container11 = styled.header(({ theme 
             onOpenChange: setIsFileSearchModalOpen
           }
         )),
-        searchFieldContent: react_default.createElement(TagsFilter, null),
+        searchFieldContent: react_default.createElement(Filter, null),
+        belowSearchContent: react_default.createElement(ReviewChangesButton_default, null),
         ...lastViewedProps
       },
       ({
@@ -25277,7 +26591,7 @@ var Sections = styled.ol(({ theme }) => ({
       color: theme.color.mediumdark
     }
   }
-})), StatusIcon2 = styled.div(({ theme }) => ({
+})), StatusIcon3 = styled.div(({ theme }) => ({
   position: "relative",
   flex: "0 0 auto",
   minHeight: 16,
@@ -25331,11 +26645,23 @@ var Sections = styled.ol(({ theme }) => ({
     transform: "rotate(var(--toggle-button-rotate))",
     transition: "transform var(--transition-duration, 0.2s)"
   }
-}), Checklist = ({
+}), ChecklistCopyButton = ({
+  label,
+  copyContent,
+  onClick
+}) => {
+  let { children: copyChildren, buttonProps: copyButtonProps } = useCopyButton({
+    children: label,
+    onCopy: onClick,
+    content: copyContent
+  });
+  return react_default.createElement(Button, { variant: "solid", size: "small", ...copyButtonProps }, copyChildren);
+}, Checklist = ({
   availableItems,
   accept,
   skip,
-  reset
+  reset,
+  forceCollapsed = !1
 }) => {
   let api = useStorybookApi(), locationHash = useLocationHash(), { itemsById, sectionsById } = useMemo(
     () => availableItems.reduce(
@@ -25349,13 +26675,13 @@ var Sections = styled.ol(({ theme }) => ({
     [availableItems]
   ), sections = useMemo(
     () => Object.values(sectionsById).map(({ id, title: title2, itemIds }) => {
-      let items = itemIds.map((id2) => itemsById[id2]), progress = items.reduce((acc, item) => item.isOpen ? acc : acc + 1, 0) / items.length * 100;
+      let items = itemIds.map((id2) => itemsById[id2]).filter(({ showOnGuidePage }) => showOnGuidePage !== !1), progress = items.reduce((acc, item) => item.isOpen ? acc : acc + 1, 0) / items.length * 100;
       return { id, title: title2, items, progress };
     }),
     [itemsById, sectionsById]
   );
   return react_default.createElement(Sections, null, sections.map(({ id, title: title2, items, progress }) => {
-    let collapsed = progress === 100 && items.every((item) => item.id !== locationHash);
+    let collapsed = forceCollapsed || progress === 100 && items.every((item) => item.id !== locationHash);
     return react_default.createElement("li", { key: id }, react_default.createElement(Focus.Proxy, { targetId: `toggle-${id}` }, react_default.createElement(
       Collapsible,
       {
@@ -25367,7 +26693,7 @@ var Sections = styled.ol(({ theme }) => ({
             isCollapsed,
             onClick: toggleCollapsed
           },
-          react_default.createElement(StatusIcon2, null, react_default.createElement(Checked2, { "data-visible": progress === 100 })),
+          react_default.createElement(StatusIcon3, null, react_default.createElement(Checked2, { "data-visible": progress === 100 })),
           react_default.createElement(SectionHeading, null, title2),
           react_default.createElement(Actions3, null, react_default.createElement(
             ToggleButton2,
@@ -25411,7 +26737,7 @@ var Sections = styled.ol(({ theme }) => ({
                     isCollapsed: isCollapsed2 || !itemContent,
                     onClick: itemContent ? toggleCollapsed : void 0
                   },
-                  react_default.createElement(StatusIcon2, null, react_default.createElement(Checked2, { "data-visible": isChecked }), react_default.createElement(Skipped, { visible: isSkipped }, "Skipped")),
+                  react_default.createElement(StatusIcon3, null, react_default.createElement(Checked2, { "data-visible": isChecked }), react_default.createElement(Skipped, { visible: isSkipped }, "Skipped")),
                   react_default.createElement(ItemHeading, { skipped: isSkipped }, item.label),
                   react_default.createElement(Actions3, null, itemContent && react_default.createElement(
                     ToggleButton2,
@@ -25434,7 +26760,17 @@ var Sections = styled.ol(({ theme }) => ({
                       readOnly: !0
                     },
                     react_default.createElement(LockIcon, null)
-                  ), isOpen && !isLocked && item.action && react_default.createElement(
+                  ), isOpen && !isLocked && item.action && (item.action.copyContent ? react_default.createElement(
+                    ChecklistCopyButton,
+                    {
+                      label: item.action.label,
+                      copyContent: item.action.copyContent,
+                      onClick: () => item.action.onClick({
+                        api,
+                        accept: () => accept(item.id)
+                      })
+                    }
+                  ) : react_default.createElement(
                     Button,
                     {
                       ariaLabel: !1,
@@ -25448,7 +26784,7 @@ var Sections = styled.ol(({ theme }) => ({
                       }
                     },
                     item.action.label
-                  ), isOpen && !isLocked && !item.action && !item.subscribe && react_default.createElement(
+                  )), isOpen && !isLocked && !item.action && !item.subscribe && react_default.createElement(
                     Button,
                     {
                       ariaLabel: !1,
@@ -25494,6 +26830,56 @@ var Sections = styled.ol(({ theme }) => ({
   }));
 };
 
+// src/manager/settings/Checklist/AiSetupBlock.tsx
+init_react();
+var AiCtaCard = styled.div(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  padding: "10px 10px 10px 15px",
+  border: `1px solid ${theme.base === "dark" ? theme.color.darker : theme.color.border}`,
+  borderRadius: 8,
+  background: theme.background.content
+})), AiCtaHeadingRow = styled.div({
+  display: "flex",
+  alignItems: "center",
+  gap: 10
+}), AiCtaHeading = styled.h2(({ theme, $skipped }) => ({
+  flex: 1,
+  margin: 0,
+  color: $skipped ? theme.textMutedColor : theme.color.defaultText,
+  fontSize: theme.typography.size.s2,
+  fontWeight: theme.typography.weight.bold,
+  textWrap: "pretty"
+})), AiCtaDescription = styled.p(({ theme }) => ({
+  margin: 0,
+  color: theme.color.defaultText,
+  fontSize: theme.typography.size.s2,
+  fontWeight: theme.typography.weight.regular,
+  marginTop: 8
+})), AiCtaActions = styled.div({
+  display: "flex",
+  gap: 8,
+  justifyContent: "flex-end",
+  marginTop: 12
+}), CopyButton2 = ({ api }) => {
+  let { children: buttonChildren, buttonProps } = useCopyButton({
+    children: "Copy prompt",
+    childrenOnCopy: react_default.createElement(react_default.Fragment, null, react_default.createElement(CheckIcon, null), " Copied!"),
+    content: getAiSetupPrompt(),
+    onCopy: () => {
+      api.emit(AI_PROMPT_NUDGE, { id: "setup", origin: "onboarding-guide-page" });
+    }
+  });
+  return react_default.createElement(Button, { variant: "solid", size: "medium", ...buttonProps }, buttonChildren);
+}, AiSetupBlock = ({
+  item,
+  reset,
+  skip
+}) => {
+  let api = useStorybookApi();
+  return !item.isDone && !item.isAccepted && !item.isCompleted ? react_default.createElement(AiCtaCard, null, react_default.createElement(AiCtaHeadingRow, null, item.isSkipped && react_default.createElement(StatusIcon3, null, react_default.createElement(Skipped, { visible: !0 }, "Skipped")), react_default.createElement(AiCtaHeading, { $skipped: item.isSkipped }, "Set up Storybook with AI"), item.isSkipped && react_default.createElement(Button, { ariaLabel: "Undo", variant: "ghost", padding: "small", onClick: () => reset(item.id) }, react_default.createElement(UndoIcon, null))), react_default.createElement(Collapsible.Content, { collapsed: item.isSkipped }, react_default.createElement(AiCtaDescription, null, "Run a prompt in your AI agent to analyze your codebase, configure decorators and mocks, write sample stories for your UI components, and verify everything works."), react_default.createElement(AiCtaActions, null, react_default.createElement(Button, { variant: "ghost", size: "medium", ariaLabel: !1, onClick: () => skip(item.id) }, "Skip"), react_default.createElement(CopyButton2, { api })))) : null;
+};
+
 // src/manager/settings/GuidePage.tsx
 var Container13 = styled.div(({ theme }) => ({
   display: "flex",
@@ -25517,8 +26903,8 @@ var Container13 = styled.div(({ theme }) => ({
     margin: 0
   }
 })), GuidePage = () => {
-  let checklist = useChecklist();
-  return react_default.createElement(Container13, null, react_default.createElement(Intro, null, react_default.createElement("h1", null, "Guide"), react_default.createElement("p", null, "Whether you're just getting started or looking for ways to level up, this checklist will help you make the most of your Storybook.")), react_default.createElement(Checklist, { ...checklist }), scope.FEATURES?.sidebarOnboardingChecklist !== !1 && react_default.createElement(react_default.Fragment, null, checklist.openItems.length === 0 ? react_default.createElement("center", null, "Your work here is done!") : checklist.widget.disable || checklist.openItems.every((item) => item.isMuted) ? react_default.createElement("center", null, "Want to see this in the sidebar?", " ", react_default.createElement(Link, { onClick: () => checklist.disable(!1) }, "Show in sidebar")) : react_default.createElement("center", null, "Don't want to see this in the sidebar?", " ", react_default.createElement(Link, { onClick: () => checklist.mute(checklist.allItems.map(({ id }) => id)) }, "Remove from sidebar"))));
+  let checklist = useChecklist(), aiSetupItem = checklist.availableItems.find((item) => item.id === "aiSetup");
+  return react_default.createElement(Container13, null, react_default.createElement(Intro, null, react_default.createElement("h1", null, "Guide"), react_default.createElement("p", null, "Whether you're just getting started or looking for ways to level up, this checklist will help you make the most of your Storybook.")), aiSetupItem && react_default.createElement(AiSetupBlock, { item: aiSetupItem, reset: checklist.reset, skip: checklist.skip }), react_default.createElement(Checklist, { ...checklist, forceCollapsed: aiSetupItem?.isOpen }), scope.FEATURES?.sidebarOnboardingChecklist !== !1 && react_default.createElement(react_default.Fragment, null, checklist.openItems.length === 0 ? react_default.createElement("center", null, "Your work here is done!") : checklist.widget.disable || checklist.openItems.every((item) => item.isMuted) ? react_default.createElement("center", null, "Want to see this in the sidebar?", " ", react_default.createElement(Link, { onClick: () => checklist.disable(!1) }, "Show in sidebar")) : react_default.createElement("center", null, "Don't want to see this in the sidebar?", " ", react_default.createElement(Link, { onClick: () => checklist.mute(checklist.allItems.map(({ id }) => id)) }, "Remove from sidebar"))));
 };
 
 // src/manager/settings/ShortcutsPage.tsx
@@ -25835,12 +27221,13 @@ var Centered = styled.div({
 })), WhatsNewFooter = ({
   isNotificationsEnabled,
   onToggleNotifications,
-  onCopyLink
+  copyContent
 }) => {
-  let theme = useTheme(), [copyText, setCopyText] = useState("Copy Link"), copyLink = () => {
-    onCopyLink(), setCopyText("Copied!"), setTimeout(() => setCopyText("Copy Link"), 4e3);
-  };
-  return react_default.createElement(Container15, null, react_default.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } }, react_default.createElement(HeartIcon, { color: theme.color.mediumdark }), react_default.createElement("div", null, "Share this with your team."), react_default.createElement(Button, { ariaLabel: !1, onClick: copyLink, size: "small", variant: "ghost" }, copyText)), isNotificationsEnabled ? react_default.createElement(Button, { ariaLabel: !1, size: "small", variant: "ghost", onClick: onToggleNotifications }, react_default.createElement(EyeCloseIcon, null), "Hide notifications") : react_default.createElement(Button, { ariaLabel: !1, size: "small", variant: "ghost", onClick: onToggleNotifications }, react_default.createElement(EyeIcon, null), "Show notifications"));
+  let theme = useTheme(), { children: copyText, buttonProps: copyButtonProps } = useCopyButton({
+    children: "Copy Link",
+    content: copyContent
+  });
+  return react_default.createElement(Container15, null, react_default.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } }, react_default.createElement(HeartIcon, { color: theme.color.mediumdark }), react_default.createElement("div", null, "Share this with your team."), react_default.createElement(Button, { size: "small", variant: "ghost", ...copyButtonProps }, copyText)), isNotificationsEnabled ? react_default.createElement(Button, { ariaLabel: !1, size: "small", variant: "ghost", onClick: onToggleNotifications }, react_default.createElement(EyeCloseIcon, null), "Hide notifications") : react_default.createElement(Button, { ariaLabel: !1, size: "small", variant: "ghost", onClick: onToggleNotifications }, react_default.createElement(EyeIcon, null), "Show notifications"));
 }, Iframe = styled.iframe(
   {
     position: "absolute",
@@ -25866,7 +27253,7 @@ var Centered = styled.div({
   isLoaded,
   onLoad,
   url,
-  onCopyLink,
+  copyContent,
   onToggleNotifications,
   isNotificationsEnabled
 }) => react_default.createElement(Fragment, null, !isLoaded && !didHitMaxWaitTime && react_default.createElement(WhatsNewLoader, null), didHitMaxWaitTime ? react_default.createElement(MaxWaitTimeMessaging, null) : react_default.createElement(react_default.Fragment, null, react_default.createElement(Iframe, { isLoaded, onLoad, src: url, title: "What's new?" }), react_default.createElement(
@@ -25874,7 +27261,7 @@ var Centered = styled.div({
   {
     isNotificationsEnabled,
     onToggleNotifications,
-    onCopyLink
+    copyContent
   }
 ))), MAX_WAIT_TIME = 1e4, WhatsNewScreen = () => {
   let api = useStorybookApi(), state = useStorybookState(), { whatsNewData } = state, [isLoaded, setLoaded] = useState(!1), [didHitMaxWaitTime, setDidHitMaxWaitTime] = useState(!1);
@@ -25894,9 +27281,7 @@ var Centered = styled.div({
       },
       url: whatsNewData.url,
       isNotificationsEnabled,
-      onCopyLink: () => {
-        navigator.clipboard?.writeText(whatsNewData.blogUrl ?? whatsNewData.url);
-      },
+      copyContent: whatsNewData.blogUrl ?? whatsNewData.url,
       onToggleNotifications: () => {
         isNotificationsEnabled ? scope.confirm("All update notifications will no longer be shown. Are you sure?") && api.toggleWhatsNewNotifications() : api.toggleWhatsNewNotifications();
       }
@@ -25927,7 +27312,7 @@ var { document: document9 } = scope, Content5 = styled(ScrollArea)(({ theme }) =
     };
     return document9.addEventListener("keydown", handleEscape), () => document9.removeEventListener("keydown", handleEscape);
   }, [enableShortcuts, onClose]);
-  let tabs = useMemo(() => {
+  let api = useStorybookApi(), toolsExtra = Object.values(api.getElements(Addon_TypesEnum.TOOLEXTRA)), tabs = useMemo(() => {
     let tabsToInclude = [
       {
         id: "about",
@@ -25955,7 +27340,7 @@ var { document: document9 } = scope, Content5 = styled(ScrollArea)(({ theme }) =
       TabsView,
       {
         tabs,
-        tools: react_default.createElement(react_default.Fragment, null, react_default.createElement(SidebarToggle, null, menuTool.render({})), react_default.createElement(
+        tools: react_default.createElement(react_default.Fragment, null, react_default.createElement(SidebarToggle, null, menuTool.render({})), toolsExtra.map((item) => react_default.createElement(react_default.Fragment, { key: item.id }, item.render({}))), react_default.createElement(
           Button,
           {
             padding: "small",
