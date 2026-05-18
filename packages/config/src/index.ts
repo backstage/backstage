@@ -28,4 +28,9 @@ export type {
 } from './deprecatedTypes';
 export { readDurationFromConfig } from './readDurationFromConfig';
 export { ConfigReader } from './reader';
-export type { AppConfig, Config } from './types';
+export type {
+  AppConfig,
+  Config,
+  ConfigUpdateCallback,
+  ConfigUpdateResult,
+} from './types';

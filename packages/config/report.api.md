@@ -25,22 +25,49 @@ export type Config = {
   subscribe?(onChange: () => void): {
     unsubscribe: () => void;
   };
-  has(key: string): boolean;
-  keys(): string[];
-  get<T = JsonValue_2>(key?: string): T;
-  getOptional<T = JsonValue_2>(key?: string): T | undefined;
-  getConfig(key: string): Config;
-  getOptionalConfig(key: string): Config | undefined;
-  getConfigArray(key: string): Config[];
-  getOptionalConfigArray(key: string): Config[] | undefined;
-  getNumber(key: string): number;
-  getOptionalNumber(key: string): number | undefined;
-  getBoolean(key: string): boolean;
-  getOptionalBoolean(key: string): boolean | undefined;
-  getString(key: string): string;
-  getOptionalString(key: string): string | undefined;
-  getStringArray(key: string): string[];
-  getOptionalStringArray(key: string): string[] | undefined;
+  has(key: string, onChange?: ConfigUpdateCallback<boolean>): boolean;
+  keys(onChange?: ConfigUpdateCallback<string[]>): string[];
+  get<T = JsonValue_2>(key?: string, onChange?: ConfigUpdateCallback<T>): T;
+  getOptional<T = JsonValue_2>(
+    key?: string,
+    onChange?: ConfigUpdateCallback<T | undefined>,
+  ): T | undefined;
+  getConfig(key: string, onChange?: ConfigUpdateCallback<Config>): Config;
+  getOptionalConfig(
+    key: string,
+    onChange?: ConfigUpdateCallback<Config | undefined>,
+  ): Config | undefined;
+  getConfigArray(
+    key: string,
+    onChange?: ConfigUpdateCallback<Config[]>,
+  ): Config[];
+  getOptionalConfigArray(
+    key: string,
+    onChange?: ConfigUpdateCallback<Config[] | undefined>,
+  ): Config[] | undefined;
+  getNumber(key: string, onChange?: ConfigUpdateCallback<number>): number;
+  getOptionalNumber(
+    key: string,
+    onChange?: ConfigUpdateCallback<number | undefined>,
+  ): number | undefined;
+  getBoolean(key: string, onChange?: ConfigUpdateCallback<boolean>): boolean;
+  getOptionalBoolean(
+    key: string,
+    onChange?: ConfigUpdateCallback<boolean | undefined>,
+  ): boolean | undefined;
+  getString(key: string, onChange?: ConfigUpdateCallback<string>): string;
+  getOptionalString(
+    key: string,
+    onChange?: ConfigUpdateCallback<string | undefined>,
+  ): string | undefined;
+  getStringArray(
+    key: string,
+    onChange?: ConfigUpdateCallback<string[]>,
+  ): string[];
+  getOptionalStringArray(
+    key: string,
+    onChange?: ConfigUpdateCallback<string[] | undefined>,
+  ): string[] | undefined;
 };
 
 // @public
@@ -69,6 +96,15 @@ export class ConfigReader implements Config {
   has(key: string): boolean;
   keys(): string[];
 }
+
+// @public
+export type ConfigUpdateCallback<T> = (newValue: T) => ConfigUpdateResult;
+
+// @public
+export type ConfigUpdateResult = {
+  accepted: boolean;
+  stop?: boolean;
+};
 
 // @public @deprecated
 export type JsonArray = JsonArray_2;

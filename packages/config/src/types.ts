@@ -17,6 +17,29 @@
 import { JsonObject, JsonValue } from '@backstage/types';
 
 /**
+ * Result returned by a config update callback.
+ *
+ * @public
+ */
+export type ConfigUpdateResult = {
+  /**
+   * Whether this consumer applied the update.
+   */
+  accepted: boolean;
+  /**
+   * If true, this callback will not be invoked for future updates.
+   */
+  stop?: boolean;
+};
+
+/**
+ * Callback invoked when a config value changes.
+ *
+ * @public
+ */
+export type ConfigUpdateCallback<T> = (newValue: T) => ConfigUpdateResult;
+
+/**
  * A serialized form of configuration data that carries additional context.
  *
  * @public
@@ -64,17 +87,17 @@ export type Config = {
   /**
    * Checks whether the given key is present.
    */
-  has(key: string): boolean;
+  has(key: string, onChange?: ConfigUpdateCallback<boolean>): boolean;
 
   /**
    * Lists all available configuration keys.
    */
-  keys(): string[];
+  keys(onChange?: ConfigUpdateCallback<string[]>): string[];
 
   /**
    * Same as `getOptional`, but will throw an error if there's no value for the given key.
    */
-  get<T = JsonValue>(key?: string): T;
+  get<T = JsonValue>(key?: string, onChange?: ConfigUpdateCallback<T>): T;
 
   /**
    * Read out all configuration data for the given key.
@@ -84,67 +107,94 @@ export type Config = {
    * the type of a configuration value in the case where there are multiple possible
    * shapes of the configuration.
    */
-  getOptional<T = JsonValue>(key?: string): T | undefined;
+  getOptional<T = JsonValue>(
+    key?: string,
+    onChange?: ConfigUpdateCallback<T | undefined>,
+  ): T | undefined;
 
   /**
    * Same as `getOptionalConfig`, but will throw an error if there's no value for the given key.
    */
-  getConfig(key: string): Config;
+  getConfig(key: string, onChange?: ConfigUpdateCallback<Config>): Config;
 
   /**
    * Creates a sub-view of the configuration object.
    * The configuration value at the position of the provided key must be an object.
    */
-  getOptionalConfig(key: string): Config | undefined;
+  getOptionalConfig(
+    key: string,
+    onChange?: ConfigUpdateCallback<Config | undefined>,
+  ): Config | undefined;
 
   /**
    * Same as `getOptionalConfigArray`, but will throw an error if there's no value for the given key.
    */
-  getConfigArray(key: string): Config[];
+  getConfigArray(
+    key: string,
+    onChange?: ConfigUpdateCallback<Config[]>,
+  ): Config[];
 
   /**
    * Creates a sub-view of an array of configuration objects.
    * The configuration value at the position of the provided key must be an array of objects.
    */
-  getOptionalConfigArray(key: string): Config[] | undefined;
+  getOptionalConfigArray(
+    key: string,
+    onChange?: ConfigUpdateCallback<Config[] | undefined>,
+  ): Config[] | undefined;
 
   /**
    * Same as `getOptionalNumber`, but will throw an error if there's no value for the given key.
    */
-  getNumber(key: string): number;
+  getNumber(key: string, onChange?: ConfigUpdateCallback<number>): number;
 
   /**
    * Reads a configuration value at the given key, expecting it to be a number.
    */
-  getOptionalNumber(key: string): number | undefined;
+  getOptionalNumber(
+    key: string,
+    onChange?: ConfigUpdateCallback<number | undefined>,
+  ): number | undefined;
 
   /**
    * Same as `getOptionalBoolean`, but will throw an error if there's no value for the given key.
    */
-  getBoolean(key: string): boolean;
+  getBoolean(key: string, onChange?: ConfigUpdateCallback<boolean>): boolean;
 
   /**
    * Reads a configuration value at the given key, expecting it to be a boolean.
    */
-  getOptionalBoolean(key: string): boolean | undefined;
+  getOptionalBoolean(
+    key: string,
+    onChange?: ConfigUpdateCallback<boolean | undefined>,
+  ): boolean | undefined;
 
   /**
    * Same as `getOptionalString`, but will throw an error if there's no value for the given key.
    */
-  getString(key: string): string;
+  getString(key: string, onChange?: ConfigUpdateCallback<string>): string;
 
   /**
    * Reads a configuration value at the given key, expecting it to be a string.
    */
-  getOptionalString(key: string): string | undefined;
+  getOptionalString(
+    key: string,
+    onChange?: ConfigUpdateCallback<string | undefined>,
+  ): string | undefined;
 
   /**
    * Same as `getOptionalStringArray`, but will throw an error if there's no value for the given key.
    */
-  getStringArray(key: string): string[];
+  getStringArray(
+    key: string,
+    onChange?: ConfigUpdateCallback<string[]>,
+  ): string[];
 
   /**
    * Reads a configuration value at the given key, expecting it to be an array of strings.
    */
-  getOptionalStringArray(key: string): string[] | undefined;
+  getOptionalStringArray(
+    key: string,
+    onChange?: ConfigUpdateCallback<string[] | undefined>,
+  ): string[] | undefined;
 };
