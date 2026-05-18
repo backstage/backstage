@@ -1,0 +1,42 @@
+import {
+  coreServices,
+  createBackendModule,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+} from '@backstage/backend-plugin-api';
+import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { {{collatorClass}} } from './collator/{{collatorClass}}';
+
+const DEFAULT_SCHEDULE = {
+  frequency: { minutes: 10 },
+  timeout: { minutes: 15 },
+  initialDelay: { seconds: 3 },
+};
+
+export const {{moduleVar}} = createBackendModule({
+  pluginId: '{{pluginId}}',
+  moduleId: '{{fullModuleId}}',
+  register({ registerInit }) {
+    registerInit({
+      deps: {
+        config: coreServices.rootConfig,
+        logger: coreServices.logger,
+        scheduler: coreServices.scheduler,
+        indexRegistry: searchIndexRegistryExtensionPoint,
+      },
+      async init({ config, logger, scheduler, indexRegistry }) {
+        const scheduleConfig = config
+          .getOptionalConfig('search.collators.{{moduleId}}')
+          ?.getOptionalConfig('schedule');
+
+        const schedule = scheduleConfig
+          ? readSchedulerServiceTaskScheduleDefinitionFromConfig(scheduleConfig)
+          : DEFAULT_SCHEDULE;
+
+        indexRegistry.addCollator({
+          schedule: scheduler.createScheduledTaskRunner(schedule),
+          factory: {{collatorClass}}.fromConfig(config, { logger }),
+        });
+      },
+    });
+  },
+});

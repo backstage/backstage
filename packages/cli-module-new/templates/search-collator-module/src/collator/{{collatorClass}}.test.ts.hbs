@@ -1,0 +1,25 @@
+import { {{collatorClass}} } from './{{collatorClass}}';
+import { mockServices } from '@backstage/backend-test-utils';
+import { TestPipeline } from '@backstage/plugin-search-backend-node';
+
+describe('{{collatorClass}}', () => {
+  it('returns a collator with the correct type', async () => {
+    const factory = {{collatorClass}}.fromConfig(mockServices.rootConfig(), {
+      logger: mockServices.logger.mock(),
+    });
+
+    expect(factory.type).toBe('{{moduleId}}');
+  });
+
+  it('runs the collator and returns documents', async () => {
+    const factory = {{collatorClass}}.fromConfig(mockServices.rootConfig(), {
+      logger: mockServices.logger.mock(),
+    });
+
+    const collator = await factory.getCollator();
+    const { documents } = await TestPipeline.fromCollator(collator).execute();
+
+    // TODO: Update this assertion once your collator yields real documents
+    expect(documents).toEqual([]);
+  });
+});

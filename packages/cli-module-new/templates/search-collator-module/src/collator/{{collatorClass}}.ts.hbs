@@ -1,0 +1,61 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
+import { DocumentCollatorFactory, IndexableDocument } from '@backstage/plugin-search-common';
+// Uncomment if your data source requires permission-based visibility filtering:
+// import { Permission } from '@backstage/plugin-permission-common';
+import { Readable } from 'node:stream';
+
+export type {{collatorClass}}Options = {
+  logger: LoggerService;
+};
+
+export class {{collatorClass}} implements DocumentCollatorFactory {
+  public readonly type = '{{moduleId}}';
+
+  // Uncomment if your data source requires permission-based visibility filtering:
+  // public readonly visibilityPermission: Permission = yourPermission;
+
+  private readonly logger: LoggerService;
+
+  static fromConfig(
+    _config: Config,
+    options: {{collatorClass}}Options,
+  ): {{collatorClass}} {
+    return new {{collatorClass}}(options);
+  }
+
+  private constructor(options: {{collatorClass}}Options) {
+    this.logger = options.logger;
+  }
+
+  async getCollator(): Promise<Readable> {
+    return Readable.from(this.execute());
+  }
+
+  private async *execute(): AsyncGenerator<IndexableDocument> {
+    this.logger.info(`Collating documents for {{moduleId}}`);
+
+    // TODO: Replace this with your data fetching logic.
+    // Each yielded document must include at minimum: title, text, and location.
+    //
+    // Example:
+    //   const items = await fetchItems();
+    //   for (const item of items) {
+    //     yield {
+    //       title: item.name,
+    //       text: item.description ?? '',
+    //       location: `/your-plugin/${item.id}`,
+    //     };
+    //   }
+
+    // Uncomment if you need cursor-based pagination for large datasets:
+    // let cursor: string | undefined = undefined;
+    // do {
+    //   const response = await fetchPage({ cursor });
+    //   for (const item of response.items) {
+    //     yield { title: item.name, text: item.description ?? '', location: `/your-plugin/${item.id}` };
+    //   }
+    //   cursor = response.nextCursor;
+    // } while (cursor);
+  }
+}
