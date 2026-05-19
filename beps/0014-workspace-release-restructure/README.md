@@ -345,21 +345,15 @@ but the choice is up to the workspace maintainers:
    _Recommended for_: `catalog`, `scaffolder`, `auth`, `search`, `permission`,
    `techdocs`.
 
-3. **Scheduled batch** — the "Version Packages" PR is opened and merged automatically
-   on a fixed schedule (e.g. weekly, biweekly). Combines the predictability of the
-   current weekly cadence with per-workspace independence.
-   _Recommended for_: workspaces that want a predictable release calendar without the
-   noise of immediate releases.
-
-4. **Manual** — releases only run when a maintainer triggers them via
+3. **Manual** — releases only run when a maintainer triggers them via
    `workflow_dispatch`. Suited to workspaces that release rarely and want full control
    over timing.
    _Recommended for_: `framework`.
 
 The selection is encoded in `workspaces/<name>/package.json` under a
-`backstage.release.cadence` field (e.g. `"immediate"`, `"version-packages"`,
-`{ "type": "scheduled", "cron": "0 9 * * MON" }`, or `"manual"`), so the same release
-workflow can act on it without per-workspace YAML duplication.
+`backstage.release.cadence` field (e.g. `"immediate"`, `"version-packages"`, or
+`"manual"`), so the same release workflow can act on it without per-workspace YAML
+duplication.
 
 Independent of mainline cadence, every workspace also opts in or out of `@next`
 releases. When opted in:
