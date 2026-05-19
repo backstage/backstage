@@ -33,7 +33,9 @@ creation-date: 2026-05-18
   - [Versioning of the core framework](#versioning-of-the-core-framework)
   - [Tooling consolidation with backstage-community-plugins](#tooling-consolidation-with-backstage-community-plugins)
   - [Documentation and microsite](#documentation-and-microsite)
-  - [Deferred work](#deferred-work)
+  - [Backstage release manifest](#backstage-release-manifest)
+  - [OIDC binding mechanics](#oidc-binding-mechanics)
+  - [Next pre-release versioning](#next-pre-release-versioning)
 - [Release Plan](#release-plan)
 - [Dependencies](#dependencies)
 - [Alternatives](#alternatives)
@@ -429,9 +431,10 @@ branch:
    └── apply queued .patches/* in order ──> publish @next (e.g. 2.0.0-next.<N>)
 ```
 
-The `<N>` suffix on `@next` releases is the standard Changesets pre-release counter,
-incremented by `yarn changeset version` when run in pre-release mode against the
-synthesized changeset set; we do not introduce a separate counter.
+The `<N>` suffix on `@next` releases is a per-workspace counter that is shared by
+every package in a given `@next` publish, so that any two packages with the same
+`<N>` came from the same `@next` snapshot. See
+[Next pre-release versioning](#next-pre-release-versioning) for the full rules.
 
 There is no long-lived "next" branch. There are no cross-branch merges. The set of
 breaking changes that will be in the next major is exactly the set of patch files
@@ -466,11 +469,12 @@ release — there is no separate publish path for majors.
 
 Because the PR is force-pushed on every relevant change to `main`, reviewers are
 expected to start a final review only after flipping the PR to ready, not while it is
-still in draft. GitHub dismisses stale review approvals on force-push by default,
-which is acceptable here — the only review that matters is the one cast after the PR
-is marked ready and the branch is at the SHA that will actually be merged. The PR is
-also marked auto-mergeable in the same way as any other PR; the draft-vs-ready toggle
-is the gate.
+still in draft. The branch protection on the Promote PR's base branch must enable
+"Dismiss stale pull request approvals when new commits are pushed", so that an
+approval cast before a force-push does not carry over to the post-force-push branch.
+This is the standard branch-protection setting Backstage already uses elsewhere; we
+just want to make sure it stays on. The PR is also marked auto-mergeable in the same
+way as any other PR; the draft-vs-ready toggle is the gate.
 
 This model has the properties we want:
 
@@ -621,10 +625,7 @@ PR to update the patch.
    queued patch (see
    [Major releases via the Promote PR](#major-releases-via-the-promote-pr)). To
    ship the major, a workspace maintainer flips that PR from draft to ready-for-review
-   and follows the normal review-and-merge process for the workspace. The same
-   `yarn breaking-change promote` CLI exists as a developer convenience — it produces
-   the same output the bot would on the same commit — and is intended only for local
-   inspection, not as part of any release pipeline.
+   and follows the normal review-and-merge process for the workspace.
 
 ### Release workflow
 
@@ -820,8 +821,10 @@ Concretely:
   `backstage release …` (e.g. `backstage release list-changed-workspaces`,
   `backstage release check-needs-release`, `backstage release create-tag`).
 - Add the new commands needed by this BEP:
-  `backstage release breaking-change create|refresh|apply|promote` and
-  `backstage release next-version`.
+  `backstage release breaking-change create|refresh|apply` (for authoring and
+  validating breaking-change patches) and `backstage release next-version` (for
+  computing the next `@next` identifier; see
+  [Next pre-release versioning](#next-pre-release-versioning)).
 - Update both repositories' workflows to invoke the CLI instead of duplicated scripts.
 
 This consolidation has the additional benefit that community-plugins gains the
@@ -853,31 +856,172 @@ This makes documentation changes part of the same PR as the corresponding code c
 in the workspace, which mirrors how changesets and breaking-change patches already
 work in this proposal.
 
-### Deferred work
+### Backstage release manifest
 
-The following pieces are intentionally not designed in this BEP and will be addressed
-in follow-up work before the corresponding migration step lands. They are collected
-here so reviewers can see them as a single list rather than scattered through the
-prose.
+The release identifier of the framework workspace (`YYYY.N`) doubles as the Backstage
+release identifier. Adopters already pin Backstage releases via the
+`@backstage/release-manifests` package and the Backstage Yarn plugin; this section
+defines how that manifest survives — and benefits from — the per-workspace release
+model.
 
-- **OIDC broker for publish dispatches.** `repository_dispatch` does not natively
-  carry an OIDC token. Realizing the OIDC binding in
-  [Publish-time safeguards](#publish-time-safeguards) requires either a small broker
-  service that re-dispatches with the token attached, or moving to a different
-  trigger mechanism that does carry OIDC. The broker has to be designed and reviewed
-  before publish-time safeguards can be enforced end to end.
-- **Backstage release ↔ workspace versions mapping.** The framework's release
-  identifier (`YYYY.N`) becomes the Backstage release. We want every workspace
-  release to record which Backstage release it was built and tested against, so the
-  Backstage Yarn plugin can resolve a pinned Backstage release to a concrete set of
-  workspace versions. The exact shape (where it lives, who writes it, what "no target"
-  looks like for workspaces like `ui`) is deferred to a follow-up that lands together
-  with or shortly after the `framework` migration.
-- **Internal-packages consolidation.** Whether the `packages/*-internal` packages
-  collapse into a single private `workspaces/internal/` workspace is left as an
-  implementation detail of the `framework` and `cli` migrations.
+#### Data shape
 
-## Release Plan
+Each Backstage release has one published manifest, identified by the framework
+release identifier and named `release-<YYYY>.<N>.json`. The manifest records every
+published package that belongs to that release:
+
+```json
+{
+  "releaseVersion": "2026.4",
+  "packages": [
+    {
+      "name": "@backstage/plugin-catalog",
+      "workspace": "catalog",
+      "version": "2.3.0"
+    },
+    {
+      "name": "@backstage/plugin-catalog-react",
+      "workspace": "catalog",
+      "version": "1.18.4"
+    },
+    {
+      "name": "@backstage/ui",
+      "workspace": "ui",
+      "version": "1.2.0"
+    }
+  ]
+}
+```
+
+Every published package appears in the manifest exactly once. There is no "no target"
+distinction at the data layer — workspaces such as `ui` that have no runtime
+dependency on `framework` still have their current `@latest` version captured. The
+manifest is purely descriptive: it answers "if I pin Backstage `2026.4`, what
+versions of every Backstage package do I get?".
+
+#### How the manifest is maintained
+
+The manifest for the current Backstage release is mutable. Every successful
+non-pre-release publish from the publishing repo updates it with the newly-published
+version of each affected package and uploads a new manifest snapshot under the same
+`release-<YYYY>.<N>.json` URL. Adopters that fetch the manifest after pinning a
+release always see the latest known versions for that release line.
+
+When the framework workspace cuts a new major (`2026.4` → `2026.5`), the publishing
+workflow snapshots the current manifest as `release-<previous>.json` (closing the
+previous release line), then creates a new mutable `release-<YYYY>.<N>.json` for the
+new release. The previous manifest becomes immutable; the new manifest inherits the
+non-framework package versions that were current at the transition point and starts
+absorbing further publishes.
+
+This gives us a few useful properties:
+
+- Adopters who pin an old Backstage release continue to resolve to the package
+  versions that line shipped with, frozen at the moment the next release line opened.
+- Adopters who pin the current Backstage release benefit from ongoing patch and minor
+  publishes across all workspaces — they get bug fixes without changing the pin.
+- There is no per-workspace coordination required to participate in a release; a
+  workspace simply publishes whenever its cadence dictates, and the manifest captures
+  the result.
+
+#### Yarn plugin integration
+
+The Backstage Yarn plugin already reads `@backstage/release-manifests` to resolve a
+pinned release to a concrete set of versions. The schema change above is additive
+(the `workspace` field is new, everything else is shaped identically to today), so
+the plugin only needs minor adjustments to load the new fields and to fall back to
+`@latest` when a manifest lookup yields nothing for a package.
+
+### OIDC binding mechanics
+
+[Publish-time safeguards](#publish-time-safeguards) above requires the publishing
+workflow to validate a GitHub Actions OIDC token bound to the dispatching workflow
+run. `repository_dispatch` does not carry an OIDC token natively, so we need a small
+amount of additional machinery to get it from one side to the other.
+
+The design is intentionally minimal:
+
+1. The release workflow in `backstage/backstage` runs on `push: [main]`. Before
+   sending its dispatch, it mints a GitHub Actions OIDC token for the configured
+   audience `backstage-release@backstage/publishing` using the built-in
+   `ACTIONS_ID_TOKEN_REQUEST_TOKEN` / `ACTIONS_ID_TOKEN_REQUEST_URL` pair.
+2. The release workflow puts the resulting JWT into the `client_payload.oidc_token`
+   field of the `repository_dispatch` event. Tokens are valid for a few minutes,
+   which is more than enough headroom for the publishing repo to act on the event.
+3. The publishing workflow validates the JWT against GitHub's public OIDC keys and
+   the claims listed in
+   [Publish-time safeguards](#publish-time-safeguards) before doing any other work.
+   It then runs the ancestor check, the required-reviewer environment gate (if the
+   target tag is `latest`), and finally the actual publish.
+
+A few details worth being explicit about:
+
+- We do not need a separate broker service. The OIDC token is just a string the
+  dispatcher includes in the dispatch payload, and the validator is plain code in
+  the publishing repo's workflow. We keep the design fully on GitHub Actions.
+- A leaked dispatch token (PAT or GitHub App credential) cannot publish on its own.
+  It can send dispatches, but without a fresh OIDC token from a workflow run on
+  `main` it cannot pass validation. Forging an OIDC token requires compromising
+  GitHub's signing key, which is outside our threat model.
+- Tokens are single-use as far as the publishing repo is concerned: each dispatch
+  carries a fresh token, and validation includes a check that the token has not been
+  seen before (a small replay-protection cache).
+- A workflow re-run of the dispatching workflow on the same SHA does mint a new
+  OIDC token, so legitimate re-runs work without manual intervention.
+
+### Next pre-release versioning
+
+`@next` is the dist-tag for "what `@latest` would become if all queued breaking-change
+patches were applied right now". Because `main` evolves continuously — patches come
+and go, mainline changesets get merged — we need a deterministic, predictable way to
+generate the pre-release identifier so adopters can pin and reason about it.
+
+We use a **per-workspace counter**, not a per-package one. Every `@next` publish for
+a workspace shares the same counter suffix across every package that was published in
+that run. This makes the version string a snapshot identifier: any two packages with
+`-next.5` came from the same `@next` publish, and the set of `-next.<N>` tags forms
+a totally-ordered series of `@next` snapshots for the workspace.
+
+Concretely, a single `@next` publish from the `catalog` workspace might produce:
+
+```
+@backstage/plugin-catalog        @ 3.0.0-next.7
+@backstage/plugin-catalog-react  @ 2.0.0-next.7
+@backstage/plugin-catalog-node   @ 1.8.4-next.7   # included for a non-breaking bump
+```
+
+Three rules determine the values:
+
+1. **Base version per package.** The portion before `-next.` is what `yarn changeset
+version` would produce on top of `main + applied patches`, using the union of (a)
+   the existing changesets in the workspace and (b) the changesets synthesized from
+   every queued patch's `description.md`. This is the standard Changesets computation;
+   we do not reinvent it.
+2. **Shared workspace counter.** The `<N>` segment is owned by the workspace as a
+   whole. It is stored in `workspaces/<name>/.next-counter` (a single integer) and
+   incremented by exactly 1 on every `@next` publish for that workspace, regardless
+   of how many packages that publish includes or why.
+3. **Counter reset.** The counter resets to 0 only when the `Promote major` PR for
+   the workspace is merged and the resulting major has been published to `@latest`.
+   Until then it monotonically increments. Mainline `@latest` releases that bump
+   patch or minor versions do not reset it — they just shift the base versions
+   forward and the next `@next` publish picks the new bases up.
+
+This gives the following user-visible properties:
+
+- The same `-next.<N>` suffix across packages means "from the same `@next` snapshot",
+  which is what adopters expect when they pin a `@next` set.
+- Semver comparisons inside a single base version (`3.0.0-next.5 < 3.0.0-next.6`)
+  work correctly out of the box.
+- When the base version changes (a mainline minor lands while patches are queued),
+  the prerelease identifier moves cleanly from `3.0.0-next.<N>` to `3.0.1-next.<N+1>`
+  or `3.1.0-next.<N+1>`; the counter does not reset, so adopters can still order any
+  two `@next` snapshots by `<N>` alone.
+
+The counter file is committed to `main` by the same workflow that runs the publish,
+so it survives across runners. The `backstage release next-version` CLI computes the
+next identifier deterministically from `main` plus the counter file, which makes it
+easy to preview locally what the next `@next` publish would look like.
 
 The migration is staged so that no single PR has to move the entire repository.
 
