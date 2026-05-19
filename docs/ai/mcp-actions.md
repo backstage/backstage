@@ -202,11 +202,12 @@ auth:
     enabled: true
     # Optional: override which client_id URLs are allowed.
     # Defaults to Claude, VS Code, and the built-in Backstage CLI.
-    # Note: setting this replaces the defaults entirely.
+    # Note: setting this replaces the defaults entirely. The built-in
+    # CLI pattern is derived from your auth backend's base URL and
+    # must be re-added manually if you override this list.
     # allowedClientIdPatterns:
     #   - 'https://claude.ai/*'
     #   - 'https://vscode.dev/*'
-    #   - '${backend.baseUrl}/.well-known/oauth-client/cli.json'
     #   - 'https://my-custom-client.example.com/*'
     # Optional: override which redirect URIs are allowed.
     # Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
