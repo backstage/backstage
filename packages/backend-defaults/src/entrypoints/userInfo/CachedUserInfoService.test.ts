@@ -19,6 +19,7 @@ import {
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { mockCredentials } from '@backstage/backend-test-utils';
+import { createDeferred } from '@backstage/types';
 import {
   CachedUserInfoService,
   UserInfoCacheEntry,
@@ -129,10 +130,8 @@ describe('CachedUserInfoService', () => {
   });
 
   it('evicts eagerly so concurrent waiters see the rejection and the next call retries', async () => {
-    let rejectFirst: (error: Error) => void;
-    const firstCall = new Promise<BackstageUserInfo>((_resolve, reject) => {
-      rejectFirst = reject;
-    });
+    const firstCall = createDeferred<BackstageUserInfo>();
+    firstCall.catch(() => {});
 
     const delegate: UserInfoService = {
       getUserInfo: jest
@@ -146,7 +145,7 @@ describe('CachedUserInfoService', () => {
     const p1 = service.getUserInfo(creds);
     const p2 = service.getUserInfo(creds);
 
-    rejectFirst!(new Error('boom'));
+    firstCall.reject(new Error('boom'));
 
     await expect(p1).rejects.toThrow('boom');
     await expect(p2).rejects.toThrow('boom');

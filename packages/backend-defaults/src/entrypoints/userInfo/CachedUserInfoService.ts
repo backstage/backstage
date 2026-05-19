@@ -73,7 +73,9 @@ export class CachedUserInfoService implements UserInfoService {
     }
 
     const promise = this.#delegate.getUserInfo(credentials).catch(error => {
-      this.#entries.delete(token);
+      if (this.#entries.get(token)?.promise === promise) {
+        this.#entries.delete(token);
+      }
       throw error;
     });
 
