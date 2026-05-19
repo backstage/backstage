@@ -20,12 +20,12 @@ creation-date: 2026-05-18
   - [Workspace layout](#workspace-layout)
   - [Workspace map](#workspace-map)
   - [Release cadence per workspace](#release-cadence-per-workspace)
-  - [Breaking-change patches](#breaking-change-patches)
+  - [Staged changes](#staged-changes)
   - [Mainline and next releases from the same branch](#mainline-and-next-releases-from-the-same-branch)
   - [Major releases via the Promote PR](#major-releases-via-the-promote-pr)
 - [Design Details](#design-details)
   - [Repository layout](#repository-layout)
-  - [Patch file format](#patch-file-format)
+  - [Staged change file format](#staged-change-file-format)
   - [Author workflow](#author-workflow)
   - [Release workflow](#release-workflow)
     - [Triggering publishing in the private repo](#triggering-publishing-in-the-private-repo)
@@ -51,15 +51,16 @@ propose to split the repository into multiple independent workspaces, modeled on
 own changesets, its own release cadence, and its own decision on when to ship breaking
 changes.
 
-In addition to the workspace split, this BEP introduces a new "breaking-change patch"
-mechanism. A breaking change is no longer a regular changeset that bumps a major version
-the next time the workspace releases. Instead it is encoded as a structured patch that
-sits in the main branch alongside a `next`-flavored changeset. Mainline releases continue
-to flow continuously from `main` without ever applying these patches, while `next`
-releases are produced by applying all queued patches in order on top of `main` and
-publishing under the `next` dist-tag. When a workspace is ready to ship its accumulated
-breaking changes, the queued patches are merged into `main` as a single coordinated
-major release.
+In addition to the workspace split, this BEP introduces a new "staged change"
+mechanism for breaking changes. A breaking change is no longer a regular changeset
+that bumps a major version the next time the workspace releases. Instead it is
+encoded as a structured staged change — a description plus a patch file — that sits
+in the main branch in a `.staged/` directory. Mainline releases continue to flow
+continuously from `main` without ever applying these staged changes, while `next`
+releases are produced by applying all of them in order on top of `main` and
+publishing under the `next` dist-tag. When a workspace is ready to ship its
+accumulated breaking changes, the staged entries are merged into `main` as a single
+coordinated major release.
 
 The net effect is that small fixes and additive features ship faster, breaking changes
 are durable, reviewable artifacts that cannot drift, and the core framework can move on
@@ -155,8 +156,8 @@ Each workspace:
 
 - Has its own `package.json`, `yarn.lock`, and `tsconfig.json`.
 - Has its own `.changeset/` directory and `changeset` configuration.
-- Has its own `.patches/` directory (described in
-  [Breaking-change patches](#breaking-change-patches)) — distinct from the existing
+- Has its own `.staged/` directory (described in
+  [Staged changes](#staged-changes)) — independent from the existing
   top-level `.patches/` used for stable-line patch releases.
 - Is independently releasable and has an independent version line per package.
 
@@ -384,40 +385,41 @@ duplication.
 The mainline cadence settings above apply only to `@latest` releases. Two adjacent
 flows have their own triggers and are not affected by the mainline cadence choice:
 
-- **Major releases** that promote queued breaking-change patches follow a separate,
-  uniform flow described in
+- **Major releases** that promote queued staged changes follow a separate, uniform
+  flow described in
   [Major releases via the Promote PR](#major-releases-via-the-promote-pr). That flow
   is the same for every workspace; there is no per-workspace mode to pick.
-- **`@next` pre-releases** are decoupled from the mainline cadence. Whenever queued
-  breaking-change patches for a workspace produce a meaningful change, an `@next`
-  publish is dispatched regardless of whether mainline is `immediate`,
-  `version-packages`, or `manual`. This matters for workspaces like `framework` whose
-  mainline cadence is `manual` but where adopters still want a continuous preview of
-  what the next major will contain.
+- **`@next` pre-releases** are decoupled from the mainline cadence. Whenever the
+  staged changes for a workspace produce a meaningful change, an `@next` publish is
+  dispatched regardless of whether mainline is `immediate`, `version-packages`, or
+  `manual`. This matters for workspaces like `framework` whose mainline cadence is
+  `manual` but where adopters still want a continuous preview of what the next major
+  will contain.
 
-### Breaking-change patches
+### Staged changes
 
-A "breaking-change patch" is a self-contained record of a future breaking change that
-lives in the `main` branch but is not yet applied to the released code. It consists of:
+A "staged change" is a self-contained record of a future breaking change that lives
+in the `main` branch but is not yet applied to the released code. It consists of:
 
 1. A human-readable description (the same content that would appear in a major-version
    changelog entry).
 2. A git diff that, when applied to the current state of the workspace, transforms it
    into the form it will take after the breaking change ships.
 3. Optional metadata: related issue/PR numbers and `notBefore` constraints (see
-   [Patch file format](#patch-file-format) for details). Apply order is encoded in the
-   patch's slug, not in metadata.
+   [Staged change file format](#staged-change-file-format) for details). Apply order
+   is encoded in the staged change's slug, not in metadata.
 
-Patches live under each workspace under a `.patches/` directory, and are checked on every PR:
-the CI applies them in order to verify that they still cleanly transform the workspace.
-Any PR that mutates code touched by an open patch is required to update that patch as
-part of the same PR; this is the property that guarantees the queue never rots.
+Staged changes live under each workspace in a `.staged/` directory, and are checked
+on every PR: the CI applies them in order to verify that they still cleanly transform
+the workspace. Any PR that mutates code touched by an open staged change is required
+to update that staged change as part of the same PR; this is the property that
+guarantees the queue never rots.
 
-A PR that introduces a deprecation can include the patch that removes the deprecation
-in the same PR. Reviewers can read both the deprecation diff and the removal diff side
-by side, the deprecation ships immediately to `@latest`, the removal ships to `@next`
-on the same merge, and the eventual cleanup is no longer the responsibility of a
-future contributor.
+A PR that introduces a deprecation can include the staged change that removes the
+deprecation in the same PR. Reviewers can read both the deprecation diff and the
+removal diff side by side, the deprecation ships immediately to `@latest`, the
+removal ships to `@next` on the same merge, and the eventual cleanup is no longer
+the responsibility of a future contributor.
 
 ### Mainline and next releases from the same branch
 
@@ -427,9 +429,9 @@ branch:
 ```
                 main HEAD
                      │
-   ┌── apply zero patches ──> publish @latest (e.g. 1.42.0)
+   ┌── apply zero staged changes ──> publish @latest (e.g. 1.42.0)
    │
-   └── apply queued .patches/* in order ──> publish @next (e.g. 2.0.0-next.<N>)
+   └── apply queued .staged/* in order ──> publish @next (e.g. 2.0.0-next.<N>)
 ```
 
 The `<N>` suffix on `@next` releases is a per-workspace counter that is shared by
@@ -450,16 +452,16 @@ workspace would look like if it were cut right now.
 On every push to `main` that affects a workspace, CI rebuilds the PR for that
 workspace from scratch:
 
-1. Apply every queued patch from `workspaces/<name>/.patches/` in file-name order.
-2. Move each patch's `description.md` into `.changeset/` so the changeset bot will
-   produce the right version bumps when the PR is merged.
-3. Delete the patch directories.
+1. Apply every staged change from `workspaces/<name>/.staged/` in file-name order.
+2. Move each staged change's `description.md` into `.changeset/` so the changeset bot
+   will produce the right version bumps when the PR is merged.
+3. Delete the staged change directories.
 4. Commit the result and force-push to the PR branch.
 
-The PR is created and kept open even when the workspace has no queued patches. In
-that state it carries a single empty changeset and the description "no breaking
+The PR is created and kept open even when the workspace has no staged changes. In
+that state it carries a single empty changeset and the description "no staged
 changes queued"; this avoids the noise of creating and closing the PR repeatedly as
-patches come and go.
+staged changes come and go.
 
 The PR is held as a **draft** at all times. Flipping it to ready-for-review is the
 explicit human signal that "this workspace is taking its next major now". A
@@ -484,7 +486,7 @@ This model has the properties we want:
 - There is always a live, viewable artifact answering "what would the next major of
   `<workspace>` look like right now?"
 - Conflicting edits are caught at PR-build time, not at major time, because the same
-  patch-apply path runs on every push regardless of whether anyone is about to merge.
+  apply path runs on every push regardless of whether anyone is about to merge.
 
 ## Design Details
 
@@ -500,11 +502,11 @@ workspaces/
     .changeset/
       config.json
       *.md
-    .patches/
+    .staged/
       <slug>/
         description.md      # frontmatter + body, in changeset format
         change.patch        # unified diff or git-formatted patch
-        meta.yaml           # optional: order, related-prs, target-removal
+        meta.yaml           # optional: related-prs, notBefore constraints
     packages/
       <package>/...
     plugins/
@@ -523,14 +525,14 @@ The repository root keeps:
 Each per-workspace `package.json` declares the Node engine range it supports, which is
 how the CI matrix is computed (the same approach used in community-plugins).
 
-### Patch file format
+### Staged change file format
 
-A patch is a directory under `<workspace>/.patches/<slug>/`. The slug carries the
-ordering, prefixed with a numeric segment so that lexicographic file-name sort produces
-the apply order:
+A staged change is a directory under `<workspace>/.staged/<slug>/`. The slug carries
+the ordering, prefixed with a numeric segment so that lexicographic file-name sort
+produces the apply order:
 
 ```
-workspaces/catalog/.patches/
+workspaces/catalog/.staged/
   001-remove-deprecated-entity-ref-link-props/
     description.md
     change.patch
@@ -561,45 +563,45 @@ diff --git a/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.ts
 # meta.yaml (optional, only used when extra metadata is needed)
 relatedPrs: [12345, 12678]
 notBefore:
-  # ISO date — exclude this patch from @next releases until at least this date
+  # ISO date — exclude this staged change from @next releases until at least this date
   date: 2026-09-01
-  # OR: depend on another patch being shipped first. The referenced patch can live
-  # in the same workspace or in a different workspace; the gate is satisfied once
-  # the referenced patch has been merged into main (i.e. promoted to a major).
-  patches:
+  # OR: depend on other staged changes being shipped first. References can point to
+  # entries in the same workspace or in a different workspace; the gate is satisfied
+  # once the referenced entry has been merged into main (i.e. promoted to a major).
+  staged:
     - framework/050-remove-config-mode-flag
     - auth/020-rotate-token-format
 ```
 
-Patch apply order is determined by file-name sort within the `.patches/` directory of
-a workspace. The numeric prefix (`001-`, `010-`, `200-`) is a convention to leave gaps
-for inserting future patches without renumbering. Slugs must be unique within a
+Apply order is determined by file-name sort within the `.staged/` directory of a
+workspace. The numeric prefix (`001-`, `010-`, `200-`) is a convention to leave gaps
+for inserting future entries without renumbering. Slugs must be unique within a
 workspace.
 
 `meta.yaml` is optional and only needed for richer metadata. The supported keys are:
 
-- `relatedPrs`: pointers to the PRs that authored or refreshed the patch.
-- `notBefore.date`: ISO date before which the patch must not be included in `@next`.
-  Useful for honoring deprecation windows ("won't remove this until at least N months
-  after deprecation").
-- `notBefore.patches`: list of `<workspace>/<slug>` references to other patches that
-  must ship to `@latest` (i.e. be promoted into a major release) before this patch is
-  eligible for `@next`. This is how a staged breaking change in one workspace can wait
-  on a prerequisite breaking change in another workspace, even though the workspaces
-  publish independently. Cross-workspace gates are checked when computing the set of
-  patches to apply for a `@next` release: if a referenced patch is still present in
-  any `.patches/` directory, the dependent patch is skipped.
+- `relatedPrs`: pointers to the PRs that authored or refreshed the staged change.
+- `notBefore.date`: ISO date before which the staged change must not be included in
+  `@next`. Useful for honoring deprecation windows ("won't remove this until at least
+  N months after deprecation").
+- `notBefore.staged`: list of `<workspace>/<slug>` references to other staged changes
+  that must ship to `@latest` (i.e. be promoted into a major release) before this
+  staged change is eligible for `@next`. This is how a staged change in one workspace
+  can wait on a prerequisite in another workspace, even though the workspaces publish
+  independently. Cross-workspace gates are checked when computing the set of staged
+  changes to apply for a `@next` release: if a referenced entry is still present in
+  any `.staged/` directory, the dependent one is skipped.
 
-  This is a constraint, not a trigger. Promoting the patches of one workspace never
-  automatically promotes the patches of another; each workspace decides when to cut
-  its own major release. The constraint only affects which dependent patches become
-  eligible for inclusion in the next major of the depending workspace when its
-  maintainers do decide to cut it.
+  This is a constraint, not a trigger. Promoting the staged changes of one workspace
+  never automatically promotes the staged changes of another; each workspace decides
+  when to cut its own major release. The constraint only affects which dependent
+  staged changes become eligible for inclusion in the next major of the depending
+  workspace when its maintainers do decide to cut it.
 
-The patch payload is a normal `git` diff. We use `git apply` with `--3way` so that
-trivial textual conflicts caused by unrelated edits to the same file can be resolved
-automatically; non-trivial conflicts fail CI and require the author of the conflicting
-PR to update the patch.
+The `change.patch` payload is a normal `git` diff. We use `git apply` with `--3way`
+so that trivial textual conflicts caused by unrelated edits to the same file can be
+resolved automatically; non-trivial conflicts fail CI and require the author of the
+conflicting PR to update the staged change.
 
 ### Author workflow
 
@@ -610,31 +612,31 @@ PR to update the patch.
 
    1. Edits code to add the deprecated alias and a runtime warning.
    2. Runs `yarn changeset` for the deprecation (regular `minor`/`patch`).
-   3. Runs `yarn backstage release patch create <slug>`. The tool snapshots the
+   3. Runs `yarn backstage release stage create <slug>`. The tool snapshots the
       current workspace, drops the author into a scratch state where they apply the
-      removal, then captures the diff into `.patches/<slug>/change.patch` and prompts
+      removal, then captures the diff into `.staged/<slug>/change.patch` and prompts
       for a description that becomes `description.md`.
-   4. Commits. CI verifies the patch applies cleanly on top of `main`.
+   4. Commits. CI verifies the staged change applies cleanly on top of `main`.
 
-3. **Updating an existing patch.** When a PR conflicts with a queued patch, CI fails
-   with a pointer to the failing patch. The author runs
-   `yarn backstage release patch refresh <slug>`, which re-runs the
-   apply/edit/capture loop and produces an updated patch. The PR is required to
-   include the refreshed patch.
+3. **Updating an existing staged change.** When a PR conflicts with a queued staged
+   change, CI fails with a pointer to the failing entry. The author runs
+   `yarn backstage release stage refresh <slug>`, which re-runs the
+   apply/edit/capture loop and produces an updated staged change. The PR is required
+   to include the refreshed entry.
 
-4. **Promoting patches to a major.** No author action required. The bot-maintained
-   `Promote major (<workspace>)` PR already contains the result of applying every
-   queued patch (see
-   [Major releases via the Promote PR](#major-releases-via-the-promote-pr)). To
-   ship the major, a workspace maintainer flips that PR from draft to ready-for-review
+4. **Promoting staged changes to a major.** No author action required. The
+   bot-maintained `Promote major (<workspace>)` PR already contains the result of
+   applying every queued staged change (see
+   [Major releases via the Promote PR](#major-releases-via-the-promote-pr)). To ship
+   the major, a workspace maintainer flips that PR from draft to ready-for-review
    and follows the normal review-and-merge process for the workspace.
 
 ### Release workflow
 
 The CI workflow follows the pattern established by community-plugins, extended with
 two additions specific to this BEP: a per-workspace `Promote major` PR that is
-rebuilt on every push, and a per-workspace `@next` publish that runs whenever queued
-patches change.
+rebuilt on every push, and a per-workspace `@next` publish that runs whenever the
+staged changes change.
 
 ```
 on push to main:
@@ -648,13 +650,13 @@ on push to main:
               │                           opens/updates "Version Packages" PR)
               ├── job: promote-pr       (always — rebuilds the draft
               │                           "Promote major (workspace)" PR by
-              │                           applying every queued .patches/ entry)
+              │                           applying every entry in .staged/)
               ├── job: dispatch-latest  (when a release commit is detected on main,
               │                           dispatches @latest publish to the
               │                           publishing repo)
-              └── job: dispatch-next    (when applying queued patches would produce
-                                         a new @next version, dispatches @next
-                                         publish to the publishing repo)
+              └── job: dispatch-next    (when the staged changes would produce a new
+                                         @next version, dispatches @next publish
+                                         to the publishing repo)
 ```
 
 `find-changed-workspaces` is a direct port of the community-plugins script: it diffs
@@ -665,13 +667,13 @@ version matrix.
 
 - `check-if-release` looks for `package.json` version bumps in the workspace between
   the previous and current commits (same as community-plugins).
-- `promote-pr` always runs. It applies every queued patch in a temporary checkout,
-  converts each patch's `description.md` into a changeset, deletes the patches, and
-  force-pushes the result onto the `Promote major (<workspace>)` PR branch. The PR is
-  kept in draft (see
+- `promote-pr` always runs. It applies every staged change in a temporary checkout,
+  converts each entry's `description.md` into a changeset, deletes the `.staged/`
+  directories, and force-pushes the result onto the `Promote major (<workspace>)`
+  PR branch. The PR is kept in draft (see
   [Major releases via the Promote PR](#major-releases-via-the-promote-pr)).
-- `dispatch-next` runs whenever the queued patch set has changed for the workspace. It
-  applies the patches in a temporary checkout, runs `yarn changeset version` to
+- `dispatch-next` runs whenever the staged changes set has changed for the workspace.
+  It applies the entries in a temporary checkout, runs `yarn changeset version` to
   compute the next pre-release identifier, and dispatches a publish with `tag: next`.
   Because `@next` is decoupled from the mainline cadence, this fires even for
   workspaces in `cadence: manual` mode.
@@ -697,7 +699,7 @@ event to the private publishing repository with a `event_type` of
 
 `tag` is an opaque string treated as the npm dist-tag for the publish. The dispatching
 workflow uses `latest` for mainline releases, `next` for releases that include queued
-breaking-change patches, and may use other identifiers (`alpha`, etc.) in the future.
+staged changes, and may use other identifiers (`alpha`, etc.) in the future.
 The publishing repo applies the same safeguards regardless of value, with an extra
 required-reviewer gate for `latest` (see
 [Publish-time safeguards](#publish-time-safeguards)).
@@ -718,7 +720,7 @@ else.
 - Pushing back per-package git tags (e.g. `@backstage/plugin-catalog@2.3.0`), matching
   the convention `backstage/community-plugins` uses today. The `framework` workspace
   additionally pushes a workspace-level tag carrying its release identifier (e.g.
-  `framework@2026.4`) on every major release, so the date-based identifier can be
+  `framework@2026-4`) on every major release, so the date-based identifier can be
   looked up in git. No other workspace publishes a workspace-level tag.
 
 This preserves the current security boundary: `backstage/backstage` never has an npm
@@ -771,22 +773,27 @@ bucket as `@next`.
 ### Versioning of the core framework
 
 The `framework` workspace adopts an incrementing date-based version line of the form
-`YYYY.N`, where `YYYY` is the calendar year and `N` is a per-year incrementing release
-number that resets each January. Examples: `2026.1`, `2026.2`, `2026.3`, `2027.1`.
+`YYYY-N`, where `YYYY` is the calendar year and `N` is a per-year incrementing release
+number that resets each January. Examples: `2026-1`, `2026-2`, `2026-3`, `2027-1`.
 
 The rationale for "year plus incrementing number" rather than month- or quarter-based
 encoding is:
 
-- It does not lie about when the release shipped (a calendar-versioned `2026.04`
+- It does not lie about when the release shipped (a calendar-versioned `2026-04`
   release that actually shipped on May 3rd is mildly embarrassing).
-- It does not over-promise a cadence (a `2026.Q2` release that slips to Q3 is worse).
+- It does not over-promise a cadence (a `2026-Q2` release that slips to Q3 is worse).
 - It tolerates multiple releases inside the same month without semantic weirdness;
-  `2026.4` and `2026.5` can both ship in June if needed.
+  `2026-4` and `2026-5` can both ship in June if needed.
 - It is short and easy to say.
+
+The hyphen separator (rather than a dot) is deliberate. It keeps the identifier
+visually distinct from semver, which prevents accidental misreading of `2026.4` as
+"major 2026, minor 4" and frees the dot for an in-line counter we use in
+[Backstage release manifest](#backstage-release-manifest) below.
 
 Each individual package inside the workspace continues to use semver internally so
 that consumers can still pin minor versions. What changes is only the workspace-level
-release identifier, which is surfaced as a git tag (`framework@2026.4`) and as a
+release identifier, which is surfaced as a git tag (`framework@2026-4`) and as a
 field in `workspaces/framework/package.json`. Other workspaces continue to use plain
 semver (`catalog@2.3.0`).
 
@@ -819,14 +826,15 @@ To meet that constraint while still running real automation in GitHub Actions, w
 introduce one new top-level directory and one new workspace:
 
 - `tooling/` at the repository root. Contains the TypeScript automation scripts that
-  CI workflows invoke directly — for example, the patch validator, the script that
-  rebuilds the Promote PR, the manifest updater, the OIDC dispatch helper. The
-  directory has **no
-  `package.json` and no `node_modules`**. Scripts are executed by `node --experimental-strip-types`
-  (or its stable successor once available), so Node strips the type annotations at
-  load time and runs the underlying JavaScript directly. The scripts only call out to
-  Node built-ins and `gh`/`git` via `child_process`; they take no third-party runtime
-  dependencies.
+  CI workflows invoke directly — for example, the staged-change validator, the
+  script that rebuilds the Promote PR, the manifest updater, the OIDC dispatch
+  helper. The directory has **no `package.json` and no `node_modules`**. Scripts are
+  executed by `node --experimental-strip-types` (or its stable successor once
+  available), so Node strips the type annotations at load time and runs the
+  underlying JavaScript directly. CLI argument parsing uses Node's built-in
+  `node:util` `parseArgs`, which is enough for the simple subcommand shapes we need
+  here. The scripts only call out to Node built-ins and `gh`/`git` via
+  `child_process`; they take no third-party runtime dependencies.
 - `workspaces/cli/` is the dependency home for everything that lints, type-checks, or
   exercises `tooling/`. It contains the Backstage CLI packages (already listed in the
   `cli` workspace map entry), plus a small `@backstage/cli-module-release` package
@@ -869,14 +877,13 @@ Concretely:
   `backstage release …` (e.g. `backstage release list-changed-workspaces`,
   `backstage release check-needs-release`, `backstage release create-tag`).
 - Add the new commands needed by this BEP:
-  `backstage release patch create|refresh|apply` (for authoring and validating
-  breaking-change patches) and `backstage release next-version` (for computing the
-  next `@next` identifier; see
-  [Next pre-release versioning](#next-pre-release-versioning)).
+  `backstage release stage create|refresh|apply` (for authoring and validating staged
+  changes) and `backstage release next-version` (for computing the next `@next`
+  identifier; see [Next pre-release versioning](#next-pre-release-versioning)).
 - Update both repositories' workflows to invoke the CLI instead of duplicated scripts.
 
 This consolidation has the additional benefit that community-plugins gains the
-breaking-change patch mechanism for free if it ever wants to adopt it.
+staged-change mechanism for free if it ever wants to adopt it.
 
 ### Documentation and microsite
 
@@ -901,26 +908,41 @@ clear home in the new layout. We propose:
   workspace-specific docs; the source layout is the only thing that changes.
 
 This makes documentation changes part of the same PR as the corresponding code change
-in the workspace, which mirrors how changesets and breaking-change patches already
-work in this proposal.
+in the workspace, which mirrors how changesets and staged changes already work in
+this proposal.
 
 ### Backstage release manifest
 
-The release identifier of the framework workspace (`YYYY.N`) doubles as the Backstage
+The release identifier of the framework workspace (`YYYY-N`) doubles as the Backstage
 release identifier. Adopters already pin Backstage releases via the
 `@backstage/release-manifests` package and the Backstage Yarn plugin; this section
 defines how that manifest survives — and benefits from — the per-workspace release
 model.
 
+#### Where the manifests live
+
+Manifests are published from the existing `backstage/versions` repository, which
+already serves the Backstage release manifests today via GitHub Pages and has the
+operational tooling, security boundary, and DNS for that purpose. The publishing repo
+(`backstage/publishing`) writes manifests into `backstage/versions` as part of every
+successful publish; `backstage/backstage` does not write manifests directly. Keeping
+the manifests in a small, focused repo also avoids checking out the entire monorepo
+to read them, which matters for the Yarn plugin's resolution path.
+
 #### Data shape
 
-Each Backstage release has one published manifest, identified by the framework
-release identifier and named `release-<YYYY>.<N>.json`. The manifest records every
-published package that belongs to that release:
+A Backstage release is identified by the framework release line — for example,
+`2026-4`. Within that line, individual manifests are numbered with a per-line
+counter, written using a dot: `2026-4.0`, `2026-4.1`, …, `2026-4.23`. The release
+identifier you _ship to adopters_ is `<line>.<counter>`. The dash separates the year
+from the framework counter; the dot separates the line from its in-line counter.
+
+Each manifest is a JSON document of the form:
 
 ```json
 {
-  "releaseVersion": "2026.4",
+  "releaseVersion": "2026-4.23",
+  "releaseLine": "2026-4",
   "packages": [
     {
       "name": "@backstage/plugin-catalog",
@@ -944,43 +966,44 @@ published package that belongs to that release:
 Every published package appears in the manifest exactly once. There is no "no target"
 distinction at the data layer — workspaces such as `ui` that have no runtime
 dependency on `framework` still have their current `@latest` version captured. The
-manifest is purely descriptive: it answers "if I pin Backstage `2026.4`, what
+manifest is purely descriptive: it answers "if I pin Backstage `2026-4.23`, what
 versions of every Backstage package do I get?".
 
 #### How the manifest is maintained
 
-Manifests are immutable. Every successful non-pre-release publish from the publishing
-repo produces a new manifest under a content-addressed URL of the form
-`release-<YYYY>.<N>-<counter>.json`, where `<counter>` is a monotonically incrementing
-integer per Backstage release line. A pointer file
-(`release-<YYYY>.<N>/latest.json`) is updated to reference the newest manifest in the
-line; that pointer is the only thing the publishing repo mutates.
+Manifests are immutable. Every successful non-pre-release publish from
+`backstage/publishing` produces a new manifest under a content-addressed URL of the
+form `release-<line>.<counter>.json` in `backstage/versions` — for example,
+`release-2026-4.23.json`. A pointer file (`release-<line>/latest.json`) is updated to
+reference the newest manifest in the line; that pointer is the only mutable artifact
+the publishing repo writes.
 
 The body of each manifest is built by:
 
 1. Copying the most recent manifest for the same Backstage release line.
 2. Replacing the version entry for every package that was just published.
-3. Writing the result to a new immutable URL.
+3. Incrementing the in-line counter and writing the result to a new immutable URL.
 
 This means an adopter can pin a Backstage release in two ways:
 
-- **Floating pin** (`backstage.json`'s `release: "2026.4"`) — the Yarn plugin reads
-  `release-2026.4/latest.json` on each install, picks up the most recent manifest in
+- **Floating pin** (`backstage.json`'s `release: "2026-4"`) — the Yarn plugin reads
+  `release-2026-4/latest.json` on each install, picks up the most recent manifest in
   that release line, and resolves to the package versions inside. Adopters get the
   latest known compatible versions across every workspace without changing the pin.
-- **Frozen pin** (`backstage.json`'s `release: "2026.4-23"`) — the Yarn plugin reads
-  the immutable `release-2026.4-23.json` directly. Adopters get an exact, reproducible
-  set of package versions and are insulated from future publishes.
+- **Frozen pin** (`backstage.json`'s `release: "2026-4.23"`) — the Yarn plugin reads
+  the immutable `release-2026-4.23.json` directly. Adopters get an exact,
+  reproducible set of package versions and are insulated from future publishes.
 
-When the framework workspace cuts a new major (`2026.4` → `2026.5`), the publishing
-workflow stops updating the `release-2026.4/latest.json` pointer (the line is closed)
-and starts a new line headed by `release-2026.5-0.json`, seeded from the last manifest
-of the previous line so that all non-framework packages keep their current versions.
+When the framework workspace cuts a new major (`2026-4` → `2026-5`), the publishing
+workflow stops updating the `release-2026-4/latest.json` pointer (the line is closed)
+and starts a new line headed by `release-2026-5.0.json`, seeded from the last
+manifest of the previous line so that all non-framework packages keep their current
+versions.
 
 This gives us a few useful properties:
 
-- Every published manifest is immutable and content-addressed. Reproducible builds are
-  trivially possible by pinning the counter.
+- Every published manifest is immutable and content-addressed. Reproducible builds
+  are trivially possible by pinning the counter.
 - Adopters who prefer a moving target follow the pointer file and get bug fixes for
   free.
 - A workspace can publish on its own cadence without any coordination with other
@@ -990,13 +1013,13 @@ This gives us a few useful properties:
 
 #### Yarn plugin integration
 
-The Backstage Yarn plugin already reads `@backstage/release-manifests` to resolve a
-pinned release to a concrete set of versions. The schema change above is additive
-(the `workspace` field is new, everything else is shaped identically to today), and
-the resolution flow gains a small new step (read `release-<id>/latest.json` to find
-the current immutable manifest URL, then read that). Packages whose workspace was
-not yet published into the current release line fall through to the previous release
-line's manifest, and finally to `@latest` if no manifest knows about them.
+The Backstage Yarn plugin already reads release manifests from `backstage/versions`
+to resolve a pinned release to a concrete set of versions. The schema change above is
+additive (the `workspace` field is new, everything else is shaped identically to
+today), and the resolution flow gains a small new step (read `release-<line>/latest.json`
+to find the current immutable manifest URL, then read that). Packages whose workspace
+was not yet published into the current release line fall through to the previous
+release line's manifest, and finally to `@latest` if no manifest knows about them.
 
 ### OIDC binding mechanics
 
@@ -1037,8 +1060,8 @@ A few details worth being explicit about:
 
 ### Next pre-release versioning
 
-`@next` is the dist-tag for "what `@latest` would become if all queued breaking-change
-patches were applied right now". Because `main` evolves continuously — patches come
+`@next` is the dist-tag for "what `@latest` would become if all queued staged changes
+were applied right now". Because `main` evolves continuously — staged changes come
 and go, mainline changesets get merged — we need a deterministic, predictable way to
 generate the pre-release identifier so adopters can pin and reason about it.
 
@@ -1059,10 +1082,10 @@ Concretely, a single `@next` publish from the `catalog` workspace might produce:
 Three rules determine the values:
 
 1. **Base version per package.** The portion before `-next.` is what `yarn changeset
-version` would produce on top of `main + applied patches`, using the union of (a)
-   the existing changesets in the workspace and (b) the changesets synthesized from
-   every queued patch's `description.md`. This is the standard Changesets computation;
-   we do not reinvent it.
+version` would produce on top of `main` with every staged change applied, using
+   the union of (a) the existing changesets in the workspace and (b) the changesets
+   synthesized from every entry's `description.md`. This is the standard Changesets
+   computation; we do not reinvent it.
 2. **Shared workspace counter.** The `<N>` segment is owned by the workspace as a
    whole. It is recorded in the root `package.json` of the workspace under
    `backstage.release.nextCounter` and is incremented by exactly 1 on every `@next`
@@ -1097,7 +1120,7 @@ The migration is staged so that no single PR has to move the entire repository.
 
 1. **BEP approval & tool scaffolding.** Land the BEP, then add the new
    `@backstage/cli-module-release` package with the existing community-plugins commands
-   in their current form. Vendor the new `patch` commands behind a flag while the
+   in their current form. Vendor the new `stage` commands behind a flag while the
    format stabilizes.
 
 2. **Migrate `cli` first.** Move all CLI and tooling packages into `workspaces/cli/`.
@@ -1128,13 +1151,14 @@ The migration is staged so that no single PR has to move the entire repository.
    most root packages and because almost every other workspace depends on it. Doing it
    last means it inherits a fully-validated workspace tooling chain.
 
-8. **Roll out breaking-change patches.** Once `framework` is migrated and stable,
-   enable the patch flow. The first end-to-end exercise is a real deprecation PR: file
-   the deprecation and the patch together, verify the `@next` release picks the patch
-   up, then flip the `Promote major` PR to ready-for-review and ship the major.
+8. **Roll out staged changes.** Once `framework` is migrated and stable, enable the
+   staged-change flow. The first end-to-end exercise is a real deprecation PR: file
+   the deprecation and the staged removal together, verify the `@next` release picks
+   the staged removal up, then flip the `Promote major` PR to ready-for-review and
+   ship the major.
 
 9. **Adopt date-based versioning for `framework`.** The first major of `framework`
-   after the patch flow lands uses the `YYYY.N` scheme.
+   after the patch flow lands uses the `YYYY-N` scheme.
 
 Throughout the migration the existing weekly release flow continues to work for any
 workspace that has not been migrated yet. There is no flag day.
