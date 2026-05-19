@@ -27,6 +27,8 @@ creation-date: 2026-05-18
   - [Patch file format](#patch-file-format)
   - [Author workflow](#author-workflow)
   - [Release workflow](#release-workflow)
+    - [Triggering publishing in the private repo](#triggering-publishing-in-the-private-repo)
+    - [Publish-time safeguards](#publish-time-safeguards)
   - [Versioning of the core framework](#versioning-of-the-core-framework)
   - [Tooling consolidation with backstage-community-plugins](#tooling-consolidation-with-backstage-community-plugins)
   - [Documentation and microsite](#documentation-and-microsite)
@@ -605,12 +607,14 @@ event to the private publishing repository with a `event_type` of
 
 `repository_dispatch` is chosen over `workflow_dispatch` because the trigger token only
 needs the `repo` scope, not the `actions` scope, and because the dispatch event is
-self-describing and easy to log. The dispatch is sent using a GitHub App or a fine-grained
-PAT with permission to dispatch on the publishing repository and nothing else, so a
-compromised workflow run in `backstage/backstage` cannot publish arbitrary code.
+self-describing and easy to log. The dispatch is sent using a GitHub App or a
+fine-grained PAT with permission to dispatch on the publishing repository and nothing
+else.
 
 `backstage/publishing` is then responsible for:
 
+- Validating the dispatch (see [Publish-time safeguards](#publish-time-safeguards)
+  below).
 - Checking out `backstage/backstage` at the supplied SHA.
 - Running `yarn install` and `yarn build` for the workspace.
 - Publishing to npm with provenance and an OIDC-bound npm token.
@@ -619,6 +623,50 @@ compromised workflow run in `backstage/backstage` cannot publish arbitrary code.
 
 This preserves the current security boundary: `backstage/backstage` never has an npm
 token, and a compromised workflow run cannot publish a package.
+
+#### Publish-time safeguards
+
+The dispatch itself is not trusted. A compromised workflow run in
+`backstage/backstage`, a leaked dispatch token, or a hijacked GitHub App installation
+must never result in published code that did not go through code review on the
+protected `main` branch. The publishing repo enforces three independent checks:
+
+1. **Ancestor check (all releases).** Before doing any work, the publishing workflow
+   calls
+   `GET /repos/backstage/backstage/compare/{sha}...main` and refuses to continue unless
+   the comparison status is `identical` or `ahead`. Because `main` has branch
+   protection that requires code review and a passing CI, "the SHA is on `main`" is
+   equivalent to "the commit was reviewed and merged".
+
+2. **OIDC binding (all releases).** Rather than trusting the `repository_dispatch`
+   payload, the dispatching workflow in `backstage/backstage` first mints a GitHub
+   Actions OIDC token and includes it in the dispatch payload (or hands it to a small
+   broker that re-dispatches with the token attached). The publishing workflow
+   validates the OIDC JWT and requires:
+
+   - `repository == "backstage/backstage"`
+   - `ref == "refs/heads/main"`
+   - `event_name == "push"`
+   - `workflow_ref` matches an allow-listed workflow file in `backstage/backstage`
+     (`.github/workflows/release_workspace.yml` and any other release entry points).
+
+   This cryptographically ties the dispatched SHA to a workflow run that GitHub itself
+   agrees executed on `main`, defending against forged dispatches even if the token
+   that sends them is compromised.
+
+3. **Required reviewer (mainline `@latest` releases only).** The publishing workflow
+   runs inside a GitHub Environment (e.g. `npm-publish-latest`) configured with
+   required reviewers from `@backstage/maintainers`. Every publish to the `latest`
+   dist-tag pauses until a maintainer clicks "Approve and deploy".
+
+   Releases with any other dist-tag (`next`, `alpha`, and similar pre-release tags)
+   skip the required-reviewer gate and use a separate environment without approval
+   gates, so pre-releases continue to ship without human intervention. They are still
+   subject to checks (1) and (2).
+
+The current "nightly snapshot" release flow is expected to be removed as part of this
+rollout. If it is kept in any form, it falls into the same "no required reviewer"
+bucket as `@next`.
 
 ### Versioning of the core framework
 
