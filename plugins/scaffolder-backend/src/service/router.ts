@@ -477,6 +477,8 @@ export async function createRouter(
             'ui:options': template.metadata['ui:options'],
             steps: parameters.map(param => {
               const condition = param.if;
+              // This `if` is a step-level visibility condition (string or boolean),
+              // not the JSON Schema `if` keyword (which is an object used with `then`/`else`).
               const isStepCondition =
                 typeof condition === 'string' || typeof condition === 'boolean';
               const { if: _, ...schema } = param as Record<string, unknown>;

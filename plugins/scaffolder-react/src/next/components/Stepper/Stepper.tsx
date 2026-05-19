@@ -139,23 +139,56 @@ export const Stepper = (stepperProps: StepperProps) => {
     [steps, stepsState],
   );
 
+  useEffect(() => {
+    setActiveStep(prev =>
+      prev >= visibleSteps.length ? Math.max(visibleSteps.length - 1, 0) : prev,
+    );
+  }, [visibleSteps.length]);
+
   const filteredFormState = useMemo(() => {
     const hiddenSteps = steps.filter(
       step => step.if !== undefined && !evaluateCondition(step.if, stepsState),
     );
     if (hiddenSteps.length === 0) return stepsState;
 
+    const collectSchemaKeys = (schema: Record<string, unknown>): string[] => {
+      const keys: string[] = [];
+      if (schema.properties) {
+        keys.push(...Object.keys(schema.properties as Record<string, unknown>));
+      }
+      for (const keyword of ['allOf', 'oneOf', 'anyOf'] as const) {
+        const entries = schema[keyword];
+        if (Array.isArray(entries)) {
+          for (const entry of entries) {
+            if (entry && typeof entry === 'object') {
+              keys.push(...collectSchemaKeys(entry as Record<string, unknown>));
+            }
+          }
+        }
+      }
+      for (const keyword of ['then', 'else'] as const) {
+        const sub = schema[keyword];
+        if (sub && typeof sub === 'object' && !Array.isArray(sub)) {
+          keys.push(...collectSchemaKeys(sub as Record<string, unknown>));
+        }
+      }
+      if (schema.dependencies && typeof schema.dependencies === 'object') {
+        for (const dep of Object.values(
+          schema.dependencies as Record<string, unknown>,
+        )) {
+          if (dep && typeof dep === 'object' && !Array.isArray(dep)) {
+            keys.push(...collectSchemaKeys(dep as Record<string, unknown>));
+          }
+        }
+      }
+      return keys;
+    };
+
     const hiddenKeys = new Set(
-      hiddenSteps.flatMap(step =>
-        Object.keys(
-          (step.mergedSchema.properties ?? {}) as Record<string, unknown>,
-        ),
-      ),
+      hiddenSteps.flatMap(step => collectSchemaKeys(step.mergedSchema)),
     );
     for (const step of visibleSteps) {
-      for (const key of Object.keys(
-        (step.mergedSchema.properties ?? {}) as Record<string, unknown>,
-      )) {
+      for (const key of collectSchemaKeys(step.mergedSchema)) {
         hiddenKeys.delete(key);
       }
     }

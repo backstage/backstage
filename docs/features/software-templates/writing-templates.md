@@ -487,7 +487,7 @@ The `if` field supports:
 - **Negation:** `${{ !parameters.field }}`
 - **Boolean values:** `if: true` or `if: false`
 
-When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, they can re-enter values.
+When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are preserved but excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, their previously entered values are restored.
 
 :::note
 This `if` field controls the visibility of wizard steps in the frontend. It is different from the `if` field on `spec.steps`, which controls whether a backend action is executed.

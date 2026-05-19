@@ -59,7 +59,9 @@ function evaluateExpression(
   expression: string,
   formState: Record<string, JsonValue>,
 ): JsonValue | undefined {
-  const comparisonMatch = expression.match(/^(.+?)\s*(===|!==|==|!=)\s*(.+)$/);
+  const comparisonMatch = expression.match(
+    /^([^\s=!]+(?:\.[^\s=!]+)*|'[^']*'|"[^"]*"|-?\d+(?:\.\d+)?|true|false|null|undefined)\s*(===|!==|==|!=)\s*([^\s=!]+(?:\.[^\s=!]+)*|'[^']*'|"[^"]*"|-?\d+(?:\.\d+)?|true|false|null|undefined)$/,
+  );
   if (comparisonMatch) {
     const left = resolveValue(comparisonMatch[1].trim(), formState);
     const op = comparisonMatch[2];
@@ -90,7 +92,7 @@ function evaluateExpression(
 
 /**
  * Evaluates a step-level `if` condition against the current form state.
- * Supports `$\{{ parameters.field === 'value' }}` syntax for comparisons,
+ * Supports `${{ parameters.field === 'value' }}` syntax for comparisons,
  * simple truthiness checks, and boolean/negation expressions.
  *
  * @public
@@ -105,8 +107,8 @@ export function evaluateCondition(
   const trimmed = condition.trim();
   if (!trimmed) return true;
 
-  const match = trimmed.match(/^\$\{\{\s*(.*?)\s*\}\}$/);
-  const expression = match ? match[1] : trimmed;
+  const match = trimmed.match(/^\$\{\{([\s\S]*)\}\}$/);
+  const expression = match ? match[1].trim() : trimmed;
 
   if (!expression) return true;
 

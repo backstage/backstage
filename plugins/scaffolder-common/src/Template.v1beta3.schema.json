@@ -131,7 +131,7 @@
                     "properties": {
                       "if": {
                         "type": ["string", "boolean"],
-                        "description": "A condition that controls whether this parameter step is shown in the wizard. When the condition evaluates to false, the step is skipped. Supports ${{ parameters.fieldName === 'value' }} syntax to reference values from earlier steps."
+                        "description": "A step-level visibility condition that controls whether this parameter step is shown in the wizard. When the condition evaluates to false, the step is skipped. Supports ${{ parameters.fieldName === 'value' }} syntax to reference values from earlier steps. Note: this is not the JSON Schema `if` keyword (which accepts an object and is used with `then`/`else` for conditional validation). Step entries are wrappers around JSON Schemas, not JSON Schemas themselves, so there is no conflict."
                       },
                       "backstage:permissions": {
                         "type": "object",

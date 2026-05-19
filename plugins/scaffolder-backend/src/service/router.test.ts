@@ -1032,6 +1032,98 @@ describe('scaffolder router', () => {
         }),
       );
     });
+
+    it('skips validation for parameter steps whose if condition evaluates to false', async () => {
+      const templateWithConditionalParams = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            if: "${{ parameters.provider === 'AWS' }}",
+            required: ['awsRegion'],
+            properties: {
+              awsRegion: {
+                type: 'string',
+                description: 'AWS Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithConditionalParams, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'GCP',
+          },
+        });
+
+      expect(response.status).toEqual(201);
+    });
+
+    it('validates parameter steps whose if condition evaluates to true', async () => {
+      const templateWithConditionalParams = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            if: "${{ parameters.provider === 'AWS' }}",
+            required: ['awsRegion'],
+            properties: {
+              awsRegion: {
+                type: 'string',
+                description: 'AWS Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithConditionalParams, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'AWS',
+          },
+        });
+
+      expect(response.status).toEqual(400);
+    });
   });
 
   describe('GET /v2/tasks', () => {
