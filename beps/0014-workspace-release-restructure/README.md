@@ -33,10 +33,10 @@ creation-date: 2026-05-18
   - [Versioning of the core framework](#versioning-of-the-core-framework)
   - [Tooling consolidation with backstage-community-plugins](#tooling-consolidation-with-backstage-community-plugins)
   - [Documentation and microsite](#documentation-and-microsite)
+  - [Deferred work](#deferred-work)
 - [Release Plan](#release-plan)
 - [Dependencies](#dependencies)
 - [Alternatives](#alternatives)
-- [Open Questions](#open-questions)
 
 ## Summary
 
@@ -135,7 +135,7 @@ workspaces under a top-level `workspaces/` directory, matching the layout used b
 
 ```
 workspaces/
-  core/
+  framework/
     package.json
     yarn.lock
     .changeset/
@@ -169,8 +169,7 @@ the new layout. Examples and private packages (`packages/app`, `packages/backend
 the repository root as private development aids and do not belong to any workspace.
 
 > **Note**: This mapping is a proposal for review. Many packages have plausible homes in
-> more than one workspace, and the boundaries should be debated before we commit. Each
-> debatable assignment is called out in [Open Questions](#open-questions).
+> more than one workspace, and the boundaries should be debated before we commit.
 
 #### `framework`
 
@@ -322,6 +321,13 @@ module ecosystem.
 
 - `@backstage/plugin-devtools`, `plugin-devtools-backend`, `plugin-devtools-common`, `plugin-devtools-react`
 
+#### `microsite`
+
+The Docusaurus site that powers `backstage.io`. The workspace is private — it does not
+publish any packages — and is included in the workspace map for completeness. See
+[Documentation and microsite](#documentation-and-microsite) for how plugin docs are
+pulled in at build time.
+
 #### `default-plugins`
 
 The set of plugins that are commonly enabled in a default Backstage app but do not need
@@ -372,13 +378,19 @@ The selection is encoded in `workspaces/<name>/package.json` under a
 `"manual"`), so the same release workflow can act on it without per-workspace YAML
 duplication.
 
-The mainline cadence settings above apply only to `@latest` releases. Major releases
-that promote queued breaking-change patches follow a separate, uniform flow described
-in [Major releases via the Promote PR](#major-releases-via-the-promote-pr). That flow
-is the same for every workspace; there is no per-workspace mode to pick. `@next`
-releases ride along on the mainline cadence: whenever queued breaking-change patches
-for a workspace produce a meaningful change, the same release trigger publishes them
-with the next major version under the `next` dist-tag.
+The mainline cadence settings above apply only to `@latest` releases. Two adjacent
+flows have their own triggers and are not affected by the mainline cadence choice:
+
+- **Major releases** that promote queued breaking-change patches follow a separate,
+  uniform flow described in
+  [Major releases via the Promote PR](#major-releases-via-the-promote-pr). That flow
+  is the same for every workspace; there is no per-workspace mode to pick.
+- **`@next` pre-releases** are decoupled from the mainline cadence. Whenever queued
+  breaking-change patches for a workspace produce a meaningful change, an `@next`
+  publish is dispatched regardless of whether mainline is `immediate`,
+  `version-packages`, or `manual`. This matters for workspaces like `framework` whose
+  mainline cadence is `manual` but where adopters still want a continuous preview of
+  what the next major will contain.
 
 ### Breaking-change patches
 
@@ -389,7 +401,9 @@ lives in the `main` branch but is not yet applied to the released code. It consi
    changelog entry).
 2. A git diff that, when applied to the current state of the workspace, transforms it
    into the form it will take after the breaking change ships.
-3. Optional metadata: ordering hints, related issue/PR numbers, target removal window.
+3. Optional metadata: related issue/PR numbers and `notBefore` constraints (see
+   [Patch file format](#patch-file-format) for details). Apply order is encoded in the
+   patch's slug, not in metadata.
 
 Patches live under each workspace under a `.patches/` directory, and are checked on every PR:
 the CI applies them in order to verify that they still cleanly transform the workspace.
@@ -414,6 +428,10 @@ branch:
    │
    └── apply queued .patches/* in order ──> publish @next (e.g. 2.0.0-next.<N>)
 ```
+
+The `<N>` suffix on `@next` releases is the standard Changesets pre-release counter,
+incremented by `yarn changeset version` when run in pre-release mode against the
+synthesized changeset set; we do not introduce a separate counter.
 
 There is no long-lived "next" branch. There are no cross-branch merges. The set of
 breaking changes that will be in the next major is exactly the set of patch files
@@ -448,8 +466,11 @@ release — there is no separate publish path for majors.
 
 Because the PR is force-pushed on every relevant change to `main`, reviewers are
 expected to start a final review only after flipping the PR to ready, not while it is
-still in draft. The PR is also marked auto-mergeable in the same way as any other PR;
-the draft-vs-ready toggle is the gate.
+still in draft. GitHub dismisses stale review approvals on force-push by default,
+which is acceptable here — the only review that matters is the one cast after the PR
+is marked ready and the branch is at the SHA that will actually be merged. The PR is
+also marked auto-mergeable in the same way as any other PR; the draft-vs-ready toggle
+is the gate.
 
 This model has the properties we want:
 
@@ -601,13 +622,16 @@ PR to update the patch.
    [Major releases via the Promote PR](#major-releases-via-the-promote-pr)). To
    ship the major, a workspace maintainer flips that PR from draft to ready-for-review
    and follows the normal review-and-merge process for the workspace. The same
-   `yarn breaking-change promote` CLI is available for local exploration of what the
-   PR would contain.
+   `yarn breaking-change promote` CLI exists as a developer convenience — it produces
+   the same output the bot would on the same commit — and is intended only for local
+   inspection, not as part of any release pipeline.
 
 ### Release workflow
 
-The CI workflow follows the pattern established by community-plugins, with additions
-for `@next` releases and for triggering publishing in the private repository.
+The CI workflow follows the pattern established by community-plugins, extended with
+two additions specific to this BEP: a per-workspace `Promote major` PR that is
+rebuilt on every push, and a per-workspace `@next` publish that runs whenever queued
+patches change.
 
 ```
 on push to main:
@@ -617,12 +641,17 @@ on push to main:
         ├── matrix per workspace
         │
         └── release-workspace.yml
-              ├── job: changeset-pr        (opens "Version Packages" PR for workspace)
-              ├── job: next-changeset-pr   (opens "Version Packages (next)" PR for workspace
-              │                              after applying all .patches/ in order)
-              ├── job: signal-publish      (when a Version Packages PR is merged, the
-              │                              resulting commit needs publishing)
-              └── job: notify              (notifies the private publishing repo)
+              ├── job: changeset-pr     (mainline cadence "version-packages" only —
+              │                           opens/updates "Version Packages" PR)
+              ├── job: promote-pr       (always — rebuilds the draft
+              │                           "Promote major (workspace)" PR by
+              │                           applying every queued .patches/ entry)
+              ├── job: dispatch-latest  (when a release commit is detected on main,
+              │                           dispatches @latest publish to the
+              │                           publishing repo)
+              └── job: dispatch-next    (when applying queued patches would produce
+                                         a new @next version, dispatches @next
+                                         publish to the publishing repo)
 ```
 
 `find-changed-workspaces` is a direct port of the community-plugins script: it diffs
@@ -631,11 +660,18 @@ version matrix.
 
 `release-workspace.yml` is parameterized by `workspace`. Inside the job:
 
-- `check-if-release` looks for package.json version bumps in that workspace between the
-  previous and current commits (same as community-plugins).
-- `next-release-check` looks for `.patches/` entries in that workspace and, if present,
-  prepares a separate "Version Packages (next)" PR by applying the patches and running
-  `yarn changeset version` in a temporary checkout.
+- `check-if-release` looks for `package.json` version bumps in the workspace between
+  the previous and current commits (same as community-plugins).
+- `promote-pr` always runs. It applies every queued patch in a temporary checkout,
+  converts each patch's `description.md` into a changeset, deletes the patches, and
+  force-pushes the result onto the `Promote major (<workspace>)` PR branch. The PR is
+  kept in draft (see
+  [Major releases via the Promote PR](#major-releases-via-the-promote-pr)).
+- `dispatch-next` runs whenever the queued patch set has changed for the workspace. It
+  applies the patches in a temporary checkout, runs `yarn changeset version` to
+  compute the next pre-release identifier, and dispatches a publish with `tag: next`.
+  Because `@next` is decoupled from the mainline cadence, this fires even for
+  workspaces in `cadence: manual` mode.
 
 #### Triggering publishing in the private repo
 
@@ -656,7 +692,12 @@ event to the private publishing repository with a `event_type` of
 }
 ```
 
-(or `"tag": "next"` for `@next` releases).
+`tag` is an opaque string treated as the npm dist-tag for the publish. The dispatching
+workflow uses `latest` for mainline releases, `next` for releases that include queued
+breaking-change patches, and may use other identifiers (`alpha`, etc.) in the future.
+The publishing repo applies the same safeguards regardless of value, with an extra
+required-reviewer gate for `latest` (see
+[Publish-time safeguards](#publish-time-safeguards)).
 
 `repository_dispatch` is chosen over `workflow_dispatch` because the trigger token only
 needs the `repo` scope, not the `actions` scope, and because the dispatch event is
@@ -671,8 +712,11 @@ else.
 - Checking out `backstage/backstage` at the supplied SHA.
 - Running `yarn install` and `yarn build` for the workspace.
 - Publishing to npm with provenance and an OIDC-bound npm token.
-- Pushing back a per-workspace git tag (e.g. `catalog@2.3.0`, `framework@2026.4`) for
-  traceability. Tags are workspace-scoped only; we do not tag individual packages.
+- Pushing back per-package git tags (e.g. `@backstage/plugin-catalog@2.3.0`), matching
+  the convention `backstage/community-plugins` uses today. The `framework` workspace
+  additionally pushes a workspace-level tag carrying its release identifier (e.g.
+  `framework@2026.4`) on every major release, so the date-based identifier can be
+  looked up in git. No other workspace publishes a workspace-level tag.
 
 This preserves the current security boundary: `backstage/backstage` never has an npm
 token, and a compromised workflow run cannot publish a package.
@@ -809,6 +853,30 @@ This makes documentation changes part of the same PR as the corresponding code c
 in the workspace, which mirrors how changesets and breaking-change patches already
 work in this proposal.
 
+### Deferred work
+
+The following pieces are intentionally not designed in this BEP and will be addressed
+in follow-up work before the corresponding migration step lands. They are collected
+here so reviewers can see them as a single list rather than scattered through the
+prose.
+
+- **OIDC broker for publish dispatches.** `repository_dispatch` does not natively
+  carry an OIDC token. Realizing the OIDC binding in
+  [Publish-time safeguards](#publish-time-safeguards) requires either a small broker
+  service that re-dispatches with the token attached, or moving to a different
+  trigger mechanism that does carry OIDC. The broker has to be designed and reviewed
+  before publish-time safeguards can be enforced end to end.
+- **Backstage release ↔ workspace versions mapping.** The framework's release
+  identifier (`YYYY.N`) becomes the Backstage release. We want every workspace
+  release to record which Backstage release it was built and tested against, so the
+  Backstage Yarn plugin can resolve a pinned Backstage release to a concrete set of
+  workspace versions. The exact shape (where it lives, who writes it, what "no target"
+  looks like for workspaces like `ui`) is deferred to a follow-up that lands together
+  with or shortly after the `framework` migration.
+- **Internal-packages consolidation.** Whether the `packages/*-internal` packages
+  collapse into a single private `workspaces/internal/` workspace is left as an
+  implementation detail of the `framework` and `cli` migrations.
+
 ## Release Plan
 
 The migration is staged so that no single PR has to move the entire repository.
@@ -883,10 +951,3 @@ workspace that has not been migrated yet. There is no flag day.
   almost all the benefits without those costs.
 - **Use `npm` workspaces or `pnpm` instead of Yarn.** Out of scope; we already use
   Yarn workspaces in both this repo and community-plugins.
-
-## Open Questions
-
-No outstanding open questions. Decisions made during BEP review are recorded in
-[Workspace map](#workspace-map), [Release cadence per workspace](#release-cadence-per-workspace),
-[Patch file format](#patch-file-format), [Publish-time safeguards](#publish-time-safeguards),
-and [Versioning of the core framework](#versioning-of-the-core-framework).
