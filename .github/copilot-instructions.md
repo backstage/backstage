@@ -40,7 +40,7 @@ When reviewing human-authored pull requests:
 - Verify that commits include `Signed-off-by` lines (DCO).
 - Check for consistent code style within the package being modified.
 - Verify tests are included for new functionality and bug fixes.
-- PRs that introduce new features or change existing behavior should include documentation updates within the `/docs` folder. README updates alone are not sufficient — the `/docs` folder is the primary documentation source.
+- PRs that introduce new features or change existing behavior should include documentation updates. Documentation should be placed in [TSDoc](https://tsdoc.org) comments, the package README, or within the `/docs` folder, whichever is most appropriate.
 - Check that ESLint, Prettier, and TypeScript configs are not modified unless the PR explicitly states that as its purpose.
 - Check that release notes in `/docs/releases` are not modified unless the PR explicitly states that as its purpose.
 - Changes to the docs should follow the documentation style guide at `/docs/contribute/doc-style-guide.md`.
