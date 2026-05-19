@@ -22,6 +22,7 @@ creation-date: 2026-05-18
   - [Release cadence per workspace](#release-cadence-per-workspace)
   - [Breaking-change patches](#breaking-change-patches)
   - [Mainline and next releases from the same branch](#mainline-and-next-releases-from-the-same-branch)
+  - [Major releases via the Promote PR](#major-releases-via-the-promote-pr)
 - [Design Details](#design-details)
   - [Repository layout](#repository-layout)
   - [Patch file format](#patch-file-format)
@@ -371,16 +372,13 @@ The selection is encoded in `workspaces/<name>/package.json` under a
 `"manual"`), so the same release workflow can act on it without per-workspace YAML
 duplication.
 
-Independent of mainline cadence, every workspace also opts in or out of `@next`
-releases. When opted in:
-
-- **Next release** (`@next`): cut from `main` whenever queued breaking-change patches
-  for that workspace produce a meaningful change, on the same trigger as the chosen
-  mainline cadence. Applies the queued patches and publishes with the next major
-  version.
-- **Major release**: cut explicitly by the workspace maintainers when they decide to
-  promote the queued breaking changes. This merges the patches into `main`, drops the
-  `@next` line, and produces the next major `@latest` release.
+The mainline cadence settings above apply only to `@latest` releases. Major releases
+that promote queued breaking-change patches follow a separate, uniform flow described
+in [Major releases via the Promote PR](#major-releases-via-the-promote-pr). That flow
+is the same for every workspace; there is no per-workspace mode to pick. `@next`
+releases ride along on the mainline cadence: whenever queued breaking-change patches
+for a workspace produce a meaningful change, the same release trigger publishes them
+with the next major version under the `next` dist-tag.
 
 ### Breaking-change patches
 
@@ -421,13 +419,46 @@ There is no long-lived "next" branch. There are no cross-branch merges. The set 
 breaking changes that will be in the next major is exactly the set of patch files
 currently in `main`, which is easy to read, review, list, and reason about.
 
-When the workspace decides to take the major:
+### Major releases via the Promote PR
 
-1. Apply all queued patches into `main` as a normal merge commit.
-2. Convert the patches' descriptions into proper changesets with a `major` bump.
-3. Delete the patches.
-4. Release in the normal flow — `@next` will simply be empty until new patches are
-   filed, and `@latest` becomes the new major.
+Every workspace has one persistent, bot-maintained pull request titled
+`Promote major (<workspace>)`. The PR represents what the next major release of the
+workspace would look like if it were cut right now.
+
+On every push to `main` that affects a workspace, CI rebuilds the PR for that
+workspace from scratch:
+
+1. Apply every queued patch from `workspaces/<name>/.patches/` in file-name order.
+2. Move each patch's `description.md` into `.changeset/` so the changeset bot will
+   produce the right version bumps when the PR is merged.
+3. Delete the patch directories.
+4. Commit the result and force-push to the PR branch.
+
+The PR is created and kept open even when the workspace has no queued patches. In
+that state it carries a single empty changeset and the description "no breaking
+changes queued"; this avoids the noise of creating and closing the PR repeatedly as
+patches come and go.
+
+The PR is held as a **draft** at all times. Flipping it to ready-for-review is the
+explicit human signal that "this workspace is taking its next major now". A
+maintainer flips the PR, the rest of the review policy for the workspace applies
+(required reviewers, status checks, etc.), and merging the PR triggers the major
+release through the same mainline cadence the workspace uses for every other
+release — there is no separate publish path for majors.
+
+Because the PR is force-pushed on every relevant change to `main`, reviewers are
+expected to start a final review only after flipping the PR to ready, not while it is
+still in draft. The PR is also marked auto-mergeable in the same way as any other PR;
+the draft-vs-ready toggle is the gate.
+
+This model has the properties we want:
+
+- The decision to cut a major is always a manual human action — flipping the PR.
+- Every workspace participates in the same flow with no per-workspace mode flag.
+- There is always a live, viewable artifact answering "what would the next major of
+  `<workspace>` look like right now?"
+- Conflicting edits are caught at PR-build time, not at major time, because the same
+  patch-apply path runs on every push regardless of whether anyone is about to merge.
 
 ## Design Details
 
@@ -564,12 +595,14 @@ PR to update the patch.
    `yarn breaking-change refresh <slug>`, which re-runs the apply/edit/capture loop and
    produces an updated patch. The PR is required to include the refreshed patch.
 
-4. **Promoting patches to a major.** A workspace maintainer runs
-   `yarn breaking-change promote`, which:
-   1. Applies every patch under `.patches/` in order.
-   2. Moves each `description.md` into `.changeset/`.
-   3. Deletes the patches.
-   4. Stages the result so it can be opened as a single PR.
+4. **Promoting patches to a major.** No author action required. The bot-maintained
+   `Promote major (<workspace>)` PR already contains the result of applying every
+   queued patch (see
+   [Major releases via the Promote PR](#major-releases-via-the-promote-pr)). To
+   ship the major, a workspace maintainer flips that PR from draft to ready-for-review
+   and follows the normal review-and-merge process for the workspace. The same
+   `yarn breaking-change promote` CLI is available for local exploration of what the
+   PR would contain.
 
 ### Release workflow
 
@@ -704,11 +737,29 @@ encoding is:
   `2026.4` and `2026.5` can both ship in June if needed.
 - It is short and easy to say.
 
-Each individual package inside the workspace continues to use semver internally so that
-consumers can still pin minor versions. What changes is only the workspace-level
+Each individual package inside the workspace continues to use semver internally so
+that consumers can still pin minor versions. What changes is only the workspace-level
 release identifier, which is surfaced as a git tag (`framework@2026.4`) and as a
 field in `workspaces/framework/package.json`. Other workspaces continue to use plain
 semver (`catalog@2.3.0`).
+
+There is no fixed calendar for when framework majors ship. The trigger is the same as
+for every other workspace: a maintainer flipping the `Promote major (framework)` PR
+from draft to ready-for-review (see
+[Major releases via the Promote PR](#major-releases-via-the-promote-pr)). The only
+calendar-driven behavior is the year segment of the version number: the counter
+resets to `1` on the first major shipped in a new calendar year. The CLI computes the
+next identifier as "current year, plus one greater than the highest `N` that has
+shipped in the current year, or `1` if no major has shipped yet this year".
+
+The current Backstage release is identified by the framework's release identifier. We
+also want to track, for every published workspace release, the framework release it
+was built and tested against, so adopters using the Backstage Yarn plugin can pin a
+Backstage release and have the plugin resolve the matching workspace versions. The exact shape
+of that mapping (what gets recorded, where, and how the Yarn plugin consumes it) is
+left to follow-up work — some workspaces will not target any framework release at all
+(for example `ui`, which has no runtime dependency on `framework`), so the mapping
+needs to model "no target" as a valid value.
 
 ### Tooling consolidation with backstage-community-plugins
 
@@ -798,7 +849,7 @@ The migration is staged so that no single PR has to move the entire repository.
 8. **Roll out breaking-change patches.** Once `framework` is migrated and stable,
    enable the patch flow. The first end-to-end exercise is a real deprecation PR: file
    the deprecation and the patch together, verify the `@next` release picks the patch
-   up, then promote and ship the major.
+   up, then flip the `Promote major` PR to ready-for-review and ship the major.
 
 9. **Adopt date-based versioning for `framework`.** The first major of `framework`
    after the patch flow lands uses the `YYYY.N` scheme.
