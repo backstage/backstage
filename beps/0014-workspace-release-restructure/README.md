@@ -223,8 +223,20 @@ Plugins from `plugins/`:
 - `@backstage/plugin-bitbucket-cloud-common`
 - `@backstage/plugin-config-schema`
 - `@backstage/plugin-events-backend`, `plugin-events-backend-test-utils`, `plugin-events-node`
-- All `@backstage/plugin-events-backend-module-*` packages
 - `@backstage/plugin-signals`, `plugin-signals-backend`, `plugin-signals-node`, `plugin-signals-react`
+
+#### `modules`
+
+Framework-level backend modules — modules that extend plugins owned by the `framework`
+workspace and that integrate with external systems. Separated so they can ship on a
+faster cadence than the framework itself, since the underlying integrations evolve
+independently of the framework APIs.
+
+By convention this workspace holds modules that do not belong to a single plugin
+workspace; modules that extend a specific plugin (catalog, auth, scaffolder, …) stay
+in their owning workspace.
+
+- All `@backstage/plugin-events-backend-module-*` packages
 
 #### `ui`
 
@@ -768,16 +780,21 @@ The migration is staged so that no single PR has to move the entire repository.
    are larger and more interconnected, but at this point the migration mechanics are
    well-understood.
 
-6. **Migrate `framework` last.** This is the most invasive move because it touches the
+6. **Migrate `modules` alongside `framework`.** The `modules` workspace and the
+   `framework` workspace are split out together, because the modules depend on the
+   `framework` packages and cannot be carved off until those packages have a stable
+   home.
+
+7. **Migrate `framework` last.** This is the most invasive move because it touches the
    most root packages and because almost every other workspace depends on it. Doing it
    last means it inherits a fully-validated workspace tooling chain.
 
-7. **Roll out breaking-change patches.** Once `framework` is migrated and stable,
+8. **Roll out breaking-change patches.** Once `framework` is migrated and stable,
    enable the patch flow. The first end-to-end exercise is a real deprecation PR: file
    the deprecation and the patch together, verify the `@next` release picks the patch
    up, then promote and ship the major.
 
-8. **Adopt date-based versioning for `framework`.** The first major of `framework`
+9. **Adopt date-based versioning for `framework`.** The first major of `framework`
    after the patch flow lands uses the `YYYY.N` scheme.
 
 Throughout the migration the existing weekly release flow continues to work for any
@@ -817,14 +834,7 @@ phase. Decisions made during BEP review are recorded in
 [Workspace map](#workspace-map), [Release cadence per workspace](#release-cadence-per-workspace),
 and [Versioning of the core framework](#versioning-of-the-core-framework).
 
-1. **Events ecosystem placement.** The base `events` packages live in `framework`, but
-   the third-party integration modules (`plugin-events-backend-module-aws-sqs`,
-   `…-github`, `…-gitlab`, `…-kafka`, …) may want a faster cadence than the framework
-   allows. Do we keep them in `framework`, split them into an `events-modules`
-   workspace, or move events out of `framework` entirely once the framework moves
-   towards a slow major cadence?
-
-2. **"Linked patches" across workspaces.** Cross-workspace ordering is covered by
+1. **"Linked patches" across workspaces.** Cross-workspace ordering is covered by
    `meta.yaml`'s `notBefore.patches` (see [Patch file format](#patch-file-format)).
    That covers the "this patch must wait for that one" case. Do we also need a
    "linked patch" concept where promoting one patch automatically promotes the others,
