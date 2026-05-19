@@ -31,6 +31,7 @@ creation-date: 2026-05-18
     - [Triggering publishing in the private repo](#triggering-publishing-in-the-private-repo)
     - [Publish-time safeguards](#publish-time-safeguards)
   - [Versioning of the core framework](#versioning-of-the-core-framework)
+  - [Repository tooling](#repository-tooling)
   - [Tooling consolidation with backstage-community-plugins](#tooling-consolidation-with-backstage-community-plugins)
   - [Documentation and microsite](#documentation-and-microsite)
   - [Backstage release manifest](#backstage-release-manifest)
@@ -609,16 +610,17 @@ PR to update the patch.
 
    1. Edits code to add the deprecated alias and a runtime warning.
    2. Runs `yarn changeset` for the deprecation (regular `minor`/`patch`).
-   3. Runs `yarn breaking-change <slug>`. The tool snapshots the current workspace,
-      drops the author into a scratch state where they apply the removal, then captures
-      the diff into `.patches/<slug>/change.patch` and prompts for a description that
-      becomes `description.md`.
+   3. Runs `yarn backstage release patch create <slug>`. The tool snapshots the
+      current workspace, drops the author into a scratch state where they apply the
+      removal, then captures the diff into `.patches/<slug>/change.patch` and prompts
+      for a description that becomes `description.md`.
    4. Commits. CI verifies the patch applies cleanly on top of `main`.
 
 3. **Updating an existing patch.** When a PR conflicts with a queued patch, CI fails
    with a pointer to the failing patch. The author runs
-   `yarn breaking-change refresh <slug>`, which re-runs the apply/edit/capture loop and
-   produces an updated patch. The PR is required to include the refreshed patch.
+   `yarn backstage release patch refresh <slug>`, which re-runs the
+   apply/edit/capture loop and produces an updated patch. The PR is required to
+   include the refreshed patch.
 
 4. **Promoting patches to a major.** No author action required. The bot-maintained
    `Promote major (<workspace>)` PR already contains the result of applying every
@@ -806,6 +808,52 @@ left to follow-up work — some workspaces will not target any framework release
 (for example `ui`, which has no runtime dependency on `framework`), so the mapping
 needs to model "no target" as a valid value.
 
+### Repository tooling
+
+The root of the repository must remain dependency-free: no `node_modules` directly at
+the repository root, no top-level `yarn install` step. This makes the root cheap to
+clone, lets every workspace own its own dependency tree without contention, and keeps
+the root scripts easy to read without having to reason about transitive packages.
+
+To meet that constraint while still running real automation in GitHub Actions, we
+introduce one new top-level directory and one new workspace:
+
+- `tooling/` at the repository root. Contains the TypeScript automation scripts that
+  CI workflows invoke directly — for example, the patch validator, the script that
+  rebuilds the Promote PR, the manifest updater, the OIDC dispatch helper. The
+  directory has **no
+  `package.json` and no `node_modules`**. Scripts are executed by `node --experimental-strip-types`
+  (or its stable successor once available), so Node strips the type annotations at
+  load time and runs the underlying JavaScript directly. The scripts only call out to
+  Node built-ins and `gh`/`git` via `child_process`; they take no third-party runtime
+  dependencies.
+- `workspaces/cli/` is the dependency home for everything that lints, type-checks, or
+  exercises `tooling/`. It contains the Backstage CLI packages (already listed in the
+  `cli` workspace map entry), plus a small `@backstage/cli-module-release` package
+  that is published for `backstage/community-plugins` consumption (see
+  [Tooling consolidation with backstage-community-plugins](#tooling-consolidation-with-backstage-community-plugins)).
+  The `cli` workspace pins TypeScript and ESLint and provides scripts that, when run,
+  point at `../../tooling/` and validate it.
+
+**Verifying `tooling/` in CI**. The repository's CI is set up so that any PR that
+touches `tooling/` triggers a job that:
+
+1. Installs the dependencies of the `cli` workspace (`yarn install` inside
+   `workspaces/cli/`).
+2. Runs `yarn workspace cli check-root-tooling`, which invokes
+   `tsc --noEmit -p ../../tooling/tsconfig.json` and `eslint ../../tooling/**/*.ts`.
+   Both use configuration files inside `tooling/`, so the root directory still owns
+   the configuration, but the actual tools (the `typescript` and `eslint` binaries)
+   come from the `node_modules` directory of the `cli` workspace.
+
+This gives us:
+
+- A truly dependency-free root that any contributor can clone and inspect without
+  installing anything.
+- Real lint and type-check coverage of the automation scripts.
+- A single workspace (`cli`) where the lint/type-check tool versions live, so they
+  stay in sync with the published CLI packages.
+
 ### Tooling consolidation with backstage-community-plugins
 
 The release scripts in `backstage/community-plugins/scripts/ci/` (`check-if-release.js`,
@@ -821,9 +869,9 @@ Concretely:
   `backstage release …` (e.g. `backstage release list-changed-workspaces`,
   `backstage release check-needs-release`, `backstage release create-tag`).
 - Add the new commands needed by this BEP:
-  `backstage release breaking-change create|refresh|apply` (for authoring and
-  validating breaking-change patches) and `backstage release next-version` (for
-  computing the next `@next` identifier; see
+  `backstage release patch create|refresh|apply` (for authoring and validating
+  breaking-change patches) and `backstage release next-version` (for computing the
+  next `@next` identifier; see
   [Next pre-release versioning](#next-pre-release-versioning)).
 - Update both repositories' workflows to invoke the CLI instead of duplicated scripts.
 
@@ -901,36 +949,54 @@ versions of every Backstage package do I get?".
 
 #### How the manifest is maintained
 
-The manifest for the current Backstage release is mutable. Every successful
-non-pre-release publish from the publishing repo updates it with the newly-published
-version of each affected package and uploads a new manifest snapshot under the same
-`release-<YYYY>.<N>.json` URL. Adopters that fetch the manifest after pinning a
-release always see the latest known versions for that release line.
+Manifests are immutable. Every successful non-pre-release publish from the publishing
+repo produces a new manifest under a content-addressed URL of the form
+`release-<YYYY>.<N>-<counter>.json`, where `<counter>` is a monotonically incrementing
+integer per Backstage release line. A pointer file
+(`release-<YYYY>.<N>/latest.json`) is updated to reference the newest manifest in the
+line; that pointer is the only thing the publishing repo mutates.
+
+The body of each manifest is built by:
+
+1. Copying the most recent manifest for the same Backstage release line.
+2. Replacing the version entry for every package that was just published.
+3. Writing the result to a new immutable URL.
+
+This means an adopter can pin a Backstage release in two ways:
+
+- **Floating pin** (`backstage.json`'s `release: "2026.4"`) — the Yarn plugin reads
+  `release-2026.4/latest.json` on each install, picks up the most recent manifest in
+  that release line, and resolves to the package versions inside. Adopters get the
+  latest known compatible versions across every workspace without changing the pin.
+- **Frozen pin** (`backstage.json`'s `release: "2026.4-23"`) — the Yarn plugin reads
+  the immutable `release-2026.4-23.json` directly. Adopters get an exact, reproducible
+  set of package versions and are insulated from future publishes.
 
 When the framework workspace cuts a new major (`2026.4` → `2026.5`), the publishing
-workflow snapshots the current manifest as `release-<previous>.json` (closing the
-previous release line), then creates a new mutable `release-<YYYY>.<N>.json` for the
-new release. The previous manifest becomes immutable; the new manifest inherits the
-non-framework package versions that were current at the transition point and starts
-absorbing further publishes.
+workflow stops updating the `release-2026.4/latest.json` pointer (the line is closed)
+and starts a new line headed by `release-2026.5-0.json`, seeded from the last manifest
+of the previous line so that all non-framework packages keep their current versions.
 
 This gives us a few useful properties:
 
-- Adopters who pin an old Backstage release continue to resolve to the package
-  versions that line shipped with, frozen at the moment the next release line opened.
-- Adopters who pin the current Backstage release benefit from ongoing patch and minor
-  publishes across all workspaces — they get bug fixes without changing the pin.
-- There is no per-workspace coordination required to participate in a release; a
-  workspace simply publishes whenever its cadence dictates, and the manifest captures
-  the result.
+- Every published manifest is immutable and content-addressed. Reproducible builds are
+  trivially possible by pinning the counter.
+- Adopters who prefer a moving target follow the pointer file and get bug fixes for
+  free.
+- A workspace can publish on its own cadence without any coordination with other
+  workspaces; its publish simply produces a new manifest in the current release line.
+- The previous-release pointer never changes after the next release line opens, so
+  adopters on older releases keep resolving to the same frozen set of versions.
 
 #### Yarn plugin integration
 
 The Backstage Yarn plugin already reads `@backstage/release-manifests` to resolve a
 pinned release to a concrete set of versions. The schema change above is additive
-(the `workspace` field is new, everything else is shaped identically to today), so
-the plugin only needs minor adjustments to load the new fields and to fall back to
-`@latest` when a manifest lookup yields nothing for a package.
+(the `workspace` field is new, everything else is shaped identically to today), and
+the resolution flow gains a small new step (read `release-<id>/latest.json` to find
+the current immutable manifest URL, then read that). Packages whose workspace was
+not yet published into the current release line fall through to the previous release
+line's manifest, and finally to `@latest` if no manifest knows about them.
 
 ### OIDC binding mechanics
 
@@ -998,9 +1064,12 @@ version` would produce on top of `main + applied patches`, using the union of (a
    every queued patch's `description.md`. This is the standard Changesets computation;
    we do not reinvent it.
 2. **Shared workspace counter.** The `<N>` segment is owned by the workspace as a
-   whole. It is stored in `workspaces/<name>/.next-counter` (a single integer) and
-   incremented by exactly 1 on every `@next` publish for that workspace, regardless
-   of how many packages that publish includes or why.
+   whole. It is recorded in the root `package.json` of the workspace under
+   `backstage.release.nextCounter` and is incremented by exactly 1 on every `@next`
+   publish for the workspace, regardless of how many packages that publish includes
+   or why. The same `backstage.release` key already holds the mainline cadence (see
+   [Release cadence per workspace](#release-cadence-per-workspace)) and is the
+   natural place for additional release-management state we accumulate over time.
 3. **Counter reset.** The counter resets to 0 only when the `Promote major` PR for
    the workspace is merged and the resulting major has been published to `@latest`.
    Until then it monotonically increments. Mainline `@latest` releases that bump
@@ -1018,17 +1087,18 @@ This gives the following user-visible properties:
   or `3.1.0-next.<N+1>`; the counter does not reset, so adopters can still order any
   two `@next` snapshots by `<N>` alone.
 
-The counter file is committed to `main` by the same workflow that runs the publish,
-so it survives across runners. The `backstage release next-version` CLI computes the
-next identifier deterministically from `main` plus the counter file, which makes it
-easy to preview locally what the next `@next` publish would look like.
+The updated `package.json` is committed to `main` by the same workflow that runs the
+publish, so the counter survives across runners. The `backstage release next-version`
+CLI computes the next identifier deterministically from `main` plus the counter
+field, which makes it easy to preview locally what the next `@next` publish would
+look like.
 
 The migration is staged so that no single PR has to move the entire repository.
 
 1. **BEP approval & tool scaffolding.** Land the BEP, then add the new
    `@backstage/cli-module-release` package with the existing community-plugins commands
-   in their current form. Vendor the new `breaking-change` commands behind a flag while
-   the format stabilizes.
+   in their current form. Vendor the new `patch` commands behind a flag while the
+   format stabilizes.
 
 2. **Migrate `cli` first.** Move all CLI and tooling packages into `workspaces/cli/`.
    This is intentionally early so that the rest of the migration can exercise the new
