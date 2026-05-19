@@ -104,6 +104,9 @@ export interface CatalogScmEventsServiceSubscriber {
 }
 
 // @alpha
+export function provideCatalogModelDiscovery(): BackendFeature;
+
+// @alpha
 export function provideStaticCatalogModel(options?: {
   layers?: CatalogModelLayer[];
 }): BackendFeature;

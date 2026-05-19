@@ -78,6 +78,11 @@ const packageRoleInfos: PackageRoleInfo[] = [
     platform: 'node',
     output: ['types', 'cjs'],
   },
+  {
+    role: 'catalog-model-layer',
+    platform: 'common',
+    output: ['types', 'esm', 'cjs'],
+  },
 ];
 
 const readSchema = z.object({

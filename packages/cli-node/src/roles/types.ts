@@ -30,7 +30,8 @@ export type PackageRole =
   | 'frontend-plugin'
   | 'frontend-plugin-module'
   | 'backend-plugin'
-  | 'backend-plugin-module';
+  | 'backend-plugin-module'
+  | 'catalog-model-layer';
 
 /**
  * A type of platform that a package can be built for.

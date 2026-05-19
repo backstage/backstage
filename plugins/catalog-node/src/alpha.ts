@@ -33,3 +33,4 @@ export { catalogModelExtensionPoint } from './extensions';
 
 export * from './scmEvents';
 export { provideStaticCatalogModel } from './provideStaticCatalogModel';
+export { provideCatalogModelDiscovery } from './catalogModelDiscovery';

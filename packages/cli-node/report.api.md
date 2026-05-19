@@ -249,7 +249,8 @@ export type PackageRole =
   | 'frontend-plugin'
   | 'frontend-plugin-module'
   | 'backend-plugin'
-  | 'backend-plugin-module';
+  | 'backend-plugin-module'
+  | 'catalog-model-layer';
 
 // @public
 export interface PackageRoleInfo {

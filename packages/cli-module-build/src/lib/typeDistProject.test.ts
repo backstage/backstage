@@ -35,6 +35,7 @@ describe('typeDistProject', () => {
       cli: false,
       'cli-module': false,
       'common-library': false,
+      'catalog-model-layer': false,
     };
 
     const allowedPackageRoles = Object.keys(packageRoles).filter(
