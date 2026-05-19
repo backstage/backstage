@@ -882,8 +882,7 @@ import { CheckboxGroup, Checkbox } from '@backstage/ui';
 
 Some Backstage APIs still require MUI-compatible icon types:
 
-- **NavItemBlueprint** (`@backstage/frontend-plugin-api`): The `icon` prop expects MUI `IconComponent` type. Remix icons
-  are not type-compatible.
+- **PageBlueprint** (`@backstage/frontend-plugin-api`): The `icon` param on page extensions expects an `IconElement`. MUI icon components can still be used via `<Icon fontSize="inherit" />`.
 - **Timeline** (`@material-ui/lab`): No BUI equivalent exists.
 
 For these cases, keep using MUI components.
