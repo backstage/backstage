@@ -62,10 +62,16 @@ describe('TemplateGroup', () => {
 
     for (const { template } of mockTemplates) {
       expect(TemplateCard).toHaveBeenCalledWith(
-        expect.objectContaining({ template, onSelected: mockOnSelected }),
+        expect.objectContaining({ template, onSelected: expect.any(Function) }),
         {},
       );
     }
+
+    const lastCall = jest.mocked(TemplateCard).mock.calls.at(-1)![0];
+    lastCall.onSelected!();
+    expect(mockOnSelected).toHaveBeenCalledWith(
+      mockTemplates[mockTemplates.length - 1].template,
+    );
   });
 
   it('should use the passed in TemplateCard prop to render the template card', () => {

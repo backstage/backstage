@@ -18,14 +18,45 @@ import {
   createExtensionInput,
   createFrontendPlugin,
   PageBlueprint,
-  NavItemBlueprint,
+  SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { Content } from '@backstage/core-components';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from './plugin';
 
-export * from './translation';
+import { userSettingsTranslationRef as _userSettingsTranslationRef } from './translation';
 
-const userSettingsPage = PageBlueprint.makeWithOverrides({
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-user-settings` instead.
+ */
+export const userSettingsTranslationRef = _userSettingsTranslationRef;
+
+const userSettingsPage = PageBlueprint.make({
+  params: {
+    path: '/settings',
+    routeRef: settingsRouteRef,
+    title: 'Settings',
+    icon: <SettingsIcon fontSize="inherit" />,
+  },
+});
+
+const generalSettingsPage = SubPageBlueprint.make({
+  name: 'general',
+  params: {
+    path: 'general',
+    title: 'General',
+    loader: () =>
+      import('./components/General').then(m => (
+        <Content>
+          <m.UserSettingsGeneral />
+        </Content>
+      )),
+  },
+});
+
+const authProvidersSettingsPage = SubPageBlueprint.makeWithOverrides({
+  name: 'auth-providers',
   inputs: {
     providerSettings: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
@@ -34,26 +65,33 @@ const userSettingsPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { inputs }) {
     return originalFactory({
-      path: '/settings',
-      routeRef: settingsRouteRef,
+      path: 'auth-providers',
+      title: 'Authentication Providers',
       loader: () =>
-        import('./components/SettingsPage').then(m => (
-          <m.SettingsPage
-            providerSettings={inputs.providerSettings?.get(
-              coreExtensionData.reactElement,
-            )}
-          />
+        import('./components/AuthProviders').then(m => (
+          <Content>
+            <m.UserSettingsAuthProviders
+              providerSettings={inputs.providerSettings?.get(
+                coreExtensionData.reactElement,
+              )}
+            />
+          </Content>
         )),
     });
   },
 });
 
-/** @alpha */
-export const settingsNavItem = NavItemBlueprint.make({
+const featureFlagsSettingsPage = SubPageBlueprint.make({
+  name: 'feature-flags',
   params: {
-    routeRef: settingsRouteRef,
-    title: 'Settings',
-    icon: SettingsIcon,
+    path: 'feature-flags',
+    title: 'Feature Flags',
+    loader: () =>
+      import('./components/FeatureFlags').then(m => (
+        <Content>
+          <m.UserSettingsFeatureFlags />
+        </Content>
+      )),
   },
 });
 
@@ -63,9 +101,14 @@ export const settingsNavItem = NavItemBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'user-settings',
   title: 'Settings',
-  icon: <SettingsIcon />,
+  icon: <SettingsIcon fontSize="inherit" />,
   info: { packageJson: () => import('../package.json') },
-  extensions: [userSettingsPage, settingsNavItem],
+  extensions: [
+    userSettingsPage,
+    generalSettingsPage,
+    authProvidersSettingsPage,
+    featureFlagsSettingsPage,
+  ],
   routes: {
     root: settingsRouteRef,
   },

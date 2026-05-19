@@ -15,9 +15,8 @@
  */
 
 import fs from 'fs-extra';
-import g from 'glob';
+import { glob } from 'glob';
 import path from 'node:path';
-import { promisify } from 'node:util';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
@@ -25,8 +24,6 @@ import {
   CatalogProcessorParser,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-
-const glob = promisify(g);
 
 const LOCATION_TYPE = 'file';
 
@@ -47,7 +44,9 @@ export class FileReaderProcessor implements CatalogProcessor {
     }
 
     try {
-      const fileMatches = await glob(location.target);
+      const fileMatches = await glob(location.target, {
+        windowsPathsNoEscape: true,
+      });
 
       if (fileMatches.length > 0) {
         for (const fileMatch of fileMatches) {

@@ -73,4 +73,23 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Push an empty commit to gitlab repository (from GitLab 18.8+ on)',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'pushChanges',
+          action: 'gitlab:repo:push',
+          name: 'Push empty commit to gitlab repository',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            commitMessage: 'Initial Commit',
+            branchName: 'feature-branch',
+            allowEmpty: true,
+          },
+        },
+      ],
+    }),
+  },
 ];

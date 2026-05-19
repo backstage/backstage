@@ -44,7 +44,11 @@ function TextComponent<T extends ElementType = 'span'>(
 
 TextComponent.displayName = 'Text';
 
-/** @public */
+/**
+ * A typographic primitive that renders text with design system variants, weights, and colors, and can render as any HTML element.
+ *
+ * @public
+ */
 export const Text = forwardRef(TextComponent) as {
   <T extends ElementType = 'p'>(
     props: TextProps<T> & { ref?: React.ComponentPropsWithRef<T>['ref'] },

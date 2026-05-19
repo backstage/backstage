@@ -100,9 +100,16 @@ describe('catalogModuleGitlabDiscoveryEntityProvider', () => {
       'GitlabDiscoveryEntityProvider:test-id',
     );
     await provider.connect(connection);
-    expect(events.subscribed).toHaveLength(1);
-    expect(events.subscribed[0].id).toEqual(
-      'GitlabDiscoveryEntityProvider:test-id',
+    expect(events.subscribed).toHaveLength(2);
+    expect(events.subscribed).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'catalog-gitlab-scm-events-bridge',
+        }),
+        expect.objectContaining({
+          id: 'GitlabDiscoveryEntityProvider:test-id',
+        }),
+      ]),
     );
     expect(runner).toHaveBeenCalledTimes(1);
   });

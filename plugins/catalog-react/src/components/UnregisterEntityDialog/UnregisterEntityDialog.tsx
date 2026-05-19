@@ -25,7 +25,7 @@ import {
 
 import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
@@ -75,8 +75,7 @@ function useUnregisterDialogHandlers(
         await state.unregisterLocation();
         onConfirm();
       } catch (err) {
-        assertError(err);
-        alertApi.post({ message: err.message });
+        alertApi.post({ message: toError(err).message });
       } finally {
         setBusyAction(null);
       }
@@ -98,8 +97,7 @@ function useUnregisterDialogHandlers(
           display: 'transient',
         });
       } catch (err) {
-        assertError(err);
-        alertApi.post({ message: err.message });
+        alertApi.post({ message: toError(err).message });
       } finally {
         setBusyAction(null);
       }

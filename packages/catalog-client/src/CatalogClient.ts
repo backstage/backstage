@@ -567,12 +567,15 @@ export class CatalogClient implements CatalogApi {
     request: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse> {
-    const { type = 'url', target, dryRun } = request;
+    const { type = 'url', target, dryRun, onConflict } = request;
 
     const response = await this.apiClient.createLocation(
       {
         body: { type, target },
-        query: { dryRun: dryRun ? 'true' : undefined },
+        query: {
+          dryRun: dryRun ? 'true' : undefined,
+          onConflict,
+        },
       },
       options,
     );
@@ -607,6 +610,27 @@ export class CatalogClient implements CatalogApi {
     return all
       .map(r => r.data)
       .find(l => locationRef === stringifyLocationRef(l));
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.updateLocation}
+   */
+  async updateLocation(
+    id: string,
+    location: { type?: string; target: string },
+    options?: CatalogRequestOptions,
+  ): Promise<Location> {
+    const { type = 'url', target } = location;
+    const response = await this.apiClient.updateLocation(
+      { path: { id }, body: { type, target } },
+      options,
+    );
+
+    if (response.status !== 200) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response.json();
   }
 
   /**

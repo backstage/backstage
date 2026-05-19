@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { stringifyError } from '../serialization/error';
-import { isError } from './assertion';
+import { toError } from './assertion';
 
 /**
  * A base class that custom Error classes can inherit from.
@@ -42,13 +41,19 @@ export class CustomErrorBase extends Error {
   readonly cause?: Error | undefined;
 
   constructor(message?: string, cause?: Error | unknown) {
+    const causeError = cause !== undefined ? toError(cause) : undefined;
+
     let fullMessage = message;
-    if (cause !== undefined) {
-      const causeStr = stringifyError(cause);
+    if (causeError !== undefined) {
+      const causeStr = String(causeError);
+      const causeMsg =
+        causeStr !== '[object Object]'
+          ? causeStr
+          : `${causeError.name}: ${causeError.message}`;
       if (fullMessage) {
-        fullMessage += `; caused by ${causeStr}`;
+        fullMessage += `; caused by ${causeMsg}`;
       } else {
-        fullMessage = `caused by ${causeStr}`;
+        fullMessage = `caused by ${causeMsg}`;
       }
     }
 
@@ -63,6 +68,6 @@ export class CustomErrorBase extends Error {
       }
     }
 
-    this.cause = isError(cause) ? cause : undefined;
+    this.cause = causeError;
   }
 }

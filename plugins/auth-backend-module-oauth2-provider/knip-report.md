@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name     | Location     | Severity |
-| :------- | :----------- | :------- |
-| passport | plugins/auth-backend-module-oauth2-provider/package.json | error    |
+| Name     | Location          | Severity |
+| :------- | :---------------- | :------- |
+| passport | package.json:39:6 | error    |
 

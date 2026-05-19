@@ -19,7 +19,7 @@ import {
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { assertError, serializeError, stringifyError } from '@backstage/errors';
+import { serializeError, stringifyError, toError } from '@backstage/errors';
 import { Hash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
@@ -142,10 +142,13 @@ export class DefaultCatalogProcessingEngine {
       pollingIntervalMs: this.pollingIntervalMs,
       loadTasks: async count => {
         try {
-          const { items } =
-            await this.processingDatabase.getProcessableEntities(this.knex, {
-              processBatchSize: count,
-            });
+          const { items } = await this.processingDatabase.transaction(
+            async tx => {
+              return this.processingDatabase.getProcessableEntities(tx, {
+                processBatchSize: count,
+              });
+            },
+          );
           return items;
         } catch (error) {
           this.logger.warn('Failed to load processing items', error);
@@ -253,7 +256,7 @@ export class DefaultCatalogProcessingEngine {
             // non-catastrophic things such as due to validation errors, as well as if
             // something fatal happens inside the processing for other reasons. In any
             // case, this means we can't trust that anything in the output is okay. So
-            // just store the errors and trigger a stich so that they become visible to
+            // just store the errors and trigger a stitch so that they become visible to
             // the outside.
             if (!result.ok) {
               // notify the error listener if the entity can not be processed.
@@ -341,8 +344,7 @@ export class DefaultCatalogProcessingEngine {
 
             track.markSuccessfulWithChanges();
           } catch (error) {
-            assertError(error);
-            track.markFailed(error);
+            track.markFailed(toError(error));
           }
         });
       },
@@ -356,7 +358,9 @@ export class DefaultCatalogProcessingEngine {
       return () => {};
     }
 
-    const stitchingStrategy = stitchingStrategyFromConfig(this.config);
+    const stitchingStrategy = stitchingStrategyFromConfig(this.config, {
+      logger: this.logger,
+    });
 
     const runOnce = async () => {
       try {

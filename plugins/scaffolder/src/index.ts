@@ -38,3 +38,4 @@ export {
 
 export * from './components';
 export * from './deprecated';
+export { scaffolderTranslationRef } from './translation';

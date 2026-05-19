@@ -19,6 +19,11 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
+const DEFAULT_CONFIG = {
+  app: { baseUrl: 'http://localhost:3000' },
+  backend: { baseUrl: 'http://localhost:7007' },
+};
+
 describe('AppRoutes', () => {
   it('should render the first route at root path', async () => {
     const homePage = PageBlueprint.make({
@@ -241,6 +246,385 @@ describe('AppRoutes', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('home-page')).not.toBeInTheDocument();
       expect(screen.queryByTestId('catalog-page')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should redirect from one path to another using configured redirects', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return <div data-testid="location">{location.pathname}</div>;
+    };
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => (
+          <div>
+            Catalog Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogPage],
+      initialRouteEntries: ['/old-catalog'],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/routes': {
+                config: {
+                  redirects: [{ from: '/old-catalog', to: '/catalog' }],
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Catalog Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent('/catalog');
+    });
+  });
+
+  it('should support multiple redirects', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return <div data-testid="location">{location.pathname}</div>;
+    };
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => (
+          <div>
+            Catalog Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    const docsPage = PageBlueprint.make({
+      name: 'docs',
+      params: {
+        path: '/docs',
+        loader: async () => (
+          <div>
+            Docs Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    const redirectsConfig = {
+      ...DEFAULT_CONFIG,
+      app: {
+        ...DEFAULT_CONFIG.app,
+        extensions: [
+          {
+            'app/routes': {
+              config: {
+                redirects: [
+                  { from: '/old-catalog', to: '/catalog' },
+                  { from: '/old-docs', to: '/docs' },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    const { unmount } = renderTestApp({
+      extensions: [catalogPage, docsPage],
+      initialRouteEntries: ['/old-catalog'],
+      config: redirectsConfig,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Catalog Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent('/catalog');
+    });
+
+    unmount();
+
+    renderTestApp({
+      extensions: [catalogPage, docsPage],
+      initialRouteEntries: ['/old-docs'],
+      config: redirectsConfig,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Docs Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent('/docs');
+    });
+  });
+
+  it('should only redirect the root path when from is /', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return <div data-testid="location">{location.pathname}</div>;
+    };
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => (
+          <div>
+            Catalog Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    const homePage = PageBlueprint.make({
+      name: 'home',
+      params: {
+        path: '/home',
+        loader: async () => (
+          <div>
+            Home Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    const redirectsConfig = {
+      ...DEFAULT_CONFIG,
+      app: {
+        ...DEFAULT_CONFIG.app,
+        extensions: [
+          {
+            'app/routes': {
+              config: {
+                redirects: [{ from: '/', to: '/home' }],
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    const { unmount } = renderTestApp({
+      extensions: [catalogPage, homePage],
+      initialRouteEntries: ['/'],
+      config: redirectsConfig,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Home Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent('/home');
+    });
+
+    unmount();
+
+    renderTestApp({
+      extensions: [catalogPage, homePage],
+      initialRouteEntries: ['/catalog'],
+      config: redirectsConfig,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Catalog Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent('/catalog');
+    });
+  });
+
+  it('should substitute named path params in redirect target', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return <div data-testid="location">{location.pathname}</div>;
+    };
+
+    const profilePage = PageBlueprint.make({
+      name: 'profile',
+      params: {
+        path: '/profile/:userId',
+        loader: async () => (
+          <div>
+            Profile Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [profilePage],
+      initialRouteEntries: ['/users/alice'],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/routes': {
+                config: {
+                  redirects: [
+                    { from: '/users/:userId', to: '/profile/:userId' },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Profile Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/profile/alice',
+      );
+    });
+  });
+
+  it('should substitute splat param in redirect target', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return <div data-testid="location">{location.pathname}</div>;
+    };
+
+    const docsPage = PageBlueprint.make({
+      name: 'docs',
+      params: {
+        path: '/docs',
+        loader: async () => (
+          <div>
+            Docs Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [docsPage],
+      initialRouteEntries: ['/d/default/component/my-entity'],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/routes': {
+                config: {
+                  redirects: [{ from: '/d', to: '/docs/*' }],
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Docs Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/docs/default/component/my-entity',
+      );
+    });
+  });
+
+  it('should not corrupt a longer param when a shorter param is a prefix of it', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return <div data-testid="location">{location.pathname}</div>;
+    };
+
+    const targetPage = PageBlueprint.make({
+      name: 'target',
+      params: {
+        path: '/target/:ab/:a',
+        loader: async () => (
+          <div>
+            Target Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [targetPage],
+      initialRouteEntries: ['/source/bar/foo'],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/routes': {
+                config: {
+                  redirects: [{ from: '/source/:ab/:a', to: '/target/:ab/:a' }],
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Target Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/target/bar/foo',
+      );
+    });
+  });
+
+  it('should not interfere with normal routes when redirects are configured', async () => {
+    const homePage = PageBlueprint.make({
+      name: 'home',
+      params: {
+        path: '/',
+        loader: async () => <div>Home Page</div>,
+      },
+    });
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => <div>Catalog Page</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [homePage, catalogPage],
+      initialRouteEntries: ['/catalog'],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/routes': {
+                config: {
+                  redirects: [{ from: '/old-catalog', to: '/catalog' }],
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Catalog Page')).toBeInTheDocument();
     });
   });
 });

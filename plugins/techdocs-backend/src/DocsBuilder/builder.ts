@@ -19,7 +19,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { assertError, isError } from '@backstage/errors';
+import { isError, toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   GeneratorBase,
@@ -225,9 +225,8 @@ export class DocsBuilder {
           // Not a blocker hence no need to await this.
           fs.remove(preparedDir);
         } catch (error) {
-          assertError(error);
           this.logger.debug(
-            `Error removing prepared directory ${error.message}`,
+            `Error removing prepared directory ${toError(error).message}`,
           );
         }
       }
@@ -238,9 +237,8 @@ export class DocsBuilder {
           // Not a blocker hence no need to await this.
           fs.remove(outputDir);
         } catch (error) {
-          assertError(error);
           this.logger.debug(
-            `Error removing generated directory ${error.message}`,
+            `Error removing generated directory ${toError(error).message}`,
           );
         }
       }

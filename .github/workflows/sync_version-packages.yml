@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
@@ -30,7 +30,7 @@ jobs:
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Use Node.js 22.x
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -49,8 +49,23 @@ jobs:
 
       - name: Discord notification
         if: ${{ failure() }}
-        uses: Ilshidur/action-discord@d2594079a10f1d6739ee50a2471f0ca57418b554 # 0.4.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: 'Version Packages Sync Failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}'
+          script: |
+            const webhook = process.env.DISCORD_WEBHOOK;
+            if (!webhook) {
+              throw new Error('DISCORD_WEBHOOK secret is not set');
+            }
+            const repo = context.repo.owner + '/' + context.repo.repo;
+            const runId = context.runId;
+            const message = `Version Packages Sync Failed https://github.com/${repo}/actions/runs/${runId}`;
+            const response = await fetch(webhook, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content: message }),
+            });
+            if (!response.ok) {
+              throw new Error(`Discord webhook request failed: ${response.status} ${response.statusText}`);
+            }

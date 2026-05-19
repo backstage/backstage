@@ -15,12 +15,13 @@
  */
 
 import { Suspense } from 'react';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import { z } from 'zod/v4';
+import { RiArticleLine } from '@remixicon/react';
 import {
   createFrontendPlugin,
   ApiBlueprint,
   PageBlueprint,
-  NavItemBlueprint,
+  PluginHeaderActionBlueprint,
   createExtensionInput,
   coreExtensionData,
   createExtension,
@@ -46,7 +47,7 @@ import {
   rootDocsRouteRef,
   rootRouteRef,
 } from '../routes';
-import { TechDocsReaderLayout } from '../reader';
+import { TechDocsReaderLayout } from './components/TechDocsReaderLayout';
 import {
   TechDocsAddons,
   techdocsApiRef,
@@ -54,7 +55,7 @@ import {
 } from '@backstage/plugin-techdocs-react';
 
 import { useTechdocsReaderIconLinkProps } from './hooks/useTechdocsReaderIconLinkProps';
-import { DocsIcon } from '@backstage/core-components';
+import { DocsIcon, SupportButton } from '@backstage/core-components';
 
 /** @alpha */
 const techdocsEntityIconLink = EntityIconLinkBlueprint.make({
@@ -106,13 +107,11 @@ const techDocsClientApi = ApiBlueprint.make({
 /** @alpha */
 export const techDocsSearchResultListItemExtension =
   SearchResultListItemBlueprint.makeWithOverrides({
-    config: {
-      schema: {
-        title: z => z.string().optional(),
-        lineClamp: z => z.number().default(5),
-        asLink: z => z.boolean().default(true),
-        asListItem: z => z.boolean().default(true),
-      },
+    configSchema: {
+      title: z.string().optional(),
+      lineClamp: z.number().default(5),
+      asLink: z.boolean().default(true),
+      asListItem: z.boolean().default(true),
     },
     factory(originalFactory, { config }) {
       return originalFactory({
@@ -139,9 +138,11 @@ const techDocsPage = PageBlueprint.make({
   params: {
     path: '/docs',
     routeRef: rootRouteRef,
+    title: 'Docs',
+    icon: <RiArticleLine />,
     loader: () =>
-      import('../home/components/TechDocsIndexPage').then(m => (
-        <m.TechDocsIndexPage />
+      import('./components/TechDocsIndexPageContent').then(m => (
+        <m.TechDocsIndexPageContent />
       )),
   },
 });
@@ -156,11 +157,9 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
   inputs: {
     addons: createExtensionInput([AddonBlueprint.dataRefs.addon]),
   },
-  config: {
-    schema: {
-      withoutSearch: z => z.boolean().default(false),
-      withoutHeader: z => z.boolean().default(false),
-    },
+  configSchema: {
+    withoutSearch: z.boolean().default(false),
+    withoutHeader: z.boolean().default(false),
   },
   factory(originalFactory, { apis, inputs, config }) {
     const addonsApi = apis.get(techdocsAddonsApiRef);
@@ -267,26 +266,26 @@ const techDocsEntityContentEmptyState = createExtension({
   factory: () => [],
 });
 
-/** @alpha */
-const techDocsNavItem = NavItemBlueprint.make({
-  params: {
-    icon: LibraryBooks,
-    title: 'Docs',
-    routeRef: rootRouteRef,
-  },
+const techDocsSupportAction = PluginHeaderActionBlueprint.make({
+  params: defineParams =>
+    defineParams({
+      loader: async () => (
+        <SupportButton>Discover documentation in your ecosystem.</SupportButton>
+      ),
+    }),
 });
 
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'techdocs',
-  title: 'Docs',
-  icon: <LibraryBooks />,
+  title: 'Documentation',
+  icon: <RiArticleLine />,
   info: { packageJson: () => import('../../package.json') },
   extensions: [
     techDocsClientApi,
     techDocsStorageApi,
     TechDocsAddonsApiExtension,
-    techDocsNavItem,
+    techDocsSupportAction,
     techDocsPage,
     techDocsReaderPage,
     techdocsEntityIconLink,

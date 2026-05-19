@@ -17,7 +17,6 @@
 import {
   createFrontendPlugin,
   createRouteRef,
-  NavItemBlueprint,
   PageBlueprint,
   PluginHeaderActionBlueprint,
   SubPageBlueprint,
@@ -31,6 +30,7 @@ const appVisualizerPage = PageBlueprint.make({
     path: '/visualizer',
     routeRef: rootRouteRef,
     title: 'Visualizer',
+    icon: <RiEyeLine />,
   },
 });
 
@@ -76,18 +76,9 @@ const appVisualizerTextPage = SubPageBlueprint.make({
 });
 
 const copyTreeAsJson = PluginHeaderActionBlueprint.make({
-  params: defineParams =>
-    defineParams({
-      loader: () =>
-        import('./components/CopyTreeButton').then(m => <m.CopyTreeButton />),
-    }),
-});
-
-export const appVisualizerNavItem = NavItemBlueprint.make({
   params: {
-    title: 'Visualizer',
-    icon: () => <RiEyeLine />,
-    routeRef: rootRouteRef,
+    loader: () =>
+      import('./components/CopyTreeButton').then(m => <m.CopyTreeButton />),
   },
 });
 
@@ -102,7 +93,6 @@ export const visualizerPlugin = createFrontendPlugin({
     appVisualizerTreePage,
     appVisualizerDetailedPage,
     appVisualizerTextPage,
-    appVisualizerNavItem,
     copyTreeAsJson,
   ],
 });

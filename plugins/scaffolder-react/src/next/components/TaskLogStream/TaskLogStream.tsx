@@ -15,6 +15,7 @@
  */
 import { LogViewer } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
+import { useDownloadLogs } from '../../hooks/useDownloadLogs';
 
 const useStyles = makeStyles({
   root: {
@@ -32,9 +33,13 @@ const useStyles = makeStyles({
  */
 export const TaskLogStream = (props: { logs: { [k: string]: string[] } }) => {
   const styles = useStyles();
+
+  const onDownloadLogs = useDownloadLogs(props.logs);
+
   return (
     <div className={styles.root}>
       <LogViewer
+        onDownloadLog={onDownloadLogs}
         text={Object.values(props.logs)
           .map(l => l.join('\n'))
           .filter(Boolean)

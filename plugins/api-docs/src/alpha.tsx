@@ -18,7 +18,6 @@ import Grid from '@material-ui/core/Grid';
 
 import {
   ApiBlueprint,
-  NavItemBlueprint,
   PageBlueprint,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
@@ -38,14 +37,6 @@ import {
   EntityCardBlueprint,
   EntityContentBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
-
-const apiDocsNavItem = NavItemBlueprint.make({
-  params: {
-    title: 'APIs',
-    routeRef: rootRoute,
-    icon: () => <AppIcon id="kind:api" />,
-  },
-});
 
 const apiDocsConfigApi = ApiBlueprint.make({
   name: 'config',
@@ -76,12 +67,16 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
     return originalFactory({
       path: '/api-docs',
       routeRef: rootRoute,
+      title: 'APIs',
+      icon: <AppIcon fontSize="inherit" id="kind:api" />,
       loader: () =>
-        import('./components/ApiExplorerPage').then(m => (
-          <m.ApiExplorerIndexPage
-            initiallySelectedFilter={config.initiallySelectedFilter}
-          />
-        )),
+        import('./components/ApiExplorerPage/DefaultApiExplorerPage').then(
+          m => (
+            <m.NfsApiExplorerPage
+              initiallySelectedFilter={config.initiallySelectedFilter}
+            />
+          ),
+        ),
     });
   },
 });
@@ -211,7 +206,7 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'api-docs',
   title: 'APIs',
-  icon: <AppIcon id="kind:api" />,
+  icon: <AppIcon fontSize="inherit" id="kind:api" />,
   info: { packageJson: () => import('../package.json') },
   routes: {
     root: rootRoute,
@@ -220,7 +215,6 @@ export default createFrontendPlugin({
     registerApi: registerComponentRouteRef,
   },
   extensions: [
-    apiDocsNavItem,
     apiDocsConfigApi,
     apiDocsExplorerPage,
     apiDocsHasApisEntityCard,
@@ -234,4 +228,10 @@ export default createFrontendPlugin({
   ],
 });
 
-export { apiDocsTranslationRef } from './translation';
+import { apiDocsTranslationRef as _apiDocsTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-api-docs` instead.
+ */
+export const apiDocsTranslationRef = _apiDocsTranslationRef;

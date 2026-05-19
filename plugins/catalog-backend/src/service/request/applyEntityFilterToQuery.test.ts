@@ -25,14 +25,12 @@ import { Knex } from 'knex';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { buildEntitySearch } from '../../database/operations/stitcher/buildEntitySearch';
 
 jest.setTimeout(60_000);
 
 const databases = TestDatabases.create();
-const strategies = ['in', 'join'] as const;
-
 describe.each(databases.eachSupportedId())(
   'applyEntityFilterToQuery, %p',
   databaseId => {
@@ -98,7 +96,6 @@ describe.each(databases.eachSupportedId())(
         entity_ref: entityRef,
         final_entity: entityJson,
         hash: 'h',
-        stitch_ticket: '',
       });
 
       const search = await buildEntitySearch(id, entity);
@@ -108,7 +105,7 @@ describe.each(databases.eachSupportedId())(
     }
     // #endregion
 
-    describe.each(strategies)('with strategy %p', strategy => {
+    describe('exists strategy', () => {
       async function query(filter: EntityFilter): Promise<string[]> {
         const q =
           knex<DbFinalEntitiesRow>('final_entities').whereNotNull(
@@ -119,7 +116,6 @@ describe.each(databases.eachSupportedId())(
           targetQuery: q,
           onEntityIdField: 'final_entities.entity_id',
           knex,
-          strategy,
         });
         return await q.then(rows =>
           rows

@@ -146,6 +146,16 @@
                 }
               ]
             },
+            "secrets": {
+              "type": "object",
+              "description": "Configuration for secrets that are passed during task creation.",
+              "properties": {
+                "schema": {
+                  "type": "object",
+                  "description": "A JSONSchema for validating secrets passed during task creation."
+                }
+              }
+            },
             "presentation": {
               "type": "object",
               "description": "A way to redefine the presentation of the scaffolder.",
@@ -180,7 +190,7 @@
                 }
               }
             },
-            "EXPERIMENTAL_formDecorators": {
+            "formDecorators": {
               "type": "array",
               "description": "A list of decorators and their inputs that the form should trigger before submitting the job",
               "items": {
@@ -188,11 +198,29 @@
                 "properties": {
                   "id": {
                     "type": "string",
-                    "description": "The form hook ID"
+                    "description": "The form decorator ID"
                   },
                   "input": {
                     "type": "object",
-                    "description": "A object describing the inputs to the form hook."
+                    "description": "An object describing the inputs to the form decorator."
+                  }
+                }
+              }
+            },
+            "EXPERIMENTAL_formDecorators": {
+              "type": "array",
+              "deprecated": true,
+              "description": "Deprecated, use formDecorators instead.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The form decorator ID"
+                  },
+                  "input": {
+                    "type": "object",
+                    "description": "An object describing the inputs to the form decorator."
                   }
                 }
               }
@@ -251,6 +279,10 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                      "if": {
+                        "type": ["string", "boolean"],
+                        "description": "A templated condition that excludes this link when evaluated to false. If the condition is true or not defined, the link is included. The condition is true, if the input is not `false`, `undefined`, `null`, `\"\"`, `0`, or `[]`."
+                      },
                       "url": {
                         "type": "string",
                         "description": "A url in a standard uri format.",
@@ -285,6 +317,10 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                      "if": {
+                        "type": ["string", "boolean"],
+                        "description": "A templated condition that excludes this text when evaluated to false. If the condition is true or not defined, the text is included. The condition is true, if the input is not `false`, `undefined`, `null`, `\"\"`, `0`, or `[]`."
+                      },
                       "title": {
                         "type": "string",
                         "description": "A user friendly display name for the text.",

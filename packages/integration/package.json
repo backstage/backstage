@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration",
-  "version": "1.21.0-next.0",
+  "version": "2.0.2-next.1",
   "description": "Helpers for managing integrations towards external systems",
   "backstage": {
     "role": "common-library"
@@ -50,6 +50,7 @@
     "p-throttle": "^4.1.1"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "msw": "^1.0.0"

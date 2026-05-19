@@ -40,7 +40,7 @@ import {
   SchedulerService,
   SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import lodash from 'lodash';
 
 const HTTP_VERBS: (keyof PathItemObject)[] = [
@@ -238,7 +238,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
             class:
               InternalOpenApiDocumentationProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
           await this.refresh(logger);
         },

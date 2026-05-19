@@ -27,12 +27,12 @@ const keyBase = {
 
 jest.setTimeout(60_000);
 
-describe('DatabaseKeyStore', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  it.each(databases.eachSupportedId())(
-    'should store a key, %p',
-    async databaseId => {
+describe.each(databases.eachSupportedId())(
+  'DatabaseKeyStore, %p',
+  databaseId => {
+    it('should store a key', async () => {
       const knex = await databases.init(databaseId);
       await AuthDatabase.runMigrations(knex);
 
@@ -53,12 +53,9 @@ describe('DatabaseKeyStore', () => {
           DateTime.fromJSDate(items[0].createdAt).diffNow('seconds').seconds,
         ),
       ).toBeLessThan(10);
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'should remove stored keys, %p',
-    async databaseId => {
+    it('should remove stored keys', async () => {
       const knex = await databases.init(databaseId);
       await AuthDatabase.runMigrations(knex);
 
@@ -124,6 +121,6 @@ describe('DatabaseKeyStore', () => {
       await expect(store.listKeys()).resolves.toEqual({
         items: [],
       });
-    },
-  );
-});
+    });
+  },
+);

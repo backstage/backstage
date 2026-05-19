@@ -31,11 +31,20 @@ export const CardDefinition = defineComponent<CardOwnProps>()({
   styles,
   classNames: {
     root: 'bui-Card',
+    trigger: 'bui-CardTrigger',
   },
   propDefs: {
     children: {},
     className: {},
+    onPress: {},
+    href: {},
+    label: {},
+    target: {},
+    rel: {},
+    download: {},
+    style: {},
   },
+  utilityProps: ['grow', 'shrink', 'basis'],
 });
 
 /**

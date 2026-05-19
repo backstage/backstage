@@ -100,7 +100,7 @@ export interface HostDiscoveryOptions {
    * These endpoints have lower priority than any that are defined in
    * app-config, but higher priority than the fallback ones.
    *
-   * This parameter is usedful for example if you want to provide a shared
+   * This parameter is useful for example if you want to provide a shared
    * library of core services to your plugin developers, which is set up for the
    * default behaviors in your org. This alleviates the need for replicating any
    * given set of endpoint config in every backend that you deploy.
@@ -152,6 +152,27 @@ export class HostDiscovery implements DiscoveryService {
   };
 
   static fromConfig(config: RootConfigService, options?: HostDiscoveryOptions) {
+    // The getExternalBaseUrl implementation relies on the backend base URL
+    // being a valid, non-local URL that others will be able to route to.
+    const baseUrl = config.getString('backend.baseUrl');
+    try {
+      const { hostname } = new URL(baseUrl);
+      const isLocalhost =
+        hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '::1' ||
+        hostname === '::';
+      if (isLocalhost && process.env.NODE_ENV === 'production') {
+        options?.logger?.warn(
+          `backend.baseUrl is set to a localhost URL and NODE_ENV is '${process.env.NODE_ENV}'. This is likely a misconfiguration — localhost URLs are not reachable by other services in a deployed environment. Prefer setting it to a routable URL that can be resolved and reached both by your app and by other plugin deployments / services.`,
+        );
+      }
+    } catch {
+      options?.logger?.warn(
+        `backend.baseUrl config value '${baseUrl}' does not appear to be a valid URL.`,
+      );
+    }
+
     const discovery = new HostDiscovery(new SrvResolvers());
 
     discovery.#updateResolvers(config, options?.defaultEndpoints);

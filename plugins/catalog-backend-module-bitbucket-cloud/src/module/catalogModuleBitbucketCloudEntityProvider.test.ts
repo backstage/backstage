@@ -88,8 +88,13 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
       'bitbucketCloud-provider:default',
     );
     await provider.connect(connection);
-    expect(events.subscribed).toHaveLength(1);
-    expect(events.subscribed[0].id).toEqual('bitbucketCloud-provider:default');
+    expect(events.subscribed).toHaveLength(2);
+    expect(events.subscribed.map(s => s.id)).toContain(
+      'bitbucketCloud-provider:default',
+    );
+    expect(events.subscribed.map(s => s.id)).toContain(
+      'catalog-bitbucket-cloud-scm-events-bridge',
+    );
     expect(runner).toHaveBeenCalledTimes(1);
   });
 });

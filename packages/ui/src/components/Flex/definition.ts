@@ -53,5 +53,8 @@ export const FlexDefinition = defineComponent<FlexOwnProps>()({
     'align',
     'justify',
     'direction',
+    'grow',
+    'shrink',
+    'basis',
   ],
 });

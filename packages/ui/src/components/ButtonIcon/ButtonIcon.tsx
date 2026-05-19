@@ -21,20 +21,32 @@ import type { ButtonIconProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ButtonIconDefinition } from './definition';
 
-/** @public */
+/**
+ * An icon-only button that supports a loading state and requires an accessible label.
+ *
+ * @public
+ */
 export const ButtonIcon = forwardRef(
   (props: ButtonIconProps, ref: Ref<HTMLButtonElement>) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(
       ButtonIconDefinition,
-      props,
+      // Merge deprecated `loading` into `isPending` so data attributes and
+      // internal logic only need to check a single prop.
+      {
+        ...props,
+        isPending:
+          props.isPending || props.loading
+            ? true
+            : props.isPending ?? props.loading,
+      },
     );
-    const { classes, icon, loading } = ownProps;
+    const { classes, icon, isPending } = ownProps;
 
     return (
       <RAButton
         className={classes.root}
         ref={ref}
-        isPending={loading}
+        isPending={isPending}
         {...dataAttributes}
         {...restProps}
       >

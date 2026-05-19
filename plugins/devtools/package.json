@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-devtools",
-  "version": "0.1.37-next.0",
+  "version": "0.1.39-next.2",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "devtools",
@@ -59,8 +59,8 @@
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-devtools-common": "workspace:^",
-    "@backstage/plugin-devtools-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",

@@ -28,8 +28,8 @@ import { CachedEntityLoader } from './CachedEntityLoader';
 import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
-jest.mock('@backstage/catalog-client');
 jest.mock('./CachedEntityLoader');
 jest.mock('./DocsSynchronizer');
 jest.mock('../cache/TechDocsCache');
@@ -107,6 +107,7 @@ describe('createRouter', () => {
   const docsBuildStrategy: jest.Mocked<DocsBuildStrategy> = {
     shouldBuild: jest.fn(),
   };
+  const mockCatalogService = catalogServiceMock();
   const outOfTheBoxOptions = {
     preparers,
     generators,
@@ -124,6 +125,7 @@ describe('createRouter', () => {
     docsBuildStrategy,
     auth: mockServices.auth(),
     httpAuth: mockServices.httpAuth(),
+    catalog: mockCatalogService,
   };
   const recommendedOptions = {
     publisher,
@@ -134,6 +136,7 @@ describe('createRouter', () => {
     docsBuildStrategy,
     auth: mockServices.auth(),
     httpAuth: mockServices.httpAuth(),
+    catalog: mockCatalogService,
   };
 
   beforeEach(() => {

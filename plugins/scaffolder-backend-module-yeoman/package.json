@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-yeoman",
-  "version": "0.4.20-next.0",
+  "version": "0.4.22-next.0",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "scaffolder",
@@ -46,7 +46,6 @@
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
-    "winston": "^3.2.1",
     "yaml": "^2.0.0",
     "yeoman-environment": "^3.9.1"
   },

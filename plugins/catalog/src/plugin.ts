@@ -43,7 +43,6 @@ import {
   SearchResultListItemExtensionProps,
 } from '@backstage/plugin-search-react';
 import { DefaultStarredEntitiesApi } from './apis';
-import { AboutCardProps } from './components/AboutCard';
 import { DefaultCatalogPageProps } from './components/CatalogPage';
 import { DependencyOfComponentsCardProps } from './components/DependencyOfComponentsCard';
 import { DependsOnComponentsCardProps } from './components/DependsOnComponentsCard';
@@ -128,15 +127,14 @@ export const CatalogEntityPage: () => JSX.Element = catalogPlugin.provide(
  * not extremely customizable; feel free to make a copy of it as a starting
  * point if you like.
  */
-export const EntityAboutCard: (props: AboutCardProps) => JSX.Element =
-  catalogPlugin.provide(
-    createComponentExtension({
-      name: 'EntityAboutCard',
-      component: {
-        lazy: () => import('./components/AboutCard').then(m => m.AboutCard),
-      },
-    }),
-  );
+export const EntityAboutCard: () => JSX.Element = catalogPlugin.provide(
+  createComponentExtension({
+    name: 'EntityAboutCard',
+    component: {
+      lazy: () => import('./components/AboutCard').then(m => m.AboutCard),
+    },
+  }),
+);
 
 /** @public */
 export const EntityLinksCard = catalogPlugin.provide(

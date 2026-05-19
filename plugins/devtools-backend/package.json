@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-devtools-backend",
-  "version": "0.5.15-next.0",
+  "version": "0.5.17-next.0",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "devtools",
@@ -55,9 +55,7 @@
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.0.0",
     "lodash": "^4.17.21",
-    "ping": "^0.4.1",
-    "semver": "^7.5.3",
-    "yn": "^4.0.0"
+    "ping": "^0.4.1"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

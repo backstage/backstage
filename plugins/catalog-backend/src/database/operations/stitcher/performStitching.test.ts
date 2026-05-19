@@ -24,18 +24,20 @@ import {
   DbRelationsRow,
   DbSearchRow,
 } from '../../tables';
+import { markForStitching } from './markForStitching';
 import { performStitching } from './performStitching';
 
 jest.setTimeout(60_000);
 
-describe('performStitching', () => {
-  const databases = TestDatabases.create();
-  const logger = mockServices.logger.mock();
+const databases = TestDatabases.create();
 
-  // NOTE(freben): Testing the deferred path since it's a superset of the immediate one
-  it.each(databases.eachSupportedId())(
-    'runs the happy path in deferred mode for %p',
-    async databaseId => {
+describe.each(databases.eachSupportedId())(
+  'performStitching, %p',
+  databaseId => {
+    const logger = mockServices.logger.mock();
+
+    // NOTE(freben): Testing the deferred path since it's a superset of the immediate one
+    it('runs the happy path in deferred mode', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -82,15 +84,29 @@ describe('performStitching', () => {
         },
       ]);
 
+      const deferredStrategy = {
+        mode: 'deferred' as const,
+        pollingInterval: { seconds: 1 },
+        stitchTimeout: { seconds: 1 },
+      };
+
+      await markForStitching({
+        knex,
+        strategy: deferredStrategy,
+        entityRefs: ['k:ns/n'],
+      });
+
       await performStitching({
         knex,
         logger,
-        strategy: {
-          mode: 'deferred',
-          pollingInterval: { seconds: 1 },
-          stitchTimeout: { seconds: 1 },
-        },
+        strategy: deferredStrategy,
         entityRef: 'k:ns/n',
+        stitchTicket: (
+          await knex('stitch_queue')
+            .where('entity_ref', 'k:ns/n')
+            .select('stitch_ticket')
+            .first()
+        )?.stitch_ticket,
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -171,15 +187,23 @@ describe('performStitching', () => {
       );
 
       // Re-stitch without any changes
+      await markForStitching({
+        knex,
+        strategy: deferredStrategy,
+        entityRefs: ['k:ns/n'],
+      });
+
       await performStitching({
         knex,
         logger,
-        strategy: {
-          mode: 'deferred',
-          pollingInterval: { seconds: 1 },
-          stitchTimeout: { seconds: 1 },
-        },
+        strategy: deferredStrategy,
         entityRef: 'k:ns/n',
+        stitchTicket: (
+          await knex('stitch_queue')
+            .where('entity_ref', 'k:ns/n')
+            .select('stitch_ticket')
+            .first()
+        )?.stitch_ticket,
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -198,15 +222,23 @@ describe('performStitching', () => {
         },
       ]);
 
+      await markForStitching({
+        knex,
+        strategy: deferredStrategy,
+        entityRefs: ['k:ns/n'],
+      });
+
       await performStitching({
         knex,
         logger,
-        strategy: {
-          mode: 'deferred',
-          pollingInterval: { seconds: 1 },
-          stitchTimeout: { seconds: 1 },
-        },
+        strategy: deferredStrategy,
         entityRef: 'k:ns/n',
+        stitchTicket: (
+          await knex('stitch_queue')
+            .where('entity_ref', 'k:ns/n')
+            .select('stitch_ticket')
+            .first()
+        )?.stitch_ticket,
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -292,12 +324,9 @@ describe('performStitching', () => {
           },
         ]),
       );
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'handles conflicts with past stitches %p',
-    async databaseId => {
+    it('handles conflicts with past stitches', async () => {
       if (databaseId === 'MYSQL_8') {
         // MySQL doesn't handle conflicts in the same way as the other two, most
         // likely due to the conflict probably being handled with a merged even
@@ -342,7 +371,6 @@ describe('performStitching', () => {
           entity_id: 'my-id',
           entity_ref: 'k:ns/n',
           hash: '',
-          stitch_ticket: 'old-ticket',
           final_entity: JSON.stringify({}),
         },
       ]);
@@ -361,12 +389,9 @@ describe('performStitching', () => {
         'Skipping stitching of k:ns/n, conflict',
         expect.anything(),
       );
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'replaces existing stitch ticket %p',
-    async databaseId => {
+    it('stitches when final_entities row already exists', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -396,20 +421,7 @@ describe('performStitching', () => {
           entity_id: 'my-id',
           entity_ref: 'k:ns/n',
           hash: '',
-          stitch_ticket: 'old-ticket',
           final_entity: JSON.stringify({}),
-        },
-      ]);
-
-      await expect(
-        knex<DbFinalEntitiesRow>('final_entities').select([
-          'entity_id',
-          'stitch_ticket',
-        ]),
-      ).resolves.toEqual([
-        {
-          entity_id: 'my-id',
-          stitch_ticket: expect.stringContaining('old-ticket'),
         },
       ]);
 
@@ -423,17 +435,10 @@ describe('performStitching', () => {
         }),
       ).resolves.toBe('changed');
 
-      await expect(
-        knex<DbFinalEntitiesRow>('final_entities').select([
-          'entity_id',
-          'stitch_ticket',
-        ]),
-      ).resolves.toEqual([
-        {
-          entity_id: 'my-id',
-          stitch_ticket: expect.not.stringContaining('old-ticket'),
-        },
-      ]);
-    },
-  );
-});
+      const entities = await knex<DbFinalEntitiesRow>('final_entities');
+      expect(entities.length).toBe(1);
+      expect(entities[0].hash).not.toBe('');
+      expect(entities[0].final_entity).toBeDefined();
+    });
+  },
+);

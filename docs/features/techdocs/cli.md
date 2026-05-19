@@ -149,6 +149,8 @@ Options:
                                   Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
   --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
                                   in case a default <docs-dir>/index.md is not provided. (default: false)
+  --disableExternalFonts          Disable external font downloads for all TechDocs sites. Useful for air-gapped environments
+                                  where Google fonts cannot be accessed. (default: false)
   --runAsDefaultUser              Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
   -v, --verbose                   Enable verbose output. (default: false)
   -h, --help                      display help for command
@@ -208,12 +210,7 @@ Options:
 
 #### Publishing from behind a proxy
 
-For users attempting to publish TechDocs content behind a proxy, the TechDocs CLI leverages `global-agent` to navigate the proxy to successfully connect to that location. To enable `global-agent`, the following variables need to be set prior to running the techdocs-cli command:
-
-```bash
-export GLOBAL_AGENT_HTTPS_PROXY=${HTTP_PROXY}
-export GLOBAL_AGENT_NO_PROXY=${NO_PROXY}
-```
+Set `NODE_USE_ENV_PROXY=1` along with `HTTP_PROXY`/`HTTPS_PROXY`/`NO_PROXY` to route TechDocs publishing through a proxy. See the [corporate proxy guide](../../tutorials/corporate-proxy.md) for details.
 
 ### Migrate content for case-insensitive access
 

@@ -212,7 +212,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-        entities: [
+        entities: expect.arrayContaining([
           {
             entity: {
               apiVersion: 'backstage.io/v1alpha1',
@@ -352,7 +352,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
             locationKey: 'github-multi-org-provider:my-id',
           },
-        ],
+        ]),
         type: 'full',
       });
     });
@@ -526,7 +526,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-        entities: [
+        entities: expect.arrayContaining([
           {
             entity: {
               apiVersion: 'backstage.io/v1alpha1',
@@ -666,7 +666,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
             locationKey: 'github-multi-org-provider:my-id',
           },
-        ],
+        ]),
         type: 'full',
       });
     });
@@ -804,7 +804,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       await entityProvider.read();
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-        entities: [
+        entities: expect.arrayContaining([
           {
             entity: {
               apiVersion: 'backstage.io/v1alpha1',
@@ -942,7 +942,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
             locationKey: 'github-multi-org-provider:my-id',
           },
-        ],
+        ]),
         type: 'full',
       });
     });

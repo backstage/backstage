@@ -43,26 +43,6 @@ export type MockWithApiFactory<TApi> = TApi & {
 };
 
 /**
- * Helper to attach mock API metadata to an instance.
- *
- * @internal
- */
-export function mockWithApiFactory<TApi, TImpl extends TApi = TApi>(
-  apiRef: ApiRef<TApi>,
-  implementation: TImpl,
-): TImpl & { [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}> } {
-  const marked = implementation as TImpl & {
-    [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
-  };
-  (marked as any)[mockApiFactorySymbol] = {
-    api: apiRef,
-    deps: {},
-    factory: () => implementation,
-  };
-  return marked;
-}
-
-/**
  * Attaches mock API factory metadata to an API instance, allowing it to be
  * passed directly to test utilities without needing to explicitly provide
  * the [apiRef, implementation] tuple.

@@ -1,0 +1,9 @@
+/* Duplicated in plugins/scaffolder/src/components/fields/scaffolderFieldOverrides.module.css
+   Keep in sync if changes are made. */
+
+/* Override the BUI Select trigger border-radius to match BUI TextField
+   for visual consistency in scaffolder forms. Only applies to Select
+   instances that explicitly use className={overrides.select}. */
+.select :global([class*='bui-SelectTrigger']) {
+  border-radius: var(--bui-radius-2);
+}

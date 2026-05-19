@@ -16,7 +16,9 @@
 
 import { RuleOptions } from './types';
 
-const SIDEBAR_WIDTH = '224px';
+const TECHDOCS_SIDEBAR_WIDTH = '16rem';
+const APP_SIDEBAR_WIDTH_PINNED = '224px';
+const APP_SIDEBAR_WIDTH_COLLAPSED = '72px';
 
 export default ({ theme, sidebar }: RuleOptions) => `
 
@@ -80,10 +82,10 @@ export default ({ theme, sidebar }: RuleOptions) => `
 .md-sidebar {
   bottom: 75px;
   position: fixed;
-  width: 16rem;
+  width: ${TECHDOCS_SIDEBAR_WIDTH};
 }
 .md-sidebar .md-sidebar__scrollwrap {
-  width: calc(16rem);
+  width: calc(${TECHDOCS_SIDEBAR_WIDTH});
   height: 100%
 }
 
@@ -97,13 +99,13 @@ export default ({ theme, sidebar }: RuleOptions) => `
 }
 
 .md-content {
-  max-width: calc(100% - 16rem * 2);
-  margin-left: 16rem;
+  max-width: calc(100% - ${TECHDOCS_SIDEBAR_WIDTH} * 2);
+  margin-left: ${TECHDOCS_SIDEBAR_WIDTH};
   margin-bottom: 50px;
 }
 
 .md-content > .md-sidebar {
-  left: 16rem;
+  left: ${TECHDOCS_SIDEBAR_WIDTH};
 }
 
 .md-footer {
@@ -120,7 +122,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
   background-color: unset;
 }
 .md-footer-nav__link, .md-footer__link {
-  width: 16rem;
+  width: ${TECHDOCS_SIDEBAR_WIDTH};
 }
 
 .md-dialog {
@@ -185,12 +187,12 @@ export default ({ theme, sidebar }: RuleOptions) => `
     height: 100%;
   }
   .md-sidebar--primary {
-    width: 16rem !important;
+    width: ${TECHDOCS_SIDEBAR_WIDTH} !important;
     z-index: 200;
     left: ${
       sidebar.isPinned
-        ? `calc(-16rem + ${SIDEBAR_WIDTH})`
-        : 'calc(-16rem + 72px)'
+        ? `calc(-${TECHDOCS_SIDEBAR_WIDTH} + var(--techdocs-sidebar-closed-offset-pinned, ${APP_SIDEBAR_WIDTH_PINNED}))`
+        : `calc(-${TECHDOCS_SIDEBAR_WIDTH} + var(--techdocs-sidebar-closed-offset-collapsed, ${APP_SIDEBAR_WIDTH_COLLAPSED}))`
     } !important;
   }
   .md-sidebar--secondary:not([hidden]) {
@@ -198,7 +200,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
   }
 
   [data-md-toggle=drawer]:checked~.md-container .md-sidebar--primary {
-    transform: translateX(16rem);
+    transform: translateX(var(--techdocs-sidebar-open-translate, ${TECHDOCS_SIDEBAR_WIDTH}));
   }
 
   .md-content {
@@ -228,8 +230,8 @@ export default ({ theme, sidebar }: RuleOptions) => `
 
 @media screen and (max-width: 600px) {
   .md-sidebar--primary {
-    left: -16rem !important;
-    width: 16rem;
+    left: -${TECHDOCS_SIDEBAR_WIDTH} !important;
+    width: ${TECHDOCS_SIDEBAR_WIDTH};
   }
 }
 

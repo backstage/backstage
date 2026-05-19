@@ -19,7 +19,7 @@ import { dirname, join as joinPath, relative } from 'node:path';
 import crypto from 'node:crypto';
 import { Lockfile } from '@backstage/cli-node';
 import { exists, rm, mkdirp } from 'fs-extra';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { CACHE_DIR, CACHE_FILE } from './constants';
 
 const version = '1';
@@ -77,7 +77,7 @@ export class PackageDocsCache {
         }
         map.set(pkg, parsed);
       } catch (e) {
-        console.error(`Skipping unparseable cache file ${file}: ${e}`);
+        console.error(`Skipping unparsable cache file ${file}: ${e}`);
       }
     }
     return new PackageDocsCache(lockfile, map, baseDirectory);

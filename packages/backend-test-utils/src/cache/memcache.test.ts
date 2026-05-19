@@ -16,7 +16,7 @@
 
 import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
 import { startMemcachedContainer } from './memcache';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 
 const itIfDocker = isDockerDisabledForTests() ? it.skip : it;
 

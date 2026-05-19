@@ -15,14 +15,15 @@
  */
 
 import { forwardRef, useRef } from 'react';
-import { useLink } from 'react-aria';
+import { mergeProps, useFocusRing, useLink } from 'react-aria';
 import type { LinkProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
+import { useResolvedHref } from '../../hooks/useResolvedHref';
 import { LinkDefinition } from './definition';
-import { InternalLinkProvider } from '../InternalLinkProvider';
+import { getNodeText } from '../../analytics/getNodeText';
 
 const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const { ownProps, restProps, dataAttributes } = useDefinition(
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     LinkDefinition,
     props,
   );
@@ -32,15 +33,31 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
 
   const { linkProps } = useLink(restProps, linkRef);
+  const { isFocusVisible, focusProps } = useFocusRing();
+  const resolvedHref = useResolvedHref(restProps.href);
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    linkProps.onClick?.(e);
+    const text =
+      restProps['aria-label'] ??
+      getNodeText(children) ??
+      String(restProps.href ?? '');
+    analytics.captureEvent('click', text, {
+      attributes: { to: String(restProps.href ?? '') },
+    });
+  };
 
   return (
     <a
-      {...linkProps}
+      {...mergeProps(linkProps, focusProps)}
       {...dataAttributes}
       {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      href={resolvedHref}
       ref={linkRef}
       title={title}
       className={classes.root}
+      data-focus-visible={isFocusVisible || undefined}
+      onClick={handleClick}
     >
       {children}
     </a>
@@ -49,13 +66,13 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
 
 LinkInternal.displayName = 'LinkInternal';
 
-/** @public */
+/**
+ * A styled anchor element that supports analytics event tracking on click.
+ *
+ * @public
+ */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  return (
-    <InternalLinkProvider href={props.href}>
-      <LinkInternal {...props} ref={ref} />
-    </InternalLinkProvider>
-  );
+  return <LinkInternal {...props} ref={ref} />;
 });
 
 Link.displayName = 'Link';

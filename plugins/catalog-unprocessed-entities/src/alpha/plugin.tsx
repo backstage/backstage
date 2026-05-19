@@ -20,7 +20,7 @@ import {
   fetchApiRef,
   ApiBlueprint,
   PageBlueprint,
-  NavItemBlueprint,
+  SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
 
 import {
@@ -29,6 +29,7 @@ import {
 } from '../api';
 import QueueIcon from '@material-ui/icons/Queue';
 import { rootRouteRef } from '../routes';
+import { Container } from '@backstage/ui';
 
 /** @alpha */
 export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
@@ -46,22 +47,35 @@ export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
 
 /** @alpha */
 export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
+  disabled: true,
   params: {
     path: '/catalog-unprocessed-entities',
     routeRef: rootRouteRef,
+    title: 'Unprocessed Entities',
+    icon: <QueueIcon fontSize="inherit" />,
     loader: () =>
       import('../components/UnprocessedEntities').then(m => (
-        <m.UnprocessedEntities />
+        <m.NfsUnprocessedEntities />
       )),
   },
 });
 
-/** @alpha */
-export const catalogUnprocessedEntitiesNavItem = NavItemBlueprint.make({
+/**
+ * DevTools content for catalog unprocessed entities.
+ *
+ * @alpha
+ */
+export const unprocessedEntitiesDevToolsContent = SubPageBlueprint.make({
+  attachTo: { id: 'page:devtools', input: 'pages' },
   params: {
+    path: 'unprocessed-entities',
     title: 'Unprocessed Entities',
-    routeRef: rootRouteRef,
-    icon: QueueIcon,
+    loader: () =>
+      import('../components/UnprocessedEntities').then(m => (
+        <Container>
+          <m.UnprocessedEntitiesContent />
+        </Container>
+      )),
   },
 });
 
@@ -69,7 +83,7 @@ export const catalogUnprocessedEntitiesNavItem = NavItemBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'catalog-unprocessed-entities',
   title: 'Unprocessed Entities',
-  icon: <QueueIcon />,
+  icon: <QueueIcon fontSize="inherit" />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
     root: rootRouteRef,
@@ -77,6 +91,6 @@ export default createFrontendPlugin({
   extensions: [
     catalogUnprocessedEntitiesApi,
     catalogUnprocessedEntitiesPage,
-    catalogUnprocessedEntitiesNavItem,
+    unprocessedEntitiesDevToolsContent,
   ],
 });

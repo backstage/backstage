@@ -16,25 +16,27 @@
 
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { IncrementalIngestionDatabaseManager } from './IncrementalIngestionDatabaseManager';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
 const migrationsDir = `${__dirname}/../../migrations`;
 
 jest.setTimeout(60_000);
 
-describe('IncrementalIngestionDatabaseManager', () => {
-  const databases = TestDatabases.create({
-    ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
-  });
+const databases = TestDatabases.create({
+  ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
+});
 
-  it.each(databases.eachSupportedId())(
-    'stores and retrieves marks, %p',
-    async databaseId => {
+describe.each(databases.eachSupportedId())(
+  'IncrementalIngestionDatabaseManager, %p',
+  databaseId => {
+    it('stores and retrieves marks', async () => {
       const knex = await databases.init(databaseId);
       await knex.migrate.latest({ directory: migrationsDir });
 
-      const manager = new IncrementalIngestionDatabaseManager({ client: knex });
+      const manager = new IncrementalIngestionDatabaseManager({
+        client: knex,
+      });
       const { ingestionId } = (await manager.createProviderIngestionRecord(
         'myProvider',
       ))!;
@@ -75,16 +77,15 @@ describe('IncrementalIngestionDatabaseManager', () => {
           sequence: 1,
         },
       ]);
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'computeRemoved correctly sums total count from count query, %p',
-    async databaseId => {
+    it('computeRemoved correctly sums total count from count query', async () => {
       const knex = await databases.init(databaseId);
       await knex.migrate.latest({ directory: migrationsDir });
 
-      const manager = new IncrementalIngestionDatabaseManager({ client: knex });
+      const manager = new IncrementalIngestionDatabaseManager({
+        client: knex,
+      });
       const { ingestionId } = (await manager.createProviderIngestionRecord(
         'testProvider',
       ))!;
@@ -119,6 +120,125 @@ describe('IncrementalIngestionDatabaseManager', () => {
       // On PostgreSQL, count queries return strings, so total should be 3 not NaN or string concatenation
       expect(result.total).toBe(3);
       expect(typeof result.total).toBe('number');
-    },
-  );
-});
+    });
+
+    it('createMarkEntities handles existing and new refs correctly', async () => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      const manager = new IncrementalIngestionDatabaseManager({ client: knex });
+      const { ingestionId } = (await manager.createProviderIngestionRecord(
+        'testProvider',
+      ))!;
+
+      const markId1 = uuid();
+      await manager.createMark({
+        record: {
+          id: markId1,
+          ingestion_id: ingestionId,
+          sequence: 1,
+          cursor: { data: 1 },
+        },
+      });
+
+      const makeEntity = (name: string): DeferredEntity => ({
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name },
+        },
+      });
+
+      // First batch: create 3 entities
+      await manager.createMarkEntities(markId1, [
+        makeEntity('a'),
+        makeEntity('b'),
+        makeEntity('c'),
+      ]);
+
+      const rows1 = await knex('ingestion_mark_entities').select('ref');
+      expect(rows1).toHaveLength(3);
+
+      // Second batch with overlap: b and c already exist, d is new.
+      // Existing refs should be updated to the new mark, new refs inserted.
+      const markId2 = uuid();
+      await manager.createMark({
+        record: {
+          id: markId2,
+          ingestion_id: ingestionId,
+          sequence: 2,
+          cursor: { data: 2 },
+        },
+      });
+
+      await manager.createMarkEntities(markId2, [
+        makeEntity('b'),
+        makeEntity('c'),
+        makeEntity('d'),
+      ]);
+
+      const rows2 = await knex('ingestion_mark_entities')
+        .select('ref', 'ingestion_mark_id')
+        .orderBy('ref');
+      expect(rows2).toHaveLength(4);
+
+      // a stays on markId1, b and c moved to markId2, d is new on markId2
+      expect(
+        rows2.find(r => r.ref === 'component:default/a')?.ingestion_mark_id,
+      ).toBe(markId1);
+      expect(
+        rows2.find(r => r.ref === 'component:default/b')?.ingestion_mark_id,
+      ).toBe(markId2);
+      expect(
+        rows2.find(r => r.ref === 'component:default/c')?.ingestion_mark_id,
+      ).toBe(markId2);
+      expect(
+        rows2.find(r => r.ref === 'component:default/d')?.ingestion_mark_id,
+      ).toBe(markId2);
+    });
+
+    it('deleteEntityRecordsByRef removes matching refs', async () => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      const manager = new IncrementalIngestionDatabaseManager({ client: knex });
+      const { ingestionId } = (await manager.createProviderIngestionRecord(
+        'testProvider',
+      ))!;
+
+      const markId = uuid();
+      await manager.createMark({
+        record: {
+          id: markId,
+          ingestion_id: ingestionId,
+          sequence: 1,
+          cursor: { data: 1 },
+        },
+      });
+
+      const makeEntity = (name: string): DeferredEntity => ({
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name },
+        },
+      });
+
+      await manager.createMarkEntities(markId, [
+        makeEntity('x'),
+        makeEntity('y'),
+        makeEntity('z'),
+      ]);
+
+      // Delete two of the three
+      await manager.deleteEntityRecordsByRef([
+        { entityRef: 'component:default/x' },
+        { entityRef: 'component:default/z' },
+      ]);
+
+      const remaining = await knex('ingestion_mark_entities').select('ref');
+      expect(remaining).toHaveLength(1);
+      expect(remaining[0].ref).toBe('component:default/y');
+    });
+  },
+);

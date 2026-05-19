@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name                  | Location     | Severity |
-| :-------------------- | :----------- | :------- |
-| @types/command-exists | packages/create-app/package.json | error    |
+| Name                  | Location          | Severity |
+| :-------------------- | :---------------- | :------- |
+| @types/command-exists | package.json:58:6 | error    |
 

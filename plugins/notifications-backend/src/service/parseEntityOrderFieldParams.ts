@@ -23,10 +23,7 @@ import { EntityOrder } from '../database';
  * Takes a single unknown parameter and makes sure that it's a single string or
  * an array of strings, and returns as an array.
  */
-export function parseStringsParam(
-  param: unknown,
-  ctx: string,
-): string[] | undefined {
+function parseStringsParam(param: unknown, ctx: string): string[] | undefined {
   if (param === undefined) {
     return undefined;
   }
@@ -57,6 +54,6 @@ export function parseEntityOrderFieldParams(
   });
 }
 
-export function isOrder(order: string): order is 'asc' | 'desc' {
+function isOrder(order: string): order is 'asc' | 'desc' {
   return ['asc', 'desc'].includes(order);
 }

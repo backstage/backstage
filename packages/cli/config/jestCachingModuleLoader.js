@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-// 'jest-runtime' is included with jest and should be kept in sync with the installed jest version
-// eslint-disable-next-line @backstage/no-undeclared-imports
-const { default: JestRuntime } = require('jest-runtime');
-
-module.exports = class CachingJestRuntime extends JestRuntime {
-  constructor(config, ...restArgs) {
-    super(config, ...restArgs);
-    this.allowLoadAsEsm = config.extensionsToTreatAsEsm.includes('.mts');
+try {
+  module.exports = require('@backstage/cli-module-test-jest/config/jestCachingModuleLoader');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    throw new Error(
+      '@backstage/cli-module-test-jest is required to use the jest caching module loader. ' +
+        'Please install it as a dependency.',
+    );
   }
-
-  // Unfortunately we need to use this unstable API to make sure that .js files
-  // are only loaded as modules where ESM is supported, i.e. Node.js packages.
-  unstable_shouldLoadAsEsm(path, ...restArgs) {
-    if (!this.allowLoadAsEsm) {
-      return false;
-    }
-    return super.unstable_shouldLoadAsEsm(path, ...restArgs);
-  }
-};
+  throw e;
+}

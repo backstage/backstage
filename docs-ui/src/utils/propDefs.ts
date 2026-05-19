@@ -44,6 +44,7 @@ export type PropDef = {
   required?: boolean;
   responsive?: boolean;
   description?: ReactNode;
+  deprecated?: boolean;
 };
 
 export { breakpoints };

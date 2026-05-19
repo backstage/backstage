@@ -37,6 +37,7 @@ export type TablePaginationOwnProps = {
     offset?: number;
     totalCount?: number;
   }) => string;
+  showPaginationLabel?: boolean;
 };
 
 /** @public */

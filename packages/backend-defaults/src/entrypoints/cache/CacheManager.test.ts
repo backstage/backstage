@@ -54,14 +54,16 @@ jest.mock('@keyv/memcache', () => {
   };
 });
 
-describe('CacheManager integration', () => {
-  const caches = TestCaches.create();
+jest.setTimeout(60_000);
 
-  afterEach(jest.clearAllMocks);
+const caches = TestCaches.create();
 
-  it.each(caches.eachSupportedId())(
-    'only creates one underlying connection per plugin, %p',
-    async cacheId => {
+describe.each(caches.eachSupportedId())(
+  'CacheManager integration, %p',
+  cacheId => {
+    afterEach(jest.clearAllMocks);
+
+    it('only creates one underlying connection per plugin', async () => {
       const { store, connection } = await caches.init(cacheId);
 
       const manager = CacheManager.fromConfig(
@@ -85,12 +87,9 @@ describe('CacheManager integration', () => {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(KeyvValkey).toHaveBeenCalledTimes(3);
       }
-    },
-  );
+    });
 
-  it.each(caches.eachSupportedId())(
-    'interacts correctly with store, %p',
-    async cacheId => {
+    it('interacts correctly with store', async () => {
       const { store, connection } = await caches.init(cacheId);
 
       const manager = CacheManager.fromConfig(
@@ -114,12 +113,9 @@ describe('CacheManager integration', () => {
       await expect(plugin1.get('a')).resolves.toBe('plugin1');
       await expect(plugin2a.get('a')).resolves.toBe('plugin2b');
       await expect(plugin2b.get('a')).resolves.toBe('plugin2b');
-    },
-  );
+    });
 
-  it.each(caches.eachSupportedId())(
-    'supports both milliseconds and human durations throughout, %p',
-    async cacheId => {
+    it('supports both milliseconds and human durations throughout', async () => {
       const { store, connection } = await caches.init(cacheId);
 
       for (const defaultTtl of [200, { milliseconds: 200 }]) {
@@ -175,39 +171,39 @@ describe('CacheManager integration', () => {
         await expect(defaultClient.get('e')).resolves.toBeUndefined();
         await expect(defaultClient.get('f')).resolves.toBeUndefined();
       }
-    },
-  );
+    });
+  },
+);
 
-  it('rejects invalid defaultTtl', () => {
-    expect(() =>
-      CacheManager.fromConfig(
-        mockServices.rootConfig({
-          data: {
-            backend: {
-              cache: {
-                store: 'memory',
-              },
+it('rejects invalid defaultTtl', () => {
+  expect(() =>
+    CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'memory',
             },
           },
-        }),
-      ),
-    ).not.toThrow();
+        },
+      }),
+    ),
+  ).not.toThrow();
 
-    expect(() =>
-      CacheManager.fromConfig(
-        mockServices.rootConfig({
-          data: {
-            backend: {
-              cache: {
-                store: 'memory',
-                defaultTtl: 'hello',
-              },
+  expect(() =>
+    CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'memory',
+              defaultTtl: 'hello',
             },
           },
-        }),
-      ),
-    ).toThrow(/Invalid duration 'hello' in config/);
-  });
+        },
+      }),
+    ),
+  ).toThrow(/Invalid duration 'hello' in config/);
 });
 
 describe('CacheManager store options', () => {

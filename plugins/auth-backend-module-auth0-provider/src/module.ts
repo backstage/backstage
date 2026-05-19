@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
 import {
   authProvidersExtensionPoint,
   commonSignInResolvers,
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
-import { auth0Authenticator } from './authenticator';
+import { createAuth0Authenticator } from './authenticator';
 
 /** @public */
 export const authModuleAuth0Provider = createBackendModule({
@@ -30,12 +33,13 @@ export const authModuleAuth0Provider = createBackendModule({
     reg.registerInit({
       deps: {
         providers: authProvidersExtensionPoint,
+        cache: coreServices.cache,
       },
-      async init({ providers }) {
+      async init({ providers, cache }) {
         providers.registerProvider({
           providerId: 'auth0',
           factory: createOAuthProviderFactory({
-            authenticator: auth0Authenticator,
+            authenticator: createAuth0Authenticator({ cache }),
             signInResolverFactories: {
               ...commonSignInResolvers,
             },

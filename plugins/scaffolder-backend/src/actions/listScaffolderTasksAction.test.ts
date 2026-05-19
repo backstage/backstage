@@ -63,7 +63,12 @@ describe('createListScaffolderTasksAction', () => {
       totalTasks: mockTasks.totalTasks ?? 0,
     });
     expect(mockScaffolderService.listTasks).toHaveBeenCalledWith(
-      { createdBy: undefined, limit: undefined, offset: undefined },
+      {
+        createdBy: undefined,
+        limit: undefined,
+        offset: undefined,
+        status: undefined,
+      },
       expect.objectContaining({ credentials: expect.anything() }),
     );
   });
@@ -106,7 +111,7 @@ describe('createListScaffolderTasksAction', () => {
     });
 
     expect(mockScaffolderService.listTasks).toHaveBeenCalledWith(
-      { createdBy: undefined, limit: 2, offset: 1 },
+      { createdBy: undefined, limit: 2, offset: 1, status: undefined },
       expect.objectContaining({ credentials: expect.anything() }),
     );
 
@@ -188,9 +193,100 @@ describe('createListScaffolderTasksAction', () => {
         createdBy: 'user:default/alice',
         limit: undefined,
         offset: undefined,
+        status: undefined,
       },
       expect.objectContaining({ credentials: expect.anything() }),
     );
+  });
+
+  it('should filter tasks by a single status when status is provided', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockAuth = mockServices.auth.mock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
+    const completedTasks = generateMockTasks().tasks.filter(
+      t => t.status === 'completed',
+    );
+
+    mockScaffolderService.listTasks.mockResolvedValue({
+      items: completedTasks as ScaffolderTask[],
+      totalItems: completedTasks.length,
+    });
+
+    createListScaffolderTasksAction({
+      actionsRegistry: mockActionsRegistry,
+      auth: mockAuth,
+      scaffolderService: mockScaffolderService,
+    });
+
+    const result = await mockActionsRegistry.invoke({
+      id: 'test:list-scaffolder-tasks',
+      input: { status: 'completed' },
+    });
+
+    expect(mockScaffolderService.listTasks).toHaveBeenCalledWith(
+      {
+        createdBy: undefined,
+        limit: undefined,
+        offset: undefined,
+        status: 'completed',
+      },
+      expect.objectContaining({ credentials: expect.anything() }),
+    );
+    expect(result.output).toEqual({
+      tasks: completedTasks.map(task => ({
+        id: task.id,
+        spec: task.spec,
+        status: task.status,
+        createdAt: task.createdAt,
+        lastHeartbeatAt: task.lastHeartbeatAt,
+      })),
+      totalTasks: completedTasks.length,
+    });
+  });
+
+  it('should filter tasks by multiple statuses when an array is provided', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockAuth = mockServices.auth.mock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
+    const matchingTasks = generateMockTasks().tasks.filter(
+      t => t.status === 'completed' || t.status === 'failed',
+    );
+
+    mockScaffolderService.listTasks.mockResolvedValue({
+      items: matchingTasks as ScaffolderTask[],
+      totalItems: matchingTasks.length,
+    });
+
+    createListScaffolderTasksAction({
+      actionsRegistry: mockActionsRegistry,
+      auth: mockAuth,
+      scaffolderService: mockScaffolderService,
+    });
+
+    const result = await mockActionsRegistry.invoke({
+      id: 'test:list-scaffolder-tasks',
+      input: { status: ['completed', 'failed'] },
+    });
+
+    expect(mockScaffolderService.listTasks).toHaveBeenCalledWith(
+      {
+        createdBy: undefined,
+        limit: undefined,
+        offset: undefined,
+        status: ['completed', 'failed'],
+      },
+      expect.objectContaining({ credentials: expect.anything() }),
+    );
+    expect(result.output).toEqual({
+      tasks: matchingTasks.map(task => ({
+        id: task.id,
+        spec: task.spec,
+        status: task.status,
+        createdAt: task.createdAt,
+        lastHeartbeatAt: task.lastHeartbeatAt,
+      })),
+      totalTasks: matchingTasks.length,
+    });
   });
 
   it('should throw NotAllowedError when owned is true without user identity', async () => {

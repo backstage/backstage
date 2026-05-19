@@ -32,6 +32,7 @@ import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -40,7 +41,7 @@ import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UiSchema } from '@rjsf/utils';
 import { WidgetProps } from '@rjsf/utils';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 // @alpha (undocumented)
 export type BackstageOverrides = Overrides & {
@@ -125,10 +126,12 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
 
 // @alpha
 export const Form: (
-  props: PropsWithChildren<ScaffolderRJSFFormProps>,
+  props: PropsWithChildren<
+    ScaffolderRJSFFormProps & Pick<FormProps, 'EXPERIMENTAL_theme'>
+  >,
 ) => JSX_2.Element;
 
-// @alpha
+// @public
 export const FormDecoratorBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-form-decorator';
   params: {
@@ -200,7 +203,9 @@ export type FormFieldExtensionData<
 };
 
 // @alpha (undocumented)
-export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi>;
+export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi> & {
+  readonly $$type: '@backstage/ApiRef';
+};
 
 // @alpha (undocumented)
 export type FormValidation = {
@@ -255,7 +260,7 @@ export interface ScaffolderFieldProps {
   required?: boolean;
 }
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type ScaffolderFormDecorator<TInput extends JsonObject = JsonObject> = {
   readonly $$type: '@backstage/scaffolder/FormDecorator';
   readonly id: string;
@@ -305,16 +310,11 @@ export type ScaffolderReactComponentsNameToClassKey = {
 // @alpha (undocumented)
 export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const scaffolderReactTranslationRef: TranslationRef<
   'scaffolder-react',
   {
     readonly 'workflow.noDescription': 'No description';
-    readonly 'stepper.backButtonText': 'Back';
-    readonly 'stepper.nextButtonText': 'Next';
-    readonly 'stepper.createButtonText': 'Create';
-    readonly 'stepper.reviewButtonText': 'Review';
-    readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
     readonly 'passwordWidget.content': 'This widget is insecure. Please use [`ui:field: Secret`](https://backstage.io/docs/features/software-templates/writing-templates/#using-secrets) instead of `ui:widget: password`';
     readonly 'scaffolderPageContextMenu.createLabel': 'Create';
     readonly 'scaffolderPageContextMenu.moreLabel': 'more';
@@ -322,6 +322,11 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'scaffolderPageContextMenu.actionsLabel': 'Installed Actions';
     readonly 'scaffolderPageContextMenu.tasksLabel': 'Task List';
     readonly 'scaffolderPageContextMenu.templatingExtensionsLabel': 'Templating Extensions';
+    readonly 'stepper.backButtonText': 'Back';
+    readonly 'stepper.nextButtonText': 'Next';
+    readonly 'stepper.createButtonText': 'Create';
+    readonly 'stepper.reviewButtonText': 'Review';
+    readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
     readonly 'templateCategoryPicker.title': 'Categories';
     readonly 'templateCard.noDescription': 'No description';
     readonly 'templateCard.chooseButtonText': 'Choose';
@@ -329,6 +334,9 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'templateOutputs.title': 'Text Output';
   }
 >;
+
+// @alpha (undocumented)
+export type ScaffolderTheme = 'mui' | 'bui';
 
 // @alpha
 export const SecretWidget: (
@@ -382,7 +390,27 @@ export interface TaskStepsProps {
 }
 
 // @alpha
-export const TemplateCard: (props: TemplateCardProps) => JSX_2.Element;
+export const TemplateCard: {
+  (props: TemplateCardComponentProps): JSX.Element | null;
+  ref: SwappableComponentRef<
+    TemplateCardComponentProps,
+    TemplateCardComponentProps
+  >;
+};
+
+// @alpha
+export interface TemplateCardComponentProps {
+  // (undocumented)
+  additionalLinks?: {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
+  // (undocumented)
+  onSelected?: () => void;
+  // (undocumented)
+  template: TemplateEntityV1beta3;
+}
 
 // @alpha
 export interface TemplateCardProps {
@@ -459,6 +487,9 @@ export const useFilteredSchemaProperties: (
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
+
+// @alpha (undocumented)
+export const useScaffolderTheme: () => ScaffolderTheme;
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {

@@ -10,31 +10,45 @@ export const alertPropDefs: Record<string, PropDef> = {
     values: ['info', 'success', 'warning', 'danger'],
     responsive: true,
     default: 'info',
+    description:
+      'Visual status of the alert, which determines color and default icon.',
   },
   icon: {
     type: 'enum',
     values: ['boolean', 'React.ReactElement'],
     responsive: false,
+    description:
+      'Set to true to show the default status icon, or pass a custom icon element. Set to false to hide the icon.',
+  },
+  isPending: {
+    type: 'boolean',
+    default: 'false',
+    description:
+      'Replaces the icon with a spinner to indicate a pending operation.',
   },
   loading: {
-    type: 'enum',
-    values: ['boolean'],
-    responsive: false,
+    type: 'boolean',
+    default: 'false',
+    description: 'Deprecated. Use `isPending` instead.',
   },
   title: {
     type: 'enum',
     values: ['React.ReactNode'],
     responsive: false,
+    description: 'Primary message displayed in the alert.',
   },
   description: {
     type: 'enum',
     values: ['React.ReactNode'],
     responsive: false,
+    description: 'Additional detail shown below the title.',
   },
   customActions: {
     type: 'enum',
     values: ['React.ReactNode'],
     responsive: false,
+    description:
+      'Custom action buttons displayed on the right side of the alert.',
   },
   m: {
     type: 'enum',

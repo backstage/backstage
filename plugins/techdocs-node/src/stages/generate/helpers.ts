@@ -15,9 +15,8 @@
  */
 
 import { isChildPath, LoggerService } from '@backstage/backend-plugin-api';
-import { NotAllowedError } from '@backstage/errors';
 import { Entity } from '@backstage/catalog-model';
-import { assertError, ForwardedError } from '@backstage/errors';
+import { ForwardedError, NotAllowedError, toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio, spawn } from 'node:child_process';
 import fs from 'fs-extra';
@@ -309,7 +308,6 @@ export const ALLOWED_MKDOCS_KEYS = new Set([
   'validation',
   // Deprecated
   'google_analytics',
-  'INHERIT',
 ]);
 
 /**
@@ -398,8 +396,18 @@ export const patchIndexPreBuild = async ({
     path.join(inputDir, 'readme.md'),
   ];
 
+  if (!isChildPath(inputDir, docsPath)) {
+    throw new NotAllowedError(
+      `Target path ${docsPath} is not allowed to refer to a location outside ${inputDir}`,
+    );
+  }
   await fs.ensureDir(docsPath);
   for (const filePath of fallbacks) {
+    if (!isChildPath(inputDir, filePath)) {
+      throw new NotAllowedError(
+        `Source path ${filePath} is not allowed to refer to a location outside ${inputDir}`,
+      );
+    }
     try {
       await fs.copyFile(filePath, indexMdPath);
       return;
@@ -443,8 +451,9 @@ export const createOrUpdateMetadata = async (
   try {
     json = await fs.readJson(techdocsMetadataPath);
   } catch (err) {
-    assertError(err);
-    const message = `Invalid JSON at ${techdocsMetadataPath} with error ${err.message}`;
+    const message = `Invalid JSON at ${techdocsMetadataPath} with error ${
+      toError(err).message
+    }`;
     logger.error(message);
     throw new Error(message);
   }
@@ -458,9 +467,10 @@ export const createOrUpdateMetadata = async (
       file.replace(`${techdocsMetadataDir}${path.sep}`, ''),
     );
   } catch (err) {
-    assertError(err);
     json.files = [];
-    logger.warn(`Unable to add files list to metadata: ${err.message}`);
+    logger.warn(
+      `Unable to add files list to metadata: ${toError(err).message}`,
+    );
   }
 
   await fs.writeJson(techdocsMetadataPath, json);

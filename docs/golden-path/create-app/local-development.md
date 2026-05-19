@@ -1,6 +1,7 @@
 ---
 id: local-development
 title: 002 - Local development
+description: How to run and develop your Backstage app locally
 ---
 
 Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn start` command. The `yarn start` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.

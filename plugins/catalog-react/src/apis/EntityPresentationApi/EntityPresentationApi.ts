@@ -25,6 +25,21 @@ import { Observable } from '@backstage/types';
 /**
  * An API that handles how to represent entities in the interface.
  *
+ * @remarks
+ *
+ * There are several ways to consume this API depending on context:
+ *
+ * - In React components, use the {@link useEntityPresentation} hook to get a
+ *   reactive presentation snapshot that updates over time.
+ *
+ * - For simple inline rendering, use the {@link EntityDisplayName} component
+ *   which wraps the hook and renders a styled entity name with optional icon
+ *   and tooltip.
+ *
+ * - In non-React contexts such as sort comparators or data mappers, use the
+ *   {@link entityPresentationSnapshot} helper for synchronous access, or
+ *   the API directly via `forEntity().promise` in async loaders.
+ *
  * @public
  */
 export const entityPresentationApiRef: ApiRef<EntityPresentationApi> =
@@ -120,8 +135,20 @@ export interface EntityRefPresentation {
  *
  * @remarks
  *
- * Most consumers will want to use the {@link useEntityPresentation} hook
- * instead of this interface directly.
+ * Most consumers will not need to interact with this interface directly.
+ * Instead, use one of the following:
+ *
+ * - {@link useEntityPresentation} — React hook for reactive presentation data.
+ *
+ * - {@link EntityDisplayName} — React component that renders an entity name
+ *   with optional icon and tooltip.
+ *
+ * For non-React contexts, use the {@link entityPresentationSnapshot} helper
+ * for synchronous access, or the API directly via `forEntity().promise`
+ * for async contexts.
+ *
+ * Implement this interface to customize how entities are displayed throughout
+ * the Backstage interface.
  *
  * @public
  */

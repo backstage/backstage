@@ -144,14 +144,13 @@ class Tracker {
   }
 }
 
-describePerformanceTest('stitchingPerformance', () => {
-  const databases = TestDatabases.create({
-    ids: [/* 'MYSQL_8', */ 'POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
-  });
+const databases = TestDatabases.create({
+  ids: [/* 'MYSQL_8', */ 'POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
+});
 
-  it.each(databases.eachSupportedId())(
-    'runs stitching in immediate mode, %p',
-    async databaseId => {
+describePerformanceTest('stitchingPerformance', () => {
+  describe.each(databases.eachSupportedId())('%p', databaseId => {
+    it('runs stitching in immediate mode', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -199,12 +198,9 @@ describePerformanceTest('stitchingPerformance', () => {
       await expect(tracker.completion()).resolves.toBeUndefined();
       await backend.stop();
       await knex.destroy();
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'runs stitching in deferred mode, %p',
-    async databaseId => {
+    it('runs stitching in deferred mode', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -252,6 +248,6 @@ describePerformanceTest('stitchingPerformance', () => {
       await expect(tracker.completion()).resolves.toBeUndefined();
       await backend.stop();
       await knex.destroy();
-    },
-  );
+    });
+  });
 });

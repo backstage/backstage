@@ -183,31 +183,12 @@
     font-weight: var(--bui-font-weight-regular);
   }
 
-  .bui-PluginHeaderToolbarWrapper {
-    padding: 0;
-    height: 32px;
-    border: none;
-    background: none;
-  }
-
-  .bui-PluginHeaderTabsWrapper {
-    margin: 0;
-    padding: 0;
-    margin-left: -8px;
-    border: none;
-    background: none;
-  }
-
   .bui-Input {
     border-radius: var(--bui-radius-3);
   }
 
   .bui-Tag {
     border-radius: var(--bui-radius-full);
-  }
-
-  .bui-Container {
-    padding-inline: 0;
   }
 }
 
@@ -228,14 +209,6 @@
   --bui-border-success: #53db83;
 
   --bui-ring: rgba(0, 0, 0, 0.2);
-
-  .bui-HeaderToolbarWrapper {
-    border: 1px solid var(--bui-border-2);
-  }
-
-  .bui-HeaderTabsWrapper {
-    border: 1px solid var(--bui-border-2);
-  }
 }
 
 [data-theme-mode='dark'][data-theme-name='spotify'] {

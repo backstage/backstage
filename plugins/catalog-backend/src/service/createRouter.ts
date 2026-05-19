@@ -33,7 +33,7 @@ import { InputError, serializeError } from '@backstage/errors';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
@@ -79,7 +79,6 @@ export interface RouterOptions {
   refreshService?: RefreshService;
   logger: LoggerService;
   config: Config;
-  permissionIntegrationRouter?: express.Router;
   auth: AuthService;
   httpAuth: HttpAuthService;
   permissionsService: PermissionsService;
@@ -108,7 +107,6 @@ export async function createRouter(
     refreshService,
     config,
     logger,
-    permissionIntegrationRouter,
     permissionsService,
     auth,
     httpAuth,
@@ -154,10 +152,6 @@ export async function createRouter(
         throw err;
       }
     });
-  }
-
-  if (permissionIntegrationRouter) {
-    router.use(permissionIntegrationRouter);
   }
 
   if (entitiesCatalog) {
@@ -606,6 +600,7 @@ export async function createRouter(
       .post('/locations', async (req, res) => {
         const location = await validateRequestBody(req, locationInput);
         const dryRun = yn(req.query.dryRun, { default: false });
+        const onConflict = req.query.onConflict;
 
         const auditorEvent = await auditor.createEvent({
           eventId: 'location-mutate',
@@ -629,6 +624,7 @@ export async function createRouter(
             location,
             dryRun,
             {
+              onConflict,
               credentials: await httpAuth.credentials(req),
             },
           );
@@ -748,6 +744,36 @@ export async function createRouter(
           await auditorEvent?.fail({
             error: err,
           });
+          throw err;
+        }
+      })
+      .put('/locations/:id', async (req, res) => {
+        const { id } = req.params;
+        const location = await validateRequestBody(req, locationInput);
+
+        const auditorEvent = await auditor.createEvent({
+          eventId: 'location-mutate',
+          severityLevel: 'medium',
+          request: req,
+          meta: {
+            actionType: 'update',
+            id,
+            location,
+          },
+        });
+
+        disallowReadonlyMode(readonlyEnabled);
+
+        try {
+          const output = await locationService.updateLocation(id, location, {
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success({ meta: { location: output } });
+
+          res.status(200).json(output);
+        } catch (err) {
+          await auditorEvent?.fail({ error: err });
           throw err;
         }
       })

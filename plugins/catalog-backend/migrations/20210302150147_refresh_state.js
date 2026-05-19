@@ -175,33 +175,10 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  await knex.schema.alterTable('refresh_state_references', table => {
-    table.dropIndex([], 'refresh_state_references_source_key_idx');
-    table.dropIndex([], 'refresh_state_references_source_entity_ref_idx');
-    table.dropIndex([], 'refresh_state_references_target_entity_ref_idx');
-  });
-  await knex.schema.alterTable('refresh_state', table => {
-    table.dropUnique([], 'refresh_state_entity_ref_uniq');
-    table.dropIndex([], 'refresh_state_entity_id_idx');
-    table.dropIndex([], 'refresh_state_entity_ref_idx');
-    table.dropIndex([], 'refresh_state_next_update_at_idx');
-  });
-  await knex.schema.alterTable('final_entities', table => {
-    table.dropIndex([], 'final_entities_entity_id_idx');
-  });
-  await knex.schema.alterTable('relations', table => {
-    table.index('source_entity_ref', 'relations_source_entity_ref_idx');
-    table.index('originating_entity_id', 'relations_source_entity_id_idx');
-  });
-  await knex.schema.alterTable('search', table => {
-    table.dropIndex([], 'search_entity_id_idx');
-    table.dropIndex([], 'search_key_idx');
-    table.dropIndex([], 'search_value_idx');
-  });
-
+  // Drop tables that have FK constraints referencing refresh_state first.
+  await knex.schema.dropTable('refresh_state_references');
   await knex.schema.dropTable('search');
   await knex.schema.dropTable('final_entities');
   await knex.schema.dropTable('relations');
-  await knex.schema.dropTable('references');
   await knex.schema.dropTable('refresh_state');
 };

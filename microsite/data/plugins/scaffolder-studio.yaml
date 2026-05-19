@@ -1,0 +1,11 @@
+---
+title: Scaffolder Studio
+author: Miklos Kiss
+authorUrl: https://github.com/kissmikijr
+category: Scaffolder
+description: Visually create, edit, and dry-run Backstage Software Templates in a dedicated user space, with reusable Prefabs and a publishing workflow.
+documentation: https://github.com/kissmikijr/scaffolder-studio/blob/main/plugins/scaffolder-studio/README.md
+iconUrl: /img/scaffolder-studio.svg
+npmPackageName: '@kissmiklosjr/plugin-scaffolder-studio'
+addedDate: '2026-04-28'
+status: active

@@ -124,6 +124,7 @@ describe('CatalogImportClient', () => {
           id: 'id-0',
           type: 'url',
           target: 'http://example.com/folder/catalog-info.yaml',
+          entityRef: 'location:default/generated-id-0',
         },
         entities: [
           {
@@ -172,6 +173,7 @@ describe('CatalogImportClient', () => {
           type: 'url',
           target:
             'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+          entityRef: 'location:default/generated-id-0',
         },
         entities: [
           {
@@ -221,6 +223,7 @@ describe('CatalogImportClient', () => {
           id: 'id-0',
           type: 'url',
           target: 'http://example.com/folder/catalog-info.yaml?branch=test',
+          entityRef: 'location:default/generated-id-0',
         },
         entities: [
           {

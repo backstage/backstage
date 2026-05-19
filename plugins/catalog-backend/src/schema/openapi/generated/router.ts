@@ -33,6 +33,14 @@ export const spec = {
     },
     contact: {},
   },
+  tags: [
+    {
+      name: 'Entity',
+    },
+    {
+      name: 'Locations',
+    },
+  ],
   servers: [
     {
       url: '/',
@@ -521,8 +529,13 @@ export const spec = {
           id: {
             type: 'string',
           },
+          entityRef: {
+            type: 'string',
+            description:
+              'The entity ref of the corresponding Location kind entity, e.g. location:default/generated-<sha1hex>.',
+          },
         },
-        required: ['target', 'type', 'id'],
+        required: ['target', 'type', 'id', 'entityRef'],
         description: 'Entity location for a specific entity.',
         additionalProperties: false,
       },
@@ -1490,6 +1503,18 @@ export const spec = {
               type: 'string',
             },
           },
+          {
+            in: 'query',
+            name: 'onConflict',
+            required: false,
+            allowReserved: true,
+            schema: {
+              type: 'string',
+              enum: ['refresh', 'reject'],
+            },
+            description:
+              "Behavior when the location already exists. 'reject' (default) returns a 409 error, 'refresh' triggers a refresh of the existing location entity and returns 201.",
+          },
         ],
         requestBody: {
           required: true,
@@ -1602,6 +1627,53 @@ export const spec = {
         operationId: 'GetLocation',
         tags: ['Locations'],
         description: 'Get a location by id.',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Location',
+                },
+              },
+            },
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: {
+              type: 'string',
+            },
+          },
+        ],
+      },
+      put: {
+        operationId: 'UpdateLocation',
+        tags: ['Locations'],
+        description:
+          'Update the type and target of an existing location by id.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/LocationInput',
+              },
+            },
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',

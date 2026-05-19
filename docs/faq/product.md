@@ -16,7 +16,7 @@ brand.
 No, but it can be! Backstage is designed to be a developer portal for all your
 infrastructure tooling, services, and documentation. So, it's not a monitoring
 platform — but that doesn't mean you can't integrate a monitoring tool into
-Backstage by writing [a plugin](#what-is-a-plugin-in-backstage).
+Backstage by writing [a plugin](technical.md#what-is-a-plugin-in-backstage).
 
 ### How is Backstage licensed?
 

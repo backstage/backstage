@@ -17,7 +17,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { isCimdUrl, validateCimdUrl, fetchCimdMetadata } from './CimdClient';
+import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 import * as dns from 'node:dns/promises';
 
 jest.mock('dns/promises');
@@ -43,65 +43,6 @@ describe('CimdClient', () => {
   afterEach(() => {
     (process.env as Record<string, string | undefined>).NODE_ENV =
       originalNodeEnv;
-  });
-
-  describe('isCimdUrl', () => {
-    it('should return true for valid CIMD URLs', () => {
-      expect(isCimdUrl('https://example.com/oauth-metadata.json')).toBe(true);
-      expect(isCimdUrl('https://example.com/path/to/metadata')).toBe(true);
-      expect(
-        isCimdUrl('https://sub.example.com/.well-known/oauth-client'),
-      ).toBe(true);
-    });
-
-    it('should return false for URLs without path', () => {
-      expect(isCimdUrl('https://example.com')).toBe(false);
-      expect(isCimdUrl('https://example.com/')).toBe(false);
-    });
-
-    it('should return false for non-HTTPS URLs on public hosts', () => {
-      expect(isCimdUrl('http://example.com/metadata')).toBe(false);
-    });
-
-    it('should return true for HTTP localhost URLs (development)', () => {
-      expect(
-        isCimdUrl(
-          'http://localhost:7007/api/auth/.well-known/oauth-client/cli',
-        ),
-      ).toBe(true);
-      expect(
-        isCimdUrl(
-          'http://127.0.0.1:7007/api/auth/.well-known/oauth-client/cli',
-        ),
-      ).toBe(true);
-      expect(isCimdUrl('http://localhost/path')).toBe(true);
-    });
-
-    it('should return false for HTTP localhost URLs in production', () => {
-      (process.env as Record<string, string | undefined>).NODE_ENV =
-        'production';
-      expect(isCimdUrl('http://localhost:7007/path')).toBe(false);
-      expect(isCimdUrl('http://127.0.0.1:7007/path')).toBe(false);
-    });
-
-    it('should return false for non-URL strings', () => {
-      expect(isCimdUrl('not-a-url')).toBe(false);
-      expect(isCimdUrl('uuid-like-client-id')).toBe(false);
-      expect(isCimdUrl('')).toBe(false);
-    });
-
-    it('should return false for URLs with query strings', () => {
-      expect(isCimdUrl('https://example.com/metadata?foo=bar')).toBe(false);
-    });
-
-    it('should return false for URLs with dot path segments', () => {
-      expect(isCimdUrl('https://example.com/./metadata')).toBe(false);
-      expect(isCimdUrl('https://example.com/../metadata')).toBe(false);
-    });
-
-    it('should return false for URLs with fragments', () => {
-      expect(isCimdUrl('https://example.com/metadata#section')).toBe(false);
-    });
   });
 
   describe('validateCimdUrl', () => {
@@ -300,6 +241,42 @@ describe('CimdClient', () => {
       });
     });
 
+    describe('redirect protection', () => {
+      it('should reject redirects to prevent SSRF via redirect bypass', async () => {
+        const redirectTarget = jest.fn();
+
+        server.use(
+          rest.get(
+            'https://example.com/oauth-metadata.json',
+            (_req, res, ctx) => {
+              return res(
+                ctx.status(302),
+                ctx.set('Location', 'http://127.0.0.1:8080/internal'),
+              );
+            },
+          ),
+          rest.get('http://127.0.0.1:8080/internal', (_req, res, ctx) => {
+            redirectTarget();
+            return res(
+              ctx.json({
+                client_id: 'https://example.com/oauth-metadata.json',
+                client_name: 'Sneaky Client',
+                redirect_uris: ['http://localhost:8080/callback'],
+              }),
+            );
+          }),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('Failed to fetch client metadata');
+
+        expect(redirectTarget).not.toHaveBeenCalled();
+      });
+    });
+
     describe('HTTP error handling', () => {
       it('should throw for network errors', async () => {
         server.use(
@@ -349,6 +326,29 @@ describe('CimdClient', () => {
             clientId: 'https://example.com/oauth-metadata.json',
           }),
         ).rejects.toThrow('Invalid client metadata document');
+      });
+
+      it('should throw for oversized JSON without content-length', async () => {
+        const oversizedMetadata = {
+          client_id: 'https://example.com/oauth-metadata.json',
+          client_name: 'x'.repeat(64 * 1024),
+          redirect_uris: ['http://localhost:8080/callback'],
+        };
+        const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(
+          new Response(JSON.stringify(oversizedMetadata), {
+            headers: { 'content-type': 'application/json' },
+          }),
+        );
+
+        try {
+          await expect(
+            fetchCimdMetadata({
+              clientId: 'https://example.com/oauth-metadata.json',
+            }),
+          ).rejects.toThrow('Client metadata document too large');
+        } finally {
+          fetchMock.mockRestore();
+        }
       });
 
       it('should throw for client_id mismatch', async () => {

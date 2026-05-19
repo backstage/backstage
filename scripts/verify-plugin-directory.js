@@ -18,7 +18,7 @@
 const fs = require('fs-extra');
 const { resolve, join } = require('node:path');
 const yaml = require('js-yaml');
-const z = require('zod');
+const z = require('zod/v3');
 
 const configSchema = z.object({
   title: z.string(),

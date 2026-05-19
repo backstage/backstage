@@ -4,20 +4,24 @@
 
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ColumnConfig } from '@backstage/ui';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { JSXElementConstructor } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TableItem } from '@backstage/ui';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha
@@ -33,7 +37,7 @@ export const CatalogFilterBlueprint: ExtensionBlueprint<{
   dataRefs: never;
 }>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const catalogReactTranslationRef: TranslationRef<
   'catalog-react',
   {
@@ -70,6 +74,7 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'inspectEntityDialog.colocatedPage.alertNoEntity': 'There were no other entities on this location.';
     readonly 'inspectEntityDialog.colocatedPage.locationHeader': 'At the same location';
     readonly 'inspectEntityDialog.colocatedPage.originHeader': 'At the same origin';
+    readonly 'inspectEntityDialog.colocatedPage.entityListAriaLabel': 'Colocated entities';
     readonly 'inspectEntityDialog.jsonPage.title': 'Entity as JSON';
     readonly 'inspectEntityDialog.jsonPage.description': 'This is the raw entity data as received from the catalog, on JSON form.';
     readonly 'inspectEntityDialog.overviewPage.title': 'Overview';
@@ -77,9 +82,12 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'inspectEntityDialog.overviewPage.labels': 'Labels';
     readonly 'inspectEntityDialog.overviewPage.status.title': 'Status';
     readonly 'inspectEntityDialog.overviewPage.identity.title': 'Identity';
-    readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
     readonly 'inspectEntityDialog.overviewPage.tags': 'Tags';
+    readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
     readonly 'inspectEntityDialog.overviewPage.relation.title': 'Relations';
+    readonly 'inspectEntityDialog.overviewPage.copyAriaLabel': 'Copy {{label}}';
+    readonly 'inspectEntityDialog.overviewPage.copiedStatus': 'Copied';
+    readonly 'inspectEntityDialog.overviewPage.helpLinkAriaLabel': 'Learn more';
     readonly 'inspectEntityDialog.yamlPage.title': 'Entity as YAML';
     readonly 'inspectEntityDialog.yamlPage.description': 'This is the raw entity data as received from the catalog, on YAML form.';
     readonly 'inspectEntityDialog.tabNames.json': 'Raw JSON';
@@ -114,11 +122,12 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.description': 'Description';
     readonly 'entityTableColumnTitle.system': 'System';
     readonly 'entityTableColumnTitle.namespace': 'Namespace';
-    readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.tags': 'Tags';
+    readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.owner': 'Owner';
     readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
     readonly 'entityTableColumnTitle.targets': 'Targets';
+    readonly 'entityRelationCard.emptyHelpLinkTitle': 'Learn how to change this.';
     readonly 'missingAnnotationEmptyState.title': 'Missing Annotation';
     readonly 'missingAnnotationEmptyState.readMore': 'Read more';
     readonly 'missingAnnotationEmptyState.annotationYaml': 'Add the annotation to your {{entityKind}} YAML as shown in the highlighted example below:';
@@ -241,6 +250,32 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
 // @alpha (undocumented)
 export type EntityCardType = 'info' | 'content';
 
+// @public (undocumented)
+export interface EntityColumnConfig extends ColumnConfig<EntityRow> {
+  // (undocumented)
+  sortValue?: (entity: EntityRow) => string;
+}
+
+// @alpha (undocumented)
+export const entityColumnPresets: {
+  readonly component: {
+    readonly columns: EntityColumnConfig[];
+    readonly helpLink: 'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component';
+  };
+  readonly resource: {
+    readonly columns: EntityColumnConfig[];
+    readonly helpLink: 'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource';
+  };
+  readonly system: {
+    readonly columns: EntityColumnConfig[];
+    readonly helpLink: 'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system';
+  };
+  readonly domain: {
+    readonly columns: EntityColumnConfig[];
+    readonly helpLink: 'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain';
+  };
+};
+
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
   kind: 'entity-content';
@@ -304,9 +339,9 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     icon: string | undefined;
   };
   configInput: {
-    filter?: FilterPredicate | undefined;
-    title?: string | undefined;
     path?: string | undefined;
+    title?: string | undefined;
+    filter?: FilterPredicate | undefined;
     group?: string | false | undefined;
     icon?: string | undefined;
   };
@@ -383,8 +418,8 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
     filter: FilterPredicate | undefined;
   };
   configInput: {
-    filter?: FilterPredicate | undefined;
     type?: string | undefined;
+    filter?: FilterPredicate | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -449,6 +484,48 @@ export type EntityContextMenuItemParams = {
   icon: JSX_2.Element;
   filter?: FilterPredicate | ((entity: Entity) => boolean);
 };
+
+// @public (undocumented)
+export function EntityDataTable(props: EntityDataTableProps): JSX_3.Element;
+
+// @public (undocumented)
+export const entityDataTableColumns: Readonly<{
+  createEntityRefColumn(options: {
+    defaultKind?: string;
+    isRowHeader?: boolean;
+    entityPresentationApi?: EntityPresentationApi;
+  }): EntityColumnConfig;
+  createEntityRelationColumn(options: {
+    id: string;
+    translationKey: 'owner' | 'system' | 'domain';
+    relation: string;
+    defaultKind?: string;
+    filter?: {
+      kind: string;
+    };
+    entityPresentationApi?: EntityPresentationApi;
+  }): EntityColumnConfig;
+  createOwnerColumn(): EntityColumnConfig;
+  createSystemColumn(): EntityColumnConfig;
+  createDomainColumn(): EntityColumnConfig;
+  createMetadataDescriptionColumn(): EntityColumnConfig;
+  createSpecTypeColumn(): EntityColumnConfig;
+  createSpecLifecycleColumn(): EntityColumnConfig;
+}>;
+
+// @public (undocumented)
+export interface EntityDataTableProps {
+  // (undocumented)
+  columnConfig: EntityColumnConfig[];
+  // (undocumented)
+  data: Entity[];
+  // (undocumented)
+  emptyState?: ReactNode;
+  // (undocumented)
+  error?: Error;
+  // (undocumented)
+  loading?: boolean;
+}
 
 // @alpha (undocumented)
 export const EntityHeaderBlueprint: ExtensionBlueprint<{
@@ -534,9 +611,9 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
     filter: FilterPredicate | undefined;
   };
   configInput: {
-    filter?: FilterPredicate | undefined;
     label?: string | undefined;
     title?: string | undefined;
+    filter?: FilterPredicate | undefined;
   };
   dataRefs: {
     useProps: ConfigurableExtensionDataRef<
@@ -556,6 +633,33 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
     >;
   };
 }>;
+
+// @public (undocumented)
+export function EntityRelationCard(
+  props: EntityRelationCardProps,
+): JSX_3.Element;
+
+// @public (undocumented)
+export interface EntityRelationCardProps {
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  columnConfig: EntityColumnConfig[];
+  // (undocumented)
+  emptyState?: {
+    message: string;
+    helpLink?: string;
+  };
+  // (undocumented)
+  entityKind?: string;
+  // (undocumented)
+  relationType: string;
+  // (undocumented)
+  title: string;
+}
+
+// @public (undocumented)
+export type EntityRow = Entity & TableItem;
 
 // @alpha (undocumented)
 export const EntityTableColumnTitle: (

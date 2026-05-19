@@ -1,0 +1,1 @@
+Fix home page widgets not being draggable or resizable after the first save 

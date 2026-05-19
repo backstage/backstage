@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-// TODO(Rugvip): Figure out best way to allow this import
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { Entity } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import { EntityStatus } from './EntityStatus';
 
 /**

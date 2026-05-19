@@ -14,48 +14,15 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import {
-  renderInTestApp,
-  TestApiProvider,
-  mockApis,
-} from '@backstage/test-utils';
-import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
-import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { OwnerEntityColumn } from './OwnerEntityColumn';
-import { identityApiRef } from '@backstage/core-plugin-api';
 
 describe('<OwnerEntityColumn />', () => {
-  const catalogApi = catalogApiMock.mock();
-  const identityApi = mockApis.identity();
-
-  it('should render the column with the user', async () => {
-    const props = {
-      entityRef: 'user:default/foo',
-    };
-
-    const entity: Entity = {
-      apiVersion: 'v1',
-      kind: 'User',
-      metadata: {
-        name: 'test',
-      },
-      spec: {
-        profile: {
-          displayName: 'BackUser',
-        },
-      },
-    };
-    catalogApi.getEntityByRef.mockResolvedValue(entity);
-
-    const { getByText, getByRole } = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [catalogApiRef, catalogApi],
-          [identityApiRef, identityApi],
-        ]}
-      >
-        <OwnerEntityColumn {...props} />
+  it('should render a link to the user entity', async () => {
+    const { getByRole } = await renderInTestApp(
+      <TestApiProvider apis={[]}>
+        <OwnerEntityColumn entityRef="user:default/foo" />
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -68,7 +35,20 @@ describe('<OwnerEntityColumn />', () => {
       'href',
       '/catalog/default/user/foo',
     );
-    const text = getByText('BackUser');
-    expect(text).toBeDefined();
+  });
+
+  it('should render Unknown when entityRef is missing', async () => {
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider apis={[]}>
+        <OwnerEntityColumn />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(getByText('Unknown')).toBeInTheDocument();
   });
 });

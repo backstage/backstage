@@ -154,7 +154,8 @@ export const createGitlabRepoPushAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'auto' | 'update' | 'create' | 'delete' | undefined;
+    allowEmpty?: boolean | undefined;
   },
   {
     projectid: string;
@@ -203,9 +204,11 @@ export function createPublishGitlabAction(options: {
     skipExisting?: boolean | undefined;
     token?: string | undefined;
     setUserAsOwner?: boolean | undefined;
+    ownerUsername?: string | undefined;
     topics?: string[] | undefined;
     settings?:
       | {
+          name?: string | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
           path?: string | undefined;
           description?: string | undefined;
@@ -271,7 +274,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
+    commitAction?: 'auto' | 'update' | 'create' | 'delete' | 'skip' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;

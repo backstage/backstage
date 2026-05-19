@@ -1,0 +1,36 @@
+.entityCard {
+  margin-bottom: var(--bui-space-6);
+}
+
+.cardBody {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--bui-space-4);
+}
+
+.definitionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bui-space-6);
+  margin: 0;
+  padding: 0;
+  flex: 1 1 0;
+  align-self: center;
+}
+
+.definitionGroup {
+  display: flex;
+  align-items: baseline;
+  gap: var(--bui-space-2);
+}
+
+.definitionValue {
+  margin: 0;
+}
+
+.searchWrapper {
+  flex: 1 1 200px;
+  max-width: 240px;
+}

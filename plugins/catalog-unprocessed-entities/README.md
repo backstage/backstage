@@ -32,7 +32,26 @@ Requires the `@backstage/plugin-catalog-backend-module-unprocessed` module to be
 yarn --cwd packages/app add @backstage/plugin-catalog-unprocessed-entities
 ```
 
-Import into your `App.tsx` and include into the `<FlatRoutes>` component:
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+
+You can optionally add unprocessed entities as a tab in DevTools through configuration:
+
+```yaml
+app:
+  extensions:
+    # Enable the catalog-unprocessed-entities tab in devtools
+    - devtools-content:catalog-unprocessed-entities: true
+    # Disable the catalog-unprocessed-entities element outside devtools including the sidebar
+    - page:catalog-unprocessed-entities: false
+```
+
+## Old Frontend System
+
+If your Backstage app uses the old frontend system, you need to manually wire the
+plugin into your app as outlined in this section. If you are on the new frontend
+system, you can skip this.
+
+Import it into your `App.tsx` and include it in the `<FlatRoutes>` component:
 
 ```tsx title="packages/app/src/App.tsx"
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
@@ -42,44 +61,6 @@ import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unproc
   path="/catalog-unprocessed-entities"
   element={<CatalogUnprocessedEntitiesPage />}
 />;
-```
-
-### Integrating with the New Frontend System
-
-Follow this section if you are using Backstage's [new frontend system](https://backstage.io/docs/frontend-system/).
-
-Import `catalogUnprocessedEntitiesPlugin` in your `App.tsx` and add it to your app's `features` array:
-
-```typescript
-import catalogUnprocessedEntitiesPlugin from '@backstage/plugin-catalog-unprocessed-entities';
-import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
-
-// Optionally add unprocessed entities route to devtools
-const devtoolsPluginUnprocessed = createFrontendModule({
-  pluginId: 'catalog-unprocessed-entities',
-  extensions: [unprocessedEntitiesDevToolsContent],
-});
-
-export const app = createApp({
-  features: [
-    // ...
-    catalogUnprocessedEntitiesPlugin,
-
-    // Optionally add unprocessed entities route to devtools
-    devtoolsPluginUnprocessed,
-    devtoolsPlugin, // devtools plugin needs to be added too, if autodiscover is disabled
-    // ...
-  ],
-});
-```
-
-```yaml
-app:
-  extensions:
-    # Enable the catalog-unprocessed-entities tab in devtools
-    - devtools-content:catalog-unprocessed-entities: true
-    # Disable the catalog-unprocessed-entities element outside devtools including the sidebar
-    - page:catalog-unprocessed-entities: false
 ```
 
 ## Customization
@@ -93,7 +74,7 @@ import { useApi } from '@backstage/core-plugin-api';
 const catalogUnprocessedEntitiesApi = useApi(catalogUnprocessedEntitiesApiRef);
 ```
 
-Note that if you are not rendering the `CatalogUnprocessedEntitiesPage` in the `App.tsx` tree, you will need to export the `catalogUnproccessedEntitiesPlugin` from your `plugins.ts` file to setup the plugin otherwise you will receive an error like `No implementation available for apiRef{plugin.catalog-unprocessed-entities.service}`
+Note that if you are not rendering the `CatalogUnprocessedEntitiesPage` in the `App.tsx` tree, you will need to export the `catalogUnprocessedEntitiesPlugin` from your `plugins.ts` file to setup the plugin otherwise you will receive an error like `No implementation available for apiRef{plugin.catalog-unprocessed-entities.service}`
 
 ```typescript
 // In packages/app/src/plugins.ts

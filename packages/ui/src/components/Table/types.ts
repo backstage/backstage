@@ -24,7 +24,7 @@ import {
 } from 'react-aria-components';
 import type { ReactElement, ReactNode } from 'react';
 import type { SortDescriptor as ReactStatelySortDescriptor } from 'react-stately';
-import type { ColumnSize, ColumnStaticSize } from '@react-types/table';
+import type { ColumnSize, ColumnStaticSize } from 'react-stately';
 import type { TextColors } from '../../types';
 import { TablePaginationProps } from '../TablePagination';
 
@@ -42,6 +42,9 @@ export interface SortState {
 /** @public */
 export type TableRootOwnProps = {
   stale?: boolean;
+  isPending?: boolean;
+  /** @deprecated Use `isPending` instead. */
+  loading?: boolean;
 };
 
 /** @public */
@@ -73,6 +76,7 @@ export type RowOwnProps<T = object> = {
   columns?: ReactAriaRowProps<T>['columns'];
   children?: ReactAriaRowProps<T>['children'];
   href?: string;
+  noTrack?: boolean;
 };
 
 /** @public */
@@ -91,17 +95,35 @@ export interface ColumnProps
   extends ColumnOwnProps,
     Omit<ReactAriaColumnProps, keyof ColumnOwnProps> {}
 
-/** @public */
+/**
+ * Own props for the {@link Cell} component.
+ *
+ * @public
+ */
 export type CellOwnProps = {
   className?: string;
 };
 
-/** @public */
+/**
+ * Props for the {@link Cell} component.
+ *
+ * `Cell` is a generic cell wrapper for custom cell content. When rendering
+ * cells via {@link ColumnConfig.cell} or a custom {@link RowRenderFn}, the
+ * returned element **must** be a cell component (`Cell`, `CellText`, or
+ * `CellProfile`) at the top level. Returning bare text or other elements
+ * without a cell wrapper will break the table layout.
+ *
+ * @public
+ */
 export interface CellProps
   extends CellOwnProps,
     Omit<ReactAriaCellProps, keyof CellOwnProps> {}
 
-/** @public */
+/**
+ * Own props for the {@link CellText} component.
+ *
+ * @public
+ */
 export type CellTextOwnProps = {
   title: string;
   description?: string;
@@ -111,12 +133,25 @@ export type CellTextOwnProps = {
   className?: string;
 };
 
-/** @public */
+/**
+ * Props for the {@link CellText} component.
+ *
+ * `CellText` renders a table cell with a title and optional description. It
+ * is one of the cell components (`Cell`, `CellText`, `CellProfile`) that
+ * **must** be used as the top-level element returned from
+ * {@link ColumnConfig.cell} or a custom {@link RowRenderFn}.
+ *
+ * @public
+ */
 export interface CellTextProps
   extends CellTextOwnProps,
     Omit<ReactAriaCellProps, keyof CellTextOwnProps> {}
 
-/** @public */
+/**
+ * Own props for the {@link CellProfile} component.
+ *
+ * @public
+ */
 export type CellProfileOwnProps = {
   src?: string;
   name?: string;
@@ -126,7 +161,16 @@ export type CellProfileOwnProps = {
   className?: string;
 };
 
-/** @public */
+/**
+ * Props for the {@link CellProfile} component.
+ *
+ * `CellProfile` renders a table cell with an avatar, name, and optional
+ * description. It is one of the cell components (`Cell`, `CellText`,
+ * `CellProfile`) that **must** be used as the top-level element returned
+ * from {@link ColumnConfig.cell} or a custom {@link RowRenderFn}.
+ *
+ * @public
+ */
 export interface CellProfileProps
   extends CellProfileOwnProps,
     Omit<ReactAriaCellProps, keyof CellProfileOwnProps> {}
@@ -149,10 +193,27 @@ export interface PagePagination extends TablePaginationProps {
 /** @public */
 export type TablePaginationType = NoPagination | PagePagination;
 
-/** @public */
+/**
+ * Configuration for a single table column.
+ *
+ * @public
+ */
 export interface ColumnConfig<T extends TableItem> {
   id: string;
   label: string;
+  /**
+   * Renders the cell content for this column.
+   *
+   * **Important:** The returned element **must** be a cell component at the
+   * top level — either `Cell`, `CellText`, or `CellProfile`. Returning bare
+   * text, fragments, or other elements without a cell wrapper will break the
+   * table layout.
+   *
+   * @example
+   * ```tsx
+   * cell: item => <CellText title={item.name} />
+   * ```
+   */
   cell: (item: T) => ReactElement;
   header?: () => ReactElement;
   isSortable?: boolean;
@@ -171,7 +232,16 @@ export interface RowConfig<T extends TableItem> {
   getIsDisabled?: (item: T) => boolean;
 }
 
-/** @public */
+/**
+ * Custom render function for table rows.
+ *
+ * When using a custom row render function, each cell rendered inside the row
+ * **must** use a cell component (`Cell`, `CellText`, or `CellProfile`) as
+ * the top-level element. Returning bare text or other elements without a
+ * cell wrapper will break the table layout.
+ *
+ * @public
+ */
 export type RowRenderFn<T extends TableItem> = (params: {
   item: T;
   index: number;
@@ -186,9 +256,17 @@ export interface TableSelection {
 }
 
 /** @public */
+export type VirtualizedProp =
+  | boolean
+  | { rowHeight: number }
+  | { estimatedRowHeight: number };
+
+/** @public */
 export interface TableProps<T extends TableItem> {
   columnConfig: readonly ColumnConfig<T>[];
   data: T[] | undefined;
+  isPending?: boolean;
+  /** @deprecated Use `isPending` instead. */
   loading?: boolean;
   isStale?: boolean;
   error?: Error;
@@ -199,4 +277,5 @@ export interface TableProps<T extends TableItem> {
   emptyState?: ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  virtualized?: VirtualizedProp;
 }

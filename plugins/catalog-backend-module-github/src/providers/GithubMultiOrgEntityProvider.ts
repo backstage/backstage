@@ -52,7 +52,7 @@ import {
   TeamEvent,
 } from '@octokit/webhooks-types';
 import { merge } from 'lodash';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 import {
   assignGroupsToUsers,
@@ -351,15 +351,32 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     const { markCommitComplete } = markReadComplete({ allUsers, allTeams });
 
+    const allEntities = [...allUsers, ...allTeams].map(entity => ({
+      locationKey: `github-multi-org-provider:${this.options.id}`,
+      entity: withLocations(
+        `https://${this.options.gitHubConfig.host}`,
+        entity,
+      ),
+    }));
+    allEntities.sort((a, b) => {
+      const am = a.entity.metadata;
+      const bm = b.entity.metadata;
+      if (am.name !== bm.name) return am.name < bm.name ? -1 : 1;
+      const al = am.annotations?.[ANNOTATION_LOCATION] ?? '';
+      const bl = bm.annotations?.[ANNOTATION_LOCATION] ?? '';
+      if (al !== bl) return al < bl ? -1 : 1;
+      if (a.entity.kind !== b.entity.kind) {
+        return a.entity.kind < b.entity.kind ? -1 : 1;
+      }
+      const ans = am.namespace ?? '';
+      const bns = bm.namespace ?? '';
+      if (ans !== bns) return ans < bns ? -1 : 1;
+      return 0;
+    });
+
     await this.connection.applyMutation({
       type: 'full',
-      entities: [...allUsers, ...allTeams].map(entity => ({
-        locationKey: `github-multi-org-provider:${this.options.id}`,
-        entity: withLocations(
-          `https://${this.options.gitHubConfig.host}`,
-          entity,
-        ),
-      })),
+      entities: allEntities,
     });
 
     markCommitComplete();
@@ -894,7 +911,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           const logger = this.options.logger.child({
             class: GithubMultiOrgEntityProvider.prototype.constructor.name,
             taskId: id,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

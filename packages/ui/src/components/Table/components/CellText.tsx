@@ -21,7 +21,11 @@ import type { CellTextProps } from '../types';
 import { useDefinition } from '../../../hooks/useDefinition';
 import { CellTextDefinition } from '../definition';
 
-/** @public */
+/**
+ * A table cell that renders a primary text title with an optional secondary description, leading icon, and link.
+ *
+ * @public
+ */
 const CellText = (props: CellTextProps) => {
   const { ownProps, restProps } = useDefinition(CellTextDefinition, props);
   const { classes, title, description, color, leadingIcon, href } = ownProps;

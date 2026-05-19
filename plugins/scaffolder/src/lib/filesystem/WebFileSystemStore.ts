@@ -16,12 +16,11 @@
 
 import { get, set } from 'idb-keyval';
 import { TemplateDirectoryAccess } from './types';
-import { IterableDirectoryHandle } from './WebFileSystemAccess';
 
 export class WebFileSystemStore {
   private static readonly key = 'scalfolder-template-editor-directory';
 
-  static async getDirectory(): Promise<IterableDirectoryHandle | undefined> {
+  static async getDirectory(): Promise<FileSystemDirectoryHandle | undefined> {
     const directory = await get(WebFileSystemStore.key);
     return directory.handle;
   }

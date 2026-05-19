@@ -633,7 +633,7 @@ Chunk optimization should be disabled for the initial implementation.
 
 The `publicPath` output config in webpack is a mandatory attribute for federated modules. However, at build time, it is impossible to guess where the assets are served from. From origin to the pathname, this is specific to each installation.
 
-We can leverage the [auto](https://webpack.js.org/guides/public-path/#automatic-publicpath) option. However this means that some manifest transformation has to happen at runtime when entry scripts are loaded into the browser. More on that in the [Plugin manifest](#plugin-manifest), [CDN Plugin](#dynamic-assets-server-plugin), and [Plugin loading](#plugin-loading) sections.
+We can leverage the [auto](https://webpack.js.org/guides/public-path/#automatic-publicpath) option. However this means that some manifest transformation has to happen at runtime when entry scripts are loaded into the browser. More on that in the [Plugin manifest](#plugin-manifest), [CDN Plugin](#dynamic-assets-server), and [Plugin loading](#plugin-loading) sections.
 
 #### Sample webpack configuration
 

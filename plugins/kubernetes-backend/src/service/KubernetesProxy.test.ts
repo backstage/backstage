@@ -43,7 +43,6 @@ import {
   KubernetesCredential,
 } from '@backstage/plugin-kubernetes-node';
 import {
-  APPLICATION_JSON,
   HEADER_KUBERNETES_AUTH,
   HEADER_KUBERNETES_CLUSTER,
   KubernetesProxy,
@@ -95,7 +94,7 @@ describe('KubernetesProxy', () => {
       header: jest.fn((key: string) => {
         switch (key) {
           case 'Content-Type': {
-            return APPLICATION_JSON;
+            return 'application/json';
           }
           case HEADER_KUBERNETES_CLUSTER: {
             return clusterName;

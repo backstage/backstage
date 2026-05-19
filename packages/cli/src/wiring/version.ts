@@ -26,4 +26,3 @@ export function findVersion() {
 }
 
 export const version = findVersion();
-export const isDev = fs.pathExistsSync(ownPaths.resolve('src'));

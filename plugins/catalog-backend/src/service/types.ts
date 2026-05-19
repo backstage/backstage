@@ -35,6 +35,7 @@ export interface LocationService {
     location: LocationInput,
     dryRun: boolean,
     options: {
+      onConflict?: 'refresh' | 'reject';
       credentials: BackstageCredentials;
     },
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }>;
@@ -49,6 +50,11 @@ export interface LocationService {
   }): Promise<{ items: Location[]; totalItems: number }>;
   getLocation(
     id: string,
+    options: { credentials: BackstageCredentials },
+  ): Promise<Location>;
+  updateLocation(
+    id: string,
+    location: LocationInput,
     options: { credentials: BackstageCredentials },
   ): Promise<Location>;
   deleteLocation(
@@ -84,7 +90,12 @@ export interface RefreshService {
  * Interacts with the database to manage locations.
  */
 export interface LocationStore {
-  createLocation(location: LocationInput): Promise<Location>;
+  createLocation(
+    location: LocationInput,
+    options?: {
+      onConflict: 'refresh' | 'reject';
+    },
+  ): Promise<Location>;
   listLocations(): Promise<Location[]>;
   queryLocations(options: {
     limit: number;
@@ -92,6 +103,7 @@ export interface LocationStore {
     query?: FilterPredicate;
   }): Promise<{ items: Location[]; totalItems: number }>;
   getLocation(id: string): Promise<Location>;
+  updateLocation(id: string, location: LocationInput): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
   getLocationByEntity(entityRef: CompoundEntityRef | string): Promise<Location>;
 }

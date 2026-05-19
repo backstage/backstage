@@ -19,3 +19,9 @@ import { default as feature } from './module';
 /** @alpha */
 const _feature = feature;
 export default _feature;
+
+export {
+  analyzeAzureDevOpsWebhookEvent,
+  type AnalyzeAzureDevOpsWebhookEventOptions,
+  type AnalyzeAzureDevOpsWebhookEventResult,
+} from './events/analyzeAzureDevOpsWebhookEvent';

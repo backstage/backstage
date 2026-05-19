@@ -7,9 +7,6 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
-// @public @deprecated (undocumented)
-export const DefaultSignalService: typeof DefaultSignalsService;
-
 // @public (undocumented)
 export class DefaultSignalsService implements SignalsService {
   // (undocumented)
@@ -32,9 +29,6 @@ export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
   channel: string;
   message: TMessage;
 };
-
-// @public @deprecated (undocumented)
-export interface SignalService extends SignalsService {}
 
 // @public @deprecated (undocumented)
 export const signalService: ServiceRef<SignalsService, 'plugin', 'singleton'>;

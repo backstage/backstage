@@ -20,7 +20,8 @@ import { useCallback, useMemo } from 'react';
 import { ScaffolderFormDecoratorContext } from '@backstage/plugin-scaffolder-react/alpha';
 import { OpaqueFormDecorator } from '@internal/scaffolder';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
-import { JsonValue } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
+import { z } from 'zod/v3';
 
 /** @internal */
 type BoundFieldDecorator = {
@@ -41,8 +42,11 @@ export const useFormDecorators = () => {
 
     for (const decorator of decorators ?? []) {
       try {
-        const { decorator: decoratorFn, deps } =
-          OpaqueFormDecorator.toInternal(decorator);
+        const {
+          decorator: decoratorFn,
+          deps,
+          schema,
+        } = OpaqueFormDecorator.toInternal(decorator);
 
         const resolvedDeps = Object.entries(deps ?? {}).map(([key, value]) => {
           const api = apiHolder.get(value);
@@ -54,8 +58,37 @@ export const useFormDecorators = () => {
           return [key, api];
         });
 
+        const inputSchema = schema?.input
+          ? z.object(
+              Object.fromEntries(
+                Object.entries(schema.input).map(([key, build]) => [
+                  key,
+                  build(z),
+                ]),
+              ),
+            )
+          : undefined;
+
         decoratorsMap.set(decorator.id, {
-          decorator: ctx => decoratorFn(ctx, Object.fromEntries(resolvedDeps)),
+          decorator: async ctx => {
+            let input: JsonObject = ctx.input;
+            if (inputSchema) {
+              const parsed = inputSchema.safeParse(ctx.input);
+              if (!parsed.success) {
+                errorApi.post(
+                  new Error(
+                    `Invalid input for form decorator ${decorator.id}: ${parsed.error.message}`,
+                  ),
+                );
+                return;
+              }
+              input = parsed.data as JsonObject;
+            }
+            await decoratorFn(
+              { ...ctx, input },
+              Object.fromEntries(resolvedDeps),
+            );
+          },
         });
       } catch (ex) {
         errorApi.post(ex);
@@ -74,7 +107,9 @@ export const useFormDecorators = () => {
       let formState: Record<string, JsonValue> = { ...opts.formState };
       let secrets: Record<string, string> = { ...opts.secrets };
 
-      const formDecorators = opts.manifest?.EXPERIMENTAL_formDecorators;
+      const formDecorators =
+        opts.manifest?.formDecorators ??
+        opts.manifest?.EXPERIMENTAL_formDecorators;
       if (formDecorators) {
         // for each of the form decorators, go and call the decorator with the context
         await Promise.all(

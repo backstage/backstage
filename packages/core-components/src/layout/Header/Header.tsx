@@ -228,7 +228,11 @@ export function Header(props: PropsWithChildren<Props>) {
   return (
     <>
       <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
-      <header style={style} className={classes.header}>
+      <header
+        style={style}
+        className={classes.header}
+        data-backstage-core-header=""
+      >
         <Box className={classes.leftItemsBox}>
           <TypeFragment
             classes={classes}

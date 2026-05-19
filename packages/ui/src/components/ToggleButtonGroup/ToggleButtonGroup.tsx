@@ -20,7 +20,11 @@ import type { ToggleButtonGroupProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ToggleButtonGroupDefinition } from './definition';
 
-/** @public */
+/**
+ * A container that groups ToggleButton items and manages their collective selection state.
+ *
+ * @public
+ */
 export const ToggleButtonGroup = forwardRef(
   (props: ToggleButtonGroupProps, ref: Ref<HTMLDivElement>) => {
     const { ownProps, restProps } = useDefinition(

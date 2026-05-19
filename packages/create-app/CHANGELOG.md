@@ -1,5 +1,168 @@
 # @backstage/create-app
 
+## 0.8.3-next.3
+
+### Patch Changes
+
+- 14e2056: Pinned the Jest version range in app templates to `~30.2.0` to prevent automatic upgrades to Jest 30.4.x, which requires Node.js v24.9+ and breaks tests on Node 22.
+
+## 0.8.3-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.3-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.3-next.0
+
+### Patch Changes
+
+- 927c003: Replaced internal error utilities with shared ones from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.2-next.0
+
+## 0.8.2
+
+### Patch Changes
+
+- a2cb332: Bumped create-app version.
+- 6c10d88: Bumped create-app version.
+- e8ffac1: Various fixes for the `create-app` template: reorganizing sidebar items, removing redundant config and code, and adding a documentation example.
+- 72a493a: Added the `mcp-actions-backend` and `plugin-auth` plugins
+- 4cf9f3a: Removed the unnecessary `@backstage/cli-module-new` dependency from the `next-app` template, since it is already included through `@backstage/cli-defaults`.
+- 2541837: Renamed the built-in template directories from `next-app` to `default-app` and `default-app` to `legacy-app`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1
+
+## 0.8.2-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.1
+
+## 0.8.2-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.2-next.0
+
+### Patch Changes
+
+- e8ffac1: Various fixes for the `create-app` template: reorganizing sidebar items, removing redundant config and code, and adding a documentation example.
+- 4cf9f3a: Removed the unnecessary `@backstage/cli-module-new` dependency from the `next-app` template, since it is already included through `@backstage/cli-defaults`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+
+## 0.8.0
+
+### Minor Changes
+
+- a6735c3: **BREAKING**: The new frontend system is now the default template when creating a new Backstage app. The previous `--next` flag has been replaced with a `--legacy` flag that can be used to create an app using the old frontend system instead.
+
+### Patch Changes
+
+- d806b0c: The create-app templates now include `@backstage/cli-defaults` as a `devDependency`, enabling the CLI's automatic module discovery for newly created projects.
+- d14b6e0: **BREAKING**: Migrated `MembersListCard`, `OwnershipCard`, and `CatalogGraphCard` to use BUI card primitives via `EntityInfoCard`.
+
+  - `OwnershipCard`: Removed `variant` and `maxScrollHeight` props. Card height and scrolling are now controlled by the parent container — the card fills its container and the body scrolls automatically when content overflows.
+  - `CatalogGraphCard`: Removed `variant` prop.
+  - `MembersListCard`: Translation keys `subtitle`, `paginationLabel`, `aggregateMembersToggle.directMembers`, `aggregateMembersToggle.aggregatedMembers`, and `aggregateMembersToggle.ariaLabel` have been removed. The `title` key now includes `{{groupName}}`. New keys added: `cardLabel`, `noSearchResult`, `aggregateMembersToggle.label`.
+  - `OwnershipCard`: Translation keys `aggregateRelationsToggle.directRelations`, `aggregateRelationsToggle.aggregatedRelations`, and `aggregateRelationsToggle.ariaLabel` have been removed. New key added: `aggregateRelationsToggle.label`.
+  - Removed `MemberComponentClassKey` export, and `root` and `cardContent` from `MembersListCardClassKey`, `card` from `OwnershipCardClassKey`, and `card` from `CatalogGraphCardClassKey`.
+
+  **Migration:**
+
+  ```diff
+  - <EntityOwnershipCard variant="gridItem" />
+  + <EntityOwnershipCard />
+  ```
+
+  ```diff
+  - <EntityCatalogGraphCard variant="gridItem" height={400} />
+  + <EntityCatalogGraphCard height={400} />
+  ```
+
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- ea90ab0: Updated the `next-app` template to reference `@backstage/cli-module-new/templates/*` instead of `@backstage/cli/templates/*` for the built-in `yarn new` templates.
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- a9d23c4: Properly support `package.json` `workspaces` field
+- ebd4630: Replace deprecated `workspaces.packages` with `workspaces` in `package.json`
+
+  This change is **not** required, but you can edit your main `package.json`, to fit the more modern & more common pattern:
+
+  ```diff
+  -  "workspaces": {
+  -    "packages": [
+     "workspaces": [
+       "packages/*",
+       "plugins/*"
+  -     ]
+  -   },
+    ],
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.0
+
+## 0.7.10-next.2
+
+### Patch Changes
+
+- d14b6e0: **BREAKING**: Migrated `MembersListCard`, `OwnershipCard`, and `CatalogGraphCard` to use BUI card primitives via `EntityInfoCard`.
+
+  - `OwnershipCard`: Removed `variant` and `maxScrollHeight` props. Card height and scrolling are now controlled by the parent container — the card fills its container and the body scrolls automatically when content overflows.
+  - `CatalogGraphCard`: Removed `variant` prop.
+  - `MembersListCard`: Translation keys `subtitle`, `paginationLabel`, `aggregateMembersToggle.directMembers`, `aggregateMembersToggle.aggregatedMembers`, and `aggregateMembersToggle.ariaLabel` have been removed. The `title` key now includes `{{groupName}}`. New keys added: `cardLabel`, `noSearchResult`, `aggregateMembersToggle.label`.
+  - `OwnershipCard`: Translation keys `aggregateRelationsToggle.directRelations`, `aggregateRelationsToggle.aggregatedRelations`, and `aggregateRelationsToggle.ariaLabel` have been removed. New key added: `aggregateRelationsToggle.label`.
+  - Removed `MemberComponentClassKey` export, and `root` and `cardContent` from `MembersListCardClassKey`, `card` from `OwnershipCardClassKey`, and `card` from `CatalogGraphCardClassKey`.
+
+  **Migration:**
+
+  ```diff
+  - <EntityOwnershipCard variant="gridItem" />
+  + <EntityOwnershipCard />
+  ```
+
+  ```diff
+  - <EntityCatalogGraphCard variant="gridItem" height={400} />
+  + <EntityCatalogGraphCard height={400} />
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.2
+
+## 0.7.10-next.1
+
+### Patch Changes
+
+- a9d23c4: Properly support `package.json` `workspaces` field
+- ebd4630: Replace deprecated `workspaces.packages` with `workspaces` in `package.json`
+
+  This change is **not** required, but you can edit your main `package.json`, to fit the more modern & more common pattern:
+
+  ```diff
+  -  "workspaces": {
+  -    "packages": [
+     "workspaces": [
+       "packages/*",
+       "plugins/*"
+  -     ]
+  -   },
+    ],
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.1
+
 ## 0.7.10-next.0
 
 ### Patch Changes
@@ -6900,7 +7063,7 @@ The `.fromConfig` of the `DefaultCatalogCollator` also now takes a `tokenManager
 
   To apply this change to an existing plugin, it is important that all plugins that you are using have already been migrated. In this case the most crucial piece is that no entity page cards of contents may require the `entity` prop, and they must instead consume the entity from context using `useEntity`.
 
-  Since this change is large with a lot of repeated changes, we'll describe a couple of common cases rather than the entire change. If your entity pages are unchanged from the `create-app` template, you can also just bring in the latest version directly from the [template itself](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx).
+  Since this change is large with a lot of repeated changes, we'll describe a couple of common cases rather than the entire change. If your entity pages are unchanged from the `create-app` template, you can also just bring in the latest version directly from the [template itself](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/legacy-app/packages/app/src/components/catalog/EntityPage.tsx).
 
   The first step of the change is to change the `packages/app/src/components/catalog/EntityPage.tsx` export to `entityPage` rather than `EntityPage`. This will require an update to `App.tsx`, which is the only change we need to do outside of `EntityPage.tsx`:
 

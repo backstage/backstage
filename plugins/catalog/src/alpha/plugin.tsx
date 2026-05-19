@@ -29,7 +29,6 @@ import {
 import apis from './apis';
 import pages from './pages';
 import filters from './filters';
-import navItems from './navItems';
 import entityCards from './entityCards';
 import entityContents from './entityContents';
 import entityIconLinks from './entityIconLinks';
@@ -40,7 +39,7 @@ import contextMenuItems from './contextMenuItems';
 export default createFrontendPlugin({
   pluginId: 'catalog',
   title: 'Catalog',
-  icon: <CategoryIcon />,
+  icon: <CategoryIcon fontSize="inherit" />,
   info: {
     packageJson: () => import('../../package.json'),
   },
@@ -58,7 +57,6 @@ export default createFrontendPlugin({
     ...apis,
     ...pages,
     ...filters,
-    ...navItems,
     ...entityCards,
     ...entityContents,
     ...entityIconLinks,

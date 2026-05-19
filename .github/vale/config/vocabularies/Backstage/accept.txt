@@ -30,6 +30,7 @@ backend's
 backported
 backporting
 BEPs
+bg
 bigint
 Bigtable
 Billett
@@ -42,11 +43,13 @@ breakpoint
 Brex
 broadcasted
 bugfixes
+BUIProvider
 builtins
 bundler
 bundlers
 bursty
 callout
+callouts
 camelCase
 CDNs
 Chai
@@ -57,6 +60,7 @@ chanwit
 Chanwit
 CI/CD
 classname
+cleye
 cli
 CLIs
 cloudbuild
@@ -71,6 +75,7 @@ codemod
 codemods
 codeowners
 codescene
+Combobox
 composability
 composable
 config
@@ -98,6 +103,7 @@ dayjs
 debounce
 debounced
 debounces
+debouncing
 debuggability
 declaratively
 deduplicate
@@ -136,6 +142,7 @@ dyno
 ecco
 elasticsearch
 Entra
+enums
 env
 Env
 esbuild
@@ -245,10 +252,13 @@ Levenshtein
 lightbox
 Lightsail
 limitranges
+liveness
+LLMs
 LocalStack
 lockdown
 lockfile
 lockfiles
+loopback
 lookbehind
 lookup
 lookups
@@ -280,6 +290,8 @@ misconfigured
 mkdocs
 Mkdocs
 modularization
+monopackage
+monopackages
 monorepo
 monorepos
 monospace
@@ -336,6 +348,7 @@ params
 parseable
 passthrough
 passwordless
+patcher
 Patrik
 pattison
 Peloton
@@ -391,6 +404,7 @@ repos
 requestors
 rerender
 rerenders
+resizable
 resourcequotas
 retryable
 reusability
@@ -425,6 +439,7 @@ scrollable
 scrollbar
 scrollbars
 sdks
+SearchField
 seb
 semlas
 semver
@@ -494,6 +509,7 @@ templater
 Templater
 templaters
 Templaters
+TextField
 TFRecord
 theia
 Themer
@@ -510,6 +526,7 @@ toolsets
 tooltip
 tooltips
 touchpoint
+touchpoints
 transpilation
 transpile
 transpiled
@@ -533,6 +550,7 @@ unmanaged
 unmount
 unregister
 unregistering
+unregisters
 unregistration
 unreviewed
 unstarred
@@ -551,11 +569,14 @@ validators
 Valkey
 varchar
 viewport
+virtualized
 vite
 VMware
 Vodafone
 VPCs
 VSCode
+walkthrough
+walkthroughs
 Wayfair
 Weaveworks
 Webpack
@@ -574,7 +595,3 @@ zod
 Zolotusky
 zoomable
 zsh
-resizable
-enums
-LLMs
-cleye

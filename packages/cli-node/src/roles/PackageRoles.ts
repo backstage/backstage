@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { PackageRole, PackageRoleInfo } from './types';
 
 const packageRoleInfos: PackageRoleInfo[] = [
@@ -32,6 +32,11 @@ const packageRoleInfos: PackageRoleInfo[] = [
     role: 'cli',
     platform: 'node',
     output: ['cjs'],
+  },
+  {
+    role: 'cli-module',
+    platform: 'node',
+    output: ['types', 'cjs'],
   },
   {
     role: 'web-library',

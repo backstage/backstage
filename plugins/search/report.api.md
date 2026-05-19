@@ -10,6 +10,7 @@ import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchBarBaseProps } from '@backstage/plugin-search-react';
 import { SearchResultSet } from '@backstage/plugin-search-common';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
 export const HomePageSearchBar: (
@@ -77,6 +78,20 @@ const searchPlugin: BackstagePlugin<
 >;
 export { searchPlugin as plugin };
 export { searchPlugin };
+
+// @public (undocumented)
+export const searchTranslationRef: TranslationRef<
+  'search',
+  {
+    readonly 'searchModal.viewFullResults': 'View Full Results';
+    readonly 'searchType.tabs.allTitle': 'All';
+    readonly 'searchType.allResults': 'All Results';
+    readonly 'searchType.accordion.collapse': 'Collapse';
+    readonly 'searchType.accordion.numberOfResults': '{{number}} results';
+    readonly 'searchType.accordion.allTitle': 'All';
+    readonly 'sidebarSearchModal.title': 'Search';
+  }
+>;
 
 // @public (undocumented)
 export const SearchType: {

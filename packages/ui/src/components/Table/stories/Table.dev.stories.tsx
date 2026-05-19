@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useMemo } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
   Table,
@@ -207,6 +207,95 @@ export const Search: Story = {
           }
           {...tableProps}
         />
+      </div>
+    );
+  },
+};
+
+export const SearchWithDebounce: Story = {
+  render: () => {
+    // Amplify the ~100-row mocked dataset to several thousand rows so the
+    // perf difference between debounced and non-debounced typing is visible.
+    const largeData = useMemo(() => {
+      const result: Data1Item[] = [];
+      for (let i = 0; i < 50; i++) {
+        for (const item of data1) {
+          result.push({ ...item, id: `${item.id}-${i}` });
+        }
+      }
+      return result;
+    }, []);
+
+    const columns: ColumnConfig<Data1Item>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => <CellText title={item.name} />,
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const searchFn = (items: Data1Item[], query: string) => {
+      const lowerQuery = query.toLowerCase();
+      return items.filter(
+        item =>
+          item.name.toLowerCase().includes(lowerQuery) ||
+          item.owner.name.toLowerCase().includes(lowerQuery) ||
+          item.type.toLowerCase().includes(lowerQuery),
+      );
+    };
+
+    const immediate = useTable({
+      mode: 'complete',
+      data: largeData,
+      paginationOptions: { pageSize: 10 },
+      searchFn,
+    });
+
+    const debounced = useTable({
+      mode: 'complete',
+      data: largeData,
+      paginationOptions: { pageSize: 10 },
+      searchFn,
+      searchDebounceMs: 200,
+    });
+
+    return (
+      <div style={{ display: 'grid', gap: '32px' }}>
+        <div>
+          <h3 style={{ marginBottom: '8px' }}>
+            Immediate (searchDebounceMs: 0)
+          </h3>
+          <SearchField
+            aria-label="Immediate search"
+            placeholder="Type to search..."
+            style={{ marginBottom: '16px' }}
+            {...immediate.search}
+          />
+          <Table columnConfig={columns} {...immediate.tableProps} />
+        </div>
+        <div>
+          <h3 style={{ marginBottom: '8px' }}>
+            Debounced (searchDebounceMs: 200)
+          </h3>
+          <SearchField
+            aria-label="Debounced search"
+            placeholder="Type to search..."
+            style={{ marginBottom: '16px' }}
+            {...debounced.search}
+          />
+          <Table columnConfig={columns} {...debounced.tableProps} />
+        </div>
       </div>
     );
   },
@@ -793,6 +882,156 @@ export const SelectionReplaceWithRowLinks: Story = {
           onSelectionChange: setSelected,
         }}
         rowConfig={{ getHref: item => `/items/${item.id}` }}
+      />
+    );
+  },
+};
+
+export const VirtualizedTable: Story = {
+  render: () => {
+    const largeData = Array.from({ length: 500 }, (_, i) => ({
+      id: String(i),
+      name: `Service ${i}`,
+      owner: { name: `Team ${i % 10}` },
+      type: ['service', 'website', 'library'][i % 3],
+      lifecycle: ['production', 'experimental'][i % 2],
+      description: `Description for service ${i}`,
+    }));
+
+    const columns: ColumnConfig<(typeof largeData)[0]>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => (
+          <CellText title={item.name} description={item.description} />
+        ),
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => largeData,
+      paginationOptions: { pageSize: 50 },
+    });
+
+    return (
+      <Table
+        columnConfig={columns}
+        {...tableProps}
+        virtualized
+        style={{ height: 400 }}
+      />
+    );
+  },
+};
+
+export const VirtualizedWithCustomRowHeight: Story = {
+  render: () => {
+    const largeData = Array.from({ length: 500 }, (_, i) => ({
+      id: String(i),
+      name: `Service ${i}`,
+      owner: { name: `Team ${i % 10}` },
+      type: ['service', 'website', 'library'][i % 3],
+      lifecycle: ['production', 'experimental'][i % 2],
+      description: `Description for service ${i}`,
+    }));
+
+    const columns: ColumnConfig<(typeof largeData)[0]>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => (
+          <CellText title={item.name} description={item.description} />
+        ),
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => largeData,
+      paginationOptions: { pageSize: 50 },
+    });
+
+    return (
+      <Table
+        columnConfig={columns}
+        {...tableProps}
+        virtualized={{ rowHeight: 56 }}
+        style={{ height: 400 }}
+      />
+    );
+  },
+};
+
+export const VirtualizedWithEstimatedRowHeight: Story = {
+  render: () => {
+    const largeData = Array.from({ length: 500 }, (_, i) => ({
+      id: String(i),
+      name: `Service ${i}`,
+      owner: { name: `Team ${i % 10}` },
+      type: ['service', 'website', 'library'][i % 3],
+      lifecycle: ['production', 'experimental'][i % 2],
+      description:
+        i % 5 === 0
+          ? `This is a much longer description for service ${i} that spans multiple lines to demonstrate variable height row rendering in the virtualized table`
+          : `Description for service ${i}`,
+    }));
+
+    const columns: ColumnConfig<(typeof largeData)[0]>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => (
+          <CellText title={item.name} description={item.description} />
+        ),
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => largeData,
+      paginationOptions: { pageSize: 50 },
+    });
+
+    return (
+      <Table
+        columnConfig={columns}
+        {...tableProps}
+        virtualized={{ estimatedRowHeight: 48 }}
+        style={{ height: 400 }}
       />
     );
   },

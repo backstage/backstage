@@ -55,9 +55,7 @@ const FilterDetailContent = ({
   }
   const schema = filter.schema;
   const partialSchemaRenderContext: Omit<SchemaRenderContext, 'parentId'> = {
-    classes,
     expanded,
-    headings: [<Typography variant="h6" component="h4" />],
   };
   return (
     <Fragment key={`${name}.detail`}>
@@ -97,7 +95,6 @@ const FilterDetailContent = ({
                   context={{
                     parentId: `${name}.arg${i}`,
                     ...partialSchemaRenderContext,
-                    headings: [<Typography variant="h6" component="h5" />],
                   }}
                   schema={argSchema}
                 />

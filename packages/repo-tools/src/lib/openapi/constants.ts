@@ -18,15 +18,9 @@ export const YAML_SCHEMA_PATH = 'src/schema/openapi.yaml';
 
 export const OUTPUT_PATH = 'src/schema/openapi/generated';
 
-export const TS_MODULE = `${OUTPUT_PATH}/router`;
-
 export const OLD_SCHEMA_PATH = `src/schema/openapi.generated.ts`;
 
-export const TS_SCHEMA_PATH = `${TS_MODULE}.ts`;
-
-export const GENERATOR_VERSION = `1.0.0`;
-export const GENERATOR_NAME = 'typescript-backstage';
-export const GENERATOR_FILE = `packages/template-openapi-plugin-client/generator/target/${GENERATOR_NAME}-openapi-generator-${GENERATOR_VERSION}.jar`;
+export const TS_SCHEMA_PATH = `${OUTPUT_PATH}/router.ts`;
 
 export const OPENAPI_IGNORE_FILES = [
   // Get rid of the default files.

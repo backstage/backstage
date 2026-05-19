@@ -151,31 +151,6 @@ Somewhat related to the `Routes` change, it is no longer possible to render a
 such a `Route` element would cause the contents of its `element` prop to be
 rendered instead, but it will now throw an error.
 
-### `PermissionedRoute`
-
-Because of the above change, the `PermissionedRoute` component no longer works in all situations with React Router v6 stable. It has been deprecated in favor of the new `RequirePermission` component, which can be placed anywhere in order to perform a permissions check.
-
-It's crucial that you update to `RequirePermission` at the same time as you update to React Router v6 stable as the `PermissionedRoute` component will no longer function.
-
-```tsx
-{/* highlight-remove-start */}
-<PermissionedRoute
-  path="/catalog-import"
-  permission={catalogEntityCreatePermission}
-  element={<CatalogImportPage />}
-{/* highlight-remove-end */}
-{/* highlight-add-start */}
-<Route
-  path="/catalog-import"
-  element={
-    <RequirePermission permission={catalogEntityCreatePermission}>
-      <CatalogImportPage />
-    </RequirePermission>
-  }
-{/* highlight-add-end */}
-/>
-```
-
 ### `<Navigate />` component
 
 When migrating over to React Router v6 stable, you might also see browser console warnings for the `Navigate` component. This will need to be wrapped up in a `Route` component with the `Navigate` component in the `element` prop.

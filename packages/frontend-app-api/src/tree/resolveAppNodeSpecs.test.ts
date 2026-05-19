@@ -15,6 +15,8 @@
  */
 
 import {
+  createExtension,
+  createExtensionDataRef,
   createFrontendModule,
   createFrontendPlugin,
   Extension,
@@ -505,5 +507,205 @@ describe('resolveAppNodeSpecs', () => {
         },
       },
     ]);
+  });
+
+  it('should carry if predicate through to AppNodeSpec', () => {
+    const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
+    const ifPredicate = { featureFlags: { $contains: 'my-flag' } };
+    const plugin = createFrontendPlugin({
+      pluginId: 'test-plugin',
+      extensions: [
+        createExtension({
+          attachTo: { id: 'app', input: 'root' },
+          if: ifPredicate,
+          output: [dataRef],
+          factory: () => [dataRef('value')],
+        }),
+      ],
+    });
+    const specs = resolveAppNodeSpecs({
+      features: [plugin],
+      builtinExtensions: [],
+      parameters: [],
+      collector,
+    });
+    expect(specs).toHaveLength(1);
+    expect(specs[0].if).toEqual(ifPredicate);
+  });
+
+  it('should apply plugin if predicates to all plugin extensions', () => {
+    const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
+    const pluginIf = { featureFlags: { $contains: 'plugin-flag' } };
+    const plugin = createFrontendPlugin({
+      pluginId: 'test-plugin',
+      if: pluginIf,
+      extensions: [
+        createExtension({
+          name: 'one',
+          attachTo: { id: 'app', input: 'root' },
+          output: [dataRef],
+          factory: () => [dataRef('one')],
+        }),
+        createExtension({
+          name: 'two',
+          attachTo: { id: 'app', input: 'root' },
+          output: [dataRef],
+          factory: () => [dataRef('two')],
+        }),
+      ],
+    });
+
+    const specs = resolveAppNodeSpecs({
+      features: [plugin],
+      builtinExtensions: [],
+      parameters: [],
+      collector,
+    });
+
+    expect(specs).toHaveLength(2);
+    expect(specs[0].if).toEqual(pluginIf);
+    expect(specs[1].if).toEqual(pluginIf);
+  });
+
+  it('should allow plugin overrides to replace or remove plugin if predicates', () => {
+    const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
+    const pluginIf = { featureFlags: { $contains: 'plugin-flag' } };
+    const overrideIf = { permissions: { $contains: 'override.permission' } };
+    const plugin = createFrontendPlugin({
+      pluginId: 'test-plugin',
+      if: pluginIf,
+      extensions: [
+        createExtension({
+          name: 'one',
+          attachTo: { id: 'app', input: 'root' },
+          output: [dataRef],
+          factory: () => [dataRef('one')],
+        }),
+      ],
+    });
+
+    const overriddenSpecs = resolveAppNodeSpecs({
+      features: [plugin.withOverrides({ if: overrideIf })],
+      builtinExtensions: [],
+      parameters: [],
+      collector,
+    });
+    const clearedSpecs = resolveAppNodeSpecs({
+      features: [plugin.withOverrides({ if: undefined })],
+      builtinExtensions: [],
+      parameters: [],
+      collector,
+    });
+
+    expect(overriddenSpecs).toHaveLength(1);
+    expect(overriddenSpecs[0].if).toEqual(overrideIf);
+    expect(clearedSpecs).toHaveLength(1);
+    expect(clearedSpecs[0].if).toBeUndefined();
+  });
+
+  it('should merge plugin and module if predicates with extension predicates', () => {
+    const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
+    const pluginIf = { featureFlags: { $contains: 'plugin-flag' } };
+    const moduleIf = { permissions: { $contains: 'module.permission' } };
+    const extensionIf = { featureFlags: { $contains: 'extension-flag' } };
+    const moduleExtensionIf = { featureFlags: { $contains: 'module-flag' } };
+    const plugin = createFrontendPlugin({
+      pluginId: 'test-plugin',
+      if: pluginIf,
+      extensions: [
+        createExtension({
+          name: 'plugin-extension',
+          attachTo: { id: 'app', input: 'root' },
+          if: extensionIf,
+          output: [dataRef],
+          factory: () => [dataRef('plugin')],
+        }),
+        createExtension({
+          name: 'module-extension',
+          attachTo: { id: 'app', input: 'root' },
+          output: [dataRef],
+          factory: () => [dataRef('base')],
+        }),
+      ],
+    });
+    const module = createFrontendModule({
+      pluginId: 'test-plugin',
+      if: moduleIf,
+      extensions: [
+        plugin.getExtension('test-plugin/module-extension').override({
+          if: moduleExtensionIf,
+          factory: () => [dataRef('module')],
+        }),
+      ],
+    });
+
+    const specs = resolveAppNodeSpecs({
+      features: [plugin, module],
+      builtinExtensions: [],
+      parameters: [],
+      collector,
+    });
+
+    expect(specs).toHaveLength(2);
+    expect(specs[0].id).toBe('test-plugin/plugin-extension');
+    expect(specs[0].if).toEqual({ $all: [pluginIf, extensionIf] });
+    expect(specs[1].id).toBe('test-plugin/module-extension');
+    expect(specs[1].if).toEqual({ $all: [moduleIf, moduleExtensionIf] });
+  });
+
+  it('should allow module extension overrides to replace or remove extension if predicates', () => {
+    const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
+    const extensionIf = { featureFlags: { $contains: 'extension-flag' } };
+    const overrideIf = { permissions: { $contains: 'override.permission' } };
+    const plugin = createFrontendPlugin({
+      pluginId: 'test-plugin',
+      extensions: [
+        createExtension({
+          name: 'extension',
+          attachTo: { id: 'app', input: 'root' },
+          if: extensionIf,
+          output: [dataRef],
+          factory: () => [dataRef('base')],
+        }),
+      ],
+    });
+
+    const overriddenSpecs = resolveAppNodeSpecs({
+      features: [
+        plugin,
+        createFrontendModule({
+          pluginId: 'test-plugin',
+          extensions: [
+            plugin.getExtension('test-plugin/extension').override({
+              if: overrideIf,
+            }),
+          ],
+        }),
+      ],
+      builtinExtensions: [],
+      parameters: [],
+      collector,
+    });
+    const clearedSpecs = resolveAppNodeSpecs({
+      features: [
+        plugin,
+        createFrontendModule({
+          pluginId: 'test-plugin',
+          extensions: [
+            plugin.getExtension('test-plugin/extension').override({
+              if: undefined,
+            }),
+          ],
+        }),
+      ],
+      builtinExtensions: [],
+      parameters: [],
+      collector,
+    });
+
+    expect(overriddenSpecs).toHaveLength(1);
+    expect(overriddenSpecs[0].if).toEqual(overrideIf);
+    expect(clearedSpecs).toHaveLength(1);
+    expect(clearedSpecs[0].if).toBeUndefined();
   });
 });

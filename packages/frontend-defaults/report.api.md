@@ -23,7 +23,6 @@ export function createApp(options?: CreateAppOptions): {
 // @public
 export interface CreateAppOptions {
   advanced?: {
-    allowUnknownExtensionConfig?: boolean;
     configLoader?: () => Promise<{
       config: ConfigApi;
     }>;
@@ -36,11 +35,6 @@ export interface CreateAppOptions {
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   features?: (FrontendFeature | FrontendFeatureLoader)[];
 }
-
-// @public @deprecated (undocumented)
-export function createPublicSignInApp(options?: CreateAppOptions): {
-  createRoot(): JSX_2;
-};
 
 // @public (undocumented)
 export function discoverAvailableFeatures(config: Config): {

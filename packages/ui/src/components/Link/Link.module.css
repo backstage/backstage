@@ -37,6 +37,11 @@
       text-underline-offset: calc(0.025em + 2px);
       text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
     }
+
+    &[data-focus-visible] {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: 2px;
+    }
   }
 
   .bui-Link[data-variant='title-large'] {

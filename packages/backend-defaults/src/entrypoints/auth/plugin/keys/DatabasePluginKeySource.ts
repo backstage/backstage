@@ -17,7 +17,7 @@
 import { DatabaseService, LoggerService } from '@backstage/backend-plugin-api';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { JWK, exportJWK, generateKeyPair } from 'jose';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { InternalKey, KeyPayload, KeyStore } from './types';
 import { PluginKeySource } from './types';

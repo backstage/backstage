@@ -309,6 +309,11 @@ export const menuItemPropDefs: Record<string, PropDef> = {
     type: 'boolean',
     description: 'Whether the item is disabled.',
   },
+  noTrack: {
+    type: 'boolean',
+    description:
+      'Suppresses the automatic analytics click event, e.g. if you already have custom tracking.',
+  },
   textValue: {
     type: 'string',
     description: 'Text used for typeahead and accessibility.',

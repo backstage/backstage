@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import parseGitUrl from 'git-url-parse';
 import { GithubIntegrationConfig } from './config';
+import { parseGitUrlSafe } from '../helpers';
 import { GithubCredentials } from './types';
 
 /**
@@ -39,7 +39,7 @@ export function getGithubFileFetchUrl(
   credentials: GithubCredentials,
 ): string {
   try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUrl(url);
+    const { owner, name, ref, filepathtype, filepath } = parseGitUrlSafe(url);
     if (
       !owner ||
       !name ||
@@ -63,7 +63,7 @@ export function getGithubFileFetchUrl(
   }
 }
 
-export function chooseEndpoint(
+function chooseEndpoint(
   config: GithubIntegrationConfig,
   credentials: GithubCredentials,
 ): 'api' | 'raw' {

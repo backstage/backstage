@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { OpaqueApiRef } from '@internal/frontend';
 import type { ApiRef } from './types';
 
 /**
@@ -25,48 +26,110 @@ export type ApiRefConfig = {
   id: string;
 };
 
-class ApiRefImpl<T> implements ApiRef<T> {
-  constructor(private readonly config: ApiRefConfig) {
-    const valid = config.id
-      .split('.')
-      .flatMap(part => part.split('-'))
-      .every(part => part.match(/^[a-z][a-z0-9]*$/));
-    if (!valid) {
-      throw new Error(
-        `API id must only contain period separated lowercase alphanum tokens with dashes, got '${config.id}'`,
-      );
-    }
-  }
+type ApiRefBuilderConfig<TId extends string> = {
+  id: TId;
+  pluginId?: string;
+};
 
-  get id(): string {
-    return this.config.id;
-  }
-
-  // Utility for getting type of an api, using `typeof apiRef.T`
-  get T(): T {
-    throw new Error(`tried to read ApiRef.T of ${this}`);
-  }
-
-  toString() {
-    return `apiRef{${this.config.id}}`;
+function validateId(id: string): void {
+  const valid = id
+    .split('.')
+    .flatMap(part => part.split('-'))
+    .every(part => part.match(/^[a-z][a-z0-9]*$/));
+  if (!valid) {
+    throw new Error(
+      `API id must only contain period separated lowercase alphanum tokens with dashes, got '${id}'`,
+    );
   }
 }
 
+function makeApiRef<T, TId extends string>(
+  config: ApiRefBuilderConfig<TId>,
+): ApiRef<T, TId> & { readonly $$type: '@backstage/ApiRef' } {
+  return OpaqueApiRef.createInstance('v1', {
+    id: config.id,
+    ...(config.pluginId ? { pluginId: config.pluginId } : {}),
+    T: null as unknown as T,
+    toString() {
+      return `apiRef{${config.id}}`;
+    },
+  }) as ApiRef<T, TId> & { readonly $$type: '@backstage/ApiRef' };
+}
+
 /**
- * Creates a reference to an API. The provided `id` is a stable identifier for
- * the API implementation.
+ * Creates a reference to an API.
  *
  * @remarks
  *
- * The frontend system infers the owning plugin for an API from the `id`. The
+ * The `id` is a stable identifier for the API implementation. The frontend
+ * system infers the owning plugin for an API from the `id`. When using the
+ * builder form, you can instead provide a `pluginId` explicitly. The
  * recommended pattern is `plugin.<plugin-id>.*` (for example,
  * `plugin.catalog.entity-presentation`). This ensures that other plugins can't
  * mistakenly override your API implementation.
  *
- * @param config - The descriptor of the API to reference.
- * @returns An API reference.
+ * The recommended way to create an API reference is:
+ *
+ * ```ts
+ * const myApiRef = createApiRef<MyApi>().with({
+ *   id: 'my-api',
+ *   pluginId: 'my-plugin',
+ * });
+ * ```
+ *
+ * The legacy way to create an API reference is:
+ *
+ * ```ts
+ * const myApiRef = createApiRef<MyApi>({ id: 'plugin.my.api' });
+ * ```
+ *
  * @public
  */
-export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> {
-  return new ApiRefImpl<T>(config);
+/**
+ * Creates a reference to an API.
+ *
+ * @deprecated Use `createApiRef<T>().with(...)` instead.
+ * @public
+ */
+export function createApiRef<T>(
+  config: ApiRefConfig,
+): ApiRef<T> & { readonly $$type: '@backstage/ApiRef' };
+/**
+ * Creates a reference to an API.
+ *
+ * @remarks
+ *
+ * Returns a builder with a `.with()` method for providing the API reference
+ * configuration.
+ *
+ * @public
+ */
+export function createApiRef<T>(): {
+  with<const TId extends string>(
+    config: ApiRefConfig & { id: TId; pluginId?: string },
+  ): ApiRef<T, TId> & {
+    readonly $$type: '@backstage/ApiRef';
+  };
+};
+export function createApiRef<T>(config?: ApiRefConfig):
+  | (ApiRef<T> & { readonly $$type: '@backstage/ApiRef' })
+  | {
+      with<const TId extends string>(
+        config: ApiRefConfig & { id: TId; pluginId?: string },
+      ): ApiRef<T, TId> & {
+        readonly $$type: '@backstage/ApiRef';
+      };
+    } {
+  if (config) {
+    validateId(config.id);
+    return makeApiRef<T, string>(config);
+  }
+  return {
+    with<const TId extends string>(
+      withConfig: ApiRefConfig & { id: TId; pluginId?: string },
+    ): ApiRef<T, TId> & { readonly $$type: '@backstage/ApiRef' } {
+      validateId(withConfig.id);
+      return makeApiRef<T, TId>(withConfig);
+    },
+  };
 }

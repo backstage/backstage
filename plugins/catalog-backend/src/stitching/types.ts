@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
 
@@ -45,6 +46,8 @@ export interface Stitcher {
  * over-stitching of hot spot entities when fan-out/fan-in in terms of relations
  * is very large. It does however also come with some performance cost due to
  * the queuing with how much wall-clock time some types of task take.
+ *
+ * Note: Immediate mode is deprecated and will be removed in a future release.
  */
 export type StitchingStrategy =
   | {
@@ -56,12 +59,23 @@ export type StitchingStrategy =
       stitchTimeout: HumanDuration;
     };
 
-export function stitchingStrategyFromConfig(config: Config): StitchingStrategy {
+let immediateDeprecationLogged = false;
+
+export function stitchingStrategyFromConfig(
+  config: Config,
+  options: { logger: LoggerService },
+): StitchingStrategy {
   const strategyMode = config.getOptionalString(
     'catalog.stitchingStrategy.mode',
   );
 
   if (strategyMode === 'immediate') {
+    if (!immediateDeprecationLogged) {
+      immediateDeprecationLogged = true;
+      options.logger.warn(
+        'DEPRECATED: Immediate mode stitching has been deprecated, and will be removed in the next Backstage release.',
+      );
+    }
     return {
       mode: 'immediate',
     };

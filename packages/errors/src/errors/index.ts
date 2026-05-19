@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { assertError, isError } from './assertion';
+export { assertError, isError, toError } from './assertion';
 export type { ErrorLike } from './assertion';
 export {
   AuthenticationError,

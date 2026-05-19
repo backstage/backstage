@@ -52,12 +52,12 @@ exports.down = async function down(knex) {
   await knex.schema.alterTable('entities', table => {
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
     table.dropUnique([], 'entities_unique_full_name');
-    table.unique(['kind', 'namespace', 'name'], {
+    table.unique(['kind', 'name', 'namespace'], {
       indexName: 'entities_unique_name',
     });
   });
 
-  await knex.schema.alterTable('entities_search', table => {
+  await knex.schema.alterTable('entities', table => {
     table.dropColumn('full_name');
   });
 };

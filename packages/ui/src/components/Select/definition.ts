@@ -20,6 +20,8 @@ import type {
   SelectTriggerOwnProps,
   SelectContentOwnProps,
   SelectListBoxOwnProps,
+  SelectListBoxItemOwnProps,
+  SelectSectionOwnProps,
 } from './types';
 import styles from './Select.module.css';
 
@@ -59,6 +61,7 @@ export const SelectTriggerDefinition = defineComponent<SelectTriggerOwnProps>()(
       chevron: 'bui-SelectTriggerChevron',
       value: 'bui-SelectValue',
     },
+    bg: 'consumer',
     propDefs: {
       icon: {},
     },
@@ -94,13 +97,40 @@ export const SelectListBoxDefinition = defineComponent<SelectListBoxOwnProps>()(
     styles,
     classNames: {
       root: 'bui-SelectList',
-      item: 'bui-SelectItem',
-      itemIndicator: 'bui-SelectItemIndicator',
-      itemLabel: 'bui-SelectItemLabel',
       noResults: 'bui-SelectNoResults',
     },
     propDefs: {
       options: {},
     },
+  },
+);
+
+/**
+ * Component definition for SelectListBoxItem
+ * @internal
+ */
+export const SelectListBoxItemDefinition =
+  defineComponent<SelectListBoxItemOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-SelectItem',
+      indicator: 'bui-SelectItemIndicator',
+      label: 'bui-SelectItemLabel',
+    },
+    propDefs: {},
+  });
+
+/**
+ * Component definition for SelectSection
+ * @internal
+ */
+export const SelectSectionDefinition = defineComponent<SelectSectionOwnProps>()(
+  {
+    styles,
+    classNames: {
+      root: 'bui-SelectSection',
+      header: 'bui-SelectSectionHeader',
+    },
+    propDefs: {},
   },
 );

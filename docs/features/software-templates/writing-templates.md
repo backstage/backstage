@@ -325,6 +325,57 @@ spec:
         token: ${{ each.value.token }}
 ```
 
+### Defining a Secrets Schema
+
+You can define a JSON Schema for secrets that will be validated when a task is created. This is useful when secrets are passed programmatically (e.g., via CI/CD pipelines or API calls) rather than through the UI form. The schema ensures that required secrets are provided before task execution begins.
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: publish-to-npm
+  title: Publish to NPM
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  # Define required secrets with a JSON Schema
+  secrets:
+    schema:
+      required:
+        - NPM_TOKEN
+      properties:
+        NPM_TOKEN:
+          type: string
+          description: NPM authentication token for publishing
+
+  parameters:
+    - title: Package Details
+      properties:
+        packageName:
+          type: string
+          title: Package Name
+
+  steps:
+    - id: publish
+      action: npm:publish
+      input:
+        packageName: ${{ parameters.packageName }}
+        token: ${{ secrets.NPM_TOKEN }}
+```
+
+When a task is created without the required secrets, the API returns a `400` error with a descriptive message:
+
+```json
+{
+  "errors": [
+    {
+      "message": "secrets.NPM_TOKEN is required"
+    }
+  ]
+}
+```
+
 ### Custom step layouts
 
 If you find that the default layout of the form used in a particular step does not meet your needs then you can supply your own [custom step layout](./writing-custom-step-layouts.md).
@@ -525,7 +576,7 @@ token from the user, which you can do on a per-provider basis, in case your
 template can be published to multiple providers.
 
 Note, that you will need to configure an [authentication provider](../../auth/index.md#configuring-authentication-providers), alongside the
-[`ScmAuthApi`](../../auth/index.md#scaffolder-configuration-software-templates) for your source code management (SCM) service to make this feature work.
+[`ScmAuthApi`](../../auth/index.md#custom-scmauthapi-implementation) for your source code management (SCM) service to make this feature work.
 
 ### The Repository Branch Picker
 
@@ -695,6 +746,75 @@ input:
 
 When `each` is used, the outputs of a repeated step are returned as an array of outputs from each iteration.
 
+### Status Check Functions - `always()` and `failure()`
+
+By default, when a step fails during a scaffolder run, all subsequent steps are skipped and the task is marked as failed. This can be problematic when your template creates external resources (repositories, cloud infrastructure, deployments) that need to be cleaned up if a later step fails.
+
+Status check functions give you control over which steps run even after a failure. You use them inside a `${{ ... }}` template expression in the `if` field of a step.
+
+| Function    | Description                                                                  |
+| ----------- | ---------------------------------------------------------------------------- |
+| `always()`  | Always runs the step, regardless of whether previous steps passed or failed. |
+| `failure()` | Runs the step only when a previous step has failed.                          |
+
+These functions must be used as template expressions such as `${{ always() }}` or `${{ failure() }}`.
+
+After a step has failed, the scaffolder only attempts later steps whose `if` expression invokes one of these status check functions.
+
+#### Usage
+
+```yaml
+steps:
+  - id: cleanup
+    name: Cleanup Resources
+    action: my:cleanup:action
+    if: ${{ always() }}
+```
+
+#### Example: Cleanup on failure
+
+A common pattern is to create resources in early steps and add cleanup steps
+that only run if something goes wrong:
+
+```yaml
+steps:
+  - id: create-repo
+    name: Create Repository
+    action: publish:github
+    input:
+      repoUrl: ${{ parameters.repoUrl }}
+
+  - id: deploy
+    name: Deploy to Kubernetes
+    action: deploy:kubernetes
+    input:
+      manifest: ./k8s/deployment.yaml
+
+  # Only runs when a previous step failed — cleans up the repository
+  - id: cleanup-repo
+    name: Delete Repository
+    action: github:repo:delete
+    if: ${{ failure() }}
+    input:
+      repoUrl: ${{ parameters.repoUrl }}
+
+  # Always runs — post an audit event regardless of outcome
+  - id: audit
+    name: Post Audit Event
+    action: debug:log
+    if: ${{ always() }}
+    input:
+      message: 'Scaffolder run completed for ${{ parameters.repoUrl }}'
+
+  # Does not run after a failure, because it does not invoke a status check function
+  - id: plain-truthy-condition
+    name: Plain Truthy Condition
+    action: debug:log
+    if: ${{ true }}
+    input:
+      message: 'This step is skipped after a previous failure'
+```
+
 ## Outputs
 
 Each individual step can output some variables that can be used in the
@@ -714,6 +834,26 @@ output:
     - title: More information
       content: |
         **Entity URL:** `${{ steps['publish'].output.remoteUrl }}`
+```
+
+Output `links` and `text` items support an optional `if` condition, using the same syntax as step conditions. Items where the condition evaluates to false are excluded from the output:
+
+```yaml
+output:
+  links:
+    - title: Repository
+      url: ${{ steps['publish'].output.remoteUrl }}
+    - if: ${{ parameters.enableCI === "Yes" }}
+      title: CI Dashboard
+      url: https://ci.example.com/${{ parameters.name }}
+  text:
+    - title: Summary
+      content: |
+        **Component:** `${{ parameters.name }}`
+    - if: ${{ parameters.showDetails }}
+      title: Details
+      content: |
+        **CI enabled:** ${{ parameters.enableCI }}
 ```
 
 ## The templating syntax

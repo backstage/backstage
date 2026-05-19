@@ -20,6 +20,7 @@ import {
   createExtensionInput,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { z } from 'zod/v4';
 import {
   AsyncEntityProvider,
   entityRouteRef,
@@ -40,34 +41,33 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([coreExtensionData.reactElement]),
   },
-  config: {
-    schema: {
-      pagination: z =>
-        z
-          .union([
-            z.boolean(),
-            z.object({
-              mode: z.enum(['cursor', 'offset']),
-              limit: z.number().optional(),
-              offset: z.number().optional(),
-            }),
-          ])
-          .default(true),
-    },
+  configSchema: {
+    pagination: z
+      .union([
+        z.boolean(),
+        z.object({
+          mode: z.enum(['cursor', 'offset']),
+          limit: z.number().optional(),
+          offset: z.number().optional(),
+        }),
+      ])
+      .default(true),
   },
   factory(originalFactory, { inputs, config }) {
     return originalFactory({
       path: '/catalog',
       routeRef: rootRouteRef,
-      icon: <CategoryIcon />,
+      icon: <CategoryIcon fontSize="inherit" />,
       title: 'Catalog',
       loader: async () => {
-        const { BaseCatalogPage } = await import('../components/CatalogPage');
+        const { NfsDefaultCatalogPage } = await import(
+          '../components/CatalogPage/DefaultCatalogPage'
+        );
         const filters = inputs.filters.map(filter =>
           filter.get(coreExtensionData.reactElement),
         );
         return (
-          <BaseCatalogPage
+          <NfsDefaultCatalogPage
             filters={<>{filters}</>}
             pagination={config.pagination}
           />
@@ -99,30 +99,30 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContextMenuItemBlueprint.dataRefs.filterFunction.optional(),
     ]),
   },
-  config: {
-    schema: {
-      groups: z =>
-        z
-          .array(
-            z.record(
-              z.string(),
-              z.object({
-                title: z.string(),
-                icon: z.string().optional(),
-                aliases: z.array(z.string()).optional(),
-                contentOrder: z.enum(['title', 'natural']).optional(),
-              }),
-            ),
-          )
-          .optional(),
-      defaultContentOrder: z =>
-        z.enum(['title', 'natural']).optional().default('title'),
-      showNavItemIcons: z => z.boolean().optional().default(false),
-    },
+  configSchema: {
+    groups: z
+      .array(
+        z.record(
+          z.string(),
+          z.object({
+            title: z.string(),
+            icon: z.string().optional(),
+            aliases: z.array(z.string()).optional(),
+            contentOrder: z.enum(['title', 'natural']).optional(),
+          }),
+        ),
+      )
+      .optional(),
+    defaultContentOrder: z
+      .enum(['title', 'natural'])
+      .optional()
+      .default('title'),
+    showNavItemIcons: z.boolean().optional().default(false),
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
       path: '/catalog/:namespace/:kind/:name',
+      noHeader: true,
       title: 'Catalog Entity',
       // NOTE: The `convertLegacyRouteRef` call here ensures that this route ref
       // is mutated to support the new frontend system. Removing this conversion

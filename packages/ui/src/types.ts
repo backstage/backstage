@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { CSSProperties } from 'react';
+
 /** @public */
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -72,7 +74,11 @@ export type BorderRadius =
   | 'xl'
   | '2xl';
 
-/** @public */
+/**
+ * Border variants available for UI utility props.
+ *
+ * @public
+ */
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
 
 /** @public */
@@ -116,6 +122,20 @@ export interface PaddingProps {
 /** @public */
 export interface SpaceProps extends MarginProps, PaddingProps {}
 
+/**
+ * Flex item properties.
+ *
+ * @public
+ */
+export interface FlexItemProps {
+  /** Controls the flex-grow property. Values of `true` or `false` are converted to `1` or `0` respectively. */
+  grow?: Responsive<number | boolean>;
+  /** Controls the flex-shrink property. Values of `true` or `false` are converted to `1` or `0` respectively. */
+  shrink?: Responsive<number | boolean>;
+  /** Controls the flex-basis property. */
+  basis?: Responsive<CSSProperties['flexBasis']>;
+}
+
 /** @public */
 export type TextVariants =
   | 'title-large'
@@ -136,20 +156,37 @@ export type TextColorStatus = 'danger' | 'warning' | 'success' | 'info';
 /** @public */
 export type TextWeights = 'regular' | 'bold';
 
-/** @public */
+/**
+ * Shared utility props supported by layout-oriented UI components.
+ *
+ * @public
+ */
 export interface UtilityProps extends SpaceProps {
+  /** Aligns children on the cross axis in flex and grid layouts. */
   alignItems?: Responsive<AlignItems>;
+  /** Applies a semantic border variant. */
   border?: Responsive<Border>;
+  /** Applies a semantic border radius token. */
   borderRadius?: Responsive<BorderRadius>;
+  /** Sets the ending grid column line. */
   colEnd?: Responsive<Columns | 'auto'>;
+  /** Sets the number of grid columns to span. */
   colSpan?: Responsive<Columns | 'full'>;
+  /** Sets the starting grid column line. */
   colStart?: Responsive<Columns | 'auto'>;
+  /** Sets the number of columns for grid containers. */
   columns?: Responsive<Columns>;
+  /** Controls the CSS display value. */
   display?: Responsive<Display>;
+  /** Controls the direction of flex items. */
   flexDirection?: Responsive<FlexDirection>;
+  /** Controls how flex items wrap. */
   flexWrap?: Responsive<FlexWrap>;
+  /** Sets spacing between children in flex and grid layouts. */
   gap?: Responsive<Space>;
+  /** Aligns children on the main axis in flex and grid layouts. */
   justifyContent?: Responsive<JustifyContent>;
+  /** Sets the number of grid rows to span. */
   rowSpan?: Responsive<Columns | 'full'>;
 }
 

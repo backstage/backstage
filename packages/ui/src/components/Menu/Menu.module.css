@@ -69,51 +69,11 @@
     box-sizing: border-box;
     overflow: auto;
     min-width: 150px;
-    box-sizing: border-box;
     outline: none;
     padding-block: var(--bui-space-1);
   }
 
   .bui-MenuItem {
-    padding-inline: var(--bui-space-1);
-    display: block;
-
-    &:focus-visible {
-      outline: none;
-    }
-
-    &[data-focus-visible] {
-      outline: 2px solid var(--bui-ring);
-      outline-offset: -2px;
-    }
-
-    &[data-focused] .bui-MenuItemWrapper {
-      background: var(--bui-bg-neutral-2);
-      color: var(--bui-fg-primary);
-    }
-
-    &[data-open] .bui-MenuItemWrapper {
-      background: var(--bui-bg-neutral-2);
-      color: var(--bui-fg-primary);
-    }
-
-    &[data-color='danger'] .bui-MenuItemWrapper {
-      color: var(--bui-fg-danger);
-    }
-
-    &[data-color='danger'][data-focused] .bui-MenuItemWrapper {
-      background: var(--bui-bg-danger);
-      color: var(--bui-fg-danger);
-    }
-
-    &[data-has-submenu] {
-      & > .bui-MenuItemWrapper > .bui-MenuItemArrow {
-        display: block;
-      }
-    }
-  }
-
-  .bui-MenuItemWrapper {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -121,17 +81,61 @@
     padding-inline: var(--bui-space-2);
     border-radius: var(--bui-radius-2);
     outline: none;
-    cursor: default;
     color: var(--bui-fg-primary);
     font-size: var(--bui-font-size-3);
     gap: var(--bui-space-6);
+    cursor: pointer;
+    margin-inline: var(--bui-space-1);
+
+    &[data-focus-visible] {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: -2px;
+    }
+
+    &[data-focused] {
+      background: var(--bui-bg-neutral-2);
+      color: var(--bui-fg-primary);
+    }
+
+    &[data-open] {
+      background: var(--bui-bg-neutral-2);
+      color: var(--bui-fg-primary);
+    }
+
+    &[data-color='danger'] {
+      color: var(--bui-fg-danger);
+    }
+
+    &[data-color='danger'][data-focused] {
+      background: var(--bui-bg-danger);
+      color: var(--bui-fg-danger);
+    }
+
+    &[data-has-submenu] {
+      & > .bui-MenuItemArrow {
+        display: block;
+      }
+    }
   }
 
   .bui-MenuItemListBox {
-    padding-inline: var(--bui-space-1);
-    display: block;
+    display: flex;
+    align-items: center;
+    height: 2rem;
+    padding-inline: var(--bui-space-2);
+    border-radius: var(--bui-radius-2);
+    outline: none;
+    color: var(--bui-fg-primary);
+    font-size: var(--bui-font-size-3);
+    cursor: pointer;
 
-    &:hover .bui-MenuItemWrapper {
+    &[data-focus-visible] {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: -2px;
+    }
+
+    &[data-hovered],
+    &[data-focused] {
       background: var(--bui-bg-neutral-2);
       color: var(--bui-fg-primary);
     }

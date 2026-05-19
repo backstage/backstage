@@ -18,45 +18,37 @@ import { queryPostgresMajorVersion } from './util';
 
 jest.setTimeout(60_000);
 
-describe('util', () => {
-  describe('unsupported', () => {
-    const databases = TestDatabases.create({
-      ids: ['SQLITE_3', 'MYSQL_8'],
-    });
-
-    it.each(databases.eachSupportedId())(
-      'should fail on get postgres major version, %p',
-      async databaseId => {
-        const knex = await databases.init(databaseId);
-
-        await expect(
-          async () => await queryPostgresMajorVersion(knex),
-        ).rejects.toThrow();
-      },
-    );
-  });
-
-  describe('supported', () => {
-    const databases = TestDatabases.create({
-      ids: ['POSTGRES_18', 'POSTGRES_14'],
-    });
-
-    if (databases.eachSupportedId().length < 1) {
-      // Only execute tests if at least on database engine is available, e.g. if
-      // not in CI=1. it.each doesn't support an empty array.
-      return;
-    }
-
-    it.each(databases.eachSupportedId())(
-      'should get postgres major version, %p',
-      async databaseId => {
-        const knex = await databases.init(databaseId);
-        const expectedVersion = +databaseId.slice(9);
-
-        await expect(queryPostgresMajorVersion(knex)).resolves.toBe(
-          expectedVersion,
-        );
-      },
-    );
-  });
+const unsupportedDatabases = TestDatabases.create({
+  ids: ['SQLITE_3', 'MYSQL_8'],
 });
+
+describe.each(unsupportedDatabases.eachSupportedId())(
+  'util unsupported, %p',
+  databaseId => {
+    it('should fail on get postgres major version', async () => {
+      const knex = await unsupportedDatabases.init(databaseId);
+
+      await expect(
+        async () => await queryPostgresMajorVersion(knex),
+      ).rejects.toThrow();
+    });
+  },
+);
+
+const supportedDatabases = TestDatabases.create({
+  ids: ['POSTGRES_18', 'POSTGRES_14'],
+});
+
+describe.each(supportedDatabases.eachSupportedId())(
+  'util supported, %p',
+  databaseId => {
+    it('should get postgres major version', async () => {
+      const knex = await supportedDatabases.init(databaseId);
+      const expectedVersion = +databaseId.slice(9);
+
+      await expect(queryPostgresMajorVersion(knex)).resolves.toBe(
+        expectedVersion,
+      );
+    });
+  },
+);

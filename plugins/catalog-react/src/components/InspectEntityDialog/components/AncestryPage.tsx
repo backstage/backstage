@@ -27,16 +27,15 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { useApi, useApp, useRouteRef } from '@backstage/core-plugin-api';
-import Box from '@material-ui/core/Box';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import { Text, Box } from '@backstage/ui';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';
-import { humanizeEntityRef } from '../../EntityRefLink';
 import { entityRouteRef } from '../../../routes';
+import { useEntityPresentation } from '../../../apis';
 import { EntityKindIcon } from './EntityKindIcon';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -137,15 +136,7 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
   const paddedWidth = paddedIconWidth + width + padding * 2;
   const paddedHeight = height + padding * 2;
 
-  const displayTitle =
-    node.metadata.title ||
-    (node.kind && node.metadata.name && node.metadata.namespace
-      ? humanizeEntityRef({
-          kind: node.kind,
-          name: node.metadata.name,
-          namespace: node.metadata.namespace || '',
-        })
-      : node.id);
+  const { primaryTitle: displayTitle } = useEntityPresentation(node);
 
   const onClick = () => {
     navigate(
@@ -209,19 +200,18 @@ export function AncestryPage(props: { entity: Entity }) {
 
   return (
     <>
-      <DialogContentText variant="h2">
-        {t('inspectEntityDialog.ancestryPage.title')}
-      </DialogContentText>
-      <DialogContentText gutterBottom>
-        {t('inspectEntityDialog.ancestryPage.description', {
-          processorsLink: (
-            <Link to="https://backstage.io/docs/features/software-catalog/life-of-an-entity">
-              {t('inspectEntityDialog.ancestryPage.processorsLink')}
-            </Link>
-          ),
-        })}
-      </DialogContentText>
-      <Box mt={4}>
+      <Box mb="2">
+        <Text as="p">
+          {t('inspectEntityDialog.ancestryPage.description', {
+            processorsLink: (
+              <Link to="https://backstage.io/docs/features/software-catalog/life-of-an-entity">
+                {t('inspectEntityDialog.ancestryPage.processorsLink')}
+              </Link>
+            ),
+          })}
+        </Text>
+      </Box>
+      <Box mt="8">
         <DependencyGraph
           nodes={nodes}
           edges={edges}

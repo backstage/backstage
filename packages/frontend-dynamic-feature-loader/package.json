@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-dynamic-feature-loader",
-  "version": "0.1.10-next.0",
+  "version": "0.1.12-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -35,9 +35,9 @@
     "@backstage/config": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/module-federation-common": "workspace:^",
-    "@module-federation/enhanced": "^0.21.6",
-    "@module-federation/runtime": "^0.21.6",
-    "@module-federation/sdk": "^0.21.6",
+    "@module-federation/enhanced": "^2.3.3",
+    "@module-federation/runtime": "^2.3.3",
+    "@module-federation/sdk": "^2.3.3",
     "cross-fetch": "^4.0.0",
     "uri-template": "^2.0.0"
   },

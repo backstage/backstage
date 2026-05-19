@@ -126,6 +126,15 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): AsyncIterable<Location_2[]>;
   // (undocumented)
+  updateLocation(
+    id: string,
+    location: {
+      type?: string;
+      target: string;
+    },
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): Promise<Location_2>;
+  // (undocumented)
   validateEntity(
     entity: Entity,
     locationRef: string,

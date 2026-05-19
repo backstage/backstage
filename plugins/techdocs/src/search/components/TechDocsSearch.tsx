@@ -15,15 +15,17 @@
  */
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { ResultHighlight } from '@backstage/plugin-search-common';
 import {
   SearchAutocomplete,
   SearchContextProvider,
-  useSearch,
 } from '@backstage/plugin-search-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
+import {
+  useTechDocsSearch,
+  TechDocsSearchResult,
+} from '../../hooks/useTechDocsSearch';
 
 /**
  * Props for {@link TechDocsSearch}
@@ -35,21 +37,6 @@ export type TechDocsSearchProps = {
   entityTitle?: string;
   debounceTime?: number;
   searchResultUrlMapper?: (url: string) => string;
-};
-
-type TechDocsDoc = {
-  namespace: string;
-  kind: string;
-  name: string;
-  path: string;
-  location: string;
-  title: string;
-};
-
-type TechDocsSearchResult = {
-  type: string;
-  document: TechDocsDoc;
-  highlight?: ResultHighlight;
 };
 
 const isTechDocsSearchResult = (
@@ -67,40 +54,7 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
   } = props;
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const {
-    setFilters,
-    term,
-    result: { loading, value: searchVal },
-  } = useSearch();
-  const [options, setOptions] = useState<any[]>([]);
-  useEffect(() => {
-    let mounted = true;
-
-    if (mounted && searchVal) {
-      // TODO: Change this into getting only subset of search results from the BE in the first place
-      // once pagination is implemented for search engines
-      // See: https://github.com/backstage/backstage/issues/6062
-      const searchResults = searchVal.results.slice(0, 10);
-      setOptions(searchResults);
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [loading, searchVal]);
-
-  // Update the filter context when the entityId changes, e.g. when the search
-  // bar continues to be rendered, navigating between different TechDocs sites.
-  const { kind, name, namespace } = entityId;
-  useEffect(() => {
-    setFilters(prevFilters => {
-      return {
-        ...prevFilters,
-        kind,
-        namespace,
-        name,
-      };
-    });
-  }, [kind, namespace, name, setFilters]);
+  const { results, term, loading } = useTechDocsSearch(entityId);
 
   const handleSelection = (
     _: any,
@@ -133,7 +87,7 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
       blurOnSelect
       noOptionsText="No results found"
       value={null}
-      options={options}
+      options={results}
       renderOption={({ document, highlight }) => (
         <TechDocsSearchResultListItem
           result={document}

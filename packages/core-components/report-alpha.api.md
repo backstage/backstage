@@ -5,7 +5,7 @@
 ```ts
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const coreComponentsTranslationRef: TranslationRef<
   'core-components',
   {
@@ -21,13 +21,16 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'table.pagination.lastTooltip': 'Last Page';
     readonly 'table.pagination.nextTooltip': 'Next Page';
     readonly 'table.pagination.previousTooltip': 'Previous Page';
+    readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
+    readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
+    readonly 'emptyState.missingAnnotation.readMore': 'Read more';
     readonly 'signIn.title': 'Sign In';
     readonly 'signIn.loginFailed': 'Login failed';
     readonly 'signIn.customProvider.title': 'Custom User';
+    readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.subtitle': 'Enter your own User ID and credentials.\n This selection will not be stored.';
     readonly 'signIn.customProvider.userId': 'User ID';
     readonly 'signIn.customProvider.tokenInvalid': 'Token is not a valid OpenID Connect JWT Token';
-    readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.idToken': 'ID Token (optional)';
     readonly 'signIn.guestProvider.title': 'Guest';
     readonly 'signIn.guestProvider.enter': 'Enter';
@@ -44,9 +47,6 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'errorPage.goBack': 'Go back';
     readonly 'errorPage.showMoreDetails': 'Show more details';
     readonly 'errorPage.showLessDetails': 'Show less details';
-    readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
-    readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
-    readonly 'emptyState.missingAnnotation.readMore': 'Read more';
     readonly 'supportConfig.default.title': 'Support Not Configured';
     readonly 'supportConfig.default.linkTitle': 'Add `app.support` config key';
     readonly 'errorBoundary.title': 'Please contact {{slackChannel}} for help.';
@@ -64,6 +64,7 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'dependencyGraph.fullscreenTooltip': 'Toggle fullscreen';
     readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';
     readonly 'logViewer.searchField.placeholder': 'Search';
+    readonly 'logViewer.downloadBtn.tooltip': 'Download logs';
   }
 >;
 

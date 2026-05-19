@@ -1,5 +1,90 @@
 # @backstage/plugin-auth
 
+## 0.1.8-next.2
+
+### Patch Changes
+
+- 4f62755: Improved the OAuth consent dialog for MCP authorization by showing more client details, including the client metadata host for CIMD clients, the metadata URL, callback URL, and requested scopes.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.3
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/theme@0.7.3
+
+## 0.1.7
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/ui@0.14.0
+  - @backstage/errors@1.3.0
+  - @backstage/theme@0.7.3
+  - @backstage/frontend-plugin-api@0.16.0
+
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/theme@0.7.3-next.0
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.2
+
+## 0.1.6
+
+### Patch Changes
+
+- 06294aa: Migrated the ConsentPage UI from Material-UI and `@backstage/core-components` to `@backstage/ui`.
+- aa29b50: New frontend system pages now use the default plugin header together with `HeaderPage` instead of the legacy core page header pattern.
+- Updated dependencies
+  - @backstage/ui@0.13.0
+  - @backstage/frontend-plugin-api@0.15.0
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-components@0.18.8-next.1
+
 ## 0.1.6-next.0
 
 ### Patch Changes

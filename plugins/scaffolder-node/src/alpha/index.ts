@@ -153,3 +153,54 @@ export const scaffolderWorkspaceProviderExtensionPoint =
   createExtensionPoint<ScaffolderWorkspaceProviderExtensionPoint>({
     id: 'scaffolder.workspace.provider',
   });
+
+import { createPermissionResourceRef } from '@backstage/plugin-permission-node';
+import {
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
+} from '@backstage/plugin-scaffolder-common/alpha';
+import type {
+  TemplateEntityStepV1beta3,
+  TemplateParametersV1beta3,
+} from '@backstage/plugin-scaffolder-common';
+import type { JsonObject } from '@backstage/types';
+import type {
+  SerializedTask,
+  TaskFilter,
+} from '@backstage/plugin-scaffolder-node';
+
+/**
+ * Permission resource ref for scaffolder templates.
+ * @alpha
+ */
+export const scaffolderTemplatePermissionResourceRef =
+  createPermissionResourceRef<
+    TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+    {}
+  >().with({
+    pluginId: 'scaffolder',
+    resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  });
+
+/**
+ * Permission resource ref for scaffolder actions.
+ * @alpha
+ */
+export const scaffolderActionPermissionResourceRef =
+  createPermissionResourceRef<JsonObject, {}>().with({
+    pluginId: 'scaffolder',
+    resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  });
+
+/**
+ * Permission resource ref for scaffolder tasks.
+ * @alpha
+ */
+export const scaffolderTaskPermissionResourceRef = createPermissionResourceRef<
+  SerializedTask,
+  TaskFilter
+>().with({
+  pluginId: 'scaffolder',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+});

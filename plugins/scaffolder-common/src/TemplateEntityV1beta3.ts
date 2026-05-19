@@ -57,7 +57,14 @@ export interface TemplateEntityV1beta3 extends Entity {
     EXPERIMENTAL_recovery?: TemplateRecoveryV1beta3;
 
     /**
-     * Form hooks to be run
+     * Form decorators to be run before submission.
+     */
+    formDecorators?: { id: string; input?: JsonObject }[];
+
+    /**
+     * Form decorators to be run before submission.
+     *
+     * @deprecated Use `spec.formDecorators` instead.
      */
     EXPERIMENTAL_formDecorators?: { id: string; input?: JsonObject }[];
 
@@ -67,6 +74,13 @@ export interface TemplateEntityV1beta3 extends Entity {
      * variables passed from the user into each action in the template.
      */
     parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
+    /**
+     * Configuration for secrets that are passed during task creation.
+     * The schema field contains a JSONSchema used to validate secrets.
+     */
+    secrets?: {
+      schema?: JsonObject;
+    };
     /**
      * A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
      * javascript action and some optional input parameters that may or may not have been collected from the end user.
@@ -157,6 +171,10 @@ export type TemplateParameterSchema = {
     description?: string;
     schema: JsonObject;
   }>;
+  formDecorators?: { id: string; input?: JsonObject }[];
+  /**
+   * @deprecated Use {@link TemplateParameterSchema.formDecorators} instead.
+   */
   EXPERIMENTAL_formDecorators?: { id: string; input?: JsonObject }[];
 };
 

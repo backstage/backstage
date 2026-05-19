@@ -14,19 +14,17 @@ How to handle common errors.
 
 ## First steps with the new plugin
 
-### Creating a todo plugin
+### Exploring the scaffolded code
 
-We're going to be creating the frontend for a todo list plugin. We want the user to be able to create todos for themselves and show the user their current list of todos.
-
-To start, we'll use a list of mocked data.
+Walk through the generated TodoPage and TodoList components, the plugin definition, and how they fit together.
 
 ### Controlling your component dynamically
 
-Update the mocked data to be controlled by config.
+Show how to disable extensions and configure them dynamically using a PageBlueprint config schema and validated config passed into factories (without using configApiRef).
 
 ### HTTP API
 
-We want our todo plugin to reach the backend that we implemented in [the backend plugin Golden Path](../backend/001-first-steps.md). Let's write a client to do this (or use OpenAPI to generate a client for us).
+The scaffolded plugin already fetches from the backend. Walk through how discoveryApiRef and fetchApiRef work together, and show how to extract a client class.
 
 ### Testing
 

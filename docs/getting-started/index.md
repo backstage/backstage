@@ -101,21 +101,46 @@ To create the application:
 
 1. Type the following command to install the Backstage application.
 
-```bash
-     npx @backstage/create-app@latest
-```
+   ```bash
+   npx @backstage/create-app@latest
+   ```
 
 2. If this is the first time that you are installing a Backstage application on this device, the following question is displayed. Enter `y` and select `Enter` to proceed with the installation.
 
-```
-     Need to install the following packages:
-     @backstage/create-app@0.7.4
-     ok to proceed? (y)
-```
+   ```console
+   Need to install the following packages:
+   @backstage/create-app@<version>
+   ok to proceed? (y)
+   ```
 
 3. Enter the name for your application and select `Enter`. This is the root directory of your application. In this example, the name is set to `my-backstage-app`.
 
-   ![create app](../assets/getting-started/create-app-output.png)
+   ```console
+   ? Enter a name for the app [required] my-backstage-app
+
+   Creating the app...
+
+   Checking if the directory is available:
+
+   checking      my-backstage-app ✔
+
+   Creating a temporary app directory:
+
+   Preparing files:
+   copying       .dockerignore ✔
+   copying       .eslintignore ✔
+   templating    .eslintrc.js.hbs ✔
+   ...
+   Moving to final location:
+   moving        my-backstage-app ✔
+   fetching      yarn.lock seed ✔
+
+   Installing dependencies:
+   executing     yarn install ✔
+   executing     yarn tsc ✔
+
+   Successfully created my-backstage-app
+   ```
 
 Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn start` command. The `yarn start` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.
 

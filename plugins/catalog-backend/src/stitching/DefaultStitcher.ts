@@ -63,7 +63,9 @@ export class DefaultStitcher implements Stitcher {
       knex: options.knex,
       logger: options.logger,
       metrics: options.metrics,
-      strategy: stitchingStrategyFromConfig(config),
+      strategy: stitchingStrategyFromConfig(config, {
+        logger: options.logger,
+      }),
     });
   }
 
