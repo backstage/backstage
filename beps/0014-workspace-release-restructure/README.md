@@ -533,6 +533,12 @@ workspace.
   patches to apply for a `@next` release: if a referenced patch is still present in
   any `.patches/` directory, the dependent patch is skipped.
 
+  This is a constraint, not a trigger. Promoting the patches of one workspace never
+  automatically promotes the patches of another; each workspace decides when to cut
+  its own major release. The constraint only affects which dependent patches become
+  eligible for inclusion in the next major of the depending workspace when its
+  maintainers do decide to cut it.
+
 The patch payload is a normal `git` diff. We use `git apply` with `--3way` so that
 trivial textual conflicts caused by unrelated edits to the same file can be resolved
 automatically; non-trivial conflicts fail CI and require the author of the conflicting
@@ -829,15 +835,7 @@ workspace that has not been migrated yet. There is no flag day.
 
 ## Open Questions
 
-The following items are still open and should be resolved during the implementation
-phase. Decisions made during BEP review are recorded in
+No outstanding open questions. Decisions made during BEP review are recorded in
 [Workspace map](#workspace-map), [Release cadence per workspace](#release-cadence-per-workspace),
+[Patch file format](#patch-file-format), [Publish-time safeguards](#publish-time-safeguards),
 and [Versioning of the core framework](#versioning-of-the-core-framework).
-
-1. **"Linked patches" across workspaces.** Cross-workspace ordering is covered by
-   `meta.yaml`'s `notBefore.patches` (see [Patch file format](#patch-file-format)).
-   That covers the "this patch must wait for that one" case. Do we also need a
-   "linked patch" concept where promoting one patch automatically promotes the others,
-   even though they live in different workspaces? It is unclear whether this would ever
-   be safe in practice, and the safer default may be to require each workspace to
-   promote its own patches.
