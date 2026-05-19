@@ -15,7 +15,7 @@ If you happen to have enabled automatic feature discovery (which is
 very uncommon at the time of writing), you do not need to perform this step.</p>
 </div>
 <p>And finally make sure to enable it in your config:</p>
-<pre><code class="yaml"><span class="hl-0"># In app-config.yaml - NOT app-config.production.yaml</span><br/><span class="hl-10">auth</span><span class="hl-2">:</span><br/><span class="hl-2">  </span><span class="hl-10">providers</span><span class="hl-2">:</span><br/><span class="hl-2">    </span><span class="hl-10">guest</span><span class="hl-2">: {}</span>
+<pre><code class="yaml"><span class="hl-0"># In app-config.yaml - NOT app-config.production.yaml</span><br/><span class="hl-14">auth</span><span class="hl-2">:</span><br/><span class="hl-2">  </span><span class="hl-14">providers</span><span class="hl-2">:</span><br/><span class="hl-2">    </span><span class="hl-14">guest</span><span class="hl-2">: {}</span>
 </code><button type="button">Copy</button></pre>
 
 <p>Notice the double curly braces, which correspond to an empty object. This sets everything up using the default settings, which are:</p>
