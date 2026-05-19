@@ -179,8 +179,10 @@ that other plugins build on. Intended cadence: slow, on the order of months betw
 major releases.
 
 Defaults packages (`app-defaults`, `backend-defaults`, `frontend-defaults`) are included
-here because they are conceptually part of the framework. Whether they should be split
-out for a faster cadence is left as an open question.
+because they are conceptually part of the framework. Although they tend to absorb
+breaking changes more often than the rest of the framework, the framework release
+cadence under this BEP is frequent enough that a shared cadence with the rest of the
+workspace is acceptable, so we do not split them out.
 
 Packages from `packages/`:
 
@@ -815,24 +817,14 @@ phase. Decisions made during BEP review are recorded in
 [Workspace map](#workspace-map), [Release cadence per workspace](#release-cadence-per-workspace),
 and [Versioning of the core framework](#versioning-of-the-core-framework).
 
-1. **Defaults packages cadence.** `app-defaults`, `backend-defaults`, and
-   `frontend-defaults` are currently grouped with the `framework` workspace. We may
-   want them to ship breaking changes more often than the rest of the framework.
-   Options:
-
-   - (a) Keep them in `framework`, accept the slower cadence.
-   - (b) Move them into a separate `defaults` workspace that releases independently.
-   - (c) Keep them in `framework` but allow `defaults`-only majors that do not bump the
-     framework release identifier.
-
-2. **Events ecosystem placement.** The base `events` packages live in `framework`, but
+1. **Events ecosystem placement.** The base `events` packages live in `framework`, but
    the third-party integration modules (`plugin-events-backend-module-aws-sqs`,
    `…-github`, `…-gitlab`, `…-kafka`, …) may want a faster cadence than the framework
    allows. Do we keep them in `framework`, split them into an `events-modules`
    workspace, or move events out of `framework` entirely once the framework moves
    towards a slow major cadence?
 
-3. **"Linked patches" across workspaces.** Cross-workspace ordering is covered by
+2. **"Linked patches" across workspaces.** Cross-workspace ordering is covered by
    `meta.yaml`'s `notBefore.patches` (see [Patch file format](#patch-file-format)).
    That covers the "this patch must wait for that one" case. Do we also need a
    "linked patch" concept where promoting one patch automatically promotes the others,
