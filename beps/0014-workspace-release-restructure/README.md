@@ -841,11 +841,13 @@ version matrix.
   [Major releases via the Promote PR](#major-releases-via-the-promote-pr)).
 - `dispatch-next` runs whenever the staged changes set has changed for the
   workspace, and only when the workspace has at least one staged change. It applies
-  the entries in a temporary checkout, runs `yarn changeset version` to compute the
-  next-major base versions, suffixes them with `-next.<N>` from the shared
-  workspace counter, and dispatches a publish with `tag: next`. For `framework` every
-  package in the workspace is republished at the next framework release identifier;
-  for every other workspace only packages directly affected by a staged change are
+  the staged entries to `main` in a temporary checkout, synthesizes a changeset for
+  each entry's `description.md`, runs `yarn changeset version` against **only** that
+  synthesized set (regular pending changesets in `.changeset/` are excluded),
+  suffixes the resulting versions with `-next.<N>` from the shared workspace
+  counter, and dispatches a publish with `tag: next`. For `framework` every package
+  in the workspace is republished at the next framework release identifier; for
+  every other workspace only packages directly affected by a staged change are
   bumped. See [Next pre-release versioning](#next-pre-release-versioning) for the
   exact rules. `@next` does not require the Version Packages PR to be merged — it
   tracks `main` directly.
@@ -1403,10 +1405,18 @@ The set of packages that participate in `@next` is workspace-dependent:
 #### Base version per package
 
 For each package that is published as `@next`, the base version (the portion before
-`-next.`) is what `yarn changeset version` would produce on top of `main` with every
-applicable staged change applied, using the union of (a) the existing changesets in
-the workspace and (b) the changesets synthesized from every entry's `description.md`.
-This is the standard Changesets computation; we do not reinvent it.
+`-next.`) is what `yarn changeset version` would produce when given **only the
+changesets synthesized from every staged change's `description.md`** — regular
+pending changesets in `.changeset/` are deliberately excluded. Those regular
+changesets ship through the Version Packages PR flow and their bumps appear in a
+future `@latest` release; `@next` does not preview them. This keeps the meaning of
+the `@next` version stable: it reflects exactly the queued breaking changes for the
+next major, and nothing else.
+
+The published code that ships as `@next` is the result of applying every staged
+change to the current `main` (so the runtime behavior matches what the next major
+would actually contain), but the published _version_ is derived only from the
+staged changes.
 
 In practice the base resolves to:
 
