@@ -406,21 +406,21 @@ and is for development only — it does not double as a project-wide example.
 
 Every workspace uses the same mainline-release mechanism: the changesets bot
 maintains a `Version Packages (<workspace>)` pull request that accumulates pending
-changesets and bumps versions. A maintainer reviews and merges that PR; the merge
-triggers an `@latest` release for that workspace. There is no `immediate`, no
-`workflow_dispatch`-only path, no per-workspace cadence mode in `package.json`.
+changesets and bumps versions. A maintainer reviews and merges that PR, and the
+merge triggers an `@latest` release for that workspace. This is the only mainline
+flow — there is no per-workspace mode configuration to pick.
 
-The reason is operational: any flow that pushes version bumps to `main` without
-human review either bypasses the repository's branch protection or relies on a
-service account that cannot review its own PRs. Neither is acceptable for the same
-security and review reasons that motivate
-[Publish-time safeguards](#publish-time-safeguards). The Version Packages PR flow
-already gives us a low-friction human-in-the-loop checkpoint that satisfies branch
-protection without any further complications.
+We chose this single flow rather than offering an "immediate" / no-human-in-the-loop
+alternative because any flow that pushes version bumps to `main` without human
+review either bypasses the repository's branch protection or relies on a service
+account that cannot review its own PRs. Neither is acceptable for the same security
+and review reasons that motivate [Publish-time safeguards](#publish-time-safeguards).
+The Version Packages PR flow already gives us a low-friction human-in-the-loop
+checkpoint that satisfies branch protection without any further complications.
 
-The cadence variation across workspaces happens naturally in practice — `framework`
-ships rarely, `home` ships whenever a fix lands — purely as a function of how often
-maintainers merge their Version Packages PR.
+Cadence variation across workspaces happens naturally — `framework` ships rarely,
+`home` ships whenever a fix lands — purely as a function of how often maintainers
+merge their Version Packages PR.
 
 #### Finding pending releases
 
