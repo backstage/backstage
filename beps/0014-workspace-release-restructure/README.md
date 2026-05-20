@@ -567,24 +567,27 @@ that state it carries a single empty changeset and the description "no staged
 changes queued"; this avoids the noise of creating and closing the PR repeatedly as
 staged changes come and go.
 
-The PR is held as a **draft** at all times. Flipping it to ready-for-review is the
-explicit human signal that "this workspace is taking its next coordinated release
-now". A maintainer flips the PR, the rest of the review policy for the workspace
-applies (required reviewers, status checks, etc.), and merging the PR triggers the
-release through the same mainline cadence the workspace uses for every other
-release — there is no separate publish path. In the typical case the staged set
-contains breaking changes and the resulting release is a major bump (and for the
-framework workspace it always moves to a new YYNN), but if every staged change
-happens to be non-breaking the resulting release is just a minor or patch bump.
+The Promote PR is opened as a regular pull request — the same shape as a Version
+Packages PR — and the regular review-and-merge process is the one that applies.
+Merging the PR is the signal to ship: it triggers the release through the same
+mainline flow the workspace uses for every other release, with no separate publish
+path. In the typical case the staged set contains breaking changes and the
+resulting release is a major bump (and for the framework workspace it always moves
+to a new YYNN), but if every staged change happens to be non-breaking the resulting
+release is just a minor or patch bump.
 
-Because the PR is force-pushed on every relevant change to `main`, reviewers are
-expected to start a final review only after flipping the PR to ready, not while it is
-still in draft. The branch protection on the Promote PR's base branch must enable
-"Dismiss stale pull request approvals when new commits are pushed", so that an
-approval cast before a force-push does not carry over to the post-force-push branch.
-This is the standard branch-protection setting Backstage already uses elsewhere; we
-just want to make sure it stays on. The PR is also marked auto-mergeable in the same
-way as any other PR; the draft-vs-ready toggle is the gate.
+Maintainers may manually convert the PR to draft at any time, for example to signal
+that the staged set is not yet ready for review or to defer the release. The bot
+respects that state and does not convert the PR back from draft to ready on
+subsequent updates; the only thing it does is keep the branch up to date by
+force-pushing on every relevant change to `main`.
+
+Because the PR is force-pushed on every relevant change to `main`, the branch
+protection on the PR's base branch must enable "Dismiss stale pull request
+approvals when new commits are pushed", so that an approval cast before a
+force-push does not carry over to the post-force-push branch. This is the standard
+branch-protection setting Backstage already uses elsewhere; we just want to make
+sure it stays on.
 
 ### Back-ported fixes
 
@@ -824,8 +827,8 @@ conflicting PR to update the staged change.
    bot-maintained `Promote major (<workspace>)` PR already contains the result of
    applying every queued staged change (see
    [Major releases via the Promote PR](#major-releases-via-the-promote-pr)). To ship
-   the major, a workspace maintainer flips that PR from draft to ready-for-review
-   and follows the normal review-and-merge process for the workspace.
+   the major, a workspace maintainer follows the normal review-and-merge process
+   for the workspace on that PR.
 
 ### Release workflow
 
@@ -866,7 +869,7 @@ version matrix.
 - `promote-pr` always runs. It applies every staged change in a temporary checkout,
   converts each entry's `description.md` into a changeset, deletes the `.staged/`
   directories, and force-pushes the result onto the `Promote major (<workspace>)`
-  PR branch. The PR is kept in draft (see
+  PR branch (see
   [Major releases via the Promote PR](#major-releases-via-the-promote-pr)).
 - `dispatch-next` runs whenever (a) the staged changes set has changed for the
   workspace, or (b) a regular `@latest` release has just shipped for the workspace,
@@ -1091,8 +1094,8 @@ For adopters this means three useful properties:
 #### Promotion trigger
 
 There is no fixed calendar for when framework releases ship. The trigger is the same
-as for every other workspace: a maintainer flipping the `Promote major (framework)`
-PR from draft to ready-for-review (see
+as for every other workspace: a maintainer reviewing and merging the
+`Promote major (framework)` PR (see
 [Major releases via the Promote PR](#major-releases-via-the-promote-pr)). The
 calendar-driven behavior is in the identifier itself: `YY` is the current two-digit
 year and `NN` is whichever is larger of the current calendar month and one greater
@@ -1586,8 +1589,7 @@ The migration is staged so that no single PR has to move the entire repository.
 8. **Roll out staged changes.** Once `framework` is migrated and stable, enable the
    staged-change flow. The first end-to-end exercise is a real deprecation PR: file
    the deprecation and the staged removal together, verify the `@next` release picks
-   the staged removal up, then flip the `Promote major` PR to ready-for-review and
-   ship the major.
+   the staged removal up, then merge the `Promote major` PR to ship the major.
 
 9. **Replace the patch-release flow with `.fix/`.** Migrate any in-flight entries
    from the top-level `.patches/` directory into per-workspace `.fix/` entries, run
