@@ -13,50 +13,6 @@ import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
-// Warning: (ae-missing-release-tag) "DefaultApiClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export class DefaultApiClient {
-  constructor(options: {
-    discoveryApi: {
-      getBaseUrl(pluginId: string): Promise<string>;
-    };
-    fetchApi?: {
-      fetch: typeof fetch;
-    };
-  });
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (ae-forgotten-export) The symbol "RequestOptions" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "TypedResponse" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "GetSubscriptionEvents200Response" needs to be exported by the entry point index.d.ts
-  getSubscriptionEvents(
-    request: {
-      path: {
-        subscriptionId: string;
-      };
-    },
-    options?: RequestOptions,
-  ): Promise<TypedResponse<void | GetSubscriptionEvents200Response>>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  postEvent(
-    request: {
-      body: PostEventRequest;
-    },
-    options?: RequestOptions,
-  ): Promise<TypedResponse<void>>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  putSubscription(
-    request: {
-      path: {
-        subscriptionId: string;
-      };
-      body: PutSubscriptionRequest;
-    },
-    options?: RequestOptions,
-  ): Promise<TypedResponse<void>>;
-}
-
 // @public
 export class DefaultEventsService implements EventsService {
   // (undocumented)
@@ -222,9 +178,4 @@ export abstract class SubTopicEventRouter extends EventRouter {
   // (undocumented)
   protected abstract determineSubTopic(params: EventParams): string | undefined;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/generated/apis/DefaultApi.client.d.ts:48:9 - (ae-forgotten-export) The symbol "PostEventRequest" needs to be exported by the entry point index.d.ts
-// src/generated/apis/DefaultApi.client.d.ts:59:9 - (ae-forgotten-export) The symbol "PutSubscriptionRequest" needs to be exported by the entry point index.d.ts
 ```
