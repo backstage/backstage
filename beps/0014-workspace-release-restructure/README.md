@@ -753,7 +753,7 @@ the conflicting PR to update the staged change.
 
    1. Edits code to add the deprecated alias and a runtime warning.
    2. Runs `yarn changeset` for the deprecation (regular `minor`/`patch`).
-   3. Runs `yarn backstage release stage create <slug>`. The tool snapshots the
+   3. Runs `yarn release stage create <slug>`. The tool snapshots the
       current workspace, drops the author into a scratch state where they apply the
       removal, then captures the diff into `.staged/<slug>/change.patch` and prompts
       for a description that becomes `description.md`.
@@ -761,7 +761,7 @@ the conflicting PR to update the staged change.
 
 3. **Updating an existing staged change.** When a PR conflicts with a queued staged
    change, CI fails with a pointer to the failing entry. The author runs
-   `yarn backstage release stage refresh <slug>`, which re-runs the
+   `yarn release stage refresh <slug>`, which re-runs the
    apply/edit/capture loop and produces an updated staged change. The PR is required
    to include the refreshed entry.
 
