@@ -221,7 +221,9 @@ Packages from `packages/`:
 - `@backstage/module-federation-common`
 - `@backstage/opaque-internal`
 - `@backstage/release-manifests`
+- `@backstage/core-components`
 - `@backstage/test-utils`
+- `@backstage/theme`
 - `@backstage/types`
 - `@backstage/version-bridge`
 
@@ -236,13 +238,13 @@ Plugins from `plugins/`:
 
 #### `ui`
 
-The Backstage UI primitives, design system, and theme. Separated from `framework` so
-that breakage in the UI surface can ship on its own schedule, which is expected to be
-faster than the framework's.
+The new Backstage UI design system. Separated from `framework` so that the BUI
+surface can ship breaking changes on its own schedule, which is expected to be
+faster than the framework's. `@backstage/theme` and `@backstage/core-components`
+stay in `framework` because the framework's defaults and many existing plugins still
+depend on them; `ui` carries only the new design system for now.
 
 - `@backstage/ui`
-- `@backstage/theme`
-- `@backstage/core-components`
 
 #### `cli`
 
