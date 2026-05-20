@@ -365,12 +365,36 @@ still letting each plugin be versioned independently inside the workspace.
 - `@backstage/plugin-gateway-backend`
 - `@backstage/plugin-mcp-actions-backend`
 
-#### Packages that remain at the repository root (not released)
+#### `demo`
 
-- `packages/app`, `packages/app-legacy`, `packages/backend`, `packages/app-example-plugin`
+The end-to-end example Backstage app for the project. Today this lives in the
+separate `backstage/demo` repository (the source of `demo.backstage.io`); under this
+BEP it folds into the main repository as a private workspace at `workspaces/demo/`.
+
+The demo workspace owns one canonical example frontend app, one example backend, and
+any demo-specific plugins (currently a small catalog processor module and a
+notifications tester backend). It is private — no packages from it are published.
+Local development and the Docker build for the deployed demo both work by Yarn
+workspace linking, so changes to any other workspace flow into the demo build from
+source without going through npm. The trade-off is that building the demo requires
+`yarn install`-ing every workspace it depends on, which we accept as the cost of
+having one always-up-to-date end-to-end example.
+
+This replaces the legacy `packages/app`, `packages/app-legacy`, `packages/backend`,
+`packages/app-example-plugin`, and `plugins/example-todo-list*` examples that
+previously lived at the repository root. None of those have a place under the new
+layout: the legacy frontend system example is dropped, the toy todo-list plugin is
+dropped, and the canonical example app/backend become the demo workspace.
+
+Plugin workspaces may still keep their own minimal local-development setup (a small
+example app and/or backend used while iterating on the plugin), mirroring the
+`backstage/community-plugins` convention. That setup is per-workspace, not shared,
+and is for development only — it does not double as a project-wide example.
+
+#### Other packages that remain at the repository root (not released)
+
 - `packages/e2e-test`, `packages/e2e-test-utils`
-- `packages/frontend-internal`, `packages/backend-internal`, `packages/cli-internal` (private development tooling that we may consolidate into a single `packages/internal` workspace)
-- `plugins/example-todo-list`, `plugins/example-todo-list-backend`, `plugins/example-todo-list-common`
+- `packages/frontend-internal`, `packages/backend-internal`, `packages/cli-internal`
 
 ### Release cadence per workspace
 
@@ -1395,19 +1419,26 @@ The migration is staged so that no single PR has to move the entire repository.
    most root packages and because almost every other workspace depends on it. Doing it
    last means it inherits a fully-validated workspace tooling chain.
 
-8. **Roll out staged changes.** Once `framework` is migrated and stable, enable the
+8. **Fold the demo repository in as `workspaces/demo/`.** Move the contents of the
+   external `backstage/demo` repository into `workspaces/demo/` and wire its Yarn
+   workspace links so it builds from source against every other workspace. Drop the
+   legacy `packages/app`, `packages/app-legacy`, `packages/backend`,
+   `packages/app-example-plugin`, and `plugins/example-todo-list*` from this
+   repository as part of the same step.
+
+9. **Roll out staged changes.** Once `framework` is migrated and stable, enable the
    staged-change flow. The first end-to-end exercise is a real deprecation PR: file
    the deprecation and the staged removal together, verify the `@next` release picks
    the staged removal up, then flip the `Promote major` PR to ready-for-review and
    ship the major.
 
-9. **Replace the patch-release flow with `.fix/`.** Migrate any in-flight entries
-   from the top-level `.patches/` directory into per-workspace `.fix/` entries, run
-   one back-port through the new flow end to end, then remove the
-   `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js` script,
-   the `patch-release` branch, and the top-level `.patches/` directory.
+10. **Replace the patch-release flow with `.fix/`.** Migrate any in-flight entries
+    from the top-level `.patches/` directory into per-workspace `.fix/` entries, run
+    one back-port through the new flow end to end, then remove the
+    `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js` script,
+    the `patch-release` branch, and the top-level `.patches/` directory.
 
-10. **Adopt date-based versioning for `framework`.** The first major of `framework`
+11. **Adopt date-based versioning for `framework`.** The first major of `framework`
     after the staged-change flow lands uses the `YYNN` scheme.
 
 Throughout the migration the existing weekly release flow continues to work for any
