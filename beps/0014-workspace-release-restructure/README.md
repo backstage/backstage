@@ -840,6 +840,7 @@ event to the private publishing repository with a `event_type` of
   "client_payload": {
     "workspace": "catalog",
     "sha": "<git sha to publish>",
+    "branch": "main",
     "tag": "latest"
   }
 }
@@ -847,11 +848,20 @@ event to the private publishing repository with a `event_type` of
 
 `tag` is a closed set. The only accepted values are `latest` and `next`; the
 publishing repo treats the dispatch payload as input from a non-trusted source
-and rejects any other value before doing any other work. Adding a new dist-tag (e.g. `alpha`)
-requires an explicit change to the publishing repo's allow-list, which is its own
-reviewed, separately-merged change. The publishing repo applies the same
-safeguards regardless of which accepted value is in the dispatch, with an extra
-required-reviewer gate for `latest` (see
+and rejects any other value before doing any other work. Adding a new dist-tag
+(e.g. `alpha`) requires an explicit change to the publishing repo's allow-list,
+which is its own reviewed, separately-merged change.
+
+`branch` tells the publishing repo which protected branch the SHA should be
+reachable from. For mainline `@latest` and `@next` releases, the value is `main`.
+For back-ported patch releases, the value is the specific `patch/<workspace>/...`
+branch the dispatch was triggered from. The publishing repo validates that the
+branch is either `main` or matches the protected `patch/**` pattern listed in
+[Patch releases](#patch-releases) before doing any other work; any other value
+is rejected.
+
+The publishing repo applies the same safeguards regardless of which accepted
+value is in the dispatch, with an extra required-reviewer gate for `latest` (see
 [Publish-time safeguards](#publish-time-safeguards)).
 
 `repository_dispatch` is chosen over `workflow_dispatch` because the trigger token only
@@ -880,15 +890,27 @@ token, and a compromised workflow run cannot publish a package.
 
 The dispatch itself is not trusted. A compromised workflow run in
 `backstage/backstage`, a leaked dispatch token, or a hijacked GitHub App installation
-must never result in published code that did not go through code review on the
-protected `main` branch. The publishing repo enforces three independent checks:
+must never result in published code that did not go through code review on a
+protected branch. The publishing repo enforces three independent checks:
 
 1. **Ancestor check (all releases).** Before doing any work, the publishing workflow
-   calls
-   `GET /repos/backstage/backstage/compare/{sha}...main` and refuses to continue unless
-   the comparison status is `identical` or `ahead`. Because `main` has branch
-   protection that requires code review and a passing CI, "the SHA is on `main`" is
-   equivalent to "the commit was reviewed and merged".
+   resolves the dispatch to the branch the SHA is expected to live on, and calls
+   `GET /repos/backstage/backstage/compare/{sha}...{branch}` to refuse to continue
+   unless the comparison status is `identical` or `ahead`. The expected branch is
+   determined by the dispatch payload:
+
+   - Releases from `main` (mainline `@latest` and `@next`): the expected branch is
+     `main`.
+   - Releases from a patch branch (back-ports): the expected branch is the
+     `patch/<workspace>/...` branch the dispatch claims to be from. The publishing
+     workflow first validates that the claimed branch name matches the protected
+     `patch/**` pattern as listed in [Patch releases](#patch-releases); anything
+     that doesn't match is rejected without a compare call.
+
+   Because both `main` and `patch/**` branches enforce branch protection with code
+   review and required status checks, "the SHA is on the expected protected
+   branch" is equivalent to "the commit was reviewed and merged on a protected
+   branch".
 
 2. **OIDC binding (all releases).** Rather than trusting the `repository_dispatch`
    payload, the dispatching workflow in `backstage/backstage` first mints a GitHub
@@ -897,19 +919,24 @@ protected `main` branch. The publishing repo enforces three independent checks:
    validates the OIDC JWT and requires:
 
    - `repository == "backstage/backstage"`
-   - `ref == "refs/heads/main"`
+   - `ref` matches the same branch the ancestor check above resolved (either
+     `refs/heads/main` or the specific `refs/heads/patch/<workspace>/...` from the
+     dispatch). A mismatch between the dispatched branch and the OIDC `ref`
+     rejects the publish.
    - `event_name == "push"`
    - `workflow_ref` matches an allow-listed workflow file in `backstage/backstage`
      (`.github/workflows/release_workspace.yml` and any other release entry points).
 
    This cryptographically ties the dispatched SHA to a workflow run that GitHub itself
-   agrees executed on `main`, defending against forged dispatches even if the token
-   that sends them is compromised.
+   agrees executed on the expected protected branch, defending against forged
+   dispatches even if the token that sends them is compromised.
 
 3. **Required reviewer (mainline `@latest` releases only).** The publishing workflow
    runs inside a GitHub Environment (e.g. `npm-publish-latest`) configured with
    required reviewers from `@backstage/maintainers`. Every publish to the `latest`
-   dist-tag pauses until a maintainer clicks "Approve and deploy".
+   dist-tag pauses until a maintainer clicks "Approve and deploy". This covers
+   both mainline `@latest` from `main` and back-ported `@latest` from
+   `patch/**` branches.
 
    Releases tagged `next` skip the required-reviewer gate and use a separate
    environment without approval gates, so `@next` continues to ship without human
