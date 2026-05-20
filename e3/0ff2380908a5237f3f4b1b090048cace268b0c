@@ -1,0 +1,19 @@
+beps/0005-definitive-plugin-listing/README.md
+  s_afa73e471a3f0c::t_24aa26106d1018 3,50,59-60,82-84,94,96,99-104,106-109,113,115,117-119,122-123,126-129,133,135-139,149-152,167-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.4.9",
+  "base_commit_sha": "e30ff2380908a5237f3f4b1b090048cace268b0c",
+  "prompts": {},
+  "sessions": {
+    "s_afa73e471a3f0c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0bcbb955-d470-4914-8821-506c370df27c",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>"
+    }
+  }
+}
