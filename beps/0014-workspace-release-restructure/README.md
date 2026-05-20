@@ -104,6 +104,8 @@ cleanly, which is what the patch mechanism is designed to solve.
 
 - Allow each area of Backstage (framework, catalog, scaffolder, auth, ...) to release on
   its own cadence, with its own changeset queue.
+- Move every package — published or private — into a per-area workspace, so that the
+  repository root is package-free and is not itself a Yarn workspace.
 - Ship non-breaking changes from `main` continuously, without waiting for a weekly
   release cycle.
 - Represent every queued breaking change as a reviewable artifact that
@@ -165,9 +167,11 @@ Each workspace:
   fixes (see [Back-ported fixes](#back-ported-fixes)).
 - Is independently releasable and has an independent version line per package.
 
-The repository root keeps repo-wide concerns: BEPs, docs, top-level scripts, the
-`.github/` workflows, shared tooling configuration, and the CI workflow that fans out
-to per-workspace jobs.
+No packages live at the repository root once the migration is complete. The root is
+not a Yarn workspace — every package, including private development packages, is
+owned by exactly one workspace under `workspaces/`. The root keeps only repo-wide
+concerns: BEPs, top-level cross-cutting docs, the `.github/` workflows, shared
+tooling configuration, and the CI workflow that fans out to per-workspace jobs.
 
 ### Workspace map
 
@@ -199,6 +203,7 @@ Packages from `packages/`:
 - `@backstage/backend-defaults`
 - `@backstage/backend-dev-utils`
 - `@backstage/backend-dynamic-feature-service`
+- `@backstage/backend-internal` (currently `packages/backend-internal`, private)
 - `@backstage/backend-openapi-utils`
 - `@backstage/backend-plugin-api`
 - `@backstage/backend-test-utils`
@@ -207,12 +212,15 @@ Packages from `packages/`:
 - `@backstage/core-app-api`
 - `@backstage/core-compat-api`
 - `@backstage/core-plugin-api`
+- `@backstage/e2e-test` (currently `packages/e2e-test`, private)
+- `@backstage/e2e-test-utils` (currently `packages/e2e-test-utils`, private)
 - `@backstage/errors`
 - `@backstage/filter-predicates`
 - `@backstage/frontend-app-api`
 - `@backstage/frontend-defaults`
 - `@backstage/frontend-dev-utils`
 - `@backstage/frontend-dynamic-feature-loader`
+- `@backstage/frontend-internal` (currently `packages/frontend-internal`, private)
 - `@backstage/frontend-plugin-api`
 - `@backstage/frontend-test-utils`
 - `@backstage/integration`
@@ -258,7 +266,7 @@ All CLI and developer-tooling packages. Independent from `framework` so that CLI
 improvements can ship continuously, and the first non-`framework` workspace to
 migrate so it can exercise the new release tooling end to end.
 
-- `@backstage/cli`, `@backstage/cli-common`, `@backstage/cli-defaults`, `@backstage/cli-node`
+- `@backstage/cli`, `@backstage/cli-common`, `@backstage/cli-defaults`, `@backstage/cli-internal` (private), `@backstage/cli-node`
 - All `@backstage/cli-module-*` packages. The shared release-automation CLI lives
   separately in the `tooling` workspace below — it is not a CLI module.
 - `@backstage/codemods`
@@ -384,11 +392,6 @@ Plugin workspaces may still keep their own minimal local-development setup (a sm
 example app and/or backend used while iterating on the plugin), mirroring the
 `backstage/community-plugins` convention. That setup is per-workspace, not shared,
 and is for development only — it does not double as a project-wide example.
-
-#### Other packages that remain at the repository root (not released)
-
-- `packages/e2e-test`, `packages/e2e-test-utils`
-- `packages/frontend-internal`, `packages/backend-internal`, `packages/cli-internal`
 
 ### Release cadence per workspace
 
@@ -651,11 +654,10 @@ workspaces/
 
 The repository root keeps:
 
-- `package.json` for the root, declaring `workspaces/*/` (and any remaining root-level
-  private packages) as Yarn workspaces. The root `package.json` does not publish
-  anything.
+- A minimal `package.json` at the root with no `workspaces` field — the root is not
+  itself a Yarn workspace. It carries only repository-wide metadata and developer
+  scripts that delegate into the per-workspace setups.
 - `beps/`, `docs/`, `OWNERS.md`, `CONTRIBUTING.md`, etc.
-- A `scripts/` directory that hosts shared release tooling.
 - `.github/workflows/` that fan out per-workspace jobs.
 
 Each per-workspace `package.json` declares the Node engine range it supports, which is
