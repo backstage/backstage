@@ -913,11 +913,19 @@ The publishing repo is then responsible for:
 - Checking out `backstage/backstage` at the supplied SHA.
 - Running `yarn install` and `yarn build` for the workspace.
 - Publishing to npm with provenance and an OIDC-bound npm token.
-- Pushing back per-package git tags (e.g. `@backstage/plugin-catalog@2.3.0`), matching
-  the convention `backstage/community-plugins` uses today. The `framework` workspace
-  additionally pushes a workspace-level tag carrying its release identifier (e.g.
-  `framework@2604`) on every major release, so the date-based identifier can be
-  looked up in git. No other workspace publishes a workspace-level tag.
+- Pushing back per-package git tags (e.g. `@backstage/plugin-catalog@2.3.0`),
+  matching the convention `backstage/community-plugins` uses today.
+- Pushing or moving a per-workspace `<workspace>@latest` tag to the commit that
+  was just published, but **only** when the publish targets the current
+  `@latest` of the workspace. Back-ports to older release lines do not move the
+  tag. This gives every consumer of the repo a single stable reference for "the
+  most recent published state" of each workspace — see for example
+  [Documentation and microsite](#documentation-and-microsite), which uses these
+  tags as the source for its build.
+- The `framework` workspace additionally pushes an immutable tag carrying its
+  named release identifier (e.g. `framework@2604`) on every Promote staged PR
+  merge, so the date-based identifier can be looked up in git. No other
+  workspace publishes a named-release tag.
 
 This preserves the current security boundary: `backstage/backstage` never has an npm
 token, and a compromised workflow run cannot publish a package.
@@ -1327,9 +1335,10 @@ Backstage release.
 The microsite build does not assemble pages from the current state of `main`.
 Instead it reads the published state of each workspace and builds against that:
 
-- For each workspace, the build resolves the commit of its most recently
-  published version — i.e. the commit referenced by the highest
-  `<package>@<version>` git tag for any package in that workspace.
+- For each workspace, the build resolves the commit of the most recent
+  `@latest` publish — i.e. the commit referenced by the per-workspace
+  `<workspace>@latest` git tag (see
+  [Triggering publishing in the private repo](#triggering-publishing-in-the-private-repo)).
 - It then pulls `workspaces/<name>/docs/` from that commit and feeds it into the
   Docusaurus build.
 - The cross-cutting top-level `/docs/` content is taken from the current `main`
@@ -1362,8 +1371,7 @@ input has a finite, deterministic shape:
 
 - The cross-cutting top-level `/docs/` content at the current `main`.
 - For each workspace, the `workspaces/<name>/docs/` content at the commit
-  of the most recently published version of that workspace (resolved via the
-  per-package git tags).
+  referenced by the `<workspace>@latest` tag.
 
 Each of those inputs has a stable identifier: a git **tree hash** for the docs
 directory at the relevant commit (e.g. `git rev-parse <sha>:workspaces/<name>/docs`).
@@ -1379,9 +1387,9 @@ The build workflow:
 4. Otherwise, runs the full build and publish, then writes the fingerprint to
    the cache on success.
 
-Step 1 is cheap (it only needs `git ls-tree` reads on a shallow clone, no
-checkout of the workspaces themselves), so a no-op scheduled run finishes in
-seconds.
+Step 1 is cheap (it only needs `git ls-tree` reads at the `<workspace>@latest`
+tags on a shallow clone, no checkout of the workspaces themselves), so a no-op
+scheduled run finishes in seconds.
 
 #### Trade-off: cross-workspace doc edits
 
