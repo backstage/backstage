@@ -655,9 +655,13 @@ touches at that commit.
 
 Each maintained release line has a long-lived branch in `backstage/backstage`:
 
-- Framework lines: `release/framework/<YYNN>` — for example `release/framework/2604`.
-- Non-framework lines: `release/<workspace>/<package>@<major>` — for example
-  `release/catalog/@backstage/plugin-catalog@2`.
+- Framework lines: `patch-release/framework/<YYNN>` — for example
+  `patch-release/framework/2604`.
+- Non-framework lines: `patch-release/<workspace>/<package>@<major>` — for example
+  `patch-release/catalog/@backstage/plugin-catalog@2`.
+
+This keeps the existing `patch-release` branch-name prefix the repository already
+uses for the patch-release flow, just with per-workspace and per-line suffixes.
 
 These branches are not where day-to-day development happens. They exist solely as
 the apply target for back-ported fixes and as the source for patch releases. Each
@@ -669,6 +673,47 @@ When a release line is closed (for example when framework `2604` is superseded b
 `2605` and we no longer support back-ports to `2604`), its release branch is left
 in place but no new fixes are accepted for it.
 
+#### Branch protection
+
+Patch-release branches carry the same review and provenance guarantees as `main`,
+but the set of contributors allowed to push to them is narrower because they
+double as the publish source for an existing release line. Branch protection on
+every `patch-release/**` branch must enforce:
+
+- **Restricted push**: only CODEOWNERS for the targeted workspace may push (and
+  only via merged pull requests; direct pushes are disallowed).
+- **Required reviews**: standard branch-protection rules apply — at least one
+  CODEOWNERS approval, all required status checks green.
+- **Dismiss stale approvals on force-push**: same as the Promote PR (see
+  [Major releases via the Promote PR](#major-releases-via-the-promote-pr)); the
+  `patch-pending/<line>` head branch is force-pushed every time a new fix lands
+  in `main`, so approvals on the open `Patch release` PR must reset when that
+  happens.
+
+Closed-line branches keep these protections in place even after no new fixes are
+accepted, so the published source of an old line cannot be retroactively modified.
+
+#### Eligibility: no back-ports for `0.x` packages
+
+Back-ports are only accepted for packages that have reached a stable `1.0.0` or
+higher. The tooling rejects any `.fix/<slug>.md` whose `packages` front-matter
+targets a package whose current published major is `0`. The reasoning is:
+
+- Semver-wise, `0.x` packages are explicitly unstable. Adopters relying on a
+  `0.x` package are expected to upgrade to the latest version rather than pin to
+  a specific older release line.
+- Maintaining patch-release branches for `0.x` packages would set the expectation
+  that those packages have multiple long-lived supported lines, which is the
+  opposite of what the `0.x` range communicates.
+- It avoids the awkward semver shape that would otherwise arise — back-porting a
+  fix to an "older `0.x`" would either bump the minor (because that is how `0.x`
+  expresses breakage by Backstage convention, which is wrong for a fix) or bump
+  the patch (which then clashes with whatever the latest `0.x` is on `@latest`).
+
+Once a package reaches `1.0.0`, it becomes eligible for back-ports under this
+flow. Until then, fixes ride the normal mainline release cadence and adopters
+upgrade to the current published version to receive them.
+
 #### Workflow on merge of a fix
 
 When a PR introducing or updating a `.fix/<slug>.md` is merged to `main`, the
@@ -676,8 +721,8 @@ release workflow does the following for each target derived from the entry's
 `packages` front-matter:
 
 1. **Identifies the release branch** for the target. Framework targets resolve to
-   `release/framework/<YYNN>`. Non-framework targets resolve to
-   `release/<workspace>/<package>@<major>`. If the branch does not yet exist (a
+   `patch-release/framework/<YYNN>`. Non-framework targets resolve to
+   `patch-release/<workspace>/<package>@<major>`. If the branch does not yet exist (a
    line that is being patched for the first time under this flow), the workflow
    creates it from the latest published tag for that line.
 2. **Applies the fix's patch** on top of the release branch's current HEAD in a
@@ -1664,7 +1709,8 @@ The migration is staged so that no single PR has to move the entire repository.
 
 9. **Move patch authoring to `.fix/`.** Migrate any in-flight entries from the
    top-level `.patches/` directory into per-workspace `.fix/` entries, set up the
-   per-line `release/...` branches and per-workspace `Patch release (<line>)` PR
+   per-line `patch-release/...` branches and per-workspace `Patch release (<line>)`
+   PR
    workflow, and run one back-port through the new flow end to end. The existing
    `patch-release` branch model is preserved at the publish layer; the
    `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js`
