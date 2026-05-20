@@ -234,6 +234,7 @@ Plugins from `plugins/`:
 - `@backstage/plugin-config-schema`
 - `@backstage/plugin-events-backend`, `plugin-events-backend-test-utils`, `plugin-events-node`
 - All `@backstage/plugin-events-backend-module-*` packages
+- `@backstage/plugin-permission-backend`, `plugin-permission-backend-module-policy-allow-all`, `plugin-permission-common`, `plugin-permission-node`, `plugin-permission-react`
 - `@backstage/plugin-signals`, `plugin-signals-backend`, `plugin-signals-node`, `plugin-signals-react`
 
 #### `ui`
@@ -311,10 +312,6 @@ The catalog plugin family.
 - `@backstage/plugin-techdocs`, `plugin-techdocs-backend`, `plugin-techdocs-common`, `plugin-techdocs-node`, `plugin-techdocs-react`
 - `@backstage/plugin-techdocs-addons-test-utils`, `plugin-techdocs-module-addons-contrib`
 - `@backstage/techdocs-cli`, `@backstage/techdocs-cli-embedded-app`
-
-#### `permission`
-
-- `@backstage/plugin-permission-backend`, `plugin-permission-backend-module-policy-allow-all`, `plugin-permission-common`, `plugin-permission-node`, `plugin-permission-react`
 
 #### `search`
 
@@ -410,8 +407,7 @@ but the choice is up to the workspace maintainers:
    PR cuts the release. This is the model used by `backstage/community-plugins` today.
    Suited to workspaces that want a human checkpoint and changelog review before each
    release, but still want fast turnaround when they choose to merge.
-   _Recommended for_: `catalog`, `scaffolder`, `auth`, `search`, `permission`,
-   `techdocs`.
+   _Recommended for_: `catalog`, `scaffolder`, `auth`, `search`, `techdocs`.
 
 3. **Manual** — releases only run when a maintainer triggers them via
    `workflow_dispatch`. Suited to workspaces that release rarely and want full control
@@ -1414,10 +1410,10 @@ The migration is staged so that no single PR has to move the entire repository.
    [Documentation and microsite](#documentation-and-microsite).
 
 4. **Migrate leaf and standalone plugin workspaces.** In rough order:
-   `api-docs`, `devtools`, `kubernetes`, `techdocs`, `permission`, `search`,
-   `notifications`, `default-plugins`. Each move is a single PR per workspace. By the
-   end of this step the surrounding tooling, CI, and publishing flow are exercised by
-   many workspaces.
+   `api-docs`, `devtools`, `kubernetes`, `techdocs`, `search`, `notifications`,
+   `default-plugins`. Each move is a single PR per workspace. By the end of this
+   step the surrounding tooling, CI, and publishing flow are exercised by many
+   workspaces.
 
 5. **Migrate the larger plugin workspaces.** `auth`, `scaffolder`, `catalog`. These
    are larger and more interconnected, but at this point the migration mechanics are
