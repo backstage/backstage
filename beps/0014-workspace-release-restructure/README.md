@@ -30,7 +30,7 @@ creation-date: 2026-05-18
   - [Release workflow](#release-workflow)
     - [Triggering publishing in the private repo](#triggering-publishing-in-the-private-repo)
     - [Publish-time safeguards](#publish-time-safeguards)
-  - [Versioning of the core framework](#versioning-of-the-core-framework)
+  - [Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle)
   - [Repository tooling](#repository-tooling)
   - [Tooling consolidation with backstage-community-plugins](#tooling-consolidation-with-backstage-community-plugins)
   - [Documentation and microsite](#documentation-and-microsite)
@@ -770,7 +770,14 @@ The current "nightly snapshot" release flow is expected to be removed as part of
 rollout. If it is kept in any form, it falls into the same "no required reviewer"
 bucket as `@next`.
 
-### Versioning of the core framework
+### Framework versioning and the release lifecycle
+
+The way the framework workspace versions its packages is one of the more
+consequential decisions in this BEP, both for adopters (who pin Backstage releases by
+the framework identifier) and for maintainers (who reason about what's safe to ship
+between releases). This section spells out the scheme end to end.
+
+#### Identifier format
 
 The `framework` workspace adopts an incrementing date-based version line of the form
 `YYNN`, where `YY` is the two-digit calendar year and `NN` is a zero-padded per-year
@@ -786,8 +793,8 @@ encoding is:
 - It does not over-promise a cadence (a `26Q2` release that slips to Q3 is worse).
 - It tolerates multiple releases inside the same month without semantic weirdness;
   `2604` and `2605` can both ship in June if needed.
-- It fits in a single integer, which means it is a valid semver major version (the
-  framework packages share their major version with the framework release line — see
+- It fits in a single integer, which means it is a valid semver major version (every
+  framework package shares its major with the framework release identifier — see
   below).
 - It supports up to 99 releases per year, which is well past the cadence we
   anticipate.
@@ -795,23 +802,71 @@ encoding is:
 #### Framework packages share a major version
 
 Every package in the `framework` workspace uses the framework release identifier as
-its semver major. When framework release `2604` ships, every framework package's
-version takes the form `2604.<minor>.<patch>` — for example,
+its semver major. When framework release `2604` is the current release line, every
+framework package's version takes the form `2604.<minor>.<patch>` — for example,
 `@backstage/core-plugin-api@2604.3.7`, `@backstage/backend-plugin-api@2604.1.0`,
-`@backstage/types@2604.0.0`. Minor and patch counters are per-package and
-incremented independently by `yarn changeset version` as non-breaking changes land.
-
-A new framework release is, by definition, a coordinated major version bump across
-every framework package — even packages whose own API did not change. The
-"Promote major (framework)" PR includes a major bump for every framework package, so
-that the framework release identifier and the major version of every framework
-package are always in sync. Adopters can therefore read a framework release version
-off of any framework package they happen to look at.
+`@backstage/types@2604.0.0`. Minor and patch counters are per-package and increment
+independently as the workspace ships throughout the release cycle.
 
 This unified major applies only to the `framework` workspace. Other workspaces
 continue to use plain per-package semver (`@backstage/plugin-catalog@2.3.0`,
 `@backstage/ui@1.2.0`), and their GitHub releases are tagged by date or timestamp as
 the publishing repo sees fit.
+
+#### How versions evolve through a release cycle
+
+A framework release like `2604` is not a single moment — it is a release _line_ that
+the workspace ships into continuously until the next major. Within that line, the
+familiar semver rules apply:
+
+- **Patch** bumps when a release contains only bug fixes. Example: `core-plugin-api`
+  goes from `2604.3.7` to `2604.3.8`.
+- **Minor** bumps when a release introduces new non-breaking features. Example:
+  `core-plugin-api` goes from `2604.3.8` to `2604.4.0`. Adopters reading semver get
+  the usual signal: minor bump means "new APIs are available, existing ones still
+  work".
+- **Major** stays pinned to the current framework release identifier. It does not
+  change between framework releases.
+
+The result is that within a framework release line, adopters get fully semver-honest
+patches and features without any major-version churn. A team can stay on `2604` for
+months and still receive a continuous stream of improvements, all of which are
+non-breaking by construction.
+
+Breaking changes are not allowed inside a release line. They are authored as staged
+changes (see [Staged changes](#staged-changes)) and accumulate in `.staged/` until
+the maintainers decide to cut the next framework release.
+
+#### What happens when a new framework release ships
+
+When the `Promote major (framework)` PR is merged and the next framework release
+publishes, every framework package's major bumps in lockstep to the new identifier.
+For example, on the `2604` → `2605` transition:
+
+- `@backstage/core-plugin-api@2604.3.8` → `@backstage/core-plugin-api@2605.0.0`
+- `@backstage/backend-plugin-api@2604.1.2` → `@backstage/backend-plugin-api@2605.0.0`
+- `@backstage/types@2604.0.5` → `@backstage/types@2605.0.0`
+
+Every package bumps to `2605.0.0`, regardless of whether its own API changed.
+
+Critically, **a new framework release does not have to contain any breaking changes**.
+The major bump is a calendar marker, not a semver signal that something broke.
+`2604` → `2605` can be a release where nothing breaks at all (no staged changes were
+queued up). In that case, the only thing the new release tells adopters is "this is
+the next named Backstage release, please update your pin when you're ready". The
+versioning scheme is _capable_ of carrying breaking changes — and they will travel
+through this transition when they exist — but it does not require them.
+
+For adopters this means three useful properties:
+
+- A floating pin (`release: "2604"`) keeps them on the current line, getting minor
+  features and patches automatically, with no possibility of a breaking change.
+- A frozen pin (`release: "2604.23"`) keeps them at an exact point in time, with no
+  changes of any kind. Useful for reproducible builds.
+- Moving to the next named release (`release: "2604"` → `release: "2605"`) is an
+  intentional action. Adopters opt into it on their own schedule, and they know that
+  _if_ anything is going to change about Backstage's APIs, this is the boundary at
+  which it happens — never inside a release line.
 
 #### Promotion trigger
 
