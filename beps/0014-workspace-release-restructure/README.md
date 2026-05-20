@@ -591,14 +591,18 @@ sure it stays on.
 
 ### Back-ported fixes
 
-Just as a staged change is a future-pointing artifact in `main` that ships when the
-next major is cut, a **back-ported fix** is a past-pointing artifact in `main` that
-ships when it is merged. The two flows are inverses of each other and share the same
-structural properties: every patch is a reviewable file in `main`, the publishing
-flow applies it to the appropriate base, and there is no separate long-lived release
-branch to keep in sync.
+A **back-ported fix** is a fix authored in `main` that applies to a past release
+line. Like a staged change, it is a structured artifact in `main` rather than an
+ad-hoc cherry-pick — but unlike a staged change, it ships through a long-lived
+release branch and a `Patch release` PR, not by being merged into `main` directly.
 
-This replaces the existing top-level `.patches/`-and-`patch-release`-branch flow.
+This extends — rather than replaces — the repository's existing patch-release flow.
+The shape of the published artifact (a `Patch release (<line>)` PR that a
+maintainer reviews and merges) is preserved. What changes is the authoring side:
+where today fixes are cherry-picked into the patch-release branch via an
+`.patches/pr-<number>.txt` reference file, they now live as structured `.fix/`
+entries in `main` and the workflow applies them onto the appropriate release
+branch automatically. The old `.patches/` reference-file mechanism goes away.
 
 #### Concept
 
@@ -647,34 +651,79 @@ needs to update multiple framework packages, listing one is enough — the workf
 applies the patch at the release line's commit and bumps every package the patch
 touches at that commit.
 
-#### Workflow on merge
+#### Release branches
 
-When a PR introducing a fix is merged to `main`, the release workflow:
+Each maintained release line has a long-lived branch in `backstage/backstage`:
 
-1. For each package key in `packages`:
-   1. Looks up the most recent published state for that package's targeted major.
-      Framework targets resolve through `release-<line>/latest.json` in
-      `backstage/versions`. Non-framework targets resolve through the highest
-      `<package>@<major>.<minor>.<patch>` git tag for the named major.
-   2. Checks out that state in a temporary scratch tree.
-   3. Applies the fix's patch using `git apply --3way`. Non-trivial conflicts fail
-      CI; the author has to refresh the patch.
-   4. Computes the next semver-patch version using the synthesized changeset, then
-      dispatches a publish to `backstage/publishing` via the standard
-      `repository_dispatch` flow.
-2. The publishing repo validates the dispatch (see
-   [Publish-time safeguards](#publish-time-safeguards)) and publishes the resulting
-   patch version of each affected package. For framework targets, it also writes a
-   new immutable manifest for the release line and bumps the `latest.json` pointer
-   for that line.
-3. On success, the publishing workflow opens a small follow-up PR to `main` that
-   deletes the fix entry. Once merged, the entry is gone from `.fix/` and the
-   audit trail lives in git history (the merge of the original PR, the deletion
-   PR) plus the changelogs attached to the published patch releases.
+- Framework lines: `release/framework/<YYNN>` — for example `release/framework/2604`.
+- Non-framework lines: `release/<workspace>/<package>@<major>` — for example
+  `release/catalog/@backstage/plugin-catalog@2`.
 
-If any package's publish fails, the fix stays in `.fix/` and re-runs on the next
-push to `main` (idempotent: packages that already shipped are skipped because their
-tag history already includes the published version).
+These branches are not where day-to-day development happens. They exist solely as
+the apply target for back-ported fixes and as the source for patch releases. Each
+branch's HEAD always reflects the current published state of its release line:
+right after a publish, HEAD points at the commit whose source tree matches the
+just-published package versions.
+
+When a release line is closed (for example when framework `2604` is superseded by
+`2605` and we no longer support back-ports to `2604`), its release branch is left
+in place but no new fixes are accepted for it.
+
+#### Workflow on merge of a fix
+
+When a PR introducing or updating a `.fix/<slug>.md` is merged to `main`, the
+release workflow does the following for each target derived from the entry's
+`packages` front-matter:
+
+1. **Identifies the release branch** for the target. Framework targets resolve to
+   `release/framework/<YYNN>`. Non-framework targets resolve to
+   `release/<workspace>/<package>@<major>`. If the branch does not yet exist (a
+   line that is being patched for the first time under this flow), the workflow
+   creates it from the latest published tag for that line.
+2. **Applies the fix's patch** on top of the release branch's current HEAD in a
+   temporary checkout, using `git apply --3way`. Non-trivial conflicts fail CI;
+   the author has to refresh the patch via the standard
+   `backstage release fix refresh <slug>` flow.
+3. **Opens or updates the `Patch release (<line>)` PR** for that release branch.
+   The PR's head is a `patch-pending/<line>` branch built by applying _every_
+   currently-merged-but-not-yet-released fix that targets the line, in slug order,
+   on top of the release branch. The PR's base is the release branch itself. The
+   PR body lists every staged-pending fix with its description.
+
+The author's PR merging into `main` therefore does two things: it adds the fix
+entry to `main` (where it stays until the patch ships), and it updates the open
+`Patch release (<line>)` PR with the fix applied on top of the release line.
+
+#### Merging the `Patch release` PR
+
+When a maintainer reviews and merges a `Patch release (<line>)` PR:
+
+1. The release branch fast-forwards to the merged commit — its HEAD now reflects
+   the new published state of the line.
+2. The release workflow synthesizes a changeset for each fix that landed in the
+   merge, runs `yarn changeset version` on the release branch to compute the next
+   patch version of every affected package, and dispatches a publish via the
+   standard `repository_dispatch` flow.
+3. The publishing repo validates the dispatch (see
+   [Publish-time safeguards](#publish-time-safeguards)) and publishes the new
+   patch version of each affected package. For framework targets, it also writes
+   a new immutable manifest for the release line and bumps the `latest.json`
+   pointer for that line.
+4. On success, the publishing workflow opens a small follow-up PR to `main` that
+   deletes the `.fix/` entries that shipped. Once merged, those entries are gone
+   and the audit trail lives in git history (the merge of the original PRs, the
+   `Patch release` PR, the deletion PR) plus the changelogs attached to the
+   published versions.
+
+A single `Patch release (<line>)` PR can therefore carry multiple fixes — every
+fix that landed in `main` targeting that line since the previous patch release is
+included automatically. Maintainers choose when to merge the PR; the cadence of
+back-port releases is purely a function of how often they decide to do so.
+
+If any fix's patch fails to apply on a release branch when the workflow tries to
+update the patch PR, that fix is excluded from the PR for that line and CI
+reports the conflict on the original fix PR. The fix stays in `.fix/` and waits
+for a refresh.
 
 #### npm dist-tag handling
 
@@ -1613,11 +1662,14 @@ The migration is staged so that no single PR has to move the entire repository.
    the deprecation and the staged removal together, verify the `@next` release picks
    the staged removal up, then merge the `Promote major` PR to ship the major.
 
-9. **Replace the patch-release flow with `.fix/`.** Migrate any in-flight entries
-   from the top-level `.patches/` directory into per-workspace `.fix/` entries, run
-   one back-port through the new flow end to end, then remove the
-   `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js` script,
-   the `patch-release` branch, and the top-level `.patches/` directory.
+9. **Move patch authoring to `.fix/`.** Migrate any in-flight entries from the
+   top-level `.patches/` directory into per-workspace `.fix/` entries, set up the
+   per-line `release/...` branches and per-workspace `Patch release (<line>)` PR
+   workflow, and run one back-port through the new flow end to end. The existing
+   `patch-release` branch model is preserved at the publish layer; the
+   `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js`
+   script, and the top-level `.patches/` directory are replaced by the new
+   tooling that fans fix entries out onto per-line release branches.
 
 10. **Adopt date-based versioning for `framework`.** The first major of `framework`
     after the staged-change flow lands uses the `YYNN` scheme.
