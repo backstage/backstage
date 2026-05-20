@@ -1302,28 +1302,79 @@ staged-change mechanism for free if it ever wants to adopt it.
 ### Documentation and microsite
 
 The repository's `docs/` directory and the Docusaurus site under `microsite/` need a
-clear home in the new layout. We propose:
+clear home in the new layout. The model below splits the source layout and reads
+from the published state of each workspace at build time, so the docs site always
+reflects what adopters actually have installed when they pin to the current
+Backstage release.
+
+#### Source layout
 
 - The `microsite/` directory becomes its own non-published workspace at
   `workspaces/microsite/`. It is migrated to the new layout early in the rollout,
   alongside the `cli` workspace, because it has no runtime dependencies on the
   framework and can validate the workspace tooling cheaply.
-- The top-level `docs/` directory stays at the repository root and keeps content that
-  is cross-cutting: `architecture-decisions/`, `contribute/`, `getting-started/`,
-  `tutorials/`, `releases/`, `overview/`, `faq/`, etc. It is owned by the repository
-  rather than by any workspace.
+- The top-level `docs/` directory stays at the repository root and keeps content
+  that is cross-cutting: `architecture-decisions/`, `contribute/`,
+  `getting-started/`, `tutorials/`, `releases/`, `overview/`, `faq/`, etc. It is
+  owned by the repository rather than by any workspace.
 - Plugin-area documentation (`docs/auth`, `docs/permissions`, `docs/notifications`,
   `docs/features/search`, `docs/features/techdocs`, `docs/integrations`,
   `docs/frontend-system`, `docs/backend-system`, …) moves into the corresponding
-  workspace under `workspaces/<name>/docs/`. The microsite build pulls those
-  per-workspace docs in via a build-time index, so the published site URLs do not
-  change.
-- The published site retains a single sidebar that interleaves cross-cutting and
-  workspace-specific docs; the source layout is the only thing that changes.
+  workspace under `workspaces/<name>/docs/`.
 
-This makes documentation changes part of the same PR as the corresponding code change
-in the workspace, which mirrors how changesets and staged changes already work in
-this proposal.
+#### Build model
+
+The microsite build does not assemble pages from the current state of `main`.
+Instead it reads the published state of each workspace and builds against that:
+
+- For each workspace, the build resolves the commit of its most recently
+  published version — i.e. the commit referenced by the highest
+  `<package>@<version>` git tag for any package in that workspace.
+- It then pulls `workspaces/<name>/docs/` from that commit and feeds it into the
+  Docusaurus build.
+- The cross-cutting top-level `/docs/` content is taken from the current `main`
+  directly, since it does not belong to any single workspace and does not have a
+  release of its own.
+
+The result is that the published microsite always reflects the docs of the latest
+released state of every workspace, not whatever is sitting in `main`. Adopters
+reading the site see documentation that matches the packages they have installed
+when they pin to the current Backstage release.
+
+The published site retains a single sidebar that interleaves cross-cutting and
+workspace-specific docs; the source layout is the only thing that changes.
+
+#### Triggers
+
+Two automatic triggers republish the docs site:
+
+- **Scheduled rebuild.** A workflow runs every 15–30 minutes, re-runs the build
+  against whatever the latest published state of each workspace is, and
+  republishes if anything changed. This catches new workspace releases without
+  needing any cross-repo dispatch.
+- **Push to `main` touching docs.** Any push to `main` that touches a `docs/`
+  directory inside a workspace or the top-level `/docs/` triggers a rebuild. This catches
+  cross-cutting docs improvements and avoids the "I fixed a typo, why isn't it
+  live?" surprise — even though workspace docs come from tagged commits, fixes
+  to the top-level `/docs/` ship immediately and workspace-local doc edits ship
+  with the next release of that workspace.
+
+These two triggers cover both authoring and publishing without needing any
+cross-repo dispatch from the publishing repo. They can be supplemented later
+with a direct dispatch from the publishing flow if rebuild latency ever becomes
+a problem.
+
+#### Trade-off: cross-workspace doc edits
+
+Documentation changes that span multiple workspaces (e.g. a new framework
+capability that the catalog docs also discuss) edit the docs in each affected
+workspace independently. Those edits become visible on the site only after each
+workspace next publishes, and if the workspaces ship at different times the site
+will briefly show a mix of new and old. The same is true of any cross-workspace
+behavior in this proposal; we accept it because it keeps the docs of each
+workspace co-located with its code, and because the alternative — coordinated
+docs releases — gives up the per-workspace independence that the rest of the BEP
+is built around.
 
 ### Backstage release manifest
 
