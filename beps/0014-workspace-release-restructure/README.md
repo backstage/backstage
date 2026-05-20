@@ -1643,3 +1643,28 @@ workspace that has not been migrated yet. There is no flag day.
   almost all the benefits without those costs.
 - **Use `npm` workspaces or `pnpm` instead of Yarn.** Out of scope; we already use
   Yarn workspaces in both this repo and community-plugins.
+- **Keep `framework` strictly the framework, and pull the bundled plugins out.**
+  As currently planned, `framework` is more than just the plugin/app/backend APIs
+  and defaults — it also contains the `events`, `signals`, `permission`, and
+  `gateway` plugin families (and their modules), plus `theme`, `core-components`,
+  the `integration` packages, `bitbucket-cloud-common`, `filter-predicates`, and
+  the `app` plugin family. An alternative would be to keep `framework` strictly
+  scoped to the API contract and defaults, and split each plugin family out into
+  its own workspace (`events`, `signals`, `permission`, `gateway`, …), the same
+  way `catalog`, `scaffolder`, and `auth` are split today.
+
+  The argument for the split is conceptual cleanliness — a workspace called
+  `framework` should arguably only contain the framework itself, and each plugin
+  family would then be free to ship breaking changes independently.
+
+  The argument against — and the reason this BEP keeps them in `framework` — is
+  that these plugins are essentially extensions of the framework's runtime surface
+  rather than independent products. They depend on core APIs, ship with the
+  defaults, and in practice would need to re-synchronize their majors with the
+  framework whenever the underlying APIs change. Pulling them into separate
+  workspaces would inflate the workspace count without giving them genuinely
+  independent release cadences. Their `@latest` releases also rarely need to ship
+  faster than the framework's continuous patch/minor cadence already allows
+  through the Version Packages PR. We can revisit this if any of them grows enough
+  module surface area to warrant a dedicated workspace, the same way `events` would
+  have, if we hadn't folded the events modules back in.
