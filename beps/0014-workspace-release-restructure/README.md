@@ -175,15 +175,18 @@ tooling configuration, and the CI workflow that fans out to per-workspace jobs.
 
 ### Workspace map
 
-Every currently-published package in `packages/` and `plugins/` is assigned a home in
-the new layout. Examples and private packages (`packages/app`, `packages/backend`,
-`packages/app-legacy`, `plugins/example-todo-list*`, `packages/e2e-test*`) remain at
-the repository root as private development aids and do not belong to any workspace.
+Every package in `packages/` and `plugins/`, published or private, is assigned a
+home in the new layout. The workspaces below are grouped into three categories:
+the framework and the supporting workspaces around it, the plugin workspaces that
+release independently, and the private workspaces that exist but do not publish
+anything.
 
 > **Note**: This mapping is a proposal for review. Many packages have plausible homes in
 > more than one workspace, and the boundaries should be debated before we commit.
 
-#### `framework`
+#### Framework and supporting workspaces
+
+##### `framework`
 
 The slowly-evolving framework core: the plugin and app APIs, the backend system, the
 defaults, plus the foundational cross-cutting features (events, signals, integrations)
@@ -245,22 +248,7 @@ Plugins from `plugins/`:
 - `@backstage/plugin-permission-backend`, `plugin-permission-backend-module-policy-allow-all`, `plugin-permission-common`, `plugin-permission-node`, `plugin-permission-react`
 - `@backstage/plugin-signals`, `plugin-signals-backend`, `plugin-signals-node`, `plugin-signals-react`
 
-#### `ui`
-
-The new Backstage UI design system, the migration tooling that helps adopters move
-to it, and the documentation site for the design system. Separated from `framework`
-so that the BUI surface can ship breaking changes on its own schedule, which is
-expected to be faster than the framework's. `@backstage/theme` and
-`@backstage/core-components` stay in `framework` because the framework's defaults
-and many existing plugins still depend on them; `ui` carries only the new design
-system for now.
-
-- `@backstage/ui`
-- `@backstage/plugin-mui-to-bui` (the MUI → BUI migration aid)
-- The `docs-ui` Next.js site, currently at the repository's top-level `docs-ui/`
-  folder. Like `microsite`, it is a private workspace package and is not published.
-
-#### `cli`
+##### `cli`
 
 All CLI and developer-tooling packages. Independent from `framework` so that CLI
 improvements can ship continuously, and the first non-`framework` workspace to
@@ -276,7 +264,7 @@ migrate so it can exercise the new release tooling end to end.
 - `@backstage/repo-tools`
 - `@backstage/yarn-plugin`
 
-#### `tooling`
+##### `tooling`
 
 A constrained workspace that hosts the release-automation scripts run by this
 repository's workflows _and_ the standalone CLI that ships that same automation to
@@ -290,11 +278,27 @@ constraints and the rationale.
   `@next` version computation. The package name is left to implementation.
 - Additional in-repo-only entrypoints used by this repository's workflows (the
   Promote staged PR builder, the manifest updater, the OIDC dispatch helper,
-  etc.). These
-  may be co-located in the same package or in private packages within the
-  workspace.
+  etc.). These may be co-located in the same package or in private packages
+  within the workspace.
 
-#### `catalog`
+##### `ui`
+
+The new Backstage UI design system, the migration tooling that helps adopters move
+to it, and the documentation site for the design system. Separated from `framework`
+so that the BUI surface can ship breaking changes on its own schedule, which is
+expected to be faster than the framework's. `@backstage/theme` and
+`@backstage/core-components` stay in `framework` because the framework's defaults
+and many existing plugins still depend on them; `ui` carries only the new design
+system for now.
+
+- `@backstage/ui`
+- `@backstage/plugin-mui-to-bui` (the MUI → BUI migration aid)
+- The `docs-ui` Next.js site, currently at the repository's top-level `docs-ui/`
+  folder. Like `microsite`, it is a private workspace package and is not published.
+
+#### Plugin workspaces
+
+##### `catalog`
 
 The catalog plugin family.
 
@@ -304,29 +308,29 @@ The catalog plugin family.
 - `@backstage/plugin-catalog-unprocessed-entities`, `plugin-catalog-unprocessed-entities-common`
 - All `@backstage/plugin-catalog-backend-module-*` packages
 
-#### `scaffolder`
+##### `scaffolder`
 
 - `@backstage/plugin-scaffolder`, `plugin-scaffolder-backend`, `plugin-scaffolder-common`, `plugin-scaffolder-node`, `plugin-scaffolder-node-test-utils`, `plugin-scaffolder-react`
 - `@backstage/scaffolder-internal` (currently `packages/scaffolder-internal`)
 - All `@backstage/plugin-scaffolder-backend-module-*` packages
 
-#### `auth`
+##### `auth`
 
 - `@backstage/plugin-auth`, `plugin-auth-backend`, `plugin-auth-node`, `plugin-auth-react`
 - All `@backstage/plugin-auth-backend-module-*` packages
 
-#### `techdocs`
+##### `techdocs`
 
 - `@backstage/plugin-techdocs`, `plugin-techdocs-backend`, `plugin-techdocs-common`, `plugin-techdocs-node`, `plugin-techdocs-react`
 - `@backstage/plugin-techdocs-addons-test-utils`, `plugin-techdocs-module-addons-contrib`
 - `@backstage/techdocs-cli`, `@backstage/techdocs-cli-embedded-app`
 
-#### `search`
+##### `search`
 
 - `@backstage/plugin-search`, `plugin-search-backend`, `plugin-search-backend-node`, `plugin-search-common`, `plugin-search-react`
 - All `@backstage/plugin-search-backend-module-*` packages
 
-#### `notifications`
+##### `notifications`
 
 The notifications plugin family is kept in its own workspace rather than folded into
 `framework`, because we expect it to evolve at a different speed and have its own
@@ -335,48 +339,50 @@ module ecosystem.
 - `@backstage/plugin-notifications`, `plugin-notifications-backend`, `plugin-notifications-common`, `plugin-notifications-node`
 - All `@backstage/plugin-notifications-backend-module-*` packages
 
-#### `kubernetes`
+##### `kubernetes`
 
 - `@backstage/plugin-kubernetes`, `plugin-kubernetes-backend`, `plugin-kubernetes-cluster`, `plugin-kubernetes-common`, `plugin-kubernetes-node`, `plugin-kubernetes-react`
 
-#### `api-docs`
+##### `api-docs`
 
 - `@backstage/plugin-api-docs`, `plugin-api-docs-module-protoc-gen-doc`
 
-#### `devtools`
+##### `devtools`
 
 - `@backstage/plugin-devtools`, `plugin-devtools-backend`, `plugin-devtools-common`, `plugin-devtools-react`
 - `@backstage/plugin-config-schema` — a frontend plugin that mounts a route in the
   app for browsing the live config schema; conceptually a developer tool.
 
-#### `microsite`
-
-The Docusaurus site that powers `backstage.io`. The workspace is private — it does not
-publish any packages — and is included in the workspace map for completeness. See
-[Documentation and microsite](#documentation-and-microsite) for how plugin docs are
-pulled in at build time.
-
-#### `home`
+##### `home`
 
 - `@backstage/plugin-home`, `plugin-home-react`
 
-#### `org`
+##### `org`
 
 - `@backstage/plugin-org`, `plugin-org-react`
 
-#### `user-settings`
+##### `user-settings`
 
 - `@backstage/plugin-user-settings`, `plugin-user-settings-backend`, `plugin-user-settings-common`
 
-#### `proxy`
+##### `proxy`
 
 - `@backstage/plugin-proxy-backend`, `plugin-proxy-node`
 
-#### `mcp`
+##### `mcp`
 
 - `@backstage/plugin-mcp-actions-backend`
 
-#### `demo`
+#### Private workspaces
+
+##### `microsite`
+
+The Docusaurus site that powers `backstage.io`. The workspace is private — it does
+not publish any packages — and is included in the workspace map for completeness.
+See [Documentation and microsite](#documentation-and-microsite) for how plugin
+docs are pulled in at build time.
+
+##### `demo`
 
 The end-to-end example Backstage app for the project. Today this lives in the
 separate `backstage/demo` repository (the source of `demo.backstage.io`); under this
