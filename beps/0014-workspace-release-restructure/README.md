@@ -1147,7 +1147,7 @@ for the plugin's resolution model), this means three useful properties:
   next run `yarn install` and let the lockfile update, the plugin picks up new
   minor and patch versions of Backstage packages within the line. There is no
   possibility of an unexpected breaking change.
-- A frozen pin (`release: "2604.23"`) locks resolution to a specific manifest;
+- A frozen pin (`release: "2604.1.3"`) locks resolution to a specific manifest;
   the plugin won't move package versions forward even on a lockfile refresh.
   Reproducibility of any one install still comes from the lockfile, as usual —
   the frozen pin just controls whether a deliberate lockfile update would drift
@@ -1433,18 +1433,30 @@ A few reasons keeping `backstage/versions` separate is the right call:
 #### Data shape
 
 A Backstage release is identified by the framework release line — for example,
-`2604`. Within that line, individual manifests are numbered with a per-line counter,
-written using a dot: `2604.0`, `2604.1`, …, `2604.23`. The release identifier you
-_ship to adopters_ is `<line>.<counter>`. Within a release line the framework
-packages all share a major version (`2604.x.y`) so the manifest counter is what
-moves between consecutive snapshots; the framework major never changes inside one
-line.
+`2604`. Within that line, individual manifests are numbered using a semver-style
+`<minor>.<patch>` suffix that follows real semver semantics across the workspace
+as a whole:
+
+- A new line opens at `<line>.0.0` when the framework `Promote staged` PR
+  merges.
+- A subsequent publish into the line that contains at least one `minor` package
+  bump advances the line's `<minor>` segment and resets `<patch>` to `0` (e.g.
+  `2604.0.5` → `2604.1.0`).
+- A publish that contains only `patch` bumps advances the `<patch>` segment
+  (e.g. `2604.1.0` → `2604.1.1`).
+- `<major>` is never bumped inside a line; cross-line transitions advance
+  `<line>` itself (e.g. `2604` → `2610`).
+
+The release identifier shipped to adopters is therefore `<line>.<minor>.<patch>`,
+e.g. `2604.0.0`, `2604.1.3`, `2604.5.7`. This applies to the framework's
+back-port lines too: a back-port to the `2603` line that contains only patch
+bumps moves it from e.g. `2603.5.2` to `2603.5.3`.
 
 Each manifest is a JSON document of the form:
 
 ```json
 {
-  "releaseVersion": "2604.23",
+  "releaseVersion": "2604.1.3",
   "releaseLine": "2604",
   "packages": [
     {
@@ -1474,23 +1486,26 @@ Each manifest is a JSON document of the form:
 Every published package appears in the manifest exactly once. There is no "no target"
 distinction at the data layer — workspaces such as `ui` that have no runtime
 dependency on `framework` still have their current `@latest` version captured. The
-manifest is purely descriptive: it answers "if I pin Backstage `2604.23`, what
+manifest is purely descriptive: it answers "if I pin Backstage `2604.1.3`, what
 versions of every Backstage package do I get?".
 
 #### How the manifest is maintained
 
 Manifests are immutable. Every successful non-pre-release publish from
 the publishing repo produces a new manifest under a content-addressed URL of the
-form `release-<line>.<counter>.json` in `backstage/versions` — for example,
-`release-2604.23.json`. A pointer file (`release-<line>/latest.json`) is updated to
-reference the newest manifest in the line; that pointer is the only mutable artifact
-the publishing repo writes.
+form `release-<line>.<minor>.<patch>.json` in `backstage/versions` — for
+example, `release-2604.1.3.json`. A pointer file
+(`release-<line>/latest.json`) is updated to reference the newest manifest in
+the line; that pointer is the only mutable artifact the publishing repo writes.
 
 The body of each manifest is built by:
 
 1. Copying the most recent manifest for the same Backstage release line.
 2. Replacing the version entry for every package that was just published.
-3. Incrementing the in-line counter and writing the result to a new immutable URL.
+3. Computing the new `<minor>.<patch>` suffix from the highest bump level in
+   the publish — minor publishes advance `<minor>` and reset `<patch>` to `0`,
+   patch publishes advance `<patch>` — and writing the result to a new immutable
+   URL.
 
 This means an adopter using the Backstage Yarn plugin (which reads
 `backstage.json`'s `release` field and resolves Backstage package versions through
@@ -1504,17 +1519,17 @@ it) can pin a Backstage release in two ways:
   Reproducibility of any single install still comes from the `yarn.lock` file,
   as usual; the floating pin only governs how resolution moves on a future
   refresh.
-- **Frozen pin** (`release: "2604.23"` in `backstage.json`): the Yarn plugin
-  reads the immutable `release-2604.23.json` directly. A future lockfile refresh
-  does not move Backstage package versions forward inside the line; the
-  resolution stays at exactly the manifest counter the pin names.
+- **Frozen pin** (`release: "2604.1.3"` in `backstage.json`): the Yarn plugin
+  reads the immutable `release-2604.1.3.json` directly. A future lockfile
+  refresh does not move Backstage package versions forward inside the line; the
+  resolution stays at exactly the manifest the pin names.
 
 When the framework workspace cuts a new named release (`2604` → `2610`), the
-publishing workflow stops updating the `release-2604/latest.json` pointer (the line
-is closed) and starts a new line headed by `release-2610.0.json`, seeded from the
-last manifest of the previous line. Packages affected by staged changes that
-shipped with the new release move to their new versions; every other package keeps
-its existing version.
+publishing workflow stops updating the `release-2604/latest.json` pointer (the
+line is closed) and starts a new line headed by `release-2610.0.0.json`, seeded
+from the last manifest of the previous line. Packages affected by staged
+changes that shipped with the new release move to their new versions; every
+other package keeps its existing version.
 
 This gives us a few useful properties:
 
