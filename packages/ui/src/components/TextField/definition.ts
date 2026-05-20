@@ -40,5 +40,6 @@ export const TextFieldDefinition = defineComponent<TextFieldOwnProps>()({
     label: {},
     description: {},
     secondaryLabel: {},
+    floatingLabel: {},
   },
 });

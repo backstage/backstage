@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useState, useCallback } from 'react';
 import { Input, TextField as AriaTextField } from 'react-aria-components';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
@@ -33,8 +33,18 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       TextFieldDefinition,
       props,
     );
-    const { classes, label, icon, secondaryLabel, placeholder, description } =
-      ownProps;
+    const {
+      classes,
+      label,
+      icon,
+      secondaryLabel,
+      placeholder,
+      description,
+      floatingLabel,
+    } = ownProps;
+
+    const [isFocused, setIsFocused] = useState(false);
+    const [inputValue, setInputValue] = useState('');
 
     useEffect(() => {
       if (!label && !restProps['aria-label'] && !restProps['aria-labelledby']) {
@@ -43,6 +53,36 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         );
       }
     }, [label, restProps['aria-label'], restProps['aria-labelledby']]);
+
+    const handleFocus = useCallback(
+      (e: React.FocusEvent<HTMLInputElement>) => {
+        setIsFocused(true);
+        if (restProps.onFocus) {
+          restProps.onFocus(e);
+        }
+      },
+      [restProps],
+    );
+
+    const handleBlur = useCallback(
+      (e: React.FocusEvent<HTMLInputElement>) => {
+        setIsFocused(e.target.value !== '');
+        if (restProps.onBlur) {
+          restProps.onBlur(e);
+        }
+      },
+      [restProps],
+    );
+
+    const handleChange = useCallback(
+      (value: string) => {
+        setInputValue(value);
+        if (restProps.onChange) {
+          restProps.onChange(value);
+        }
+      },
+      [restProps],
+    );
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -53,17 +93,33 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         className={classes.root}
         {...dataAttributes}
         {...restProps}
+        onFocus={floatingLabel ? handleFocus : restProps.onFocus}
+        onBlur={floatingLabel ? handleBlur : restProps.onBlur}
+        onChange={floatingLabel ? handleChange : restProps.onChange}
         ref={ref}
       >
-        <FieldLabel
-          label={label}
-          secondaryLabel={secondaryLabelText}
-          description={description}
-          descriptionSlot="description"
-        />
+        {!floatingLabel && (
+          <FieldLabel
+            label={label}
+            secondaryLabel={secondaryLabelText}
+            description={description}
+            descriptionSlot="description"
+          />
+        )}
         <div
           className={classes.inputWrapper}
           data-size={dataAttributes['data-size']}
+          style={
+            floatingLabel
+              ? {
+                  position: 'relative',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                }
+              : undefined
+          }
         >
           {icon && (
             <div
@@ -77,10 +133,48 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           <Input
             className={classes.input}
             {...(icon && { 'data-icon': true })}
-            placeholder={placeholder}
+            placeholder={
+              floatingLabel
+                ? isFocused && !inputValue
+                  ? placeholder
+                  : ''
+                : placeholder
+            }
+            style={
+              floatingLabel
+                ? {
+                    paddingTop: isFocused || inputValue ? '2px' : '0px',
+                    border: 'none !important' as any,
+                    boxShadow: 'none !important' as any,
+                    backgroundColor: 'transparent !important' as any,
+                    width: '100%',
+                  }
+                : undefined
+            }
           />
+          {floatingLabel && label && (
+            <label
+              style={{
+                position: 'absolute',
+                left: icon ? '40px' : '12px',
+                top: isFocused || inputValue ? '-8px' : '50%',
+                transform:
+                  isFocused || inputValue
+                    ? 'translateY(0)'
+                    : 'translateY(-50%)',
+                fontSize: isFocused || inputValue ? '12px' : '14px',
+                color: isFocused ? '#2563eb' : '#6b7280',
+                pointerEvents: 'none',
+                transition: 'all 0.2s ease',
+                backgroundColor: '#ffffff',
+                padding: '0 6px',
+              }}
+            >
+              {label}
+            </label>
+          )}
         </div>
-        <FieldError />
+        {!floatingLabel && <FieldError />}
       </AriaTextField>
     );
   },

@@ -29,3 +29,10 @@ export const withDescriptionSnippet = `<TextField
   label="Label"
   description="Description"
 />`;
+
+export const withFloatingLabelSnippet = `<TextField
+  name="url"
+  placeholder="Enter a URL"
+  label="Label"
+  floatingLabel={true}
+/>`;

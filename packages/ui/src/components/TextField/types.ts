@@ -42,6 +42,12 @@ export type TextFieldOwnProps = {
   label?: FieldLabelProps['label'];
   description?: FieldLabelProps['description'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
+
+  /**
+   * Enable floating label that animates on focus
+   * @defaultValue false
+   */
+  floatingLabel?: boolean;
 };
 
 /** @public */

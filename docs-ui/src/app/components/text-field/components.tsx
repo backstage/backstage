@@ -14,6 +14,17 @@ export const WithLabel = () => {
     />
   );
 };
+export const WithFloatingLabel = () => {
+  return (
+    <TextField
+      name="url"
+      placeholder="Enter a URL"
+      label="Label"
+      floatingLabel={true}
+      style={{ maxWidth: '300px' }}
+    />
+  );
+};
 
 export const Sizes = () => {
   return (

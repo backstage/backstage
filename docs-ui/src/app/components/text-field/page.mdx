@@ -6,8 +6,9 @@ import {
   withLabelSnippet,
   sizesSnippet,
   withDescriptionSnippet,
+  withFloatingLabelSnippet,
 } from './snippets';
-import { WithLabel, Sizes, WithDescription } from './components';
+import { WithLabel, Sizes, WithDescription, WithFloatingLabel } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { TextFieldDefinition } from '../../../utils/definitions';
@@ -62,6 +63,17 @@ export const reactAriaUrls = {
   open
   preview={<WithDescription />}
   code={withDescriptionSnippet}
+  layout="side-by-side"
+/>
+
+### With floating label
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithFloatingLabel />}
+  code={withFloatingLabelSnippet}
   layout="side-by-side"
 />
 
