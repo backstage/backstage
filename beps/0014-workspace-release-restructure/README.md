@@ -779,25 +779,41 @@ between releases). This section spells out the scheme end to end.
 
 #### Identifier format
 
-The `framework` workspace adopts an incrementing date-based version line of the form
-`YYNN`, where `YY` is the two-digit calendar year and `NN` is a zero-padded per-year
-incrementing release number that resets each January. Examples: `2601`, `2602`,
-`2603`, `2701`. The first release of the scheme is whichever year we land it in.
+The `framework` workspace adopts a date-based version line of the form `YYNN`, where
+`YY` is the two-digit calendar year and `NN` is normally the two-digit calendar
+month in which the release ships. The first release of the scheme is whichever year
+we land it in. Examples:
 
-The rationale for "year plus incrementing number" rather than month- or quarter-based
-encoding is:
+- A release shipping in April 2026 is `2604`, regardless of whether it is the first,
+  third, or only release of the year.
+- A release shipping in October 2026 is `2610`.
+- A release shipping in January 2027 is `2701`.
 
-- It does not lie about when the release shipped (a calendar-versioned `2604` release
-  that actually shipped on May 3rd is mildly embarrassing if the `04` is read as a
-  month — by convention we read the trailing pair as a sequence, not a month).
-- It does not over-promise a cadence (a `26Q2` release that slips to Q3 is worse).
-- It tolerates multiple releases inside the same month without semantic weirdness;
-  `2604` and `2605` can both ship in June if needed.
+If two releases happen in the same calendar month (which we expect to be very rare),
+the second one increments past the month. So a hypothetical second release in April
+2026 is `2605`. If May 2026 then ships a release, it picks up at `2606` rather than
+`2605`, because `2605` is already taken. In other words, `NN` is whichever is larger
+of the current calendar month and one greater than the highest `NN` already shipped
+this year. The counter resets to `01..12` at the start of each calendar year, so a
+February 2027 release shipping after a `2613` overflow at the end of 2026 is still
+`2702`.
+
+The rationale for "year plus month" rather than a pure sequence or a quarterly scheme
+is:
+
+- The version number tells adopters when the release shipped at a glance. `2604`
+  reads as "April 2026". This is the most useful information a single identifier can
+  carry about a framework release.
+- It does not over-promise a fixed cadence. Months where no release ships are simply
+  skipped — `2601, 2602, 2603` are absent if the first release of 2026 happens in
+  April.
+- It tolerates extra releases inside the same month by incrementing past the month
+  rather than introducing a sub-counter.
 - It fits in a single integer, which means it is a valid semver major version (every
   framework package shares its major with the framework release identifier — see
   below).
-- It supports up to 99 releases per year, which is well past the cadence we
-  anticipate.
+- The `NN` range can stretch up to 99 if overflow ever stacks up, giving plenty of
+  headroom past the 12 normal monthly slots.
 
 #### Framework packages share a major version
 
@@ -873,12 +889,12 @@ For adopters this means three useful properties:
 There is no fixed calendar for when framework releases ship. The trigger is the same
 as for every other workspace: a maintainer flipping the `Promote major (framework)`
 PR from draft to ready-for-review (see
-[Major releases via the Promote PR](#major-releases-via-the-promote-pr)). The only
-calendar-driven behavior is the year segment of the identifier: the counter resets
-to `01` on the first release shipped in a new calendar year. The CLI computes the
-next identifier as "current two-digit year, concatenated with a two-digit counter
-that is one greater than the highest `NN` shipped this year, or `01` if no framework
-release has shipped yet this year".
+[Major releases via the Promote PR](#major-releases-via-the-promote-pr)). The
+calendar-driven behavior is in the identifier itself: `YY` is the current two-digit
+year and `NN` is whichever is larger of the current calendar month and one greater
+than the highest `NN` shipped so far this year. The counter restarts at the new
+year. The CLI computes the next identifier deterministically from the current date
+and the highest `NN` already published in the year.
 
 The framework release identifier doubles as the Backstage release identifier;
 see [Backstage release manifest](#backstage-release-manifest) for how non-framework
