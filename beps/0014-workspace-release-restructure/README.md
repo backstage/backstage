@@ -950,59 +950,74 @@ between releases). This section spells out the scheme end to end.
 
 #### Identifier format
 
-The `framework` workspace adopts a date-based version line of the form `YYNN`, where
-`YY` is the two-digit calendar year and `NN` is normally the two-digit calendar
-month in which the release ships. The first release of the scheme is whichever year
-we land it in. Examples:
+The `framework` workspace adopts a date-based version line of the form `YYNN`,
+where `YY` is the two-digit calendar year and `NN` is a two-digit slot number that
+identifies which release in the project's cadence this is. The first release of
+the scheme is whichever year we land it in.
 
-- A release shipping in April 2026 is `2604`, regardless of whether it is the first,
-  third, or only release of the year.
-- A release shipping in October 2026 is `2610`.
-- A release shipping in January 2027 is `2701`.
+`NN` reflects the **cadence slot**, not the calendar month the release happened
+to ship in. The project's cadence is "two releases per year, in April and
+October" (see [Expected cadence](#expected-cadence) below); under that cadence
+the slot numbers are `04` and `10`, so the regular releases are `2604`, `2610`,
+`2704`, `2710`, and so on. Picking slot numbers that match the planned calendar
+months means adopters can read the version at a glance and know roughly when it
+shipped, without having to chase exactly which week it landed.
 
-If two releases happen in the same calendar month (which we expect to be very rare),
-the second one increments past the month. So a hypothetical second release in April
-2026 is `2605`. If May 2026 then ships a release, it picks up at `2606` rather than
-`2605`, because `2605` is already taken. In other words, `NN` is whichever is larger
-of the current calendar month and one greater than the highest `NN` already shipped
-this year. Overflow does not carry across calendar years: even if 2026 ends with an
-overflow release `2613`, the first 2027 release picks up at `<27><current-month>`,
-not `2614`. A January 2027 release after a `2613` is therefore `2701`.
+Two situations move `NN` away from a cadence slot:
 
-The rationale for "year plus month" rather than a pure sequence or a quarterly scheme
-is:
+- **Extra releases off the cadence.** If we ever need to ship more than the
+  planned number of releases in a year (an emergency major, a one-off coordinated
+  push), the extra release takes a slot number that does not collide with the
+  cadence. The simplest rule is "use the current calendar month if it is free,
+  otherwise increment past the highest `NN` already shipped this year". For
+  example, with a `2604`/`2610` cadence, an extra release in July 2026 is `2607`;
+  if a second extra release happens later that same month, it is `2608`.
+- **Cadence changes.** If we change the cadence (e.g. switch to "once a year in
+  August"), new releases adopt the new slot numbers (`<YY>08`). The previous
+  numbers stand as the historical record of the old cadence; nothing about
+  earlier releases is renamed.
 
-- The version number tells adopters when the release shipped at a glance. `2604`
-  reads as "April 2026". This is the most useful information a single identifier can
-  carry about a framework release.
-- It does not over-promise a fixed cadence. Months where no release ships are simply
-  skipped — `2601, 2602, 2603` are absent if the first release of 2026 happens in
-  April.
-- It tolerates extra releases inside the same month by incrementing past the month
-  rather than introducing a sub-counter.
-- The `NN` range can stretch up to 99 if overflow ever stacks up, giving plenty of
-  headroom past the 12 normal monthly slots.
+Overflow does not carry across calendar years: even if 2026 ends with an
+overflow release `2613`, the first 2027 release picks up at `<27>` followed by
+its cadence slot (e.g. `2704` for an April release), not `2614`. A January 2027
+off-cadence release after a `2613` is therefore `2701`.
+
+The rationale for "year plus cadence slot" rather than a pure sequence or a
+quarterly scheme is:
+
+- The version number tells adopters roughly when the release shipped at a glance.
+  `2604` reads as "the April 2026 release", which is the most useful information
+  a single identifier can carry.
+- The number is tied to the cadence rather than the exact ship date, so a release
+  that slips by a few weeks still ships under the slot number adopters were
+  expecting. Adopters do not have to learn that a planned `2604` shipped as
+  `2605` because of a slip.
+- It tolerates extra releases inside the same year by stepping outside the
+  cadence slots into a different month number.
+- The `NN` range can stretch up to 99 if overflow ever stacks up, giving plenty
+  of headroom past the 12 normal monthly slots.
 
 The identifier is a workspace-level label only. It is the name the Backstage
-release goes by, it is what `framework@<YYNN>` tags in git, and it keys the release
-manifest. It does **not** determine the semver of any individual package — see
+release goes by, it is what `framework@<YYNN>` tags in git, and it keys the
+release manifest. It does **not** determine the semver of any individual
+package — see
 [Framework packages keep independent semver](#framework-packages-keep-independent-semver)
 below.
 
 #### Expected cadence
 
 The project targets two framework releases per year, in April and October. Both
-windows are timed to coincide with the KubeCon events: KubeCon EU lands in
-April most years (occasionally in March), and KubeCon NA lands in November.
-Under the `YYNN` scheme that produces `<YY>04` and `<YY>10` as the typical
-release identifiers — for example `2604` and `2610` in 2026, then `2704` and
-`2710` in 2027, and so on.
+windows are timed to coincide with the KubeCon events: KubeCon EU lands in April
+most years (occasionally in March), and KubeCon NA lands in November. Under the
+`YYNN` scheme that produces `<YY>04` and `<YY>10` as the cadence slot numbers —
+for example `2604` and `2610` in 2026, then `2704` and `2710` in 2027, and so on.
 
-The dates are guidelines rather than commitments. A release that slips by a few
-weeks moves its `NN` to match the month it actually shipped in (e.g. a planned
-`2604` that ships in May becomes `2605`); adopters always see the month the
-release actually happened. Likewise an unplanned extra release in the same month
-overflows past the calendar month per the
+The dates are guidelines rather than commitments. A release planned for April
+that ends up shipping in May still publishes as `2604`, not `2605`, because the
+slot number tracks the cadence rather than the ship month. The cadence is what
+adopters plan around, so sticking to its slot numbers is more important than
+being precise about the month. Off-cadence releases (an emergency major, a
+one-off coordinated push) use a non-cadence slot per the
 [Identifier format](#identifier-format) rules.
 
 #### Framework packages keep independent semver
