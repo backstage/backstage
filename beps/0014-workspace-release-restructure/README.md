@@ -720,7 +720,7 @@ else.
 - Pushing back per-package git tags (e.g. `@backstage/plugin-catalog@2.3.0`), matching
   the convention `backstage/community-plugins` uses today. The `framework` workspace
   additionally pushes a workspace-level tag carrying its release identifier (e.g.
-  `framework@2026-4`) on every major release, so the date-based identifier can be
+  `framework@2604`) on every major release, so the date-based identifier can be
   looked up in git. No other workspace publishes a workspace-level tag.
 
 This preserves the current security boundary: `backstage/backstage` never has an npm
@@ -773,47 +773,62 @@ bucket as `@next`.
 ### Versioning of the core framework
 
 The `framework` workspace adopts an incrementing date-based version line of the form
-`YYYY-N`, where `YYYY` is the calendar year and `N` is a per-year incrementing release
-number that resets each January. Examples: `2026-1`, `2026-2`, `2026-3`, `2027-1`.
+`YYNN`, where `YY` is the two-digit calendar year and `NN` is a zero-padded per-year
+incrementing release number that resets each January. Examples: `2601`, `2602`,
+`2603`, `2701`. The first release of the scheme is whichever year we land it in.
 
 The rationale for "year plus incrementing number" rather than month- or quarter-based
 encoding is:
 
-- It does not lie about when the release shipped (a calendar-versioned `2026-04`
-  release that actually shipped on May 3rd is mildly embarrassing).
-- It does not over-promise a cadence (a `2026-Q2` release that slips to Q3 is worse).
+- It does not lie about when the release shipped (a calendar-versioned `2604` release
+  that actually shipped on May 3rd is mildly embarrassing if the `04` is read as a
+  month — by convention we read the trailing pair as a sequence, not a month).
+- It does not over-promise a cadence (a `26Q2` release that slips to Q3 is worse).
 - It tolerates multiple releases inside the same month without semantic weirdness;
-  `2026-4` and `2026-5` can both ship in June if needed.
-- It is short and easy to say.
+  `2604` and `2605` can both ship in June if needed.
+- It fits in a single integer, which means it is a valid semver major version (the
+  framework packages share their major version with the framework release line — see
+  below).
+- It supports up to 99 releases per year, which is well past the cadence we
+  anticipate.
 
-The hyphen separator (rather than a dot) is deliberate. It keeps the identifier
-visually distinct from semver, which prevents accidental misreading of `2026.4` as
-"major 2026, minor 4" and frees the dot for an in-line counter we use in
-[Backstage release manifest](#backstage-release-manifest) below.
+#### Framework packages share a major version
 
-Each individual package inside the workspace continues to use semver internally so
-that consumers can still pin minor versions. What changes is only the workspace-level
-release identifier, which is surfaced as a git tag (`framework@2026-4`) and as a
-field in `workspaces/framework/package.json`. Other workspaces continue to use plain
-semver (`catalog@2.3.0`).
+Every package in the `framework` workspace uses the framework release identifier as
+its semver major. When framework release `2604` ships, every framework package's
+version takes the form `2604.<minor>.<patch>` — for example,
+`@backstage/core-plugin-api@2604.3.7`, `@backstage/backend-plugin-api@2604.1.0`,
+`@backstage/types@2604.0.0`. Minor and patch counters are per-package and
+incremented independently by `yarn changeset version` as non-breaking changes land.
 
-There is no fixed calendar for when framework majors ship. The trigger is the same as
-for every other workspace: a maintainer flipping the `Promote major (framework)` PR
-from draft to ready-for-review (see
+A new framework release is, by definition, a coordinated major version bump across
+every framework package — even packages whose own API did not change. The
+"Promote major (framework)" PR includes a major bump for every framework package, so
+that the framework release identifier and the major version of every framework
+package are always in sync. Adopters can therefore read a framework release version
+off of any framework package they happen to look at.
+
+This unified major applies only to the `framework` workspace. Other workspaces
+continue to use plain per-package semver (`@backstage/plugin-catalog@2.3.0`,
+`@backstage/ui@1.2.0`), and their GitHub releases are tagged by date or timestamp as
+the publishing repo sees fit.
+
+#### Promotion trigger
+
+There is no fixed calendar for when framework releases ship. The trigger is the same
+as for every other workspace: a maintainer flipping the `Promote major (framework)`
+PR from draft to ready-for-review (see
 [Major releases via the Promote PR](#major-releases-via-the-promote-pr)). The only
-calendar-driven behavior is the year segment of the version number: the counter
-resets to `1` on the first major shipped in a new calendar year. The CLI computes the
-next identifier as "current year, plus one greater than the highest `N` that has
-shipped in the current year, or `1` if no major has shipped yet this year".
+calendar-driven behavior is the year segment of the identifier: the counter resets
+to `01` on the first release shipped in a new calendar year. The CLI computes the
+next identifier as "current two-digit year, concatenated with a two-digit counter
+that is one greater than the highest `NN` shipped this year, or `01` if no framework
+release has shipped yet this year".
 
-The current Backstage release is identified by the framework's release identifier. We
-also want to track, for every published workspace release, the framework release it
-was built and tested against, so adopters using the Backstage Yarn plugin can pin a
-Backstage release and have the plugin resolve the matching workspace versions. The exact shape
-of that mapping (what gets recorded, where, and how the Yarn plugin consumes it) is
-left to follow-up work — some workspaces will not target any framework release at all
-(for example `ui`, which has no runtime dependency on `framework`), so the mapping
-needs to model "no target" as a valid value.
+The framework release identifier doubles as the Backstage release identifier;
+see [Backstage release manifest](#backstage-release-manifest) for how non-framework
+workspace versions are recorded alongside it so that the Backstage Yarn plugin can
+resolve a pinned Backstage release into a concrete set of package versions.
 
 ### Repository tooling
 
@@ -913,7 +928,7 @@ this proposal.
 
 ### Backstage release manifest
 
-The release identifier of the framework workspace (`YYYY-N`) doubles as the Backstage
+The release identifier of the framework workspace (`YYNN`) doubles as the Backstage
 release identifier. Adopters already pin Backstage releases via the
 `@backstage/release-manifests` package and the Backstage Yarn plugin; this section
 defines how that manifest survives — and benefits from — the per-workspace release
@@ -932,18 +947,25 @@ to read them, which matters for the Yarn plugin's resolution path.
 #### Data shape
 
 A Backstage release is identified by the framework release line — for example,
-`2026-4`. Within that line, individual manifests are numbered with a per-line
-counter, written using a dot: `2026-4.0`, `2026-4.1`, …, `2026-4.23`. The release
-identifier you _ship to adopters_ is `<line>.<counter>`. The dash separates the year
-from the framework counter; the dot separates the line from its in-line counter.
+`2604`. Within that line, individual manifests are numbered with a per-line counter,
+written using a dot: `2604.0`, `2604.1`, …, `2604.23`. The release identifier you
+_ship to adopters_ is `<line>.<counter>`. Within a release line the framework
+packages all share a major version (`2604.x.y`) so the manifest counter is what
+moves between consecutive snapshots; the framework major never changes inside one
+line.
 
 Each manifest is a JSON document of the form:
 
 ```json
 {
-  "releaseVersion": "2026-4.23",
-  "releaseLine": "2026-4",
+  "releaseVersion": "2604.23",
+  "releaseLine": "2604",
   "packages": [
+    {
+      "name": "@backstage/core-plugin-api",
+      "workspace": "framework",
+      "version": "2604.3.7"
+    },
     {
       "name": "@backstage/plugin-catalog",
       "workspace": "catalog",
@@ -966,7 +988,7 @@ Each manifest is a JSON document of the form:
 Every published package appears in the manifest exactly once. There is no "no target"
 distinction at the data layer — workspaces such as `ui` that have no runtime
 dependency on `framework` still have their current `@latest` version captured. The
-manifest is purely descriptive: it answers "if I pin Backstage `2026-4.23`, what
+manifest is purely descriptive: it answers "if I pin Backstage `2604.23`, what
 versions of every Backstage package do I get?".
 
 #### How the manifest is maintained
@@ -974,7 +996,7 @@ versions of every Backstage package do I get?".
 Manifests are immutable. Every successful non-pre-release publish from
 `backstage/publishing` produces a new manifest under a content-addressed URL of the
 form `release-<line>.<counter>.json` in `backstage/versions` — for example,
-`release-2026-4.23.json`. A pointer file (`release-<line>/latest.json`) is updated to
+`release-2604.23.json`. A pointer file (`release-<line>/latest.json`) is updated to
 reference the newest manifest in the line; that pointer is the only mutable artifact
 the publishing repo writes.
 
@@ -986,19 +1008,19 @@ The body of each manifest is built by:
 
 This means an adopter can pin a Backstage release in two ways:
 
-- **Floating pin** (`backstage.json`'s `release: "2026-4"`) — the Yarn plugin reads
-  `release-2026-4/latest.json` on each install, picks up the most recent manifest in
+- **Floating pin** (`backstage.json`'s `release: "2604"`) — the Yarn plugin reads
+  `release-2604/latest.json` on each install, picks up the most recent manifest in
   that release line, and resolves to the package versions inside. Adopters get the
   latest known compatible versions across every workspace without changing the pin.
-- **Frozen pin** (`backstage.json`'s `release: "2026-4.23"`) — the Yarn plugin reads
-  the immutable `release-2026-4.23.json` directly. Adopters get an exact,
-  reproducible set of package versions and are insulated from future publishes.
+- **Frozen pin** (`backstage.json`'s `release: "2604.23"`) — the Yarn plugin reads
+  the immutable `release-2604.23.json` directly. Adopters get an exact, reproducible
+  set of package versions and are insulated from future publishes.
 
-When the framework workspace cuts a new major (`2026-4` → `2026-5`), the publishing
-workflow stops updating the `release-2026-4/latest.json` pointer (the line is closed)
-and starts a new line headed by `release-2026-5.0.json`, seeded from the last
-manifest of the previous line so that all non-framework packages keep their current
-versions.
+When the framework workspace cuts a new major (`2604` → `2605`), the publishing
+workflow stops updating the `release-2604/latest.json` pointer (the line is closed)
+and starts a new line headed by `release-2605.0.json`, seeded from the last manifest
+of the previous line so that all non-framework packages keep their current versions
+and every framework package's major is bumped to `2605`.
 
 This gives us a few useful properties:
 
@@ -1158,7 +1180,7 @@ The migration is staged so that no single PR has to move the entire repository.
    ship the major.
 
 9. **Adopt date-based versioning for `framework`.** The first major of `framework`
-   after the patch flow lands uses the `YYYY-N` scheme.
+   after the patch flow lands uses the `YYNN` scheme.
 
 Throughout the migration the existing weekly release flow continues to work for any
 workspace that has not been migrated yet. There is no flag day.
