@@ -403,46 +403,62 @@ and is for development only — it does not double as a project-wide example.
 
 ### Release cadence per workspace
 
-Each workspace selects its mainline-release cadence in its own `package.json`. The
-following modes are supported; this BEP includes a recommendation for each workspace,
-but the choice is up to the workspace maintainers:
+Every workspace uses the same mainline-release mechanism: the changesets bot
+maintains a `Version Packages (<workspace>)` pull request that accumulates pending
+changesets and bumps versions. A maintainer reviews and merges that PR; the merge
+triggers an `@latest` release for that workspace. There is no `immediate`, no
+`workflow_dispatch`-only path, no per-workspace cadence mode in `package.json`.
 
-1. **Immediate** — every push to `main` that contains merged changesets cuts a release
-   for the affected workspace. No human in the loop. Suited to high-velocity plugin
-   workspaces where a single bug fix should reach adopters within minutes.
-   _Recommended for_: `home`, `org`, `user-settings`, `proxy`, `mcp`, `kubernetes`,
-   `api-docs`, `devtools`, `notifications`, leaf plugin workspaces in general.
+The reason is operational: any flow that pushes version bumps to `main` without
+human review either bypasses the repository's branch protection or relies on a
+service account that cannot review its own PRs. Neither is acceptable for the same
+security and review reasons that motivate
+[Publish-time safeguards](#publish-time-safeguards). The Version Packages PR flow
+already gives us a low-friction human-in-the-loop checkpoint that satisfies branch
+protection without any further complications.
 
-2. **Version Packages PR** — the changesets bot maintains a "Version Packages
-   (workspace)" PR that accumulates pending changesets and bumps versions. Merging that
-   PR cuts the release. This is the model used by `backstage/community-plugins` today.
-   Suited to workspaces that want a human checkpoint and changelog review before each
-   release, but still want fast turnaround when they choose to merge.
-   _Recommended for_: `catalog`, `scaffolder`, `auth`, `search`, `techdocs`.
+The cadence variation across workspaces happens naturally in practice — `framework`
+ships rarely, `home` ships whenever a fix lands — purely as a function of how often
+maintainers merge their Version Packages PR.
 
-3. **Manual** — releases only run when a maintainer triggers them via
-   `workflow_dispatch`. Suited to workspaces that release rarely and want full control
-   over timing.
-   _Recommended for_: `framework`.
+#### Finding pending releases
 
-The selection is encoded in `workspaces/<name>/package.json` under a
-`backstage.release.cadence` field (e.g. `"immediate"`, `"version-packages"`, or
-`"manual"`), so the same release workflow can act on it without per-workspace YAML
-duplication.
+Because every workspace has its own Version Packages PR, the number of open ones
+gets unwieldy to find in the regular PR list. To make pending releases easy to
+discover and act on:
 
-The mainline cadence settings above apply only to `@latest` releases. Two adjacent
-flows have their own triggers and are not affected by the mainline cadence choice:
+- Every Version Packages PR carries a well-known label (e.g. `release: pending`),
+  applied by the release workflow when the PR is opened or updated.
+- A bot-maintained tracking issue (e.g. `Pending releases`) is kept up to date with
+  a checklist of all open Version Packages PRs across every workspace, grouped by
+  workspace and annotated with the number of changesets queued.
+
+The label and the tracking issue together give maintainers a one-click overview of
+"what's ready to release right now" without changing the underlying flow.
+
+#### How this interacts with `@next` and major releases
+
+The `Version Packages` PR only governs `@latest` releases. Two adjacent flows have
+their own triggers and are independent of it:
 
 - **Major releases** that promote queued staged changes follow a separate, uniform
   flow described in
   [Major releases via the Promote PR](#major-releases-via-the-promote-pr). That flow
-  is the same for every workspace; there is no per-workspace mode to pick.
-- **`@next` pre-releases** are decoupled from the mainline cadence. Whenever the
-  staged changes for a workspace produce a meaningful change, an `@next` publish is
-  dispatched regardless of whether mainline is `immediate`, `version-packages`, or
-  `manual`. This matters for workspaces like `framework` whose mainline cadence is
-  `manual` but where adopters still want a continuous preview of what the next major
-  will contain.
+  is the same for every workspace.
+- **`@next` pre-releases** ship from the staged changes themselves, independent of
+  the Version Packages PR. The exact semantics of when an `@next` ships and which
+  major it targets are unchanged from
+  [Next pre-release versioning](#next-pre-release-versioning) but are flagged for
+  follow-up review (see the note at the end of that section).
+
+#### Workspace-level versioning
+
+The framework workspace uses the date-based `YYNN` scheme described in
+[Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle).
+In every other workspace, the root `package.json` stays at a fixed
+`version: "0.0.0"` and is never bumped — those workspaces do not have a
+workspace-level version, only per-package semver. Their GitHub releases are tagged
+by date.
 
 ### Staged changes
 
@@ -792,8 +808,8 @@ on push to main:
         ├── matrix per workspace
         │
         └── release-workspace.yml
-              ├── job: changeset-pr     (mainline cadence "version-packages" only —
-              │                           opens/updates "Version Packages" PR)
+              ├── job: changeset-pr     (always — opens/updates the
+              │                           "Version Packages (workspace)" PR)
               ├── job: promote-pr       (always — rebuilds the draft
               │                           "Promote major (workspace)" PR by
               │                           applying every entry in .staged/)
@@ -818,11 +834,11 @@ version matrix.
   directories, and force-pushes the result onto the `Promote major (<workspace>)`
   PR branch. The PR is kept in draft (see
   [Major releases via the Promote PR](#major-releases-via-the-promote-pr)).
-- `dispatch-next` runs whenever the staged changes set has changed for the workspace.
-  It applies the entries in a temporary checkout, runs `yarn changeset version` to
-  compute the next pre-release identifier, and dispatches a publish with `tag: next`.
-  Because `@next` is decoupled from the mainline cadence, this fires even for
-  workspaces in `cadence: manual` mode.
+- `dispatch-next` runs whenever the staged changes set has changed for the
+  workspace. It applies the entries in a temporary checkout, runs
+  `yarn changeset version` to compute the next pre-release identifier, and
+  dispatches a publish with `tag: next`. `@next` does not require the Version
+  Packages PR to be merged — it tracks `main` directly.
 
 #### Triggering publishing in the private repo
 
@@ -1344,6 +1360,14 @@ A few details worth being explicit about:
 
 ### Next pre-release versioning
 
+> **To revisit.** The relationship between `@next` releases and the next major of
+> the workspace is still being worked out. The current draft below describes `@next` as a
+> rolling preview of `main + applied staged changes`, but we have not yet settled
+> whether `@next` should always target the next major (i.e. only ship when there are
+> staged changes queued), how it interacts with the Promote PR, or what happens when
+> the staged-change set is empty. This subsection is preserved as-is for now;
+> reviewers should expect a follow-up pass before implementation.
+
 `@next` is the dist-tag for "what `@latest` would become if all queued staged changes
 were applied right now". Because `main` evolves continuously — staged changes come
 and go, mainline changesets get merged — we need a deterministic, predictable way to
@@ -1374,9 +1398,8 @@ version` would produce on top of `main` with every staged change applied, using
    whole. It is recorded in the root `package.json` of the workspace under
    `backstage.release.nextCounter` and is incremented by exactly 1 on every `@next`
    publish for the workspace, regardless of how many packages that publish includes
-   or why. The same `backstage.release` key already holds the mainline cadence (see
-   [Release cadence per workspace](#release-cadence-per-workspace)) and is the
-   natural place for additional release-management state we accumulate over time.
+   or why. The `backstage.release` key is the natural place for additional
+   release-management state we accumulate over time.
 3. **Counter reset.** The counter resets to 0 only when the `Promote major` PR for
    the workspace is merged and the resulting major has been published to `@latest`.
    Until then it monotonically increments. Mainline `@latest` releases that bump
