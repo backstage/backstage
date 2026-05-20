@@ -22,7 +22,7 @@ creation-date: 2026-05-18
   - [Release cadence per workspace](#release-cadence-per-workspace)
   - [Staged changes](#staged-changes)
   - [Mainline and next releases from the same branch](#mainline-and-next-releases-from-the-same-branch)
-  - [Major releases via the Promote PR](#major-releases-via-the-promote-pr)
+  - [Promoting staged changes](#promoting-staged-changes)
   - [Patch releases](#patch-releases)
 - [Design Details](#design-details)
   - [Repository layout](#repository-layout)
@@ -289,7 +289,8 @@ constraints and the rationale.
 - The published standalone CLI for managing workspaces, staged changes, and
   `@next` version computation. The package name is left to implementation.
 - Additional in-repo-only entrypoints used by this repository's workflows (the
-  Promote PR builder, the manifest updater, the OIDC dispatch helper, etc.). These
+  Promote staged PR builder, the manifest updater, the OIDC dispatch helper,
+  etc.). These
   may be co-located in the same package or in private packages within the
   workspace.
 
@@ -433,10 +434,9 @@ The label and the tracking issue together give maintainers a one-click overview 
 The `Version Packages` PR only governs `@latest` releases. Two adjacent flows have
 their own triggers and are independent of it:
 
-- **Major releases** that promote queued staged changes follow a separate, uniform
-  flow described in
-  [Major releases via the Promote PR](#major-releases-via-the-promote-pr). That flow
-  is the same for every workspace.
+- **Releases that promote queued staged changes** follow a separate, uniform flow
+  described in [Promoting staged changes](#promoting-staged-changes). That flow is
+  the same for every workspace.
 - **`@next` pre-releases** ship from the staged changes themselves, independent of
   the Version Packages PR. The exact semantics of when an `@next` ships and which
   major it targets are unchanged from
@@ -462,7 +462,7 @@ entry is composed of three things:
 1. A **description**: a human-readable note in changeset front-matter format. It
    names the packages that the change affects and is used both as the eventual
    changelog entry and as the synthesized changeset that drives version computation
-   in the `Promote major` PR and in `@next` releases.
+   in the `Promote staged` PR and in `@next` releases.
 2. A **patch**: a git diff that, when applied to the current state of the
    workspace, transforms it into the form it will take after the change ships.
    This is what makes the entry self-contained: the description without the patch
@@ -493,10 +493,10 @@ This means non-breaking changes have two valid paths:
 
 The same entry serves two consumers downstream:
 
-- The **`Promote major` PR builder** applies the patch to `main` and uses the
+- The **`Promote staged` PR builder** applies the patch to `main` and uses the
   description to synthesize a real changeset, which then drives the eventual
-  `@latest` major release through the normal Changesets version-and-publish flow
-  (see [Major releases via the Promote PR](#major-releases-via-the-promote-pr)).
+  `@latest` release through the normal Changesets version-and-publish flow
+  (see [Promoting staged changes](#promoting-staged-changes)).
 - The **`dispatch-next` job** does the same in a temporary checkout to compute the
   next `@next` snapshot (see
   [Next pre-release versioning](#next-pre-release-versioning)).
@@ -546,10 +546,10 @@ There is no long-lived "next" branch. There are no cross-branch merges. The set 
 breaking changes that will be in the next major is exactly the set of patch files
 currently in `main`, which is easy to read, review, list, and reason about.
 
-### Major releases via the Promote PR
+### Promoting staged changes
 
 Every workspace has one persistent, bot-maintained pull request titled
-`Promote major (<workspace>)`. The PR represents what the next major release of the
+`Promote staged (<workspace>)`. The PR represents what the next release of the
 workspace would look like if it were cut right now.
 
 On every push to `main` that affects a workspace, CI rebuilds the PR for that
@@ -566,7 +566,7 @@ that state it carries a single empty changeset and the description "no staged
 changes queued"; this avoids the noise of creating and closing the PR repeatedly as
 staged changes come and go.
 
-The Promote PR is opened as a regular pull request — the same shape as a Version
+The Promote staged PR is opened as a regular pull request — the same shape as a Version
 Packages PR — and the regular review-and-merge process is the one that applies.
 Merging the PR is the signal to ship: it triggers the release through the same
 mainline flow the workspace uses for every other release, with no separate publish
@@ -710,7 +710,7 @@ The front-matter is intentionally _not_ a Changesets file as-is: the `packages` 
 is nested under a single top-level key so that tooling can read it without having
 to know which top-level keys are package names and which are metadata. When the
 tooling synthesizes a real changeset for downstream consumption (e.g. for the
-Promote PR or for `dispatch-next`), it lifts the `packages` map to the top-level of
+Promote staged PR or for `dispatch-next`), it lifts the `packages` map to the top-level of
 the generated changeset and uses the markdown body — minus the trailing patch code
 block — as the changeset description.
 
@@ -766,16 +766,16 @@ the conflicting PR to update the staged change.
    to include the refreshed entry.
 
 4. **Promoting staged changes to a major.** No author action required. The
-   bot-maintained `Promote major (<workspace>)` PR already contains the result of
+   bot-maintained `Promote staged (<workspace>)` PR already contains the result of
    applying every queued staged change (see
-   [Major releases via the Promote PR](#major-releases-via-the-promote-pr)). To ship
-   the major, a workspace maintainer follows the normal review-and-merge process
-   for the workspace on that PR.
+   [Promoting staged changes](#promoting-staged-changes)). To ship the release, a
+   workspace maintainer follows the normal review-and-merge process for the
+   workspace on that PR.
 
 ### Release workflow
 
 The CI workflow follows the pattern established by community-plugins, extended with
-two additions specific to this BEP: a per-workspace `Promote major` PR that is
+two additions specific to this BEP: a per-workspace `Promote staged` PR that is
 rebuilt on every push, and a per-workspace `@next` publish that runs whenever the
 staged changes change.
 
@@ -789,8 +789,8 @@ on push to main:
         └── release-workspace.yml
               ├── job: changeset-pr     (always — opens/updates the
               │                           "Version Packages (workspace)" PR)
-              ├── job: promote-pr       (always — rebuilds the draft
-              │                           "Promote major (workspace)" PR by
+              ├── job: promote-pr       (always — rebuilds the
+              │                           "Promote staged (workspace)" PR by
               │                           applying every entry in .staged/)
               ├── job: dispatch-latest  (when a release commit is detected on main,
               │                           dispatches @latest publish to the
@@ -810,9 +810,8 @@ version matrix.
   the previous and current commits (same as community-plugins).
 - `promote-pr` always runs. It applies every staged change in a temporary checkout,
   converts each entry's `description.md` into a changeset, deletes the `.staged/`
-  directories, and force-pushes the result onto the `Promote major (<workspace>)`
-  PR branch (see
-  [Major releases via the Promote PR](#major-releases-via-the-promote-pr)).
+  directories, and force-pushes the result onto the `Promote staged (<workspace>)`
+  PR branch (see [Promoting staged changes](#promoting-staged-changes)).
 - `dispatch-next` runs whenever (a) the staged changes set has changed for the
   workspace, or (b) a regular `@latest` release has just shipped for the workspace,
   and only when the workspace has at least one staged change in either case. It
@@ -1020,7 +1019,7 @@ the maintainers decide to cut the next framework release.
 
 #### What happens when a new framework release ships
 
-When the `Promote major (framework)` PR is merged and the next framework release
+When the `Promote staged (framework)` PR is merged and the next framework release
 publishes, every framework package's major bumps in lockstep to the new identifier.
 For example, on the `2604` → `2605` transition:
 
@@ -1053,8 +1052,8 @@ For adopters this means three useful properties:
 
 There is no fixed calendar for when framework releases ship. The trigger is the same
 as for every other workspace: a maintainer reviewing and merging the
-`Promote major (framework)` PR (see
-[Major releases via the Promote PR](#major-releases-via-the-promote-pr)). The
+`Promote staged (framework)` PR (see
+[Promoting staged changes](#promoting-staged-changes)). The
 calendar-driven behavior is in the identifier itself: `YY` is the current two-digit
 year and `NN` is whichever is larger of the current calendar month and one greater
 than the highest `NN` shipped so far this year. The counter restarts at the new
@@ -1082,7 +1081,8 @@ other workspaces.
 
 `workspaces/tooling/` hosts every script that the repository's own workflows invoke
 during release automation: the staged-change validator, the script that rebuilds the
-Promote PR, the manifest updater, the OIDC dispatch helper, and so on. It also hosts
+Promote staged PR, the manifest updater, the OIDC dispatch helper, and so on. It
+also hosts
 the standalone CLI that ships that same automation to `backstage/community-plugins`
 and any other repository adopting this structure.
 
@@ -1428,7 +1428,7 @@ In practice the base resolves to:
 
 - **`framework` workspace.** Every framework package's base is `<next-YYNN>.0.0`,
   where `<next-YYNN>` is the framework release identifier that would be assigned if
-  the Promote PR were merged today (see
+  the Promote staged PR were merged today (see
   [Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle)).
   This holds even when the staged set only contains non-breaking changes, because
   every framework release moves to a new YYNN by definition.
@@ -1451,7 +1451,7 @@ snapshot. The counter is:
   for additional release-management state we accumulate over time.
 - Incremented by exactly `1` on every `@next` publish for the workspace, regardless
   of how many packages that publish includes.
-- Reset to `0` when the `Promote major` PR for the workspace is merged and the
+- Reset to `0` when the `Promote staged` PR for the workspace is merged and the
   corresponding major has been published to `@latest`. This is the only event that
   resets the counter; mainline patch/minor releases do not.
 
@@ -1476,8 +1476,8 @@ Initial state: `@backstage/plugin-catalog@2.3.0`, `@backstage/plugin-catalog-rea
 5. `dispatch-next` republishes: `plugin-catalog@3.0.0-next.1`,
    `plugin-catalog-react@2.0.0-next.1`, `plugin-catalog-graph@0.8.0-next.1`. All
    three share `-next.1`, marking them as a coherent snapshot.
-6. The `Promote major (catalog)` PR is eventually flipped to ready, reviewed, and
-   merged. The major ships to `@latest` and the counter resets to `0`.
+6. The `Promote staged (catalog)` PR is eventually reviewed and merged. The
+   release ships to `@latest` and the counter resets to `0`.
 
 #### Worked example: `framework`
 
@@ -1491,9 +1491,9 @@ version is `2604.<minor>.<patch>` on `@latest`. The CLI's next-identifier rule (
 3. Subsequent staged changes (or refreshes) republish every framework package again
    at the same base `2605.0.0`, with the counter advancing each time
    (`-next.1`, `-next.2`, …).
-4. The `Promote major (framework)` PR is eventually merged. Every framework package
-   ships at `2605.0.0` on `@latest`, the counter resets to `0`, and the manifest
-   line moves from `2604` to `2605`.
+4. The `Promote staged (framework)` PR is eventually merged. Every framework
+   package ships at `2605.0.0` on `@latest`, the counter resets to `0`, and the
+   manifest line moves from `2604` to `2605`.
 
 #### Local previewing
 
@@ -1546,7 +1546,7 @@ The migration is staged so that no single PR has to move the entire repository.
 8. **Roll out staged changes.** Once `framework` is migrated and stable, enable the
    staged-change flow. The first end-to-end exercise is a real deprecation PR: file
    the deprecation and the staged removal together, verify the `@next` release picks
-   the staged removal up, then merge the `Promote major` PR to ship the major.
+   the staged removal up, then merge the `Promote staged` PR to ship the release.
 
 9. **Adopt date-based versioning for `framework`.** The first major of `framework`
    after the staged-change flow lands uses the `YYNN` scheme.
