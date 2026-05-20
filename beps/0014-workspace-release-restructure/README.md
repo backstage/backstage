@@ -1415,9 +1415,9 @@ model.
 
 Manifests are published from the existing `backstage/versions` repository, which
 already serves the Backstage release manifests today via GitHub Pages and has the
-operational tooling, security boundary, and DNS for that purpose. The publishing repo
-(the publishing repo) writes manifests into `backstage/versions` as part of every
-successful publish; `backstage/backstage` does not write manifests directly. Keeping
+operational tooling, security boundary, and DNS for that purpose. The publishing
+repo writes manifests into `backstage/versions` as part of every successful
+publish; `backstage/backstage` does not write manifests directly. Keeping
 the manifests in a small, focused repo also avoids checking out the entire monorepo
 to read them, which matters for the Yarn plugin's resolution path.
 
