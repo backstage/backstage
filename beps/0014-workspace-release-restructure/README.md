@@ -1346,23 +1346,42 @@ workspace-specific docs; the source layout is the only thing that changes.
 
 #### Triggers
 
-Two automatic triggers republish the docs site:
+The docs site rebuilds on a schedule only — a workflow runs every 30 minutes
+inside `workspaces/microsite/` using its own built-in `GITHUB_TOKEN`. No
+cross-repo dispatch from the publishing repo is needed.
 
-- **Scheduled rebuild.** A workflow runs every 15–30 minutes, re-runs the build
-  against whatever the latest published state of each workspace is, and
-  republishes if anything changed. This catches new workspace releases without
-  needing any cross-repo dispatch.
-- **Push to `main` touching docs.** Any push to `main` that touches a `docs/`
-  directory inside a workspace or the top-level `/docs/` triggers a rebuild. This catches
-  cross-cutting docs improvements and avoids the "I fixed a typo, why isn't it
-  live?" surprise — even though workspace docs come from tagged commits, fixes
-  to the top-level `/docs/` ship immediately and workspace-local doc edits ship
-  with the next release of that workspace.
+The schedule cadence is generous because the docs site has no urgency
+requirement: docs catch up to a published release within at most half an hour,
+which is fine in practice. The workflow could be supplemented later with a
+direct dispatch from the publishing flow if that latency ever becomes a problem.
 
-These two triggers cover both authoring and publishing without needing any
-cross-repo dispatch from the publishing repo. They can be supplemented later
-with a direct dispatch from the publishing flow if rebuild latency ever becomes
-a problem.
+#### Short-circuiting unchanged rebuilds
+
+A scheduled rebuild that has nothing to do should exit immediately. The docs
+input has a finite, deterministic shape:
+
+- The cross-cutting top-level `/docs/` content at the current `main`.
+- For each workspace, the `workspaces/<name>/docs/` content at the commit
+  of the most recently published version of that workspace (resolved via the
+  per-package git tags).
+
+Each of those inputs has a stable identifier: a git **tree hash** for the docs
+directory at the relevant commit (e.g. `git rev-parse <sha>:workspaces/<name>/docs`).
+Combining the tree hashes of every input into a single fingerprint gives a
+deterministic key that changes if and only if any docs content has changed.
+
+The build workflow:
+
+1. Computes the fingerprint above.
+2. Looks up the fingerprint in the GitHub Actions cache (keyed by fingerprint).
+3. If the cache hit indicates a successful previous build at this fingerprint,
+   exits immediately — there is nothing new to publish.
+4. Otherwise, runs the full build and publish, then writes the fingerprint to
+   the cache on success.
+
+Step 1 is cheap (it only needs `git ls-tree` reads on a shallow clone, no
+checkout of the workspaces themselves), so a no-op scheduled run finishes in
+seconds.
 
 #### Trade-off: cross-workspace doc edits
 
