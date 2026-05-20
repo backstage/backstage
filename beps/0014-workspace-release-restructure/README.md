@@ -839,18 +839,18 @@ version matrix.
   directories, and force-pushes the result onto the `Promote major (<workspace>)`
   PR branch. The PR is kept in draft (see
   [Major releases via the Promote PR](#major-releases-via-the-promote-pr)).
-- `dispatch-next` runs whenever the staged changes set has changed for the
-  workspace, and only when the workspace has at least one staged change. It applies
-  the staged entries to `main` in a temporary checkout, synthesizes a changeset for
-  each entry's `description.md`, runs `yarn changeset version` against **only** that
-  synthesized set (regular pending changesets in `.changeset/` are excluded),
-  suffixes the resulting versions with `-next.<N>` from the shared workspace
-  counter, and dispatches a publish with `tag: next`. For `framework` every package
-  in the workspace is republished at the next framework release identifier; for
-  every other workspace only packages directly affected by a staged change are
-  bumped. See [Next pre-release versioning](#next-pre-release-versioning) for the
-  exact rules. `@next` does not require the Version Packages PR to be merged — it
-  tracks `main` directly.
+- `dispatch-next` runs whenever (a) the staged changes set has changed for the
+  workspace, or (b) a regular `@latest` release has just shipped for the workspace,
+  and only when the workspace has at least one staged change in either case. It
+  applies the staged entries to `main` in a temporary checkout, synthesizes a
+  changeset for each entry's `description.md`, runs `yarn changeset version`
+  against **only** that synthesized set (regular pending changesets in
+  `.changeset/` are excluded), suffixes the resulting versions with `-next.<N>`
+  from the shared workspace counter, and dispatches a publish with `tag: next`.
+  For `framework` every package in the workspace is republished at the next
+  framework release identifier; for every other workspace only packages directly
+  affected by a staged change are bumped. See
+  [Next pre-release versioning](#next-pre-release-versioning) for the exact rules.
 
 #### Triggering publishing in the private repo
 
@@ -1383,10 +1383,21 @@ before the major actually ships.
 
 `@next` is produced **only** when the workspace has at least one staged change in
 `.staged/`. Without staged changes there is no next major to preview, and `@next`
-publishes nothing. As soon as a staged change is added, refreshed, or removed by a
-merged PR, the `dispatch-next` job for the workspace (see
-[Release workflow](#release-workflow)) computes the new pre-release identifier and
-dispatches a publish.
+publishes nothing.
+
+When the workspace does have staged changes, an `@next` publish is dispatched in
+two situations:
+
+1. **A staged change is added, refreshed, or removed** by a merged PR. The set of
+   queued breaking changes has changed, so the preview needs a new snapshot.
+2. **A regular `@latest` release ships** for the workspace (a Version Packages PR
+   is merged). The underlying state has moved forward, and we republish the `@next`
+   preview on top of the new `@latest` so that adopters always see an `@next` that
+   reflects the most recent baseline.
+
+Both situations route through the same `dispatch-next` job (see
+[Release workflow](#release-workflow)); each dispatch increments the shared
+workspace counter and publishes a new `@next` snapshot.
 
 #### Which packages are published as `@next`
 
