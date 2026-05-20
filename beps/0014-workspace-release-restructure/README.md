@@ -239,7 +239,6 @@ Plugins from `plugins/`:
 
 - `@backstage/plugin-app`, `plugin-app-backend`, `plugin-app-node`, `plugin-app-react`, `plugin-app-visualizer`
 - `@backstage/plugin-bitbucket-cloud-common`
-- `@backstage/plugin-config-schema`
 - `@backstage/plugin-events-backend`, `plugin-events-backend-test-utils`, `plugin-events-node`
 - All `@backstage/plugin-events-backend-module-*` packages
 - `@backstage/plugin-gateway-backend`
@@ -347,6 +346,8 @@ module ecosystem.
 #### `devtools`
 
 - `@backstage/plugin-devtools`, `plugin-devtools-backend`, `plugin-devtools-common`, `plugin-devtools-react`
+- `@backstage/plugin-config-schema` — a frontend plugin that mounts a route in the
+  app for browsing the live config schema; conceptually a developer tool.
 
 #### `microsite`
 
