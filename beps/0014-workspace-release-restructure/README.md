@@ -186,7 +186,7 @@ anything.
 
 #### Framework and supporting workspaces
 
-##### `framework`
+##### Workspace: `framework`
 
 The slowly-evolving framework core: the plugin and app APIs, the backend system, the
 defaults, plus the foundational cross-cutting features (events, signals, integrations)
@@ -248,7 +248,7 @@ Plugins from `plugins/`:
 - `@backstage/plugin-permission-backend`, `plugin-permission-backend-module-policy-allow-all`, `plugin-permission-common`, `plugin-permission-node`, `plugin-permission-react`
 - `@backstage/plugin-signals`, `plugin-signals-backend`, `plugin-signals-node`, `plugin-signals-react`
 
-##### `cli`
+##### Workspace: `cli`
 
 All CLI and developer-tooling packages. Independent from `framework` so that CLI
 improvements can ship continuously, and the first non-`framework` workspace to
@@ -264,7 +264,7 @@ migrate so it can exercise the new release tooling end to end.
 - `@backstage/repo-tools`
 - `@backstage/yarn-plugin`
 
-##### `tooling`
+##### Workspace: `tooling`
 
 A constrained workspace that hosts the release-automation scripts run by this
 repository's workflows _and_ the standalone CLI that ships that same automation to
@@ -281,7 +281,7 @@ constraints and the rationale.
   etc.). These may be co-located in the same package or in private packages
   within the workspace.
 
-##### `ui`
+##### Workspace: `ui`
 
 The new Backstage UI design system, the migration tooling that helps adopters move
 to it, and the documentation site for the design system. Separated from `framework`
@@ -298,7 +298,7 @@ system for now.
 
 #### Plugin workspaces
 
-##### `catalog`
+##### Workspace: `catalog`
 
 The catalog plugin family.
 
@@ -308,29 +308,29 @@ The catalog plugin family.
 - `@backstage/plugin-catalog-unprocessed-entities`, `plugin-catalog-unprocessed-entities-common`
 - All `@backstage/plugin-catalog-backend-module-*` packages
 
-##### `scaffolder`
+##### Workspace: `scaffolder`
 
 - `@backstage/plugin-scaffolder`, `plugin-scaffolder-backend`, `plugin-scaffolder-common`, `plugin-scaffolder-node`, `plugin-scaffolder-node-test-utils`, `plugin-scaffolder-react`
 - `@backstage/scaffolder-internal` (currently `packages/scaffolder-internal`)
 - All `@backstage/plugin-scaffolder-backend-module-*` packages
 
-##### `auth`
+##### Workspace: `auth`
 
 - `@backstage/plugin-auth`, `plugin-auth-backend`, `plugin-auth-node`, `plugin-auth-react`
 - All `@backstage/plugin-auth-backend-module-*` packages
 
-##### `techdocs`
+##### Workspace: `techdocs`
 
 - `@backstage/plugin-techdocs`, `plugin-techdocs-backend`, `plugin-techdocs-common`, `plugin-techdocs-node`, `plugin-techdocs-react`
 - `@backstage/plugin-techdocs-addons-test-utils`, `plugin-techdocs-module-addons-contrib`
 - `@backstage/techdocs-cli`, `@backstage/techdocs-cli-embedded-app`
 
-##### `search`
+##### Workspace: `search`
 
 - `@backstage/plugin-search`, `plugin-search-backend`, `plugin-search-backend-node`, `plugin-search-common`, `plugin-search-react`
 - All `@backstage/plugin-search-backend-module-*` packages
 
-##### `notifications`
+##### Workspace: `notifications`
 
 The notifications plugin family is kept in its own workspace rather than folded into
 `framework`, because we expect it to evolve at a different speed and have its own
@@ -339,50 +339,50 @@ module ecosystem.
 - `@backstage/plugin-notifications`, `plugin-notifications-backend`, `plugin-notifications-common`, `plugin-notifications-node`
 - All `@backstage/plugin-notifications-backend-module-*` packages
 
-##### `kubernetes`
+##### Workspace: `kubernetes`
 
 - `@backstage/plugin-kubernetes`, `plugin-kubernetes-backend`, `plugin-kubernetes-cluster`, `plugin-kubernetes-common`, `plugin-kubernetes-node`, `plugin-kubernetes-react`
 
-##### `api-docs`
+##### Workspace: `api-docs`
 
 - `@backstage/plugin-api-docs`, `plugin-api-docs-module-protoc-gen-doc`
 
-##### `devtools`
+##### Workspace: `devtools`
 
 - `@backstage/plugin-devtools`, `plugin-devtools-backend`, `plugin-devtools-common`, `plugin-devtools-react`
 - `@backstage/plugin-config-schema` — a frontend plugin that mounts a route in the
   app for browsing the live config schema; conceptually a developer tool.
 
-##### `home`
+##### Workspace: `home`
 
 - `@backstage/plugin-home`, `plugin-home-react`
 
-##### `org`
+##### Workspace: `org`
 
 - `@backstage/plugin-org`, `plugin-org-react`
 
-##### `user-settings`
+##### Workspace: `user-settings`
 
 - `@backstage/plugin-user-settings`, `plugin-user-settings-backend`, `plugin-user-settings-common`
 
-##### `proxy`
+##### Workspace: `proxy`
 
 - `@backstage/plugin-proxy-backend`, `plugin-proxy-node`
 
-##### `mcp`
+##### Workspace: `mcp`
 
 - `@backstage/plugin-mcp-actions-backend`
 
 #### Private workspaces
 
-##### `microsite`
+##### Workspace: `microsite`
 
 The Docusaurus site that powers `backstage.io`. The workspace is private — it does
 not publish any packages — and is included in the workspace map for completeness.
 See [Documentation and microsite](#documentation-and-microsite) for how plugin
 docs are pulled in at build time.
 
-##### `demo`
+##### Workspace: `demo`
 
 The end-to-end example Backstage app for the project. Today this lives in the
 separate `backstage/demo` repository (the source of `demo.backstage.io`); under this
