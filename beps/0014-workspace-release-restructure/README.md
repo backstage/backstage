@@ -493,14 +493,19 @@ branch:
 ```
                 main HEAD
                      │
-   ┌── apply zero staged changes ──> publish @latest (e.g. 1.42.0)
+   ┌── apply zero staged changes ──> publish @latest of every changed package
+   │                                  (e.g. plugin-catalog 1.42.0)
    │
-   └── apply queued .staged/* in order ──> publish @next (e.g. 2.0.0-next.<N>)
+   └── apply queued .staged/* in order ──> publish @next of every package
+                                            affected by a staged change, at the
+                                            next-major base version
+                                            (e.g. plugin-catalog 2.0.0-next.<N>)
 ```
 
 The `<N>` suffix on `@next` releases is a per-workspace counter that is shared by
 every package in a given `@next` publish, so that any two packages with the same
-`<N>` came from the same `@next` snapshot. See
+`<N>` came from the same `@next` snapshot. `@next` publishes nothing when the
+workspace has no staged changes. See
 [Next pre-release versioning](#next-pre-release-versioning) for the full rules.
 
 There is no long-lived "next" branch. There are no cross-branch merges. The set of
@@ -835,10 +840,15 @@ version matrix.
   PR branch. The PR is kept in draft (see
   [Major releases via the Promote PR](#major-releases-via-the-promote-pr)).
 - `dispatch-next` runs whenever the staged changes set has changed for the
-  workspace. It applies the entries in a temporary checkout, runs
-  `yarn changeset version` to compute the next pre-release identifier, and
-  dispatches a publish with `tag: next`. `@next` does not require the Version
-  Packages PR to be merged — it tracks `main` directly.
+  workspace, and only when the workspace has at least one staged change. It applies
+  the entries in a temporary checkout, runs `yarn changeset version` to compute the
+  next-major base versions, suffixes them with `-next.<N>` from the shared
+  workspace counter, and dispatches a publish with `tag: next`. For `framework` every
+  package in the workspace is republished at the next framework release identifier;
+  for every other workspace only packages directly affected by a staged change are
+  bumped. See [Next pre-release versioning](#next-pre-release-versioning) for the
+  exact rules. `@next` does not require the Version Packages PR to be merged — it
+  tracks `main` directly.
 
 #### Triggering publishing in the private repo
 
@@ -1360,68 +1370,118 @@ A few details worth being explicit about:
 
 ### Next pre-release versioning
 
-> **To revisit.** The relationship between `@next` releases and the next major of
-> the workspace is still being worked out. The current draft below describes `@next` as a
-> rolling preview of `main + applied staged changes`, but we have not yet settled
-> whether `@next` should always target the next major (i.e. only ship when there are
-> staged changes queued), how it interacts with the Promote PR, or what happens when
-> the staged-change set is empty. This subsection is preserved as-is for now;
-> reviewers should expect a follow-up pass before implementation.
+`@next` is the dist-tag for "what the next major of the workspace would look like
+if it were cut right now". It exists to give adopters a continuously-updated
+preview of the breaking changes that are staged for the next major release of a
+workspace, so
+that organizations can validate their integrations against pending breakage long
+before the major actually ships.
 
-`@next` is the dist-tag for "what `@latest` would become if all queued staged changes
-were applied right now". Because `main` evolves continuously — staged changes come
-and go, mainline changesets get merged — we need a deterministic, predictable way to
-generate the pre-release identifier so adopters can pin and reason about it.
+#### When `@next` ships
 
-We use a **per-workspace counter**, not a per-package one. Every `@next` publish for
-a workspace shares the same counter suffix across every package that was published in
-that run. This makes the version string a snapshot identifier: any two packages with
-`-next.5` came from the same `@next` publish, and the set of `-next.<N>` tags forms
-a totally-ordered series of `@next` snapshots for the workspace.
+`@next` is produced **only** when the workspace has at least one staged change in
+`.staged/`. Without staged changes there is no next major to preview, and `@next`
+publishes nothing. As soon as a staged change is added, refreshed, or removed by a
+merged PR, the `dispatch-next` job for the workspace (see
+[Release workflow](#release-workflow)) computes the new pre-release identifier and
+dispatches a publish.
 
-Concretely, a single `@next` publish from the `catalog` workspace might produce:
+#### Which packages are published as `@next`
 
-```
-@backstage/plugin-catalog        @ 3.0.0-next.7
-@backstage/plugin-catalog-react  @ 2.0.0-next.7
-@backstage/plugin-catalog-node   @ 1.8.4-next.7   # included for a non-breaking bump
-```
+The set of packages that participate in `@next` is workspace-dependent:
 
-Three rules determine the values:
+- **`framework` workspace.** Because every framework package shares a major version
+  by design, an `@next` publish includes _every_ framework package, bumped to the
+  next framework release identifier. Even framework packages whose own API is
+  untouched by any staged change get a new `@next` version, so that adopters can
+  install a coherent preview of the next framework release without mixing majors.
+- **Every other workspace.** Per-package semver. Only packages directly affected by
+  at least one staged change are bumped and published as `@next`. Packages that are
+  not touched stay at their `@latest` version; adopters resolve them through the
+  normal `@latest` dist-tag.
 
-1. **Base version per package.** The portion before `-next.` is what `yarn changeset
-version` would produce on top of `main` with every staged change applied, using
-   the union of (a) the existing changesets in the workspace and (b) the changesets
-   synthesized from every entry's `description.md`. This is the standard Changesets
-   computation; we do not reinvent it.
-2. **Shared workspace counter.** The `<N>` segment is owned by the workspace as a
-   whole. It is recorded in the root `package.json` of the workspace under
-   `backstage.release.nextCounter` and is incremented by exactly 1 on every `@next`
-   publish for the workspace, regardless of how many packages that publish includes
-   or why. The `backstage.release` key is the natural place for additional
-   release-management state we accumulate over time.
-3. **Counter reset.** The counter resets to 0 only when the `Promote major` PR for
-   the workspace is merged and the resulting major has been published to `@latest`.
-   Until then it monotonically increments. Mainline `@latest` releases that bump
-   patch or minor versions do not reset it — they just shift the base versions
-   forward and the next `@next` publish picks the new bases up.
+#### Base version per package
 
-This gives the following user-visible properties:
+For each package that is published as `@next`, the base version (the portion before
+`-next.`) is what `yarn changeset version` would produce on top of `main` with every
+applicable staged change applied, using the union of (a) the existing changesets in
+the workspace and (b) the changesets synthesized from every entry's `description.md`.
+This is the standard Changesets computation; we do not reinvent it.
 
-- The same `-next.<N>` suffix across packages means "from the same `@next` snapshot",
-  which is what adopters expect when they pin a `@next` set.
-- Semver comparisons inside a single base version (`3.0.0-next.5 < 3.0.0-next.6`)
-  work correctly out of the box.
-- When the base version changes (a mainline minor lands while patches are queued),
-  the prerelease identifier moves cleanly from `3.0.0-next.<N>` to `3.0.1-next.<N+1>`
-  or `3.1.0-next.<N+1>`; the counter does not reset, so adopters can still order any
-  two `@next` snapshots by `<N>` alone.
+In practice the base resolves to:
+
+- **`framework` workspace.** Every framework package's base is `<next-YYNN>.0.0`,
+  where `<next-YYNN>` is the framework release identifier that would be assigned if
+  the Promote PR were merged today (see
+  [Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle)).
+- **A package at `1.0.0` or above.** The base is the next semver-major (e.g.
+  `2.3.0` → `3.0.0`).
+- **A package below `1.0.0`.** The base is the next semver-minor, which is how
+  Changesets and Backstage already treat breaking changes for `0.x` packages
+  (e.g. `0.7.5` → `0.8.0`).
+
+#### Shared workspace counter
+
+The `-next.<N>` suffix is shared across every package in a single `@next` publish
+for the workspace, so that any two packages with `-next.5` came from the same
+snapshot. The counter is:
+
+- Recorded in the root `package.json` of the workspace under
+  `backstage.release.nextCounter`. The `backstage.release` key is the natural place
+  for additional release-management state we accumulate over time.
+- Incremented by exactly `1` on every `@next` publish for the workspace, regardless
+  of how many packages that publish includes.
+- Reset to `0` when the `Promote major` PR for the workspace is merged and the
+  corresponding major has been published to `@latest`. This is the only event that
+  resets the counter; mainline patch/minor releases do not.
 
 The updated `package.json` is committed to `main` by the same workflow that runs the
-publish, so the counter survives across runners. The `backstage release next-version`
-CLI computes the next identifier deterministically from `main` plus the counter
-field, which makes it easy to preview locally what the next `@next` publish would
-look like.
+publish, so the counter survives across runners.
+
+#### Worked example: `catalog`
+
+Initial state: `@backstage/plugin-catalog@2.3.0`, `@backstage/plugin-catalog-react@1.8.0`,
+`@backstage/plugin-catalog-graph@0.7.5`, all on `@latest`.
+
+1. Staged change `001` is merged. It declares `plugin-catalog: major` and
+   `plugin-catalog-react: major`.
+2. `dispatch-next` computes: `plugin-catalog@3.0.0-next.0`,
+   `plugin-catalog-react@2.0.0-next.0`. `plugin-catalog-graph` is untouched and
+   stays at `0.7.5` on `@latest`.
+3. Adopters can preview the upcoming major by installing
+   `plugin-catalog@next plugin-catalog-react@next`. They continue to receive
+   `plugin-catalog-graph` from `@latest`.
+4. Staged change `002` is merged later. It declares `plugin-catalog-graph: major`
+   (which for a `0.x` package becomes a minor bump).
+5. `dispatch-next` republishes: `plugin-catalog@3.0.0-next.1`,
+   `plugin-catalog-react@2.0.0-next.1`, `plugin-catalog-graph@0.8.0-next.1`. All
+   three share `-next.1`, marking them as a coherent snapshot.
+6. The `Promote major (catalog)` PR is eventually flipped to ready, reviewed, and
+   merged. The major ships to `@latest` and the counter resets to `0`.
+
+#### Worked example: `framework`
+
+Initial state: framework is on release line `2604`. Every framework package's
+version is `2604.<minor>.<patch>` on `@latest`. The CLI's next-identifier rule (see
+[Identifier format](#identifier-format)) says the next release would be `2605`.
+
+1. A staged change in `framework/.staged/` is merged.
+2. `dispatch-next` republishes _every_ framework package at `2605.0.0-next.0` and
+   bumps the workspace counter.
+3. Subsequent staged changes (or refreshes) republish every framework package again
+   at the same base `2605.0.0`, with the counter advancing each time
+   (`-next.1`, `-next.2`, …).
+4. The `Promote major (framework)` PR is eventually merged. Every framework package
+   ships at `2605.0.0` on `@latest`, the counter resets to `0`, and the manifest
+   line moves from `2604` to `2605`.
+
+#### Local previewing
+
+The `next-version` subcommand of the standalone release CLI computes the next
+`@next` identifier deterministically from `main`, the staged changes for the
+workspace, and `backstage.release.nextCounter`. Running it locally produces the exact version
+strings a real `@next` publish would produce, which makes it easy to inspect what
+the next `@next` would look like without dispatching it.
 
 The migration is staged so that no single PR has to move the entire repository.
 
