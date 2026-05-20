@@ -1,0 +1,19 @@
+docs/golden-path/plugins/backend/004-reading-from-source.md
+  s_1e797a0d660427::t_2fe0aa00dc0c95 161,171-174,176-191
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.4.9",
+  "base_commit_sha": "978cd8ed74884ead1bf3359c106c2eee92de05cd",
+  "prompts": {},
+  "sessions": {
+    "s_1e797a0d660427": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "418802b7-cf69-4659-b814-a50bb600d238",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>"
+    }
+  }
+}
