@@ -1222,28 +1222,41 @@ The workspace is constrained in four ways that make this dual role possible:
    that runs on any Node version, without needing the type-stripping flag. The
    build is **not** required for in-repo use; constraint 3 still applies.
 
-The dev dependencies (TypeScript, ESLint, the build runner) live in `package.json`
-`devDependencies` only. They are installed by anyone running lint, type-check, or
-publishing, and they are ignored by the in-repo `node --experimental-strip-types`
-invocations.
+Despite the runtime constraints, the `tooling` workspace is still a regular Yarn
+workspace from a developer's point of view. It has a `package.json` with
+`devDependencies` (TypeScript, ESLint, the build runner, test dependencies if
+needed), and contributors working _on_ the tooling workspace itself
+`yarn install` it and use the usual tools — type-checking, linting, running
+tests, building locally — exactly the way they would in any other workspace. The
+dev dependencies are the normal Backstage versions of those tools.
 
-The `tooling` workspace is intentionally outside the standard Backstage monorepo
-layout. It does not use the `@backstage/cli`-driven build, does not follow the
-package layout conventions of the other workspaces, and has its own minimal
-`tsconfig.json` and build script. In that sense it is closer to `microsite` (which
-is also a Docusaurus-driven workspace with its own setup) than to a plugin
-workspace. This is a deliberate choice: keeping the layout minimal makes the
-zero-runtime-dependency rule easy to enforce and audit.
+The zero-runtime-dependency rule only kicks in when scripts _from_ the tooling
+workspace are being executed _by other workflows_ to do release automation for
+other workspaces. Those invocations never `yarn install` the tooling workspace;
+they just `node --experimental-strip-types` the script. So:
+
+- Working on the tooling workspace itself: dependencies installed, full
+  TypeScript + ESLint experience.
+- Running tooling-workspace scripts from a release workflow targeting some
+  other workspace: no install, no dependencies, scripts execute directly from
+  source via Node type-stripping.
+
+The `tooling` workspace is also intentionally outside the standard Backstage
+monorepo layout for the runtime code. It does not use the `@backstage/cli`-driven
+build, does not follow the package layout conventions of the other workspaces,
+and has its own minimal `tsconfig.json` and build script. In that sense it is
+closer to `microsite` (which is also a Docusaurus-driven workspace with its own
+setup) than to a plugin workspace. This is a deliberate choice: keeping the
+runtime layout minimal makes the zero-runtime-dependency rule easy to enforce
+and audit.
 
 #### Verifying `tooling/` in CI
 
-Any PR that touches `workspaces/tooling/` triggers a job that:
-
-1. Installs the workspace dependencies (`yarn install` inside
-   `workspaces/tooling/`).
-2. Runs `yarn workspace tooling check`, which invokes `tsc --noEmit` and `eslint`
-   across the workspace. These confirm that the type stripping in-repo invocations
-   rely on actually produces valid TypeScript.
+Any PR that touches `workspaces/tooling/` triggers a job that installs the
+workspace dependencies (`yarn install` inside `workspaces/tooling/`) and runs
+the usual checks — `tsc --noEmit`, `eslint`, tests, and the build — across the
+workspace. These confirm that the TypeScript that in-repo invocations rely on is
+valid, well-typed, and continues to build cleanly.
 
 The repository's other CI jobs that _use_ the tooling never install its
 dependencies; they just `node --experimental-strip-types` the relevant script.
