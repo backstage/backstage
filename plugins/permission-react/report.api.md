@@ -4,6 +4,7 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AuthorizeByNamePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
@@ -27,6 +28,10 @@ export class IdentityPermissionApi implements PermissionApi {
   // (undocumented)
   authorize(
     request: AuthorizePermissionRequest,
+  ): Promise<AuthorizePermissionResponse>;
+  // (undocumented)
+  authorizeByName(
+    request: AuthorizeByNamePermissionRequest,
   ): Promise<AuthorizePermissionResponse>;
   // (undocumented)
   static create(options: {

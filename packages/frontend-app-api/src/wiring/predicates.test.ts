@@ -14,56 +14,50 @@
  * limitations under the License.
  */
 
-import {
-  ApiHolder,
-  ApiRef,
-  discoveryApiRef,
-  fetchApiRef,
-} from '@backstage/frontend-plugin-api';
+import { ApiHolder, ApiRef } from '@backstage/frontend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   createPredicateContextLoader,
   localPermissionApiRef,
 } from './predicates';
 
-function makeApis(options: { fetch?: jest.Mock; authorize?: jest.Mock }): {
+function makeApis(options: {
+  authorizeByName?: jest.Mock;
+  authorize?: jest.Mock;
+  includeAuthorizeByName?: boolean;
+}): {
   apis: ApiHolder;
-  fetch: jest.Mock;
+  authorizeByName: jest.Mock;
   authorize: jest.Mock;
 } {
-  const fetch =
-    options.fetch ??
-    jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ items: [] }),
-    });
+  const authorizeByName =
+    options.authorizeByName ??
+    jest.fn().mockResolvedValue({ result: AuthorizeResult.ALLOW });
   const authorize =
     options.authorize ?? jest.fn().mockResolvedValue({ result: 'ALLOW' });
+  const permissionApi: Record<string, unknown> = { authorize };
+  if (options.includeAuthorizeByName !== false) {
+    permissionApi.authorizeByName = authorizeByName;
+  }
   const map = new Map<ApiRef<unknown>, unknown>([
-    [localPermissionApiRef, { authorize }],
-    [discoveryApiRef, { getBaseUrl: async () => 'http://x/api/permission' }],
-    [fetchApiRef, { fetch }],
+    [localPermissionApiRef, permissionApi],
   ]);
   return {
     apis: { get: <T>(ref: ApiRef<T>) => map.get(ref) as T | undefined },
-    fetch,
+    authorizeByName,
     authorize,
   };
 }
 
 describe('createPredicateContextLoader', () => {
-  it('issues a single batched authorize-by-name request and reports allowed names', async () => {
-    const fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        items: [
-          { id: '0', result: AuthorizeResult.ALLOW },
-          { id: '1', result: AuthorizeResult.DENY },
-          { id: '2', result: AuthorizeResult.ALLOW },
-        ],
-      }),
+  it('calls authorizeByName for each referenced permission and reports allowed names', async () => {
+    const authorizeByName = jest.fn(async ({ name }) => {
+      if (name === 'catalog.entity.delete') {
+        return { result: AuthorizeResult.DENY };
+      }
+      return { result: AuthorizeResult.ALLOW };
     });
-    const { apis } = makeApis({ fetch });
+    const { apis } = makeApis({ authorizeByName });
 
     const result = await createPredicateContextLoader({
       apis,
@@ -77,19 +71,15 @@ describe('createPredicateContextLoader', () => {
       },
     }).load();
 
-    expect(fetch).toHaveBeenCalledTimes(1);
-    const [url, init] = fetch.mock.calls[0];
-    expect(url).toEqual('http://x/api/permission/authorize/by-name');
-    expect(init).toMatchObject({
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
+    expect(authorizeByName).toHaveBeenCalledTimes(3);
+    expect(authorizeByName).toHaveBeenNthCalledWith(1, {
+      name: 'catalog.entity.create',
     });
-    expect(JSON.parse(init.body)).toEqual({
-      items: [
-        { id: '0', name: 'catalog.entity.create' },
-        { id: '1', name: 'catalog.entity.delete' },
-        { id: '2', name: 'scaffolder.task.create' },
-      ],
+    expect(authorizeByName).toHaveBeenNthCalledWith(2, {
+      name: 'catalog.entity.delete',
+    });
+    expect(authorizeByName).toHaveBeenNthCalledWith(3, {
+      name: 'scaffolder.task.create',
     });
     expect(result.permissions).toEqual([
       'catalog.entity.create',
@@ -97,14 +87,8 @@ describe('createPredicateContextLoader', () => {
     ]);
   });
 
-  it('does not call the local permissionApi.authorize — naming is the only input', async () => {
-    const fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        items: [{ id: '0', result: AuthorizeResult.ALLOW }],
-      }),
-    });
-    const { apis, authorize } = makeApis({ fetch });
+  it('does not call the local permissionApi.authorize — authorizeByName is the only entrypoint', async () => {
+    const { apis, authorize } = makeApis({});
 
     await createPredicateContextLoader({
       apis,
@@ -118,12 +102,10 @@ describe('createPredicateContextLoader', () => {
   });
 
   it('forwards backend errors as ForwardedError so the app surfaces them', async () => {
-    const fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      status: 500,
-      statusText: 'Server Error',
-    });
-    const { apis } = makeApis({ fetch });
+    const authorizeByName = jest
+      .fn()
+      .mockRejectedValue(new Error('backend down'));
+    const { apis } = makeApis({ authorizeByName });
 
     await expect(
       createPredicateContextLoader({
@@ -136,15 +118,29 @@ describe('createPredicateContextLoader', () => {
     ).rejects.toThrow('Failed to authorize extension permissions');
   });
 
+  it('treats missing authorizeByName capability as deny-all without throwing', async () => {
+    const { apis, authorizeByName } = makeApis({
+      includeAuthorizeByName: false,
+    });
+
+    const result = await createPredicateContextLoader({
+      apis,
+      predicateReferences: { featureFlags: [], permissions: ['p'] },
+    }).load();
+
+    expect(authorizeByName).not.toHaveBeenCalled();
+    expect(result.permissions).toEqual([]);
+  });
+
   it('returns no allowed permissions when there are no referenced names (no backend round-trip)', async () => {
-    const { apis, fetch } = makeApis({});
+    const { apis, authorizeByName } = makeApis({});
 
     const result = await createPredicateContextLoader({
       apis,
       predicateReferences: { featureFlags: [], permissions: [] },
     }).load();
 
-    expect(fetch).not.toHaveBeenCalled();
+    expect(authorizeByName).not.toHaveBeenCalled();
     expect(result.permissions).toEqual([]);
   });
 });

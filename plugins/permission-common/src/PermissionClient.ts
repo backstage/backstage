@@ -32,6 +32,7 @@ import {
   IdentifiedPermissionMessage,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
+import { AuthorizeByNamePermissionRequest } from './types/integration';
 import {
   AuthorizeRequestOptions,
   BasicPermission,
@@ -156,6 +157,45 @@ export class PermissionClient implements PermissionEvaluator {
     return this.makeRequest(
       requests,
       authorizePermissionResponseSchema,
+      'authorize',
+      options,
+    );
+  }
+
+  /**
+   * Evaluates permissions identified only by their registered `name`. The
+   * permission backend resolves each name to the full {@link Permission}
+   * shape (including `attributes`) before running the policy, which lets
+   * callers that hold a permission name but not the registration object —
+   * such as the frontend predicate loader — authorize without a roundtrip
+   * to fetch the full registry.
+   *
+   * If the connected permission backend predates the `/authorize/by-name`
+   * route (404), this method falls back to `/authorize` with a fabricated
+   * `{ type: 'basic', attributes: {} }` permission per name. The fallback
+   * drops `attributes` and any `resourceRef`, matching how the frontend
+   * predicate loader behaved before the dedicated route existed.
+   */
+  async authorizeByName(
+    requests: AuthorizeByNamePermissionRequest[],
+    options?: PermissionClientRequestOptions,
+  ): Promise<AuthorizePermissionResponse[]> {
+    try {
+      return await this.makeRequest(
+        requests,
+        authorizePermissionResponseSchema,
+        'authorize/by-name',
+        options,
+      );
+    } catch (error) {
+      if (!(error instanceof ResponseError) || error.statusCode !== 404) {
+        throw error;
+      }
+    }
+    return this.authorize(
+      requests.map(({ name }) => ({
+        permission: { name, type: 'basic', attributes: {} },
+      })),
       options,
     );
   }
@@ -171,12 +211,18 @@ export class PermissionClient implements PermissionEvaluator {
       return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
-    return this.makeRequest(queries, queryPermissionResponseSchema, options);
+    return this.makeRequest(
+      queries,
+      queryPermissionResponseSchema,
+      'authorize',
+      options,
+    );
   }
 
   private async makeRequest<TQuery, TResult>(
     queries: TQuery[],
     itemSchema: z.ZodSchema<TResult>,
+    path: string,
     options?: AuthorizeRequestOptions,
   ) {
     const request: PermissionMessageBatch<TQuery> = {
@@ -189,6 +235,7 @@ export class PermissionClient implements PermissionEvaluator {
     const parsedResponse = await this.makeRawRequest(
       request,
       itemSchema,
+      path,
       options,
     );
 
@@ -230,6 +277,7 @@ export class PermissionClient implements PermissionEvaluator {
     const parsedResponse = await this.makeRawRequest(
       { items: Object.values(request) },
       authorizePermissionResponseBatchSchema,
+      'authorize',
       options,
     );
 
@@ -255,10 +303,11 @@ export class PermissionClient implements PermissionEvaluator {
   private async makeRawRequest<TQuery, TResult>(
     request: PermissionMessageBatch<TQuery>,
     itemSchema: z.ZodSchema<TResult>,
+    path: string,
     options?: AuthorizeRequestOptions,
   ) {
     const permissionApi = await this.discovery.getBaseUrl('permission');
-    const response = await fetch(`${permissionApi}/authorize`, {
+    const response = await fetch(`${permissionApi}/${path}`, {
       method: 'POST',
       body: JSON.stringify(request),
       headers: {

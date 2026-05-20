@@ -43,14 +43,18 @@ export type MetadataResponse = {
 };
 
 /**
- * Path of the metadata endpoint mounted by
- * {@link @backstage/plugin-permission-node#createPermissionIntegrationRouter}
- * on every plugin that registers permissions or rules.
+ * Request item used by {@link @backstage/plugin-permission-common#PermissionClient.authorizeByName}.
+ * Identifies a permission by its registered `name`; the backend resolves it
+ * to the full {@link Permission} (preserving `attributes` and the basic /
+ * resource discriminator) before authorizing. `resourceRef` is required for
+ * resource permissions for the same reason as on regular `authorize` calls.
  *
  * @public
  */
-export const PERMISSIONS_METADATA_PATH =
-  '/.well-known/backstage/permissions/metadata';
+export type AuthorizeByNamePermissionRequest = {
+  name: string;
+  resourceRef?: string;
+};
 
 /**
  * Request payload for the permission backend's `POST /authorize/by-name`

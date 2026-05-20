@@ -17,15 +17,13 @@
 import {
   ApiHolder,
   createApiRef,
-  discoveryApiRef,
   featureFlagsApiRef,
-  fetchApiRef,
 } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import {
-  type AuthorizeByNameRequest,
-  type AuthorizeByNameResponse,
   AuthorizeResult,
+  type AuthorizeByNamePermissionRequest,
+  type AuthorizePermissionResponse,
   type EvaluatePermissionRequest,
   type EvaluatePermissionResponse,
 } from '@backstage/plugin-permission-common';
@@ -41,11 +39,17 @@ export const EMPTY_PREDICATE_CONTEXT: ExtensionPredicateContext = {
   permissions: [],
 };
 
-// Minimal local permission API interface to avoid a dependency on @backstage/plugin-permission-react
+// Minimal local permission API interface to avoid a dependency on
+// @backstage/plugin-permission-react. `authorize` is kept on the type as a
+// presence anchor so the registered permission API satisfies the older
+// consumers, while `authorizeByName` is the route this loader actually uses.
 type MinimalPermissionApi = {
   authorize(
     request: EvaluatePermissionRequest,
   ): Promise<EvaluatePermissionResponse>;
+  authorizeByName?: (
+    request: AuthorizeByNamePermissionRequest,
+  ) => Promise<AuthorizePermissionResponse>;
 };
 
 export const localPermissionApiRef = createApiRef<MinimalPermissionApi>({
@@ -67,12 +71,21 @@ export function createPredicateContextLoader(options: {
     );
   }
 
+  function getPermissionApiWithByName() {
+    if (options.predicateReferences.permissions.length === 0) {
+      return undefined;
+    }
+    const permissionApi = options.apis.get(localPermissionApiRef);
+    if (!permissionApi?.authorizeByName) {
+      return undefined;
+    }
+    return permissionApi as MinimalPermissionApi &
+      Required<Pick<MinimalPermissionApi, 'authorizeByName'>>;
+  }
+
   function getImmediate(): ExtensionPredicateContext | undefined {
-    if (options.predicateReferences.permissions.length > 0) {
-      const permissionApi = options.apis.get(localPermissionApiRef);
-      if (permissionApi) {
-        return undefined;
-      }
+    if (getPermissionApiWithByName()) {
+      return undefined;
     }
 
     return {
@@ -82,24 +95,10 @@ export function createPredicateContextLoader(options: {
   }
 
   async function load() {
-    const immediatePredicateContext = getImmediate();
-    if (immediatePredicateContext) {
-      return immediatePredicateContext;
-    }
-
-    const permissionNames = options.predicateReferences.permissions;
-    if (permissionNames.length === 0) {
-      return {
-        featureFlags: getActiveFeatureFlags(),
-        permissions: [],
-      };
-    }
-
-    const discoveryApi = options.apis.get(discoveryApiRef);
-    const fetchApi = options.apis.get(fetchApiRef);
-    if (!discoveryApi || !fetchApi) {
-      // Without the standard frontend APIs we can't reach the backend; stay
-      // safe by treating no permissions as allowed rather than fabricating a
+    const permissionApi = getPermissionApiWithByName();
+    if (!permissionApi) {
+      // No permission API capable of authorizing by name; stay safe by
+      // treating no permissions as allowed rather than fabricating a
       // basic-permission shape and silently dropping `attributes`.
       return {
         featureFlags: getActiveFeatureFlags(),
@@ -107,31 +106,15 @@ export function createPredicateContextLoader(options: {
       };
     }
 
+    const permissionNames = options.predicateReferences.permissions;
     let allowedPermissions: string[] = [];
     try {
-      const baseUrl = await discoveryApi.getBaseUrl('permission');
-      const body: AuthorizeByNameRequest = {
-        items: permissionNames.map((name, index) => ({
-          id: String(index),
-          name,
-        })),
-      };
-      const response = await fetchApi.fetch(`${baseUrl}/authorize/by-name`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (!response.ok) {
-        throw new Error(
-          `Permission backend returned ${response.status} ${response.statusText}`,
-        );
-      }
-      const decoded = (await response.json()) as AuthorizeByNameResponse;
-      const decisionsById = new Map(decoded.items.map(item => [item.id, item]));
-      allowedPermissions = permissionNames.filter((_, index) => {
-        const decision = decisionsById.get(String(index));
-        return decision?.result === AuthorizeResult.ALLOW;
-      });
+      const decisions = await Promise.all(
+        permissionNames.map(name => permissionApi.authorizeByName({ name })),
+      );
+      allowedPermissions = permissionNames.filter(
+        (_, index) => decisions[index]?.result === AuthorizeResult.ALLOW,
+      );
     } catch (error) {
       throw new ForwardedError(
         'Failed to authorize extension permissions',

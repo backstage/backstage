@@ -218,6 +218,167 @@ describe('PermissionClient', () => {
     });
   });
 
+  describe('authorizeByName', () => {
+    beforeAll(() => {
+      client = new PermissionClient({
+        discovery,
+        config: new ConfigReader({ permission: { enabled: true } }),
+      });
+    });
+
+    const mockAuthorizeByNameHandler = jest.fn(
+      (req, res, { json }: RestContext) => {
+        const responses = req.body.items.map(
+          (a: IdentifiedPermissionMessage<{ name: string }>) => ({
+            id: a.id,
+            result: AuthorizeResult.ALLOW,
+          }),
+        );
+        return res(json({ items: responses }));
+      },
+    );
+
+    beforeEach(() => {
+      server.use(
+        rest.post(
+          `${mockBaseUrl}/authorize/by-name`,
+          mockAuthorizeByNameHandler,
+        ),
+      );
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('posts the by-name request and returns the matching response', async () => {
+      const response = await client.authorizeByName([
+        { name: 'catalog.entity.create' },
+        { name: 'catalog.entity.read', resourceRef: 'entity:test/foo' },
+      ]);
+
+      expect(mockAuthorizeByNameHandler).toHaveBeenCalledTimes(1);
+      const request = mockAuthorizeByNameHandler.mock.calls[0][0];
+      expect(request.body).toEqual({
+        items: [
+          expect.objectContaining({ name: 'catalog.entity.create' }),
+          expect.objectContaining({
+            name: 'catalog.entity.read',
+            resourceRef: 'entity:test/foo',
+          }),
+        ],
+      });
+      expect(response).toEqual([
+        expect.objectContaining({ result: AuthorizeResult.ALLOW }),
+        expect.objectContaining({ result: AuthorizeResult.ALLOW }),
+      ]);
+    });
+
+    it('forwards the bearer token when provided', async () => {
+      await client.authorizeByName([{ name: 'catalog.entity.create' }], {
+        token,
+      });
+      const request = mockAuthorizeByNameHandler.mock.calls[0][0];
+      expect(request.headers.get('authorization')).toEqual('Bearer fake-token');
+    });
+
+    it('forwards response errors from the backend', async () => {
+      mockAuthorizeByNameHandler.mockImplementationOnce(
+        (_req, res, { status }: RestContext) => res(status(401)),
+      );
+      await expect(
+        client.authorizeByName([{ name: 'catalog.entity.create' }]),
+      ).rejects.toThrow(/request failed with 401/i);
+    });
+
+    it('rejects responses whose ids do not match the request', async () => {
+      mockAuthorizeByNameHandler.mockImplementationOnce(
+        (_req, res, { json }: RestContext) =>
+          res(
+            json({
+              items: [{ id: 'wrong-id', result: AuthorizeResult.ALLOW }],
+            }),
+          ),
+      );
+      await expect(
+        client.authorizeByName([{ name: 'catalog.entity.create' }]),
+      ).rejects.toThrow(/items in response do not match request/i);
+    });
+
+    it('falls back to /authorize with a fabricated basic permission when the backend returns 404 for /authorize/by-name', async () => {
+      const fallbackClient = new PermissionClient({
+        discovery,
+        config: new ConfigReader({ permission: { enabled: true } }),
+      });
+      const byNameHandler = jest.fn((_req, res, { status }: RestContext) =>
+        res(status(404)),
+      );
+      const authorizeHandler = jest.fn((req, res, { json }: RestContext) => {
+        const responses = req.body.items.map(
+          (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+            id: a.id,
+            result: AuthorizeResult.ALLOW,
+          }),
+        );
+        return res(json({ items: responses }));
+      });
+      server.use(
+        rest.post(`${mockBaseUrl}/authorize/by-name`, byNameHandler),
+        rest.post(`${mockBaseUrl}/authorize`, authorizeHandler),
+      );
+
+      const first = await fallbackClient.authorizeByName([
+        { name: 'catalog.entity.create' },
+        { name: 'catalog.entity.read', resourceRef: 'entity:test/foo' },
+      ]);
+
+      expect(byNameHandler).toHaveBeenCalledTimes(1);
+      expect(authorizeHandler).toHaveBeenCalledTimes(1);
+      expect(authorizeHandler.mock.calls[0][0].body).toEqual({
+        items: [
+          expect.objectContaining({
+            permission: {
+              name: 'catalog.entity.create',
+              type: 'basic',
+              attributes: {},
+            },
+          }),
+          expect.objectContaining({
+            permission: {
+              name: 'catalog.entity.read',
+              type: 'basic',
+              attributes: {},
+            },
+          }),
+        ],
+      });
+      expect(first).toEqual([
+        expect.objectContaining({ result: AuthorizeResult.ALLOW }),
+        expect.objectContaining({ result: AuthorizeResult.ALLOW }),
+      ]);
+    });
+
+    it('does not fall back on non-404 errors from /authorize/by-name', async () => {
+      const fallbackClient = new PermissionClient({
+        discovery,
+        config: new ConfigReader({ permission: { enabled: true } }),
+      });
+      const byNameHandler = jest.fn((_req, res, { status }: RestContext) =>
+        res(status(500)),
+      );
+      const authorizeHandler = jest.fn();
+      server.use(
+        rest.post(`${mockBaseUrl}/authorize/by-name`, byNameHandler),
+        rest.post(`${mockBaseUrl}/authorize`, authorizeHandler),
+      );
+
+      await expect(
+        fallbackClient.authorizeByName([{ name: 'catalog.entity.create' }]),
+      ).rejects.toThrow(/request failed with 500/i);
+      expect(authorizeHandler).not.toHaveBeenCalled();
+    });
+  });
+
   describe('authorize (batched)', () => {
     beforeAll(() => {
       client = new PermissionClient({

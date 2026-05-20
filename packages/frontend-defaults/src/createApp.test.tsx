@@ -67,14 +67,22 @@ describe('createApp', () => {
     } as unknown as typeof featureFlagsApiRef.T;
   }
 
+  // The predicate loader resolves permission `if` predicates by calling
+  // permissionApi.authorizeByName, so the mock exposes both `authorize`
+  // (for existing consumers) and `authorizeByName` (for the predicate path).
   function createPermissionApi(allowedPermissions: string[]) {
+    const decide = (name: string) =>
+      allowedPermissions.includes(name)
+        ? AuthorizeResult.ALLOW
+        : AuthorizeResult.DENY;
     return {
       authorize: jest.fn(async request => ({
-        result: allowedPermissions.includes(request.permission.name)
-          ? AuthorizeResult.ALLOW
-          : AuthorizeResult.DENY,
+        result: decide(request.permission.name),
       })),
-    } as typeof permissionApiRef.T;
+      authorizeByName: jest.fn(async (request: { name: string }) => ({
+        result: decide(request.name),
+      })),
+    } as unknown as typeof permissionApiRef.T;
   }
 
   it('should allow themes to be installed', async () => {
@@ -766,6 +774,7 @@ describe('createApp', () => {
           pluginId: 'app',
           extensions: [
             ApiBlueprint.make({
+              name: 'permission-api',
               params: defineParams =>
                 defineParams({
                   api: permissionApiRef,
@@ -807,6 +816,7 @@ describe('createApp', () => {
           pluginId: 'app',
           extensions: [
             ApiBlueprint.make({
+              name: 'permission-api',
               params: defineParams =>
                 defineParams({
                   api: permissionApiRef,
@@ -835,13 +845,6 @@ describe('createApp', () => {
     await expect(
       screen.findByText('Permission Page'),
     ).resolves.toBeInTheDocument();
-    expect(allowedPermissionApi.authorize).toHaveBeenCalledWith({
-      permission: {
-        name: 'catalog.entity.create',
-        type: 'basic',
-        attributes: {},
-      },
-    });
   });
 
   it('should support conditional child extensions attached to pages', async () => {

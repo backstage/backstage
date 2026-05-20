@@ -18,6 +18,12 @@ export type AnyOfCriteria<TQuery> = {
 };
 
 // @public
+export type AuthorizeByNamePermissionRequest = {
+  name: string;
+  resourceRef?: string;
+};
+
+// @public
 export type AuthorizeByNameRequest = PermissionMessageBatch<{
   name: string;
   resourceRef?: string | string[];
@@ -201,6 +207,10 @@ export class PermissionClient implements PermissionEvaluator {
     requests: AuthorizePermissionRequest[],
     options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
+  authorizeByName(
+    requests: AuthorizeByNamePermissionRequest[],
+    options?: PermissionClientRequestOptions,
+  ): Promise<AuthorizePermissionResponse[]>;
   authorizeConditional(
     queries: QueryPermissionRequest[],
     options?: PermissionClientRequestOptions,
@@ -257,10 +267,6 @@ export type PermissionRuleParam = undefined | JsonPrimitive | JsonPrimitive[];
 export type PermissionRuleParams =
   | undefined
   | Record<string, PermissionRuleParam>;
-
-// @public
-export const PERMISSIONS_METADATA_PATH =
-  '/.well-known/backstage/permissions/metadata';
 
 // @public
 export type PolicyDecision =

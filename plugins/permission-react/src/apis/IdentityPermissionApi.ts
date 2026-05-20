@@ -18,6 +18,7 @@ import DataLoader from 'dataloader';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { PermissionApi } from './PermissionApi';
 import {
+  AuthorizeByNamePermissionRequest,
   AuthorizePermissionRequest,
   AuthorizePermissionResponse,
   PermissionClient,
@@ -35,6 +36,10 @@ export class IdentityPermissionApi implements PermissionApi {
     AuthorizePermissionRequest,
     AuthorizePermissionResponse
   >;
+  private readonly byNameLoader: DataLoader<
+    AuthorizeByNamePermissionRequest,
+    AuthorizePermissionResponse
+  >;
 
   private constructor(
     permissionClient: PermissionClient,
@@ -44,6 +49,15 @@ export class IdentityPermissionApi implements PermissionApi {
       async (requests: readonly AuthorizePermissionRequest[]) => {
         const credentials = await identityApi.getCredentials();
         return permissionClient.authorize([...requests], credentials);
+      },
+      {
+        cache: false,
+      },
+    );
+    this.byNameLoader = new DataLoader(
+      async (requests: readonly AuthorizeByNamePermissionRequest[]) => {
+        const credentials = await identityApi.getCredentials();
+        return permissionClient.authorizeByName([...requests], credentials);
       },
       {
         cache: false,
@@ -68,5 +82,11 @@ export class IdentityPermissionApi implements PermissionApi {
     request: AuthorizePermissionRequest,
   ): Promise<AuthorizePermissionResponse> {
     return await this.loader.load(request);
+  }
+
+  async authorizeByName(
+    request: AuthorizeByNamePermissionRequest,
+  ): Promise<AuthorizePermissionResponse> {
+    return await this.byNameLoader.load(request);
   }
 }

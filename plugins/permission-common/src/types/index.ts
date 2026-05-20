@@ -41,12 +41,12 @@ export type {
 } from './api';
 export type { DiscoveryApi } from './discovery';
 export type {
+  AuthorizeByNamePermissionRequest,
   AuthorizeByNameRequest,
   AuthorizeByNameResponse,
   MetadataResponse,
   MetadataResponseSerializedRule,
 } from './integration';
-export { PERMISSIONS_METADATA_PATH } from './integration';
 export type {
   BasicPermission,
   PermissionAttributes,
