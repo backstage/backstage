@@ -1131,12 +1131,19 @@ changes**, and it does not force any package version bump just because the relea
 identifier advanced. The release identifier is the calendar marker; the per-package
 versions tell the actual story of what changed.
 
-For adopters this means three useful properties:
+For adopters who use the Backstage Yarn plugin to pin a Backstage release in
+`backstage.json` (see [Backstage release manifest](#backstage-release-manifest)
+for the plugin's resolution model), this means three useful properties:
 
-- A floating pin (`release: "2604"`) keeps them on the current line, getting minor
-  features and patches automatically, with no possibility of a breaking change.
-- A frozen pin (`release: "2604.23"`) keeps them at an exact point in time, with no
-  changes of any kind. Useful for reproducible builds.
+- A floating pin (`release: "2604"`) keeps them on the current line. When they
+  next run `yarn install` and let the lockfile update, the plugin picks up new
+  minor and patch versions of Backstage packages within the line. There is no
+  possibility of an unexpected breaking change.
+- A frozen pin (`release: "2604.23"`) locks resolution to a specific manifest;
+  the plugin won't move package versions forward even on a lockfile refresh.
+  Reproducibility of any one install still comes from the lockfile, as usual —
+  the frozen pin just controls whether a deliberate lockfile update would drift
+  forward inside the line or stay put.
 - Moving to the next named release (`release: "2604"` → `release: "2610"`) is an
   intentional action. Adopters opt into it on their own schedule, and they know that
   _if_ anything is going to change about Backstage's APIs, this is the boundary at
@@ -1380,15 +1387,22 @@ The body of each manifest is built by:
 2. Replacing the version entry for every package that was just published.
 3. Incrementing the in-line counter and writing the result to a new immutable URL.
 
-This means an adopter can pin a Backstage release in two ways:
+This means an adopter using the Backstage Yarn plugin (which reads
+`backstage.json`'s `release` field and resolves Backstage package versions through
+it) can pin a Backstage release in two ways:
 
-- **Floating pin** (`backstage.json`'s `release: "2604"`): the Yarn plugin reads
-  `release-2604/latest.json` on each install, picks up the most recent manifest in
-  that release line, and resolves to the package versions inside. Adopters get the
-  latest known compatible versions across every workspace without changing the pin.
-- **Frozen pin** (`backstage.json`'s `release: "2604.23"`): the Yarn plugin reads
-  the immutable `release-2604.23.json` directly. Adopters get an exact, reproducible
-  set of package versions and are insulated from future publishes.
+- **Floating pin** (`release: "2604"` in `backstage.json`): the Yarn plugin reads
+  `release-2604/latest.json` on each resolve, picks up the most recent manifest
+  in that release line, and resolves Backstage package versions accordingly.
+  When the adopter next refreshes their lockfile they get the latest known
+  compatible versions across every workspace without changing the pin.
+  Reproducibility of any single install still comes from the `yarn.lock` file,
+  as usual; the floating pin only governs how resolution moves on a future
+  refresh.
+- **Frozen pin** (`release: "2604.23"` in `backstage.json`): the Yarn plugin
+  reads the immutable `release-2604.23.json` directly. A future lockfile refresh
+  does not move Backstage package versions forward inside the line; the
+  resolution stays at exactly the manifest counter the pin names.
 
 When the framework workspace cuts a new named release (`2604` → `2610`), the
 publishing workflow stops updating the `release-2604/latest.json` pointer (the line
