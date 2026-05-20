@@ -118,8 +118,9 @@ cleanly, which is what the patch mechanism is designed to solve.
   fixes as structured artifacts in `main` and ships them without a separate branch.
 - Preserve the current security boundary: package publishing continues to happen from a
   separate, private repository, never from `backstage/backstage` itself.
-- Share tooling with `backstage/community-plugins` so that improvements benefit both
-  repositories.
+- Share the underlying tooling with `backstage/community-plugins` and with any other
+  repository that wants to adopt this same workspace structure and release process,
+  so that improvements benefit every consumer.
 
 ### Non-Goals
 
