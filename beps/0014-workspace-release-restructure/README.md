@@ -462,16 +462,45 @@ by date.
 
 ### Staged changes
 
-A "staged change" is a self-contained record of a future breaking change that lives
-in the `main` branch but is not yet applied to the released code. It consists of:
+A "staged change" is a strict superset of a regular Changesets `changeset`. Where a
+changeset captures _what_ will bump in the next release, a staged change additionally
+captures _the actual code change_ that will produce that bump. A single staged-change
+entry is composed of three things:
 
-1. A human-readable description (the same content that would appear in a major-version
-   changelog entry).
-2. A git diff that, when applied to the current state of the workspace, transforms it
-   into the form it will take after the breaking change ships.
-3. Optional metadata: related issue/PR numbers and `notBefore` constraints (see
-   [Staged change file format](#staged-change-file-format) for details). Apply order
-   is encoded in the staged change's slug, not in metadata.
+1. A **description** — a human-readable note in changeset front-matter format. It
+   names the packages that the change affects and is used both as the eventual
+   changelog entry and as the synthesized changeset that drives version computation
+   in the `Promote major` PR and in `@next` releases.
+2. A **patch** — a git diff that, when applied to the current state of the
+   workspace, transforms it into the form it will take after the change ships.
+   This is what makes the entry self-contained: the description without the patch
+   would just be a normal changeset, and the patch without the description would
+   just be a diff with no release semantics.
+3. **Optional metadata** — related issue/PR numbers and `notBefore` constraints
+   (see [Staged change file format](#staged-change-file-format) for details). Apply
+   order is encoded in the entry's slug, not in metadata.
+
+A staged change is **always** treated as a breaking change. Non-breaking changes go
+through the normal Changesets flow and never end up in `.staged/`. The front-matter
+of the description must therefore declare `major` bumps (or `minor` bumps for packages
+below `1.0.0`, which is how Backstage and Changesets express breaking changes for
+`0.x` packages); the staging tooling rejects any other bump level. This invariant
+is what lets `@next` and the `Promote major` PR treat every staged change uniformly.
+
+The same entry serves two consumers downstream:
+
+- The **`Promote major` PR builder** applies the patch to `main` and uses the
+  description to synthesize a real changeset, which then drives the eventual
+  `@latest` major release through the normal Changesets version-and-publish flow
+  (see [Major releases via the Promote PR](#major-releases-via-the-promote-pr)).
+- The **`dispatch-next` job** does the same in a temporary checkout to compute the
+  next `@next` snapshot (see
+  [Next pre-release versioning](#next-pre-release-versioning)).
+
+The mechanics are built on top of Changesets — staging adds a patch file and some
+metadata alongside the changeset, and the surrounding tooling treats the bundle as
+the unit of work — so the staged-change tooling does not reimplement version
+computation, changelog generation, or any other Changesets responsibility.
 
 Staged changes live under each workspace in a `.staged/` directory, and are checked
 on every PR: the CI applies them in order to verify that they still cleanly transform
