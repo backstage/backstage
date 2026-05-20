@@ -23,6 +23,7 @@ creation-date: 2026-05-18
   - [Staged changes](#staged-changes)
   - [Mainline and next releases from the same branch](#mainline-and-next-releases-from-the-same-branch)
   - [Major releases via the Promote PR](#major-releases-via-the-promote-pr)
+  - [Back-ported fixes](#back-ported-fixes)
 - [Design Details](#design-details)
   - [Repository layout](#repository-layout)
   - [Staged change file format](#staged-change-file-format)
@@ -112,6 +113,9 @@ cleanly, which is what the patch mechanism is designed to solve.
   breaking patches, while `latest` releases remain non-breaking.
 - Move the core framework onto a slower, predictable release cadence with a clear,
   human-readable version label.
+- Replace the existing stable-line patch flow (top-level `.patches/` with a long-lived
+  `patch-release` branch) with an inverse-of-staging design that authors back-ported
+  fixes as structured artifacts in `main` and ships them without a separate branch.
 - Preserve the current security boundary: package publishing continues to happen from a
   separate, private repository, never from `backstage/backstage` itself.
 - Share tooling with `backstage/community-plugins` so that improvements benefit both
@@ -125,8 +129,6 @@ cleanly, which is what the patch mechanism is designed to solve.
 - This BEP does not change how adopters consume Backstage releases, beyond introducing
   more frequent `latest` releases and a more meaningful version scheme for the core
   framework.
-- This BEP does not redesign the existing `.patches/`-based patch-release flow for
-  shipping fixes back to stable release lines. That mechanism remains as-is.
 - This BEP does not pre-commit to a specific set of breaking changes for any workspace.
   It only describes the mechanism by which they will be authored and released.
 
@@ -157,9 +159,9 @@ Each workspace:
 
 - Has its own `package.json`, `yarn.lock`, and `tsconfig.json`.
 - Has its own `.changeset/` directory and `changeset` configuration.
-- Has its own `.staged/` directory (described in
-  [Staged changes](#staged-changes)) — independent from the existing
-  top-level `.patches/` used for stable-line patch releases.
+- Has its own `.staged/` directory of pending breaking changes (see
+  [Staged changes](#staged-changes)) and `.fix/` directory of pending back-ported
+  fixes (see [Back-ported fixes](#back-ported-fixes)).
 - Is independently releasable and has an independent version line per package.
 
 The repository root keeps repo-wide concerns: BEPs, docs, top-level scripts, the
@@ -489,6 +491,100 @@ This model has the properties we want:
 - Conflicting edits are caught at PR-build time, not at major time, because the same
   apply path runs on every push regardless of whether anyone is about to merge.
 
+### Back-ported fixes
+
+Just as a staged change is a future-pointing artifact in `main` that ships when the
+next major is cut, a **back-ported fix** is a past-pointing artifact in `main` that
+ships when it is merged. The two flows are inverses of each other and share the same
+structural properties: every patch is a reviewable file in `main`, the publishing
+flow applies it to the appropriate base, and there is no separate long-lived release
+branch to keep in sync.
+
+This replaces the existing top-level `.patches/`-and-`patch-release`-branch flow.
+
+#### Concept
+
+A back-ported fix lives under each workspace in a `.fix/` directory:
+
+```
+workspaces/framework/.fix/
+  001-handle-missing-config/
+    description.md      # changeset frontmatter + body (same shape as staged changes)
+    change.patch        # unified diff to apply on top of the target
+    meta.yaml           # target spec — which past release(s) to patch
+```
+
+`description.md` and `change.patch` follow the same conventions as their `.staged/`
+equivalents (see [Staged change file format](#staged-change-file-format)). The only
+new piece is `meta.yaml`, which declares one or more targets:
+
+```yaml
+# For the framework workspace — target a Backstage release line
+targets:
+  - releaseLine: 2604
+
+# For other workspaces — target a package's major-version line
+targets:
+  - package: '@backstage/plugin-catalog'
+    major: 2
+```
+
+A single fix may declare multiple targets if the same patch applies cleanly to each
+(for example, the same security fix could target both the `2604` and `2603` framework
+lines). Each target produces an independent publish.
+
+#### Workflow on merge
+
+When a PR introducing a fix is merged to `main`, the release workflow:
+
+1. For each target declared in `meta.yaml`:
+   1. Looks up the most recent published state for that target. For framework lines,
+      this is the commit referenced by `release-<line>/latest.json` in
+      `backstage/versions`. For per-package targets, it is the most recent published
+      version of the named package in the named major.
+   2. Checks out that state in a temporary scratch tree.
+   3. Applies `change.patch` using `git apply --3way`. Non-trivial conflicts fail
+      CI; the author has to refresh the patch.
+   4. Combines `description.md` with any other changesets to compute the next
+      semver-patch version, then dispatches a publish to `backstage/publishing` via
+      the standard `repository_dispatch` flow.
+2. The publishing repo validates the dispatch (see
+   [Publish-time safeguards](#publish-time-safeguards)) and publishes the resulting
+   patch version of each affected package. For framework targets, it also writes a
+   new immutable manifest for the release line and bumps the `latest.json` pointer
+   for that line.
+3. On success, the publishing workflow opens a small follow-up PR to `main` that
+   deletes the fix entry. Once merged, the entry is gone from `.fix/` and the audit
+   trail lives in git history (the merge of the original PR, the deletion PR) plus
+   the changelogs attached to the published patch releases.
+
+A fix that targets multiple release lines is deleted only after all targets have
+shipped successfully. If any target's publish fails, the fix stays in `.fix/` and
+re-runs on the next push to `main` (idempotent: targets that already shipped are
+skipped because their `latest.json` pointer already includes the published version).
+
+#### npm dist-tag handling
+
+A back-ported fix to the current framework release line publishes to `@latest` like
+any other release. A fix to an older line publishes the new version but does **not**
+update `@latest` — it just becomes available as a higher patch version that adopters
+pinning the older line resolve through the manifest pointer for that line.
+
+#### Required-reviewer gate
+
+Back-ported fixes go out through the same publish-time safeguards as every other
+release ([Publish-time safeguards](#publish-time-safeguards)). Because they
+typically target dist-tags adopters consume from (`@latest`, an older release line),
+the required-reviewer environment gate applies to every back-port publish.
+
+#### What this replaces
+
+The current `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js`
+script, and the long-lived `patch-release` branch are removed as part of the
+framework migration. The existing top-level `.patches/` directory is deleted in the
+same migration step. Any in-flight patches at the time of migration are converted
+to `.fix/` entries by hand.
+
 ## Design Details
 
 ### Repository layout
@@ -508,6 +604,11 @@ workspaces/
         description.md      # frontmatter + body, in changeset format
         change.patch        # unified diff or git-formatted patch
         meta.yaml           # optional: related-prs, notBefore constraints
+    .fix/
+      <slug>/
+        description.md      # frontmatter + body, in changeset format
+        change.patch        # unified diff to apply on the target
+        meta.yaml           # target spec for the back-port
     packages/
       <package>/...
     plugins/
@@ -1251,8 +1352,14 @@ The migration is staged so that no single PR has to move the entire repository.
    the staged removal up, then flip the `Promote major` PR to ready-for-review and
    ship the major.
 
-9. **Adopt date-based versioning for `framework`.** The first major of `framework`
-   after the patch flow lands uses the `YYNN` scheme.
+9. **Replace the patch-release flow with `.fix/`.** Migrate any in-flight entries
+   from the top-level `.patches/` directory into per-workspace `.fix/` entries, run
+   one back-port through the new flow end to end, then remove the
+   `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js` script,
+   the `patch-release` branch, and the top-level `.patches/` directory.
+
+10. **Adopt date-based versioning for `framework`.** The first major of `framework`
+    after the staged-change flow lands uses the `YYNN` scheme.
 
 Throughout the migration the existing weekly release flow continues to work for any
 workspace that has not been migrated yet. There is no flag day.
