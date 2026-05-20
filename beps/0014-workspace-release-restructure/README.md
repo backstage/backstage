@@ -958,9 +958,9 @@ the second one increments past the month. So a hypothetical second release in Ap
 2026 is `2605`. If May 2026 then ships a release, it picks up at `2606` rather than
 `2605`, because `2605` is already taken. In other words, `NN` is whichever is larger
 of the current calendar month and one greater than the highest `NN` already shipped
-this year. The counter resets to `01..12` at the start of each calendar year, so a
-February 2027 release shipping after a `2613` overflow at the end of 2026 is still
-`2702`.
+this year. Overflow does not carry across calendar years: even if 2026 ends with an
+overflow release `2613`, the first 2027 release picks up at `<27><current-month>`,
+not `2614`. A January 2027 release after a `2613` is therefore `2701`.
 
 The rationale for "year plus month" rather than a pure sequence or a quarterly scheme
 is:
