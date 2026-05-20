@@ -586,15 +586,6 @@ This is the standard branch-protection setting Backstage already uses elsewhere;
 just want to make sure it stays on. The PR is also marked auto-mergeable in the same
 way as any other PR; the draft-vs-ready toggle is the gate.
 
-This model has the properties we want:
-
-- The decision to cut a major is always a manual human action — flipping the PR.
-- Every workspace participates in the same flow with no per-workspace mode flag.
-- There is always a live, viewable artifact answering "what would the next major of
-  `<workspace>` look like right now?"
-- Conflicting edits are caught at PR-build time, not at major time, because the same
-  apply path runs on every push regardless of whether anyone is about to merge.
-
 ### Back-ported fixes
 
 Just as a staged change is a future-pointing artifact in `main` that ships when the
