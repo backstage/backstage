@@ -576,10 +576,13 @@ The Promote staged PR is opened as a regular pull request — the same shape as 
 Packages PR — and the regular review-and-merge process is the one that applies.
 Merging the PR is the signal to ship: it triggers the release through the same
 mainline flow the workspace uses for every other release, with no separate publish
-path. In the typical case the staged set contains breaking changes and the
-resulting release is a major bump (and for the framework workspace it always moves
-to a new YYNN), but if every staged change happens to be non-breaking the resulting
-release is just a minor or patch bump.
+path. In the typical case the staged set contains breaking changes that bump the
+affected packages' majors. For the `framework` workspace the named release
+identifier always advances to a new `YYNN` regardless of which packages bumped (see
+[Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle)).
+For every other workspace the per-package bumps come straight from the staged set;
+if every staged change happens to be non-breaking, the resulting bumps are just
+minor or patch.
 
 Maintainers may manually convert the PR to draft at any time, for example to signal
 that the staged set is not yet ready for review or to defer the release. The bot
@@ -826,10 +829,8 @@ version matrix.
   against **only** that synthesized set (regular pending changesets in
   `.changeset/` are excluded), suffixes the resulting versions with `-next.<N>`
   from the shared workspace counter, and dispatches a publish with `tag: next`.
-  For `framework` every package in the workspace is republished at the next
-  framework release identifier; for every other workspace only packages directly
-  affected by a staged change are bumped, at whatever semver bump the staged
-  changesets declare. See
+  Only packages directly affected by a staged change are bumped, at whatever
+  semver bump the staged changesets declare. See
   [Next pre-release versioning](#next-pre-release-versioning) for the exact rules.
 
 #### Triggering publishing in the private repo
@@ -979,11 +980,14 @@ is:
   April.
 - It tolerates extra releases inside the same month by incrementing past the month
   rather than introducing a sub-counter.
-- It fits in a single integer, which means it is a valid semver major version (every
-  framework package shares its major with the framework release identifier — see
-  below).
 - The `NN` range can stretch up to 99 if overflow ever stacks up, giving plenty of
   headroom past the 12 normal monthly slots.
+
+The identifier is a workspace-level label only. It is the name the Backstage
+release goes by, it is what `framework@<YYNN>` tags in git, and it keys the release
+manifest. It does **not** determine the semver of any individual package — see
+[Framework packages keep independent semver](#framework-packages-keep-independent-semver)
+below.
 
 #### Expected cadence
 
@@ -1001,63 +1005,87 @@ release actually happened. Likewise an unplanned extra release in the same month
 overflows past the calendar month per the
 [Identifier format](#identifier-format) rules.
 
-#### Framework packages share a major version
+#### Framework packages keep independent semver
 
-Every package in the `framework` workspace uses the framework release identifier as
-its semver major. When framework release `2604` is the current release line, every
-framework package's version takes the form `2604.<minor>.<patch>` — for example,
-`@backstage/core-plugin-api@2604.3.7`, `@backstage/backend-plugin-api@2604.1.0`,
-`@backstage/types@2604.0.0`. Minor and patch counters are per-package and increment
-independently as the workspace ships throughout the release cycle.
+The framework release identifier is **only an identifier**. It does not determine
+the semver of any individual package in the `framework` workspace. Every framework
+package keeps its own independent semver and carries that version across framework
+releases.
 
-This unified major applies only to the `framework` workspace. Other workspaces
-continue to use plain per-package semver (`@backstage/plugin-catalog@2.3.0`,
-`@backstage/ui@1.2.0`), and their GitHub releases are tagged by date or timestamp as
-the publishing repo sees fit.
+The reason is cadence. Framework releases happen roughly every six months (see
+[Expected cadence](#expected-cadence)). If every release bumped every framework
+package's major, individual packages would churn through several majors a year
+regardless of whether their actual API had changed — and adopters would be forced
+into busywork upgrades they don't need. We want the option for a stable framework
+package to sit at `1.x.y` for two or three years before its next breaking change.
+The semver of each framework package therefore reflects _actual_ API stability of
+that package, not the calendar position of the framework release.
+
+So while framework release `2604` is the name the Backstage release goes by,
+adopters who look at any individual framework package see version numbers like:
+
+- `@backstage/core-plugin-api@2.4.7`
+- `@backstage/backend-plugin-api@3.1.0`
+- `@backstage/types@1.0.5`
+
+These versions move at each package's own pace. A staged change for the framework
+workspace can bump specific packages' majors; packages without staged changes keep
+their existing semver across the release.
 
 #### How versions evolve through a release cycle
 
-A framework release like `2604` is not a single moment — it is a release _line_ that
-the workspace ships into continuously until the next major. Within that line, the
-familiar semver rules apply:
+A framework release like `2604` is the named state of the workspace at a moment in
+time. Between one framework release and the next, the workspace continues to ship
+non-breaking changes through the Version Packages PR — patches and minors per the
+usual semver rules:
 
-- **Patch** bumps when a release contains only bug fixes. Example: `core-plugin-api`
-  goes from `2604.3.7` to `2604.3.8`.
+- **Patch** bumps when a release contains only bug fixes. Example:
+  `core-plugin-api` goes from `2.4.7` to `2.4.8`.
 - **Minor** bumps when a release introduces new non-breaking features. Example:
-  `core-plugin-api` goes from `2604.3.8` to `2604.4.0`. Adopters reading semver get
-  the usual signal: minor bump means "new APIs are available, existing ones still
-  work".
-- **Major** stays pinned to the current framework release identifier. It does not
-  change between framework releases.
+  `core-plugin-api` goes from `2.4.8` to `2.5.0`.
+- **Major** bumps only when the package's own API breaks. That happens when a
+  staged change for the framework workspace declares a major bump for the package
+  and the `Promote staged` PR is merged. Most framework releases will not bump
+  every package's major; many releases will not bump any framework package's
+  major.
 
-The result is that within a framework release line, adopters get fully semver-honest
-patches and features without any major-version churn. A team can stay on `2604` for
-months and still receive a continuous stream of improvements, all of which are
-non-breaking by construction.
+The framework release identifier (`2604`, `2610`, …) advances on every framework
+release regardless of whether any packages broke. Adopters use it to track the
+named Backstage release; the per-package semver tells them which packages actually
+moved.
 
-Breaking changes are not allowed inside a release line. They are authored as staged
-changes (see [Staged changes](#staged-changes)) and accumulate in `.staged/` until
-the maintainers decide to cut the next framework release.
+Breaking changes to framework packages are not shipped via the regular Version
+Packages PR. They are authored as staged changes (see
+[Staged changes](#staged-changes)) and accumulate in `.staged/` until the next
+framework release is cut.
 
 #### What happens when a new framework release ships
 
 When the `Promote staged (framework)` PR is merged and the next framework release
-publishes, every framework package's major bumps in lockstep to the new identifier.
-For example, on the `2604` → `2605` transition:
+publishes, three things happen:
 
-- `@backstage/core-plugin-api@2604.3.8` → `@backstage/core-plugin-api@2605.0.0`
-- `@backstage/backend-plugin-api@2604.1.2` → `@backstage/backend-plugin-api@2605.0.0`
-- `@backstage/types@2604.0.5` → `@backstage/types@2605.0.0`
+1. The framework release identifier advances (e.g. `2604` → `2610`). The new
+   identifier is tagged in git (`framework@2610`) and becomes the key for the new
+   release manifest.
+2. Each staged change in `framework/.staged/` is applied. Affected packages bump
+   per the bump levels declared in their staged-change front-matter — typically
+   `major` for packages with API breakage, occasionally `minor`/`patch` for
+   experimental features held back from `@latest`.
+3. Framework packages that are not affected by any staged change keep their
+   existing versions. They show up in the new release's manifest at the version
+   they were already on.
 
-Every package bumps to `2605.0.0`, regardless of whether its own API changed.
+For example, on the `2604` → `2610` transition, a typical mix might look like:
 
-Critically, **a new framework release does not have to contain any breaking changes**.
-The major bump is a calendar marker, not a semver signal that something broke.
-`2604` → `2605` can be a release where nothing breaks at all (no staged changes were
-queued up). In that case, the only thing the new release tells adopters is "this is
-the next named Backstage release, please update your pin when you're ready". The
-versioning scheme is _capable_ of carrying breaking changes — and they will travel
-through this transition when they exist — but it does not require them.
+- `@backstage/core-plugin-api@2.4.8` → `@backstage/core-plugin-api@3.0.0`
+  (had a staged major change)
+- `@backstage/backend-plugin-api@3.1.0` → unchanged (no staged change)
+- `@backstage/types@1.0.5` → unchanged (no staged change)
+
+Crucially, **a new framework release does not have to contain any breaking
+changes**, and it does not force any package version bump just because the release
+identifier advanced. The release identifier is the calendar marker; the per-package
+versions tell the actual story of what changed.
 
 For adopters this means three useful properties:
 
@@ -1065,7 +1093,7 @@ For adopters this means three useful properties:
   features and patches automatically, with no possibility of a breaking change.
 - A frozen pin (`release: "2604.23"`) keeps them at an exact point in time, with no
   changes of any kind. Useful for reproducible builds.
-- Moving to the next named release (`release: "2604"` → `release: "2605"`) is an
+- Moving to the next named release (`release: "2604"` → `release: "2610"`) is an
   intentional action. Adopters opt into it on their own schedule, and they know that
   _if_ anything is going to change about Backstage's APIs, this is the boundary at
   which it happens — never inside a release line.
@@ -1266,7 +1294,7 @@ Each manifest is a JSON document of the form:
     {
       "name": "@backstage/core-plugin-api",
       "workspace": "framework",
-      "version": "2604.3.7"
+      "version": "2.4.7"
     },
     {
       "name": "@backstage/plugin-catalog",
@@ -1318,11 +1346,12 @@ This means an adopter can pin a Backstage release in two ways:
   the immutable `release-2604.23.json` directly. Adopters get an exact, reproducible
   set of package versions and are insulated from future publishes.
 
-When the framework workspace cuts a new major (`2604` → `2605`), the publishing
-workflow stops updating the `release-2604/latest.json` pointer (the line is closed)
-and starts a new line headed by `release-2605.0.json`, seeded from the last manifest
-of the previous line so that all non-framework packages keep their current versions
-and every framework package's major is bumped to `2605`.
+When the framework workspace cuts a new named release (`2604` → `2610`), the
+publishing workflow stops updating the `release-2604/latest.json` pointer (the line
+is closed) and starts a new line headed by `release-2610.0.json`, seeded from the
+last manifest of the previous line. Packages affected by staged changes that
+shipped with the new release move to their new versions; every other package keeps
+its existing version.
 
 This gives us a few useful properties:
 
@@ -1419,24 +1448,16 @@ workspace counter and publishes a new `@next` snapshot.
 
 #### Which packages are published as `@next`
 
-The set of packages that participate in `@next` is workspace-dependent:
-
-- **`framework` workspace.** Because every framework release ships as a new YYNN
-  across all framework packages by design, an `@next` publish includes _every_
-  framework package, bumped to the next framework release identifier. Even
-  framework packages whose own API is untouched by any staged change get a new
-  `@next` version, so that adopters can install a coherent preview of the next
-  framework release without mixing identifiers.
-- **Every other workspace.** Per-package semver. Only packages directly affected by
-  at least one staged change are bumped and published as `@next`. Packages that are
-  not touched stay at their `@latest` version; adopters resolve them through the
-  normal `@latest` dist-tag.
+The same rule applies to every workspace, including `framework`: only packages
+directly affected by at least one staged change are bumped and published as
+`@next`. Packages that are not touched stay at their `@latest` version; adopters
+resolve them through the normal `@latest` dist-tag.
 
 #### Base version per package
 
-For each package that is published as `@next`, the base version (the portion before
-`-next.`) is what `yarn changeset version` would produce when given **only the
-changesets synthesized from every staged change's `description.md`** — regular
+For each package that is published as `@next`, the base version (the portion
+before `-next.`) is what `yarn changeset version` would produce when given **only
+the changesets synthesized from every staged change's `description.md`** — regular
 pending changesets in `.changeset/` are deliberately excluded. Those regular
 changesets ship through the Version Packages PR flow and their bumps appear in a
 future `@latest` release; `@next` does not preview them. This keeps the meaning of
@@ -1447,21 +1468,12 @@ change to the current `main` (so the runtime behavior matches what the next
 coordinated release would actually contain), but the published _version_ is
 derived only from the staged changes.
 
-In practice the base resolves to:
-
-- **`framework` workspace.** Every framework package's base is `<next-YYNN>.0.0`,
-  where `<next-YYNN>` is the framework release identifier that would be assigned if
-  the Promote staged PR were merged today (see
-  [Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle)).
-  This holds even when the staged set only contains non-breaking changes, because
-  every framework release moves to a new YYNN by definition.
-- **Every other workspace.** The base is whatever `yarn changeset version` would
-  pick when fed only the synthesized changesets — i.e. the highest bump declared
-  across the staged set, applied to each affected package's current `@latest`
-  version. That is typically the next semver-major (e.g. `2.3.0` → `3.0.0`, or
-  `0.7.5` → `0.8.0` for `0.x` packages where minor is the breaking bump), but if
-  every staged change for a package is non-breaking the base is the corresponding
-  minor or patch bump instead.
+In practice the base is whatever `yarn changeset version` would pick when fed only
+the synthesized changesets — i.e. the highest bump declared across the staged set
+for that package, applied to its current `@latest` version. That is typically the
+next semver-major (e.g. `2.3.0` → `3.0.0`, or `0.7.5` → `0.8.0` for `0.x` packages
+where minor is the breaking bump). When every staged change for a package is
+non-breaking the base is the corresponding minor or patch bump instead.
 
 #### Shared workspace counter
 
@@ -1475,7 +1487,7 @@ snapshot. The counter is:
 - Incremented by exactly `1` on every `@next` publish for the workspace, regardless
   of how many packages that publish includes.
 - Reset to `0` when the `Promote staged` PR for the workspace is merged and the
-  corresponding major has been published to `@latest`. This is the only event that
+  resulting release has been published to `@latest`. This is the only event that
   resets the counter; mainline patch/minor releases do not.
 
 The updated `package.json` is committed to `main` by the same workflow that runs the
@@ -1504,19 +1516,23 @@ Initial state: `@backstage/plugin-catalog@2.3.0`, `@backstage/plugin-catalog-rea
 
 #### Worked example: `framework`
 
-Initial state: framework is on release line `2604`. Every framework package's
-version is `2604.<minor>.<patch>` on `@latest`. The CLI's next-identifier rule (see
-[Identifier format](#identifier-format)) says the next release would be `2605`.
+Initial state: framework is on release line `2604`. Each framework package is at
+its own current semver — for example, `@backstage/core-plugin-api@2.4.7`,
+`@backstage/backend-plugin-api@3.1.0`, `@backstage/types@1.0.5`.
 
-1. A staged change in `framework/.staged/` is merged.
-2. `dispatch-next` republishes _every_ framework package at `2605.0.0-next.0` and
-   bumps the workspace counter.
-3. Subsequent staged changes (or refreshes) republish every framework package again
-   at the same base `2605.0.0`, with the counter advancing each time
-   (`-next.1`, `-next.2`, …).
-4. The `Promote staged (framework)` PR is eventually merged. Every framework
-   package ships at `2605.0.0` on `@latest`, the counter resets to `0`, and the
-   manifest line moves from `2604` to `2605`.
+1. A staged change in `framework/.staged/` is merged. It declares
+   `core-plugin-api: major`.
+2. `dispatch-next` computes: `@backstage/core-plugin-api@3.0.0-next.0`. Other
+   framework packages are not touched and stay at their `@latest` versions.
+3. A second staged change later declares `backend-plugin-api: minor`.
+   `dispatch-next` republishes `core-plugin-api@3.0.0-next.1` and
+   `backend-plugin-api@3.2.0-next.1` together with the shared `-next.1` suffix.
+   `types` remains at `1.0.5` on `@latest`.
+4. The `Promote staged (framework)` PR is eventually merged. The named release
+   advances from `2604` to the next framework identifier (e.g. `2610`), the new
+   manifest line opens, the two affected packages publish at `3.0.0` and `3.2.0`
+   on `@latest`, every other framework package keeps its previous version, and
+   the workspace counter resets to `0`.
 
 #### Local previewing
 
