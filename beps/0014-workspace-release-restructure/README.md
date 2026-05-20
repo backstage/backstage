@@ -238,14 +238,18 @@ Plugins from `plugins/`:
 
 #### `ui`
 
-The new Backstage UI design system. Separated from `framework` so that the BUI
-surface can ship breaking changes on its own schedule, which is expected to be
-faster than the framework's. `@backstage/theme` and `@backstage/core-components`
-stay in `framework` because the framework's defaults and many existing plugins still
-depend on them; `ui` carries only the new design system for now.
+The new Backstage UI design system, the migration tooling that helps adopters move
+to it, and the documentation site for the design system. Separated from `framework`
+so that the BUI surface can ship breaking changes on its own schedule, which is
+expected to be faster than the framework's. `@backstage/theme` and
+`@backstage/core-components` stay in `framework` because the framework's defaults
+and many existing plugins still depend on them; `ui` carries only the new design
+system for now.
 
 - `@backstage/ui`
 - `@backstage/plugin-mui-to-bui` (the MUI → BUI migration aid)
+- The `docs-ui` Next.js site, currently at the repository's top-level `docs-ui/`
+  folder. Like `microsite`, it is a private workspace package and is not published.
 
 #### `cli`
 
@@ -254,8 +258,8 @@ improvements can ship continuously, and the first non-`framework` workspace to
 migrate so it can exercise the new release tooling end to end.
 
 - `@backstage/cli`, `@backstage/cli-common`, `@backstage/cli-defaults`, `@backstage/cli-node`
-- All `@backstage/cli-module-*` packages **except** `@backstage/cli-module-release`,
-  which has stricter constraints and lives in the `tooling` workspace below.
+- All `@backstage/cli-module-*` packages. The shared release-automation CLI lives
+  separately in the `tooling` workspace below — it is not a CLI module.
 - `@backstage/codemods`
 - `@backstage/create-app`
 - `@backstage/dev-utils`
@@ -266,17 +270,20 @@ migrate so it can exercise the new release tooling end to end.
 #### `tooling`
 
 A constrained workspace that hosts the release-automation scripts run by this
-repository's workflows _and_ the npm packages that ship that same automation to other
-adopters (`backstage/community-plugins` and any third party using this structure). It
-is the only workspace where runtime code must be dependency-free; see
-[Repository tooling](#repository-tooling) for the full constraints.
+repository's workflows _and_ the standalone CLI that ships that same automation to
+other adopters (`backstage/community-plugins` and any third party using this
+structure). It is the only workspace where runtime code must be dependency-free, it
+is not a Backstage CLI module, and it does not follow the standard Backstage
+monorepo layout. See [Repository tooling](#repository-tooling) for the full
+constraints and the rationale.
 
-- `@backstage/cli-module-release` — the published CLI module that exposes
-  `backstage release <verb>` subcommands for managing workspaces, staged changes,
-  back-ported fixes, and `@next` version computation.
+- The published standalone CLI for managing workspaces, staged changes, back-ported
+  fixes, and `@next` version computation. The package name is left to
+  implementation.
 - Additional in-repo-only entrypoints used by this repository's workflows (the
   Promote PR builder, the manifest updater, the OIDC dispatch helper, etc.). These
-  may be co-located in the same package or in private packages within the workspace.
+  may be co-located in the same package or in private packages within the
+  workspace.
 
 #### `catalog`
 
@@ -1051,37 +1058,51 @@ other workspaces.
 `workspaces/tooling/` hosts every script that the repository's own workflows invoke
 during release automation: the staged-change validator, the script that rebuilds the
 Promote PR, the manifest updater, the OIDC dispatch helper, the `.fix/` back-port
-runner, and so on. It also hosts the corresponding npm packages that
-`backstage/community-plugins` and any other repository adopting this structure
-consume — primarily `@backstage/cli-module-release`, which exposes
-`backstage release <verb>` subcommands wrapping the same underlying logic.
+runner, and so on. It also hosts the standalone CLI that ships that same automation
+to `backstage/community-plugins` and any other repository adopting this structure.
 
-The workspace is constrained in three ways that make this dual role possible:
+The workspace is constrained in four ways that make this dual role possible:
 
-1. **Runtime code is dependency-free.** Every TypeScript file under
+1. **Zero runtime dependencies.** Every TypeScript file under
    `workspaces/tooling/<package>/src/` may import only from Node built-ins. No
    third-party runtime imports. CLI argument parsing uses Node's built-in
    `node:util` `parseArgs`, which is enough for the subcommand shapes we need;
-   shelling out to `gh` and `git` via `child_process` covers the rest.
+   shelling out to `gh` and `git` via `child_process` covers the rest. If a runtime
+   dependency genuinely cannot be avoided at some point in the future,
+   `bundleDependencies` is the escape hatch we would consider before relaxing the
+   rule.
 
-2. **No build step is required for in-repo use.** CI workflows in this repository
+2. **Not a Backstage CLI module.** The published artifact is a standalone CLI, not
+   a `@backstage/cli`-loaded module. CLI modules inherit the host CLI's dependency
+   graph, which would defeat the zero-runtime-dependency constraint. Consumers in
+   other repositories install the standalone CLI directly.
+
+3. **No build step is required for in-repo use.** CI workflows in this repository
    invoke scripts directly with `node --experimental-strip-types path/to/script.ts`
-   (or the stable successor flag once available). Node strips the type annotations at
-   load time, and because the runtime code has no third-party imports, the script
-   runs without ever calling `yarn install` inside `workspaces/tooling/`. This keeps
-   the dependency-free promise for the repository's own automation.
+   (or the stable successor flag once available). Node strips the type annotations
+   at load time, and because the runtime code has no third-party imports, the
+   script runs without ever calling `yarn install` inside `workspaces/tooling/`.
+   This keeps the dependency-free promise for the repository's own automation.
 
-3. **Published packages are built.** When a `workspaces/tooling/<package>/` is
-   published to npm, a `prepublishOnly` build step compiles the TypeScript to
-   JavaScript and ships the resulting `dist/` directory. Consumers in other
-   repositories therefore get a regular JS package that runs on any Node version,
-   without needing the type-stripping flag. The build step uses TypeScript pinned in
-   the workspace as a dev dependency.
+4. **Published packages are built.** When the standalone CLI is published to npm, a
+   `prepublishOnly` build step compiles the TypeScript to JavaScript and ships the
+   resulting `dist/` directory. Consumers in other repositories therefore get a
+   regular JS package that runs on any Node version, without needing the
+   type-stripping flag. The build step uses TypeScript pinned in the workspace as a
+   dev dependency.
 
-The dev dependencies (TypeScript, ESLint, the build runner) live in
-`package.json` `devDependencies` only. They are installed by anyone running lint,
-type-check, or publishing, and they are ignored by the in-repo
-`node --experimental-strip-types` invocations.
+The dev dependencies (TypeScript, ESLint, the build runner) live in `package.json`
+`devDependencies` only. They are installed by anyone running lint, type-check, or
+publishing, and they are ignored by the in-repo `node --experimental-strip-types`
+invocations.
+
+The `tooling` workspace is intentionally outside the standard Backstage monorepo
+layout. It does not use the `@backstage/cli`-driven build, does not follow the
+package layout conventions of the other workspaces, and has its own minimal
+`tsconfig.json` and build script. In that sense it is closer to `microsite` (which
+is also a Docusaurus-driven workspace with its own setup) than to a plugin
+workspace. This is a deliberate choice: keeping the layout minimal makes the
+zero-runtime-dependency rule easy to enforce and audit.
 
 #### Verifying `tooling/` in CI
 
@@ -1110,24 +1131,27 @@ dependencies; they just `node --experimental-strip-types` the relevant script.
 ### Tooling consolidation with backstage-community-plugins
 
 The release scripts in `backstage/community-plugins/scripts/ci/` (`check-if-release.js`,
-`list-workspaces-with-changes.js`, `create-tag.js`, etc.) are CLI scripts duplicated in
-each consuming repository. We propose to publish them as a Backstage CLI module so that
-both `backstage/backstage` and `backstage/community-plugins` consume the same
-implementation.
+`list-workspaces-with-changes.js`, `create-tag.js`, etc.) are CLI scripts duplicated
+in each consuming repository. We propose to publish them as a standalone CLI from the
+new `tooling` workspace (see [Repository tooling](#repository-tooling)) so that
+`backstage/backstage`, `backstage/community-plugins`, and any other repository
+adopting this structure all consume the same implementation. The standalone CLI is
+not a Backstage CLI module, because the zero-runtime-dependency rule rules that out;
+consumers install it directly.
 
 Concretely:
 
-- Create a new package `@backstage/cli-module-release` inside `workspaces/tooling/`
-  (see [Repository tooling](#repository-tooling) for the constraints that apply
-  there).
-- Move and refactor the community-plugins scripts into commands under
-  `backstage release …` (e.g. `backstage release list-changed-workspaces`,
-  `backstage release check-needs-release`, `backstage release create-tag`).
-- Add the new commands needed by this BEP:
-  `backstage release stage create|refresh|apply` (for authoring and validating staged
-  changes) and `backstage release next-version` (for computing the next `@next`
-  identifier; see [Next pre-release versioning](#next-pre-release-versioning)).
-- Update both repositories' workflows to invoke the CLI instead of duplicated scripts.
+- Create a new standalone CLI package inside `workspaces/tooling/`. The package name
+  is left to implementation.
+- Move and refactor the community-plugins scripts into subcommands of that CLI
+  (e.g. `list-changed-workspaces`, `check-needs-release`, `create-tag`).
+- Add the new subcommands needed by this BEP: `stage create|refresh|apply` (for
+  authoring and validating staged changes), `fix create|refresh|apply` (for
+  authoring and validating back-ported fixes), and `next-version` (for computing the
+  next `@next` identifier; see
+  [Next pre-release versioning](#next-pre-release-versioning)).
+- Update both repositories' workflows to invoke the CLI instead of duplicated
+  scripts.
 
 This consolidation has the additional benefit that community-plugins gains the
 staged-change mechanism for free if it ever wants to adopt it.
@@ -1374,16 +1398,15 @@ The migration is staged so that no single PR has to move the entire repository.
 
 1. **BEP approval & tool scaffolding.** Land the BEP, then carve out the new
    `workspaces/tooling/` workspace (see
-   [Repository tooling](#repository-tooling)) and add the new
-   `@backstage/cli-module-release` package inside it with the existing
-   community-plugins commands in their current form. Vendor the new `stage` and `fix`
-   commands behind a flag while the format stabilizes.
+   [Repository tooling](#repository-tooling)) and bootstrap the standalone
+   release-automation CLI inside it with the existing community-plugins commands in
+   their current form. Vendor the new `stage` and `fix` commands behind a flag while
+   the format stabilizes.
 
 2. **Migrate `cli` first.** Move all CLI and developer-tooling packages into
-   `workspaces/cli/` (everything except `cli-module-release`, which already lives in
-   `workspaces/tooling/` from step 1). This is intentionally early so that the rest
-   of the migration can exercise the new release tooling, and because the CLI has no
-   runtime dependencies on `framework`.
+   `workspaces/cli/`. This is intentionally early so that the rest of the migration
+   can exercise the new release tooling, and because the CLI has no runtime
+   dependencies on `framework`.
 
 3. **Migrate `ui` and `microsite`.** Both are conceptually independent from the
    framework runtime. `ui` enables BUI to ship breakage on its own schedule. `microsite`
@@ -1433,10 +1456,10 @@ workspace that has not been migrated yet. There is no flag day.
 
 - The `backstage/publishing` (private) repository needs a generalized publish workflow
   that accepts `(workspace, sha, tag)` rather than the current monolithic publish job.
-- Cooperation with `backstage/community-plugins` maintainers to extract shared tooling
-  into `@backstage/cli-module-release`. This BEP assumes their consent in principle and
-  proposes that the extraction happens in their repo as well, by replacing their
-  duplicated scripts with the CLI.
+- Cooperation with `backstage/community-plugins` maintainers to extract shared
+  tooling into the standalone CLI in `workspaces/tooling/`. This BEP assumes their
+  consent in principle and proposes that the extraction happens in their repo as
+  well, by replacing their duplicated scripts with the published CLI.
 - No new external dependencies are required.
 
 ## Alternatives
