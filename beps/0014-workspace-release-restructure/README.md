@@ -91,7 +91,8 @@ problems:
   that want to move quickly (e.g. catalog, scaffolder). A bug-fix release of one plugin
   drags the entire monorepo through a release.
 - Conversely, plugin areas that want to ship breaking changes more often (such as
-  `app-defaults`) are gated on the core framework's slow major-version cadence.
+  `ui`, where the BUI design system is in active development) are gated on the core
+  framework's slow major-version cadence.
 
 The `backstage/community-plugins` repository already demonstrates that a per-workspace
 release model works well for a multi-repository-like set of plugins inside a single git
