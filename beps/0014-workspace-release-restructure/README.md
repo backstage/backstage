@@ -480,12 +480,24 @@ entry is composed of three things:
    (see [Staged change file format](#staged-change-file-format) for details). Apply
    order is encoded in the entry's slug, not in metadata.
 
-A staged change is **always** treated as a breaking change. Non-breaking changes go
-through the normal Changesets flow and never end up in `.staged/`. The front-matter
-of the description must therefore declare `major` bumps (or `minor` bumps for packages
-below `1.0.0`, which is how Backstage and Changesets express breaking changes for
-`0.x` packages); the staging tooling rejects any other bump level. This invariant
-is what lets `@next` and the `Promote major` PR treat every staged change uniformly.
+Staged changes are the mechanism for **any change that should ship in a coordinated
+batch with the next named release of the workspace, instead of streaming straight
+into `@latest`**. The most common case is breaking changes — those are the
+motivating use case — but the same mechanism is also useful for experimental
+features that are not ready for `@latest` and should preview through `@next` until
+the next batch ships. The description's front-matter may declare any bump level:
+`major`, `minor`, or `patch` (and the usual Backstage convention that
+`minor` is the breaking bump for `0.x` packages still applies). The staging
+tooling does not constrain the bump level; it only requires that the description is
+a valid changeset.
+
+This means non-breaking changes have two valid paths:
+
+- The **normal Changesets flow** for things that should ship to `@latest` as soon
+  as the workspace next releases (the default).
+- The **staged-change flow** for things that should be held back from `@latest`
+  until the next coordinated batch ships, while still showing up in the `@next`
+  preview.
 
 The same entry serves two consumers downstream:
 
@@ -527,8 +539,9 @@ branch:
    │
    └── apply queued .staged/* in order ──> publish @next of every package
                                             affected by a staged change, at the
-                                            next-major base version
-                                            (e.g. plugin-catalog 2.0.0-next.<N>)
+                                            base version that the staged set bumps
+                                            them to (typically the next major,
+                                            e.g. plugin-catalog 2.0.0-next.<N>)
 ```
 
 The `<N>` suffix on `@next` releases is a per-workspace counter that is shared by
@@ -562,11 +575,14 @@ changes queued"; this avoids the noise of creating and closing the PR repeatedly
 staged changes come and go.
 
 The PR is held as a **draft** at all times. Flipping it to ready-for-review is the
-explicit human signal that "this workspace is taking its next major now". A
-maintainer flips the PR, the rest of the review policy for the workspace applies
-(required reviewers, status checks, etc.), and merging the PR triggers the major
+explicit human signal that "this workspace is taking its next coordinated release
+now". A maintainer flips the PR, the rest of the review policy for the workspace
+applies (required reviewers, status checks, etc.), and merging the PR triggers the
 release through the same mainline cadence the workspace uses for every other
-release — there is no separate publish path for majors.
+release — there is no separate publish path. In the typical case the staged set
+contains breaking changes and the resulting release is a major bump (and for the
+framework workspace it always moves to a new YYNN), but if every staged change
+happens to be non-breaking the resulting release is just a minor or patch bump.
 
 Because the PR is force-pushed on every relevant change to `main`, reviewers are
 expected to start a final review only after flipping the PR to ready, not while it is
@@ -878,7 +894,8 @@ version matrix.
   from the shared workspace counter, and dispatches a publish with `tag: next`.
   For `framework` every package in the workspace is republished at the next
   framework release identifier; for every other workspace only packages directly
-  affected by a staged change are bumped. See
+  affected by a staged change are bumped, at whatever semver bump the staged
+  changesets declare. See
   [Next pre-release versioning](#next-pre-release-versioning) for the exact rules.
 
 #### Triggering publishing in the private repo
@@ -1401,24 +1418,29 @@ A few details worth being explicit about:
 
 ### Next pre-release versioning
 
-`@next` is the dist-tag for "what the next major of the workspace would look like
-if it were cut right now". It exists to give adopters a continuously-updated
-preview of the breaking changes that are staged for the next major release of a
-workspace, so
-that organizations can validate their integrations against pending breakage long
-before the major actually ships.
+`@next` is the dist-tag for "what the next coordinated release of the workspace
+would look like if it were cut right now". It exists to give adopters a
+continuously-updated preview of everything that is currently staged — both
+breaking changes and experimental non-breaking changes — so that organizations can
+validate their integrations long before the next batch actually ships.
+
+In practice this is usually the next major of the workspace, because the staging
+mechanism is primarily used to batch breaking changes. But because a staged change
+can declare any bump level (see [Staged changes](#staged-changes)), the actual
+version that `@next` previews follows from the bumps declared by the staged set,
+not from a fixed "always next major" rule.
 
 #### When `@next` ships
 
 `@next` is produced **only** when the workspace has at least one staged change in
-`.staged/`. Without staged changes there is no next major to preview, and `@next`
-publishes nothing.
+`.staged/`. Without staged changes there is no pending batch to preview, and
+`@next` publishes nothing.
 
 When the workspace does have staged changes, an `@next` publish is dispatched in
 two situations:
 
 1. **A staged change is added, refreshed, or removed** by a merged PR. The set of
-   queued breaking changes has changed, so the preview needs a new snapshot.
+   queued changes has changed, so the preview needs a new snapshot.
 2. **A regular `@latest` release ships** for the workspace (a Version Packages PR
    is merged). The underlying state has moved forward, and we republish the `@next`
    preview on top of the new `@latest` so that adopters always see an `@next` that
@@ -1432,11 +1454,12 @@ workspace counter and publishes a new `@next` snapshot.
 
 The set of packages that participate in `@next` is workspace-dependent:
 
-- **`framework` workspace.** Because every framework package shares a major version
-  by design, an `@next` publish includes _every_ framework package, bumped to the
-  next framework release identifier. Even framework packages whose own API is
-  untouched by any staged change get a new `@next` version, so that adopters can
-  install a coherent preview of the next framework release without mixing majors.
+- **`framework` workspace.** Because every framework release ships as a new YYNN
+  across all framework packages by design, an `@next` publish includes _every_
+  framework package, bumped to the next framework release identifier. Even
+  framework packages whose own API is untouched by any staged change get a new
+  `@next` version, so that adopters can install a coherent preview of the next
+  framework release without mixing identifiers.
 - **Every other workspace.** Per-package semver. Only packages directly affected by
   at least one staged change are bumped and published as `@next`. Packages that are
   not touched stay at their `@latest` version; adopters resolve them through the
@@ -1450,13 +1473,12 @@ changesets synthesized from every staged change's `description.md`** — regular
 pending changesets in `.changeset/` are deliberately excluded. Those regular
 changesets ship through the Version Packages PR flow and their bumps appear in a
 future `@latest` release; `@next` does not preview them. This keeps the meaning of
-the `@next` version stable: it reflects exactly the queued breaking changes for the
-next major, and nothing else.
+the `@next` version stable: it reflects exactly the staged batch and nothing else.
 
 The published code that ships as `@next` is the result of applying every staged
-change to the current `main` (so the runtime behavior matches what the next major
-would actually contain), but the published _version_ is derived only from the
-staged changes.
+change to the current `main` (so the runtime behavior matches what the next
+coordinated release would actually contain), but the published _version_ is
+derived only from the staged changes.
 
 In practice the base resolves to:
 
@@ -1464,11 +1486,15 @@ In practice the base resolves to:
   where `<next-YYNN>` is the framework release identifier that would be assigned if
   the Promote PR were merged today (see
   [Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle)).
-- **A package at `1.0.0` or above.** The base is the next semver-major (e.g.
-  `2.3.0` → `3.0.0`).
-- **A package below `1.0.0`.** The base is the next semver-minor, which is how
-  Changesets and Backstage already treat breaking changes for `0.x` packages
-  (e.g. `0.7.5` → `0.8.0`).
+  This holds even when the staged set only contains non-breaking changes, because
+  every framework release moves to a new YYNN by definition.
+- **Every other workspace.** The base is whatever `yarn changeset version` would
+  pick when fed only the synthesized changesets — i.e. the highest bump declared
+  across the staged set, applied to each affected package's current `@latest`
+  version. That is typically the next semver-major (e.g. `2.3.0` → `3.0.0`, or
+  `0.7.5` → `0.8.0` for `0.x` packages where minor is the breaking bump), but if
+  every staged change for a package is non-breaking the base is the corresponding
+  minor or patch bump instead.
 
 #### Shared workspace counter
 
