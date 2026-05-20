@@ -1417,9 +1417,18 @@ Manifests are published from the existing `backstage/versions` repository, which
 already serves the Backstage release manifests today via GitHub Pages and has the
 operational tooling, security boundary, and DNS for that purpose. The publishing
 repo writes manifests into `backstage/versions` as part of every successful
-publish; `backstage/backstage` does not write manifests directly. Keeping
-the manifests in a small, focused repo also avoids checking out the entire monorepo
-to read them, which matters for the Yarn plugin's resolution path.
+publish; `backstage/backstage` does not write manifests directly.
+
+A few reasons keeping `backstage/versions` separate is the right call:
+
+- It already exists and is wired up to a dedicated GitHub Pages site for serving
+  manifests. Rather than introduce a second Pages target on `backstage/backstage`
+  (which would compete with the microsite), we reuse the one that already
+  exists.
+- The repo is small and focused, so consumers (the Yarn plugin, in particular)
+  do not have to clone the entire monorepo to read manifests.
+- Write access to `backstage/versions` is already restricted to the publishing
+  workflow, which keeps the security boundary intact for who can mint manifests.
 
 #### Data shape
 
