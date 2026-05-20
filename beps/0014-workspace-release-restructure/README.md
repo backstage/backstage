@@ -652,8 +652,9 @@ how the CI matrix is computed (the same approach used in community-plugins).
 ### Staged change file format
 
 A staged change is a single markdown file under `<workspace>/.staged/<slug>.md`. The
-slug carries the apply order, prefixed with a numeric segment so that lexicographic
-file-name sort produces the order. The file has two parts:
+slug starts with a UTC timestamp of the form `YYYYMMDD-HHMMSS` recorded when the
+entry is created, so that lexicographic file-name sort puts entries in the order
+they were authored. The file has two parts:
 
 1. **YAML front-matter** with a `packages` map and any additional metadata keys.
 2. **A markdown body** with the human-readable description, followed by a fenced
@@ -663,7 +664,7 @@ file-name sort produces the order. The file has two parts:
 
 ```
 workspaces/catalog/.staged/
-  001-remove-deprecated-entity-ref-link-props.md
+  20260518-143012-remove-deprecated-entity-ref-link-props.md
 ```
 
 ````markdown
@@ -679,8 +680,8 @@ notBefore:
   # entries in the same workspace or in a different workspace; the gate is satisfied
   # once the referenced entry has been merged into main.
   staged:
-    - framework/050-remove-config-mode-flag
-    - auth/020-rotate-token-format
+    - framework/20260301-091500-remove-config-mode-flag
+    - auth/20260415-152230-rotate-token-format
 ---
 
 Removed the deprecated `EntityRefLink` props `defaultKind` and `defaultNamespace`.
@@ -698,9 +699,12 @@ diff --git a/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.ts
 ````
 
 Apply order is determined by file-name sort within the `.staged/` directory of a
-workspace. The numeric prefix (`001-`, `010-`, `200-`) is a convention to leave gaps
-for inserting future entries without renumbering. Slugs must be unique within a
-workspace.
+workspace. The timestamp prefix is `YYYYMMDD-HHMMSS` in UTC (e.g.
+`20260518-143012-`), which makes lexicographic sort identical to chronological
+sort and removes the need to renumber entries when a new one is inserted between
+two existing ones. The timestamp is filled in by the staging tooling at the time
+the entry is created and is not edited afterwards (refreshes keep the original
+timestamp). Slugs must be unique within a workspace.
 
 The front-matter is intentionally _not_ a Changesets file as-is: the `packages` map
 is nested under a single top-level key so that tooling can read it without having
