@@ -242,6 +242,7 @@ Plugins from `plugins/`:
 - `@backstage/plugin-config-schema`
 - `@backstage/plugin-events-backend`, `plugin-events-backend-test-utils`, `plugin-events-node`
 - All `@backstage/plugin-events-backend-module-*` packages
+- `@backstage/plugin-gateway-backend`
 - `@backstage/plugin-permission-backend`, `plugin-permission-backend-module-policy-allow-all`, `plugin-permission-common`, `plugin-permission-node`, `plugin-permission-react`
 - `@backstage/plugin-signals`, `plugin-signals-backend`, `plugin-signals-node`, `plugin-signals-react`
 
@@ -354,17 +355,24 @@ publish any packages — and is included in the workspace map for completeness. 
 [Documentation and microsite](#documentation-and-microsite) for how plugin docs are
 pulled in at build time.
 
-#### `default-plugins`
-
-The set of plugins that are commonly enabled in a default Backstage app but do not need
-their own workspace boundary. Grouping them keeps the workspace count manageable while
-still letting each plugin be versioned independently inside the workspace.
+#### `home`
 
 - `@backstage/plugin-home`, `plugin-home-react`
+
+#### `org`
+
 - `@backstage/plugin-org`, `plugin-org-react`
+
+#### `user-settings`
+
 - `@backstage/plugin-user-settings`, `plugin-user-settings-backend`, `plugin-user-settings-common`
+
+#### `proxy`
+
 - `@backstage/plugin-proxy-backend`, `plugin-proxy-node`
-- `@backstage/plugin-gateway-backend`
+
+#### `mcp`
+
 - `@backstage/plugin-mcp-actions-backend`
 
 #### `demo`
@@ -402,8 +410,8 @@ but the choice is up to the workspace maintainers:
 1. **Immediate** — every push to `main` that contains merged changesets cuts a release
    for the affected workspace. No human in the loop. Suited to high-velocity plugin
    workspaces where a single bug fix should reach adopters within minutes.
-   _Recommended for_: `default-plugins`, `kubernetes`, `api-docs`, `devtools`,
-   `notifications`, leaf plugin workspaces in general.
+   _Recommended for_: `home`, `org`, `user-settings`, `proxy`, `mcp`, `kubernetes`,
+   `api-docs`, `devtools`, `notifications`, leaf plugin workspaces in general.
 
 2. **Version Packages PR** — the changesets bot maintains a "Version Packages
    (workspace)" PR that accumulates pending changesets and bumps versions. Merging that
@@ -1413,9 +1421,9 @@ The migration is staged so that no single PR has to move the entire repository.
 
 4. **Migrate leaf and standalone plugin workspaces.** In rough order:
    `api-docs`, `devtools`, `kubernetes`, `techdocs`, `search`, `notifications`,
-   `default-plugins`. Each move is a single PR per workspace. By the end of this
-   step the surrounding tooling, CI, and publishing flow are exercised by many
-   workspaces.
+   `home`, `org`, `user-settings`, `proxy`, `mcp`. Each move is a single PR per
+   workspace. By the end of this step the surrounding tooling, CI, and publishing
+   flow are exercised by many workspaces.
 
 5. **Migrate the larger plugin workspaces.** `auth`, `scaffolder`, `catalog`. These
    are larger and more interconnected, but at this point the migration mechanics are
