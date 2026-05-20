@@ -231,20 +231,8 @@ Plugins from `plugins/`:
 - `@backstage/plugin-bitbucket-cloud-common`
 - `@backstage/plugin-config-schema`
 - `@backstage/plugin-events-backend`, `plugin-events-backend-test-utils`, `plugin-events-node`
-- `@backstage/plugin-signals`, `plugin-signals-backend`, `plugin-signals-node`, `plugin-signals-react`
-
-#### `modules`
-
-Framework-level backend modules — modules that extend plugins owned by the `framework`
-workspace and that integrate with external systems. Separated so they can ship on a
-faster cadence than the framework itself, since the underlying integrations evolve
-independently of the framework APIs.
-
-By convention this workspace holds modules that do not belong to a single plugin
-workspace; modules that extend a specific plugin (catalog, auth, scaffolder, …) stay
-in their owning workspace.
-
 - All `@backstage/plugin-events-backend-module-*` packages
+- `@backstage/plugin-signals`, `plugin-signals-backend`, `plugin-signals-node`, `plugin-signals-react`
 
 #### `ui`
 
@@ -1410,35 +1398,30 @@ The migration is staged so that no single PR has to move the entire repository.
    are larger and more interconnected, but at this point the migration mechanics are
    well-understood.
 
-6. **Migrate `modules` alongside `framework`.** The `modules` workspace and the
-   `framework` workspace are split out together, because the modules depend on the
-   `framework` packages and cannot be carved off until those packages have a stable
-   home.
+6. **Migrate `framework` last.** This is the most invasive move because it touches
+   the most root packages and because almost every other workspace depends on it.
+   Doing it last means it inherits a fully-validated workspace tooling chain.
 
-7. **Migrate `framework` last.** This is the most invasive move because it touches the
-   most root packages and because almost every other workspace depends on it. Doing it
-   last means it inherits a fully-validated workspace tooling chain.
-
-8. **Fold the demo repository in as `workspaces/demo/`.** Move the contents of the
+7. **Fold the demo repository in as `workspaces/demo/`.** Move the contents of the
    external `backstage/demo` repository into `workspaces/demo/` and wire its Yarn
    workspace links so it builds from source against every other workspace. Drop the
    legacy `packages/app`, `packages/app-legacy`, `packages/backend`,
    `packages/app-example-plugin`, and `plugins/example-todo-list*` from this
    repository as part of the same step.
 
-9. **Roll out staged changes.** Once `framework` is migrated and stable, enable the
+8. **Roll out staged changes.** Once `framework` is migrated and stable, enable the
    staged-change flow. The first end-to-end exercise is a real deprecation PR: file
    the deprecation and the staged removal together, verify the `@next` release picks
    the staged removal up, then flip the `Promote major` PR to ready-for-review and
    ship the major.
 
-10. **Replace the patch-release flow with `.fix/`.** Migrate any in-flight entries
-    from the top-level `.patches/` directory into per-workspace `.fix/` entries, run
-    one back-port through the new flow end to end, then remove the
-    `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js` script,
-    the `patch-release` branch, and the top-level `.patches/` directory.
+9. **Replace the patch-release flow with `.fix/`.** Migrate any in-flight entries
+   from the top-level `.patches/` directory into per-workspace `.fix/` entries, run
+   one back-port through the new flow end to end, then remove the
+   `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js` script,
+   the `patch-release` branch, and the top-level `.patches/` directory.
 
-11. **Adopt date-based versioning for `framework`.** The first major of `framework`
+10. **Adopt date-based versioning for `framework`.** The first major of `framework`
     after the staged-change flow lands uses the `YYNN` scheme.
 
 Throughout the migration the existing weekly release flow continues to work for any
