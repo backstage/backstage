@@ -480,14 +480,23 @@ entry is composed of three things:
 
 Staged changes are the mechanism for **any change that should ship in a coordinated
 batch with the next named release of the workspace, instead of streaming straight
-into `@latest`**. The most common case is breaking changes — those are the
-motivating use case — but the same mechanism is also useful for experimental
-features that are not ready for `@latest` and should preview through `@next` until
-the next batch ships. The description's front-matter may declare any bump level:
-`major`, `minor`, or `patch` (and the usual Backstage convention that
-`minor` is the breaking bump for `0.x` packages still applies). The staging
-tooling does not constrain the bump level; it only requires that the description is
-a valid changeset.
+into `@latest`**, or that should be available in `@next` previews without ever
+automatically reaching `@latest`. The most common case is breaking changes — those
+are the motivating use case — but the same mechanism is also useful for:
+
+- **Experimental features** that should preview through `@next` but stay out of
+  `@latest` until they're stabilized (see the `experimental` flag in
+  [Staged change file format](#staged-change-file-format)). An experimental
+  entry can be dropped without ever shipping, or graduated to stable later via a
+  separate PR.
+- **Non-breaking features held back for a coordinated batch**, where the team
+  wants the feature to ship alongside other related changes rather than dribble
+  out into `@latest`.
+
+The description's front-matter may declare any bump level: `major`, `minor`, or
+`patch` (with the usual Backstage convention that `minor` is the breaking bump
+for `0.x` packages). The staging tooling does not constrain the bump level; it
+only requires that the description is a valid changeset.
 
 This means non-breaking changes have two valid paths:
 
@@ -747,6 +756,26 @@ Supported top-level front-matter keys:
   workspace decides when to cut its own major release. The constraint only affects
   which dependent staged changes become eligible for inclusion in the next major
   of the depending workspace when its maintainers do decide to cut it.
+
+- `experimental` (optional, boolean): when `true`, the staged change is treated as
+  experimental. It still participates in `@next` previews — adopters using `@next`
+  can install and try it — but it is **never** automatically included in the
+  `Promote staged` PR. The entry stays in `.staged/` indefinitely until a
+  maintainer either:
+
+  - **Drops the experiment**: removes the staged entry without ever shipping it.
+    This is a legitimate end-state — staging something as experimental does not
+    commit the project to ever promoting it.
+  - **Graduates the experiment**: opens a separate PR that lands the feature
+    directly in `main` (typically with a regular changeset for the appropriate
+    semver bump) and deletes the staged entry as part of the same PR. The
+    feature then ships to `@latest` through the normal Version Packages PR flow,
+    independent of any future `Promote staged` PR merge.
+
+  Experimental entries are otherwise subject to all the same validation as
+  regular staged changes — their patch is applied on every PR to verify it still
+  applies cleanly, the description must be valid, and so on. They just don't
+  participate in promotion.
 
 The patch payload is a normal `git` diff. We use `git apply` with `--3way` so that
 trivial textual conflicts caused by unrelated edits to the same file can be
