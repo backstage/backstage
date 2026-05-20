@@ -245,6 +245,7 @@ stay in `framework` because the framework's defaults and many existing plugins s
 depend on them; `ui` carries only the new design system for now.
 
 - `@backstage/ui`
+- `@backstage/plugin-mui-to-bui` (the MUI → BUI migration aid)
 
 #### `cli`
 
@@ -261,7 +262,6 @@ migrate so it can exercise the new release tooling end to end.
 - `@backstage/eslint-plugin`
 - `@backstage/repo-tools`
 - `@backstage/yarn-plugin`
-- `@backstage/plugin-mui-to-bui` (a migration aid)
 
 #### `tooling`
 
