@@ -1,0 +1,19 @@
+.changeset/create-app-npm-cooldown.md
+  s_ce0fc1cdfb5968::t_3ddc43f3e4c0f6 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.4.9",
+  "base_commit_sha": "6344c54fa68fb11092dcfe3ac659f032772aef05",
+  "prompts": {},
+  "sessions": {
+    "s_ce0fc1cdfb5968": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ea7bdb8-ea35-4ac9-af64-832298896a72",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>"
+    }
+  }
+}
