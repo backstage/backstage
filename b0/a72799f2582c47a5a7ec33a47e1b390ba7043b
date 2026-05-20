@@ -1,0 +1,19 @@
+packages/e2e-test/src/commands/runCommand.ts
+  s_ce0fc1cdfb5968::t_8527824a3f6e87 220-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.4.9",
+  "base_commit_sha": "b0a72799f2582c47a5a7ec33a47e1b390ba7043b",
+  "prompts": {},
+  "sessions": {
+    "s_ce0fc1cdfb5968": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ea7bdb8-ea35-4ac9-af64-832298896a72",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>"
+    }
+  }
+}
