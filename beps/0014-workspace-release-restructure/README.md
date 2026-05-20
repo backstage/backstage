@@ -602,64 +602,79 @@ This replaces the existing top-level `.patches/`-and-`patch-release`-branch flow
 
 #### Concept
 
-A back-ported fix lives under each workspace in a `.fix/` directory:
+A back-ported fix lives under each workspace as a single markdown file in `.fix/`,
+using the same file format as a staged change (see
+[Staged change file format](#staged-change-file-format)). The only differences are:
+
+- The bumps are always `patch` (or `minor` for `0.x` packages, matching the
+  Backstage convention).
+- The target is **implicit**: it is derived from the package(s) listed in the
+  `packages` front-matter key, not from a separate `target:` field.
 
 ```
 workspaces/framework/.fix/
-  001-handle-missing-config/
-    description.md      # changeset frontmatter + body (same shape as staged changes)
-    change.patch        # unified diff to apply on top of the target
-    meta.yaml           # target spec — which past release(s) to patch
+  001-handle-missing-config.md
 ```
 
-`description.md` and `change.patch` follow the same conventions as their `.staged/`
-equivalents (see [Staged change file format](#staged-change-file-format)). The only
-new piece is `meta.yaml`, which declares one or more targets:
+```markdown
+---
+packages:
+  '@backstage/core-plugin-api@2604': patch
+relatedPrs: [12345]
+---
 
-```yaml
-# For the framework workspace — target a Backstage release line
-targets:
-  - releaseLine: 2604
+Fix crash when the runtime config is missing.
 
-# For other workspaces — target a package's major-version line
-targets:
-  - package: '@backstage/plugin-catalog'
-    major: 2
+​`patch
+diff --git a/...
+​`
 ```
 
-A single fix may declare multiple targets if the same patch applies cleanly to each
-(for example, the same security fix could target both the `2604` and `2603` framework
-lines). Each target produces an independent publish.
+The `@<line-or-major>` suffix on the package key in `packages` is what makes the
+target implicit. The general rule is:
+
+- **`'<package>'`** (no suffix): patch the highest currently-published major of
+  that package. Use this when the fix targets the current `@latest` release line.
+- **`'<package>@<major>'`**: patch the named major-version line of the package.
+  Use this for back-ports to older majors that are still supported.
+- **`'<framework-package>@<YYNN>'`**: patch the named framework release line.
+  Mechanically this is the same as the previous case, since framework packages
+  use their release identifier as their semver major.
+
+Listing more than one package in `packages` is allowed when the same patch needs
+to bump several packages at the same source commit. For a framework back-port that
+needs to update multiple framework packages, listing one is enough — the workflow
+applies the patch at the release line's commit and bumps every package the patch
+touches at that commit.
 
 #### Workflow on merge
 
 When a PR introducing a fix is merged to `main`, the release workflow:
 
-1. For each target declared in `meta.yaml`:
-   1. Looks up the most recent published state for that target. For framework lines,
-      this is the commit referenced by `release-<line>/latest.json` in
-      `backstage/versions`. For per-package targets, it is the most recent published
-      version of the named package in the named major.
+1. For each package key in `packages`:
+   1. Looks up the most recent published state for that package's targeted major.
+      Framework targets resolve through `release-<line>/latest.json` in
+      `backstage/versions`. Non-framework targets resolve through the highest
+      `<package>@<major>.<minor>.<patch>` git tag for the named major.
    2. Checks out that state in a temporary scratch tree.
-   3. Applies `change.patch` using `git apply --3way`. Non-trivial conflicts fail
+   3. Applies the fix's patch using `git apply --3way`. Non-trivial conflicts fail
       CI; the author has to refresh the patch.
-   4. Combines `description.md` with any other changesets to compute the next
-      semver-patch version, then dispatches a publish to `backstage/publishing` via
-      the standard `repository_dispatch` flow.
+   4. Computes the next semver-patch version using the synthesized changeset, then
+      dispatches a publish to `backstage/publishing` via the standard
+      `repository_dispatch` flow.
 2. The publishing repo validates the dispatch (see
    [Publish-time safeguards](#publish-time-safeguards)) and publishes the resulting
    patch version of each affected package. For framework targets, it also writes a
    new immutable manifest for the release line and bumps the `latest.json` pointer
    for that line.
 3. On success, the publishing workflow opens a small follow-up PR to `main` that
-   deletes the fix entry. Once merged, the entry is gone from `.fix/` and the audit
-   trail lives in git history (the merge of the original PR, the deletion PR) plus
-   the changelogs attached to the published patch releases.
+   deletes the fix entry. Once merged, the entry is gone from `.fix/` and the
+   audit trail lives in git history (the merge of the original PR, the deletion
+   PR) plus the changelogs attached to the published patch releases.
 
-A fix that targets multiple release lines is deleted only after all targets have
-shipped successfully. If any target's publish fails, the fix stays in `.fix/` and
-re-runs on the next push to `main` (idempotent: targets that already shipped are
-skipped because their `latest.json` pointer already includes the published version).
+If any package's publish fails, the fix stays in `.fix/` and re-runs on the next
+push to `main` (idempotent: packages that already shipped are skipped because their
+tag history already includes the published version).
 
 #### npm dist-tag handling
 
@@ -698,15 +713,9 @@ workspaces/
       config.json
       *.md
     .staged/
-      <slug>/
-        description.md      # frontmatter + body, in changeset format
-        change.patch        # unified diff or git-formatted patch
-        meta.yaml           # optional: related-prs, notBefore constraints
+      <slug>.md             # YAML front-matter + body + trailing patch code block
     .fix/
-      <slug>/
-        description.md      # frontmatter + body, in changeset format
-        change.patch        # unified diff to apply on the target
-        meta.yaml           # target spec for the back-port
+      <slug>.md             # same shape as .staged, with patch as the last fenced block
     packages/
       <package>/...
     plugins/
@@ -726,81 +735,94 @@ how the CI matrix is computed (the same approach used in community-plugins).
 
 ### Staged change file format
 
-A staged change is a directory under `<workspace>/.staged/<slug>/`. The slug carries
-the ordering, prefixed with a numeric segment so that lexicographic file-name sort
-produces the apply order:
+A staged change is a single markdown file under `<workspace>/.staged/<slug>.md`. The
+slug carries the apply order, prefixed with a numeric segment so that lexicographic
+file-name sort produces the order. The file has two parts:
+
+1. **YAML front-matter** with a `packages` map and any additional metadata keys.
+2. **A markdown body** with the human-readable description, followed by a fenced
+   code block tagged `patch` (or `diff`) that holds the git diff. The patch block
+   is required to be the **last** fenced code block in the file; tooling extracts
+   it from the end and treats whatever comes before it as the description.
 
 ```
 workspaces/catalog/.staged/
-  001-remove-deprecated-entity-ref-link-props/
-    description.md
-    change.patch
-    meta.yaml          # optional
+  001-remove-deprecated-entity-ref-link-props.md
 ```
 
-```yaml
-# description.md (changeset-compatible)
+````markdown
 ---
-'@backstage/plugin-catalog': major
-'@backstage/plugin-catalog-react': major
+packages:
+  '@backstage/plugin-catalog': major
+  '@backstage/plugin-catalog-react': major
+relatedPrs: [12345, 12678]
+notBefore:
+  # ISO date — exclude this staged change from @next until at least this date
+  date: 2026-09-01
+  # OR: depend on other staged changes being shipped first. References can point to
+  # entries in the same workspace or in a different workspace; the gate is satisfied
+  # once the referenced entry has been merged into main.
+  staged:
+    - framework/050-remove-config-mode-flag
+    - auth/020-rotate-token-format
 ---
+
 Removed the deprecated `EntityRefLink` props `defaultKind` and `defaultNamespace`.
 Pass these as part of the `entityRef` instead.
-```
 
-```diff
-# change.patch
+​```patch
 diff --git a/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.tsx b/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.tsx
 --- a/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.tsx
 +++ b/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.tsx
 @@ ... @@
+
 - defaultKind, defaultNamespace,
 - ...
-```
-
-```yaml
-# meta.yaml (optional, only used when extra metadata is needed)
-relatedPrs: [12345, 12678]
-notBefore:
-  # ISO date — exclude this staged change from @next releases until at least this date
-  date: 2026-09-01
-  # OR: depend on other staged changes being shipped first. References can point to
-  # entries in the same workspace or in a different workspace; the gate is satisfied
-  # once the referenced entry has been merged into main (i.e. promoted to a major).
-  staged:
-    - framework/050-remove-config-mode-flag
-    - auth/020-rotate-token-format
-```
+  ​```
+````
 
 Apply order is determined by file-name sort within the `.staged/` directory of a
 workspace. The numeric prefix (`001-`, `010-`, `200-`) is a convention to leave gaps
 for inserting future entries without renumbering. Slugs must be unique within a
 workspace.
 
-`meta.yaml` is optional and only needed for richer metadata. The supported keys are:
+The front-matter is intentionally _not_ a Changesets file as-is: the `packages` map
+is nested under a single top-level key so that tooling can read it without having
+to know which top-level keys are package names and which are metadata. When the
+tooling synthesizes a real changeset for downstream consumption (e.g. for the
+Promote PR or for `dispatch-next`), it lifts the `packages` map to the top-level of
+the generated changeset and uses the markdown body — minus the trailing patch code
+block — as the changeset description.
 
-- `relatedPrs`: pointers to the PRs that authored or refreshed the staged change.
-- `notBefore.date`: ISO date before which the staged change must not be included in
-  `@next`. Useful for honoring deprecation windows ("won't remove this until at least
-  N months after deprecation").
-- `notBefore.staged`: list of `<workspace>/<slug>` references to other staged changes
-  that must ship to `@latest` (i.e. be promoted into a major release) before this
-  staged change is eligible for `@next`. This is how a staged change in one workspace
-  can wait on a prerequisite in another workspace, even though the workspaces publish
-  independently. Cross-workspace gates are checked when computing the set of staged
-  changes to apply for a `@next` release: if a referenced entry is still present in
-  any `.staged/` directory, the dependent one is skipped.
+Supported top-level front-matter keys:
 
-  This is a constraint, not a trigger. Promoting the staged changes of one workspace
-  never automatically promotes the staged changes of another; each workspace decides
-  when to cut its own major release. The constraint only affects which dependent
-  staged changes become eligible for inclusion in the next major of the depending
-  workspace when its maintainers do decide to cut it.
+- `packages` (required): a map of package name to bump level, using the same syntax
+  Changesets uses (`major`, `minor`, `patch`; with the usual Backstage convention
+  that `minor` is the breaking bump for `0.x` packages).
+- `relatedPrs` (optional): pointers to the PRs that authored or refreshed the
+  staged change.
+- `notBefore.date` (optional): ISO date before which the staged change must not be
+  included in `@next`. Useful for honoring deprecation windows ("won't remove this
+  until at least N months after deprecation").
+- `notBefore.staged` (optional): list of `<workspace>/<slug>` references to other
+  staged changes that must ship to `@latest` (i.e. be promoted into a major
+  release) before this staged change is eligible for `@next`. This is how a staged
+  change in one workspace can wait on a prerequisite in another workspace, even
+  though the workspaces publish independently. Cross-workspace gates are checked
+  when computing the set of staged changes to apply for a `@next` release: if a
+  referenced entry is still present in any `.staged/` directory, the dependent one
+  is skipped.
 
-The `change.patch` payload is a normal `git` diff. We use `git apply` with `--3way`
-so that trivial textual conflicts caused by unrelated edits to the same file can be
-resolved automatically; non-trivial conflicts fail CI and require the author of the
-conflicting PR to update the staged change.
+  This is a constraint, not a trigger. Promoting the staged changes of one
+  workspace never automatically promotes the staged changes of another; each
+  workspace decides when to cut its own major release. The constraint only affects
+  which dependent staged changes become eligible for inclusion in the next major
+  of the depending workspace when its maintainers do decide to cut it.
+
+The patch payload is a normal `git` diff. We use `git apply` with `--3way` so that
+trivial textual conflicts caused by unrelated edits to the same file can be
+resolved automatically; non-trivial conflicts fail CI and require the author of
+the conflicting PR to update the staged change.
 
 ### Author workflow
 
