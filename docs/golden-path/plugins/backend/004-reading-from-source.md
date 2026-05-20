@@ -158,10 +158,7 @@ async syncTodosFromSource(options: {
     }
   }
 
-  await this.#database('todo')
-    .insert(discovered.map(todo => this.toDatabaseRow(todo)))
-    .onConflict('id')
-    .ignore();
+  await this.createTodos(discovered);
 
   return { items: discovered };
 }
@@ -171,7 +168,27 @@ A few things worth highlighting:
 
 1. **Globs are scoped to the source URL.** `urlReader.search` translates `https://github.com/org/repo/tree/main/**/*.ts` into the right per-provider API call — you don't need to know whether the backend is the GitHub Trees API or the GitLab Repository API.
 2. **Authentication is implicit.** Because `github.com` is configured under `integrations`, the search request goes out with the token your env var resolved to. If a user owns a repo your backend doesn't have credentials for, the call will fail with a clear error rather than silently returning nothing.
-3. **`onConflict('id').ignore()`** keeps repeated syncs idempotent. A more sophisticated implementation would key off `(entityRef, file, lineNumber)` so an edit to a TODO in source updates the existing row, but that's beyond what we need to demonstrate the integration.
+3. **Persistence stays in the service layer.** Rather than reaching into `this.#database` here, we delegate to a `createTodos` method that lives next to `createTodo`. The sync flow doesn't need to know how rows are shaped or how conflicts are resolved — that stays the database layer's job.
+
+## Persisting in bulk
+
+`createTodo` from the previous step already handles a single row. Sync can produce hundreds at once, and we want repeated runs to be idempotent rather than failing on duplicate ids. Add a sibling method that does both:
+
+```ts title="src/services/TodoListService.ts"
+async createTodos(todos: TodoItem[]): Promise<void> {
+  if (todos.length === 0) return;
+
+  await this.#database('todo')
+    .insert(todos.map(todo => this.toDatabaseRow(todo)))
+    .onConflict('id')
+    .ignore();
+}
+```
+
+A couple of notes:
+
+1. **`onConflict('id').ignore()`** keeps repeated syncs idempotent. A more sophisticated implementation would key off `(entityRef, file, lineNumber)` so an edit to a TODO in source updates the existing row, but that's beyond what we need to demonstrate the integration.
+2. **Empty-input guard.** Knex will reject `.insert([])` on some dialects, and skipping the round-trip is cheaper than handling the error. Callers can hand us whatever the sync produced without pre-filtering.
 
 Finally, expose the new method through the router so users can trigger a sync:
 
