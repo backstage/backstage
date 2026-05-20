@@ -1,0 +1,19 @@
+packages/repo-tools/src/commands/package/schema/openapi/generate/client.ts
+  s_203439e8434664::t_8ec790558894e2 108-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.4.9",
+  "base_commit_sha": "fce62e7fd77b4db0d694889a1c7c9e2980e0d856",
+  "prompts": {},
+  "sessions": {
+    "s_203439e8434664": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3a9600fb-579c-47d1-a518-5f13dc7d7ede",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>"
+    }
+  }
+}
