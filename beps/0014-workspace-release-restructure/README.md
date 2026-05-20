@@ -460,16 +460,16 @@ changeset captures _what_ will bump in the next release, a staged change additio
 captures _the actual code change_ that will produce that bump. A single staged-change
 entry is composed of three things:
 
-1. A **description** — a human-readable note in changeset front-matter format. It
+1. A **description**: a human-readable note in changeset front-matter format. It
    names the packages that the change affects and is used both as the eventual
    changelog entry and as the synthesized changeset that drives version computation
    in the `Promote major` PR and in `@next` releases.
-2. A **patch** — a git diff that, when applied to the current state of the
+2. A **patch**: a git diff that, when applied to the current state of the
    workspace, transforms it into the form it will take after the change ships.
    This is what makes the entry self-contained: the description without the patch
    would just be a normal changeset, and the patch without the description would
    just be a diff with no release semantics.
-3. **Optional metadata** — related issue/PR numbers and `notBefore` constraints
+3. **Optional metadata**: related issue/PR numbers and `notBefore` constraints
    (see [Staged change file format](#staged-change-file-format) for details). Apply
    order is encoded in the entry's slug, not in metadata.
 
@@ -1337,11 +1337,11 @@ The body of each manifest is built by:
 
 This means an adopter can pin a Backstage release in two ways:
 
-- **Floating pin** (`backstage.json`'s `release: "2604"`) — the Yarn plugin reads
+- **Floating pin** (`backstage.json`'s `release: "2604"`): the Yarn plugin reads
   `release-2604/latest.json` on each install, picks up the most recent manifest in
   that release line, and resolves to the package versions inside. Adopters get the
   latest known compatible versions across every workspace without changing the pin.
-- **Frozen pin** (`backstage.json`'s `release: "2604.23"`) — the Yarn plugin reads
+- **Frozen pin** (`backstage.json`'s `release: "2604.23"`): the Yarn plugin reads
   the immutable `release-2604.23.json` directly. Adopters get an exact, reproducible
   set of package versions and are insulated from future publishes.
 
