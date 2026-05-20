@@ -1,0 +1,19 @@
+.changeset/notifications-backend-openapi-router.md
+  s_203439e8434664::t_70f34297a5a276 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.4.9",
+  "base_commit_sha": "42b6831916a97fbc40b51d4e54238f94a7f3abf7",
+  "prompts": {},
+  "sessions": {
+    "s_203439e8434664": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3a9600fb-579c-47d1-a518-5f13dc7d7ede",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>"
+    }
+  }
+}
