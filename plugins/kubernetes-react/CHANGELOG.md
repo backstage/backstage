@@ -1,5 +1,23 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.19
+
+### Patch Changes
+
+- e68cb8a: Added optional clustersCacheTtlMs option to KubernetesBackendClient that caches getClusters() responses for the specified duration, avoiding repeated /clusters requests when multiple proxy calls resolve cluster auth in quick succession.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/core-components@0.18.10
+  - @backstage/errors@1.3.1
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-kubernetes-common@0.9.12
+
+## 0.5.19-next.1
+
+### Patch Changes
+
+- e68cb8a: Added optional clustersCacheTtlMs option to KubernetesBackendClient that caches getClusters() responses for the specified duration, avoiding repeated /clusters requests when multiple proxy calls resolve cluster auth in quick succession.
+
 ## 0.5.19-next.0
 
 ### Patch Changes

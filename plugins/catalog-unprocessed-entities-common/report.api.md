@@ -57,8 +57,12 @@ export const unprocessedEntitiesDeletePermission: BasicPermission;
 
 // @public
 export const unprocessedEntitiesPermissions: {
+  unprocessedEntitiesReadPermission: BasicPermission;
   unprocessedEntitiesDeletePermission: BasicPermission;
 };
+
+// @public
+export const unprocessedEntitiesReadPermission: BasicPermission;
 
 // @public
 export interface UnprocessedEntitiesRequestOptions {

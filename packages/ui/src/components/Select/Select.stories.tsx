@@ -105,6 +105,51 @@ export const SearchableMultiple = meta.story({
   },
 });
 
+const sectionedOptions = [
+  {
+    title: 'Serif Fonts',
+    options: [
+      { value: 'times', label: 'Times New Roman' },
+      { value: 'georgia', label: 'Georgia' },
+      { value: 'garamond', label: 'Garamond' },
+    ],
+  },
+  {
+    title: 'Sans-Serif Fonts',
+    options: [
+      { value: 'arial', label: 'Arial' },
+      { value: 'helvetica', label: 'Helvetica' },
+      { value: 'verdana', label: 'Verdana' },
+    ],
+  },
+  {
+    title: 'Monospace Fonts',
+    options: [
+      { value: 'courier', label: 'Courier New' },
+      { value: 'consolas', label: 'Consolas' },
+      { value: 'fira', label: 'Fira Code' },
+    ],
+  },
+];
+
+export const WithSections = meta.story({
+  args: {
+    label: 'Font Family',
+    options: sectionedOptions,
+    name: 'font',
+  },
+});
+
+export const SearchableWithSections = meta.story({
+  args: {
+    label: 'Font Family',
+    searchable: true,
+    searchPlaceholder: 'Search fonts...',
+    options: sectionedOptions,
+    name: 'font',
+  },
+});
+
 export const Preview = meta.story({
   args: {
     label: 'Font Family',

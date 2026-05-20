@@ -1,5 +1,20 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.17
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/cli-common@0.2.2
+  - @backstage/config@1.3.8
+  - @backstage/config-loader@1.10.11
+  - @backstage/plugin-devtools-common@0.1.25
+
 ## 0.5.17-next.0
 
 ### Patch Changes

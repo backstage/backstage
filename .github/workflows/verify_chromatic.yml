@@ -49,7 +49,7 @@ jobs:
 
       - name: Run Chromatic
         id: chromatic
-        uses: chromaui/action@f191a0224b10e1a38b2091cefb7b7a2337009116 # latest
+        uses: chromaui/action@e3eb8ec36101d8f0253c7c3ae66e5a2b4e2197ba # latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
@@ -82,7 +82,7 @@ jobs:
 
       - name: Post Chromatic Link in PR Comment
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url && github.event.pull_request.head.repo.full_name == github.repository
-        uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2
+        uses: mshick/add-pr-comment@8e4927817251f1ff60c001f04568532b38e0b4a0 # v3
         with:
           message: |
             ## 🎨 Visual Testing with Chromatic

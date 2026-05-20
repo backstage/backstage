@@ -15,6 +15,10 @@
  */
 
 import preview from '../../../../.storybook/preview';
+import {
+  Header as CoreHeader,
+  Page as CorePage,
+} from '@backstage/core-components';
 import type { StoryFn } from '@storybook/react-vite';
 import { MemoryRouter } from 'react-router-dom';
 import { BUIProvider } from '../provider';
@@ -49,7 +53,7 @@ import {
 // ---------------------------------------------------------------------------
 
 const PageContent = () => (
-  <Container mt="6">
+  <Container style={{ gridArea: 'pageContent' }}>
     <Flex direction="row" gap="4">
       <Card style={{ minHeight: 120, flex: 1 }} />
       <Card style={{ minHeight: 120, flex: 1 }} />
@@ -59,7 +63,7 @@ const PageContent = () => (
 );
 
 const LongPageContent = () => (
-  <Container mt="6" pb="3">
+  <Container pb="3">
     <Flex direction="row" gap="4" mb="4">
       <Card style={{ minHeight: 200, flex: 1 }} />
       <Card style={{ minHeight: 200, flex: 1 }} />
@@ -104,6 +108,28 @@ export const NoHeader = meta.story({
   ),
 });
 
+export const NoHeaderWithTabs = meta.story({
+  decorators: [withLayout],
+  render: () => (
+    <>
+      <PluginHeader
+        icon={<RiCodeSSlashLine />}
+        title="APIs"
+        tabs={[
+          { id: 'overview', label: 'Overview', href: '/apis' },
+          {
+            id: 'definitions',
+            label: 'Definitions',
+            href: '/apis/definitions',
+          },
+          { id: 'consumers', label: 'Consumers', href: '/apis/consumers' },
+        ]}
+      />
+      <PageContent />
+    </>
+  ),
+});
+
 export const SimpleHeader = meta.story({
   decorators: [withLayout],
   render: () => (
@@ -111,6 +137,44 @@ export const SimpleHeader = meta.story({
       <PluginHeader icon={<RiCodeSSlashLine />} title="APIs" />
       <Header title="payments-api" />
       <PageContent />
+    </>
+  ),
+});
+
+export const CoreComponentsHeader = meta.story({
+  decorators: [withLayout],
+  render: () => (
+    <>
+      <PluginHeader icon={<RiCodeSSlashLine />} title="APIs" />
+      <CorePage themeId="home">
+        <CoreHeader title="payments-api" />
+        <PageContent />
+      </CorePage>
+    </>
+  ),
+});
+
+export const CoreComponentsHeaderWithTabs = meta.story({
+  decorators: [withLayout],
+  render: () => (
+    <>
+      <PluginHeader
+        icon={<RiCodeSSlashLine />}
+        title="APIs"
+        tabs={[
+          { id: 'overview', label: 'Overview', href: '/apis' },
+          {
+            id: 'definitions',
+            label: 'Definitions',
+            href: '/apis/definitions',
+          },
+          { id: 'consumers', label: 'Consumers', href: '/apis/consumers' },
+        ]}
+      />
+      <CorePage themeId="home">
+        <CoreHeader title="payments-api" />
+        <PageContent />
+      </CorePage>
     </>
   ),
 });

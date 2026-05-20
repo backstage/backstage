@@ -1,5 +1,70 @@
 # @backstage/plugin-app
 
+## 0.4.6
+
+### Patch Changes
+
+- a345820: The `app/routes` redirect config now supports path parameter substitution in the `to` target. Named params (`:userId`) and splat params (`*`) captured by the `from` path are replaced in the `to` string before navigating, making it possible to express redirects like:
+
+  ```yaml
+  app:
+    extensions:
+      - app/routes:
+          config:
+            redirects:
+              - from: /users/:userId
+                to: /profile/:userId
+              - from: /old-docs
+                to: /docs/*
+  ```
+
+- d1be10c: Migrated React Aria imports from individual packages (`@react-aria/toast`, `@react-aria/button`, `@react-stately/toast`) to the monopackages (`react-aria`, `react-stately`).
+- e2d9831: Tightened React Aria dependency version ranges from `^` to `~` to prevent unintended minor version upgrades.
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- 2ba8c10: Following the removal of `NavItemBlueprint` in `@backstage/frontend-plugin-api`, the built-in app nav was updated to keep accepting legacy `nav-item` extensions so older plugins continue to work until they migrate.
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 085133f: The `zod` dependency has been bumped from `^3.25.76 || ^4.0.0` to `^4.0.0`, since `configSchema` requires the full Zod v4 package for JSON Schema support.
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/filter-predicates@0.1.3
+  - @backstage/plugin-app-react@0.2.3
+  - @backstage/integration-react@1.2.18
+  - @backstage/plugin-permission-react@0.5.1
+
+## 0.4.6-next.2
+
+### Patch Changes
+
+- a345820: The `app/routes` redirect config now supports path parameter substitution in the `to` target. Named params (`:userId`) and splat params (`*`) captured by the `from` path are replaced in the `to` string before navigating, making it possible to express redirects like:
+
+  ```yaml
+  app:
+    extensions:
+      - app/routes:
+          config:
+            redirects:
+              - from: /users/:userId
+                to: /profile/:userId
+              - from: /old-docs
+                to: /docs/*
+  ```
+
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.3
+
+## 0.4.6-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+
 ## 0.4.6-next.0
 
 ### Patch Changes

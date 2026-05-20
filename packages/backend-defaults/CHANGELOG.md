@@ -1,5 +1,55 @@
 # @backstage/backend-defaults
 
+## 0.17.1
+
+### Patch Changes
+
+- 90b572e: Adds an alpha `TracingService` to provide a unified interface for emitting trace spans across Backstage plugins.
+- 97d3bd4: Fixed a race condition in `CachedUserInfoService` where a failed request could incorrectly evict a newer cache entry for the same token. The error handler now verifies the map entry is still the same promise before deleting it.
+- 3595c97: Exported `defaultServiceFactories` to allow use with `createSpecializedBackend` for advanced configuration like `extensionPointFactoryMiddleware`.
+- 89d3248: Fixed scheduler `sleep` firing immediately for durations longer than ~24.8 days, caused by Node.js `setTimeout` overflowing its 32-bit millisecond limit.
+- d00a44b: Fixed Valkey cluster mode to use `iovalkey`'s `Cluster` class instead of
+  `createCluster` from `@keyv/redis`. The previous implementation passed a
+  `@redis/client` `RedisCluster` instance to `@keyv/valkey`, which expects an
+  `iovalkey` `Cluster` instance. This caused the cluster client to not be
+  recognized correctly, as the two libraries have incompatible object models.
+- 2f0519c: Added a new `CachedUserInfoService` decorator that wraps `DefaultUserInfoService` with a 5-second TTL cache and in-flight request coalescing. The decorator is wired in via `userInfoServiceFactory` using a shared root-level cache. Repeated `getUserInfo()` calls for the same user token within the TTL window return the cached result without making an HTTP call to the auth backend. Note that custom `UserInfoService` implementations registered via their own factory will not benefit from this cache automatically.
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- 6209065: Added `context` and `propagation` to the alpha `TracingService`. Plugins can bridge OpenTelemetry context across async boundaries via `tracing.propagation.extract(tracing.context.active(), carrier)` followed by `tracing.context.with(ctx, fn)`, and read propagated baggage via `tracing.propagation.getActiveBaggage()` or `tracing.propagation.getBaggage(ctx)`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/integration-aws-node@0.2.0
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/backend-app-api@1.7.0
+  - @backstage/cli-node@0.3.2
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-auth-node@0.7.1
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/config@1.3.8
+  - @backstage/config-loader@1.10.11
+  - @backstage/plugin-events-node@0.4.22
+
+## 0.17.1-next.2
+
+### Patch Changes
+
+- 90b572e: Adds an alpha `TracingService` to provide a unified interface for emitting trace spans across Backstage plugins.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.9.1-next.1
+
+## 0.17.1-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.2-next.1
+  - @backstage/plugin-auth-node@0.7.1-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
 ## 0.17.1-next.0
 
 ### Patch Changes

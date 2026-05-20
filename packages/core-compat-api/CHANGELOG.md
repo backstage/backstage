@@ -1,5 +1,18 @@
 # @backstage/core-compat-api
 
+## 0.5.11
+
+### Patch Changes
+
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/filter-predicates@0.1.3
+  - @backstage/plugin-catalog-react@3.0.0
+  - @backstage/plugin-app-react@0.2.3
+
 ## 0.5.11-next.0
 
 ### Patch Changes

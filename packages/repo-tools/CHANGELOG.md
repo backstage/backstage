@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.17.2
+
+### Patch Changes
+
+- 927c003: Replaced internal error utilities with shared ones from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/cli-node@0.3.2
+  - @backstage/cli-common@0.2.2
+  - @backstage/config-loader@1.10.11
+
 ## 0.17.2-next.0
 
 ### Patch Changes

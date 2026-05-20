@@ -1,5 +1,14 @@
 # @backstage/plugin-signals-node
 
+## 0.2.1
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-events-node@0.4.22
+
 ## 0.2.1-next.0
 
 ### Patch Changes

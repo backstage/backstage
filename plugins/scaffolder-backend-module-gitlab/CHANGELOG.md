@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.11.6
+
+### Patch Changes
+
+- 8474da5: Added `allowEmpty` input option to the `gitlab:repo:push` action, allowing empty commits. Required from GitLab 18.8 or later.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-scaffolder-node@0.13.3
+  - @backstage/config@1.3.8
+
 ## 0.11.6-next.0
 
 ### Patch Changes

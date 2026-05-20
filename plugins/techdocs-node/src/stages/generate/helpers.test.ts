@@ -37,6 +37,7 @@ import {
   patchMkdocsYmlPreBuild,
   patchMkdocsYmlWithPlugins,
   sanitizeMkdocsYml,
+  patchMkdocsYmlWithFontDisabled,
 } from './mkdocsPatchers';
 import yaml from 'js-yaml';
 
@@ -468,6 +469,119 @@ describe('helpers', () => {
     });
   });
 
+  describe('patchMkdocsYmlWithFontDisabled', () => {
+    beforeEach(() => {
+      mockDir.setContent({
+        'mkdocs_without_theme.yml': `site_name: Test Site
+docs_dir: docs
+`,
+        'mkdocs_with_theme_no_font.yml': `site_name: Test Site
+docs_dir: docs
+theme:
+  name: material
+`,
+        'mkdocs_with_theme_font_true.yml': `site_name: Test Site
+docs_dir: docs
+theme:
+  name: material
+  font: true
+`,
+        'mkdocs_with_theme_font_false.yml': `site_name: Test Site
+docs_dir: docs
+theme:
+  name: material
+  font: false
+`,
+        'mkdocs_with_theme_non_material.yml': `site_name: Test Site
+docs_dir: docs
+theme:
+  name: test-theme
+`,
+      });
+      mockLogger.debug.mockClear();
+    });
+
+    it('should create theme section with font disabled when no theme exists', async () => {
+      await patchMkdocsYmlWithFontDisabled(
+        mockDir.resolve('mkdocs_without_theme.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_without_theme.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: { name?: string; font?: boolean };
+      };
+      expect(parsedYml.theme).toBeDefined();
+      expect(parsedYml.theme?.name).toBe('material');
+      expect(parsedYml.theme?.font).toBe(false);
+    });
+
+    it('should add font: false when theme exists but font is not configured', async () => {
+      await patchMkdocsYmlWithFontDisabled(
+        mockDir.resolve('mkdocs_with_theme_no_font.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_theme_no_font.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: { name?: string; font?: boolean };
+      };
+      expect(parsedYml.theme).toBeDefined();
+      expect(parsedYml.theme?.name).toBe('material');
+      expect(parsedYml.theme?.font).toBe(false);
+    });
+
+    it('should not override font when font is already set to true', async () => {
+      await patchMkdocsYmlWithFontDisabled(
+        mockDir.resolve('mkdocs_with_theme_font_true.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_theme_font_true.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: { name?: string; font?: boolean };
+      };
+      expect(parsedYml.theme).toBeDefined();
+      expect(parsedYml.theme?.name).toBe('material');
+      expect(parsedYml.theme?.font).toBe(true);
+    });
+
+    it('should not override font when font is already set to false', async () => {
+      await patchMkdocsYmlWithFontDisabled(
+        mockDir.resolve('mkdocs_with_theme_font_false.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_theme_font_false.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: { name?: string; font?: boolean };
+      };
+      expect(parsedYml.theme).toBeDefined();
+      expect(parsedYml.theme?.name).toBe('material');
+      expect(parsedYml.theme?.font).toBe(false);
+    });
+
+    it('should not patch when theme name is not material', async () => {
+      const fixturePath = mockDir.resolve('mkdocs_with_theme_non_material.yml');
+      const before = await fs.readFile(fixturePath, 'utf8');
+
+      await patchMkdocsYmlWithFontDisabled(fixturePath, mockLogger);
+
+      await expect(fs.readFile(fixturePath, 'utf8')).resolves.toEqual(before);
+      expect(mockLogger.debug).toHaveBeenCalledWith(
+        'mkdocs.yml theme is not "material"; skipping font disabling patch',
+      );
+    });
+  });
+
   describe('patchIndexPreBuild', () => {
     afterEach(() => {
       warn.mockClear();
@@ -543,6 +657,119 @@ describe('helpers', () => {
         ],
       ]);
     });
+
+    it.each(['README.md', 'readme.md', 'docs/README.md', 'docs/readme.md'])(
+      'should use a symlink to %s if docs/index.md does not exist',
+      async fileName => {
+        mockDir.setContent({
+          'information.md': 'information.md content',
+          [fileName]: ctx => ctx.symlink(mockDir.resolve('information.md')),
+        });
+
+        await patchIndexPreBuild({
+          inputDir: mockDir.path,
+          logger: mockLogger,
+        });
+
+        await expect(
+          fs.readFile(mockDir.resolve('docs/index.md'), 'utf-8'),
+        ).resolves.toEqual('information.md content');
+      },
+    );
+
+    it.each(['README.md', 'readme.md', 'docs/README.md', 'docs/readme.md'])(
+      'should reject a symlink from %s to outside of the current directory',
+      async fileName => {
+        const anotherMockDir = createMockDirectory();
+
+        mockDir.setContent({
+          'information.md': 'information.md content',
+          [fileName]: ctx => ctx.symlink(anotherMockDir.resolve('tmp/secret')),
+        });
+
+        anotherMockDir.setContent({
+          tmp: {
+            secret: 'password',
+          },
+        });
+
+        await expect(
+          patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger }),
+        ).rejects.toThrow(
+          /Source path .* is not allowed to refer to a location outside/i,
+        );
+      },
+    );
+
+    it.each(['README.md', 'readme.md', 'docs/README.md', 'docs/readme.md'])(
+      'should write %s to a symlink docs directory if docs/index.md does not exist',
+      async fileName => {
+        mockDir.setContent({
+          'target/docs': {},
+          docs: ctx => ctx.symlink('./target/docs'),
+          [fileName]: `${fileName} content`,
+        });
+
+        await patchIndexPreBuild({
+          inputDir: mockDir.path,
+          logger: mockLogger,
+        });
+
+        await expect(
+          fs.readFile(mockDir.resolve('target/docs/index.md'), 'utf-8'),
+        ).resolves.toEqual(`${fileName} content`);
+      },
+    );
+
+    it.each(['README.md', 'readme.md'])(
+      'should reject creating docs dir if target symlink points to non-existing directory outside of the current directory',
+      async fileName => {
+        const anotherMockDir = createMockDirectory();
+
+        mockDir.setContent({
+          docs: ctx => ctx.symlink(anotherMockDir.resolve('docs')),
+          'information.md': 'information.md content',
+          [fileName]: `${fileName} content`,
+        });
+
+        await expect(
+          patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger }),
+        ).rejects.toThrow(
+          /Target path .* is not allowed to refer to a location outside/i,
+        );
+
+        await expect(fs.exists(anotherMockDir.resolve('docs'))).resolves.toBe(
+          false,
+        );
+      },
+    );
+
+    it.each(['README.md', 'readme.md'])(
+      'should reject creating docs dir if target symlink points to existing directory outside of the current directory',
+      async fileName => {
+        const anotherMockDir = createMockDirectory();
+
+        mockDir.setContent({
+          docs: ctx => ctx.symlink(anotherMockDir.resolve('docs')),
+          'information.md': 'information.md content',
+          [fileName]: `${fileName} content`,
+        });
+
+        anotherMockDir.setContent({
+          docs: {},
+        });
+
+        await expect(
+          patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger }),
+        ).rejects.toThrow(
+          /Target path .* is not allowed to refer to a location outside/i,
+        );
+
+        await expect(
+          fs.exists(anotherMockDir.resolve('docs/index.md')),
+        ).resolves.toBe(false);
+      },
+    );
   });
 
   describe('addBuildTimestampMetadata', () => {

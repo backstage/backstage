@@ -179,7 +179,11 @@ export interface Config {
      */
     stitchingStrategy?:
       | {
-          /** Perform stitching in-band immediately when needed */
+          /**
+           * Perform stitching in-band immediately when needed.
+           *
+           * @deprecated Immediate mode stitching has been deprecated and will be removed in a future release. Migrate to deferred mode (the default).
+           */
           mode: 'immediate';
         }
       | {

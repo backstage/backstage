@@ -17,15 +17,57 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
+  .bui-PluginHeader {
+    --bui-plugin-header-margin-bottom: var(--bui-space-6);
+    --bui-plugin-header-toolbar-border-bottom: solid 1px var(--bui-border-1);
+    --bui-plugin-header-tabs-border-bottom: 1px solid var(--bui-border-1);
+    --bui-plugin-header-toolbar-padding-bottom: var(--bui-space-4);
+    --bui-plugin-header-toolbar-tabs-padding-bottom: var(--bui-space-1);
+    --bui-plugin-header-background-color: transparent;
+    --bui-plugin-header-padding-top: var(--bui-space-4);
+
+    margin-bottom: var(--bui-plugin-header-margin-bottom);
+    padding-inline: var(--bui-space-5);
+    padding-top: var(--bui-plugin-header-padding-top);
+    background-color: var(--bui-plugin-header-background-color);
+  }
+
+  .bui-PluginHeader:has(+ .bui-HeaderTop),
+  .bui-PluginHeader:has(+ [data-backstage-core-header]),
+  .bui-PluginHeader:has(
+      + [data-backstage-core-page] [data-backstage-core-header]
+    ) {
+    --bui-plugin-header-margin-bottom: 0;
+    --bui-plugin-header-toolbar-border-bottom: none;
+    --bui-plugin-header-tabs-border-bottom: none;
+    --bui-plugin-header-toolbar-padding-bottom: var(--bui-space-2);
+    --bui-plugin-header-toolbar-tabs-padding-bottom: var(--bui-space-2);
+    --bui-plugin-header-background-color: var(--bui-bg-neutral-1);
+    --bui-plugin-header-padding-top: var(--bui-space-2);
+  }
+
+  .bui-PluginHeader:has(+ [data-backstage-core-header])
+    .bui-PluginHeaderToolbarIcon,
+  .bui-PluginHeader:has(
+      + [data-backstage-core-page] [data-backstage-core-header]
+    )
+    .bui-PluginHeaderToolbarIcon {
+    background-color: var(--bui-bg-neutral-3);
+  }
+
   .bui-PluginHeaderToolbar {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding-inline: var(--bui-space-5);
     color: var(--bui-fg-primary);
-    height: 52px;
-    border-bottom: 1px solid var(--bui-border-1);
+    border-bottom: var(--bui-plugin-header-toolbar-border-bottom);
+    padding-bottom: var(--bui-plugin-header-toolbar-padding-bottom);
+
+    &[data-has-tabs] {
+      border-bottom: none;
+      padding-bottom: var(--bui-plugin-header-toolbar-tabs-padding-bottom);
+    }
   }
 
   .bui-PluginHeaderToolbarContent {
@@ -45,7 +87,7 @@
     flex-shrink: 0;
   }
 
-  .bui-PluginHeaderToolbarIcon {
+  .bui-PluginHeader .bui-PluginHeaderToolbarIcon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -69,7 +111,6 @@
   }
 
   .bui-PluginHeaderTabsWrapper {
-    padding-inline: var(--bui-space-3);
-    border-bottom: 1px solid var(--bui-border-1);
+    border-bottom: var(--bui-plugin-header-tabs-border-bottom);
   }
 }

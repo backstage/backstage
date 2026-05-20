@@ -8,6 +8,7 @@ import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { GithubCredentialsProvider } from '@backstage/integration';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Octokit } from 'octokit';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -510,6 +511,13 @@ export const createPublishGithubPullRequestAction: (
 >;
 
 // @public
+export function getOctokitClient(
+  octokitOptions: OctokitOptions,
+  logger: LoggerService,
+  retryOptions?: RetryOptions,
+): Octokit;
+
+// @public
 export function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
@@ -530,4 +538,10 @@ export function getOctokitOptions(options: {
 // @public
 const githubModule: BackendFeature;
 export default githubModule;
+
+// @public
+export type RetryOptions = {
+  retries?: number;
+  retryAfter?: number;
+};
 ```

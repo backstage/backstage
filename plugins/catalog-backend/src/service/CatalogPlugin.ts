@@ -288,6 +288,10 @@ export const catalogPlugin = createBackendPlugin({
           catalog,
           actionsRegistry,
           modelHolder,
+          useExperimentalCatalogLayersDescriptions:
+            config.getOptionalBoolean(
+              'catalog.actions.experimentalCatalogLayersDescriptions.enabled',
+            ) ?? false,
         });
 
         const scmEventsMessagesCounter = metrics.createCounter<{

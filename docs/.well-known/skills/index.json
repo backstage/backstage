@@ -19,6 +19,11 @@
       "name": "plugin-full-frontend-system-migration",
       "description": "Fully migrate a Backstage plugin to the new frontend system, dropping all old system support. Use this skill for internal plugins that only need to run in a single app, or when you are ready to remove backward compatibility entirely.",
       "files": ["SKILL.md"]
+    },
+    {
+      "name": "plugin-analytics-instrumentation",
+      "description": "Instrument a Backstage frontend plugin with analytics events using the Backstage Analytics API. Use this skill when adding, reviewing, or extending event capture (captureEvent, AnalyticsContext) in plugin components, deciding whether an interaction warrants an event, or writing tests for analytics behavior.",
+      "files": ["SKILL.md"]
     }
   ]
 }

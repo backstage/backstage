@@ -255,6 +255,41 @@ describe('buildEntitySearch', () => {
       ]);
     });
 
+    it('deduplicates rows from duplicate array values', () => {
+      const rows = buildEntitySearch('eid', {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: { name: 'n', tags: ['java', 'java', 'Java'] },
+      });
+      // 'java' and 'Java' both normalise to value 'java'; all three occurrences
+      // should collapse into a single row (first-wins for original_value).
+      const tagRows = rows.filter(r => r.key === 'metadata.tags');
+      expect(tagRows).toHaveLength(1);
+      expect(tagRows[0]).toEqual(
+        expect.objectContaining({ value: 'java', original_value: 'java' }),
+      );
+      // The synthetic boolean path key (metadata.tags.java) should also appear
+      // exactly once.
+      const boolRows = rows.filter(r => r.key === 'metadata.tags.java');
+      expect(boolRows).toHaveLength(1);
+    });
+
+    it('treats null and empty-string values as distinct for deduplication', () => {
+      // An array with both null and '' for the same key must produce two rows
+      // since value=null and value='' are distinct in the database.
+      const rows = buildEntitySearch('eid', {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: { name: 'n' },
+        spec: { foo: [null, ''] },
+      });
+      const fooRows = rows.filter(r => r.key === 'spec.foo');
+      expect(fooRows).toHaveLength(2);
+      const values = fooRows.map(r => r.value);
+      expect(values).toContain(null);
+      expect(values).toContain('');
+    });
+
     it('rejects duplicate keys', () => {
       expect(() =>
         buildEntitySearch('eid', {

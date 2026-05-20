@@ -179,7 +179,7 @@ export class LdapClient {
     }
   }
 
-  // Check a shema for Google-specific patterns
+  // Check a schema for Google-specific patterns
   private checkGoogleSchema(rootDSE: Entry): boolean {
     try {
       const objectClasses = this.parseSchemaValues(rootDSE.objectClasses);

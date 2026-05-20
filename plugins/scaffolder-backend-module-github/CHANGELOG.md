@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.9
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- a2ee960: Improved Octokit client creation to support retries via @octokit/plugin-retry
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-scaffolder-node@0.13.3
+  - @backstage/config@1.3.8
+
 ## 0.9.9-next.0
 
 ### Patch Changes

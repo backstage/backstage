@@ -1,5 +1,33 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.8.3
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.0
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-search-backend-node@1.4.4
+  - @backstage/config@1.3.8
+  - @backstage/plugin-search-common@1.2.24
+
+## 1.8.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.9.1-next.1
+
+## 1.8.3-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.4-next.1
+
 ## 1.8.3-next.0
 
 ### Patch Changes

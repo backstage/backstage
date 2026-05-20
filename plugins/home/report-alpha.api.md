@@ -13,7 +13,6 @@ import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { HomePageLayoutProps } from '@backstage/plugin-home-react/alpha';
 import { HomePageWidgetBlueprintParams } from '@backstage/plugin-home-react/alpha';
 import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
-import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -80,31 +79,6 @@ const _default: OverridableFrontendPlugin<
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
       params: HomePageWidgetBlueprintParams;
-    }>;
-    'nav-item:home': OverridableExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {
-        title: string | undefined;
-      };
-      configInput: {
-        title?: string | undefined;
-      };
-      output: ExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      };
     }>;
     'page:home': OverridableExtensionDefinition<{
       config: {

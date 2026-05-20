@@ -44,6 +44,7 @@ import {
   actionsRegistryServiceMock,
   actionsServiceMock,
   metricsServiceMock,
+  tracingServiceMock,
 } from '../alpha/services';
 import { rootPermissionsRegistryServiceFactory } from '@backstage/backend-defaults/alpha';
 
@@ -96,6 +97,7 @@ export const defaultServiceFactories = [
   actionsServiceMock.factory(),
   metricsServiceMock.factory(),
   rootPermissionsRegistryServiceFactory,
+  tracingServiceMock.factory(),
 ];
 
 /**

@@ -97,6 +97,33 @@ techdocs:
       legacyCopyReadmeMdToIndexMd: false
 ```
 
+#### Disable external fonts
+
+`techdocs.generator.mkdocs.disableExternalFonts`
+
+(Optional) Use this when the generator cannot reach the internet (for example air-gapped or restricted networks). MkDocs Material otherwise tries to download the Roboto font from Google during generation.
+
+When `true`, TechDocs patches each `mkdocs.yml` during generation: if no `theme` section exists it adds `name: material` and `font: false`; if a `theme` exists but `font` is omitted, it sets `font: false`; if `font` is already set in the file, your value is left unchanged.
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    mkdocs:
+      disableExternalFonts: true
+```
+
+Alternatively, configure `mkdocs.yml` manually:
+
+```yaml
+theme:
+  name: material
+  font: false
+```
+
+**Note:** When using `theme.font` in `mkdocs.yml`, `theme.name: material` is required. If `font` is already set in the file, app-config patching does not override it; it only adds `font: false` when `font` was not configured.
+
 #### Default Plugins
 
 `techdocs.generator.mkdocs.defaultPlugins`

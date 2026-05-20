@@ -25,7 +25,6 @@ import { Box } from '../Box';
 import { Link } from '../Link';
 import { RiShapesLine } from '@remixicon/react';
 import { Text } from '../Text';
-import { BgReset } from '../../hooks/useBg';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -53,7 +52,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
   } = ownProps;
 
   const hasTabs = tabs && tabs.length > 0;
-  const headerRef = useRef<HTMLElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | undefined>(undefined);
   const lastAppliedHeightRef = useRef<number | undefined>(undefined);
 
@@ -62,7 +61,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
   }, [customActions]);
 
   useIsomorphicLayoutEffect(() => {
-    const el = headerRef.current;
+    const el = rootRef.current;
     if (!el) {
       return undefined;
     }
@@ -125,50 +124,44 @@ export const PluginHeader = (props: PluginHeaderProps) => {
   const titleText = title || 'Your plugin';
 
   return (
-    <BgReset>
-      <header ref={headerRef} className={classes.root}>
-        <Box bg="neutral" className={classes.toolbar} data-has-tabs={hasTabs}>
-          <div className={classes.toolbarContent}>
-            <Box
-              bg="neutral"
-              className={classes.toolbarIcon}
-              aria-hidden="true"
-            >
-              {icon || <RiShapesLine />}
-            </Box>
-            <h1 className={classes.toolbarName}>
-              {titleLink ? (
-                <Link href={titleLink} standalone variant="body-medium">
-                  {titleText}
-                </Link>
-              ) : (
-                <Text as="span" variant="body-medium">
-                  {titleText}
-                </Text>
-              )}
-            </h1>
-          </div>
-          <div className={classes.toolbarControls}>{actionChildren}</div>
-        </Box>
-        {tabs && (
-          <Box bg="neutral" className={classes.tabs}>
-            <Tabs onSelectionChange={onTabSelectionChange}>
-              <TabList>
-                {tabs?.map(tab => (
-                  <Tab
-                    key={tab.id}
-                    id={tab.id}
-                    href={tab.href}
-                    matchStrategy={tab.matchStrategy}
-                  >
-                    {tab.label}
-                  </Tab>
-                ))}
-              </TabList>
-            </Tabs>
+    <div ref={rootRef} className={classes.root}>
+      <div className={classes.toolbar} data-has-tabs={hasTabs ? '' : undefined}>
+        <div className={classes.toolbarContent}>
+          <Box bg="neutral" className={classes.toolbarIcon} aria-hidden="true">
+            {icon || <RiShapesLine />}
           </Box>
-        )}
-      </header>
-    </BgReset>
+          <h1 className={classes.toolbarName}>
+            {titleLink ? (
+              <Link href={titleLink} standalone variant="body-medium">
+                {titleText}
+              </Link>
+            ) : (
+              <Text as="span" variant="body-medium">
+                {titleText}
+              </Text>
+            )}
+          </h1>
+        </div>
+        <div className={classes.toolbarControls}>{actionChildren}</div>
+      </div>
+      {hasTabs && (
+        <div className={classes.tabs}>
+          <Tabs onSelectionChange={onTabSelectionChange}>
+            <TabList>
+              {tabs?.map(tab => (
+                <Tab
+                  key={tab.id}
+                  id={tab.id}
+                  href={tab.href}
+                  matchStrategy={tab.matchStrategy}
+                >
+                  {tab.label}
+                </Tab>
+              ))}
+            </TabList>
+          </Tabs>
+        </div>
+      )}
+    </div>
   );
 };

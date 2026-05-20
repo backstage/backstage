@@ -25,12 +25,12 @@ import {
 
 jest.setTimeout(60_000);
 
-describe('markForStitching', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  it.each(databases.eachSupportedId())(
-    'marks the right rows in deferred mode %p',
-    async databaseId => {
+describe.each(databases.eachSupportedId())(
+  'markForStitching, %p',
+  databaseId => {
+    it('marks the right rows in deferred mode', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -203,12 +203,9 @@ describe('markForStitching', () => {
       const final = await result();
       const entity4Final = final.find(r => r.entity_ref === 'k:ns/four');
       expect(entity4Final?.stitch_ticket).not.toEqual('old');
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'marks the right rows in immediate mode %p',
-    async databaseId => {
+    it('marks the right rows in immediate mode', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -435,12 +432,9 @@ describe('markForStitching', () => {
       for (let i = 0; i < final.length; ++i) {
         expect(original[i].next_update_at).not.toEqual(final[i].next_update_at);
       }
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'reproduces deadlock scenario when concurrent transactions update overlapping entity sets %p',
-    async databaseId => {
+    it('reproduces deadlock scenario when concurrent transactions update overlapping entity sets', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -567,6 +561,6 @@ describe('markForStitching', () => {
         expect(row.next_stitch_at).not.toBeNull();
         expect(row.stitch_ticket).not.toBeNull();
       });
-    },
-  );
-});
+    });
+  },
+);

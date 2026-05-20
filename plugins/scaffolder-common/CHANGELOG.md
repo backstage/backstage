@@ -1,5 +1,29 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.2.0
+
+### Minor Changes
+
+- 8006acf: Promote the `formDecorators` field on the `Template` spec out of experimental.
+  The previous `EXPERIMENTAL_formDecorators` field continues to work and is
+  kept as a deprecated alias.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-permission-common@0.9.9
+
+## 2.2.0-next.1
+
+### Minor Changes
+
+- 8006acf: Promote the `formDecorators` field on the `Template` spec out of experimental.
+  The previous `EXPERIMENTAL_formDecorators` field continues to work and is
+  kept as a deprecated alias.
+
 ## 2.1.1-next.0
 
 ### Patch Changes

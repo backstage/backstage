@@ -24,9 +24,10 @@ import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 jest.setTimeout(60_000);
 
-describe('TaskScheduler', () => {
+const databases = TestDatabases.create();
+
+describe.each(databases.eachSupportedId())('TaskScheduler, %p', databaseId => {
   const logger = mockServices.logger.mock();
-  const databases = TestDatabases.create();
   const rootLifecycle = mockServices.rootLifecycle.mock();
   const httpRouter = mockServices.httpRouter.mock();
   const pluginMetadata = {
@@ -35,63 +36,57 @@ describe('TaskScheduler', () => {
   const testScopedSignal = createTestScopedSignal();
   const metrics = metricsServiceMock.mock();
 
-  it.each(databases.eachSupportedId())(
-    'can return a working v1 plugin impl, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      const database = mockServices.database({ knex });
+  it('can return a working v1 plugin impl', async () => {
+    const knex = await databases.init(databaseId);
+    const database = mockServices.database({ knex });
 
-      const manager = DefaultSchedulerService.create({
-        database,
-        logger,
-        metrics,
-        rootLifecycle,
-        httpRouter,
-        pluginMetadata,
-      });
-      const fn = jest.fn();
+    const manager = DefaultSchedulerService.create({
+      database,
+      logger,
+      metrics,
+      rootLifecycle,
+      httpRouter,
+      pluginMetadata,
+    });
+    const fn = jest.fn();
 
-      await manager.scheduleTask({
-        id: 'task1',
-        timeout: Duration.fromMillis(5000),
-        frequency: Duration.fromMillis(5000),
-        signal: testScopedSignal(),
-        fn,
-      });
+    await manager.scheduleTask({
+      id: 'task1',
+      timeout: Duration.fromMillis(5000),
+      frequency: Duration.fromMillis(5000),
+      signal: testScopedSignal(),
+      fn,
+    });
 
-      await waitForExpect(() => {
-        expect(fn).toHaveBeenCalled();
-      });
-    },
-  );
+    await waitForExpect(() => {
+      expect(fn).toHaveBeenCalled();
+    });
+  });
 
-  it.each(databases.eachSupportedId())(
-    'can return a working v2 plugin impl, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      const database = mockServices.database({ knex });
+  it('can return a working v2 plugin impl', async () => {
+    const knex = await databases.init(databaseId);
+    const database = mockServices.database({ knex });
 
-      const manager = DefaultSchedulerService.create({
-        database,
-        logger,
-        metrics,
-        rootLifecycle,
-        httpRouter,
-        pluginMetadata,
-      });
-      const fn = jest.fn();
+    const manager = DefaultSchedulerService.create({
+      database,
+      logger,
+      metrics,
+      rootLifecycle,
+      httpRouter,
+      pluginMetadata,
+    });
+    const fn = jest.fn();
 
-      await manager.scheduleTask({
-        id: 'task2',
-        timeout: Duration.fromMillis(5000),
-        frequency: { cron: '* * * * * *' },
-        signal: testScopedSignal(),
-        fn,
-      });
+    await manager.scheduleTask({
+      id: 'task2',
+      timeout: Duration.fromMillis(5000),
+      frequency: { cron: '* * * * * *' },
+      signal: testScopedSignal(),
+      fn,
+    });
 
-      await waitForExpect(() => {
-        expect(fn).toHaveBeenCalled();
-      });
-    },
-  );
+    await waitForExpect(() => {
+      expect(fn).toHaveBeenCalled();
+    });
+  });
 });

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli",
-  "version": "0.36.2-next.0",
+  "version": "0.36.2",
   "description": "CLI for developing Backstage plugins and apps",
   "backstage": {
     "role": "cli"
@@ -94,11 +94,11 @@
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/theme": "workspace:^",
-    "@jest/environment-jsdom-abstract": "^30.0.0",
+    "@jest/environment-jsdom-abstract": "~30.2.0",
     "@types/fs-extra": "^11.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.13.14",
-    "jest": "^30.2.0",
+    "jest": "~30.2.0",
     "jsdom": "^27.1.0",
     "nodemon": "^3.0.1"
   },

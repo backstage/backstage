@@ -21,18 +21,12 @@
     width: 100%;
     border-radius: var(--bui-radius-3);
     padding: var(--bui-space-3);
+  }
 
-    &[data-bg='neutral-1'] {
-      background-color: var(--bui-bg-neutral-1);
-    }
-
-    &[data-bg='neutral-2'] {
-      background-color: var(--bui-bg-neutral-2);
-    }
-
-    &[data-bg='neutral-3'] {
-      background-color: var(--bui-bg-neutral-3);
-    }
+  .bui-Accordion[data-bg='danger'],
+  .bui-Accordion[data-bg='warning'],
+  .bui-Accordion[data-bg='success'] {
+    background-color: transparent;
   }
 
   .bui-AccordionTrigger {

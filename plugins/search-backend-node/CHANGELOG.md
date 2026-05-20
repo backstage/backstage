@@ -1,5 +1,25 @@
 # @backstage/plugin-search-backend-node
 
+## 1.4.4
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/config@1.3.8
+  - @backstage/plugin-search-common@1.2.24
+
+## 1.4.4-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
 ## 1.4.4-next.0
 
 ### Patch Changes

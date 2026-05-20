@@ -126,9 +126,9 @@ Configure page size and available options through `paginationOptions`. The table
 
 ### Search
 
-The `useTable` hook returns a `search` object with `value` and `onChange` properties, ready to connect to a search input. With `mode: 'complete'`, provide a `searchFn` that filters the dataset based on the search query.
+The `useTable` hook returns a `search` object with `value` and `onChange` properties, ready to connect to a search input. With `mode: 'complete'`, provide a `searchFn` that filters the dataset based on the search query. When the search query changes, pagination resets to the first page automatically.
 
-The search state is debounced internally, so rapid typing doesn't trigger excessive re-filtering. When the search query changes, pagination resets to the first page automatically.
+In `complete` mode, set `searchDebounceMs` (and/or `filterDebounceMs`) to defer the filtering pipeline until typing settles — useful for large datasets. Both default to `0` (no debounce). The controlled `search` / `onSearchChange` (and `filter` / `onFilterChange`) surface continues to fire on every change. For `offset` and `cursor` modes, requests are already debounced internally, so these options don't apply.
 
 For server-side search with `offset` or `cursor` modes, the search query is passed to your `getData` function. See [Server-Side Data](#server-side-data).
 

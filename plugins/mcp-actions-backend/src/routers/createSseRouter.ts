@@ -18,6 +18,7 @@ import { Router } from 'express';
 import { McpService } from '../services/McpService';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
+import { TracingService } from '@backstage/backend-plugin-api/alpha';
 import { McpServerConfig } from '../config';
 
 /**
@@ -26,10 +27,12 @@ import { McpServerConfig } from '../config';
 export const createSseRouter = ({
   mcpService,
   httpAuth,
+  tracing,
   serverConfig,
 }: {
   mcpService: McpService;
   httpAuth: HttpAuthService;
+  tracing: TracingService;
   serverConfig?: McpServerConfig;
 }): Router => {
   const router = PromiseRouter();
@@ -65,7 +68,13 @@ export const createSseRouter = ({
 
     const transport = transportsToSessionId.get(sessionId);
     if (transport) {
-      await transport.handlePostMessage(req, res, req.body);
+      const ctx = tracing.propagation.extract(
+        tracing.context.active(),
+        req.headers,
+      );
+      await tracing.context.with(ctx, () =>
+        transport.handlePostMessage(req, res, req.body),
+      );
     } else {
       res
         .status(400)

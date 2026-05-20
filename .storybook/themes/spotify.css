@@ -239,27 +239,3 @@
 
   --bui-ring: rgba(255, 255, 255, 0.2);
 }
-
-/*
- * Plugin header (@backstage/ui) and story shell header — kept at the bottom of
- * this file for easier scanning alongside other component overrides above.
- */
-[data-theme-name='spotify'] {
-  .bui-PluginHeaderToolbar {
-    height: 32px;
-    border: none;
-    background: none;
-    margin-top: var(--bui-space-4);
-  }
-
-  .bui-PluginHeaderTabsWrapper {
-    border: none;
-    background: none;
-    margin-left: 0;
-    margin-top: var(--bui-space-2);
-  }
-
-  .bui-HeaderTop {
-    padding-top: var(--bui-space-4);
-  }
-}

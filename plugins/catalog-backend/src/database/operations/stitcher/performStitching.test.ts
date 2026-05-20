@@ -29,14 +29,15 @@ import { performStitching } from './performStitching';
 
 jest.setTimeout(60_000);
 
-describe('performStitching', () => {
-  const databases = TestDatabases.create();
-  const logger = mockServices.logger.mock();
+const databases = TestDatabases.create();
 
-  // NOTE(freben): Testing the deferred path since it's a superset of the immediate one
-  it.each(databases.eachSupportedId())(
-    'runs the happy path in deferred mode for %p',
-    async databaseId => {
+describe.each(databases.eachSupportedId())(
+  'performStitching, %p',
+  databaseId => {
+    const logger = mockServices.logger.mock();
+
+    // NOTE(freben): Testing the deferred path since it's a superset of the immediate one
+    it('runs the happy path in deferred mode', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -323,12 +324,9 @@ describe('performStitching', () => {
           },
         ]),
       );
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'handles conflicts with past stitches %p',
-    async databaseId => {
+    it('handles conflicts with past stitches', async () => {
       if (databaseId === 'MYSQL_8') {
         // MySQL doesn't handle conflicts in the same way as the other two, most
         // likely due to the conflict probably being handled with a merged even
@@ -391,12 +389,9 @@ describe('performStitching', () => {
         'Skipping stitching of k:ns/n, conflict',
         expect.anything(),
       );
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'stitches when final_entities row already exists %p',
-    async databaseId => {
+    it('stitches when final_entities row already exists', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -444,6 +439,6 @@ describe('performStitching', () => {
       expect(entities.length).toBe(1);
       expect(entities[0].hash).not.toBe('');
       expect(entities[0].final_entity).toBeDefined();
-    },
-  );
-});
+    });
+  },
+);

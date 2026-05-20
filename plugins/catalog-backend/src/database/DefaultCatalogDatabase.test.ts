@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
+import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { DefaultCatalogDatabase } from './DefaultCatalogDatabase';
 import { applyDatabaseMigrations } from './migrations';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
@@ -26,48 +22,46 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 
 jest.setTimeout(60_000);
 
-describe('DefaultCatalogDatabase', () => {
-  const defaultLogger = mockServices.logger.mock();
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  async function createDatabase(
-    databaseId: TestDatabaseId,
-    logger: LoggerService = defaultLogger,
-  ) {
-    const knex = await databases.init(databaseId);
-    await applyDatabaseMigrations(knex);
-    return {
-      knex,
-      db: new DefaultCatalogDatabase({
-        database: knex,
-        logger,
-      }),
-    };
-  }
+describe.each(databases.eachSupportedId())(
+  'DefaultCatalogDatabase, %p',
+  databaseId => {
+    const defaultLogger = mockServices.logger.mock();
 
-  describe('listAncestors', () => {
-    let nextId = 1;
-    function makeEntity(ref: string) {
+    async function createDatabase(logger: LoggerService = defaultLogger) {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
       return {
-        entity_id: String(nextId++),
-        entity_ref: ref,
-        unprocessed_entity: JSON.stringify({
-          kind: 'Location',
-          apiVersion: '1.0.0',
-          metadata: {
-            name: 'xyz',
-          },
+        knex,
+        db: new DefaultCatalogDatabase({
+          database: knex,
+          logger,
         }),
-        errors: '[]',
-        next_update_at: '2019-01-01 23:00:00',
-        last_discovery_at: '2021-04-01 13:37:00',
       };
     }
 
-    it.each(databases.eachSupportedId())(
-      'should return ancestors, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+    describe('listAncestors', () => {
+      let nextId = 1;
+      function makeEntity(ref: string) {
+        return {
+          entity_id: String(nextId++),
+          entity_ref: ref,
+          unprocessed_entity: JSON.stringify({
+            kind: 'Location',
+            apiVersion: '1.0.0',
+            metadata: {
+              name: 'xyz',
+            },
+          }),
+          errors: '[]',
+          next_update_at: '2019-01-01 23:00:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        };
+      }
+
+      it('should return ancestors', async () => {
+        const { knex, db } = await createDatabase();
 
         await knex<DbRefreshStateRow>('refresh_state').insert(
           makeEntity('location:default/root-1'),
@@ -107,7 +101,7 @@ describe('DefaultCatalogDatabase', () => {
           'location:default/root-1',
           'location:default/root-2',
         ]);
-      },
-    );
-  });
-});
+      });
+    });
+  },
+);

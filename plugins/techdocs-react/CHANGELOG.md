@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.3.11
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/core-components@0.18.10
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/config@1.3.8
+
 ## 1.3.11-next.0
 
 ### Patch Changes

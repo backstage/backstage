@@ -75,9 +75,7 @@ export class GitLabIntegration implements ScmIntegration {
   }
 
   private createFetchStrategy(): FetchFunction {
-    let fetchFn: FetchFunction = async (url, options) => {
-      return fetch(url, { ...options, mode: 'same-origin' });
-    };
+    let fetchFn: FetchFunction = (url, options) => fetch(url, options);
 
     const retryConfig = this.integrationConfig.retry;
     if (retryConfig) {
@@ -109,33 +107,80 @@ export class GitLabIntegration implements ScmIntegration {
       return fetchFn;
     }
 
+    // Exponential backoff, cap at 10 seconds
+    const backoffDelay = (a: number) =>
+      Math.min(100 * Math.pow(2, a - 1), 10000);
+
     return async (url, options) => {
       const abortSignal = options?.signal;
-      let response: Response;
       let attempt = 0;
       for (;;) {
-        response = await fetchFn(url, options);
-        // If response is not retryable, return immediately
-        if (!retryStatusCodes.includes(response.status)) {
-          break;
+        let response: Response;
+        try {
+          response = await fetchFn(url, options);
+        } catch (e) {
+          // The caller aborted — surface that immediately rather than retrying.
+          if (abortSignal?.aborted) throw e;
+          // No more attempts left — propagate the network error.
+          if (attempt++ >= maxRetries) throw e;
+          await sleep(backoffDelay(attempt), abortSignal);
+          if (abortSignal?.aborted) throw e;
+          continue;
         }
 
-        // If this was the last allowed attempt, return response
-        if (attempt++ >= maxRetries) {
-          break;
+        // Successful, non-retryable response: return immediately
+        if (!retryStatusCodes.includes(response.status)) {
+          return response;
         }
-        // Determine delay from Retry-After header if present, otherwise exponential backoff
-        const retryAfter = response.headers.get('Retry-After');
-        const delay = retryAfter
-          ? parseInt(retryAfter, 10) * 1000
-          : Math.min(100 * Math.pow(2, attempt - 1), 10000); // Exponential backoff, cap at 10 seconds
+
+        // No more attempts left — return the last (retryable) response.
+        if (attempt++ >= maxRetries) {
+          return response;
+        }
+
+        // Retry-After is either delay-seconds or an HTTP-date (RFC 9110 §10.2.3).
+        const delay = parseRetryAfterMs(
+          response.headers.get('Retry-After'),
+          backoffDelay(attempt),
+        );
+
+        // Release the underlying connection so it can be reused, since we're
+        // about to discard this response in favor of a retry.
+        await response.body?.cancel().catch(() => {});
 
         await sleep(delay, abortSignal);
+        if (abortSignal?.aborted) return response;
       }
-
-      return response;
     };
   }
+}
+
+/** @internal */
+export function parseRetryAfterMs(
+  headerValue: string | null,
+  fallbackMs: number,
+): number {
+  if (!headerValue) {
+    return fallbackMs;
+  }
+
+  // delay-seconds per RFC 9110 is 1*DIGIT
+  if (/^\d+$/.test(headerValue)) {
+    return Number(headerValue) * 1000;
+  }
+
+  // HTTP-dates (IMF-fixdate) always contain a comma, e.g.
+  // "Sun, 06 Nov 1994 08:49:37 GMT" — use that as a prerequisite
+  // to avoid Date.parse interpreting random strings as dates.
+  if (headerValue.includes(',')) {
+    const dateMs = Date.parse(headerValue);
+    if (Number.isFinite(dateMs)) {
+      const deltaMs = dateMs - Date.now();
+      return deltaMs > 0 ? deltaMs : 0;
+    }
+  }
+
+  return fallbackMs;
 }
 
 /** @internal */

@@ -21,12 +21,12 @@ import { DbStitchQueueRow } from '../../tables';
 
 jest.setTimeout(60_000);
 
-describe('markDeferredStitchCompleted', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  it.each(databases.eachSupportedId())(
-    'completes only if unchanged %p',
-    async databaseId => {
+describe.each(databases.eachSupportedId())(
+  'markDeferredStitchCompleted, %p',
+  databaseId => {
+    it('completes only if unchanged', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -68,6 +68,6 @@ describe('markDeferredStitchCompleted', () => {
         stitchTicket: 'the-ticket',
       });
       await expect(result()).resolves.toEqual([]);
-    },
-  );
-});
+    });
+  },
+);

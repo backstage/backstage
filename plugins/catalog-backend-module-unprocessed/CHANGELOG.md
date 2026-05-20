@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.6.12
+
+### Patch Changes
+
+- fa06df6: Added permission authorization checks to the unprocessed entities read endpoints for pending and failed entities.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/plugin-auth-node@0.7.1
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.16
+
+## 0.6.12-next.1
+
+### Patch Changes
+
+- fa06df6: Added permission authorization checks to the unprocessed entities read endpoints for pending and failed entities.
+- Updated dependencies
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.16-next.1
+
 ## 0.6.11-next.0
 
 ### Patch Changes

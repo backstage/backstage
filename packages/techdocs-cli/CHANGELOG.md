@@ -1,5 +1,32 @@
 # @techdocs/cli
 
+## 1.11.0
+
+### Minor Changes
+
+- 329f592: Add support for disabling external font downloads via techdocs-cli `techdocs-cli generate --disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/backend-defaults@0.17.1
+  - @backstage/plugin-techdocs-node@1.15.0
+  - @backstage/cli-common@0.2.2
+  - @backstage/config@1.3.8
+
+## 1.11.0-next.1
+
+### Minor Changes
+
+- 329f592: Add support for disabling external font downloads via techdocs-cli `techdocs-cli generate --disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.15.0-next.1
+
 ## 1.10.8-next.0
 
 ### Patch Changes

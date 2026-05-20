@@ -142,10 +142,10 @@ export const UserSettingsThemeToggle = () => {
             const themeId = theme.id;
             const themeIcon = theme.icon;
             const themeTitle =
-              theme.title ||
-              (themeId === 'light' || themeId === 'dark'
+              themeId === 'light' || themeId === 'dark'
                 ? t(`themeToggle.names.${themeId}`)
-                : themeId);
+                : theme.title || themeId;
+
             return (
               <TooltipToggleButton
                 key={themeId}

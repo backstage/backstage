@@ -1,5 +1,76 @@
 # @backstage/plugin-auth-backend
 
+## 0.29.0
+
+### Minor Changes
+
+- 29d398b: **BREAKING**: Hardened the default allowed patterns for CIMD and DCR to replace the previous permissive `['*']` wildcards with specific defaults for known MCP clients. If you previously relied on the default `['*']` patterns, you will need to explicitly configure the patterns you need in your `app-config.yaml`.
+
+  **CIMD (`experimentalClientIdMetadataDocuments`):**
+
+  - `allowedClientIdPatterns` now defaults to Claude, VS Code, and the built-in Backstage CLI instead of `['*']`
+  - `allowedRedirectUriPatterns` now defaults to loopback addresses (localhost, 127.0.0.1, [::1]) instead of `['*']`
+
+  **DCR (`experimentalDynamicClientRegistration`):**
+
+  - `allowedRedirectUriPatterns` now defaults to Cursor and loopback addresses instead of `['*']`
+
+  If you need to allow additional clients or redirect URIs, you can override these defaults in your `app-config.yaml`:
+
+  ```yaml
+  auth:
+    experimentalClientIdMetadataDocuments:
+      enabled: true
+      allowedClientIdPatterns:
+        - 'https://claude.ai/*'
+        - 'https://vscode.dev/*'
+        - 'https://my-custom-client.example.com/*'
+      allowedRedirectUriPatterns:
+        - 'http://localhost:*'
+        - 'http://127.0.0.1:*'
+        - 'https://my-app.example.com/callback'
+    experimentalDynamicClientRegistration:
+      enabled: true
+      allowedRedirectUriPatterns:
+        - 'cursor://*'
+        - 'http://localhost:*'
+        - 'http://127.0.0.1:*'
+        - 'myapp://*'
+  ```
+
+### Patch Changes
+
+- 9f269d7: Limit the size of fetched client ID metadata documents to prevent oversized responses from being accepted.
+- 3f5e7ec: Improved OIDC error messages to include the rejected redirect URI or client ID, making it easier to debug client registration failures.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- 27f24a9: Refresh token usage now verifies that the user's catalog entity still exists before issuing a new access token. If the user has been removed from the catalog, the refresh is rejected and the session is revoked. Transient catalog errors reject the refresh but preserve the session for retry. This check can be disabled by setting `auth.experimentalRefreshToken.dangerouslyDisableCatalogPresenceCheck` to `true`.
+- 4f62755: Improved the OAuth consent dialog for MCP authorization by showing more client details, including the client metadata host for CIMD clients, the metadata URL, callback URL, and requested scopes.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/plugin-auth-node@0.7.1
+  - @backstage/config@1.3.8
+
+## 0.28.1-next.2
+
+### Patch Changes
+
+- 4f62755: Improved the OAuth consent dialog for MCP authorization by showing more client details, including the client metadata host for CIMD clients, the metadata URL, callback URL, and requested scopes.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.1
+
+## 0.28.1-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/plugin-catalog-node@2.2.1-next.1
+  - @backstage/plugin-auth-node@0.7.1-next.1
+
 ## 0.28.1-next.0
 
 ### Patch Changes

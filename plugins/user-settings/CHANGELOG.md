@@ -1,5 +1,22 @@
 # @backstage/plugin-user-settings
 
+## 0.9.3
+
+### Patch Changes
+
+- 876c99e: Prioritize i18n translation over `theme.title` for built-in light/dark theme names in `UserSettingsThemeToggle`, so that translation overrides are no longer silently ignored.
+- 44d77e9: Removed separate nav item extensions. Sidebar entries are now provided via `title` and `icon` on each plugin's page extension.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/errors@1.3.1
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-catalog-react@3.0.0
+  - @backstage/core-app-api@1.20.1
+  - @backstage/plugin-signals-react@0.0.22
+
 ## 0.9.3-next.0
 
 ### Patch Changes

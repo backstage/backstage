@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Isolate } from 'isolated-vm';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import {
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
-import fs from 'fs-extra';
 import { JsonValue } from '@backstage/types';
+import fs from 'fs-extra';
+import { Isolate } from 'isolated-vm';
 import { getMajorNodeVersion, isNoNodeSnapshotOptionProvided } from './helpers';
 
 // language=JavaScript
@@ -202,8 +202,10 @@ export class SecureTemplater {
     await nunjucksScript.run(context);
 
     const render: SecureTemplateRenderer = (template, values) => {
-      if (!context) {
-        throw new Error('SecureTemplater has not been initialized');
+      if (!context || isolate.isDisposed) {
+        throw new Error(
+          'SecureTemplater has not been initialized or has been disposed',
+        );
       }
 
       contextGlobal.setSync('templateStr', String(template));
@@ -215,6 +217,19 @@ export class SecureTemplater {
 
       return context.evalSync(`render(templateStr, templateValues)`);
     };
-    return render;
+
+    return {
+      render,
+      dispose: () => {
+        if (context && !isolate.isDisposed) {
+          try {
+            context.release();
+            isolate.dispose();
+          } catch (error) {
+            // Ignore errors during dispose, as there's not much we can do about it
+          }
+        }
+      },
+    };
   }
 }

@@ -228,6 +228,14 @@ helps downstream localization.
 - Use (`-`) for unordered lists.
 - Leave a blank line after each list.
 - Indent nested lists with two spaces.
+- Use a numbered list for a sequence of steps rather than prose with
+  "First", "Then", and "Finally". Numbered lists are easier to scan, make
+  the order explicit, and give readers a clear way to reference a specific
+  step.
+
+| Do                                                                 | Don't                                                                           |
+| :----------------------------------------------------------------- | :------------------------------------------------------------------------------ |
+| 1) Install the package. 2) Run the migration. 3) Start the server. | First, install the package. Then, run the migration. Finally, start the server. |
 
 ### Tables
 
@@ -353,7 +361,7 @@ A list of Backstage-specific terms and words to be used consistently across
 the site.
 
 | Term               | Usage                                                                                                                                  |
-| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------- |
 | Backstage          | Always capitalized.                                                                                                                    |
 | plugin             | Lowercase when referring to the concept. Use code style when referring to a specific package, for example `@backstage/plugin-catalog`. |
 | Software Catalog   | Capitalized as a product name. Use "catalog" (lowercase) when referring to the concept generically.                                    |
@@ -362,4 +370,4 @@ the site.
 | Scaffolder         | Capitalized as a product name.                                                                                                         |
 | app-config         | Use code style: `app-config.yaml`.                                                                                                     |
 | open source        | Two words, lowercase (unless starting a sentence).                                                                                     |
-| backend system     | Lowercase when referring to the Backstage backend framework.                                                                           |     |
+| backend system     | Lowercase when referring to the Backstage backend framework.                                                                           |

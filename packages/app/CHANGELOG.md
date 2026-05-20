@@ -1,5 +1,67 @@
 # example-app
 
+## 0.0.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/plugin-notifications@0.5.17
+  - @backstage/plugin-app@0.4.6
+  - @backstage/plugin-scaffolder-react@2.0.0
+  - @backstage/plugin-scaffolder@1.37.0
+  - @backstage/plugin-app-visualizer@0.2.4
+  - @backstage/frontend-app-api@0.16.3
+  - @backstage/plugin-devtools@0.1.39
+  - @backstage/plugin-user-settings@0.9.3
+  - @backstage/plugin-catalog@2.0.5
+  - @backstage/frontend-defaults@0.5.2
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-home@0.9.6
+  - @backstage/plugin-techdocs@1.17.6
+  - @backstage/plugin-api-docs@0.14.1
+  - @backstage/plugin-auth@0.1.8
+  - @backstage/plugin-catalog-graph@0.6.4
+  - @backstage/plugin-catalog-import@0.13.13
+  - @backstage/plugin-catalog-react@3.0.0
+  - @backstage/plugin-org@0.7.4
+  - @backstage/plugin-signals@0.0.31
+  - @backstage/cli@0.36.2
+  - @backstage/core-compat-api@0.5.11
+  - @backstage/plugin-search@1.7.4
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.31
+  - @backstage/plugin-techdocs-react@1.3.11
+  - @backstage/plugin-search-react@1.11.4
+  - @backstage/plugin-app-react@0.2.3
+  - @backstage/plugin-kubernetes@0.12.19
+  - @backstage/plugin-kubernetes-cluster@0.0.37
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.36
+  - @backstage/app-defaults@1.7.8
+  - @backstage/config@1.3.8
+  - @backstage/core-app-api@1.20.1
+  - @backstage/integration-react@1.2.18
+  - @backstage/plugin-auth-react@0.1.27
+  - @backstage/plugin-catalog-common@1.1.10
+  - @backstage/plugin-home-react@0.1.38
+  - @backstage/plugin-permission-react@0.5.1
+  - @backstage/plugin-search-common@1.2.24
+
+## 0.0.35-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.4.6-next.2
+  - @backstage/plugin-scaffolder-react@1.21.0-next.1
+  - @backstage/plugin-scaffolder@1.37.0-next.2
+  - @backstage/plugin-catalog@2.0.5-next.1
+  - @backstage/ui@0.15.0-next.3
+  - @backstage/plugin-auth@0.1.8-next.2
+  - @backstage/plugin-catalog-react@2.1.5-next.1
+
 ## 0.0.35-next.0
 
 ### Patch Changes

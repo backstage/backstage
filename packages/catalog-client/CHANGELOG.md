@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 1.15.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/filter-predicates@0.1.3
+
 ## 1.15.1-next.0
 
 ### Patch Changes

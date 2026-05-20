@@ -1,5 +1,25 @@
 # @backstage/plugin-permission-node
 
+## 0.11.0
+
+### Minor Changes
+
+- 2f0519c: **BREAKING**: Cleaned up the `PolicyQueryUser` type:
+
+  - `token` — **Removed.** Was previously deprecated in favor of `credentials` with `coreServices.auth`.
+  - `expiresInSeconds` — **Removed.** Was previously deprecated.
+  - `identity` — **Removed.** Was previously deprecated in favor of `info`.
+  - `info` — **Deprecated.** Still required and populated for now; will be made optional and then removed in a future release.
+  - `credentials` — Unchanged.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/config@1.3.8
+
 ## 0.10.13-next.0
 
 ### Patch Changes

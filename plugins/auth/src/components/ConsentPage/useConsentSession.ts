@@ -30,13 +30,7 @@ interface Session {
   clientName?: string;
   clientId: string;
   redirectUri: string;
-  scopes?: string[];
-  responseType?: string;
-  state?: string;
-  nonce?: string;
-  codeChallenge?: string;
-  codeChallengeMethod?: string;
-  expiresAt?: string;
+  scope?: string;
 }
 
 type ConsentState =

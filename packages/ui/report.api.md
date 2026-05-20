@@ -10,10 +10,12 @@ import type { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import type { ColumnSize } from 'react-stately';
 import type { ColumnStaticSize } from 'react-stately';
+import type { ComboBoxProps } from 'react-aria-components';
 import type { ComponentProps } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import type { CSSProperties } from 'react';
+import type { DatePickerProps as DatePickerProps_2 } from 'react-aria-components';
 import type { DateRangePickerProps as DateRangePickerProps_2 } from 'react-aria-components';
 import type { DateValue } from '@internationalized/date';
 import type { DialogTriggerProps as DialogTriggerProps_2 } from 'react-aria-components';
@@ -1008,6 +1010,111 @@ export type Columns =
   | '12'
   | 'auto';
 
+// @public
+export const Combobox: ForwardRefExoticComponent<
+  ComboboxProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const ComboboxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Combobox';
+    readonly popover: 'bui-ComboboxPopover';
+  };
+  readonly propDefs: {
+    readonly icon: {};
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly options: {};
+    readonly placeholder: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export const ComboboxInputDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxInput';
+    readonly icon: 'bui-ComboboxInputIcon';
+    readonly input: 'bui-ComboboxInputField';
+    readonly chevron: 'bui-ComboboxInputChevron';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly icon: {};
+    readonly placeholder: {};
+  };
+};
+
+// @public
+export const ComboboxListBoxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxList';
+    readonly noResults: 'bui-ComboboxNoResults';
+  };
+  readonly propDefs: {
+    readonly options: {};
+  };
+};
+
+// @public
+export const ComboboxListBoxItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxItem';
+    readonly indicator: 'bui-ComboboxItemIndicator';
+    readonly label: 'bui-ComboboxItemLabel';
+  };
+  readonly propDefs: {};
+};
+
+// @public (undocumented)
+export type ComboboxOwnProps = {
+  icon?: ReactNode;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  options?: Array<Option_2 | OptionSection>;
+  placeholder?: string;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: boolean;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface ComboboxProps
+  extends ComboboxOwnProps,
+    Omit<ComboBoxProps<Option_2>, keyof ComboboxOwnProps> {}
+
+// @public
+export const ComboboxSectionDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxSection';
+    readonly header: 'bui-ComboboxSectionHeader';
+  };
+  readonly propDefs: {};
+};
+
 // @public (undocumented)
 export interface CompletePaginationOptions extends PaginationOptions {
   // (undocumented)
@@ -1104,6 +1211,79 @@ export interface CursorResponse<T> {
   // (undocumented)
   totalCount?: number;
 }
+
+// @public
+export const DatePicker: ForwardRefExoticComponent<
+  DatePickerProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const DatePickerCalendarDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePickerCalendar';
+    readonly header: 'bui-DatePickerCalendarHeader';
+    readonly heading: 'bui-DatePickerCalendarHeading';
+    readonly navButton: 'bui-DatePickerCalendarNavButton';
+    readonly grid: 'bui-DatePickerCalendarGrid';
+    readonly gridHeader: 'bui-DatePickerCalendarGridHeader';
+    readonly headerCell: 'bui-DatePickerCalendarHeaderCell';
+    readonly gridBody: 'bui-DatePickerCalendarGridBody';
+    readonly cell: 'bui-DatePickerCalendarCell';
+  };
+  readonly propDefs: {};
+};
+
+// @public
+export const DatePickerDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePicker';
+  };
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
+  };
+};
+
+// @public
+export const DatePickerGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePickerGroup';
+    readonly dateInput: 'bui-DatePickerDateInput';
+    readonly segment: 'bui-DatePickerSegment';
+    readonly button: 'bui-DatePickerButton';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {};
+};
+
+// @public (undocumented)
+export type DatePickerOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  className?: string;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+};
+
+// @public (undocumented)
+export interface DatePickerProps
+  extends Omit<DatePickerProps_2<DateValue>, 'className' | 'children'>,
+    DatePickerOwnProps {}
 
 // @public
 export const DateRangePicker: ForwardRefExoticComponent<
@@ -2182,6 +2362,12 @@ type Option_2 = {
 export { Option_2 as Option };
 
 // @public (undocumented)
+export type OptionSection = {
+  title: string;
+  options: Option_2[];
+};
+
+// @public (undocumented)
 export interface PaddingProps {
   // (undocumented)
   p?: Responsive<Space>;
@@ -2249,6 +2435,7 @@ export const PasswordFieldDefinition: {
     readonly inputIcon: 'bui-PasswordFieldIcon';
     readonly inputVisibility: 'bui-PasswordFieldVisibility';
   };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -2667,7 +2854,7 @@ export const SelectDefinition: {
 export type SelectOwnProps = {
   icon?: ReactNode;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  options?: Array<Option_2>;
+  options?: Array<Option_2 | OptionSection>;
   searchable?: boolean;
   searchPlaceholder?: string;
   label?: FieldLabelProps['label'];
@@ -3457,6 +3644,8 @@ export type UseTableCompleteOptions<
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
   filterFn?: (data: T[], filter: TFilter) => T[];
   searchFn?: (data: T[], search: string) => T[];
+  searchDebounceMs?: number;
+  filterDebounceMs?: number;
 } & (
     | {
         data: T[] | undefined;

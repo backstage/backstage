@@ -1,5 +1,28 @@
 # @backstage/frontend-defaults
 
+## 0.5.2
+
+### Patch Changes
+
+- 482cc59: Invalid feature flag declarations are now treated as warnings rather than errors, letting the app load normally.
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/errors@1.3.1
+  - @backstage/plugin-app@0.4.6
+  - @backstage/frontend-app-api@0.16.3
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/config@1.3.8
+
+## 0.5.2-next.1
+
+### Patch Changes
+
+- 482cc59: Invalid feature flag declarations are now treated as warnings rather than errors, letting the app load normally.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/frontend-app-api@0.16.3-next.1
+  - @backstage/plugin-app@0.4.6-next.1
+
 ## 0.5.2-next.0
 
 ### Patch Changes

@@ -14,11 +14,46 @@
  * limitations under the License.
  */
 
+export type {
+  Entity,
+  EntityLink,
+  EntityMeta,
+  EntityRelation,
+} from './entity/Entity';
+export type { KindValidator } from './kinds/types';
 export type { AlphaEntity } from './entity/AlphaEntity';
 export type {
   EntityStatus,
   EntityStatusItem,
   EntityStatusLevel,
 } from './entity/EntityStatus';
+export type {
+  AiResourceEntityV1alpha1,
+  AiResourceEntityV1alpha1Default,
+  SkillAiResourceEntityV1alpha1,
+  RuleAiResourceEntityV1alpha1,
+} from './kinds/AiResourceEntityV1alpha1';
+export {
+  aiResourceEntityV1alpha1Validator,
+  skillAiResourceEntityV1alpha1Validator,
+  ruleAiResourceEntityV1alpha1Validator,
+  isAiResourceEntity,
+  isSkillAiResourceEntity,
+  isRuleAiResourceEntity,
+  aiResourceEntityModel,
+} from './kinds/AiResourceEntityV1alpha1';
+export type {
+  ApiEntityV1alpha1 as ApiEntity,
+  ApiEntityV1alpha1,
+} from './kinds/ApiEntityV1alpha1';
+export type {
+  McpServerApiEntity,
+  McpServerRemote,
+} from './kinds/McpServerApiEntity';
+export {
+  mcpServerApiEntityValidator,
+  isMcpServerApiEntity,
+  mcpServerApiEntityModel,
+} from './kinds/McpServerApiEntity';
 export * from './model';
 export { defaultCatalogEntityModel } from './model/defaultCatalogEntityModel';

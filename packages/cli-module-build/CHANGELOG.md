@@ -1,5 +1,20 @@
 # @backstage/cli-module-build
 
+## 0.1.3
+
+### Patch Changes
+
+- ed4ee6f: Fixed config path resolution for the embedded-postgres database client detection to resolve paths relative to the target package directory rather than the workspace root.
+- be7e4eb: The embedded Postgres database used during local development now respects user-provided connection configuration. If you configure `host`, `port`, `user`, or `password` under `backend.database.connection` alongside the `embedded-postgres` database client, those values will be forwarded to the embedded Postgres instance. Only values that you have not configured will be filled in with defaults. This makes it possible to run the embedded database on a specific host and port, for example to connect to it externally with `psql`.
+- 41070b8: Upgraded `@module-federation/enhanced`, `@module-federation/runtime`, and `@module-federation/sdk` from `^0.21.6` to `^2.3.3` to address known vulnerabilities.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/cli-node@0.3.2
+  - @backstage/module-federation-common@0.1.4
+  - @backstage/cli-common@0.2.2
+  - @backstage/config@1.3.8
+  - @backstage/config-loader@1.10.11
+
 ## 0.1.3-next.0
 
 ### Patch Changes

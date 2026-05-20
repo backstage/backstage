@@ -290,17 +290,6 @@ describe('createRouter', () => {
           },
         },
         {
-          token: mockCredentials.service.token({
-            onBehalfOf: mockCredentials.user(),
-            targetPluginId: 'catalog',
-          }),
-          identity: {
-            type: 'user',
-            userEntityRef: mockCredentials.user().principal.userEntityRef,
-            ownershipEntityRefs: [
-              mockCredentials.user().principal.userEntityRef,
-            ],
-          },
           info: {
             userEntityRef: mockCredentials.user().principal.userEntityRef,
             ownershipEntityRefs: [
@@ -617,7 +606,7 @@ describe('POST /authorize/by-name', () => {
     });
     expect(policy.handle).toHaveBeenCalledWith(
       { permission },
-      expect.objectContaining({ identity: expect.any(Object) }),
+      expect.objectContaining({ credentials: expect.any(Object) }),
     );
   });
 

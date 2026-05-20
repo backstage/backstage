@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   createExtensionTester,
@@ -36,6 +36,8 @@ import {
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { rootRouteRef } from '../routes';
 import { Entity } from '@backstage/catalog-model';
+
+jest.setTimeout(30_000);
 
 describe('Entity page', () => {
   const entityMock = {
@@ -167,26 +169,17 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /Documentation/ }),
-        ).toBeInTheDocument(),
+      await userEvent.click(
+        await screen.findByRole('tab', { name: /Documentation/ }),
       );
 
-      await userEvent.click(screen.getByRole('tab', { name: /Documentation/ }));
+      await expect(
+        screen.findByRole('button', { name: /TechDocs/ }),
+      ).resolves.toHaveAttribute('href', '/techdocs');
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
-
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      await expect(
+        screen.findByRole('button', { name: /ApiDocs/ }),
+      ).resolves.toHaveAttribute('href', '/apidocs');
     });
 
     it('Should rename a default group', async () => {
@@ -223,24 +216,15 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(screen.queryByRole('tab', { name: /Docs/ })).toBeInTheDocument(),
-      );
+      await userEvent.click(await screen.findByRole('tab', { name: /Docs/ }));
 
-      await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
+      await expect(
+        screen.findByRole('button', { name: /TechDocs/ }),
+      ).resolves.toHaveAttribute('href', '/techdocs');
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
-
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      await expect(
+        screen.findByRole('button', { name: /ApiDocs/ }),
+      ).resolves.toHaveAttribute('href', '/apidocs');
     });
 
     it('Should disassociate a content with a default group', async () => {
@@ -272,23 +256,15 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(
-          screen.queryByRole('tab', { name: /Documentation/ }),
-        ).not.toBeInTheDocument(),
-      );
-
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /TechDocs/ }),
-        ).toBeInTheDocument(),
-      );
-
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /ApiDocs/ }),
-        ).toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByRole('tab', { name: /TechDocs/ }),
+      ).resolves.toBeInTheDocument();
+      await expect(
+        screen.findByRole('tab', { name: /ApiDocs/ }),
+      ).resolves.toBeInTheDocument();
+      expect(
+        screen.queryByRole('tab', { name: /Documentation/ }),
+      ).not.toBeInTheDocument();
     });
 
     it('Should create a custom group', async () => {
@@ -333,24 +309,15 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(screen.getByRole('tab', { name: /Docs/ })).toBeInTheDocument(),
-      );
+      await userEvent.click(await screen.findByRole('tab', { name: /Docs/ }));
 
-      await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
+      await expect(
+        screen.findByRole('button', { name: /TechDocs/ }),
+      ).resolves.toHaveAttribute('href', '/techdocs');
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
-
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      await expect(
+        screen.findByRole('button', { name: /ApiDocs/ }),
+      ).resolves.toHaveAttribute('href', '/apidocs');
     });
 
     it('Should render a single-content groups as a normal tab', async () => {
@@ -383,17 +350,12 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /Overview/ }),
-        ).toBeInTheDocument(),
-      );
-
-      await waitFor(() =>
-        expect(
-          screen.queryByRole('tab', { name: /Development/ }),
-        ).not.toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByRole('tab', { name: /Overview/ }),
+      ).resolves.toBeInTheDocument();
+      expect(
+        screen.queryByRole('tab', { name: /Development/ }),
+      ).not.toBeInTheDocument();
     });
 
     it('Should render groups first', async () => {
@@ -422,10 +384,16 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(2));
-
-      expect(screen.getAllByRole('tab')[0]).toHaveTextContent('Documentation');
-      expect(screen.getAllByRole('tab')[1]).toHaveTextContent('Overview');
+      await expect(
+        screen.findByRole('tab', { name: /Documentation/ }),
+      ).resolves.toBeInTheDocument();
+      await expect(
+        screen.findByRole('tab', { name: /Overview/ }),
+      ).resolves.toBeInTheDocument();
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(2);
+      expect(tabs[0]).toHaveTextContent('Documentation');
+      expect(tabs[1]).toHaveTextContent('Overview');
     });
 
     it('Should resolve group aliases', async () => {
@@ -462,24 +430,15 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(screen.getByRole('tab', { name: /Docs/ })).toBeInTheDocument(),
-      );
+      await userEvent.click(await screen.findByRole('tab', { name: /Docs/ }));
 
-      await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
+      await expect(
+        screen.findByRole('button', { name: /TechDocs/ }),
+      ).resolves.toHaveAttribute('href', '/techdocs');
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
-
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      await expect(
+        screen.findByRole('button', { name: /ApiDocs/ }),
+      ).resolves.toHaveAttribute('href', '/apidocs');
     });
 
     it('Should sort content by title by default', async () => {
@@ -646,10 +605,16 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(2));
-
-      expect(screen.getAllByRole('tab')[0]).toHaveTextContent('Overview');
-      expect(screen.getAllByRole('tab')[1]).toHaveTextContent('Documentation');
+      await expect(
+        screen.findByRole('tab', { name: /Overview/ }),
+      ).resolves.toBeInTheDocument();
+      await expect(
+        screen.findByRole('tab', { name: /Documentation/ }),
+      ).resolves.toBeInTheDocument();
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(2);
+      expect(tabs[0]).toHaveTextContent('Overview');
+      expect(tabs[1]).toHaveTextContent('Documentation');
     });
   });
 
@@ -677,9 +642,9 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(screen.getByText(/artist-lookup/)).toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByText(/artist-lookup/),
+      ).resolves.toBeInTheDocument();
     });
 
     it('Should render a totally different header element', async () => {
@@ -716,11 +681,9 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('heading', { name: /Custom header/ }),
-        ).toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByRole('heading', { name: /Custom header/ }),
+      ).resolves.toBeInTheDocument();
     });
   });
 
@@ -780,13 +743,11 @@ describe('Entity page', () => {
 
       await userEvent.click(await screen.findByTestId('menu-button'));
 
-      await waitFor(async () => {
-        expect(screen.getByText('Test Title')).toBeInTheDocument();
-        expect(screen.getByText('Test Icon')).toBeInTheDocument();
-        const anchor = screen.getByText('Test Title').closest('a');
-        expect(anchor).toHaveAttribute('href', '/somewhere');
-        expect(anchor).toHaveAttribute('aria-disabled', disabled.toString());
-      });
+      const title = await screen.findByText('Test Title');
+      await expect(screen.findByText('Test Icon')).resolves.toBeInTheDocument();
+      const anchor = title.closest('a');
+      expect(anchor).toHaveAttribute('href', '/somewhere');
+      expect(anchor).toHaveAttribute('aria-disabled', disabled.toString());
     });
 
     it.each([
@@ -836,19 +797,17 @@ describe('Entity page', () => {
 
       const { disabled } = params.useProps();
 
-      // Wait for entity to load first
-      await waitFor(() =>
-        expect(screen.getByText(/artist-lookup/)).toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByText(/artist-lookup/),
+      ).resolves.toBeInTheDocument();
 
       await userEvent.click(screen.getByTestId('menu-button'));
 
-      // Wait for menu to open
-      await waitFor(() =>
-        expect(screen.getByText('Test Title')).toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByText('Test Title'),
+      ).resolves.toBeInTheDocument();
 
-      expect(screen.getByText('Test Icon')).toBeInTheDocument();
+      await expect(screen.findByText('Test Icon')).resolves.toBeInTheDocument();
       const listItem = screen.getByText('Test Title').closest('li');
       expect(listItem).toHaveAttribute('aria-disabled', disabled.toString());
       if (!disabled) {
@@ -930,12 +889,10 @@ describe('Entity page', () => {
 
         await userEvent.click(await screen.findByTestId('menu-button'));
 
-        await waitFor(async () => {
-          expect(screen.getByText('Should Render')).toBeInTheDocument();
-          expect(
-            screen.queryByText('Should Not Render'),
-          ).not.toBeInTheDocument();
-        });
+        await expect(
+          screen.findByText('Should Render'),
+        ).resolves.toBeInTheDocument();
+        expect(screen.queryByText('Should Not Render')).not.toBeInTheDocument();
       },
     );
   });

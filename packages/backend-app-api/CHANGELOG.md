@@ -1,5 +1,18 @@
 # @backstage/backend-app-api
 
+## 1.7.0
+
+### Minor Changes
+
+- 3595c97: Added `ExtensionPointFactoryMiddleware` type and `createExtensionPointFactoryMiddleware` helper to reimplement extension point outputs at backend creation time.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/config@1.3.8
+
 ## 1.7.0-next.0
 
 ### Minor Changes

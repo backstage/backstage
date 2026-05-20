@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import {
   Content,
@@ -37,9 +37,12 @@ import {
   TemplateCategoryPicker,
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import { createGroupsWithOther } from '../lib/createGroupsWithOther';
 import {
   FieldExtensionOptions,
+  FormProps,
   SecretsContextProvider,
+  TemplateGroupFilter,
   useCustomFieldExtensions,
   useCustomLayouts,
 } from '@backstage/plugin-scaffolder-react';
@@ -62,7 +65,11 @@ import {
   TECHDOCS_EXTERNAL_ANNOTATION,
 } from '@backstage/plugin-techdocs-common';
 
-function TemplateListContent() {
+function TemplateListContent({
+  groups: configuredGroups,
+}: {
+  groups?: TemplateGroupFilter[];
+}) {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
@@ -70,12 +77,21 @@ function TemplateListContent() {
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  const groups = [
-    {
-      title: t('templateListPage.templateGroups.defaultTitle'),
-      filter: () => true,
-    },
-  ];
+  const groups = useMemo(
+    () =>
+      configuredGroups?.length
+        ? createGroupsWithOther(
+            configuredGroups,
+            t('templateListPage.templateGroups.otherTitle'),
+          )
+        : [
+            {
+              title: t('templateListPage.templateGroups.defaultTitle'),
+              filter: () => true,
+            },
+          ],
+    [configuredGroups, t],
+  );
 
   const additionalLinksForEntity = useCallback(
     (template: TemplateEntityV1beta3) => {
@@ -159,7 +175,11 @@ function TemplateListContent() {
  *
  * @internal
  */
-export function TemplatesSubPage(props: { formFields?: Array<FormField> }) {
+export function TemplatesSubPage(props: {
+  formFields?: Array<FormField>;
+  formProps?: FormProps;
+  groups?: TemplateGroupFilter[];
+}) {
   const customFieldExtensions = useCustomFieldExtensions(undefined);
   const customLayouts = useCustomLayouts(undefined);
 
@@ -177,7 +197,7 @@ export function TemplatesSubPage(props: { formFields?: Array<FormField> }) {
 
   return (
     <Routes>
-      <Route index element={<TemplateListContent />} />
+      <Route index element={<TemplateListContent groups={props.groups} />} />
       <Route
         path=":namespace/:templateName"
         element={
@@ -185,6 +205,7 @@ export function TemplatesSubPage(props: { formFields?: Array<FormField> }) {
             <TemplateWizardPageContent
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
+              formProps={props.formProps}
             />
           </SecretsContextProvider>
         }

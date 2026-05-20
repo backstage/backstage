@@ -78,6 +78,7 @@ export namespace mockCredentials {
   export function none(): BackstageCredentials<BackstageNonePrincipal> {
     const result = {
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: { type: 'none' },
     } as const;
     Object.defineProperties(result, {
@@ -122,6 +123,7 @@ export namespace mockCredentials {
     validateUserEntityRef(userEntityRef);
     const result = {
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: {
         type: 'user',
         userEntityRef,
@@ -142,7 +144,10 @@ export namespace mockCredentials {
       token: {
         enumerable: false,
         configurable: true,
-        value: user.token(),
+        value:
+          userEntityRef !== DEFAULT_MOCK_USER_ENTITY_REF || options?.actor
+            ? user.token(userEntityRef, options)
+            : user.token(),
       },
     });
     return result;
@@ -250,6 +255,7 @@ export namespace mockCredentials {
   ): BackstageCredentials<BackstageServicePrincipal> {
     const result = {
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: {
         type: 'service',
         subject,

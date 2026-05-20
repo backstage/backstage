@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.0.50-next.0",
+  "version": "0.0.50",
   "backstage": {
     "role": "backend"
   },
@@ -40,6 +40,7 @@
     "@backstage/plugin-auth-backend-module-openshift-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-ai-model": "workspace:^",
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^",
     "@backstage/plugin-catalog-backend-module-logs": "workspace:^",
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^",

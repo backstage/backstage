@@ -22,6 +22,7 @@ import { Config, ConfigReader } from '@backstage/config';
 import {
   fromNodeProviderChain,
   fromTemporaryCredentials,
+  fromTokenFile,
 } from '@aws-sdk/credential-providers';
 import { join } from 'node:path';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
@@ -38,6 +39,7 @@ jest.mock('@aws-sdk/credential-providers', () => {
     ...originalModule,
     fromNodeProviderChain: jest.fn(),
     fromTemporaryCredentials: jest.fn(),
+    fromTokenFile: jest.fn(),
   };
 });
 
@@ -553,6 +555,77 @@ describe('DefaultAwsCredentialsManager', () => {
       await provider.getCredentialProvider({ accountId: '123456789012' });
 
       expect(await stsMock.call(0).thisValue.config.region()).toEqual(region);
+    });
+
+    it('uses fromTokenFile when webIdentityTokenFile is set per-account with a roleName', async () => {
+      const wifCreds = {
+        accessKeyId: 'WIF_KEY',
+        secretAccessKey: 'WIF_SECRET',
+        sessionToken: 'WIF_SESSION',
+        expiration: new Date('2026-06-01'),
+      };
+      (fromTokenFile as jest.Mock).mockReturnValue(async () => wifCreds);
+
+      const wifConfig = new ConfigReader({
+        aws: {
+          accounts: [
+            {
+              accountId: '111111111111',
+              roleName: 'PortalRole',
+              webIdentityTokenFile: '/var/run/aws/token',
+              region: 'eu-west-1',
+            },
+          ],
+        },
+      });
+      const provider = DefaultAwsCredentialsManager.fromConfig(wifConfig);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '111111111111',
+      });
+
+      expect(fromTokenFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          webIdentityTokenFile: '/var/run/aws/token',
+          roleArn: 'arn:aws:iam::111111111111:role/PortalRole',
+          roleSessionName: 'backstage',
+          clientConfig: expect.objectContaining({ region: 'eu-west-1' }),
+        }),
+      );
+      expect(fromTemporaryCredentials).not.toHaveBeenCalled();
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual(wifCreds);
+
+      const awsCredentialProvider2 = await provider.getCredentialProvider({
+        accountId: '111111111111',
+      });
+      expect(awsCredentialProvider).toBe(awsCredentialProvider2);
+    });
+
+    it('inherits webIdentityTokenFile from accountDefaults for on-demand registrations', async () => {
+      const wifConfig = new ConfigReader({
+        aws: {
+          accountDefaults: {
+            roleName: 'DefaultRole',
+            webIdentityTokenFile: '/var/run/aws/default-token',
+          },
+        },
+      });
+      const provider = DefaultAwsCredentialsManager.fromConfig(wifConfig);
+      await provider.getCredentialProvider({ accountId: '999999999999' });
+
+      expect(fromTokenFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          webIdentityTokenFile: '/var/run/aws/default-token',
+          roleArn: 'arn:aws:iam::999999999999:role/DefaultRole',
+        }),
+      );
+    });
+
+    it('does not call fromTokenFile when webIdentityTokenFile is unset, even with roleName', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      await provider.getCredentialProvider({ accountId: '111111111111' });
+      expect(fromTokenFile).not.toHaveBeenCalled();
     });
   });
 });

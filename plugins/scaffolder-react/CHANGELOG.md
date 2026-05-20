@@ -1,5 +1,88 @@
 # @backstage/plugin-scaffolder-react
 
+## 2.0.0
+
+### Minor Changes
+
+- dbeb7aa: Added experimental BUI (Backstage UI) form theme for scaffolder forms. All default field extensions render BUI variants when enabled.
+
+  **Extension config:**
+
+  ```yaml
+  app:
+    extensions:
+      - sub-page:scaffolder/templates:
+          config:
+            enableBackstageUi: true
+  ```
+
+  **JSX props:**
+
+  ```tsx
+  <ScaffolderPage formProps={{ EXPERIMENTAL_theme: 'bui' }} />
+  ```
+
+- 8006acf: Promoted `FormDecoratorBlueprint` and `ScaffolderFormDecorator` from `@alpha`
+  to `@public`.
+- d09c21c: The `TemplateCard` component is now a swappable component. Apps using the new
+  frontend system can replace it by registering a `SwappableComponentBlueprint`
+  that targets `TemplateCard`. Components used as the swappable implementation
+  receive `TemplateCardComponentProps`, where `onSelected` is a zero-argument
+  callback bound to the rendered template. Existing usage continues to work
+  unchanged.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/frontend-test-utils@0.6.0
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-catalog-react@3.0.0
+  - @backstage/plugin-scaffolder-common@2.2.0
+  - @backstage/catalog-client@1.15.1
+  - @backstage/plugin-permission-react@0.5.1
+
+## 1.21.0-next.1
+
+### Minor Changes
+
+- dbeb7aa: Added experimental BUI (Backstage UI) form theme for scaffolder forms. All default field extensions render BUI variants when enabled.
+
+  **Extension config:**
+
+  ```yaml
+  app:
+    extensions:
+      - sub-page:scaffolder/templates:
+          config:
+            enableBackstageUi: true
+  ```
+
+  **JSX props:**
+
+  ```tsx
+  <ScaffolderPage formProps={{ EXPERIMENTAL_theme: 'bui' }} />
+  ```
+
+- 8006acf: Promoted `FormDecoratorBlueprint` and `ScaffolderFormDecorator` from `@alpha`
+  to `@public`.
+- d09c21c: The `TemplateCard` component is now a swappable component. Apps using the new
+  frontend system can replace it by registering a `SwappableComponentBlueprint`
+  that targets `TemplateCard`. Components used as the swappable implementation
+  receive `TemplateCardComponentProps`, where `onSelected` is a zero-argument
+  callback bound to the rendered template. Existing usage continues to work
+  unchanged.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.3
+  - @backstage/plugin-scaffolder-common@2.2.0-next.1
+  - @backstage/plugin-catalog-react@2.1.5-next.1
+
 ## 1.20.2-next.0
 
 ### Patch Changes
