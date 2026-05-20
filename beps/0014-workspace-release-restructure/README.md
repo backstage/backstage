@@ -23,7 +23,7 @@ creation-date: 2026-05-18
   - [Staged changes](#staged-changes)
   - [Mainline and next releases from the same branch](#mainline-and-next-releases-from-the-same-branch)
   - [Major releases via the Promote PR](#major-releases-via-the-promote-pr)
-  - [Back-ported fixes](#back-ported-fixes)
+  - [Patch releases](#patch-releases)
 - [Design Details](#design-details)
   - [Repository layout](#repository-layout)
   - [Staged change file format](#staged-change-file-format)
@@ -67,6 +67,10 @@ The net effect is that small fixes and additive features ship faster, breaking c
 are durable, reviewable artifacts that cannot drift, and the core framework can move on
 a slower, more predictable release cadence without holding back the rest of the
 ecosystem.
+
+The existing patch-release flow is kept mostly as-is, adapted to multiple
+workspaces. See [Patch releases](#patch-releases) for the details that touch the
+workspace structure.
 
 ## Motivation
 
@@ -115,9 +119,6 @@ cleanly, which is what the patch mechanism is designed to solve.
   breaking patches, while `latest` releases remain non-breaking.
 - Move the core framework onto a slower, predictable release cadence with a clear,
   human-readable version label.
-- Replace the existing stable-line patch flow (top-level `.patches/` with a long-lived
-  `patch-release` branch) with an inverse-of-staging design that authors back-ported
-  fixes as structured artifacts in `main` and ships them without a separate branch.
 - Preserve the current security boundary: package publishing continues to happen from a
   separate, private repository, never from `backstage/backstage` itself.
 - Share the underlying tooling with `backstage/community-plugins` and with any other
@@ -163,8 +164,7 @@ Each workspace:
 - Has its own `package.json`, `yarn.lock`, and `tsconfig.json`.
 - Has its own `.changeset/` directory and `changeset` configuration.
 - Has its own `.staged/` directory of pending breaking changes (see
-  [Staged changes](#staged-changes)) and `.fix/` directory of pending back-ported
-  fixes (see [Back-ported fixes](#back-ported-fixes)).
+  [Staged changes](#staged-changes)).
 - Is independently releasable and has an independent version line per package.
 
 No packages live at the repository root once the migration is complete. The root is
@@ -286,9 +286,8 @@ is not a Backstage CLI module, and it does not follow the standard Backstage
 monorepo layout. See [Repository tooling](#repository-tooling) for the full
 constraints and the rationale.
 
-- The published standalone CLI for managing workspaces, staged changes, back-ported
-  fixes, and `@next` version computation. The package name is left to
-  implementation.
+- The published standalone CLI for managing workspaces, staged changes, and
+  `@next` version computation. The package name is left to implementation.
 - Additional in-repo-only entrypoints used by this repository's workflows (the
   Promote PR builder, the manifest updater, the OIDC dispatch helper, etc.). These
   may be co-located in the same package or in private packages within the
@@ -589,208 +588,33 @@ force-push does not carry over to the post-force-push branch. This is the standa
 branch-protection setting Backstage already uses elsewhere; we just want to make
 sure it stays on.
 
-### Back-ported fixes
+### Patch releases
 
-A **back-ported fix** is a fix authored in `main` that applies to a past release
-line. Like a staged change, it is a structured artifact in `main` rather than an
-ad-hoc cherry-pick — but unlike a staged change, it ships through a long-lived
-release branch and a `Patch release` PR, not by being merged into `main` directly.
+The existing patch-release flow stays mostly as it is today, adapted to multiple
+workspaces. The exact tooling is evolving in parallel to this BEP and the details
+are out of scope here. The parts that touch the workspace structure are:
 
-This extends — rather than replaces — the repository's existing patch-release flow.
-The shape of the published artifact (a `Patch release (<line>)` PR that a
-maintainer reviews and merges) is preserved. What changes is the authoring side:
-where today fixes are cherry-picked into the patch-release branch via an
-`.patches/pr-<number>.txt` reference file, they now live as structured `.fix/`
-entries in `main` and the workflow applies them onto the appropriate release
-branch automatically. The old `.patches/` reference-file mechanism goes away.
+- **Branch naming.** Patch branches use the prefix `patch/`, followed by either
+  the framework workspace and release identifier (e.g. `patch/framework/2604`)
+  or a workspace and package major-version line
+  (e.g. `patch/catalog/@backstage/plugin-catalog@2`).
+- **Branch protection.** Every `patch/**` branch is protected with the same shape
+  as `main`: required reviews, CODEOWNERS-restricted push, all required status
+  checks. The published source of an old release line cannot be retroactively
+  rewritten.
+- **Eligibility.** Back-ports are only accepted for packages at `1.0.0` or above.
+  Packages still in the `0.x` range ride the mainline flow; their adopters
+  upgrade to the current published version rather than pin to a back-ported
+  line. The semver semantics of `0.x` ("anything can change") do not match a
+  multi-line support model.
 
-#### Concept
-
-A back-ported fix lives under each workspace as a single markdown file in `.fix/`,
-using the same file format as a staged change (see
-[Staged change file format](#staged-change-file-format)). The only differences are:
-
-- The bumps are always `patch` (or `minor` for `0.x` packages, matching the
-  Backstage convention).
-- The target is **implicit**: it is derived from the package(s) listed in the
-  `packages` front-matter key, not from a separate `target:` field.
-
-```
-workspaces/framework/.fix/
-  001-handle-missing-config.md
-```
-
-```markdown
----
-packages:
-  '@backstage/core-plugin-api@2604': patch
-relatedPrs: [12345]
----
-
-Fix crash when the runtime config is missing.
-
-​`patch
-diff --git a/...
-​`
-```
-
-The `@<line-or-major>` suffix on the package key in `packages` is what makes the
-target implicit. The general rule is:
-
-- **`'<package>'`** (no suffix): patch the highest currently-published major of
-  that package. Use this when the fix targets the current `@latest` release line.
-- **`'<package>@<major>'`**: patch the named major-version line of the package.
-  Use this for back-ports to older majors that are still supported.
-- **`'<framework-package>@<YYNN>'`**: patch the named framework release line.
-  Mechanically this is the same as the previous case, since framework packages
-  use their release identifier as their semver major.
-
-Listing more than one package in `packages` is allowed when the same patch needs
-to bump several packages at the same source commit. For a framework back-port that
-needs to update multiple framework packages, listing one is enough — the workflow
-applies the patch at the release line's commit and bumps every package the patch
-touches at that commit.
-
-#### Release branches
-
-Each maintained release line has a long-lived branch in `backstage/backstage`:
-
-- Framework lines: `patch-release/framework/<YYNN>` — for example
-  `patch-release/framework/2604`.
-- Non-framework lines: `patch-release/<workspace>/<package>@<major>` — for example
-  `patch-release/catalog/@backstage/plugin-catalog@2`.
-
-This keeps the existing `patch-release` branch-name prefix the repository already
-uses for the patch-release flow, just with per-workspace and per-line suffixes.
-
-These branches are not where day-to-day development happens. They exist solely as
-the apply target for back-ported fixes and as the source for patch releases. Each
-branch's HEAD always reflects the current published state of its release line:
-right after a publish, HEAD points at the commit whose source tree matches the
-just-published package versions.
-
-When a release line is closed (for example when framework `2604` is superseded by
-`2605` and we no longer support back-ports to `2604`), its release branch is left
-in place but no new fixes are accepted for it.
-
-#### Branch protection
-
-Patch-release branches carry the same review and provenance guarantees as `main`,
-but the set of contributors allowed to push to them is narrower because they
-double as the publish source for an existing release line. Branch protection on
-every `patch-release/**` branch must enforce:
-
-- **Restricted push**: only CODEOWNERS for the targeted workspace may push (and
-  only via merged pull requests; direct pushes are disallowed).
-- **Required reviews**: standard branch-protection rules apply — at least one
-  CODEOWNERS approval, all required status checks green.
-- **Dismiss stale approvals on force-push**: same as the Promote PR (see
-  [Major releases via the Promote PR](#major-releases-via-the-promote-pr)); the
-  `patch-pending/<line>` head branch is force-pushed every time a new fix lands
-  in `main`, so approvals on the open `Patch release` PR must reset when that
-  happens.
-
-Closed-line branches keep these protections in place even after no new fixes are
-accepted, so the published source of an old line cannot be retroactively modified.
-
-#### Eligibility: no back-ports for `0.x` packages
-
-Back-ports are only accepted for packages that have reached a stable `1.0.0` or
-higher. The tooling rejects any `.fix/<slug>.md` whose `packages` front-matter
-targets a package whose current published major is `0`. The reasoning is:
-
-- Semver-wise, `0.x` packages are explicitly unstable. Adopters relying on a
-  `0.x` package are expected to upgrade to the latest version rather than pin to
-  a specific older release line.
-- Maintaining patch-release branches for `0.x` packages would set the expectation
-  that those packages have multiple long-lived supported lines, which is the
-  opposite of what the `0.x` range communicates.
-- It avoids the awkward semver shape that would otherwise arise — back-porting a
-  fix to an "older `0.x`" would either bump the minor (because that is how `0.x`
-  expresses breakage by Backstage convention, which is wrong for a fix) or bump
-  the patch (which then clashes with whatever the latest `0.x` is on `@latest`).
-
-Once a package reaches `1.0.0`, it becomes eligible for back-ports under this
-flow. Until then, fixes ride the normal mainline release cadence and adopters
-upgrade to the current published version to receive them.
-
-#### Workflow on merge of a fix
-
-When a PR introducing or updating a `.fix/<slug>.md` is merged to `main`, the
-release workflow does the following for each target derived from the entry's
-`packages` front-matter:
-
-1. **Identifies the release branch** for the target. Framework targets resolve to
-   `patch-release/framework/<YYNN>`. Non-framework targets resolve to
-   `patch-release/<workspace>/<package>@<major>`. If the branch does not yet exist (a
-   line that is being patched for the first time under this flow), the workflow
-   creates it from the latest published tag for that line.
-2. **Applies the fix's patch** on top of the release branch's current HEAD in a
-   temporary checkout, using `git apply --3way`. Non-trivial conflicts fail CI;
-   the author has to refresh the patch via the standard
-   `backstage release fix refresh <slug>` flow.
-3. **Opens or updates the `Patch release (<line>)` PR** for that release branch.
-   The PR's head is a `patch-pending/<line>` branch built by applying _every_
-   currently-merged-but-not-yet-released fix that targets the line, in slug order,
-   on top of the release branch. The PR's base is the release branch itself. The
-   PR body lists every staged-pending fix with its description.
-
-The author's PR merging into `main` therefore does two things: it adds the fix
-entry to `main` (where it stays until the patch ships), and it updates the open
-`Patch release (<line>)` PR with the fix applied on top of the release line.
-
-#### Merging the `Patch release` PR
-
-When a maintainer reviews and merges a `Patch release (<line>)` PR:
-
-1. The release branch fast-forwards to the merged commit — its HEAD now reflects
-   the new published state of the line.
-2. The release workflow synthesizes a changeset for each fix that landed in the
-   merge, runs `yarn changeset version` on the release branch to compute the next
-   patch version of every affected package, and dispatches a publish via the
-   standard `repository_dispatch` flow.
-3. The publishing repo validates the dispatch (see
-   [Publish-time safeguards](#publish-time-safeguards)) and publishes the new
-   patch version of each affected package. For framework targets, it also writes
-   a new immutable manifest for the release line and bumps the `latest.json`
-   pointer for that line.
-4. On success, the publishing workflow opens a small follow-up PR to `main` that
-   deletes the `.fix/` entries that shipped. Once merged, those entries are gone
-   and the audit trail lives in git history (the merge of the original PRs, the
-   `Patch release` PR, the deletion PR) plus the changelogs attached to the
-   published versions.
-
-A single `Patch release (<line>)` PR can therefore carry multiple fixes — every
-fix that landed in `main` targeting that line since the previous patch release is
-included automatically. Maintainers choose when to merge the PR; the cadence of
-back-port releases is purely a function of how often they decide to do so.
-
-If any fix's patch fails to apply on a release branch when the workflow tries to
-update the patch PR, that fix is excluded from the PR for that line and CI
-reports the conflict on the original fix PR. The fix stays in `.fix/` and waits
-for a refresh.
-
-#### npm dist-tag handling
-
-A back-ported fix to the current framework release line publishes to `@latest` like
-any other release. A fix to an older line publishes the new version but does **not**
-update `@latest` — it just becomes available as a higher patch version that adopters
-pinning the older line resolve through the manifest pointer for that line.
-
-#### Required-reviewer gate
-
-Back-ported fixes go out through the same publish-time safeguards as every other
-release ([Publish-time safeguards](#publish-time-safeguards)). Because they
-typically target dist-tags adopters consume from (`@latest`, an older release line),
-the required-reviewer environment gate applies to every back-port publish.
-
-#### What this replaces
-
-The current `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js`
-script, and the long-lived `patch-release` branch are removed as part of the
-framework migration. The existing top-level `.patches/` directory is deleted in the
-same migration step. Any in-flight patches at the time of migration are converted
-to `.fix/` entries by hand.
+As a potential future direction, back-ports could be authored as structured
+artifacts in `main` — for example by extending the staged-change file format
+with metadata that points the patch at a past release line — so that the same
+authoring, validation, and review surface is shared by both forward-looking
+staged changes and backward-looking patches. That evolution is intentionally
+out of scope for this BEP; the design above only commits to the branch naming,
+the protection model, and the `1.0.0` eligibility rule.
 
 ## Design Details
 
@@ -808,8 +632,6 @@ workspaces/
       *.md
     .staged/
       <slug>.md             # YAML front-matter + body + trailing patch code block
-    .fix/
-      <slug>.md             # same shape as .staged, with patch as the last fenced block
     packages/
       <package>/...
     plugins/
@@ -1240,9 +1062,9 @@ other workspaces.
 
 `workspaces/tooling/` hosts every script that the repository's own workflows invoke
 during release automation: the staged-change validator, the script that rebuilds the
-Promote PR, the manifest updater, the OIDC dispatch helper, the `.fix/` back-port
-runner, and so on. It also hosts the standalone CLI that ships that same automation
-to `backstage/community-plugins` and any other repository adopting this structure.
+Promote PR, the manifest updater, the OIDC dispatch helper, and so on. It also hosts
+the standalone CLI that ships that same automation to `backstage/community-plugins`
+and any other repository adopting this structure.
 
 The workspace is constrained in four ways that make this dual role possible:
 
@@ -1329,8 +1151,7 @@ Concretely:
 - Move and refactor the community-plugins scripts into subcommands of that CLI
   (e.g. `list-changed-workspaces`, `check-needs-release`, `create-tag`).
 - Add the new subcommands needed by this BEP: `stage create|refresh|apply` (for
-  authoring and validating staged changes), `fix create|refresh|apply` (for
-  authoring and validating back-ported fixes), and `next-version` (for computing the
+  authoring and validating staged changes) and `next-version` (for computing the
   next `@next` identifier; see
   [Next pre-release versioning](#next-pre-release-versioning)).
 - Update both repositories' workflows to invoke the CLI instead of duplicated
@@ -1707,18 +1528,8 @@ The migration is staged so that no single PR has to move the entire repository.
    the deprecation and the staged removal together, verify the `@next` release picks
    the staged removal up, then merge the `Promote major` PR to ship the major.
 
-9. **Move patch authoring to `.fix/`.** Migrate any in-flight entries from the
-   top-level `.patches/` directory into per-workspace `.fix/` entries, set up the
-   per-line `patch-release/...` branches and per-workspace `Patch release (<line>)`
-   PR
-   workflow, and run one back-port through the new flow end to end. The existing
-   `patch-release` branch model is preserved at the publish layer; the
-   `sync_patch-release.yml` workflow, the `scripts/patch-release-for-pr.js`
-   script, and the top-level `.patches/` directory are replaced by the new
-   tooling that fans fix entries out onto per-line release branches.
-
-10. **Adopt date-based versioning for `framework`.** The first major of `framework`
-    after the staged-change flow lands uses the `YYNN` scheme.
+9. **Adopt date-based versioning for `framework`.** The first major of `framework`
+   after the staged-change flow lands uses the `YYNN` scheme.
 
 Throughout the migration the existing weekly release flow continues to work for any
 workspace that has not been migrated yet. There is no flag day.
