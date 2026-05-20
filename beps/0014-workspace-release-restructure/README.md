@@ -964,6 +964,22 @@ is:
 - The `NN` range can stretch up to 99 if overflow ever stacks up, giving plenty of
   headroom past the 12 normal monthly slots.
 
+#### Expected cadence
+
+The project targets two framework releases per year, in April and October. Both
+windows are timed to coincide with the KubeCon events: KubeCon EU lands in
+April most years (occasionally in March), and KubeCon NA lands in November.
+Under the `YYNN` scheme that produces `<YY>04` and `<YY>10` as the typical
+release identifiers — for example `2604` and `2610` in 2026, then `2704` and
+`2710` in 2027, and so on.
+
+The dates are guidelines rather than commitments. A release that slips by a few
+weeks moves its `NN` to match the month it actually shipped in (e.g. a planned
+`2604` that ships in May becomes `2605`); adopters always see the month the
+release actually happened. Likewise an unplanned extra release in the same month
+overflows past the calendar month per the
+[Identifier format](#identifier-format) rules.
+
 #### Framework packages share a major version
 
 Every package in the `framework` workspace uses the framework release identifier as
