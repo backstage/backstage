@@ -845,10 +845,12 @@ event to the private publishing repository with a `event_type` of
 }
 ```
 
-`tag` is an opaque string treated as the npm dist-tag for the publish. The dispatching
-workflow uses `latest` for mainline releases, `next` for releases that include queued
-staged changes, and may use other identifiers (`alpha`, etc.) in the future.
-The publishing repo applies the same safeguards regardless of value, with an extra
+`tag` is a closed set. The only accepted values are `latest` and `next`; the
+publishing repo treats the dispatch payload as input from a non-trusted source
+and rejects any other value before doing any other work. Adding a new dist-tag (e.g. `alpha`)
+requires an explicit change to the publishing repo's allow-list, which is its own
+reviewed, separately-merged change. The publishing repo applies the same
+safeguards regardless of which accepted value is in the dispatch, with an extra
 required-reviewer gate for `latest` (see
 [Publish-time safeguards](#publish-time-safeguards)).
 
@@ -909,10 +911,9 @@ protected `main` branch. The publishing repo enforces three independent checks:
    required reviewers from `@backstage/maintainers`. Every publish to the `latest`
    dist-tag pauses until a maintainer clicks "Approve and deploy".
 
-   Releases with any other dist-tag (`next`, `alpha`, and similar pre-release tags)
-   skip the required-reviewer gate and use a separate environment without approval
-   gates, so pre-releases continue to ship without human intervention. They are still
-   subject to checks (1) and (2).
+   Releases tagged `next` skip the required-reviewer gate and use a separate
+   environment without approval gates, so `@next` continues to ship without human
+   intervention. They are still subject to checks (1) and (2).
 
 The current "nightly snapshot" release flow is expected to be removed as part of this
 rollout. If it is kept in any form, it falls into the same "no required reviewer"
