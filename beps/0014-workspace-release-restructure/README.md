@@ -861,7 +861,7 @@ branch is either `main` or matches the protected `patch/**` pattern listed in
 is rejected.
 
 The publishing repo applies the same safeguards regardless of which accepted
-value is in the dispatch, with an extra required-reviewer gate for `latest` (see
+value is in the dispatch (see
 [Publish-time safeguards](#publish-time-safeguards)).
 
 `repository_dispatch` is chosen over `workflow_dispatch` because the trigger token only
@@ -891,7 +891,7 @@ token, and a compromised workflow run cannot publish a package.
 The dispatch itself is not trusted. A compromised workflow run in
 `backstage/backstage`, a leaked dispatch token, or a hijacked GitHub App installation
 must never result in published code that did not go through code review on a
-protected branch. The publishing repo enforces three independent checks:
+protected branch. The publishing repo enforces two independent checks:
 
 1. **Ancestor check (all releases).** Before doing any work, the publishing workflow
    resolves the dispatch to the branch the SHA is expected to live on, and calls
@@ -931,20 +931,8 @@ protected branch. The publishing repo enforces three independent checks:
    agrees executed on the expected protected branch, defending against forged
    dispatches even if the token that sends them is compromised.
 
-3. **Required reviewer (mainline `@latest` releases only).** The publishing workflow
-   runs inside a GitHub Environment (e.g. `npm-publish-latest`) configured with
-   required reviewers from `@backstage/maintainers`. Every publish to the `latest`
-   dist-tag pauses until a maintainer clicks "Approve and deploy". This covers
-   both mainline `@latest` from `main` and back-ported `@latest` from
-   `patch/**` branches.
-
-   Releases tagged `next` skip the required-reviewer gate and use a separate
-   environment without approval gates, so `@next` continues to ship without human
-   intervention. They are still subject to checks (1) and (2).
-
-The current "nightly snapshot" release flow is expected to be removed as part of this
-rollout. If it is kept in any form, it falls into the same "no required reviewer"
-bucket as `@next`.
+The current "nightly snapshot" release flow is expected to be removed as part of
+this rollout.
 
 ### Framework versioning and the release lifecycle
 
@@ -1609,6 +1597,19 @@ workspace that has not been migrated yet. There is no flag day.
   almost all the benefits without those costs.
 - **Use `npm` workspaces or `pnpm` instead of Yarn.** Out of scope; we already use
   Yarn workspaces in both this repo and community-plugins.
+- **Add a required-reviewer environment gate for `@latest` publishes as a future
+  hardening step.** The publishing workflow could run inside a GitHub Environment
+  configured with required reviewers from `@backstage/maintainers`, so that every
+  publish to the `latest` dist-tag pauses until a maintainer clicks "Approve and
+  deploy" — covering both mainline `@latest` from `main` and back-ported
+  `@latest` from `patch/**` branches. `@next` publishes would skip the gate and
+  continue to ship without human intervention. The ancestor check and OIDC
+  binding in [Publish-time safeguards](#publish-time-safeguards) already make
+  the dispatch flow safe; the reviewer gate would be a second-layer defense
+  against a maintainer accidentally merging something they shouldn't have. It is
+  intentionally left out of the initial design to keep the publish flow
+  frictionless, and called out here as something we may add later if the threat
+  model warrants it.
 - **Keep `framework` strictly the framework, and pull the bundled plugins out.**
   As currently planned, `framework` is more than just the plugin/app/backend APIs
   and defaults — it also contains the `events`, `signals`, `permission`, and
