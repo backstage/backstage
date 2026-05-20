@@ -1,6 +1,6 @@
 ---
 title: Definitive Plugin Listing
-status: implementable
+status: implemented
 authors:
   - '@aramissennyeydd'
 owners:
@@ -47,7 +47,7 @@ This section is for explicitly listing the motivation, goals, and non-goals of
 this BEP. Describe why the change is important and the benefits to users.
 -->
 
-Split backends are a consistently difficult space to operate in and design for. There has been a growing desire for the framework to provide a way to get a list of the installed plugins. This was nearly impossible in the old backend, where plugins were hosted on denormalized routes and had non-standard startup sequences. In the new backend, this has become significantly more doable. Moving this forward would unblock a number of cases that require knowledge of your entire Backstage installation, namely a single OpenAPI spec for your instance, checking installed permissions, and DevTools information.
+Split backends are a consistently difficult space to operate in and design for. There has been a growing desire for the framework to provide a way to get a list of the installed plugins. This was nearly impossible in the old backend, where plugins were hosted on denormalized routes and had non-standard startup sequences. In the new backend, this has become significantly more doable. Moving this forward unblocks a number of cases that require knowledge of your entire Backstage installation, namely a single OpenAPI spec for your instance, checking installed permissions, and DevTools information.
 
 ### Goals
 
@@ -56,8 +56,8 @@ List the specific goals of the BEP. What is it trying to achieve? How will we
 know that this has succeeded?
 -->
 
-1. As a plugin builder, I can now get a list of currently installed features across my deployment.
-1. As a plugin builder, I can get a list of currently installed features for a single instance in my deployment.
+1. As a plugin builder, I can get a list of currently installed plugins across my deployment.
+1. As a plugin builder, I can get a list of currently installed plugins (with their modules) for a single instance in my deployment.
 1. As an integrator/administrator, I can continue to use my static `HostDiscovery` config.
 
 ### Non-Goals
@@ -79,7 +79,9 @@ you're proposing, but should not include things like API designs or
 implementation.
 -->
 
-Most of the work below is API definitions for hosting the list of features and better abstractions to make that list available through HTTP. This is not intended to perform much heavy lifting, that can happen in a further design. We will build a default implementation on the existing static `HostDiscovery` config definition for split deployments. Users can override the API as they need.
+Two new core services were introduced to surface the installed plugin list. `RootInstanceMetadataService` reports the plugins (and their modules) installed on a single running instance. `RootSystemMetadataService` reports the plugins installed across an entire deployment, derived from the local instance combined with the existing static `HostDiscovery` config. The default implementation does not perform any heavy lifting — it reads from the same data the rest of the backend already uses — and users can override either service to fit their setup.
+
+A separate `@backstage/plugin-gateway-backend` plugin builds on these services to provide centralized frontend-to-backend routing in split deployments, without adding any new HTTP APIs to the core.
 
 ## Design Details
 
@@ -89,143 +91,52 @@ change are understandable. This may include API specs or even code snippets.
 If there's any ambiguity about HOW your proposal will be implemented, this is the place to discuss them.
 -->
 
-### Glossary
+### `RootInstanceMetadataService`
 
-### New Type `BackendFeatureMeta`
-
-```ts
-type BackendFeatureMeta =
-  | {
-      type: 'plugin';
-      pluginId: string;
-    }
-  | {
-      type: 'module';
-      pluginId: string;
-      moduleId: string;
-    };
-```
-
-### New `InstanceMetadataService`
-
-While we could attach the existing information to the `PluginMetadataService`, we propose a new service that handles instance-level information. The existing `PluginMetadataService` should reveal information about the plugin itself, its `pluginId`, dependencies or similar. The new `InstanceMetadataService` should give you information about the entire Backstage instance that you're interrogating. One could imagine this service also having information about instance URLs, health or gateway status.
+A new core service, available as `coreServices.rootInstanceMetadata` and exported from `@backstage/backend-plugin-api`. It exposes the plugins (and modules) wired into the running instance.
 
 ```ts
-interface InstanceMetadataService {
-  getInstalledFeatures: () => BackendFeatureMeta[];
+interface RootInstanceMetadataServicePluginInfo {
+  readonly pluginId: string;
+  readonly modules: ReadonlyArray<{
+    moduleId: string;
+  }>;
+}
+
+interface RootInstanceMetadataService {
+  getInstalledPlugins: () => Promise<
+    ReadonlyArray<RootInstanceMetadataServicePluginInfo>
+  >;
 }
 ```
 
-Currently, this would need to be bootstrapped directly in `BackendInitializer` or `BackstageBackend`. It may make sense to create a new `FeatureRegistry` class that can expose this instead similar to the `PluginMetadataService`.
+The list is populated by `BackendInitializer` at startup from the plugins and modules passed to `backend.add(...)`. It only reflects the plugins installed at `backend.start()` time — newly added plugins require a restart to appear.
 
-### New HTTP API to expose `InstanceMetadataService`
+The information about the plugin itself (such as its `pluginId`, scopes, or dependencies) continues to live on `PluginMetadataService`. The new `RootInstanceMetadataService` is intentionally scoped to instance-level information that the plugin itself does not own. Future additions on this service could include instance URLs, health, or gateway status.
 
-We also propose exposing the new services through an HTTP API, so that these can be queried.
+### `RootSystemMetadataService`
 
-```yaml
-paths:
-  /.backstage/instanceMetadata/features/installed:
-    get:
-      summary: Get a list of installed features for this instance.
-      operationId: GetInstalledFeaturesByInstance
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  oneOf:
-                    - type: object
-                      properties:
-                        type:
-                          type: string
-                          enum:
-                            - plugin
-                        pluginId: { type: string }
-                    - type: object
-                      properties:
-                        type:
-                          type: string
-                          enum:
-                            - module
-                        pluginId: { type: string }
-                        moduleId: { type: string }
-```
-
-### New `SystemMetadataService`
-
-This will be a new core service. The idea is that it will show information about your whole Backstage deployment, which can have multiple instances. Initially, this will host aggregate information around instances in the deployment, like their internal and external URLs.
+A new alpha core service, exported from `@backstage/backend-plugin-api/alpha`. It exposes the plugins available across the entire Backstage deployment — local plugins plus plugins reachable through the existing `discovery.endpoints` static config.
 
 ```ts
-interface BackstageInstance {
-  url: {
-    internal: string;
-    external: string;
-  };
+interface RootSystemMetadataServicePluginInfo {
+  readonly pluginId: string;
 }
 
-interface SystemMetadataService {
-  getInstances: () => Promise<BackstageInstance[]>;
+interface RootSystemMetadataService {
+  getInstalledPlugins: () => Promise<
+    ReadonlyArray<RootSystemMetadataServicePluginInfo>
+  >;
 }
 ```
 
-By default, this will
-a. be the exact same as `InstanceMetadataService` if we are not using `HostDiscovery` static config, or
-b. use the `HostDiscovery` static config to fetch other instance's base URLs. This would require an additional set of config to provide the instance base URL instead of the plugin-specific routing that currently exists.
+The default implementation (`DefaultRootSystemMetadataService`) aggregates the plugin IDs from `discovery.endpoints` with the plugins reported by `RootInstanceMetadataService`. This means a) deployments without `HostDiscovery` config naturally reduce to the local instance's plugin list, and b) deployments with `HostDiscovery` config can enumerate plugins across the system without any extra configuration.
 
-#### New config value example
+The service is marked `@alpha` to leave room for the shape to evolve as more deployment-level information (URLs, health, gateway status) is added.
 
-```yaml
-discovery:
-  endpoints:
-    - target: https://internal.example.com/internal-catalog
-      # New value to hold the Backstage base URL.
-      # For targets that point directly to a URL with no plugin templating, there may be no good value here
-      #  and it will require users to update their routing to expose this.
-      rootUrl: https://internal.example.com/
-      plugins: [catalog]
-    - target: https://internal.example.com/secure/api/{{pluginId}}
-      # New value to hold the Backstage base URL.
-      rootUrl: https://internal.example.com/secure/
-      plugins: [auth, permission]
-    - target:
-        internal: https://internal.example.com/backstage/api/search
-        external: https://example.com/backstage/api/search
-      # New value to hold the Backstage base URL.
-      rootUrl:
-        internal: https://internal.example.com/backstage
-        external: https://example.com/backstage
-      plugins: [search]
-```
+### Gateway plugin
 
-### `SystemMetadataService` HTTP API
-
-```yaml
-paths:
-  /.backstage/systemInfo/instances:
-    get:
-      summary: Get a list of instances in this Backstage system.
-      operationId: ListInstances
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    url:
-                      oneOf:
-                        - type: string
-                        - type: object
-                          properties:
-                            internal: { type: string }
-                            external: { type: string }
-```
+Cross-instance HTTP traffic is handled by a new `@backstage/plugin-gateway-backend` plugin rather than by adding new HTTP APIs to the core services. The gateway depends on `coreServices.rootInstanceMetadata` and `coreServices.discovery`, and proxies any inbound `/api/:pluginId` request to the discovery-resolved backend for that plugin, short-circuiting when the target plugin is hosted locally. This keeps the metadata services purely informational and concentrates the routing concern in a single, optional plugin.
 
 ## Release Plan
 
@@ -235,8 +146,10 @@ This section should describe the rollout process for any new features. It must t
 If there is any particular feedback to be gathered during the rollout, this should be described here as well.
 -->
 
-- Implement the proposed service + plugin as _experimental_.
-- Create a new plugin to host the instance service HTTP API.
+- `RootInstanceMetadataService` shipped as a stable `@public` core service on `@backstage/backend-plugin-api`.
+- `RootSystemMetadataService` shipped as `@alpha` on `@backstage/backend-plugin-api/alpha`, with a default factory in `@backstage/backend-defaults`.
+- `@backstage/plugin-gateway-backend` shipped as a new optional backend plugin that consumes the instance metadata service.
+- The earlier internal `InstanceMetadataService` (returning `BackendFeatureMeta[]`) is retained as `@internal` for backward compatibility and now delegates to `RootInstanceMetadataService`.
 
 ## Dependencies
 
@@ -251,3 +164,15 @@ What other approaches did you consider, and why did you rule them out? These do
 not need to be as detailed as the proposal, but should include enough
 information to express the idea and why it was not acceptable.
 -->
+
+### Dedicated HTTP APIs on the core services
+
+Earlier drafts of this BEP proposed exposing the metadata services through dedicated HTTP endpoints under `/.backstage/instanceMetadata/...` and `/.backstage/systemInfo/...`, plus a new `rootUrl` value on `discovery.endpoints` so each instance could publish its own base URL. We ruled this out because the only concrete consumer was cross-instance routing, and the gateway plugin handles that without leaking metadata onto a stable public HTTP surface. Keeping the services in-process leaves us free to evolve the shape under `@alpha` before committing to a wire format.
+
+### Extending `PluginMetadataService`
+
+We could have hung `getInstalledFeatures` (or similar) off the existing `PluginMetadataService`. We chose a separate service so that `PluginMetadataService` continues to describe "this plugin", and the new service describes "this instance / this system". The two concerns rot differently over time and conflating them now would make either one harder to evolve later.
+
+### `BackendFeatureMeta` discriminated union
+
+The original shape was a discriminated union over `{ type: 'plugin' | 'module', ... }`. We pivoted to a plugin-centric shape with nested modules because it matches how callers actually use the data — they almost always want to ask "for plugin X, which modules are installed?" rather than walk a flat list. The discriminated-union form is still available on the legacy `@internal` `InstanceMetadataService` for the few existing call sites.
