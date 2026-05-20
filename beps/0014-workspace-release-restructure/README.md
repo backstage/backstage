@@ -860,7 +860,7 @@ self-describing and easy to log. The dispatch is sent using a GitHub App or a
 fine-grained PAT with permission to dispatch on the publishing repository and nothing
 else.
 
-`backstage/publishing` is then responsible for:
+The publishing repo is then responsible for:
 
 - Validating the dispatch (see [Publish-time safeguards](#publish-time-safeguards)
   below).
@@ -1220,7 +1220,7 @@ model.
 Manifests are published from the existing `backstage/versions` repository, which
 already serves the Backstage release manifests today via GitHub Pages and has the
 operational tooling, security boundary, and DNS for that purpose. The publishing repo
-(`backstage/publishing`) writes manifests into `backstage/versions` as part of every
+(the publishing repo) writes manifests into `backstage/versions` as part of every
 successful publish; `backstage/backstage` does not write manifests directly. Keeping
 the manifests in a small, focused repo also avoids checking out the entire monorepo
 to read them, which matters for the Yarn plugin's resolution path.
@@ -1275,7 +1275,7 @@ versions of every Backstage package do I get?".
 #### How the manifest is maintained
 
 Manifests are immutable. Every successful non-pre-release publish from
-`backstage/publishing` produces a new manifest under a content-addressed URL of the
+the publishing repo produces a new manifest under a content-addressed URL of the
 form `release-<line>.<counter>.json` in `backstage/versions` — for example,
 `release-2604.23.json`. A pointer file (`release-<line>/latest.json`) is updated to
 reference the newest manifest in the line; that pointer is the only mutable artifact
@@ -1335,7 +1335,8 @@ The design is intentionally minimal:
 
 1. The release workflow in `backstage/backstage` runs on `push: [main]`. Before
    sending its dispatch, it mints a GitHub Actions OIDC token for the configured
-   audience `backstage-release@backstage/publishing` using the built-in
+   audience scoped to the publishing repo (e.g. `backstage-release`) using the
+   built-in
    `ACTIONS_ID_TOKEN_REQUEST_TOKEN` / `ACTIONS_ID_TOKEN_REQUEST_URL` pair.
 2. The release workflow puts the resulting JWT into the `client_payload.oidc_token`
    field of the `repository_dispatch` event. Tokens are valid for a few minutes,
@@ -1557,7 +1558,7 @@ workspace that has not been migrated yet. There is no flag day.
 
 ## Dependencies
 
-- The `backstage/publishing` (private) repository needs a generalized publish workflow
+- The (private) publishing repository needs a generalized publish workflow
   that accepts `(workspace, sha, tag)` rather than the current monolithic publish job.
 - Cooperation with `backstage/community-plugins` maintainers to extract shared
   tooling into the standalone CLI in `workspaces/tooling/`. This BEP assumes their
