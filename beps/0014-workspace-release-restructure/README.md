@@ -1189,14 +1189,18 @@ and any other repository adopting this structure.
 
 The workspace is constrained in four ways that make this dual role possible:
 
-1. **Zero runtime dependencies.** Every TypeScript file under
-   `workspaces/tooling/<package>/src/` may import only from Node built-ins. No
-   third-party runtime imports. CLI argument parsing uses Node's built-in
+1. **Zero runtime dependencies, not even transitively.** Every TypeScript file
+   under `workspaces/tooling/<package>/src/` may import only from Node built-ins.
+   No third-party runtime imports, and no reaching into the `node_modules` of
+   another workspace either. (For example, the Node-based TypeScript transformer
+   in `@backstage/cli` would be tempting, but it requires `swc` as a transitive
+   dependency, and assuming `swc` is installed inside any particular workspace
+   is not safe.) CLI argument parsing uses Node's built-in
    `node:util` `parseArgs`, which is enough for the subcommand shapes we need;
-   shelling out to `gh` and `git` via `child_process` covers the rest. If a runtime
-   dependency genuinely cannot be avoided at some point in the future,
-   `bundleDependencies` is the escape hatch we would consider before relaxing the
-   rule.
+   shelling out to `gh` and `git` via `child_process` covers the rest. If a
+   runtime dependency genuinely cannot be avoided at some point in the future,
+   `bundleDependencies` is the escape hatch we would consider before relaxing
+   the rule.
 
 2. **Not a Backstage CLI module.** The published artifact is a standalone CLI, not
    a `@backstage/cli`-loaded module. CLI modules inherit the host CLI's dependency
@@ -1210,12 +1214,13 @@ The workspace is constrained in four ways that make this dual role possible:
    script runs without ever calling `yarn install` inside `workspaces/tooling/`.
    This keeps the dependency-free promise for the repository's own automation.
 
-4. **Published packages are built.** When the standalone CLI is published to npm, a
-   `prepublishOnly` build step compiles the TypeScript to JavaScript and ships the
-   resulting `dist/` directory. Consumers in other repositories therefore get a
-   regular JS package that runs on any Node version, without needing the
-   type-stripping flag. The build step uses TypeScript pinned in the workspace as a
-   dev dependency.
+4. **Built when published.** The workspace has a regular build step that compiles
+   the TypeScript sources to JavaScript using TypeScript pinned as a dev
+   dependency. The build runs in CI on changes to the workspace (so we always
+   know the source builds cleanly), and the resulting `dist/` directory is what
+   gets shipped to npm — consumers in other repositories get a normal JS package
+   that runs on any Node version, without needing the type-stripping flag. The
+   build is **not** required for in-repo use; constraint 3 still applies.
 
 The dev dependencies (TypeScript, ESLint, the build runner) live in `package.json`
 `devDependencies` only. They are installed by anyone running lint, type-check, or
