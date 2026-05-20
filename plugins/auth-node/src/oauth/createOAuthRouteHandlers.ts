@@ -64,6 +64,8 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
   /** @public */
   upstreamRefreshRegistry?: UpstreamRefreshRegistry;
+  /** @public */
+  envKeys?: string[];
 }
 
 /** @internal */
@@ -144,9 +146,10 @@ export function createOAuthRouteHandlers<TProfile>(
         return { refreshToken: result.session.refreshToken };
       },
       async start({ scope, sessionId }) {
+        const env = options.envKeys?.[0] ?? 'development';
         const state = encodeOAuthState({
           nonce: sessionId,
-          env: 'production',
+          env,
           flow: 'cimd_approval',
           redirectUrl: sessionId,
         });

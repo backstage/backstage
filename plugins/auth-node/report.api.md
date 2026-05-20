@@ -415,6 +415,8 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   // (undocumented)
   cookieConfigurer?: CookieConfigurer;
   // (undocumented)
+  envKeys?: string[];
+  // (undocumented)
   isOriginAllowed: (origin: string) => boolean;
   // (undocumented)
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
