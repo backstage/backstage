@@ -861,10 +861,12 @@ version matrix.
   applies the staged entries to `master` in a temporary checkout, synthesizes a
   changeset from each entry's front-matter and markdown body, runs `yarn changeset version`
   against **only** that synthesized set (regular pending changesets in
-  `.changeset/` are excluded), suffixes the resulting versions with `-next.<N>`
-  from the shared workspace counter, and dispatches a publish with `tag: next`.
-  Only packages directly affected by a staged change are bumped, at whatever
-  semver bump the staged changesets declare. See
+  `.changeset/` are excluded), resolves the workspace-wide `<N>` from the npm
+  registry (see
+  [Shared workspace counter](#shared-workspace-counter)), rewrites the version
+  strings to `-next.<N>`, and dispatches a publish with `tag: next`. Only
+  packages directly affected by a staged change are bumped, at whatever semver
+  bump the staged changesets declare. See
   [Next pre-release versioning](#next-pre-release-versioning) for the exact rules.
 
 #### Triggering publishing in the private repo
@@ -1633,8 +1635,10 @@ two situations:
    reflects the most recent baseline.
 
 Both situations route through the same `dispatch-next` job (see
-[Release workflow](#release-workflow)); each dispatch increments the shared
-workspace counter and publishes a new `@next` snapshot.
+[Release workflow](#release-workflow)); each dispatch resolves the next
+workspace-wide `<N>` from the npm registry (see
+[Shared workspace counter](#shared-workspace-counter)) and publishes a new
+`@next` snapshot at `-next.<N>`.
 
 #### Which packages are published as `@next`
 
@@ -1671,30 +1675,50 @@ The `-next.<N>` suffix is shared across every package in a single `@next` publis
 for the workspace, so that any two packages with `-next.5` came from the same
 snapshot. The counter is:
 
-- Recorded in the root `package.json` of the workspace under
-  `backstage.release.nextCounter`. The `backstage.release` key is the natural place
-  for additional release-management state we accumulate over time.
-- Incremented by exactly `1` on every `@next` publish for the workspace,
-  regardless of how many packages that publish includes.
-- **Never reset.** The counter grows monotonically across the lifetime of the
-  workspace.
+- **Derived from the npm registry, not stored in the repository.** Before each
+  `@next` publish, the release tooling fetches the published version list of
+  every package in the workspace from the npm registry, finds the highest
+  existing `-next.<N>` suffix across all of them, and uses `<N>+1` for the new
+  publish. Every package in the dispatch then shares that `<N>`.
+- Monotonically increasing across the lifetime of the workspace. Because
+  max-over-already-published is what determines the next value, dropped or
+  abandoned `@next` previews still consume counter values and the counter
+  never reverts. This preserves the snapshot identity property (every package
+  with the same `-next.<N>` came from the same publish) and avoids the
+  collision risk that resetting would introduce — consider a staged change
+  marked `experimental` that publishes `plugin-foo@2.0.0-next.5` to `@next` and
+  then gets dropped without ever promoting. `plugin-foo` stays at `1.x.y` on
+  `@latest`, but `plugin-foo@2.0.0-next.0..5` are already on npm. If a future
+  staged change targets `plugin-foo@2.0.0` again, a registry-derived counter
+  picks `-next.6` and the collision is avoided by construction.
 
-  The reason is that resetting on `Promote staged` merges introduces a
-  collision risk for packages whose previous `@next` publishes never made it to
-  `@latest`. Consider a staged change marked `experimental` that publishes
-  `plugin-foo@2.0.0-next.5` to `@next` and then gets dropped without ever
-  promoting: `plugin-foo` stays at `1.x.y` on `@latest`, but
-  `plugin-foo@2.0.0-next.0..5` are already on npm. If the counter then reset
-  and a future staged change targeted `plugin-foo@2.0.0` again, the next
-  publish would land at `2.0.0-next.0`, which collides with what's already
-  published. Letting the counter grow monotonically across rounds avoids the
-  entire class of collisions. Adopters do not see a clean `-next.0` for a new
-  round, but they keep the snapshot identifier property (all packages with the
-  same `-next.<N>` came from the same publish), which is what they actually
-  rely on.
+The registry-derived approach has three useful properties:
 
-The updated `package.json` is committed to `master` by the same workflow that runs the
-publish, so the counter survives across runners.
+- **Stateless in the repository.** There is no counter file to commit, no
+  protected-branch push, no special bot permissions required to update the
+  number. The npm registry is already the source of truth for what versions
+  have been published; we stop duplicating that state.
+- **Portable.** Any repository adopting the staged-change / `@next` flow
+  (`backstage/community-plugins`, plugin repositories outside the Backstage
+  organization, internal forks) can do so without first wiring up shared
+  state, branch-protection exceptions, or counter ledgers. The same logic runs
+  unchanged.
+- **Composable with changesets.** Changesets always produces `-next.0` when it
+  computes a pre-release version, which is the wrong number for our flow. The
+  standalone release
+  CLI exposes a `next-version` subcommand that performs the registry lookup
+  and rewrites the version strings emitted by `yarn changeset version` to use
+  the workspace-wide `<N>`. This wrapping step sits between the changeset
+  version computation and the dispatched `npm publish`, and is the only piece
+  of bespoke versioning logic the workflow needs on top of changesets.
+
+Operationally, `@next` dispatch is serialized per workspace — only one workflow
+run can be computing the next counter at a time. This eliminates the only race
+where two concurrent dispatches could otherwise pick the same `<N>`. GitHub
+Actions' default concurrency on `repository_dispatch` already enforces this,
+and the release CLI additionally aborts if it detects that the version it
+intends to publish already exists on the registry by the time it gets to the
+publish step.
 
 #### Worked example: `catalog`
 
@@ -1743,9 +1767,11 @@ its own current semver — for example, `@backstage/frontend-plugin-api@2.4.7`,
 
 The `next-version` subcommand of the standalone release CLI computes the next
 `@next` identifier deterministically from `master`, the staged changes for the
-workspace, and `backstage.release.nextCounter`. Running it locally produces the exact version
-strings a real `@next` publish would produce, which makes it easy to inspect what
-the next `@next` would look like without dispatching it.
+workspace, and the npm registry (see
+[Shared workspace counter](#shared-workspace-counter)). Running it locally
+produces the exact version strings a real `@next` publish would produce, which
+makes it easy to inspect what the next `@next` would look like without
+dispatching it.
 
 ## Release Plan
 
