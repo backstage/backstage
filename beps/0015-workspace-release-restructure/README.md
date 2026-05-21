@@ -60,13 +60,14 @@ mechanism is offered for workspaces that want to roll breaking changes out more
 carefully and on their own schedule. The `framework` workspace is the primary
 intended user, but any workspace can opt in.
 
-A staged change is encoded as a structured artifact — a description plus a patch
-file — that sits in the main branch in a `.staged/` directory. Mainline releases
-continue to flow continuously from `main` without ever applying these staged
-changes, while `next` releases are produced by applying all of them in order on
-top of `main` and publishing under the `next` dist-tag. When a workspace is
-ready to ship its accumulated breaking changes, the staged entries are merged
-into `main` as a single coordinated release.
+When the staged-change mechanism is used, a breaking change can be encoded as a
+structured artifact — a description plus a patch file — that sits in the main
+branch in a `.staged/` directory. Mainline releases continue to flow
+continuously from `main` without ever applying these staged changes, while
+`next` releases are produced by applying all of them in order on top of `main`
+and publishing under the `next` dist-tag. When a workspace is ready to ship its
+accumulated breaking changes, the staged entries are merged into `main` as a
+single coordinated release.
 
 The net effect is that small fixes and additive features ship faster, breaking changes
 are durable, reviewable artifacts that cannot drift, and the core framework can move on
@@ -483,11 +484,14 @@ entry is composed of three things:
    (see [Staged change file format](#staged-change-file-format) for details). Apply
    order is encoded in the entry's slug, not in metadata.
 
-Staged changes are the mechanism for **any change that should ship in a coordinated
-batch with the next named release of the workspace, instead of streaming straight
-into `@latest`**, or that should be available in `@next` previews without ever
-automatically reaching `@latest`. The most common case is breaking changes — those
-are the motivating use case — but the same mechanism is also useful for:
+Staged changes are an **opt-in** mechanism for any change that should ship in a
+coordinated batch with the next named release of the workspace, instead of
+streaming straight into `@latest`, or that should be available in `@next`
+previews without ever automatically reaching `@latest`. Workspaces that don't
+opt in keep shipping breaking changes the traditional way — as regular
+changesets that the next release of the workspace promotes through Version
+Packages. The motivating use case for opting in is breaking changes that need
+to be rolled out carefully, but the same mechanism is also useful for:
 
 - **Experimental features** that should preview through `@next` but stay out of
   `@latest` until they're stabilized (see the `experimental` flag in
