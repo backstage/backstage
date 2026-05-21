@@ -1,0 +1,35 @@
+plugins/notifications-backend/src/schema/openapi/generated/models/NotificationRecipientsOneOf.model.ts
+  s_866eee86222906::t_142eebe8b5c820 20,27-28
+plugins/notifications-backend/src/schema/openapi/generated/apis/Api.server.ts
+  s_866eee86222906::t_142eebe8b5c820 29,96,113
+plugins/notifications-backend/src/schema/openapi/generated/models/OrderField.model.ts
+  s_866eee86222906::t_142eebe8b5c820 1-25
+plugins/notifications-backend/src/schema/openapi/generated/models/index.ts
+  s_866eee86222906::t_142eebe8b5c820 18,35
+plugins/notifications-backend/src/schema/openapi/generated/router.ts
+  s_866eee86222906::t_142eebe8b5c820 80,341-369,381,384
+plugins/notifications-backend/src/schema/openapi/generated/models/EntityRef.model.ts
+  s_866eee86222906::t_142eebe8b5c820 22,25
+docs/.well-known/skills/onboard-to-openapi-server/SKILL.md
+  s_866eee86222906::t_0a0bc26d155ff0 87
+  s_866eee86222906::t_54d1d90239fcaa 127
+plugins/notifications-backend/src/schema/openapi.yaml
+  s_866eee86222906::t_7cdab4208fcafd 279-294,307,309
+  s_866eee86222906::t_196d48a9ebbe78 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.4.9",
+  "base_commit_sha": "1e63deaefd96503bf51e0939524fe963894b1e4d",
+  "prompts": {},
+  "sessions": {
+    "s_866eee86222906": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f33a479-6a81-4828-8977-22a5b04e98dd",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>"
+    }
+  }
+}
