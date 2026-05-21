@@ -580,17 +580,21 @@ that state it carries a single empty changeset and the description "no staged
 changes queued"; this avoids the noise of creating and closing the PR repeatedly as
 staged changes come and go.
 
-The Promote staged PR is opened as a regular pull request — the same shape as a Version
-Packages PR — and the regular review-and-merge process is the one that applies.
-Merging the PR is the signal to ship: it triggers the release through the same
-mainline flow the workspace uses for every other release, with no separate publish
-path. In the typical case the staged set contains breaking changes that bump the
-affected packages' majors. For the `framework` workspace the named release
-identifier always advances to a new `YYNN` regardless of which packages bumped (see
+The Promote staged PR is opened as a regular pull request and goes through the
+regular review-and-merge process. Merging it lands the applied patches and the
+synthesized changesets onto `master`. From that point publishing follows the
+same path the workspace uses for every other release: the changeset bot picks
+the new changesets up on the next push, opens (or updates) the Version Packages
+PR for that workspace, and the eventual merge of that Version Packages PR is
+what triggers the actual `@latest` publish. There is no separate promotion-only
+publish path. In the typical case the staged set contains breaking changes that
+bump the affected packages' majors. For the `framework` workspace the named
+release identifier always advances to a new `YYNN` regardless of which packages
+bumped (see
 [Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle)).
-For every other workspace the per-package bumps come straight from the staged set;
-if every staged change happens to be non-breaking, the resulting bumps are just
-minor or patch.
+For every other workspace the per-package bumps come straight from the staged
+set; if every staged change happens to be non-breaking, the resulting bumps are
+just minor or patch.
 
 Maintainers may manually convert the PR to draft at any time, for example to signal
 that the staged set is not yet ready for review or to defer the release. The bot
