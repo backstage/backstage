@@ -52,16 +52,21 @@ propose to split the repository into multiple independent workspaces, modeled on
 own changesets, its own release cadence, and its own decision on when to ship breaking
 changes.
 
-In addition to the workspace split, this BEP introduces a new "staged change"
-mechanism for breaking changes. A breaking change is no longer a regular changeset
-that bumps a major version the next time the workspace releases. Instead it is
-encoded as a structured staged change — a description plus a patch file — that sits
-in the main branch in a `.staged/` directory. Mainline releases continue to flow
-continuously from `main` without ever applying these staged changes, while `next`
-releases are produced by applying all of them in order on top of `main` and
-publishing under the `next` dist-tag. When a workspace is ready to ship its
-accumulated breaking changes, the staged entries are merged into `main` as a single
-coordinated major release.
+In addition to the workspace split, this BEP introduces a new opt-in "staged
+change" mechanism for breaking changes. Workspaces that want to keep shipping
+breaking changes the traditional way — as regular changesets that the next
+release of the workspace promotes — are free to do so; the staged-change
+mechanism is offered for workspaces that want to roll breaking changes out more
+carefully and on their own schedule. The `framework` workspace is the primary
+intended user, but any workspace can opt in.
+
+A staged change is encoded as a structured artifact — a description plus a patch
+file — that sits in the main branch in a `.staged/` directory. Mainline releases
+continue to flow continuously from `main` without ever applying these staged
+changes, while `next` releases are produced by applying all of them in order on
+top of `main` and publishing under the `next` dist-tag. When a workspace is
+ready to ship its accumulated breaking changes, the staged entries are merged
+into `main` as a single coordinated release.
 
 The net effect is that small fixes and additive features ship faster, breaking changes
 are durable, reviewable artifacts that cannot drift, and the core framework can move on
