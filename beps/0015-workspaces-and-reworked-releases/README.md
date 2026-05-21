@@ -1080,7 +1080,7 @@ that package, not the calendar position of the framework release.
 So while framework release `2604` is the name the Backstage release goes by,
 adopters who look at any individual framework package see version numbers like:
 
-- `@backstage/core-plugin-api@2.4.7`
+- `@backstage/frontend-plugin-api@2.4.7`
 - `@backstage/backend-plugin-api@3.1.0`
 - `@backstage/types@1.0.5`
 
@@ -1096,9 +1096,9 @@ non-breaking changes through the Version Packages PR — patches and minors per 
 usual semver rules:
 
 - **Patch** bumps when a release contains only bug fixes. Example:
-  `core-plugin-api` goes from `2.4.7` to `2.4.8`.
+  `frontend-plugin-api` goes from `2.4.7` to `2.4.8`.
 - **Minor** bumps when a release introduces new non-breaking features. Example:
-  `core-plugin-api` goes from `2.4.8` to `2.5.0`.
+  `frontend-plugin-api` goes from `2.4.8` to `2.5.0`.
 - **Major** bumps only when the package's own API breaks. That happens when a
   staged change for the framework workspace declares a major bump for the package
   and the `Promote staged` PR is merged. Most framework releases will not bump
@@ -1133,7 +1133,7 @@ publishes, three things happen:
 
 For example, on the `2604` → `2610` transition, a typical mix might look like:
 
-- `@backstage/core-plugin-api@2.4.8` → `@backstage/core-plugin-api@3.0.0`
+- `@backstage/frontend-plugin-api@2.4.8` → `@backstage/frontend-plugin-api@3.0.0`
   (had a staged major change)
 - `@backstage/backend-plugin-api@3.1.0` → unchanged (no staged change)
 - `@backstage/types@1.0.5` → unchanged (no staged change)
@@ -1467,7 +1467,7 @@ Each manifest is a JSON document of the form:
   "releaseLine": "2604",
   "packages": [
     {
-      "name": "@backstage/core-plugin-api",
+      "name": "@backstage/frontend-plugin-api",
       "workspace": "framework",
       "version": "2.4.7"
     },
@@ -1717,15 +1717,15 @@ Initial state: `@backstage/plugin-catalog@2.3.0`, `@backstage/plugin-catalog-rea
 #### Worked example: `framework`
 
 Initial state: framework is on release line `2604`. Each framework package is at
-its own current semver — for example, `@backstage/core-plugin-api@2.4.7`,
+its own current semver — for example, `@backstage/frontend-plugin-api@2.4.7`,
 `@backstage/backend-plugin-api@3.1.0`, `@backstage/types@1.0.5`.
 
 1. A staged change in `framework/.staged/` is merged. It declares
-   `core-plugin-api: major`.
-2. `dispatch-next` computes: `@backstage/core-plugin-api@3.0.0-next.0`. Other
+   `frontend-plugin-api: major`.
+2. `dispatch-next` computes: `@backstage/frontend-plugin-api@3.0.0-next.0`. Other
    framework packages are not touched and stay at their `@latest` versions.
 3. A second staged change later declares `backend-plugin-api: minor`.
-   `dispatch-next` republishes `core-plugin-api@3.0.0-next.1` and
+   `dispatch-next` republishes `frontend-plugin-api@3.0.0-next.1` and
    `backend-plugin-api@3.2.0-next.1` together with the shared `-next.1` suffix.
    `types` remains at `1.0.5` on `@latest`.
 4. The `Promote staged (framework)` PR is eventually merged. The named release
