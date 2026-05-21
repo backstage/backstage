@@ -40,10 +40,11 @@ describe('resourcesRoutes', () => {
     auditor.createEvent.mockResolvedValue(auditEvent);
   };
 
+  const nodeEnv = process.env.NODE_ENV || 'development';
   const auth = {
     providers: {
       microsoft: {
-        test: {
+        [nodeEnv]: {
           tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
           clientId: 'microsoft-entra-id-enterprise-application-client-id',
           clientSecret:

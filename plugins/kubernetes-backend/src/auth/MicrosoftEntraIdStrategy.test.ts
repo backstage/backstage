@@ -21,11 +21,13 @@ import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
 import { ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE } from '@backstage/plugin-kubernetes-common';
 
 const logger = mockServices.logger.mock();
+
+const env = process.env.NODE_ENV || 'development';
 const mockConfig = {
   auth: {
     providers: {
       microsoft: {
-        test: {
+        [env]: {
           tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
           clientId: 'microsoft-entra-id-enterprise-application-client-id',
           clientSecret:
@@ -38,7 +40,7 @@ const mockConfig = {
     auth: {
       providers: {
         microsoft: {
-          test: {
+          [env]: {
             scope: 'microsoft-enterprise-app-id/mapped.permission',
           },
         },

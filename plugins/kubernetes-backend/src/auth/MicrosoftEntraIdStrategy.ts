@@ -142,8 +142,9 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
       }
 
       cached.accessToken = newAccessToken;
-    } catch (err: any) {
-      this.logger.error('Unable to fetch Microsoft Entra ID token', err);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      this.logger.error('Unable to fetch Microsoft Entra ID token', error);
 
       // only throw the error if the token has already expired, otherwise re-use existing until we're able to fetch a new token
       if (this.tokenExpired(cached)) {
