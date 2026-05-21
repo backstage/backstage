@@ -568,9 +568,11 @@ On every push to `main` that affects a workspace, CI rebuilds the PR for that
 workspace from scratch:
 
 1. Apply every staged change from `workspaces/<name>/.staged/` in file-name order.
-2. Move each staged change's `description.md` into `.changeset/` so the changeset bot
-   will produce the right version bumps when the PR is merged.
-3. Delete the staged change directories.
+2. For each staged change, synthesize a regular changeset under `.changeset/` from
+   its front-matter `packages` map and its markdown body (with the trailing patch
+   code block stripped), so the changeset bot produces the right version bumps
+   when the PR is merged.
+3. Delete the staged change files from `.staged/`.
 4. Commit the result and force-push to the PR branch.
 
 The PR is created and kept open even when the workspace has no staged changes. In
@@ -790,8 +792,9 @@ the conflicting PR to update the staged change.
    2. Runs `yarn changeset` for the deprecation (regular `minor`/`patch`).
    3. Runs `yarn release stage create <slug>`. The tool snapshots the
       current workspace, drops the author into a scratch state where they apply the
-      removal, then captures the diff into `.staged/<slug>/change.patch` and prompts
-      for a description that becomes `description.md`.
+      removal, then captures the diff and prompts for a description, writing both
+      into a single `.staged/<timestamp>-<slug>.md` file with the description as
+      the markdown body and the diff as a trailing `patch` fenced code block.
    4. Commits. CI verifies the staged change applies cleanly on top of `main`.
 
 3. **Updating an existing staged change.** When a PR conflicts with a queued staged
@@ -844,14 +847,15 @@ version matrix.
 - `check-if-release` looks for `package.json` version bumps in the workspace between
   the previous and current commits (same as community-plugins).
 - `promote-pr` always runs. It applies every staged change in a temporary checkout,
-  converts each entry's `description.md` into a changeset, deletes the `.staged/`
-  directories, and force-pushes the result onto the `Promote staged (<workspace>)`
-  PR branch (see [Promoting staged changes](#promoting-staged-changes)).
+  synthesizes a changeset from each entry's front-matter and markdown body, deletes
+  the entries from `.staged/`, and force-pushes the result onto the
+  `Promote staged (<workspace>)` PR branch (see
+  [Promoting staged changes](#promoting-staged-changes)).
 - `dispatch-next` runs whenever (a) the staged changes set has changed for the
   workspace, or (b) a regular `@latest` release has just shipped for the workspace,
   and only when the workspace has at least one staged change in either case. It
   applies the staged entries to `main` in a temporary checkout, synthesizes a
-  changeset for each entry's `description.md`, runs `yarn changeset version`
+  changeset from each entry's front-matter and markdown body, runs `yarn changeset version`
   against **only** that synthesized set (regular pending changesets in
   `.changeset/` are excluded), suffixes the resulting versions with `-next.<N>`
   from the shared workspace counter, and dispatches a publish with `tag: next`.
@@ -1633,8 +1637,8 @@ resolve them through the normal `@latest` dist-tag.
 
 For each package that is published as `@next`, the base version (the portion
 before `-next.`) is what `yarn changeset version` would produce when given **only
-the changesets synthesized from every staged change's `description.md`** — regular
-pending changesets in `.changeset/` are deliberately excluded. Those regular
+the changesets synthesized from every staged change** — regular pending changesets
+in `.changeset/` are deliberately excluded. Those regular
 changesets ship through the Version Packages PR flow and their bumps appear in a
 future `@latest` release; `@next` does not preview them. This keeps the meaning of
 the `@next` version stable: it reflects exactly the staged batch and nothing else.
