@@ -143,12 +143,12 @@ export function createOAuthRouteHandlers<TProfile>(
         );
         return { refreshToken: result.session.refreshToken };
       },
-      async start({ scope, state, callbackUrl: upstreamCallbackUrl }) {
-        // Use the provider's authenticator to generate the upstream auth URL.
-        // We pass a custom callback URL that points to the CIMD upstream callback endpoint.
-        const startCtx = authenticator.initialize({
-          config,
-          callbackUrl: upstreamCallbackUrl,
+      async start({ scope, sessionId }) {
+        const state = encodeOAuthState({
+          nonce: sessionId,
+          env: 'production',
+          flow: 'cimd_approval',
+          redirectUrl: sessionId,
         });
         const { url } = await authenticator.start(
           {
@@ -156,23 +156,9 @@ export function createOAuthRouteHandlers<TProfile>(
             state,
             req: {} as express.Request,
           },
-          startCtx,
+          authenticatorCtx,
         );
         return { url };
-      },
-      async authenticate(req) {
-        const authCallbackUrl = `${req.protocol}://${req.get('host')}${
-          req.path
-        }`;
-        const authCtx = authenticator.initialize({
-          config,
-          callbackUrl: authCallbackUrl,
-        });
-        const result = await authenticator.authenticate({ req }, authCtx);
-        return {
-          refreshToken: result.session.refreshToken,
-          accessToken: result.session.accessToken,
-        };
       },
     });
   }
@@ -226,6 +212,33 @@ export function createOAuthRouteHandlers<TProfile>(
 
       try {
         state = decodeOAuthState(req.query.state?.toString() ?? '');
+
+        // CIMD/DCR approval flow: upstream provider redirects back here after
+        // the user authenticates. Skip nonce cookie validation (the session ID
+        // in the state serves as CSRF protection) and complete the offline
+        // session instead of the normal web flow.
+        if (state.flow === 'cimd_approval' && options.upstreamRefreshRegistry) {
+          const result = await authenticator.authenticate(
+            { req },
+            authenticatorCtx,
+          );
+
+          if (!result.session.refreshToken) {
+            throw new AuthenticationError(
+              'Upstream provider did not issue a refresh token',
+            );
+          }
+
+          const sessionId = state.redirectUrl!;
+          const cliRedirectUrl =
+            await options.upstreamRefreshRegistry.completeUpstreamAuth({
+              sessionId,
+              refreshToken: result.session.refreshToken,
+            });
+
+          res.redirect(cliRedirectUrl);
+          return;
+        }
 
         if (state.origin) {
           try {

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { Request } from 'express';
-
 /**
  * Result of refreshing a token against an upstream auth provider.
  * @public
@@ -42,6 +40,16 @@ export type UpstreamRefreshFn = (
 ) => Promise<UpstreamRefreshResult>;
 
 /**
+ * Callback invoked when an upstream auth flow completes during CIMD/DCR
+ * approval. Returns the redirect URL for the CLI client.
+ * @public
+ */
+export type OnUpstreamAuthCompleteCallback = (options: {
+  sessionId: string;
+  refreshToken: string;
+}) => Promise<string>;
+
+/**
  * Functions for interacting with an upstream auth provider.
  * @public
  */
@@ -49,10 +57,8 @@ export interface UpstreamProviderEntry {
   refresh: UpstreamRefreshFn;
   start: (options: {
     scope: string;
-    state: string;
-    callbackUrl: string;
+    sessionId: string;
   }) => Promise<{ url: string }>;
-  authenticate: (req: Request) => Promise<UpstreamAuthenticateResult>;
 }
 
 /**
@@ -76,6 +82,7 @@ export class UpstreamRefreshRegistry {
   readonly #providers = new Map<string, UpstreamProviderEntry>();
   readonly #userProviders = new Map<string, string>();
   #onSignIn?: OnSignInCallback;
+  #onUpstreamAuthComplete?: OnUpstreamAuthCompleteCallback;
   #lookupProvider?: (userEntityRef: string) => Promise<string | undefined>;
 
   register(providerId: string, entry: UpstreamProviderEntry): void {
@@ -115,5 +122,19 @@ export class UpstreamRefreshRegistry {
       this.#userProviders.set(userEntityRef, looked);
     }
     return looked;
+  }
+
+  setOnUpstreamAuthComplete(callback: OnUpstreamAuthCompleteCallback): void {
+    this.#onUpstreamAuthComplete = callback;
+  }
+
+  async completeUpstreamAuth(options: {
+    sessionId: string;
+    refreshToken: string;
+  }): Promise<string> {
+    if (!this.#onUpstreamAuthComplete) {
+      throw new Error('No upstream auth completion handler registered');
+    }
+    return this.#onUpstreamAuthComplete(options);
   }
 }

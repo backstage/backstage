@@ -41,6 +41,7 @@ import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcRouter } from './OidcRouter';
+import { OidcService } from './OidcService';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
 import { UpstreamRefreshRegistry } from '@backstage/plugin-auth-node';
@@ -171,18 +172,35 @@ export async function createRouter(
 
   const oidc = await OidcDatabase.create({ database });
 
-  const oidcRouter = OidcRouter.create({
+  const oidcService = OidcService.create({
     auth: options.auth,
     tokenIssuer,
     baseUrl: authUrl,
-    appUrl,
     userInfo,
     oidc,
+    config,
+    logger,
+    offlineAccess: options.offlineAccess,
+    upstreamRefreshRegistry,
+  });
+
+  upstreamRefreshRegistry.setOnUpstreamAuthComplete(
+    async ({ sessionId, refreshToken }) => {
+      return oidcService.completeUpstreamCallback({
+        sessionId,
+        upstreamRefreshToken: refreshToken,
+      });
+    },
+  );
+
+  const oidcRouter = OidcRouter.fromService({
+    oidcService,
+    auth: options.auth,
+    appUrl,
     logger,
     httpAuth,
     config,
-    offlineAccess: options.offlineAccess,
-    upstreamRefreshRegistry,
+    baseUrl: authUrl,
   });
 
   router.use(oidcRouter.getRouter());

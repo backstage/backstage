@@ -475,6 +475,12 @@ export type OnSignInCallback = (
   providerId: string,
 ) => Promise<void>;
 
+// @public
+export type OnUpstreamAuthCompleteCallback = (options: {
+  sessionId: string;
+  refreshToken: string;
+}) => Promise<string>;
+
 // @public (undocumented)
 export type PassportDoneCallback<TResult, TPrivateInfo = never> = (
   err?: Error,
@@ -719,25 +725,11 @@ export const tokenTypes: Readonly<{
 }>;
 
 // @public
-export interface UpstreamAuthenticateResult {
-  // (undocumented)
-  accessToken: string;
-  // (undocumented)
-  refreshToken?: string;
-}
-
-// @public
 export interface UpstreamProviderEntry {
-  // (undocumented)
-  authenticate: (req: Request_2) => Promise<UpstreamAuthenticateResult>;
   // (undocumented)
   refresh: UpstreamRefreshFn;
   // (undocumented)
-  start: (options: {
-    scope: string;
-    state: string;
-    callbackUrl: string;
-  }) => Promise<{
+  start: (options: { scope: string; sessionId: string }) => Promise<{
     url: string;
   }>;
 }
@@ -750,6 +742,11 @@ export type UpstreamRefreshFn = (
 // @public
 export class UpstreamRefreshRegistry {
   // (undocumented)
+  completeUpstreamAuth(options: {
+    sessionId: string;
+    refreshToken: string;
+  }): Promise<string>;
+  // (undocumented)
   get(providerId: string): UpstreamProviderEntry | undefined;
   // (undocumented)
   getProviderForUser(userEntityRef: string): Promise<string | undefined>;
@@ -761,6 +758,8 @@ export class UpstreamRefreshRegistry {
   register(providerId: string, entry: UpstreamProviderEntry): void;
   // (undocumented)
   setOnSignIn(callback: OnSignInCallback): void;
+  // (undocumented)
+  setOnUpstreamAuthComplete(callback: OnUpstreamAuthCompleteCallback): void;
   // (undocumented)
   setProviderLookup(
     lookup: (userEntityRef: string) => Promise<string | undefined>,

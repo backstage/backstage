@@ -48,7 +48,7 @@ export {
   UpstreamRefreshRegistry,
   type UpstreamRefreshFn,
   type UpstreamRefreshResult,
-  type UpstreamAuthenticateResult,
   type UpstreamProviderEntry,
   type OnSignInCallback,
+  type OnUpstreamAuthCompleteCallback,
 } from './UpstreamRefreshRegistry';
