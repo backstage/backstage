@@ -132,6 +132,7 @@ export function createOAuthRouteHandlers<TProfile>(
         {
           refreshToken,
           scope: '',
+          scopeAlreadyGranted: true,
           req: {} as express.Request,
         },
         authenticatorCtx,
