@@ -138,8 +138,9 @@ In the existing router file:
    ```
    (Adjust the import path to the router's location.) The function is async — propagate the `await` up to where the router is constructed.
 2. Move route handlers onto the new router unchanged. The OpenAPI router validates incoming requests against the spec at runtime (response shapes are validated separately via `wrapServer` in tests); if a handler reads `req.body.foo` where the spec says it is `req.body.event.foo`, the spec is wrong, not the handler — go fix the spec and regenerate.
-3. Keep all middleware in the same order (cookie parsers, body parsers, auth, error handlers). Auth/permissions logic is NOT generated and must remain in the router code.
-4. Preserve the function signature and exports of `createRouter`/`router` exactly so callers (the plugin's `*Plugin.ts`) need no change.
+3. Remove request validation that the spec now covers. Anything the OpenAPI validator enforces — required path/query/body params, primitive types, enums, `format`, `minimum`/`maximum`, `minLength`/`pattern`, etc. — should be deleted from the handler. Typical things to strip out: manual `if (!req.body.x) throw new InputError(...)` guards, `typeof req.query.foo !== 'string'` checks, hand-rolled `enum` membership tests, `Number.parseInt`/`.toString()` coercion on values the spec already types correctly. Keep validation the spec _can't_ express — cross-field invariants, auth/permission checks, business-rule guards, lookups against the database.
+4. Keep all middleware in the same order (cookie parsers, body parsers, auth, error handlers). Auth/permissions logic is NOT generated and must remain in the router code.
+5. Preserve the function signature and exports of `createRouter`/`router` exactly so callers (the plugin's `*Plugin.ts`) need no change.
 
 [`plugins/events-backend/src/service/hub/createEventBusRouter.ts`](https://github.com/backstage/backstage/blob/master/plugins/events-backend/src/service/hub/createEventBusRouter.ts) is the canonical example.
 
