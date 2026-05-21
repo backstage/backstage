@@ -51,12 +51,12 @@ packages, changesets, version lines, and release cadence, so a bug fix in one ar
 no longer drags the rest of the repository through a release.
 
 It also introduces an opt-in "staged change" mechanism: a breaking (or otherwise
-held-back) change is committed to `main` as a description plus a patch file under
+held-back) change is committed to `master` as a description plus a patch file under
 a per-workspace `.staged/` directory. Mainline `@latest` releases flow continuously
-from `main` and never apply staged entries, while `@next` releases are produced by
-applying the queued staged entries on top of `main`. When a workspace is ready to
+from `master` and never apply staged entries, while `@next` releases are produced by
+applying the queued staged entries on top of `master`. When a workspace is ready to
 ship its accumulated batch, a bot-maintained `Promote staged` PR merges them into
-`main` as a single coordinated release. This lets a deprecation and its eventual
+`master` as a single coordinated release. This lets a deprecation and its eventual
 removal be authored in the same PR, and keeps the set of queued breaking changes
 verifiable on every push.
 
@@ -83,8 +83,8 @@ problems:
 - There is no structured representation of what breaking changes are queued up. We
   cannot easily generate a "what is coming in the next major" overview, and we cannot
   guarantee that an in-flight breaking change still applies cleanly to the latest
-  `main`.
-- A breaking-change branch that is kept in sync with `main` indefinitely is
+  `master`.
+- A breaking-change branch that is kept in sync with `master` indefinitely is
   operationally expensive and tends to rot.
 - Plugin areas that are stable (e.g. the framework APIs) are coupled to plugin areas
   that want to move quickly (e.g. catalog, scaffolder). A bug-fix release of one plugin
@@ -104,10 +104,10 @@ cleanly, which is what the patch mechanism is designed to solve.
   its own cadence, with its own changeset queue.
 - Move every package — published or private — into a per-area workspace, so that the
   repository root is package-free and is not itself a Yarn workspace.
-- Ship non-breaking changes from `main` continuously, without waiting for a weekly
+- Ship non-breaking changes from `master` continuously, without waiting for a weekly
   release cycle.
 - Represent every queued breaking change as a reviewable artifact that
-  lives in `main` and is verified to apply cleanly on every PR.
+  lives in `master` and is verified to apply cleanly on every PR.
 - Allow a deprecation and its eventual removal to be authored together in a single PR.
 - Produce ongoing `next` releases that preview the result of applying all queued
   breaking patches, while `latest` releases remain non-breaking.
@@ -505,7 +505,7 @@ This means non-breaking changes have two valid paths:
 
 The same entry serves two consumers downstream:
 
-- The **`Promote staged` PR builder** applies the patch to `main` and uses the
+- The **`Promote staged` PR builder** applies the patch to `master` and uses the
   description to synthesize a real changeset, which then drives the eventual
   `@latest` release through the normal Changesets version-and-publish flow
   (see [Promoting staged changes](#promoting-staged-changes)).
@@ -532,11 +532,11 @@ the responsibility of a future contributor.
 
 ### Mainline and next releases from the same branch
 
-This is the central operational property of the proposal. From a single linear `main`
+This is the central operational property of the proposal. From a single linear `master`
 branch:
 
 ```
-                main HEAD
+                master HEAD
                      │
    ┌── apply zero staged changes ──> publish @latest of every changed package
    │                                  (e.g. plugin-catalog 1.42.0)
@@ -556,7 +556,7 @@ workspace has no staged changes. See
 
 There is no long-lived "next" branch. There are no cross-branch merges. The set of
 breaking changes that will be in the next major is exactly the set of patch files
-currently in `main`, which is easy to read, review, list, and reason about.
+currently in `master`, which is easy to read, review, list, and reason about.
 
 ### Promoting staged changes
 
@@ -564,7 +564,7 @@ Every workspace has one persistent, bot-maintained pull request titled
 `Promote staged (<workspace>)`. The PR represents what the next release of the
 workspace would look like if it were cut right now.
 
-On every push to `main` that affects a workspace, CI rebuilds the PR for that
+On every push to `master` that affects a workspace, CI rebuilds the PR for that
 workspace from scratch:
 
 1. Apply every staged change from `workspaces/<name>/.staged/` in file-name order.
@@ -596,9 +596,9 @@ Maintainers may manually convert the PR to draft at any time, for example to sig
 that the staged set is not yet ready for review or to defer the release. The bot
 respects that state and does not convert the PR back from draft to ready on
 subsequent updates; the only thing it does is keep the branch up to date by
-force-pushing on every relevant change to `main`.
+force-pushing on every relevant change to `master`.
 
-Because the PR is force-pushed on every relevant change to `main`, the branch
+Because the PR is force-pushed on every relevant change to `master`, the branch
 protection on the PR's base branch must enable "Dismiss stale pull request
 approvals when new commits are pushed", so that an approval cast before a
 force-push does not carry over to the post-force-push branch. This is the standard
@@ -616,7 +616,7 @@ are out of scope here. The parts that touch the workspace structure are:
   or a workspace and package major-version line
   (e.g. `patch/catalog/@backstage/plugin-catalog@2`).
 - **Branch protection.** Every `patch/**` branch is protected with the same shape
-  as `main`: required reviews, CODEOWNERS-restricted push, all required status
+  as `master`: required reviews, CODEOWNERS-restricted push, all required status
   checks. The published source of an old release line cannot be retroactively
   rewritten.
 - **Eligibility.** Back-ports are only accepted for packages at `1.0.0` or above.
@@ -626,7 +626,7 @@ are out of scope here. The parts that touch the workspace structure are:
   multi-line support model.
 
 As a potential future direction, back-ports could be authored as structured
-artifacts in `main` — for example by extending the staged-change file format
+artifacts in `master` — for example by extending the staged-change file format
 with metadata that points the patch at a past release line — so that the same
 authoring, validation, and review surface is shared by both forward-looking
 staged changes and backward-looking patches. That evolution is intentionally
@@ -695,7 +695,7 @@ notBefore:
   date: 2026-09-01
   # OR: depend on other staged changes being shipped first. References can point to
   # entries in the same workspace or in a different workspace; the gate is satisfied
-  # once the referenced entry has been merged into main.
+  # once the referenced entry has been merged into master.
   staged:
     - framework/20260301-091500-remove-config-mode-flag
     - auth/20260415-152230-rotate-token-format
@@ -766,7 +766,7 @@ Supported top-level front-matter keys:
     This is a legitimate end-state — staging something as experimental does not
     commit the project to ever promoting it.
   - **Graduates the experiment**: opens a separate PR that lands the feature
-    directly in `main` (typically with a regular changeset for the appropriate
+    directly in `master` (typically with a regular changeset for the appropriate
     semver bump) and deletes the staged entry as part of the same PR. The
     feature then ships to `@latest` through the normal Version Packages PR flow,
     independent of any future `Promote staged` PR merge.
@@ -795,7 +795,7 @@ the conflicting PR to update the staged change.
       removal, then captures the diff and prompts for a description, writing both
       into a single `.staged/<timestamp>-<slug>.md` file with the description as
       the markdown body and the diff as a trailing `patch` fenced code block.
-   4. Commits. CI verifies the staged change applies cleanly on top of `main`.
+   4. Commits. CI verifies the staged change applies cleanly on top of `master`.
 
 3. **Updating an existing staged change.** When a PR conflicts with a queued staged
    change, CI fails with a pointer to the failing entry. The author runs
@@ -818,7 +818,7 @@ rebuilt on every push, and a per-workspace `@next` publish that runs whenever th
 staged changes change.
 
 ```
-on push to main:
+on push to master:
 
   find-changed-workspaces
         │
@@ -830,7 +830,7 @@ on push to main:
               ├── job: promote-pr       (always — rebuilds the
               │                           "Promote staged (workspace)" PR by
               │                           applying every entry in .staged/)
-              ├── job: dispatch-latest  (when a release commit is detected on main,
+              ├── job: dispatch-latest  (when a release commit is detected on master,
               │                           dispatches @latest publish to the
               │                           publishing repo)
               └── job: dispatch-next    (when the staged changes would produce a new
@@ -854,7 +854,7 @@ version matrix.
 - `dispatch-next` runs whenever (a) the staged changes set has changed for the
   workspace, or (b) a regular `@latest` release has just shipped for the workspace,
   and only when the workspace has at least one staged change in either case. It
-  applies the staged entries to `main` in a temporary checkout, synthesizes a
+  applies the staged entries to `master` in a temporary checkout, synthesizes a
   changeset from each entry's front-matter and markdown body, runs `yarn changeset version`
   against **only** that synthesized set (regular pending changesets in
   `.changeset/` are excluded), suffixes the resulting versions with `-next.<N>`
@@ -877,7 +877,7 @@ event to the private publishing repository with a `event_type` of
   "client_payload": {
     "workspace": "catalog",
     "sha": "<git sha to publish>",
-    "branch": "main",
+    "branch": "master",
     "tag": "latest"
   }
 }
@@ -890,10 +890,10 @@ and rejects any other value before doing any other work. Adding a new dist-tag
 which is its own reviewed, separately-merged change.
 
 `branch` tells the publishing repo which protected branch the SHA should be
-reachable from. For mainline `@latest` and `@next` releases, the value is `main`.
+reachable from. For mainline `@latest` and `@next` releases, the value is `master`.
 For back-ported patch releases, the value is the specific `patch/<workspace>/...`
 branch the dispatch was triggered from. The publishing repo validates that the
-branch is either `main` or matches the protected `patch/**` pattern listed in
+branch is either `master` or matches the protected `patch/**` pattern listed in
 [Patch releases](#patch-releases) before doing any other work; any other value
 is rejected.
 
@@ -944,15 +944,15 @@ protected branch. The publishing repo enforces two independent checks:
    unless the comparison status is `identical` or `ahead`. The expected branch is
    determined by the dispatch payload:
 
-   - Releases from `main` (mainline `@latest` and `@next`): the expected branch is
-     `main`.
+   - Releases from `master` (mainline `@latest` and `@next`): the expected branch is
+     `master`.
    - Releases from a patch branch (back-ports): the expected branch is the
      `patch/<workspace>/...` branch the dispatch claims to be from. The publishing
      workflow first validates that the claimed branch name matches the protected
      `patch/**` pattern as listed in [Patch releases](#patch-releases); anything
      that doesn't match is rejected without a compare call.
 
-   Because both `main` and `patch/**` branches enforce branch protection with code
+   Because both `master` and `patch/**` branches enforce branch protection with code
    review and required status checks, "the SHA is on the expected protected
    branch" is equivalent to "the commit was reviewed and merged on a protected
    branch".
@@ -965,7 +965,7 @@ protected branch. The publishing repo enforces two independent checks:
 
    - `repository == "backstage/backstage"`
    - `ref` matches the same branch the ancestor check above resolved (either
-     `refs/heads/main` or the specific `refs/heads/patch/<workspace>/...` from the
+     `refs/heads/master` or the specific `refs/heads/patch/<workspace>/...` from the
      dispatch). A mismatch between the dispatched branch and the OIDC `ref`
      rejects the publish.
    - `event_name == "push"`
@@ -1339,7 +1339,7 @@ Backstage release.
 
 #### Build model
 
-The microsite build does not assemble pages from the current state of `main`.
+The microsite build does not assemble pages from the current state of `master`.
 Instead it reads the published state of each workspace and builds against that:
 
 - For each workspace, the build resolves the commit of the most recent
@@ -1348,12 +1348,12 @@ Instead it reads the published state of each workspace and builds against that:
   [Triggering publishing in the private repo](#triggering-publishing-in-the-private-repo)).
 - It then pulls `workspaces/<name>/docs/` from that commit and feeds it into the
   Docusaurus build.
-- The cross-cutting top-level `/docs/` content is taken from the current `main`
+- The cross-cutting top-level `/docs/` content is taken from the current `master`
   directly, since it does not belong to any single workspace and does not have a
   release of its own.
 
 The result is that the published microsite always reflects the docs of the latest
-released state of every workspace, not whatever is sitting in `main`. Adopters
+released state of every workspace, not whatever is sitting in `master`. Adopters
 reading the site see documentation that matches the packages they have installed
 when they pin to the current Backstage release.
 
@@ -1376,7 +1376,7 @@ direct dispatch from the publishing flow if that latency ever becomes a problem.
 A scheduled rebuild that has nothing to do should exit immediately. The docs
 input has a finite, deterministic shape:
 
-- The cross-cutting top-level `/docs/` content at the current `main`.
+- The cross-cutting top-level `/docs/` content at the current `master`.
 - For each workspace, the `workspaces/<name>/docs/` content at the commit
   referenced by the `<workspace>@latest` tag.
 
@@ -1569,7 +1569,7 @@ amount of additional machinery to get it from one side to the other.
 
 The design is intentionally minimal:
 
-1. The release workflow in `backstage/backstage` runs on `push: [main]`. Before
+1. The release workflow in `backstage/backstage` runs on `push: [master]`. Before
    sending its dispatch, it mints a GitHub Actions OIDC token for the configured
    audience scoped to the publishing repo (e.g. `backstage-release`) using the
    built-in
@@ -1590,7 +1590,7 @@ A few details worth being explicit about:
   the publishing repo's workflow. We keep the design fully on GitHub Actions.
 - A leaked dispatch token (PAT or GitHub App credential) cannot publish on its own.
   It can send dispatches, but without a fresh OIDC token from a workflow run on
-  `main` it cannot pass validation. Forging an OIDC token requires compromising
+  `master` it cannot pass validation. Forging an OIDC token requires compromising
   GitHub's signing key, which is outside our threat model.
 - Tokens are single-use as far as the publishing repo is concerned: each dispatch
   carries a fresh token, and validation includes a check that the token has not been
@@ -1650,7 +1650,7 @@ future `@latest` release; `@next` does not preview them. This keeps the meaning 
 the `@next` version stable: it reflects exactly the staged batch and nothing else.
 
 The published code that ships as `@next` is the result of applying every staged
-change to the current `main` (so the runtime behavior matches what the next
+change to the current `master` (so the runtime behavior matches what the next
 coordinated release would actually contain), but the published _version_ is
 derived only from the staged changes.
 
@@ -1689,7 +1689,7 @@ snapshot. The counter is:
   same `-next.<N>` came from the same publish), which is what they actually
   rely on.
 
-The updated `package.json` is committed to `main` by the same workflow that runs the
+The updated `package.json` is committed to `master` by the same workflow that runs the
 publish, so the counter survives across runners.
 
 #### Worked example: `catalog`
@@ -1738,7 +1738,7 @@ its own current semver — for example, `@backstage/core-plugin-api@2.4.7`,
 #### Local previewing
 
 The `next-version` subcommand of the standalone release CLI computes the next
-`@next` identifier deterministically from `main`, the staged changes for the
+`@next` identifier deterministically from `master`, the staged changes for the
 workspace, and `backstage.release.nextCounter`. Running it locally produces the exact version
 strings a real `@next` publish would produce, which makes it easy to inspect what
 the next `@next` would look like without dispatching it.
@@ -1810,13 +1810,13 @@ workspace that has not been migrated yet. There is no flag day.
 
 - **Keep a single workspace, just slow down releases.** Does not solve the
   faster-fixes vs. slower-breaks tension; both audiences are still coupled.
-- **Long-lived `next` branch kept in sync with `main`.** Operationally expensive, breaks down
+- **Long-lived `next` branch kept in sync with `master`.** Operationally expensive, breaks down
   at scale, and provides no structured representation of queued breaking changes.
 - **Treat breaking changes as regular changesets that pile up until the next
   major.** This is essentially today's model. It does not solve deprecation lag
   and does not let us merge breaking changes while also publishing incremental
   non-breaking `@latest` releases from the same branch — once a major-bump
-  changeset lands on `main`, the next Version Packages release of that workspace
+  changeset lands on `master`, the next Version Packages release of that workspace
   ships the major, which is exactly the coupling this BEP exists to break.
 - **Use a separate repository per workspace.** Closer to a true multi-repo layout.
   Rejected on
@@ -1829,7 +1829,7 @@ workspace that has not been migrated yet. There is no flag day.
   hardening step.** The publishing workflow could run inside a GitHub Environment
   configured with required reviewers from `@backstage/maintainers`, so that every
   publish to the `latest` dist-tag pauses until a maintainer clicks "Approve and
-  deploy" — covering both mainline `@latest` from `main` and back-ported
+  deploy" — covering both mainline `@latest` from `master` and back-ported
   `@latest` from `patch/**` branches. `@next` publishes would skip the gate and
   continue to ship without human intervention. The ancestor check and OIDC
   binding in [Publish-time safeguards](#publish-time-safeguards) already make
