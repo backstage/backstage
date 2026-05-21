@@ -44,50 +44,27 @@ creation-date: 2026-05-18
 
 ## Summary
 
-This BEP proposes a restructure of how the `backstage/backstage` repository is organized
-and released. Today the repository is a single Yarn workspace where every package shares
-one release cadence, one changeset queue, and one set of breaking-change windows. We
-propose to split the repository into multiple independent workspaces, modeled on the
-`backstage/community-plugins` layout, where each workspace owns its own packages, its
-own changesets, its own release cadence, and its own decision on when to ship breaking
-changes.
+This BEP proposes restructuring the `backstage/backstage` repository from a single
+Yarn workspace into a set of independent workspaces under a top-level `workspaces/`
+directory, modeled on `backstage/community-plugins`. Each workspace owns its own
+packages, changesets, version lines, and release cadence, so a bug fix in one area
+no longer drags the rest of the repository through a release.
 
-This BEP also changes how the framework is released and versioned. The framework
-workspace adopts a named release identifier of the form `YYNN` (year + cadence
-slot — e.g. `2604`, `2610`), with a target cadence of two releases per year, in
-April and October, aligned with the KubeCon events. The release identifier is a
-workspace-level label only: it names the Backstage release, tags the release in
-git, and keys the release manifest that the Backstage Yarn plugin reads — but
-it does not determine the semver of any individual package. Every package in the
-framework workspace keeps its own independent semver and moves at the pace its
-own API stability allows, so a stable framework package can sit at `1.x.y` for
-years even as the named release identifier advances every six months.
+It also introduces an opt-in "staged change" mechanism: a breaking (or otherwise
+held-back) change is committed to `main` as a description plus a patch file under
+a per-workspace `.staged/` directory. Mainline `@latest` releases flow continuously
+from `main` and never apply staged entries, while `@next` releases are produced by
+applying the queued staged entries on top of `main`. When a workspace is ready to
+ship its accumulated batch, a bot-maintained `Promote staged` PR merges them into
+`main` as a single coordinated release. This lets a deprecation and its eventual
+removal be authored in the same PR, and keeps the set of queued breaking changes
+verifiable on every push.
 
-In addition to the workspace split, this BEP introduces a new opt-in "staged
-change" mechanism for breaking changes. Workspaces that want to keep shipping
-breaking changes the traditional way — as regular changesets that the next
-release of the workspace promotes — are free to do so; the staged-change
-mechanism is offered for workspaces that want to roll breaking changes out more
-carefully and on their own schedule. The `framework` workspace is the primary
-intended user, but any workspace can opt in.
-
-When the staged-change mechanism is used, a breaking change can be encoded as a
-structured artifact — a description plus a patch file — that sits in the main
-branch in a `.staged/` directory. Mainline releases continue to flow
-continuously from `main` without ever applying these staged changes, while
-`next` releases are produced by applying all of them in order on top of `main`
-and publishing under the `next` dist-tag. When a workspace is ready to ship its
-accumulated breaking changes, the staged entries are merged into `main` as a
-single coordinated release.
-
-The net effect is that small fixes and additive features ship faster, breaking changes
-are durable, reviewable artifacts that cannot drift, and the core framework can move on
-a slower, more predictable release cadence without holding back the rest of the
-ecosystem.
-
-The existing patch-release flow is kept mostly as-is, adapted to multiple
-workspaces. See [Patch releases](#patch-releases) for the details that touch the
-workspace structure.
+Finally, the `framework` workspace adopts a date-based release identifier of the
+form `YYNN` (e.g. `2604`, `2610`) that names the Backstage release and keys the
+release manifest. The identifier does not determine the semver of any individual
+package — every framework package keeps its own independent semver and moves at
+the pace its API stability allows.
 
 ## Motivation
 
