@@ -39,6 +39,11 @@ exports.up = async function up(knex) {
       .comment(
         'Upstream auth provider environment (e.g. development, production)',
       );
+
+    table
+      .string('granted_scope')
+      .nullable()
+      .comment('OAuth scopes granted for this session');
   });
 
   await knex.schema.alterTable('oauth_authorization_sessions', table => {
@@ -75,5 +80,6 @@ exports.down = async function down(knex) {
     table.dropColumn('upstream_token_key');
     table.dropColumn('auth_provider_id');
     table.dropColumn('auth_provider_env');
+    table.dropColumn('granted_scope');
   });
 };

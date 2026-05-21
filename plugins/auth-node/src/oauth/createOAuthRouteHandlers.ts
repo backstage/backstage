@@ -127,11 +127,11 @@ export function createOAuthRouteHandlers<TProfile>(
   });
 
   return {
-    async programmaticRefresh(refreshToken) {
+    async programmaticRefresh(refreshToken, _env, scope) {
       const result = await authenticator.refresh(
         {
           refreshToken,
-          scope: '',
+          scope: scope ?? '',
           scopeAlreadyGranted: true,
           req: {} as express.Request,
         },

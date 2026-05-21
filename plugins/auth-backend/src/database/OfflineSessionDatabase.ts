@@ -27,6 +27,7 @@ type DbOfflineSessionRow = {
   upstream_token_key: string | null;
   auth_provider_id: string | null;
   auth_provider_env: string | null;
+  granted_scope: string | null;
   created_at: Date;
   last_used_at: Date;
 };
@@ -43,6 +44,7 @@ export type OfflineSession = {
   upstreamTokenKey: string | null;
   authProviderId: string | null;
   authProviderEnv: string | null;
+  grantedScope: string | null;
   createdAt: Date;
   lastUsedAt: Date;
 };
@@ -59,6 +61,7 @@ export type CreateOfflineSessionOptions = {
   upstreamTokenKey?: string;
   authProviderId?: string;
   authProviderEnv?: string;
+  grantedScope?: string;
 };
 
 /**
@@ -141,6 +144,7 @@ export class OfflineSessionDatabase {
         upstream_token_key: options.upstreamTokenKey ?? null,
         auth_provider_id: options.authProviderId ?? null,
         auth_provider_env: options.authProviderEnv ?? null,
+        granted_scope: options.grantedScope ?? null,
         created_at: trx.fn.now(),
         last_used_at: trx.fn.now(),
       });
@@ -277,6 +281,7 @@ export class OfflineSessionDatabase {
       upstreamTokenKey: row.upstream_token_key,
       authProviderId: row.auth_provider_id,
       authProviderEnv: row.auth_provider_env,
+      grantedScope: row.granted_scope,
       createdAt: new Date(row.created_at),
       lastUsedAt: new Date(row.last_used_at),
     };

@@ -701,6 +701,7 @@ export class OidcService {
           upstreamRefreshToken,
           authProviderId,
           authProviderEnv: session.authProviderEnv,
+          grantedScope: session.scope ?? undefined,
         });
       } catch (err) {
         this.logger.warn(
@@ -739,7 +740,12 @@ export class OidcService {
         tokenIssuer: this.tokenIssuer,
         clientId: params.clientId,
         upstreamRefresh: providers
-          ? async ({ authProviderId, refreshToken: upstreamToken, env }) => {
+          ? async ({
+              authProviderId,
+              refreshToken: upstreamToken,
+              env,
+              scope,
+            }) => {
               const provider = providers[authProviderId];
               if (!provider?.programmaticRefresh) {
                 throw new AuthenticationError(
@@ -749,6 +755,7 @@ export class OidcService {
               const result = await provider.programmaticRefresh(
                 upstreamToken,
                 env,
+                scope,
               );
               return result ?? {};
             }

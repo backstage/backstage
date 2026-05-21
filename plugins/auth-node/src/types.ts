@@ -272,6 +272,7 @@ export interface AuthProviderRouteHandlers {
   programmaticRefresh?(
     refreshToken: string,
     env?: string,
+    scope?: string,
   ): Promise<{ refreshToken?: string } | undefined>;
 }
 

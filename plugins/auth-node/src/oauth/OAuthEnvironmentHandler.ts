@@ -68,12 +68,13 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
   async programmaticRefresh(
     refreshToken: string,
     env?: string,
+    scope?: string,
   ): Promise<{ refreshToken?: string } | undefined> {
     if (!env) {
       return undefined;
     }
     const handler = this.getProviderForEnv(env);
-    return handler.programmaticRefresh?.(refreshToken);
+    return handler.programmaticRefresh?.(refreshToken, undefined, scope);
   }
 
   private getEnvFromRequest(req: express.Request): string | undefined {

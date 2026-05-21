@@ -57,6 +57,7 @@ export type UpstreamRefreshFn = (options: {
   authProviderId: string;
   refreshToken: string;
   env?: string;
+  scope?: string;
 }) => Promise<UpstreamRefreshResult>;
 
 /**
@@ -206,6 +207,7 @@ export class OfflineAccessService {
     upstreamRefreshToken?: string;
     authProviderId?: string;
     authProviderEnv?: string;
+    grantedScope?: string;
   }): Promise<string> {
     const {
       userEntityRef,
@@ -213,6 +215,7 @@ export class OfflineAccessService {
       upstreamRefreshToken,
       authProviderId,
       authProviderEnv,
+      grantedScope,
     } = options;
 
     const sessionId = uuid();
@@ -238,6 +241,7 @@ export class OfflineAccessService {
       upstreamTokenKey,
       authProviderId,
       authProviderEnv,
+      grantedScope,
     });
 
     this.#logger.debug(
@@ -325,6 +329,7 @@ export class OfflineAccessService {
           authProviderId: session.authProviderId,
           refreshToken: upstreamRefreshToken,
           env: session.authProviderEnv ?? undefined,
+          scope: session.grantedScope ?? undefined,
         });
       } catch (error) {
         this.#logger.info(
