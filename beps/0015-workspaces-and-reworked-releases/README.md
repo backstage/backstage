@@ -970,7 +970,7 @@ protected branch. The publishing repo enforces two independent checks:
      rejects the publish.
    - `event_name == "push"`
    - `workflow_ref` matches an allow-listed workflow file in `backstage/backstage`
-     (`.github/workflows/release_workspace.yml` and any other release entry points).
+     (`.github/workflows/release-workspace.yml` and any other release entry points).
 
    This cryptographically ties the dispatched SHA to a workflow run that GitHub itself
    agrees executed on the expected protected branch, defending against forged
