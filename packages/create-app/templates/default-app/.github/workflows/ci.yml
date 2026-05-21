@@ -1,0 +1,69 @@
+# Documentation: https://backstage.io/docs/getting-started/ci
+name: PR CI build
+
+on:
+  pull_request: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=4096
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      # Beginning of yarn setup
+      - name: use node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 24.x
+          registry-url: https://registry.npmjs.org/
+      - name: cache all node_modules
+        id: cache-modules
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+      - name: find location of global yarn cache
+        id: yarn-cache
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - name: cache global yarn cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: yarn install
+        run: yarn install --immutable
+      # End of yarn setup
+
+      - name: lint
+        run: yarn backstage-cli repo lint
+
+      - name: deprecations
+        run: yarn backstage-cli repo list-deprecations
+
+      - name: type checking and declarations
+        run: yarn tsc:full
+
+      - name: build
+        run: yarn build:all
+
+      - name: tests
+        run: yarn backstage-cli repo test
+
+      - name: config check
+        run: |
+          yarn backstage-cli config:check --lax --strict
+          yarn backstage-cli config:check --lax --strict --config app-config.yaml --config app-config.production.yaml
+
+      - name: docker build
+        env:
+          DOCKER_BUILDKIT: 1
+        run: yarn build-image
