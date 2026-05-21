@@ -1168,10 +1168,13 @@ as for every other workspace: a maintainer reviewing and merging the
 `Promote staged (framework)` PR (see
 [Promoting staged changes](#promoting-staged-changes)). The
 calendar-driven behavior is in the identifier itself: `YY` is the current two-digit
-year and `NN` is whichever is larger of the current calendar month and one greater
-than the highest `NN` shipped so far this year. The counter restarts at the new
-year. The CLI computes the next identifier deterministically from the current date
-and the highest `NN` already published in the year.
+year and `NN` is picked according to the rules in
+[Identifier format](#identifier-format) — the next unused cadence slot
+(`04` or `10` under the planned cadence) by default, or a non-cadence slot for an
+off-cadence release. The CLI computes the next identifier deterministically from
+the configured cadence slots, the current date, and the highest `NN` already
+published in the year. The slot number is not derived from the ship date, so a
+release planned for April that ends up merging in May still publishes as `2604`.
 
 The framework release identifier doubles as the Backstage release identifier;
 see [Backstage release manifest](#backstage-release-manifest) for how non-framework
