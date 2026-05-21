@@ -263,6 +263,16 @@ export interface AuthProviderRouteHandlers {
    * - removes the refresh token cookie
    */
   logout?(req: Request, res: Response): Promise<void>;
+
+  /**
+   * (Optional) Programmatic refresh of an upstream token, without HTTP
+   * request/response ceremony. Used by the CIMD/DCR offline session system
+   * to validate sessions against the upstream auth provider.
+   */
+  programmaticRefresh?(
+    refreshToken: string,
+    env?: string,
+  ): Promise<{ refreshToken?: string } | undefined>;
 }
 
 /**
@@ -320,12 +330,6 @@ export type AuthProviderFactory = (options: {
    * The function used to resolve cookie configuration based on the auth provider options.
    */
   cookieConfigurer?: CookieConfigurer;
-
-  /** @public */
-  providerRefreshFns?: Map<
-    string,
-    (token: string) => Promise<{ refreshToken?: string }>
-  >;
 }) => AuthProviderRouteHandlers;
 
 /** @public */

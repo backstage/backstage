@@ -100,10 +100,11 @@ export class OidcService {
   private readonly config: RootConfigService;
   private readonly logger: LoggerService;
   private readonly offlineAccess?: OfflineAccessService;
-  private providerRefreshFns?: Map<
-    string,
-    (token: string) => Promise<{ refreshToken?: string }>
-  >;
+  private readonly providers?: {
+    [
+      providerId: string
+    ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
+  };
 
   private constructor(
     auth: AuthService,
@@ -114,6 +115,11 @@ export class OidcService {
     config: RootConfigService,
     logger: LoggerService,
     offlineAccess?: OfflineAccessService,
+    providers?: {
+      [
+        providerId: string
+      ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
+    },
   ) {
     this.auth = auth;
     this.tokenIssuer = tokenIssuer;
@@ -123,6 +129,7 @@ export class OidcService {
     this.config = config;
     this.logger = logger;
     this.offlineAccess = offlineAccess;
+    this.providers = providers;
   }
 
   static create(options: {
@@ -134,6 +141,11 @@ export class OidcService {
     config: RootConfigService;
     logger: LoggerService;
     offlineAccess?: OfflineAccessService;
+    providers?: {
+      [
+        providerId: string
+      ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
+    };
   }) {
     return new OidcService(
       options.auth,
@@ -144,13 +156,8 @@ export class OidcService {
       options.config,
       options.logger,
       options.offlineAccess,
+      options.providers,
     );
-  }
-
-  setProviderRefreshFns(
-    fns: Map<string, (token: string) => Promise<{ refreshToken?: string }>>,
-  ) {
-    this.providerRefreshFns = fns;
   }
 
   public getConfiguration() {
@@ -459,10 +466,8 @@ export class OidcService {
         : undefined;
 
     if (authProviderId) {
-      const providerConfig = this.config.getOptionalConfig(
-        `auth.providers.${authProviderId}`,
-      );
-      const env = providerConfig?.keys()[0] ?? 'development';
+      const env =
+        this.config.getOptionalString('auth.environment') ?? 'development';
 
       const startUrl = new URL(`${this.baseUrl}/${authProviderId}/start`);
       startUrl.searchParams.set('env', env);
@@ -479,8 +484,9 @@ export class OidcService {
   public async completeUpstreamCallback(opts: {
     sessionId: string;
     upstreamRefreshToken: string;
+    authProviderEnv?: string;
   }): Promise<string> {
-    const { sessionId, upstreamRefreshToken } = opts;
+    const { sessionId, upstreamRefreshToken, authProviderEnv } = opts;
 
     const session = await this.oidc.getAuthorizationSession({ id: sessionId });
     if (!session) {
@@ -510,6 +516,7 @@ export class OidcService {
       id: sessionId,
       encryptedUpstreamToken,
       authProviderId,
+      authProviderEnv,
     });
 
     return this.#createAuthCodeRedirect(session, key);
@@ -693,6 +700,7 @@ export class OidcService {
           oidcClientId: session.clientId,
           upstreamRefreshToken,
           authProviderId,
+          authProviderEnv: session.authProviderEnv,
         });
       } catch (err) {
         this.logger.warn(
@@ -724,21 +732,25 @@ export class OidcService {
       throw new InputError('Refresh tokens are not enabled');
     }
 
-    const providerRefreshFns = this.providerRefreshFns;
+    const providers = this.providers;
     const { accessToken, refreshToken } =
       await this.offlineAccess.refreshAccessToken({
         refreshToken: params.refreshToken,
         tokenIssuer: this.tokenIssuer,
         clientId: params.clientId,
-        upstreamRefresh: providerRefreshFns
-          ? async ({ authProviderId, refreshToken: upstreamToken }) => {
-              const refreshFn = providerRefreshFns.get(authProviderId);
-              if (!refreshFn) {
+        upstreamRefresh: providers
+          ? async ({ authProviderId, refreshToken: upstreamToken, env }) => {
+              const provider = providers[authProviderId];
+              if (!provider?.programmaticRefresh) {
                 throw new AuthenticationError(
                   `No upstream refresh available for provider '${authProviderId}'`,
                 );
               }
-              return refreshFn(upstreamToken);
+              const result = await provider.programmaticRefresh(
+                upstreamToken,
+                env,
+              );
+              return result ?? {};
             }
           : undefined,
       });

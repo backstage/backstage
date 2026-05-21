@@ -176,17 +176,14 @@ export class OidcRouter {
     httpAuth: HttpAuthService;
     config: RootConfigService;
     offlineAccess?: OfflineAccessService;
-    providerRefreshFns?: Map<
-      string,
-      (token: string) => Promise<{ refreshToken?: string }>
-    >;
+    providers?: {
+      [
+        providerId: string
+      ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
+    };
   }) {
-    const oidcService = OidcService.create(options);
-    if (options.providerRefreshFns) {
-      oidcService.setProviderRefreshFns(options.providerRefreshFns);
-    }
     return new OidcRouter(
-      oidcService,
+      OidcService.create(options),
       options.logger,
       options.auth,
       options.appUrl,
@@ -397,6 +394,7 @@ export class OidcRouter {
               req.params,
             );
             const upstreamRefreshToken = req.query.token?.toString();
+            const authProviderEnv = req.query.env?.toString();
 
             if (!upstreamRefreshToken) {
               throw new OidcError(
@@ -409,6 +407,7 @@ export class OidcRouter {
             const redirectUrl = await this.oidc.completeUpstreamCallback({
               sessionId,
               upstreamRefreshToken,
+              authProviderEnv,
             });
 
             res.redirect(redirectUrl);

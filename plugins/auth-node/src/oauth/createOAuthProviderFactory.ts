@@ -58,7 +58,6 @@ export function createOAuthProviderFactory<TProfile>(options: {
         stateTransform: options.stateTransform,
         profileTransform: options.profileTransform,
         signInResolver,
-        providerRefreshFns: ctx.providerRefreshFns,
       });
     });
   };

@@ -51,6 +51,7 @@ type OAuthAuthorizationSessionRow = {
   expires_at: Date | string;
   encrypted_upstream_token: string | null;
   auth_provider_id: string | null;
+  auth_provider_env: string | null;
 };
 
 type OidcAuthorizationCodeRow = {
@@ -86,6 +87,7 @@ export type AuthorizationSession = {
   expiresAt: Date;
   encryptedUpstreamToken?: string;
   authProviderId?: string;
+  authProviderEnv?: string;
 };
 
 export type ConsentRequest = {
@@ -357,6 +359,7 @@ export class OidcDatabase {
       expires_at: toDate(session.expiresAt),
       encrypted_upstream_token: session.encryptedUpstreamToken,
       auth_provider_id: session.authProviderId,
+      auth_provider_env: session.authProviderEnv,
     };
   }
 
@@ -378,6 +381,7 @@ export class OidcDatabase {
       expiresAt: toDate(row.expires_at),
       encryptedUpstreamToken: row.encrypted_upstream_token ?? undefined,
       authProviderId: row.auth_provider_id ?? undefined,
+      authProviderEnv: row.auth_provider_env ?? undefined,
     };
   }
 

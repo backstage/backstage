@@ -142,12 +142,7 @@ export async function createRouter(
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
-  const providerRefreshFns = new Map<
-    string,
-    (token: string) => Promise<{ refreshToken?: string }>
-  >();
-
-  bindProviderRouters(router, {
+  const configuredProviders = bindProviderRouters(router, {
     providers: providerFactories,
     appUrl,
     baseUrl: authUrl,
@@ -155,7 +150,6 @@ export async function createRouter(
     ...options,
     auth: options.auth,
     userInfo,
-    providerRefreshFns,
   });
 
   const oidc = await OidcDatabase.create({ database });
@@ -171,7 +165,7 @@ export async function createRouter(
     httpAuth,
     config,
     offlineAccess: options.offlineAccess,
-    providerRefreshFns,
+    providers: configuredProviders,
   });
 
   router.use(oidcRouter.getRouter());

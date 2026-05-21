@@ -20,6 +20,7 @@ import { NotFoundError, toError } from '@backstage/errors';
 import {
   AuthOwnershipResolver,
   AuthProviderFactory,
+  AuthProviderRouteHandlers,
 } from '@backstage/plugin-auth-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import express from 'express';
@@ -44,12 +45,8 @@ export function bindProviderRouters(
     userInfo: UserInfoDatabase;
     ownershipResolver?: AuthOwnershipResolver;
     catalog: CatalogService;
-    providerRefreshFns?: Map<
-      string,
-      (token: string) => Promise<{ refreshToken?: string }>
-    >;
   },
-) {
+): { [providerId: string]: AuthProviderRouteHandlers } {
   const {
     providers,
     appUrl,
@@ -66,6 +63,9 @@ export function bindProviderRouters(
   const providersConfig = config.getOptionalConfig('auth.providers');
 
   const isOriginAllowed = createOriginFilter(config);
+  const configuredProviders: {
+    [providerId: string]: AuthProviderRouteHandlers;
+  } = {};
 
   for (const [providerId, providerFactory] of Object.entries(providers)) {
     if (providersConfig?.has(providerId)) {
@@ -92,8 +92,9 @@ export function bindProviderRouters(
             userInfo,
             authProviderId: providerId,
           }),
-          providerRefreshFns: options.providerRefreshFns,
         });
+
+        configuredProviders[providerId] = provider;
 
         const r = Router();
 
@@ -139,6 +140,8 @@ export function bindProviderRouters(
       });
     }
   }
+
+  return configuredProviders;
 }
 
 export function createOriginFilter(

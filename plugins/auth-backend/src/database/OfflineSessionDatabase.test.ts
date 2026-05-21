@@ -385,6 +385,7 @@ describe('OfflineSessionDatabase', () => {
           tokenHash: 'hash-1',
           upstreamTokenKey: null,
           authProviderId: null,
+          authProviderEnv: null,
           createdAt: DateTime.now().toJSDate(),
           lastUsedAt: DateTime.now()
             .minus({ seconds: TOKEN_LIFETIME_SECONDS + 1 })
@@ -402,6 +403,7 @@ describe('OfflineSessionDatabase', () => {
           tokenHash: 'hash-1',
           upstreamTokenKey: null,
           authProviderId: null,
+          authProviderEnv: null,
           createdAt: DateTime.now()
             .minus({ seconds: MAX_ROTATION_LIFETIME_SECONDS + 1 })
             .toJSDate(),
@@ -419,6 +421,7 @@ describe('OfflineSessionDatabase', () => {
           tokenHash: 'hash-1',
           upstreamTokenKey: null,
           authProviderId: null,
+          authProviderEnv: null,
           createdAt: DateTime.now().toJSDate(),
           lastUsedAt: DateTime.now().toJSDate(),
         };

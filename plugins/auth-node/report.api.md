@@ -55,12 +55,6 @@ export type AuthProviderFactory = (options: {
   appUrl: string;
   isOriginAllowed: (origin: string) => boolean;
   cookieConfigurer?: CookieConfigurer;
-  providerRefreshFns?: Map<
-    string,
-    (token: string) => Promise<{
-      refreshToken?: string;
-    }>
-  >;
 }) => AuthProviderRouteHandlers;
 
 // @public (undocumented)
@@ -75,6 +69,15 @@ export interface AuthProviderRegistrationOptions {
 export interface AuthProviderRouteHandlers {
   frameHandler(req: Request_2, res: Response_2): Promise<void>;
   logout?(req: Request_2, res: Response_2): Promise<void>;
+  programmaticRefresh?(
+    refreshToken: string,
+    env?: string,
+  ): Promise<
+    | {
+        refreshToken?: string;
+      }
+    | undefined
+  >;
   refresh?(req: Request_2, res: Response_2): Promise<void>;
   start(req: Request_2, res: Response_2): Promise<void>;
 }
@@ -400,6 +403,16 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
     factoryFunc: (envConfig: Config) => AuthProviderRouteHandlers,
   ): OAuthEnvironmentHandler;
   // (undocumented)
+  programmaticRefresh(
+    refreshToken: string,
+    env?: string,
+  ): Promise<
+    | {
+        refreshToken?: string;
+      }
+    | undefined
+  >;
+  // (undocumented)
   refresh(req: express.Request, res: express.Response): Promise<void>;
   // (undocumented)
   start(req: express.Request, res: express.Response): Promise<void>;
@@ -425,13 +438,6 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   // (undocumented)
   providerId: string;
-  // (undocumented)
-  providerRefreshFns?: Map<
-    string,
-    (token: string) => Promise<{
-      refreshToken?: string;
-    }>
-  >;
   // (undocumented)
   resolverContext: AuthResolverContext;
   // (undocumented)

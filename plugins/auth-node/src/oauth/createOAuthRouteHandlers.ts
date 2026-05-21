@@ -60,11 +60,6 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   cookieConfigurer?: CookieConfigurer;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
-  /** @public */
-  providerRefreshFns?: Map<
-    string,
-    (token: string) => Promise<{ refreshToken?: string }>
-  >;
 }
 
 /** @internal */
@@ -131,8 +126,8 @@ export function createOAuthRouteHandlers<TProfile>(
     additionalScopes: options.additionalScopes,
   });
 
-  if (options.providerRefreshFns) {
-    options.providerRefreshFns.set(providerId, async refreshToken => {
+  return {
+    async programmaticRefresh(refreshToken) {
       const result = await authenticator.refresh(
         {
           refreshToken,
@@ -141,11 +136,15 @@ export function createOAuthRouteHandlers<TProfile>(
         },
         authenticatorCtx,
       );
-      return { refreshToken: result.session.refreshToken };
-    });
-  }
 
-  return {
+      const { profile } = await profileTransform(result, resolverContext);
+
+      if (signInResolver) {
+        await signInResolver({ profile, result }, resolverContext);
+      }
+
+      return { refreshToken: result.session.refreshToken };
+    },
     async start(
       this: never,
       req: express.Request,
@@ -220,6 +219,7 @@ export function createOAuthRouteHandlers<TProfile>(
             `${baseUrl}/v1/sessions/${sessionId}/upstream-complete`,
           );
           completeUrl.searchParams.set('token', result.session.refreshToken);
+          completeUrl.searchParams.set('env', state.env);
 
           res.redirect(completeUrl.toString());
           return;

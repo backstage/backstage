@@ -32,6 +32,13 @@ exports.up = async function up(knex) {
       .string('auth_provider_id')
       .nullable()
       .comment('Upstream auth provider ID used to refresh the upstream token');
+
+    table
+      .string('auth_provider_env')
+      .nullable()
+      .comment(
+        'Upstream auth provider environment (e.g. development, production)',
+      );
   });
 
   await knex.schema.alterTable('oauth_authorization_sessions', table => {
@@ -46,6 +53,11 @@ exports.up = async function up(knex) {
       .string('auth_provider_id')
       .nullable()
       .comment('Upstream auth provider ID for this session');
+
+    table
+      .string('auth_provider_env')
+      .nullable()
+      .comment('Upstream auth provider environment for this session');
   });
 };
 
@@ -56,10 +68,12 @@ exports.down = async function down(knex) {
   await knex.schema.alterTable('oauth_authorization_sessions', table => {
     table.dropColumn('encrypted_upstream_token');
     table.dropColumn('auth_provider_id');
+    table.dropColumn('auth_provider_env');
   });
 
   await knex.schema.alterTable('offline_sessions', table => {
     table.dropColumn('upstream_token_key');
     table.dropColumn('auth_provider_id');
+    table.dropColumn('auth_provider_env');
   });
 };

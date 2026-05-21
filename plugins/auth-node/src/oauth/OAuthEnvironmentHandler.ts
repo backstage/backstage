@@ -43,7 +43,7 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
   ) {}
 
   async start(req: express.Request, res: express.Response): Promise<void> {
-    const provider = this.getProviderForEnv(req);
+    const provider = this.getProviderForReq(req);
     await provider.start(req, res);
   }
 
@@ -51,18 +51,29 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
     req: express.Request,
     res: express.Response,
   ): Promise<void> {
-    const provider = this.getProviderForEnv(req);
+    const provider = this.getProviderForReq(req);
     await provider.frameHandler(req, res);
   }
 
   async refresh(req: express.Request, res: express.Response): Promise<void> {
-    const provider = this.getProviderForEnv(req);
+    const provider = this.getProviderForReq(req);
     await provider.refresh?.(req, res);
   }
 
   async logout(req: express.Request, res: express.Response): Promise<void> {
-    const provider = this.getProviderForEnv(req);
+    const provider = this.getProviderForReq(req);
     await provider.logout?.(req, res);
+  }
+
+  async programmaticRefresh(
+    refreshToken: string,
+    env?: string,
+  ): Promise<{ refreshToken?: string } | undefined> {
+    if (!env) {
+      return undefined;
+    }
+    const handler = this.getProviderForEnv(env);
+    return handler.programmaticRefresh?.(refreshToken);
   }
 
   private getEnvFromRequest(req: express.Request): string | undefined {
@@ -78,13 +89,17 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
     return env;
   }
 
-  private getProviderForEnv(req: express.Request): AuthProviderRouteHandlers {
-    const env: string | undefined = this.getEnvFromRequest(req);
+  private getProviderForReq(req: express.Request): AuthProviderRouteHandlers {
+    const env = this.getEnvFromRequest(req);
 
     if (!env) {
       throw new InputError(`Must specify 'env' query to select environment`);
     }
 
+    return this.getProviderForEnv(env);
+  }
+
+  private getProviderForEnv(env: string): AuthProviderRouteHandlers {
     const handler = this.handlers.get(env);
     if (!handler) {
       throw new NotFoundError(

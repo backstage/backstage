@@ -172,6 +172,7 @@ describe('createOAuthRouteHandlers', () => {
       frameHandler: expect.any(Function),
       refresh: expect.any(Function),
       logout: expect.any(Function),
+      programmaticRefresh: expect.any(Function),
     });
   });
 

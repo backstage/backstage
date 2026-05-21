@@ -6,6 +6,7 @@
 
 | Column                     | Type                       | Nullable | Max Length | Default           |
 | -------------------------- | -------------------------- | -------- | ---------- | ----------------- |
+| `auth_provider_env`        | `character varying`        | true     | 255        | -                 |
 | `auth_provider_id`         | `character varying`        | true     | 255        | -                 |
 | `client_id`                | `character varying`        | false    | 255        | -                 |
 | `code_challenge`           | `character varying`        | true     | 255        | -                 |
@@ -31,6 +32,7 @@
 
 | Column               | Type                       | Nullable | Max Length | Default             |
 | -------------------- | -------------------------- | -------- | ---------- | ------------------- |
+| `auth_provider_env`  | `character varying`        | true     | 255        | -                   |
 | `auth_provider_id`   | `character varying`        | true     | 255        | -                   |
 | `created_at`         | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
 | `id`                 | `character varying`        | false    | 255        | -                   |
