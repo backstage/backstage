@@ -449,22 +449,13 @@ export class OidcService {
     });
 
     const scopes = session.scope?.split(' ') ?? [];
-    const needsUpstream =
-      scopes.includes('offline_access') &&
-      this.offlineAccess &&
-      this.upstreamRefreshRegistry;
+    const upstreamEntry =
+      scopes.includes('offline_access') && this.offlineAccess
+        ? await this.#getUpstreamEntry(userEntityRef)
+        : undefined;
 
-    if (needsUpstream) {
-      const signInProviderId = await this.#getSignInProvider(userEntityRef);
-
-      const entry = this.upstreamRefreshRegistry!.get(signInProviderId);
-      if (!entry) {
-        throw new InputError(
-          `No auth provider '${signInProviderId}' registered for upstream refresh`,
-        );
-      }
-
-      const { url } = await entry.start({
+    if (upstreamEntry) {
+      const { url } = await upstreamEntry.start({
         scope: 'openid offline_access',
         sessionId: session.id,
       });
@@ -492,7 +483,13 @@ export class OidcService {
       throw new AuthenticationError('No user associated with session');
     }
 
-    const authProviderId = await this.#getSignInProvider(session.userEntityRef);
+    const upstreamEntry = await this.#getUpstreamEntry(session.userEntityRef);
+    if (!upstreamEntry) {
+      throw new AuthenticationError(
+        'Cannot determine sign-in provider for user',
+      );
+    }
+    const { authProviderId } = upstreamEntry;
 
     // Encrypt the upstream token and store the ciphertext on the session.
     // The decryption key is embedded in the auth code sent to the client,
@@ -537,25 +534,25 @@ export class OidcService {
     return redirectUrl.toString();
   }
 
-  async #getSignInProvider(userEntityRef: string): Promise<string> {
+  async #getUpstreamEntry(userEntityRef: string): Promise<
+    | (import('@backstage/plugin-auth-node').UpstreamProviderEntry & {
+        authProviderId: string;
+      })
+    | undefined
+  > {
+    if (!this.upstreamRefreshRegistry) {
+      return undefined;
+    }
     const info = await this.userInfo.getUserInfo(userEntityRef);
     const providerId = info?.claims?.authProviderId as string | undefined;
-
     if (!providerId) {
-      throw new InputError(
-        `Cannot determine sign-in provider for user '${userEntityRef}'. ` +
-          'The user must sign in via a web browser before approving offline sessions.',
-      );
+      return undefined;
     }
-
-    const entry = this.upstreamRefreshRegistry?.get(providerId);
+    const entry = this.upstreamRefreshRegistry.get(providerId);
     if (!entry) {
-      throw new InputError(
-        `No auth provider '${providerId}' registered for upstream refresh`,
-      );
+      return undefined;
     }
-
-    return providerId;
+    return { ...entry, authProviderId: providerId };
   }
 
   public async getAuthorizationSessionById(opts: {

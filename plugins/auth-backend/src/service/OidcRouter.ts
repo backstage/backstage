@@ -180,10 +180,7 @@ export class OidcRouter {
     upstreamRefreshRegistry?: UpstreamRefreshRegistry;
   }) {
     return OidcRouter.fromService({
-      oidcService: OidcService.create({
-        ...options,
-        upstreamRefreshRegistry: options.upstreamRefreshRegistry,
-      }),
+      oidcService: OidcService.create(options),
       auth: options.auth,
       appUrl: options.appUrl,
       logger: options.logger,
