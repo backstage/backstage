@@ -1,0 +1,20 @@
+docs/.well-known/skills/onboard-to-openapi-server/SKILL.md
+  s_866eee86222906::t_17c34c960413d0 142-143
+  s_866eee86222906::t_5e0f8bf50cb8b9 141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.4.9",
+  "base_commit_sha": "2a3dc0df54f17553e95c290edf30f61756e72fcb",
+  "prompts": {},
+  "sessions": {
+    "s_866eee86222906": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f33a479-6a81-4828-8977-22a5b04e98dd",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>"
+    }
+  }
+}
