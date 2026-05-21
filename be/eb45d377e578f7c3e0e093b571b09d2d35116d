@@ -1,0 +1,50 @@
+docs/golden-path/plugins/integrations/004-notifications.md
+  s_0998d83ebe3459::t_37ec09d66b342f 12-32,36-46,50-126,130-151,155-180,184-214
+docs/golden-path/plugins/integrations/002-search.md
+  s_0998d83ebe3459::t_fe32fa1ccb3bc9 154
+  s_0998d83ebe3459::t_8a09d891175997 193,228
+  s_0998d83ebe3459::t_617d307df33f6c 12-33,37-50,54-83,86-93,98-153,155-192,194-227,229-247
+  s_0998d83ebe3459::t_8ce3700df33e52 94-97
+  s_0998d83ebe3459::t_cbc5292988fefe 84-85
+docs/golden-path/plugins/integrations/001-catalog.md
+  s_0998d83ebe3459::t_dba8dead2d52f6 88,117,144,307
+  s_0998d83ebe3459::t_1a8e133c2acdac 220-222,227-232,234,236-246,249,252,255-256
+  s_0998d83ebe3459::t_0fad80b4cd1345 12-28,32-54,58-87,89-116,118-143,145-186,190-219,223-226,233,235,247-248,250-251,257-306,308-424
+  s_0998d83ebe3459::t_c720d562068901 253-254
+docs/golden-path/plugins/frontend/001-first-steps.md
+  s_0998d83ebe3459::t_6ceab0f239e384 17-19
+  s_0998d83ebe3459::t_7c5fa3faba25a7 86
+docs/golden-path/plugins/integrations/003-permissions.md
+  s_0998d83ebe3459::t_b05e0f729aaffc 248
+  s_0998d83ebe3459::t_cbe381e9c660d2 28,67,120,177,249
+  s_0998d83ebe3459::t_94a3048b9598e5 71-75,78,95,102-106
+docs/golden-path/plugins/backend/001-first-steps.md
+  s_0998d83ebe3459::t_fa6a0c73839b81 42-43,45-46,48-82,85-87,91-107
+  s_0998d83ebe3459::t_eb8f638696d54b 26
+docs/golden-path/plugins/backend/003-persistence.md
+  s_0998d83ebe3459::t_c53eeedb827ff2 55,58-59,61,71,73,79,87-94
+  s_0998d83ebe3459::t_dd4b992b3b7d3a 100-101,104,107-110,114
+  s_0998d83ebe3459::t_8abbd549657043 199
+docs/golden-path/plugins/frontend/003-dynamic-config.md
+  s_0998d83ebe3459::t_44be2698acd61b 112-118
+  s_0998d83ebe3459::t_f7eb350138e6e3 54-55,58-59,61-62
+.github/vale/config/vocabularies/Backstage/accept.txt
+  s_0998d83ebe3459::t_10ae46c9384865 18
+  s_0998d83ebe3459::t_a1b0f27074b942 388
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.4.9",
+  "base_commit_sha": "beeb45d377e578f7c3e0e093b571b09d2d35116d",
+  "prompts": {},
+  "sessions": {
+    "s_0998d83ebe3459": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe5f5e59-361b-463f-bcb4-b8189fa45653",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>"
+    }
+  }
+}
