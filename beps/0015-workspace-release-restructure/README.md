@@ -52,6 +52,17 @@ propose to split the repository into multiple independent workspaces, modeled on
 own changesets, its own release cadence, and its own decision on when to ship breaking
 changes.
 
+This BEP also changes how the framework is released and versioned. The framework
+workspace adopts a named release identifier of the form `YYNN` (year + cadence
+slot — e.g. `2604`, `2610`), with a target cadence of two releases per year, in
+April and October, aligned with the KubeCon events. The release identifier is a
+workspace-level label only: it names the Backstage release, tags the release in
+git, and keys the release manifest that the Backstage Yarn plugin reads — but
+it does not determine the semver of any individual package. Every package in the
+framework workspace keeps its own independent semver and moves at the pace its
+own API stability allows, so a stable framework package can sit at `1.x.y` for
+years even as the named release identifier advances every six months.
+
 In addition to the workspace split, this BEP introduces a new opt-in "staged
 change" mechanism for breaking changes. Workspaces that want to keep shipping
 breaking changes the traditional way — as regular changesets that the next
