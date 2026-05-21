@@ -41,10 +41,8 @@ import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcRouter } from './OidcRouter';
-import { OidcService } from './OidcService';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
-import { UpstreamRefreshRegistry } from '@backstage/plugin-auth-node';
 
 interface RouterOptions {
   logger: LoggerService;
@@ -144,18 +142,10 @@ export async function createRouter(
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
-  const upstreamRefreshRegistry = new UpstreamRefreshRegistry();
-
-  upstreamRefreshRegistry.setOnSignIn(async (userEntityRef, providerId) => {
-    const existing = await userInfo.getUserInfo(userEntityRef);
-    const claims = existing?.claims ?? { sub: userEntityRef };
-    if (claims.authProviderId === providerId) {
-      return;
-    }
-    await userInfo.addUserInfo({
-      claims: { ...claims, authProviderId: providerId },
-    });
-  });
+  const providerRefreshFns = new Map<
+    string,
+    (token: string) => Promise<{ refreshToken?: string }>
+  >();
 
   bindProviderRouters(router, {
     providers: providerFactories,
@@ -165,40 +155,23 @@ export async function createRouter(
     ...options,
     auth: options.auth,
     userInfo,
-    upstreamRefreshRegistry,
+    providerRefreshFns,
   });
 
   const oidc = await OidcDatabase.create({ database });
 
-  const oidcService = OidcService.create({
+  const oidcRouter = OidcRouter.create({
     auth: options.auth,
     tokenIssuer,
     baseUrl: authUrl,
+    appUrl,
     userInfo,
     oidc,
-    config,
-    logger,
-    offlineAccess: options.offlineAccess,
-    upstreamRefreshRegistry,
-  });
-
-  upstreamRefreshRegistry.setOnUpstreamAuthComplete(
-    async ({ sessionId, refreshToken }) => {
-      return oidcService.completeUpstreamCallback({
-        sessionId,
-        upstreamRefreshToken: refreshToken,
-      });
-    },
-  );
-
-  const oidcRouter = OidcRouter.fromService({
-    oidcService,
-    auth: options.auth,
-    appUrl,
     logger,
     httpAuth,
     config,
-    baseUrl: authUrl,
+    offlineAccess: options.offlineAccess,
+    providerRefreshFns,
   });
 
   router.use(oidcRouter.getRouter());

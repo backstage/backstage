@@ -322,7 +322,10 @@ export type AuthProviderFactory = (options: {
   cookieConfigurer?: CookieConfigurer;
 
   /** @public */
-  upstreamRefreshRegistry?: import('./oauth/UpstreamRefreshRegistry').UpstreamRefreshRegistry;
+  providerRefreshFns?: Map<
+    string,
+    (token: string) => Promise<{ refreshToken?: string }>
+  >;
 }) => AuthProviderRouteHandlers;
 
 /** @public */

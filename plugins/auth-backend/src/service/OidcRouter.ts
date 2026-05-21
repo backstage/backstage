@@ -30,7 +30,6 @@ import { json } from 'express';
 import { z } from 'zod/v4';
 import { fromZodError } from 'zod-validation-error/v4';
 import { OidcError } from './OidcError';
-import { UpstreamRefreshRegistry } from '@backstage/plugin-auth-node';
 
 function ensureTrailingSlash(url: string): string {
   return url.endsWith('/') ? url : `${url}/`;
@@ -177,30 +176,17 @@ export class OidcRouter {
     httpAuth: HttpAuthService;
     config: RootConfigService;
     offlineAccess?: OfflineAccessService;
-    upstreamRefreshRegistry?: UpstreamRefreshRegistry;
+    providerRefreshFns?: Map<
+      string,
+      (token: string) => Promise<{ refreshToken?: string }>
+    >;
   }) {
-    return OidcRouter.fromService({
-      oidcService: OidcService.create(options),
-      auth: options.auth,
-      appUrl: options.appUrl,
-      logger: options.logger,
-      httpAuth: options.httpAuth,
-      config: options.config,
-      baseUrl: options.baseUrl,
-    });
-  }
-
-  static fromService(options: {
-    oidcService: OidcService;
-    auth: AuthService;
-    appUrl: string;
-    logger: LoggerService;
-    httpAuth: HttpAuthService;
-    config: RootConfigService;
-    baseUrl: string;
-  }) {
+    const oidcService = OidcService.create(options);
+    if (options.providerRefreshFns) {
+      oidcService.setProviderRefreshFns(options.providerRefreshFns);
+    }
     return new OidcRouter(
-      options.oidcService,
+      oidcService,
       options.logger,
       options.auth,
       options.appUrl,
@@ -398,6 +384,39 @@ export class OidcRouter {
           throw OidcError.fromError(error);
         }
       });
+
+      // Upstream auth completion endpoint
+      // Called via redirect from the provider's frameHandler after the
+      // upstream OAuth flow completes during CIMD/DCR approval.
+      router.get(
+        '/v1/sessions/:sessionId/upstream-complete',
+        async (req, res) => {
+          try {
+            const { sessionId } = validateRequest(
+              sessionIdParamSchema,
+              req.params,
+            );
+            const upstreamRefreshToken = req.query.token?.toString();
+
+            if (!upstreamRefreshToken) {
+              throw new OidcError(
+                'invalid_request',
+                'Missing upstream token',
+                400,
+              );
+            }
+
+            const redirectUrl = await this.oidc.completeUpstreamCallback({
+              sessionId,
+              upstreamRefreshToken,
+            });
+
+            res.redirect(redirectUrl);
+          } catch (error) {
+            throw OidcError.fromError(error);
+          }
+        },
+      );
 
       // Authorization Session rejection endpoint
       // Handles user rejection of Authorization Session requests and redirects with error

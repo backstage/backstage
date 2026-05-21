@@ -53,6 +53,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     auth: AuthService;
     ownershipResolver?: AuthOwnershipResolver;
     userInfo: UserInfoDatabase;
+    authProviderId?: string;
   }): CatalogAuthResolverContext {
     const catalogIdentityClient = new CatalogIdentityClient({
       catalog: options.catalog,
@@ -67,6 +68,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
       options.auth,
       options.userInfo,
       options.ownershipResolver,
+      options.authProviderId,
     );
   }
 
@@ -77,6 +79,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   private readonly auth: AuthService;
   private readonly userInfo: UserInfoDatabase;
   private readonly ownershipResolver?: AuthOwnershipResolver;
+  private readonly authProviderId?: string;
 
   private constructor(
     logger: LoggerService,
@@ -86,6 +89,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     auth: AuthService,
     userInfo: UserInfoDatabase,
     ownershipResolver?: AuthOwnershipResolver,
+    authProviderId?: string,
   ) {
     this.logger = logger;
     this.tokenIssuer = tokenIssuer;
@@ -94,6 +98,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     this.auth = auth;
     this.userInfo = userInfo;
     this.ownershipResolver = ownershipResolver;
+    this.authProviderId = authProviderId;
   }
 
   async issueToken(params: TokenParams) {
@@ -102,14 +107,13 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
       sub,
       ent,
       ...additionalClaims,
+      ...(this.authProviderId && { authProviderId: this.authProviderId }),
     };
 
     const issuedToken = await this.tokenIssuer.issueToken({
       claims,
     });
 
-    // Store the user info in the database upon successful token
-    // issuance so that it can be retrieved later by limited user tokens
     await this.userInfo.addUserInfo({
       claims,
     });

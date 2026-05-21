@@ -38,7 +38,6 @@ export function createOAuthProviderFactory<TProfile>(options: {
   };
 }): AuthProviderFactory {
   return ctx => {
-    const envKeys = ctx.config.keys();
     return OAuthEnvironmentHandler.mapConfig(ctx.config, envConfig => {
       const signInResolver =
         readDeclarativeSignInResolver({
@@ -59,8 +58,7 @@ export function createOAuthProviderFactory<TProfile>(options: {
         stateTransform: options.stateTransform,
         profileTransform: options.profileTransform,
         signInResolver,
-        upstreamRefreshRegistry: ctx.upstreamRefreshRegistry,
-        envKeys,
+        providerRefreshFns: ctx.providerRefreshFns,
       });
     });
   };

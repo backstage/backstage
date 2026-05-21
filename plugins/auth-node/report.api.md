@@ -55,7 +55,12 @@ export type AuthProviderFactory = (options: {
   appUrl: string;
   isOriginAllowed: (origin: string) => boolean;
   cookieConfigurer?: CookieConfigurer;
-  upstreamRefreshRegistry?: UpstreamRefreshRegistry;
+  providerRefreshFns?: Map<
+    string,
+    (token: string) => Promise<{
+      refreshToken?: string;
+    }>
+  >;
 }) => AuthProviderRouteHandlers;
 
 // @public (undocumented)
@@ -415,21 +420,24 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   // (undocumented)
   cookieConfigurer?: CookieConfigurer;
   // (undocumented)
-  envKeys?: string[];
-  // (undocumented)
   isOriginAllowed: (origin: string) => boolean;
   // (undocumented)
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   // (undocumented)
   providerId: string;
   // (undocumented)
+  providerRefreshFns?: Map<
+    string,
+    (token: string) => Promise<{
+      refreshToken?: string;
+    }>
+  >;
+  // (undocumented)
   resolverContext: AuthResolverContext;
   // (undocumented)
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
   // (undocumented)
   stateTransform?: OAuthStateTransform;
-  // (undocumented)
-  upstreamRefreshRegistry?: UpstreamRefreshRegistry;
 }
 
 // @public (undocumented)
@@ -470,18 +478,6 @@ export type OAuthStateTransform = (
 ) => Promise<{
   state: OAuthState;
 }>;
-
-// @public
-export type OnSignInCallback = (
-  userEntityRef: string,
-  providerId: string,
-) => Promise<void>;
-
-// @public
-export type OnUpstreamAuthCompleteCallback = (options: {
-  sessionId: string;
-  refreshToken: string;
-}) => Promise<string>;
 
 // @public (undocumented)
 export type PassportDoneCallback<TResult, TPrivateInfo = never> = (
@@ -725,46 +721,6 @@ export const tokenTypes: Readonly<{
     typParam: 'vnd.backstage.plugin';
   }>;
 }>;
-
-// @public
-export interface UpstreamProviderEntry {
-  // (undocumented)
-  refresh: UpstreamRefreshFn;
-  // (undocumented)
-  start: (options: { scope: string; sessionId: string }) => Promise<{
-    url: string;
-  }>;
-}
-
-// @public
-export type UpstreamRefreshFn = (
-  refreshToken: string,
-) => Promise<UpstreamRefreshResult>;
-
-// @public
-export class UpstreamRefreshRegistry {
-  // (undocumented)
-  completeUpstreamAuth(options: {
-    sessionId: string;
-    refreshToken: string;
-  }): Promise<string>;
-  // (undocumented)
-  get(providerId: string): UpstreamProviderEntry | undefined;
-  // (undocumented)
-  recordSignIn(userEntityRef: string, providerId: string): Promise<void>;
-  // (undocumented)
-  register(providerId: string, entry: UpstreamProviderEntry): void;
-  // (undocumented)
-  setOnSignIn(callback: OnSignInCallback): void;
-  // (undocumented)
-  setOnUpstreamAuthComplete(callback: OnUpstreamAuthCompleteCallback): void;
-}
-
-// @public
-export interface UpstreamRefreshResult {
-  // (undocumented)
-  refreshToken?: string;
-}
 
 // @public
 export type WebMessageResponse =

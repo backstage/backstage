@@ -46,8 +46,6 @@ import {
 } from './types';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { CookieScopeManager } from './CookieScopeManager';
-import { UpstreamRefreshRegistry } from './UpstreamRefreshRegistry';
-
 /** @public */
 export interface OAuthRouteHandlersOptions<TProfile> {
   authenticator: OAuthAuthenticator<any, TProfile>;
@@ -63,9 +61,10 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   cookieConfigurer?: CookieConfigurer;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
   /** @public */
-  upstreamRefreshRegistry?: UpstreamRefreshRegistry;
-  /** @public */
-  envKeys?: string[];
+  providerRefreshFns?: Map<
+    string,
+    (token: string) => Promise<{ refreshToken?: string }>
+  >;
 }
 
 /** @internal */
@@ -132,36 +131,17 @@ export function createOAuthRouteHandlers<TProfile>(
     additionalScopes: options.additionalScopes,
   });
 
-  if (options.upstreamRefreshRegistry) {
-    options.upstreamRefreshRegistry.register(providerId, {
-      async refresh(refreshToken) {
-        const result = await authenticator.refresh(
-          {
-            refreshToken,
-            scope: '',
-            req: {} as express.Request,
-          },
-          authenticatorCtx,
-        );
-        return { refreshToken: result.session.refreshToken };
-      },
-      async start({ scope, sessionId }) {
-        const env = options.envKeys?.[0] ?? 'development';
-        const state = encodeOAuthState({
-          nonce: sessionId,
-          env,
-          flow: 'cimd_approval',
-        });
-        const { url } = await authenticator.start(
-          {
-            scope,
-            state,
-            req: {} as express.Request,
-          },
-          authenticatorCtx,
-        );
-        return { url };
-      },
+  if (options.providerRefreshFns) {
+    options.providerRefreshFns.set(providerId, async refreshToken => {
+      const result = await authenticator.refresh(
+        {
+          refreshToken,
+          scope: '',
+          req: {} as express.Request,
+        },
+        authenticatorCtx,
+      );
+      return { refreshToken: result.session.refreshToken };
     });
   }
 
@@ -216,10 +196,9 @@ export function createOAuthRouteHandlers<TProfile>(
         state = decodeOAuthState(req.query.state?.toString() ?? '');
 
         // CIMD/DCR approval flow: upstream provider redirects back here after
-        // the user authenticates. Skip nonce cookie validation (the session ID
-        // in the state serves as CSRF protection) and complete the offline
-        // session instead of the normal web flow.
-        if (state.flow === 'cimd_approval' && options.upstreamRefreshRegistry) {
+        // the user authenticates. Exchange the code, then redirect to the
+        // OIDC upstream-complete endpoint which handles session creation.
+        if (state.flow === 'cimd_approval') {
           const result = await authenticator.authenticate(
             { req },
             authenticatorCtx,
@@ -231,14 +210,18 @@ export function createOAuthRouteHandlers<TProfile>(
             );
           }
 
-          const sessionId = state.nonce;
-          const cliRedirectUrl =
-            await options.upstreamRefreshRegistry.completeUpstreamAuth({
-              sessionId,
-              refreshToken: result.session.refreshToken,
-            });
+          const sessionId = state.redirectUrl;
+          if (!sessionId) {
+            throw new AuthenticationError(
+              'CIMD approval state is missing session ID',
+            );
+          }
+          const completeUrl = new URL(
+            `${baseUrl}/v1/sessions/${sessionId}/upstream-complete`,
+          );
+          completeUrl.searchParams.set('token', result.session.refreshToken);
 
-          res.redirect(cliRedirectUrl);
+          res.redirect(completeUrl.toString());
           return;
         }
 
@@ -282,13 +265,6 @@ export function createOAuthRouteHandlers<TProfile>(
         const backstageIdentity = signInResult
           ? prepareBackstageIdentityResponse(signInResult)
           : undefined;
-
-        if (backstageIdentity && options.upstreamRefreshRegistry) {
-          await options.upstreamRefreshRegistry.recordSignIn(
-            backstageIdentity.identity.userEntityRef,
-            providerId,
-          );
-        }
 
         const response: ClientOAuthResponse = {
           profile,
@@ -454,15 +430,8 @@ export function createOAuthRouteHandlers<TProfile>(
             { profile, result },
             resolverContext,
           );
-          const backstageIdentity = prepareBackstageIdentityResponse(identity);
-          response.backstageIdentity = backstageIdentity;
-
-          if (options.upstreamRefreshRegistry) {
-            await options.upstreamRefreshRegistry.recordSignIn(
-              backstageIdentity.identity.userEntityRef,
-              providerId,
-            );
-          }
+          response.backstageIdentity =
+            prepareBackstageIdentityResponse(identity);
         }
 
         res.status(200).json(response);

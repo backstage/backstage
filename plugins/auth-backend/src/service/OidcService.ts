@@ -32,7 +32,6 @@ import { DateTime } from 'luxon';
 import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
-import { UpstreamRefreshRegistry } from '@backstage/plugin-auth-node';
 import {
   generateEncryptionKey,
   encryptToken,
@@ -101,7 +100,10 @@ export class OidcService {
   private readonly config: RootConfigService;
   private readonly logger: LoggerService;
   private readonly offlineAccess?: OfflineAccessService;
-  private readonly upstreamRefreshRegistry?: UpstreamRefreshRegistry;
+  private providerRefreshFns?: Map<
+    string,
+    (token: string) => Promise<{ refreshToken?: string }>
+  >;
 
   private constructor(
     auth: AuthService,
@@ -112,7 +114,6 @@ export class OidcService {
     config: RootConfigService,
     logger: LoggerService,
     offlineAccess?: OfflineAccessService,
-    upstreamRefreshRegistry?: UpstreamRefreshRegistry,
   ) {
     this.auth = auth;
     this.tokenIssuer = tokenIssuer;
@@ -122,7 +123,6 @@ export class OidcService {
     this.config = config;
     this.logger = logger;
     this.offlineAccess = offlineAccess;
-    this.upstreamRefreshRegistry = upstreamRefreshRegistry;
   }
 
   static create(options: {
@@ -134,7 +134,6 @@ export class OidcService {
     config: RootConfigService;
     logger: LoggerService;
     offlineAccess?: OfflineAccessService;
-    upstreamRefreshRegistry?: UpstreamRefreshRegistry;
   }) {
     return new OidcService(
       options.auth,
@@ -145,8 +144,13 @@ export class OidcService {
       options.config,
       options.logger,
       options.offlineAccess,
-      options.upstreamRefreshRegistry,
     );
+  }
+
+  setProviderRefreshFns(
+    fns: Map<string, (token: string) => Promise<{ refreshToken?: string }>>,
+  ) {
+    this.providerRefreshFns = fns;
   }
 
   public getConfiguration() {
@@ -449,18 +453,24 @@ export class OidcService {
     });
 
     const scopes = session.scope?.split(' ') ?? [];
-    const upstreamEntry =
+    const authProviderId =
       scopes.includes('offline_access') && this.offlineAccess
-        ? await this.#getUpstreamEntry(userEntityRef)
+        ? await this.#getAuthProviderId(userEntityRef)
         : undefined;
 
-    if (upstreamEntry) {
-      const { url } = await upstreamEntry.start({
-        scope: 'openid offline_access',
-        sessionId: session.id,
-      });
+    if (authProviderId) {
+      const providerConfig = this.config.getOptionalConfig(
+        `auth.providers.${authProviderId}`,
+      );
+      const env = providerConfig?.keys()[0] ?? 'development';
 
-      return { upstreamAuthUrl: url };
+      const startUrl = new URL(`${this.baseUrl}/${authProviderId}/start`);
+      startUrl.searchParams.set('env', env);
+      startUrl.searchParams.set('flow', 'cimd_approval');
+      startUrl.searchParams.set('redirectUrl', session.id);
+      startUrl.searchParams.set('scope', 'openid offline_access');
+
+      return { upstreamAuthUrl: startUrl.toString() };
     }
 
     return { redirectUrl: await this.#createAuthCodeRedirect(session) };
@@ -483,13 +493,12 @@ export class OidcService {
       throw new AuthenticationError('No user associated with session');
     }
 
-    const upstreamEntry = await this.#getUpstreamEntry(session.userEntityRef);
-    if (!upstreamEntry) {
+    const authProviderId = await this.#getAuthProviderId(session.userEntityRef);
+    if (!authProviderId) {
       throw new AuthenticationError(
         'Cannot determine sign-in provider for user',
       );
     }
-    const { authProviderId } = upstreamEntry;
 
     // Encrypt the upstream token and store the ciphertext on the session.
     // The decryption key is embedded in the auth code sent to the client,
@@ -534,25 +543,9 @@ export class OidcService {
     return redirectUrl.toString();
   }
 
-  async #getUpstreamEntry(userEntityRef: string): Promise<
-    | (import('@backstage/plugin-auth-node').UpstreamProviderEntry & {
-        authProviderId: string;
-      })
-    | undefined
-  > {
-    if (!this.upstreamRefreshRegistry) {
-      return undefined;
-    }
+  async #getAuthProviderId(userEntityRef: string): Promise<string | undefined> {
     const info = await this.userInfo.getUserInfo(userEntityRef);
-    const providerId = info?.claims?.authProviderId as string | undefined;
-    if (!providerId) {
-      return undefined;
-    }
-    const entry = this.upstreamRefreshRegistry.get(providerId);
-    if (!entry) {
-      return undefined;
-    }
-    return { ...entry, authProviderId: providerId };
+    return info?.claims?.authProviderId as string | undefined;
   }
 
   public async getAuthorizationSessionById(opts: {
@@ -731,21 +724,21 @@ export class OidcService {
       throw new InputError('Refresh tokens are not enabled');
     }
 
-    const registry = this.upstreamRefreshRegistry;
+    const providerRefreshFns = this.providerRefreshFns;
     const { accessToken, refreshToken } =
       await this.offlineAccess.refreshAccessToken({
         refreshToken: params.refreshToken,
         tokenIssuer: this.tokenIssuer,
         clientId: params.clientId,
-        upstreamRefresh: registry
+        upstreamRefresh: providerRefreshFns
           ? async ({ authProviderId, refreshToken: upstreamToken }) => {
-              const entry = registry.get(authProviderId);
-              if (!entry) {
+              const refreshFn = providerRefreshFns.get(authProviderId);
+              if (!refreshFn) {
                 throw new AuthenticationError(
                   `No upstream refresh available for provider '${authProviderId}'`,
                 );
               }
-              return entry.refresh(upstreamToken);
+              return refreshFn(upstreamToken);
             }
           : undefined,
       });
