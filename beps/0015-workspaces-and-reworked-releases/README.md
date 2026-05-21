@@ -1045,8 +1045,11 @@ below.
 #### Expected cadence
 
 The project targets two framework releases per year, in April and October. Both
-windows are timed to coincide with the KubeCon events: KubeCon EU lands in April
-most years (occasionally in March), and KubeCon NA lands in November. Under the
+windows are chosen to land shortly before a KubeCon event so the most recent
+named release is fresh when adopters and maintainers meet there: KubeCon EU
+typically falls in April (occasionally March) and KubeCon NA typically falls in
+November, so an April release lines up with KubeCon EU and an October release
+gives KubeCon NA attendees a recent stable release to talk about. Under the
 `YYNN` scheme that produces `<YY>04` and `<YY>10` as the cadence slot numbers —
 for example `2604` and `2610` in 2026, then `2704` and `2710` in 2027, and so on.
 
