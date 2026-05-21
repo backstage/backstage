@@ -702,7 +702,7 @@ notBefore:
 Removed the deprecated `EntityRefLink` props `defaultKind` and `defaultNamespace`.
 Pass these as part of the `entityRef` instead.
 
-​```patch
+```patch
 diff --git a/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.tsx b/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.tsx
 --- a/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.tsx
 +++ b/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.tsx
@@ -710,7 +710,7 @@ diff --git a/plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.ts
 
 - defaultKind, defaultNamespace,
 - ...
-  ​```
+```
 ````
 
 Apply order is determined by file-name sort within the `.staged/` directory of a
