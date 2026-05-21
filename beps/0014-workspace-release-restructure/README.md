@@ -1535,8 +1535,9 @@ This gives us a few useful properties:
 
 - Every published manifest is immutable and content-addressed. Reproducible builds
   are trivially possible by pinning the counter.
-- Adopters who prefer a moving target follow the pointer file and get bug fixes for
-  free.
+- Adopters who prefer a moving target follow the pointer file and get bug fixes
+  and new non-breaking features for free as the line's `<minor>.<patch>`
+  advances.
 - A workspace can publish on its own cadence without any coordination with other
   workspaces; its publish simply produces a new manifest in the current release line.
 - The previous-release pointer never changes after the next release line opens, so
