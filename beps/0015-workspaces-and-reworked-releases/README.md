@@ -1,5 +1,5 @@
 ---
-title: Workspace Release Restructure
+title: Workspaces and Reworked Releases
 status: implementable
 authors:
   - '@Rugvip'
@@ -10,7 +10,7 @@ project-areas:
 creation-date: 2026-05-18
 ---
 
-# BEP: Workspace Release Restructure
+# BEP: Workspaces and Reworked Releases
 
 - [Summary](#summary)
 - [Motivation](#motivation)
