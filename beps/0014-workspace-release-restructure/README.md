@@ -1736,6 +1736,8 @@ workspace, and `backstage.release.nextCounter`. Running it locally produces the 
 strings a real `@next` publish would produce, which makes it easy to inspect what
 the next `@next` would look like without dispatching it.
 
+## Release Plan
+
 The migration is staged so that no single PR has to move the entire repository.
 
 1. **BEP approval & tool scaffolding.** Land the BEP, then carve out the new
