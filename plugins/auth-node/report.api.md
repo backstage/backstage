@@ -751,10 +751,6 @@ export class UpstreamRefreshRegistry {
   // (undocumented)
   get(providerId: string): UpstreamProviderEntry | undefined;
   // (undocumented)
-  getProviderForUser(userEntityRef: string): Promise<string | undefined>;
-  // (undocumented)
-  has(providerId: string): boolean;
-  // (undocumented)
   recordSignIn(userEntityRef: string, providerId: string): Promise<void>;
   // (undocumented)
   register(providerId: string, entry: UpstreamProviderEntry): void;
@@ -762,10 +758,6 @@ export class UpstreamRefreshRegistry {
   setOnSignIn(callback: OnSignInCallback): void;
   // (undocumented)
   setOnUpstreamAuthComplete(callback: OnUpstreamAuthCompleteCallback): void;
-  // (undocumented)
-  setProviderLookup(
-    lookup: (userEntityRef: string) => Promise<string | undefined>,
-  ): void;
 }
 
 // @public

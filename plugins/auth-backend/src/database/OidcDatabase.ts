@@ -49,6 +49,8 @@ type OAuthAuthorizationSessionRow = {
   nonce: string | null;
   status: 'pending' | 'approved' | 'rejected' | 'expired';
   expires_at: Date | string;
+  encrypted_upstream_token: string | null;
+  auth_provider_id: string | null;
 };
 
 type OidcAuthorizationCodeRow = {
@@ -82,6 +84,8 @@ export type AuthorizationSession = {
   nonce?: string;
   status: 'pending' | 'approved' | 'rejected' | 'expired';
   expiresAt: Date;
+  encryptedUpstreamToken?: string;
+  authProviderId?: string;
 };
 
 export type ConsentRequest = {
@@ -351,6 +355,8 @@ export class OidcDatabase {
       nonce: session.nonce,
       status: session.status,
       expires_at: toDate(session.expiresAt),
+      encrypted_upstream_token: session.encryptedUpstreamToken,
+      auth_provider_id: session.authProviderId,
     };
   }
 
@@ -370,6 +376,8 @@ export class OidcDatabase {
       nonce: row.nonce ?? undefined,
       status: row.status,
       expiresAt: toDate(row.expires_at),
+      encryptedUpstreamToken: row.encrypted_upstream_token ?? undefined,
+      authProviderId: row.auth_provider_id ?? undefined,
     };
   }
 

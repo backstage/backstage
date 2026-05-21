@@ -4,20 +4,22 @@
 
 ## Table `oauth_authorization_sessions`
 
-| Column                  | Type                       | Nullable | Max Length | Default           |
-| ----------------------- | -------------------------- | -------- | ---------- | ----------------- |
-| `client_id`             | `character varying`        | false    | 255        | -                 |
-| `code_challenge`        | `character varying`        | true     | 255        | -                 |
-| `code_challenge_method` | `character varying`        | true     | 255        | -                 |
-| `expires_at`            | `timestamp with time zone` | false    | -          | -                 |
-| `id`                    | `character varying`        | false    | 255        | -                 |
-| `nonce`                 | `character varying`        | true     | 255        | -                 |
-| `redirect_uri`          | `text`                     | false    | -          | -                 |
-| `response_type`         | `character varying`        | false    | 255        | -                 |
-| `scope`                 | `text`                     | true     | -          | -                 |
-| `state`                 | `text`                     | true     | -          | -                 |
-| `status`                | `text`                     | true     | -          | `'pending'::text` |
-| `user_entity_ref`       | `character varying`        | true     | 255        | -                 |
+| Column                     | Type                       | Nullable | Max Length | Default           |
+| -------------------------- | -------------------------- | -------- | ---------- | ----------------- |
+| `auth_provider_id`         | `character varying`        | true     | 255        | -                 |
+| `client_id`                | `character varying`        | false    | 255        | -                 |
+| `code_challenge`           | `character varying`        | true     | 255        | -                 |
+| `code_challenge_method`    | `character varying`        | true     | 255        | -                 |
+| `encrypted_upstream_token` | `text`                     | true     | -          | -                 |
+| `expires_at`               | `timestamp with time zone` | false    | -          | -                 |
+| `id`                       | `character varying`        | false    | 255        | -                 |
+| `nonce`                    | `character varying`        | true     | 255        | -                 |
+| `redirect_uri`             | `text`                     | false    | -          | -                 |
+| `response_type`            | `character varying`        | false    | 255        | -                 |
+| `scope`                    | `text`                     | true     | -          | -                 |
+| `state`                    | `text`                     | true     | -          | -                 |
+| `status`                   | `text`                     | true     | -          | `'pending'::text` |
+| `user_entity_ref`          | `character varying`        | true     | 255        | -                 |
 
 ### Indices
 

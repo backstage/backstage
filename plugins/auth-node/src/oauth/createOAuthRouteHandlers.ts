@@ -151,7 +151,6 @@ export function createOAuthRouteHandlers<TProfile>(
           nonce: sessionId,
           env,
           flow: 'cimd_approval',
-          redirectUrl: sessionId,
         });
         const { url } = await authenticator.start(
           {
@@ -232,7 +231,7 @@ export function createOAuthRouteHandlers<TProfile>(
             );
           }
 
-          const sessionId = state.redirectUrl!;
+          const sessionId = state.nonce;
           const cliRedirectUrl =
             await options.upstreamRefreshRegistry.completeUpstreamAuth({
               sessionId,

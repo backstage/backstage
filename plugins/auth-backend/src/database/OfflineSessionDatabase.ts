@@ -197,17 +197,15 @@ export class OfflineSessionDatabase {
         return undefined;
       }
 
-      // Update token hash (and optionally the upstream key) atomically
-      const updateFields: Partial<DbOfflineSessionRow> = {
-        token_hash: newTokenHash,
-        last_used_at: trx.fn.now() as unknown as Date,
-      };
-      if (newUpstreamTokenKey !== undefined) {
-        updateFields.upstream_token_key = newUpstreamTokenKey;
-      }
       await trx<DbOfflineSessionRow>(TABLE_NAME)
         .where('id', id)
-        .update(updateFields);
+        .update({
+          token_hash: newTokenHash,
+          last_used_at: trx.fn.now(),
+          ...(newUpstreamTokenKey !== undefined && {
+            upstream_token_key: newUpstreamTokenKey,
+          }),
+        });
 
       return this.#mapRow(row);
     });

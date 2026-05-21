@@ -33,6 +33,11 @@ import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 import { UpstreamRefreshRegistry } from '@backstage/plugin-auth-node';
+import {
+  generateEncryptionKey,
+  encryptToken,
+  decryptToken,
+} from '../lib/tokenEncryption';
 
 function validateRedirectUri(
   redirectUri: string,
@@ -450,15 +455,7 @@ export class OidcService {
       this.upstreamRefreshRegistry;
 
     if (needsUpstream) {
-      const signInProviderId =
-        await this.upstreamRefreshRegistry!.getProviderForUser(userEntityRef);
-
-      if (!signInProviderId) {
-        throw new InputError(
-          `Cannot determine sign-in provider for user '${userEntityRef}'. ` +
-            'The user must sign in via a web browser before approving offline sessions.',
-        );
-      }
+      const signInProviderId = await this.#getSignInProvider(userEntityRef);
 
       const entry = this.upstreamRefreshRegistry!.get(signInProviderId);
       if (!entry) {
@@ -495,64 +492,70 @@ export class OidcService {
       throw new AuthenticationError('No user associated with session');
     }
 
-    const authProviderId =
-      await this.upstreamRefreshRegistry?.getProviderForUser(
-        session.userEntityRef,
-      );
-    if (!authProviderId) {
-      throw new AuthenticationError(
-        'Cannot determine sign-in provider for user',
-      );
-    }
+    const authProviderId = await this.#getSignInProvider(session.userEntityRef);
 
-    return this.#issueOfflineTokens({
-      session,
-      upstreamRefreshToken,
-      authProviderId,
-    });
-  }
+    // Encrypt the upstream token and store the ciphertext on the session.
+    // The decryption key is embedded in the auth code sent to the client,
+    // so the DB only ever has the ciphertext, never the key.
+    const key = generateEncryptionKey();
+    const encryptedUpstreamToken = encryptToken(upstreamRefreshToken, key);
 
-  async #issueOfflineTokens(opts: {
-    session: AuthorizationSession;
-    upstreamRefreshToken: string;
-    authProviderId: string;
-  }): Promise<string> {
-    const { session, upstreamRefreshToken, authProviderId } = opts;
-
-    if (!this.offlineAccess) {
-      throw new InputError('Refresh tokens are not enabled');
-    }
-
-    // Issue a refresh token backed by the upstream provider
-    await this.offlineAccess.issueRefreshToken({
-      userEntityRef: session.userEntityRef!,
-      oidcClientId: session.clientId,
-      upstreamRefreshToken,
+    await this.oidc.updateAuthorizationSession({
+      id: sessionId,
+      encryptedUpstreamToken,
       authProviderId,
     });
 
-    return await this.#createAuthCodeRedirect(session);
+    return this.#createAuthCodeRedirect(session, key);
   }
 
   async #createAuthCodeRedirect(
     session: AuthorizationSession,
+    keySuffix?: string,
   ): Promise<string> {
     const authorizationCode = crypto.randomBytes(32).toString('base64url');
     const codeExpiresAt = DateTime.now().plus({ minutes: 10 }).toJSDate();
 
+    // Store only the code in the DB (not the key suffix).
     await this.oidc.createAuthorizationCode({
       code: authorizationCode,
       sessionId: session.id,
       expiresAt: codeExpiresAt,
     });
 
+    // The client receives code.key so the key never touches the DB.
+    const clientCode = keySuffix
+      ? `${authorizationCode}.${keySuffix}`
+      : authorizationCode;
+
     const redirectUrl = new URL(session.redirectUri);
-    redirectUrl.searchParams.append('code', authorizationCode);
+    redirectUrl.searchParams.append('code', clientCode);
     if (session.state) {
       redirectUrl.searchParams.append('state', session.state);
     }
 
     return redirectUrl.toString();
+  }
+
+  async #getSignInProvider(userEntityRef: string): Promise<string> {
+    const info = await this.userInfo.getUserInfo(userEntityRef);
+    const providerId = info?.claims?.authProviderId as string | undefined;
+
+    if (!providerId) {
+      throw new InputError(
+        `Cannot determine sign-in provider for user '${userEntityRef}'. ` +
+          'The user must sign in via a web browser before approving offline sessions.',
+      );
+    }
+
+    const entry = this.upstreamRefreshRegistry?.get(providerId);
+    if (!entry) {
+      throw new InputError(
+        `No auth provider '${providerId}' registered for upstream refresh`,
+      );
+    }
+
+    return providerId;
   }
 
   public async getAuthorizationSessionById(opts: {
@@ -609,7 +612,13 @@ export class OidcService {
       throw new InputError('Unsupported grant type');
     }
 
-    const authCode = await this.oidc.getAuthorizationCode({ code });
+    // The code may contain an embedded key suffix (code.key) for
+    // upstream token decryption. Look up the DB by code-only.
+    const [codeValue, upstreamTokenKey] = code.split('.');
+
+    const authCode = await this.oidc.getAuthorizationCode({
+      code: codeValue,
+    });
     if (!authCode) {
       throw new AuthenticationError('Invalid authorization code');
     }
@@ -659,7 +668,7 @@ export class OidcService {
     }
 
     await this.oidc.updateAuthorizationCode({
-      code,
+      code: codeValue,
       used: true,
     });
 
@@ -669,18 +678,33 @@ export class OidcService {
       },
     });
 
-    // Check if offline_access scope is requested
     let refreshToken: string | undefined;
     const scopes = session.scope?.split(' ') ?? [];
     if (scopes.includes('offline_access') && this.offlineAccess) {
       try {
+        let upstreamRefreshToken: string | undefined;
+        let authProviderId: string | undefined;
+
+        if (session.encryptedUpstreamToken && session.authProviderId) {
+          if (!upstreamTokenKey) {
+            throw new AuthenticationError(
+              'Authorization code is missing the upstream token decryption key',
+            );
+          }
+          upstreamRefreshToken = decryptToken(
+            session.encryptedUpstreamToken,
+            upstreamTokenKey,
+          );
+          authProviderId = session.authProviderId;
+        }
+
         refreshToken = await this.offlineAccess.issueRefreshToken({
           userEntityRef: session.userEntityRef,
           oidcClientId: session.clientId,
+          upstreamRefreshToken,
+          authProviderId,
         });
       } catch (err) {
-        // Don't fail the entire token exchange if refresh token issuance fails.
-        // The access token is still valid and should be returned.
         this.logger.warn(
           `Failed to issue refresh token for user ${session.userEntityRef}, offline_access will not be available: ${err}`,
         );

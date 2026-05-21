@@ -33,12 +33,31 @@ exports.up = async function up(knex) {
       .nullable()
       .comment('Upstream auth provider ID used to refresh the upstream token');
   });
+
+  await knex.schema.alterTable('oauth_authorization_sessions', table => {
+    table
+      .text('encrypted_upstream_token')
+      .nullable()
+      .comment(
+        'AES-256-GCM encrypted upstream refresh token (ciphertext only, key is in the auth code)',
+      );
+
+    table
+      .string('auth_provider_id')
+      .nullable()
+      .comment('Upstream auth provider ID for this session');
+  });
 };
 
 /**
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
+  await knex.schema.alterTable('oauth_authorization_sessions', table => {
+    table.dropColumn('encrypted_upstream_token');
+    table.dropColumn('auth_provider_id');
+  });
+
   await knex.schema.alterTable('offline_sessions', table => {
     table.dropColumn('upstream_token_key');
     table.dropColumn('auth_provider_id');

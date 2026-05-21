@@ -89,16 +89,7 @@ export async function generateRefreshToken(
  * @internal
  */
 export function getRefreshTokenId(token: string): string {
-  if (!token || typeof token !== 'string') {
-    throw new Error('Invalid refresh token format');
-  }
-
-  const parts = token.split('.');
-  if ((parts.length !== 2 && parts.length !== 3) || !parts[0] || !parts[1]) {
-    throw new Error('Invalid refresh token format');
-  }
-
-  return parts[0];
+  return parseRefreshTokenParts(token)[0];
 }
 
 /**
@@ -110,6 +101,13 @@ export function getRefreshTokenId(token: string): string {
  * @internal
  */
 export function getEncryptedUpstreamToken(token: string): string | undefined {
+  const parts = parseRefreshTokenParts(token);
+  return parts.length === 3 ? parts[2] : undefined;
+}
+
+function parseRefreshTokenParts(
+  token: string,
+): [string, string] | [string, string, string] {
   if (!token || typeof token !== 'string') {
     throw new Error('Invalid refresh token format');
   }
@@ -119,7 +117,7 @@ export function getEncryptedUpstreamToken(token: string): string | undefined {
     throw new Error('Invalid refresh token format');
   }
 
-  return parts.length === 3 ? parts[2] : undefined;
+  return parts as [string, string] | [string, string, string];
 }
 
 /**
