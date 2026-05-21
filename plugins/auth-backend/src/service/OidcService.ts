@@ -681,23 +681,23 @@ export class OidcService {
     let refreshToken: string | undefined;
     const scopes = session.scope?.split(' ') ?? [];
     if (scopes.includes('offline_access') && this.offlineAccess) {
-      try {
-        let upstreamRefreshToken: string | undefined;
-        let authProviderId: string | undefined;
+      let upstreamRefreshToken: string | undefined;
+      let authProviderId: string | undefined;
 
-        if (session.encryptedUpstreamToken && session.authProviderId) {
-          if (!upstreamTokenKey) {
-            throw new AuthenticationError(
-              'Authorization code is missing the upstream token decryption key',
-            );
-          }
-          upstreamRefreshToken = decryptToken(
-            session.encryptedUpstreamToken,
-            upstreamTokenKey,
+      if (session.encryptedUpstreamToken && session.authProviderId) {
+        if (!upstreamTokenKey) {
+          throw new AuthenticationError(
+            'Authorization code is missing the upstream token decryption key',
           );
-          authProviderId = session.authProviderId;
         }
+        upstreamRefreshToken = decryptToken(
+          session.encryptedUpstreamToken,
+          upstreamTokenKey,
+        );
+        authProviderId = session.authProviderId;
+      }
 
+      try {
         refreshToken = await this.offlineAccess.issueRefreshToken({
           userEntityRef: session.userEntityRef,
           oidcClientId: session.clientId,

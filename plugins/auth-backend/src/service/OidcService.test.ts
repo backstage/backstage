@@ -21,6 +21,7 @@ import {
 import { JsonObject } from '@backstage/types';
 import { OidcService } from './OidcService';
 import { OfflineAccessService } from './OfflineAccessService';
+import { UpstreamRefreshRegistry } from '@backstage/plugin-auth-node';
 import {
   BackstageCredentials,
   BackstageServicePrincipal,
@@ -55,10 +56,16 @@ describe('OidcService', () => {
     databaseId: TestDatabaseId;
     config?: JsonObject;
     offlineAccess?: OfflineAccessService;
+    upstreamRefreshRegistry?: UpstreamRefreshRegistry;
   }
 
   async function createOidcService(options: CreateOidcServiceOptions) {
-    const { databaseId, config: configData = {}, offlineAccess } = options;
+    const {
+      databaseId,
+      config: configData = {},
+      offlineAccess,
+      upstreamRefreshRegistry,
+    } = options;
 
     const knex = await databases.init(databaseId);
 
@@ -98,6 +105,7 @@ describe('OidcService', () => {
         config,
         logger: mockServices.logger.mock(),
         offlineAccess,
+        upstreamRefreshRegistry,
       }),
       mocks: {
         auth: mockAuth,
@@ -959,6 +967,212 @@ describe('OidcService', () => {
         expect(tokenResult.accessToken).toBe(mockToken);
         expect(tokenResult.refreshToken).toBeUndefined();
         expect(mockOfflineAccess.issueRefreshToken).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('upstream-backed offline sessions', () => {
+      it('should return upstreamAuthUrl when offline_access with upstream provider', async () => {
+        const registry = new UpstreamRefreshRegistry();
+        registry.register('test-provider', {
+          refresh: jest.fn(),
+          start: jest.fn().mockResolvedValue({
+            url: 'https://upstream.example.com/authorize?state=test',
+          }),
+        });
+
+        const mockOfflineAccess = {
+          issueRefreshToken: jest.fn().mockResolvedValue('mock-refresh-token'),
+        } as unknown as OfflineAccessService;
+
+        const mockUserInfo = {
+          addUserInfo: jest.fn(),
+          getUserInfo: jest.fn().mockResolvedValue({
+            claims: {
+              sub: 'user:default/test',
+              authProviderId: 'test-provider',
+            },
+          }),
+        } as unknown as jest.Mocked<UserInfoDatabase>;
+
+        const { service } = await createOidcService({
+          databaseId,
+          offlineAccess: mockOfflineAccess,
+          upstreamRefreshRegistry: registry,
+        });
+        // Override the userInfo mock on the service
+        (service as any).userInfo = mockUserInfo;
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        const result = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        expect((result as { upstreamAuthUrl: string }).upstreamAuthUrl).toBe(
+          'https://upstream.example.com/authorize?state=test',
+        );
+      });
+
+      it('should embed decryption key in auth code during completeUpstreamCallback', async () => {
+        const registry = new UpstreamRefreshRegistry();
+        registry.register('test-provider', {
+          refresh: jest.fn(),
+          start: jest
+            .fn()
+            .mockResolvedValue({ url: 'https://upstream.example.com/auth' }),
+        });
+
+        const mockOfflineAccess = {
+          issueRefreshToken: jest.fn().mockResolvedValue('mock-refresh-token'),
+        } as unknown as OfflineAccessService;
+
+        const mockUserInfo = {
+          addUserInfo: jest.fn(),
+          getUserInfo: jest.fn().mockResolvedValue({
+            claims: {
+              sub: 'user:default/test',
+              authProviderId: 'test-provider',
+            },
+          }),
+        } as unknown as jest.Mocked<UserInfoDatabase>;
+
+        const { service, mocks } = await createOidcService({
+          databaseId,
+          offlineAccess: mockOfflineAccess,
+          upstreamRefreshRegistry: registry,
+        });
+        (service as any).userInfo = mockUserInfo;
+        mocks.tokenIssuer.issueToken.mockResolvedValue({
+          token: 'mock-access-token',
+        });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+          state: 'client-state',
+        });
+
+        await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const redirectUrl = await service.completeUpstreamCallback({
+          sessionId: authSession.id,
+          upstreamRefreshToken: 'upstream-refresh-token-value',
+        });
+
+        const url = new URL(redirectUrl);
+        const code = url.searchParams.get('code')!;
+        expect(url.searchParams.get('state')).toBe('client-state');
+
+        // Code should have embedded key (code.key format)
+        const parts = code.split('.');
+        expect(parts).toHaveLength(2);
+
+        // Exchange the code - should pass upstream data to issueRefreshToken
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+        });
+
+        expect(tokenResult.accessToken).toBe('mock-access-token');
+        expect(tokenResult.refreshToken).toBe('mock-refresh-token');
+        expect(mockOfflineAccess.issueRefreshToken).toHaveBeenCalledWith(
+          expect.objectContaining({
+            upstreamRefreshToken: 'upstream-refresh-token-value',
+            authProviderId: 'test-provider',
+          }),
+        );
+      });
+
+      it('should throw when auth code is missing key but session has encrypted token', async () => {
+        const registry = new UpstreamRefreshRegistry();
+        registry.register('test-provider', {
+          refresh: jest.fn(),
+          start: jest
+            .fn()
+            .mockResolvedValue({ url: 'https://upstream.example.com/auth' }),
+        });
+
+        const mockOfflineAccess = {
+          issueRefreshToken: jest.fn().mockResolvedValue('mock-refresh-token'),
+        } as unknown as OfflineAccessService;
+
+        const mockUserInfo = {
+          addUserInfo: jest.fn(),
+          getUserInfo: jest.fn().mockResolvedValue({
+            claims: {
+              sub: 'user:default/test',
+              authProviderId: 'test-provider',
+            },
+          }),
+        } as unknown as jest.Mocked<UserInfoDatabase>;
+
+        const { service, mocks } = await createOidcService({
+          databaseId,
+          offlineAccess: mockOfflineAccess,
+          upstreamRefreshRegistry: registry,
+        });
+        (service as any).userInfo = mockUserInfo;
+        mocks.tokenIssuer.issueToken.mockResolvedValue({
+          token: 'mock-access-token',
+        });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const redirectUrl = await service.completeUpstreamCallback({
+          sessionId: authSession.id,
+          upstreamRefreshToken: 'upstream-refresh-token',
+        });
+
+        // Extract code and strip the key to simulate a tampered code
+        const fullCode = new URL(redirectUrl).searchParams.get('code')!;
+        const codeOnly = fullCode.split('.')[0];
+
+        await expect(
+          service.exchangeCodeForToken({
+            code: codeOnly,
+            redirectUri: 'https://example.com/callback',
+            grantType: 'authorization_code',
+          }),
+        ).rejects.toThrow(
+          'Authorization code is missing the upstream token decryption key',
+        );
       });
     });
 
