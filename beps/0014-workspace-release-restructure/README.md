@@ -1805,9 +1805,12 @@ workspace that has not been migrated yet. There is no flag day.
   faster-fixes vs. slower-breaks tension; both audiences are still coupled.
 - **Long-lived `next` branch kept in sync with `main`.** Operationally expensive, breaks down
   at scale, and provides no structured representation of queued breaking changes.
-- **Treat breaking changes as regular changesets that pile up until the next major.**
-  This is essentially today's model. It does not solve deprecation lag and does not let
-  us publish `@next` releases continuously without forking the branch.
+- **Treat breaking changes as regular changesets that pile up until the next
+  major.** This is essentially today's model. It does not solve deprecation lag
+  and does not let us merge breaking changes while also publishing incremental
+  non-breaking `@latest` releases from the same branch — once a major-bump
+  changeset lands on `main`, the next Version Packages release of that workspace
+  ships the major, which is exactly the coupling this BEP exists to break.
 - **Use a separate repository per workspace.** Closer to a true multi-repo layout.
   Rejected on
   grounds of cross-workspace refactoring cost, contributor experience, and CI
