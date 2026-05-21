@@ -77,17 +77,7 @@ export const spec = {
         description:
           'One or more "field,direction" pairs. Direction is "asc" or "desc". Pass multiple to express compound sorts.',
         schema: {
-          oneOf: [
-            {
-              type: 'string',
-            },
-            {
-              type: 'array',
-              items: {
-                type: 'string',
-              },
-            },
-          ],
+          $ref: '#/components/schemas/OrderField',
         },
       },
       topic: {
@@ -348,6 +338,35 @@ export const spec = {
           },
         },
       },
+      EntityRef: {
+        description: 'A single entity ref, or a list of entity refs.',
+        oneOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+        ],
+      },
+      OrderField: {
+        description:
+          'One or more "field,direction" pairs, given as a single string or an array of strings.',
+        oneOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+        ],
+      },
       NotificationRecipients: {
         oneOf: [
           {
@@ -359,30 +378,10 @@ export const spec = {
                 enum: ['entity'],
               },
               entityRef: {
-                oneOf: [
-                  {
-                    type: 'string',
-                  },
-                  {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                    },
-                  },
-                ],
+                $ref: '#/components/schemas/EntityRef',
               },
               excludeEntityRef: {
-                oneOf: [
-                  {
-                    type: 'string',
-                  },
-                  {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                    },
-                  },
-                ],
+                $ref: '#/components/schemas/EntityRef',
               },
             },
           },

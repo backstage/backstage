@@ -84,7 +84,7 @@ Conventions to follow:
 - `servers: [{ url: / }]`.
 - Define a reusable `Error`/`ErrorResponse` under `components.schemas` and `components.responses` and reference it from every error status.
 - Reuse path parameters via `components.parameters`.
-- Each operation gets a stable `operationId` (camelCase verb-noun) — these become the generated client's method names.
+- Each operation gets a stable `operationId` (PascalCase verb-noun, e.g. `ListNotifications`, `PostEvent`) — these become the generated client's method names. Match the convention used by the other onboarded Backstage plugins linked above.
 - `requestBody` content type usually `application/json`; responses likewise.
 - Required query/path params marked `required: true`.
 
@@ -124,7 +124,7 @@ This will:
 
 The generator also writes `<plugin-dir>/src/schema/openapi/index.ts` re-exporting `./generated`. Leave this alone.
 
-If generation fails, the most common causes are: invalid YAML (fix and rerun), unsupported OpenAPI version (must be 3.0.x or 3.1.x).
+If generation fails, the most common causes are: invalid YAML (fix and rerun), unsupported OpenAPI version (`@backstage/backend-openapi-utils` only supports OpenAPI 3.1.x — keep `openapi: 3.1.0` at the top of the spec).
 
 ### Step 6 — Switch the router over to `createOpenApiRouter`
 

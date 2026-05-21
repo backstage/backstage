@@ -15,11 +15,11 @@
  */
 
 export * from '../models/ChannelSetting.model';
+export * from '../models/EntityRef.model';
 export * from '../models/ErrorError.model';
 export * from '../models/ErrorRequest.model';
 export * from '../models/ErrorResponse.model';
 export * from '../models/GetTopicsResponse.model';
-export * from '../models/ListNotificationsLegacyOrderFieldParameter.model';
 export * from '../models/ListNotificationsResponse.model';
 export * from '../models/ModelError.model';
 export * from '../models/Notification.model';
@@ -32,6 +32,7 @@ export * from '../models/NotificationSendOptions.model';
 export * from '../models/NotificationSettings.model';
 export * from '../models/NotificationSeverity.model';
 export * from '../models/NotificationStatus.model';
+export * from '../models/OrderField.model';
 export * from '../models/OriginSetting.model';
 export * from '../models/TopicSetting.model';
 export * from '../models/UpdateNotificationsRequest.model';

@@ -19,6 +19,7 @@
 // ******************************************************************
 
 /**
+ * A single entity ref, or a list of entity refs.
  * @public
  */
-export type ListNotificationsLegacyOrderFieldParameter = Array<string> | string;
+export type EntityRef = Array<string> | string;
