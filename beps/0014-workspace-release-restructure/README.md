@@ -1663,11 +1663,24 @@ snapshot. The counter is:
 - Recorded in the root `package.json` of the workspace under
   `backstage.release.nextCounter`. The `backstage.release` key is the natural place
   for additional release-management state we accumulate over time.
-- Incremented by exactly `1` on every `@next` publish for the workspace, regardless
-  of how many packages that publish includes.
-- Reset to `0` when the `Promote staged` PR for the workspace is merged and the
-  resulting release has been published to `@latest`. This is the only event that
-  resets the counter; mainline patch/minor releases do not.
+- Incremented by exactly `1` on every `@next` publish for the workspace,
+  regardless of how many packages that publish includes.
+- **Never reset.** The counter grows monotonically across the lifetime of the
+  workspace.
+
+  The reason is that resetting on `Promote staged` merges introduces a
+  collision risk for packages whose previous `@next` publishes never made it to
+  `@latest`. Consider a staged change marked `experimental` that publishes
+  `plugin-foo@2.0.0-next.5` to `@next` and then gets dropped without ever
+  promoting: `plugin-foo` stays at `1.x.y` on `@latest`, but
+  `plugin-foo@2.0.0-next.0..5` are already on npm. If the counter then reset
+  and a future staged change targeted `plugin-foo@2.0.0` again, the next
+  publish would land at `2.0.0-next.0`, which collides with what's already
+  published. Letting the counter grow monotonically across rounds avoids the
+  entire class of collisions. Adopters do not see a clean `-next.0` for a new
+  round, but they keep the snapshot identifier property (all packages with the
+  same `-next.<N>` came from the same publish), which is what they actually
+  rely on.
 
 The updated `package.json` is committed to `main` by the same workflow that runs the
 publish, so the counter survives across runners.
@@ -1691,7 +1704,8 @@ Initial state: `@backstage/plugin-catalog@2.3.0`, `@backstage/plugin-catalog-rea
    `plugin-catalog-react@2.0.0-next.1`, `plugin-catalog-graph@0.8.0-next.1`. All
    three share `-next.1`, marking them as a coherent snapshot.
 6. The `Promote staged (catalog)` PR is eventually reviewed and merged. The
-   release ships to `@latest` and the counter resets to `0`.
+   release ships to `@latest`. The shared counter does not reset; the next
+   `@next` publish for the workspace picks up from `<N+1>`.
 
 #### Worked example: `framework`
 
@@ -1711,7 +1725,8 @@ its own current semver — for example, `@backstage/core-plugin-api@2.4.7`,
    advances from `2604` to the next framework identifier (e.g. `2610`), the new
    manifest line opens, the two affected packages publish at `3.0.0` and `3.2.0`
    on `@latest`, every other framework package keeps its previous version, and
-   the workspace counter resets to `0`.
+   the shared workspace counter keeps advancing — the next `@next` publish for
+   the workspace will be `-next.<N+1>`.
 
 #### Local previewing
 
