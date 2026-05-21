@@ -1745,8 +1745,8 @@ The migration is staged so that no single PR has to move the entire repository.
    `workspaces/tooling/` workspace (see
    [Repository tooling](#repository-tooling)) and bootstrap the standalone
    release-automation CLI inside it with the existing community-plugins commands in
-   their current form. Vendor the new `stage` and `fix` commands behind a flag while
-   the format stabilizes.
+   their current form. Vendor the new `stage create|refresh|apply` subcommands
+   behind a flag while the format stabilizes.
 
 2. **Migrate `cli` first.** Move all CLI and developer-tooling packages into
    `workspaces/cli/`. This is intentionally early so that the rest of the migration
