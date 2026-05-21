@@ -1,0 +1,19 @@
+plugins/catalog-backend-module-openapi/src/lib/bundle.ts
+  s_cb38c49b41c103::t_2bc9e04554f353 115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.4.9",
+  "base_commit_sha": "03bd1d53659cc6f306e7bc6283579c60672d8ae9",
+  "prompts": {},
+  "sessions": {
+    "s_cb38c49b41c103": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "68376f8a-34ec-46fa-a1b4-c0316231bf88",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>"
+    }
+  }
+}
