@@ -76,6 +76,7 @@ export type NextCatalogPageProps = {
     header: CatalogColumnHeader;
     cell: (entity: Entity) => ReactElement;
   }>;
+  pageSizeOptions?: number[];
 };
 
 function buildColumnConfig(
@@ -95,7 +96,10 @@ function buildColumnConfig(
   }));
 }
 
-function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
+function NextCatalogTable(props: {
+  columns: NextCatalogPageProps['columns'];
+  pageSizeOptions: number[];
+}) {
   const { entities, loading, error, updateFilters } = useEntityList();
   const entityRoute = useRouteRef(entityRouteRef);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor | null>(
@@ -155,19 +159,10 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
     });
   };
 
-  const handleNextPage = () => {
-    const total = totalItems ?? 0;
+  const handleNextPage = () => setOffset?.((offset ?? 0) + (limit ?? 0));
 
-    if ((offset ?? 0) + (limit ?? 0) >= total) {
-      setOffset!(Math.max(0, total - (limit ?? 0)));
-    } else {
-      setOffset!(Math.max(0, (offset ?? 0) + (limit ?? 0)));
-    }
-  };
-
-  const handlePreviousPage = () => {
-    setOffset!(Math.max(0, (offset ?? 0) - (limit ?? 0)));
-  };
+  const handlePreviousPage = () =>
+    setOffset?.(Math.max(0, (offset ?? 0) - (limit ?? 0)));
 
   return (
     <Card>
@@ -190,7 +185,7 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
             : false,
           hasPreviousPage: (offset ?? 0) > 0,
           onPageSizeChange: setLimit,
-          pageSizeOptions: [50],
+          pageSizeOptions: props.pageSizeOptions,
         }}
         sort={{ descriptor: sortDescriptor, onSortChange }}
         rowConfig={rowConfig}
@@ -236,7 +231,10 @@ export function NextCatalogPage(props: NextCatalogPageProps) {
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
-              <NextCatalogTable columns={columns} />
+              <NextCatalogTable
+                columns={columns}
+                pageSizeOptions={props.pageSizeOptions ?? [20, 50, 100]}
+              />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
         </EntityListProvider>

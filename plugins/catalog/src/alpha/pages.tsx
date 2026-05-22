@@ -80,6 +80,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
   },
   configSchema: {
     version: z.enum(['v1', 'v2']).default('v1'),
+    pageSizeOptions: z.array(z.number()).default([20, 50, 100]),
     pagination: z
       .union([
         z.boolean(),
@@ -125,7 +126,13 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
                 cell: NonNullable<typeof c.cell>;
               } => Boolean(c.header && c.cell),
             );
-          return <NextCatalogPage filters={<>{filters}</>} columns={columns} />;
+          return (
+            <NextCatalogPage
+              filters={<>{filters}</>}
+              columns={columns}
+              pageSizeOptions={config.pageSizeOptions}
+            />
+          );
         }
 
         // Merge export customizers from all attached extensions
