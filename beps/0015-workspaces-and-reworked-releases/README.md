@@ -1274,6 +1274,51 @@ Authors who want to claim support for framework `2610.3.5` set
 carries it forward. There is no separate publishing-time configuration to
 maintain.
 
+#### The `backstage:` protocol applies to every Backstage-ecosystem dependency
+
+The `backstage:` Yarn protocol is what activates the Backstage Yarn
+plugin's resolver. Today it is used primarily for framework packages:
+adopters declare `@backstage/plugin-foo: backstage:^` and the plugin
+resolves through the framework manifest. Under this BEP we extend it to
+every Backstage-ecosystem dependency a project depends on, regardless of
+which workspace or scope the package lives in:
+
+```json
+{
+  "dependencies": {
+    "@backstage/plugin-catalog": "backstage:^",
+    "@backstage-community/plugin-sonarqube": "backstage:^",
+    "@coolco/backstage-plugin-things": "backstage:^",
+    "@spotify/backstage-plugin-internal-thing": "backstage:^"
+  }
+}
+```
+
+The resolver handles all of them through one set of rules: framework
+packages are looked up in the manifest, everything else is resolved via
+the npm-registry filter described in
+[Resolution semantics](#resolution-semantics) below. The universal
+identifier for "this is a Backstage-ecosystem package" is the top-level
+`backstage` field in the published `package.json` — the same field that
+already carries `role` today and that this BEP extends with `version`.
+If an adopter declares `backstage:^` for a package whose npm metadata
+has no `backstage` field, the resolver fails with a clear error pointing
+at the misuse.
+
+Plain semver ranges (`^x.y.z`) for Backstage-ecosystem dependencies
+remain installable — the resolver only engages when it sees the
+`backstage:` protocol marker. Those ranges fall through to Yarn's
+normal semver behavior and therefore bypass the framework-compatibility
+filter, which means an adopter on framework `2604` can end up installing
+a plugin version that was actually built against `2701`. The
+recommendation is to migrate to `backstage:^` for every
+Backstage-ecosystem dependency over time. `backstage-cli versions info`
+surfaces candidates by reporting which `^x.y.z` deps resolve to
+packages whose npm metadata carries a `backstage` field, and
+`backstage-cli versions migrate` may grow a sub-behavior that performs
+the rewrite in one shot. New projects scaffolded by `backstage-cli new`
+default to `backstage:^` for every Backstage dependency they install.
+
 #### Resolution semantics
 
 When an adopter pins `backstage.json: version: "X"` and runs `yarn install`,
@@ -1477,10 +1522,15 @@ installation.
   available in the same line and in newer lines. For every dependency
   declared with `backstage:^`, lists the locked version, the published
   `backstage.version` it advertises (or notes that the field is absent),
-  and the latest compatible version available on npm. Useful both to a
-  plugin workspace maintainer wanting to know whether they are behind,
-  and to an adopter assessing the state of their installation. The
-  command exits 0 regardless of what it finds; it is purely informational.
+  and the latest compatible version available on npm. Also surfaces
+  dependencies declared with plain semver ranges whose installed package
+  carries a top-level `backstage` field, as candidates for migration to
+  the `backstage:^` protocol (see
+  [The `backstage:` protocol applies to every Backstage-ecosystem dependency](#the-backstage-protocol-applies-to-every-backstage-ecosystem-dependency)).
+  Useful both to a plugin workspace maintainer wanting to know whether
+  they are behind, and to an adopter assessing the state of their
+  installation. The command exits 0 regardless of what it finds; it is
+  purely informational.
 
 - **`backstage-cli versions migrate`** — Unchanged from today; handles
   packages that have moved between npm scopes (for example to
@@ -2226,6 +2276,21 @@ workspace that has not been migrated yet. There is no flag day.
   may revisit ranges if multi-line support proves common in practice, but
   the simple-form-first approach matches how community-plugins authors
   already maintain plugins.
+- **Auto-detect Backstage packages without using the `backstage:` protocol.**
+  The Backstage Yarn plugin could intercept resolution for every
+  dependency, inspect each package's npm metadata, and apply the
+  framework-compatibility filter to whichever ones turn out to carry a
+  top-level `backstage` field — letting adopters keep plain `^x.y.z`
+  ranges everywhere. Rejected. The plugin would have to inspect the npm
+  metadata of every dependency in the project, which is a real
+  performance and complexity cost; the descriptor-binding mechanism we
+  rely on for cache invalidation does not naturally apply to ranges
+  without a protocol marker, so we would also need a separate hook that
+  walks the lockfile after `backstage.json` changes; and the implicit
+  behavior loses the explicit-is-better-than-implicit property that
+  reading a `package.json` tells you which deps are Backstage-managed.
+  Universal `backstage:^` is more invasive on the adopter side at first
+  but simpler everywhere else.
 - **Keep `framework` strictly the framework, and pull the bundled plugins out.**
   As currently planned, `framework` is more than just the plugin/app/backend APIs
   and defaults — it also contains the `events`, `signals`, `permission`, and
