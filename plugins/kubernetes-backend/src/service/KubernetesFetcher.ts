@@ -359,7 +359,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     let agent = this.agentCache.get(key);
     if (!agent) {
       agent = new https.Agent({
-        ca: ca ?? undefined,
+        ca,
         rejectUnauthorized: !clusterDetails.skipTLSVerify,
         keepAlive: true,
         ...(credential.type === 'x509 client certificate' && {
