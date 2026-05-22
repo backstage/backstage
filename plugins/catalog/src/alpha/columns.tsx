@@ -92,6 +92,7 @@ const descriptionColumn = CatalogColumnBlueprint.make({
     id: 'description',
     label: 'Description',
     header: () => <EntityTableColumnTitle translationKey="description" />,
+    orderField: 'metadata.description',
     searchFields: ['metadata.description'],
     filter: 'not:kind:location',
     cell: entity => <CellText title={entity.metadata.description ?? ''} />,
