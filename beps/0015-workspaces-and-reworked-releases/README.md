@@ -32,6 +32,7 @@ creation-date: 2026-05-18
     - [Triggering publishing in the private repo](#triggering-publishing-in-the-private-repo)
     - [Publish-time safeguards](#publish-time-safeguards)
   - [Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle)
+  - [Workspace target framework version](#workspace-target-framework-version)
   - [Repository tooling](#repository-tooling)
   - [Tooling consolidation with backstage-community-plugins](#tooling-consolidation-with-backstage-community-plugins)
   - [Documentation and microsite](#documentation-and-microsite)
@@ -647,7 +648,7 @@ workspaces/
     package.json            # workspace root
     yarn.lock
     tsconfig.json
-    backstage.json
+    backstage.json          # framework version the workspace targets (see below)
     .changeset/
       config.json
       *.md
@@ -658,6 +659,15 @@ workspaces/
     plugins/
       <plugin>/...
 ```
+
+Every non-framework workspace has a `backstage.json` at its root carrying a
+single `version` field that records the framework release the workspace was
+built against (see
+[Workspace target framework version](#workspace-target-framework-version)).
+This value is what is propagated into the published `package.json` of every
+package the workspace ships, and is what governs how adopters resolve those
+packages. The `framework` workspace itself does not carry the field — it is
+the source of truth for framework packages.
 
 The repository root keeps:
 
@@ -1153,16 +1163,16 @@ For adopters who use the Backstage Yarn plugin to pin a Backstage release in
 `backstage.json` (see [Backstage release manifest](#backstage-release-manifest)
 for the plugin's resolution model), this means three useful properties:
 
-- A floating pin (`release: "2604"`) keeps them on the current line. When they
+- A floating pin (`version: "2604"`) keeps them on the current line. When they
   next run `yarn install` and let the lockfile update, the plugin picks up new
   minor and patch versions of Backstage packages within the line. There is no
   possibility of an unexpected breaking change.
-- A frozen pin (`release: "2604.1.3"`) locks resolution to a specific manifest;
+- A frozen pin (`version: "2604.1.3"`) locks resolution to a specific manifest;
   the plugin won't move package versions forward even on a lockfile refresh.
   Reproducibility of any one install still comes from the lockfile, as usual —
   the frozen pin just controls whether a deliberate lockfile update would drift
   forward inside the line or stay put.
-- Moving to the next named release (`release: "2604"` → `release: "2610"`) is an
+- Moving to the next named release (`version: "2604"` → `version: "2610"`) is an
   intentional action. Adopters opt into it on their own schedule, and they know that
   _if_ anything is going to change about Backstage's APIs, this is the boundary at
   which it happens — never inside a release line.
@@ -1182,10 +1192,172 @@ the configured cadence slots, the current date, and the highest `NN` already
 published in the year. The slot number is not derived from the ship date, so a
 release planned for April that ends up merging in May still publishes as `2604`.
 
-The framework release identifier doubles as the Backstage release identifier;
-see [Backstage release manifest](#backstage-release-manifest) for how non-framework
-workspace versions are recorded alongside it so that the Backstage Yarn plugin can
-resolve a pinned Backstage release into a concrete set of package versions.
+The framework release identifier doubles as the Backstage release identifier.
+See [Backstage release manifest](#backstage-release-manifest) for how the
+framework manifest is built and served, and
+[Workspace target framework version](#workspace-target-framework-version) for
+how non-framework workspaces declare which framework version they were built
+against so that adopters can resolve a pinned Backstage release into a
+concrete set of package versions.
+
+### Workspace target framework version
+
+Every non-framework workspace declares a specific framework release identifier
+in its `backstage.json`:
+
+```json
+{
+  "version": "2610.3.5"
+}
+```
+
+(Adopter repositories declare the same field, with the same meaning, at the
+root of the project they are pinning to a Backstage release.)
+
+This identifier carries three coupled meanings:
+
+1. **The framework manifest the workspace builds against.** The Backstage
+   Yarn plugin resolves `backstage:^` ranges in the packages owned by the
+   workspace against `release-2610.3.5.json` (see
+   [Backstage release manifest](#backstage-release-manifest)).
+2. **The support claim the workspace makes when it publishes.** Every
+   package the workspace publishes carries this same identifier under
+   `backstage.version` in its published `package.json`.
+3. **The floor below which the workspace cannot accidentally drop.** Local
+   installs in the workspace pull in framework packages at exactly the
+   versions the manifest names. Code that compiles against the resulting
+   `node_modules` cannot use APIs that are not present in those versions.
+
+#### Honest support window
+
+The third point above is the lever that turns "what framework do you
+support" from an open-ended maintenance burden into a property of the build.
+A workspace cannot claim support for a framework version older than its
+`version` field — the field is the support claim — and cannot accidentally
+use APIs from a newer framework version, because newer APIs are not in the
+resolved `node_modules`.
+
+The two failure modes of traditional support-window declarations both go
+away:
+
+- **Wide window, accidental drift.** A workspace cannot use APIs from a
+  framework version newer than its pin, because those APIs are not in scope
+  during compilation.
+- **Eager bumping, narrow signaled window.** Eager bumping is fine. An
+  adopter on framework `2610.5.0` who installs a plugin tagged
+  `backstage.version: 2610.3.5` still gets the plugin —
+  `2610.3.5 <= 2610.5.0` is what the resolver checks (see below). The
+  author can bump as often as they like; the only impact is on adopters
+  who are on framework versions older than the new floor, who pick up the
+  previous plugin version instead.
+
+#### Published-package metadata
+
+The pack-time hook in the Backstage Yarn plugin (`beforeWorkspacePacking`,
+which already rewrites `backstage:^` ranges to concrete `^x.y.z` ranges
+today) is extended to also copy the `version` field from the workspace
+`backstage.json` into the published `package.json` under `backstage.version`:
+
+```json
+{
+  "name": "@backstage/plugin-catalog",
+  "version": "2.3.1",
+  "backstage": {
+    "role": "frontend-plugin",
+    "version": "2610.3.5"
+  }
+}
+```
+
+Authors who want to claim support for framework `2610.3.5` set
+`backstage.json: version: "2610.3.5"` in their workspace. The next publish
+carries it forward. There is no separate publishing-time configuration to
+maintain.
+
+#### Resolution semantics
+
+When an adopter pins `backstage.json: version: "X"` and runs `yarn install`,
+the Yarn plugin:
+
+1. Resolves `X` to a concrete `<line>.<minor>.<patch>` — following the
+   line's `latest.json` pointer if `X` is line-only.
+2. For each `backstage:^` dependency, checks the framework manifest for
+   that version. If the package is present in the manifest (it is a
+   framework package), the manifest-pinned version is used.
+3. Otherwise — the package is a non-framework Backstage-ecosystem package —
+   the plugin queries the npm registry for the package's published
+   versions, reads `backstage.version` from each, filters to versions
+   where `backstage.version <= X`, and picks the highest semver among
+   them.
+
+Version comparison is plain numerical comparison on the full
+`<line>.<minor>.<patch>` identifier:
+`2610.3.5 < 2610.5.0 < 2701.0.0 < 2701.0.1`. Cross-line compatibility is
+treated as forward-compatible by default — a plugin tagged `2610.3.5` is
+considered compatible with an adopter on `2701.x.y`. The rationale is that
+named-release transitions do not necessarily bump every framework
+package's major (see
+[Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle)),
+so most cross-line installs work in practice. When they do not, the plugin
+author publishes a new version targeting the newer line; adopters on the
+newer line pick that up automatically on their next `yarn install`.
+
+The opposite direction is strict by construction. An adopter on `2610.x.y`
+does not see plugins tagged with newer framework versions: those versions
+fail the `<= adopter's framework version` filter. The latest plugin a
+`2610.x.y` adopter sees is whatever was tagged with `<= 2610.x.y` at the
+time the plugin was last published into that line. To pick up newer plugin
+versions, the adopter bumps their framework version.
+
+#### Bumping the framework version
+
+A workspace bumps its target framework version with a single command exposed
+by the standalone release CLI (`yarn release set-version <new-version>`):
+
+1. The command updates `backstage.json: version`.
+2. `yarn install` re-resolves the lockfile against the new framework
+   manifest.
+3. CI runs against the new framework; maintainers fix any breakage.
+4. On the next publish, every package the workspace ships carries the new
+   value under `backstage.version`.
+
+There is no mechanical batch operation; workspaces choose when to bump.
+Workspaces inside `backstage/backstage` typically bump as part of preparing
+for the next named framework release; other repositories choose their own
+cadence.
+
+#### Universality
+
+The model is the same for every workspace, regardless of where it lives:
+
+- **Workspaces in `backstage/backstage`.** Each `workspaces/<name>/backstage.json`
+  declares its target framework version. The `framework` workspace itself
+  is the source of truth for framework packages and does not carry the
+  field.
+- **Workspaces in `backstage/community-plugins`.** Same mechanic. Each
+  workspace declares its target framework version; the publishing flow
+  propagates it.
+- **External open-source plugin repositories.** Same. Set
+  `backstage.json: version`, ensure the Backstage Yarn plugin is active
+  during pack time (it already is for any repository that uses
+  `backstage:^` ranges), and publish.
+- **Internal corporate plugins.** Same. No coordination with the
+  framework's publishing infrastructure is required.
+
+The only contract between a workspace and the rest of the Backstage
+ecosystem is the published `backstage.version` field. No central registry,
+no shared state, no special permissions.
+
+#### Plugins without the field
+
+Plugins published before this BEP rolls out do not carry a
+`backstage.version` field. The Yarn plugin treats those versions as
+universally compatible — they pass the compatibility filter regardless of
+the adopter's pinned framework version, so they remain installable while
+their authors catch up. After a transition window of two named framework
+releases the Yarn plugin instead warns, and after a further two releases it
+errors. `backstage-cli versions:check` can flag missing metadata earlier so
+that plugin authors do not learn about it from broken installs.
 
 ### Repository tooling
 
@@ -1311,9 +1483,12 @@ Concretely:
 - Move and refactor the community-plugins scripts into subcommands of that CLI
   (e.g. `list-changed-workspaces`, `check-needs-release`, `create-tag`).
 - Add the new subcommands needed by this BEP: `stage create|refresh|apply` (for
-  authoring and validating staged changes) and `next-version` (for computing the
+  authoring and validating staged changes), `next-version` (for computing the
   next `@next` identifier; see
-  [Next pre-release versioning](#next-pre-release-versioning)).
+  [Next pre-release versioning](#next-pre-release-versioning)), and
+  `set-version` (for bumping the target framework version of a workspace;
+  see
+  [Workspace target framework version](#workspace-target-framework-version)).
 - Update both repositories' workflows to invoke the CLI instead of duplicated
   scripts.
 
@@ -1447,16 +1622,16 @@ A few reasons keeping `backstage/versions` separate is the right call:
 
 A Backstage release is identified by the framework release line — for example,
 `2604`. Within that line, individual manifests are numbered using a semver-style
-`<minor>.<patch>` suffix that follows real semver semantics across the workspace
-as a whole:
+`<minor>.<patch>` suffix that follows real semver semantics across the framework
+workspace:
 
 - A new line opens at `<line>.0.0` when the framework `Promote staged` PR
   merges.
-- A subsequent publish into the line that contains at least one `minor` package
-  bump advances the line's `<minor>` segment and resets `<patch>` to `0` (e.g.
-  `2604.0.5` → `2604.1.0`).
-- A publish that contains only `patch` bumps advances the `<patch>` segment
-  (e.g. `2604.1.0` → `2604.1.1`).
+- A subsequent framework publish into the line that contains at least one
+  `minor` package bump advances the line's `<minor>` segment and resets
+  `<patch>` to `0` (e.g. `2604.0.5` → `2604.1.0`).
+- A framework publish that contains only `patch` bumps advances the `<patch>`
+  segment (e.g. `2604.1.0` → `2604.1.1`).
 - `<major>` is never bumped inside a line; cross-line transitions advance
   `<line>` itself (e.g. `2604` → `2610`).
 
@@ -1464,6 +1639,13 @@ The release identifier shipped to adopters is therefore `<line>.<minor>.<patch>`
 e.g. `2604.0.0`, `2604.1.3`, `2604.5.7`. This applies to the framework's
 back-port lines too: a back-port to the `2603` line that contains only patch
 bumps moves it from e.g. `2603.5.2` to `2603.5.3`.
+
+Only framework publishes affect the manifest. Publishes from other workspaces
+(`catalog`, `ui`, `scaffolder`, and so on) carry their own `backstage.version`
+metadata in the published `package.json` (see
+[Workspace target framework version](#workspace-target-framework-version))
+and are resolved independently from the npm registry; they do not appear in
+the framework manifest.
 
 Each manifest is a JSON document of the form:
 
@@ -1474,68 +1656,73 @@ Each manifest is a JSON document of the form:
   "packages": [
     {
       "name": "@backstage/frontend-plugin-api",
-      "workspace": "framework",
       "version": "2.4.7"
     },
     {
-      "name": "@backstage/plugin-catalog",
-      "workspace": "catalog",
-      "version": "2.3.0"
+      "name": "@backstage/backend-plugin-api",
+      "version": "3.1.0"
     },
     {
-      "name": "@backstage/plugin-catalog-react",
-      "workspace": "catalog",
-      "version": "1.18.4"
-    },
-    {
-      "name": "@backstage/ui",
-      "workspace": "ui",
-      "version": "1.2.0"
+      "name": "@backstage/types",
+      "version": "1.0.5"
     }
   ]
 }
 ```
 
-Every published package appears in the manifest exactly once. There is no "no target"
-distinction at the data layer — workspaces such as `ui` that have no runtime
-dependency on `framework` still have their current `@latest` version captured. The
-manifest is purely descriptive: it answers "if I pin Backstage `2604.1.3`, what
-versions of every Backstage package do I get?".
+Only framework packages appear in `packages[]`, each with a strict pin. The
+manifest answers a narrow question: "if I pin Backstage `2604.1.3`, which
+exact version of each framework package do I get?". Resolution of every
+other Backstage-ecosystem package is delegated to the npm registry per the
+[Workspace target framework version](#workspace-target-framework-version)
+rules.
 
 #### How the manifest is maintained
 
-Manifests are immutable. Every successful non-pre-release publish from
-the publishing repo produces a new manifest under a content-addressed URL of the
-form `release-<line>.<minor>.<patch>.json` in `backstage/versions` — for
-example, `release-2604.1.3.json`. A pointer file
+Manifests are immutable. Every successful non-pre-release framework publish
+from the publishing repo produces a new manifest under a content-addressed
+URL of the form `release-<line>.<minor>.<patch>.json` in `backstage/versions`
+— for example, `release-2604.1.3.json`. A pointer file
 (`release-<line>/latest.json`) is updated to reference the newest manifest in
 the line; that pointer is the only mutable artifact the publishing repo writes.
 
 The body of each manifest is built by:
 
 1. Copying the most recent manifest for the same Backstage release line.
-2. Replacing the version entry for every package that was just published.
+2. Replacing the version entry for every framework package that was just
+   published.
 3. Computing the new `<minor>.<patch>` suffix from the highest bump level in
    the publish — minor publishes advance `<minor>` and reset `<patch>` to `0`,
    patch publishes advance `<patch>` — and writing the result to a new immutable
    URL.
 
-This means an adopter using the Backstage Yarn plugin (which reads
-`backstage.json`'s `release` field and resolves Backstage package versions through
-it) can pin a Backstage release in two ways:
+Publishes from non-framework workspaces do not produce new manifests. Their
+effect on what an adopter resolves at install time is handled by the npm
+registry: the published package carries `backstage.version` metadata, and
+the Yarn plugin filters on that field (see
+[Workspace target framework version](#workspace-target-framework-version)).
 
-- **Floating pin** (`release: "2604"` in `backstage.json`): the Yarn plugin reads
-  `release-2604/latest.json` on each resolve, picks up the most recent manifest
-  in that release line, and resolves Backstage package versions accordingly.
-  When the adopter next refreshes their lockfile they get the latest known
-  compatible versions across every workspace without changing the pin.
-  Reproducibility of any single install still comes from the `yarn.lock` file,
-  as usual; the floating pin only governs how resolution moves on a future
-  refresh.
-- **Frozen pin** (`release: "2604.1.3"` in `backstage.json`): the Yarn plugin
-  reads the immutable `release-2604.1.3.json` directly. A future lockfile
-  refresh does not move Backstage package versions forward inside the line; the
-  resolution stays at exactly the manifest the pin names.
+This means an adopter using the Backstage Yarn plugin (which reads the
+`version` field from `backstage.json` and resolves Backstage package
+versions through it) can pin a Backstage release in two ways:
+
+- **Floating pin** (`version: "2604"` in `backstage.json`): the Yarn plugin reads
+  `release-2604/latest.json` on each resolve, picks up the most recent
+  framework manifest in that release line, and resolves framework package
+  versions accordingly. Non-framework packages resolve to the latest
+  versions on npm whose `backstage.version` is `<=` the concrete framework
+  version this pin resolved to. When the adopter next refreshes their
+  lockfile they get the latest known compatible versions across every
+  workspace without changing the pin. Reproducibility of any single install
+  still comes from the `yarn.lock` file, as usual; the floating pin only
+  governs how resolution moves on a future refresh.
+- **Frozen pin** (`version: "2604.1.3"` in `backstage.json`): the Yarn plugin
+  reads the immutable `release-2604.1.3.json` directly. Framework packages are
+  pinned strictly to the manifest's versions, and non-framework packages
+  resolve to the latest version on npm with `backstage.version <= 2604.1.3`.
+  A future lockfile refresh does not move framework package versions forward
+  inside the line; non-framework packages may move forward if newer versions
+  with a compatible `backstage.version` have been published.
 
 When the framework workspace cuts a new named release (`2604` → `2610`), the
 publishing workflow stops updating the `release-2604/latest.json` pointer (the
@@ -1558,13 +1745,23 @@ This gives us a few useful properties:
 
 #### Yarn plugin integration
 
-The Backstage Yarn plugin already reads release manifests from `backstage/versions`
-to resolve a pinned release to a concrete set of versions. The schema change above is
-additive (the `workspace` field is new, everything else is shaped identically to
-today), and the resolution flow gains a small new step (read `release-<line>/latest.json`
-to find the current immutable manifest URL, then read that). Packages whose workspace
-was not yet published into the current release line fall through to the previous
-release line's manifest, and finally to `@latest` if no manifest knows about them.
+The Backstage Yarn plugin already reads release manifests from
+`backstage/versions` to resolve a pinned release to a concrete set of
+versions. Two adjustments land alongside this BEP:
+
+1. **Pointer-file lookup.** When `backstage.json` carries a line-only pin
+   (e.g. `version: "2604"`), the plugin reads `release-2604/latest.json` on
+   each resolve to find the current immutable manifest URL, then reads that.
+   When `backstage.json` carries a full identifier (e.g.
+   `version: "2604.1.3"`), the plugin reads the immutable manifest directly.
+2. **npm-fallback for non-framework packages.** When a `backstage:^` range
+   resolves to a package that is not in the framework manifest, the plugin
+   queries the npm registry for the package's published versions, reads
+   `backstage.version` from each version's `package.json`, filters to
+   versions where `backstage.version <= adopter's framework version`, and
+   picks the highest semver among them. See
+   [Workspace target framework version](#workspace-target-framework-version)
+   for the full rules.
 
 ### OIDC binding mechanics
 
@@ -1868,6 +2065,36 @@ workspace that has not been migrated yet. There is no flag day.
   intentionally left out of the initial design to keep the publish flow
   frictionless, and called out here as something we may add later if the threat
   model warrants it.
+- **Enumerate every published package in the release manifest, as today.**
+  The previous draft of this BEP carried the `@latest` version of every
+  workspace in the manifest, so an adopter pinning a Backstage release got an
+  exact snapshot across the entire ecosystem. We moved away from that for two
+  reasons: it implicitly couples every workspace publish to a manifest write
+  in `backstage/versions` (a write that the publishing infrastructure of
+  every participating workspace would need to be trusted with), and it does
+  not generalize to
+  third-party or internal plugin repositories that have no way to update the
+  manifest. The current model — manifest pins framework packages only,
+  non-framework packages declare `backstage.version` and are resolved from
+  the npm registry — gives up the frozen-snapshot property at the line level
+  but in exchange works uniformly for every Backstage-ecosystem repository
+  and removes a class of cross-repo write permissions. Lockfile-level
+  reproducibility for any single install is preserved.
+- **Declare framework support as a line, not a specific version.** Plugins
+  could declare `backstage.version: "2610"` (line-only). We rejected this
+  because the support claim then drifts from the build: a plugin tagged
+  `2610` may actually depend on APIs introduced mid-line, but the metadata
+  doesn't capture that. Plugin authors would have to maintain the support
+  claim by hand, with no compiler help. The `<line>.<minor>.<patch>` form
+  ties the support claim to the framework version actually in `node_modules`
+  during the build, which makes it honest by construction.
+- **Declare framework support as a range.** Plugins could declare
+  `backstage.version: { min: "2610.0.0", max: "2701.5.0" }`. Out of scope.
+  Plugin authors who want to support multiple framework lines can publish
+  separate versions targeting each line (the existing back-port pattern). We
+  may revisit ranges if multi-line support proves common in practice, but
+  the simple-form-first approach matches how community-plugins authors
+  already maintain plugins.
 - **Keep `framework` strictly the framework, and pull the bundled plugins out.**
   As currently planned, `framework` is more than just the plugin/app/backend APIs
   and defaults — it also contains the `events`, `signals`, `permission`, and
