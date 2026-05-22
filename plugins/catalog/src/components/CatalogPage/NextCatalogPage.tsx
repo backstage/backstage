@@ -103,7 +103,12 @@ function buildColumnConfig(
     label: header.label,
     header: header.header
       ? () => (
-          <Column isRowHeader={index === firstVisibleIndex}>
+          <Column
+            id={header.id}
+            isRowHeader={index === firstVisibleIndex}
+            allowsSorting={Boolean(header.orderField)}
+            width={header.width}
+          >
             {header.header!()}
           </Column>
         )
