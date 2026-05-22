@@ -1403,9 +1403,10 @@ universally compatible — they pass the compatibility filter regardless of
 the adopter's pinned framework version, so they remain installable while
 their authors catch up. After a transition window of two named framework
 releases the Yarn plugin instead warns, and after a further two releases it
-errors. `backstage-cli versions check` (see
-[Backstage CLI commands](#backstage-cli-commands)) can flag missing metadata
-earlier so that plugin authors do not learn about it from broken installs.
+errors. `backstage-cli versions info` (see
+[Backstage CLI commands](#backstage-cli-commands)) surfaces missing metadata
+in its status report so that plugin authors do not learn about it from
+broken installs.
 
 #### Backstage CLI commands
 
@@ -1451,19 +1452,35 @@ installation.
 
 - **`backstage-cli versions upgrade`** — Refresh non-framework
   Backstage-ecosystem dependencies to their latest npm versions that are
-  still compatible with the current framework pin. Wraps the equivalent
-  of `yarn up '@backstage/*'`. Does not touch `backstage.json: version`.
-  This is the command an adopter runs to pick up plugin updates without
-  bumping the framework. Plugin workspace maintainers rarely need it —
-  their own framework pin already governs their `node_modules`.
+  still compatible with the current framework pin. Does not touch
+  `backstage.json: version`. The command walks every `package.json` in
+  the project, collects the set of dependencies declared with a
+  `backstage:` protocol range (which is the universal marker for "let
+  the Backstage Yarn plugin resolve this", independent of package name
+  or scope), and runs `yarn up` for that set. Yarn's `up` command marks
+  those packages for re-resolution against the registry on the next
+  install, which is what the Backstage Yarn plugin needs to re-pick the
+  latest version compatible with the current framework pin. This is the
+  command an adopter runs to pick up plugin updates without bumping the
+  framework. Plugin workspace maintainers rarely need it — their own
+  framework pin already governs their `node_modules`.
 
-- **`backstage-cli versions check`** — Status report. Prints the
-  currently-pinned framework version, whether a newer version exists in
-  the line, whether a newer line is available, which Backstage-ecosystem
-  deps have newer compatible versions on npm than what is locked, and
-  which dependencies are missing the `backstage.version` field (during
-  the transition window described in
-  [Plugins without the field](#plugins-without-the-field)).
+  The set of refreshed packages is derived from the `backstage:` ranges
+  in the project rather than from any package-name pattern, because
+  Backstage-ecosystem packages can live under any scope (community
+  plugins under `@backstage-community/`, third-party plugins under any
+  scope, internal corporate plugins under organization-specific scopes).
+  The `backstage:` protocol is the only thing they share.
+
+- **`backstage-cli versions info`** — Print a status report. Lists the
+  currently-pinned framework version and what published versions are
+  available in the same line and in newer lines. For every dependency
+  declared with `backstage:^`, lists the locked version, the published
+  `backstage.version` it advertises (or notes that the field is absent),
+  and the latest compatible version available on npm. Useful both to a
+  plugin workspace maintainer wanting to know whether they are behind,
+  and to an adopter assessing the state of their installation. The
+  command exits 0 regardless of what it finds; it is purely informational.
 
 - **`backstage-cli versions migrate`** — Unchanged from today; handles
   packages that have moved between npm scopes (for example to
