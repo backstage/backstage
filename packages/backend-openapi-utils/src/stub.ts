@@ -30,6 +30,34 @@ import { InputError } from '@backstage/errors';
 import { middleware as OpenApiValidator } from 'express-openapi-validator';
 import { OPENAPI_SPEC_ROUTE } from './constants';
 import { isErrorResult, merge } from 'openapi-merge';
+import type {
+  HttpAuthService,
+  LoggerService,
+  PermissionsRegistryService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
+import { permissionsMiddlewareFactory } from './middlewares/permissions';
+
+/** @public */
+export type CreateValidatedOpenApiRouterOptions = {
+  validatorOptions?: Partial<Parameters<typeof OpenApiValidator>['0']>;
+  middleware?: RequestHandler[];
+};
+
+/**
+ * Services that the OpenAPI router can use to automatically wire up
+ * middleware. When all permissions-related services are provided, the
+ * permissions middleware is registered automatically based on the
+ * `x-backstage-permissions` annotations in the OpenAPI spec.
+ *
+ * @public
+ */
+export type CreateValidatedOpenApiRouterServices = {
+  permissions: PermissionsService;
+  permissionsRegistry: PermissionsRegistryService;
+  httpAuth: HttpAuthService;
+  logger: LoggerService;
+};
 
 function validatorErrorTransformer(): ErrorRequestHandler {
   return (error: Error, _: Request, _2: Response, next: NextFunction) => {
@@ -61,10 +89,8 @@ export function getOpenApiSpecRoute(baseUrl: string) {
  */
 function createRouterWithValidation(
   spec: RequiredDoc,
-  options?: {
-    validatorOptions?: Partial<Parameters<typeof OpenApiValidator>['0']>;
-    middleware?: RequestHandler[];
-  },
+  options?: CreateValidatedOpenApiRouterOptions,
+  services?: CreateValidatedOpenApiRouterServices,
 ): Router {
   const router = PromiseRouter();
   router.use(options?.middleware || getDefaultRouterMiddleware());
@@ -86,6 +112,18 @@ function createRouterWithValidation(
 
   // Any errors from the middleware get through here.
   router.use(validatorErrorTransformer());
+
+  if (services) {
+    const { permissions, permissionsRegistry, httpAuth, logger } = services;
+    router.use(
+      permissionsMiddlewareFactory({
+        permissions,
+        permissionsRegistry,
+        httpAuth,
+        logger,
+      }),
+    );
+  }
 
   router.get(OPENAPI_SPEC_ROUTE, async (req, res) => {
     const mergeOutput = merge([
@@ -124,12 +162,12 @@ function createRouterWithValidation(
  */
 export function createValidatedOpenApiRouter<T extends RequiredDoc>(
   spec: T,
-  options?: {
-    validatorOptions?: Partial<Parameters<typeof OpenApiValidator>['0']>;
-    middleware?: RequestHandler[];
-  },
+  options?: CreateValidatedOpenApiRouterOptions,
+  services?: CreateValidatedOpenApiRouterServices,
 ) {
-  return createRouterWithValidation(spec, options) as ApiRouter<typeof spec>;
+  return createRouterWithValidation(spec, options, services) as ApiRouter<
+    typeof spec
+  >;
 }
 
 /**
@@ -144,10 +182,8 @@ export function createValidatedOpenApiRouterFromGeneratedEndpointMap<
   T extends EndpointMap,
 >(
   spec: RequiredDoc,
-  options?: {
-    validatorOptions?: Partial<Parameters<typeof OpenApiValidator>['0']>;
-    middleware?: RequestHandler[];
-  },
+  options?: CreateValidatedOpenApiRouterOptions,
+  services?: CreateValidatedOpenApiRouterServices,
 ) {
-  return createRouterWithValidation(spec, options) as TypedRouter<T>;
+  return createRouterWithValidation(spec, options, services) as TypedRouter<T>;
 }

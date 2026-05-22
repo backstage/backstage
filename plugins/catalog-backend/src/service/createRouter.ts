@@ -67,7 +67,6 @@ import {
   parseLocationQuery,
 } from './request/parseLocationQuery';
 import { parseEntityQuery } from './request/parseEntityQuery';
-import { permissionsMiddlewareFactory } from '@backstage/backend-openapi-utils';
 
 /**
  * Options used by {@link createRouter}.
@@ -94,13 +93,6 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = await createOpenApiRouter({
-    validatorOptions: {
-      // We want the spec to be up to date with the expected value, but the return type needs
-      //  to be controlled by the router implementation not the request validator.
-      ignorePaths: /^\/validate-entity\/?$/,
-    },
-  });
   const {
     entitiesCatalog,
     locationAnalyzer,
@@ -117,16 +109,23 @@ export async function createRouter(
     enableRelationsCompatibility = false,
   } = options;
 
-  if (permissionsRegistry) {
-    router.use(
-      permissionsMiddlewareFactory({
-        permissions: permissionsService,
-        httpAuth,
-        permissionsRegistry,
-        logger,
-      }),
-    );
-  }
+  const router = await createOpenApiRouter(
+    {
+      validatorOptions: {
+        // We want the spec to be up to date with the expected value, but the return type needs
+        //  to be controlled by the router implementation not the request validator.
+        ignorePaths: /^\/validate-entity\/?$/,
+      },
+    },
+    permissionsRegistry
+      ? {
+          permissions: permissionsService,
+          permissionsRegistry,
+          httpAuth,
+          logger,
+        }
+      : undefined,
+  );
 
   const readonlyEnabled =
     config.getOptionalBoolean('catalog.readonly') || false;

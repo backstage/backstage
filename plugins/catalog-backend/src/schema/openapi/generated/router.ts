@@ -1978,8 +1978,12 @@ export const createOpenApiRouter = async (
   options?: Parameters<
     typeof createValidatedOpenApiRouterFromGeneratedEndpointMap
   >['1'],
+  services?: Parameters<
+    typeof createValidatedOpenApiRouterFromGeneratedEndpointMap
+  >['2'],
 ) =>
   createValidatedOpenApiRouterFromGeneratedEndpointMap<EndpointMap>(
     spec,
     options,
+    services,
   );

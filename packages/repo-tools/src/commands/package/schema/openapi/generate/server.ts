@@ -66,7 +66,8 @@ import {EndpointMap} from './apis';
 export const spec = ${JSON.stringify(yaml, null, 2)} as const;
 export const createOpenApiRouter = async (
   options?: Parameters<typeof createValidatedOpenApiRouterFromGeneratedEndpointMap>['1'],
-) => createValidatedOpenApiRouterFromGeneratedEndpointMap<EndpointMap>(spec, options);
+  services?: Parameters<typeof createValidatedOpenApiRouterFromGeneratedEndpointMap>['2'],
+) => createValidatedOpenApiRouterFromGeneratedEndpointMap<EndpointMap>(spec, options, services);
 `,
   );
 
