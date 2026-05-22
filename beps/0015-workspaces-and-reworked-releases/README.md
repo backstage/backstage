@@ -1300,7 +1300,9 @@ package's major (see
 [Framework versioning and the release lifecycle](#framework-versioning-and-the-release-lifecycle)),
 so most cross-line installs work in practice. When they do not, the plugin
 author publishes a new version targeting the newer line; adopters on the
-newer line pick that up automatically on their next `yarn install`.
+newer line pick that up the next time they explicitly refresh their
+Backstage dependencies — see
+[When re-resolution happens](#when-re-resolution-happens) below.
 
 The opposite direction is strict by construction. An adopter on `2610.x.y`
 does not see plugins tagged with newer framework versions: those versions
@@ -1308,6 +1310,50 @@ fail the `<= adopter's framework version` filter. The latest plugin a
 `2610.x.y` adopter sees is whatever was tagged with `<= 2610.x.y` at the
 time the plugin was last published into that line. To pick up newer plugin
 versions, the adopter bumps their framework version.
+
+#### When re-resolution happens
+
+`yarn install` is deterministic and lockfile-driven: it never reaches out to
+the npm registry to look for newer versions of a dependency that is already
+resolved in `yarn.lock`. The resolution rules described above only run at
+well-defined moments, all of them either explicit user actions or
+descriptor changes that Yarn detects.
+
+The plugin already takes advantage of this property today by binding the
+Backstage version into every `backstage:^` descriptor it produces. When the
+adopter changes `backstage.json: version`, the descriptor for every
+`backstage:^` dependency changes too, and Yarn invalidates the cached
+resolutions for them. The next `yarn install` re-runs the resolver against
+the new framework version and writes new entries to `yarn.lock`. We carry
+this mechanism forward unchanged.
+
+Concretely, re-resolution happens at four moments:
+
+- **Bumping the framework version.** Changing `backstage.json: version`
+  (typically via the standalone release CLI's
+  [`set-version`](#bumping-the-framework-version) subcommand) invalidates
+  every `backstage:^` descriptor in the lockfile via the descriptor
+  binding. The next `yarn install` re-resolves the lot: framework packages
+  shift to the versions pinned by the new manifest, and non-framework
+  packages re-pick the latest npm version compatible with the new
+  framework pin. This is the dominant trigger in practice.
+- **Adding a new Backstage dependency.** `yarn add <pkg>` creates a new
+  `backstage:^` descriptor, which Yarn resolves through the plugin on the
+  spot. The new package picks up the current framework pin.
+- **Upgrading a specific package.** `yarn up <pkg>` asks Yarn to refresh
+  the resolution for that one package. The plugin re-queries the npm
+  registry, applies the compatibility filter against the unchanged
+  framework version, and picks the latest compatible version.
+- **Refreshing every Backstage-ecosystem package without bumping the
+  framework.** `yarn up '@backstage/*'` (or whichever glob captures the
+  Backstage-ecosystem deps in the project) applies the previous step
+  across all matching packages in one shot. Useful when an adopter wants
+  to pick up plugin updates that have shipped since their last refresh,
+  without touching framework versions.
+
+A clean `yarn install` against an existing lockfile, on any of these
+operations' outputs, is reproducible. No registry queries happen for
+already-locked descriptors.
 
 #### Bumping the framework version
 
@@ -1358,6 +1404,21 @@ their authors catch up. After a transition window of two named framework
 releases the Yarn plugin instead warns, and after a further two releases it
 errors. `backstage-cli versions:check` can flag missing metadata earlier so
 that plugin authors do not learn about it from broken installs.
+
+#### Optional convenience tooling
+
+Nothing in the design above adds commands to the Backstage Yarn plugin
+itself; re-resolution is driven by standard Yarn invocations (`yarn add`,
+`yarn up`, plus the descriptor invalidation that follows a framework
+version bump). As a separate, optional improvement, the existing
+`backstage-cli versions:bump` command — which already understands Backstage
+release lines and how `backstage.json` is laid out — could be adapted to
+wrap the common adopter workflows into a single command, for example
+combining a framework version bump with the equivalent of
+`yarn up '@backstage/*'` for adopters who want both in one step. This is
+not part of the core mechanism and the design works without it; it is
+listed here as a quality-of-life improvement that may be picked up
+alongside this BEP.
 
 ### Repository tooling
 
@@ -1711,18 +1772,18 @@ versions through it) can pin a Backstage release in two ways:
   framework manifest in that release line, and resolves framework package
   versions accordingly. Non-framework packages resolve to the latest
   versions on npm whose `backstage.version` is `<=` the concrete framework
-  version this pin resolved to. When the adopter next refreshes their
-  lockfile they get the latest known compatible versions across every
-  workspace without changing the pin. Reproducibility of any single install
-  still comes from the `yarn.lock` file, as usual; the floating pin only
-  governs how resolution moves on a future refresh.
+  version this pin resolved to. The resolved versions are then locked in
+  `yarn.lock` and reused on every subsequent `yarn install` until the
+  adopter explicitly asks for a refresh (see
+  [When re-resolution happens](#when-re-resolution-happens)); the floating
+  pin governs the snapshot that the next refresh produces, not what plain
+  `yarn install` consults on every run.
 - **Frozen pin** (`version: "2604.1.3"` in `backstage.json`): the Yarn plugin
   reads the immutable `release-2604.1.3.json` directly. Framework packages are
   pinned strictly to the manifest's versions, and non-framework packages
   resolve to the latest version on npm with `backstage.version <= 2604.1.3`.
-  A future lockfile refresh does not move framework package versions forward
-  inside the line; non-framework packages may move forward if newer versions
-  with a compatible `backstage.version` have been published.
+  Same lockfile semantics: once resolved, the versions stay until the
+  adopter explicitly refreshes.
 
 When the framework workspace cuts a new named release (`2604` → `2610`), the
 publishing workflow stops updating the `release-2604/latest.json` pointer (the
