@@ -90,7 +90,8 @@ function buildColumnConfig(
     ({ header, cell, filterFunction, filterExpression }) => {
       const filter = buildFilterFn(filterFunction, filterExpression);
       const hasFilter = Boolean(filterFunction || filterExpression);
-      const hiddenByFilter = hasFilter && !entities.some(e => filter(e));
+      const hiddenByFilter =
+        hasFilter && entities.length > 0 && !entities.some(e => filter(e));
       const isHidden = header.hidden || hiddenByFilter;
       return { header, cell, filter, isHidden };
     },
@@ -162,7 +163,7 @@ function NextCatalogTable(props: {
     const seen = new Set<string>();
     const entityList = entities ?? [];
     for (const { header, filterFunction, filterExpression } of props.columns) {
-      if (filterFunction || filterExpression) {
+      if ((filterFunction || filterExpression) && entityList.length > 0) {
         const filter = buildFilterFn(filterFunction, filterExpression);
         if (!entityList.some(e => filter(e))) continue;
       }
