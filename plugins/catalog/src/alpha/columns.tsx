@@ -19,18 +19,14 @@ import {
   CatalogColumnBlueprint,
   EntityTableColumnTitle,
 } from '@backstage/plugin-catalog-react/alpha';
-import { CellText, Column } from '@backstage/ui';
+import { CellText } from '@backstage/ui';
 
 const nameColumn = CatalogColumnBlueprint.make({
   name: 'name',
   params: {
     id: 'name',
     label: 'Name',
-    header: () => (
-      <Column>
-        <EntityTableColumnTitle translationKey="name" />
-      </Column>
-    ),
+    header: () => <EntityTableColumnTitle translationKey="name" />,
     orderField: 'metadata.name',
     searchFields: ['metadata.name', 'metadata.title'],
     cell: entity => (
@@ -44,11 +40,7 @@ const ownerColumn = CatalogColumnBlueprint.make({
   params: {
     id: 'owner',
     label: 'Owner',
-    header: () => (
-      <Column>
-        <EntityTableColumnTitle translationKey="owner" />
-      </Column>
-    ),
+    header: () => <EntityTableColumnTitle translationKey="owner" />,
     orderField: 'spec.owner',
     searchFields: ['spec.owner'],
     cell: entity => {
@@ -63,11 +55,7 @@ const typeColumn = CatalogColumnBlueprint.make({
   params: {
     id: 'type',
     label: 'Type',
-    header: () => (
-      <Column>
-        <EntityTableColumnTitle translationKey="type" />
-      </Column>
-    ),
+    header: () => <EntityTableColumnTitle translationKey="type" />,
     orderField: 'spec.type',
     searchFields: ['spec.type'],
     cell: entity => {
@@ -82,11 +70,7 @@ const lifecycleColumn = CatalogColumnBlueprint.make({
   params: {
     id: 'lifecycle',
     label: 'Lifecycle',
-    header: () => (
-      <Column>
-        <EntityTableColumnTitle translationKey="lifecycle" />
-      </Column>
-    ),
+    header: () => <EntityTableColumnTitle translationKey="lifecycle" />,
     orderField: 'spec.lifecycle',
     searchFields: ['spec.lifecycle'],
     cell: entity => {
@@ -104,11 +88,7 @@ const descriptionColumn = CatalogColumnBlueprint.make({
   params: {
     id: 'description',
     label: 'Description',
-    header: () => (
-      <Column>
-        <EntityTableColumnTitle translationKey="description" />
-      </Column>
-    ),
+    header: () => <EntityTableColumnTitle translationKey="description" />,
     searchFields: ['metadata.description'],
     cell: entity => <CellText title={entity.metadata.description ?? ''} />,
   },
@@ -119,11 +99,7 @@ const tagsColumn = CatalogColumnBlueprint.make({
   params: {
     id: 'tags',
     label: 'Tags',
-    header: () => (
-      <Column>
-        <EntityTableColumnTitle translationKey="tags" />
-      </Column>
-    ),
+    header: () => <EntityTableColumnTitle translationKey="tags" />,
     searchFields: ['metadata.tags'],
     cell: entity => (
       <CellText title={(entity.metadata.tags ?? []).join(', ')} />

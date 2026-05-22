@@ -24,7 +24,16 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { NextCatalogSearchBar } from './NextCatalogSearchBar';
 import type { CatalogColumnHeader } from '@backstage/plugin-catalog-react/alpha';
-import { Box, Card, Cell, Flex, Header, Table, Text } from '@backstage/ui';
+import {
+  Box,
+  Card,
+  Cell,
+  Column,
+  Flex,
+  Header,
+  Table,
+  Text,
+} from '@backstage/ui';
 import type { ColumnConfig, SortDescriptor } from '@backstage/ui';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
@@ -75,7 +84,9 @@ function buildColumnConfig(
   return columns.map(({ header, cell }, index) => ({
     id: header.id,
     label: header.label,
-    header: header.header,
+    header: header.header
+      ? () => <Column isRowHeader={index === 0}>{header.header!()}</Column>
+      : undefined,
     width: header.width,
     isSortable: Boolean(header.orderField),
     isRowHeader: index === 0,
@@ -102,6 +113,7 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
     () => buildColumnConfig(props.columns),
     [props.columns],
   );
+
   const rowConfig = useMemo(
     () => ({
       getHref: (row: EntityRow) => entityRoute(entityRouteParams(row.entity)),
