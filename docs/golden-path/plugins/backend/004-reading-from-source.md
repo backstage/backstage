@@ -19,18 +19,18 @@ Backstage gives us all three through the `integrations` config and the `urlReade
 
 The `urlReader` service uses the `integrations` block of your config to figure out how to authenticate against each SCM. You don't need to write any auth code yourself — once a host is registered there, every call you make through `urlReader` will pick up the right token.
 
-For local development, define the integration in `app-config.local.yaml`. That file is ignored by Git, so it's the right home for development-only config that you don't want to force on every other environment:
+For local development, define the integration in `app-config.local.yaml`. That file is ignored by Git, so you can paste a Personal Access Token straight in without it landing in any committed or shared file:
 
 ```yaml title="app-config.local.yaml"
 integrations:
   github:
     - host: github.com
-      token: ${GITHUB_TOKEN}
+      token: ghp_yourPersonalAccessTokenHere
 ```
 
-The token itself should still come from an environment variable rather than being pasted into the yaml — set `GITHUB_TOKEN` in a `.env` file (or your shell) so it never lands in any committed or shared file. A Personal Access Token with `repo` scope is enough for private repositories; public-only setups can omit the token entirely.
+A PAT with `repo` scope is enough for private repositories; public-only setups can omit the token entirely.
 
-We deliberately leave the committed `app-config.yaml` alone here. Production deployments often want a [GitHub App](https://backstage.io/docs/integrations/github/github-apps) instead of a PAT — the credentials rotate automatically and aren't tied to a single user — and putting the dev shape in the committed file would push a PAT-shaped config onto every environment.
+We deliberately leave the committed `app-config.yaml` alone here. Production deployments often want a [GitHub App](https://backstage.io/docs/integrations/github/github-apps) instead of a PAT — you'll still ship credentials with the app, but they rotate automatically and aren't tied to a single user — and putting the dev shape in the committed file would push a PAT-shaped config onto every environment.
 
 The same pattern works for `gitlab`, `bitbucketCloud`, `bitbucketServer`, and `azure`. See the [integrations reference](https://backstage.io/docs/integrations/) for the full list.
 
@@ -73,10 +73,17 @@ Wire it through the constructor the same way you did for `database` in the previ
 Next, add a method that asks the catalog for the components owned by the calling user and returns their source locations:
 
 ```ts title="src/services/TodoListService.ts"
-import { getEntitySourceLocation } from '@backstage/catalog-model';
+import {
+  getEntitySourceLocation,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import type { BackstageCredentials } from '@backstage/backend-plugin-api';
+import type { BackstageUserPrincipal } from '@backstage/backend-plugin-api';
 
 async listOwnedSources(options: {
-  credentials: BackstageCredentials;
+  // Typed as a user principal so `userEntityRef` is available; the router
+  // already enforces `allow: ['user']` before we get here.
+  credentials: BackstageCredentials<BackstageUserPrincipal>;
 }): Promise<{ entityRef: string; url: string }[]> {
   const { items } = await this.#catalog.getEntities(
     {
@@ -86,12 +93,16 @@ async listOwnedSources(options: {
       },
       fields: ['kind', 'metadata', 'spec'],
     },
+    // Pass the caller's credentials so the catalog enforces authorization —
+    // never run catalog reads with anonymous credentials inside a request handler.
     { credentials: options.credentials },
   );
 
   return items
     .map(entity => {
       try {
+        // `getEntitySourceLocation` resolves `backstage.io/source-location`,
+        // falling back to `backstage.io/managed-by-location`.
         const { type, target } = getEntitySourceLocation(entity);
         if (type !== 'url') return undefined;
         return {
@@ -105,11 +116,6 @@ async listOwnedSources(options: {
     .filter((s): s is { entityRef: string; url: string } => Boolean(s));
 }
 ```
-
-A couple of things to note:
-
-1. `getEntitySourceLocation` returns the URL pointing at the entity's source on the SCM (resolved from `backstage.io/source-location`, falling back to `backstage.io/managed-by-location`).
-2. We pass the caller's credentials through to the catalog so authorization is enforced — you should never run catalog reads with anonymous credentials inside a request handler.
 
 ## Fetching
 
@@ -128,12 +134,15 @@ private static readonly TODO_PATTERN =
   /\b(?:TODO|FIXME)(?:\(([^)]*)\))?:?\s*(.*)/;
 
 async syncTodosFromSource(options: {
-  credentials: BackstageCredentials;
+  credentials: BackstageCredentials<BackstageUserPrincipal>;
 }): Promise<{ items: TodoItem[] }> {
   const sources = await this.listOwnedSources(options);
   const discovered: TodoItem[] = [];
 
   for (const { entityRef, url } of sources) {
+    // `urlReader.search` translates this glob into the right per-provider
+    // API call (GitHub Trees, GitLab Repository, etc.) and uses the token
+    // from `integrations` — no per-host plumbing required here.
     const { files } = await this.#urlReader.search(
       `${url.replace(/\/$/, '')}/**/*.{ts,tsx,js,jsx,go,py,java}`,
     );
@@ -158,17 +167,15 @@ async syncTodosFromSource(options: {
     }
   }
 
+  // Delegate persistence to `createTodos` so the sync flow doesn't have
+  // to know how rows are shaped or how conflicts are resolved.
   await this.createTodos(discovered);
 
   return { items: discovered };
 }
 ```
 
-A few things worth highlighting:
-
-1. **Globs are scoped to the source URL.** `urlReader.search` translates `https://github.com/org/repo/tree/main/**/*.ts` into the right per-provider API call — you don't need to know whether the backend is the GitHub Trees API or the GitLab Repository API.
-2. **Authentication is implicit.** Because `github.com` is configured under `integrations`, the search request goes out with the token your env var resolved to. If a user owns a repo your backend doesn't have credentials for, the call will fail with a clear error rather than silently returning nothing.
-3. **Persistence stays in the service layer.** Rather than reaching into `this.#database` here, we delegate to a `createTodos` method that lives next to `createTodo`. The sync flow doesn't need to know how rows are shaped or how conflicts are resolved — that stays the database layer's job.
+If a user owns a repo your backend doesn't have credentials for, the `search` call fails with a clear error rather than silently returning nothing — make sure your `integrations` config covers every host you expect to read from.
 
 ## Persisting in bulk
 
@@ -176,19 +183,20 @@ A few things worth highlighting:
 
 ```ts title="src/services/TodoListService.ts"
 async createTodos(todos: TodoItem[]): Promise<void> {
+  // Knex rejects `.insert([])` on some dialects, and skipping the round-trip
+  // is cheaper than handling that error — callers can hand us whatever the
+  // sync produced without pre-filtering.
   if (todos.length === 0) return;
 
   await this.#database('todo')
     .insert(todos.map(todo => this.toDatabaseRow(todo)))
+    // Keep repeated syncs idempotent. A more sophisticated implementation
+    // would key off `(entityRef, file, lineNumber)` so an edit to a TODO in
+    // source updates the existing row, but that's beyond this integration.
     .onConflict('id')
     .ignore();
 }
 ```
-
-A couple of notes:
-
-1. **`onConflict('id').ignore()`** keeps repeated syncs idempotent. A more sophisticated implementation would key off `(entityRef, file, lineNumber)` so an edit to a TODO in source updates the existing row, but that's beyond what we need to demonstrate the integration.
-2. **Empty-input guard.** Knex will reject `.insert([])` on some dialects, and skipping the round-trip is cheaper than handling the error. Callers can hand us whatever the sync produced without pre-filtering.
 
 Finally, expose the new method through the router so users can trigger a sync:
 

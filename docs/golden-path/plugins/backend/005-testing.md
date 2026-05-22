@@ -54,7 +54,7 @@ describe('createRouter', () => {
 
 A few patterns worth internalising here:
 
-1. **`mockServices` gives you fakes for every core service.** `mockServices.httpAuth()` returns a credential resolver that always succeeds — perfect for tests that aren't actually about auth. There's a corresponding `mockServices.<service>.mock()` that returns a Jest mock you can assert on if you _do_ want to verify auth behaviour.
+1. **`mockServices` gives you fakes for every core service.** `mockServices.httpAuth()` defaults missing credentials to a mock user principal, so any handler that calls `httpAuth.credentials(req, { allow: ['user'] })` passes through without you having to set an `Authorization` header. Handlers that restrict to other principal types (e.g. `allow: ['service']`) will still throw — use `mockCredentials.none.header()` from `@backstage/backend-test-utils` to drive an explicitly unauthenticated request, or `mockServices.httpAuth.mock()` if you want a Jest mock you can assert on.
 2. **The router takes its dependencies as plain objects.** Because `createRouter` accepts an interface rather than calling out to global state, we can pass an in-test object for `todoList` and stay laser-focused on routing concerns: status codes, query parsing, error mapping. The actual database, catalog, and SCM logic gets tested separately.
 3. **Prefer fewer, thorough tests with multiple assertions.** Group a happy path, a 404, and a validation error in the same `describe` rather than splitting them across many tiny tests — it keeps the per-test setup small and the failures more informative.
 
@@ -65,7 +65,10 @@ This is a great place to test the router-only behaviour we added in earlier step
 Router tests give you fast feedback, but they don't exercise the bits of your plugin that live in `plugin.ts` — the `init` function, the migration runner, the service factory wiring. For those, reach for `startTestBackend`:
 
 ```ts title="src/plugin.test.ts"
-import { startTestBackend } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 import request from 'supertest';
 import { todoPlugin } from './plugin';
 
@@ -83,7 +86,7 @@ describe('todoPlugin', () => {
 
     const createResponse = await request(server)
       .post('/api/todo/todos')
-      .set('Authorization', 'Bearer mock-id-token')
+      .set('Authorization', mockCredentials.user.header())
       .send({ title: 'A new todo' });
     expect(createResponse.status).toEqual(201);
     expect(createResponse.body).toMatchObject({ title: 'A new todo' });
@@ -103,28 +106,30 @@ If your plugin depends on another (for example, a real catalog rather than the m
 
 If you've followed the [OpenAPI getting-started guide](../../../openapi/01-getting-started.md) and have a spec at `src/schema/openapi.yaml`, you can have your test traffic double as a check that your responses actually match what your spec promises.
 
-The trick is to wrap the express app with a helper that, when invoked under the OpenAPI test runner, transparently routes traffic through a proxy that records every request and response:
+The trick is to wrap the express app with `wrapServer` from `@backstage/backend-openapi-utils/testUtils`. It boots a small in-process proxy that validates every request and response against your spec, then tears itself down via Jest's `afterAll`:
 
 ```diff title="src/router.test.ts"
 - import express from 'express';
 + import express from 'express';
 + import { Server } from 'node:http';
-+ import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils/testUtils';
++ import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
 
   describe('createRouter', () => {
 -   let app: express.Express;
-+   let app: express.Express | Server;
++   let app: Server;
 
     beforeAll(async () => {
       const router = await createRouter({ /* ... */ });
 -     app = express().use(router);
-+     app = wrapInOpenApiTestServer(express().use(router));
++     app = await wrapServer(express().use(router));
     });
 ```
 
 ### Integration with Jest tests
 
-You don't need a separate test file or a separate Jest configuration. With the wrapper in place, every `request(app)` call your existing router tests already make is checked against `src/schema/openapi.yaml`: the route has to exist in the spec, the status code has to be declared, and the response body has to satisfy the declared schema — including any `required` properties. A mismatch surfaces as a normal Jest failure on the test case that produced the bad response.
+You don't need a separate test command or a separate Jest configuration. With `wrapServer` in place, every `request(app)` call your existing router tests already make flows through the proxy and is checked against `src/schema/openapi.yaml`: the route has to exist in the spec, the status code has to be declared, and the response body has to satisfy the declared schema — including any `required` properties. A mismatch surfaces as a normal Jest failure on the test case that produced the bad response.
+
+> `@backstage/backend-openapi-utils/testUtils` also exports an older `wrapInOpenApiTestServer` helper that only validates when run under a separate Optic-based CLI. That integration is deprecated — prefer `wrapServer` for new tests.
 
 Because validation is real, **partial fixtures will fail the test, not silently pass.** A handler that returns `{} as TodoItem` will fail validation against a spec that requires `id`, `title`, `createdBy`, and `createdAt`. The fix is to populate fixtures fully:
 
