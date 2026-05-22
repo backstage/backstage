@@ -127,9 +127,9 @@ The trick is to wrap the express app with `wrapServer` from `@backstage/backend-
 
 ### Integration with Jest tests
 
-You don't need a separate test command or a separate Jest configuration. With `wrapServer` in place, every `request(app)` call your existing router tests already make flows through the proxy and is checked against `src/schema/openapi.yaml`: the route has to exist in the spec, the status code has to be declared, and the response body has to satisfy the declared schema — including any `required` properties. A mismatch surfaces as a normal Jest failure on the test case that produced the bad response.
+You don't need a separate test command or a separate Jest configuration. With `wrapServer` in place, every `request(app)` call your existing router tests already make flows through the proxy and is checked against the OpenAPI schema served by the running app at `/openapi.json` (which may itself be generated from `src/schema/openapi.yaml`): the route has to exist in the spec, the status code has to be declared, and the response body has to satisfy the declared schema — including any `required` properties. A mismatch surfaces as a normal Jest failure on the test case that produced the bad response.
 
-> `@backstage/backend-openapi-utils/testUtils` also exports an older `wrapInOpenApiTestServer` helper that only validates when run under a separate Optic-based CLI. That integration is deprecated — prefer `wrapServer` for new tests.
+> `@backstage/backend-openapi-utils/testUtils` also exports `wrapInOpenApiTestServer`, which is a separate Optic-based integration that only validates when `OPTIC_PROXY` is set. For ordinary Jest tests, prefer `wrapServer`.
 
 Because validation is real, **partial fixtures will fail the test, not silently pass.** A handler that returns `{} as TodoItem` will fail validation against a spec that requires `id`, `title`, `createdBy`, and `createdAt`. The fix is to populate fixtures fully:
 
