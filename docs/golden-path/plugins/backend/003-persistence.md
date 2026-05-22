@@ -47,17 +47,18 @@ export const todoListServiceRef = createServiceRef<Expand<TodoListService>>({
 We then need to add it to our service,
 
 ```diff file="src/services/TodoListService.ts"
-+import type { Knex } from 'knex';
 import {
   coreServices,
   createServiceFactory,
   createServiceRef,
   LoggerService,
-+ DatabaseService,
++  DatabaseService,
 } from '@backstage/backend-plugin-api';
 
++type DatabaseClient = Awaited<ReturnType<DatabaseService['getClient']>>;
++
 export class TodoListService {
-+  readonly #database: Knex;
++  readonly #database: DatabaseClient;
 
 -  readonly #storedTodos = new Array<TodoItem>();
 
@@ -67,15 +68,15 @@ export class TodoListService {
     catalog: typeof catalogServiceRef.T;
 +    database: DatabaseService;
   }) {
-     const knex = await options.database.getClient();
++    const database = await options.database.getClient();
 -    return new TodoListService(options.logger, options.catalog);
-+    return new TodoListService(options.logger, options.catalog, knex);
++    return new TodoListService(options.logger, options.catalog, database);
   }
 
   private constructor(
     logger: LoggerService,
     catalog: typeof catalogServiceRef.T,
-+    database: Knex,
++    database: DatabaseClient,
   ) {
     this.#logger = logger;
     this.#catalog = catalog;
@@ -83,22 +84,34 @@ export class TodoListService {
   }
 ```
 
-And with that, we have an isolated `knex` client to communicate with our database!
+Notice that we infer the database client type from `DatabaseService['getClient']`
+rather than importing `Knex` from `'knex'` directly. The framework already pins
+a `knex` version transitively, so re-importing the type ourselves can produce
+two non-assignable `Knex` types in some installs. Taking the type from the
+service ref keeps your plugin aligned with whichever version the framework
+ships, automatically.
+
+And with that, we have an isolated database client to communicate with our database!
 
 ### Creating your table
 
 Unfortunately, without tables in our database, our `knex` client is not doing much. We need to create a _migration_. Knex stores migrations as JavaScript/TypeScript files that get executed as part of a call to `knex.migrate.latest()`. By default, these are stored in a `migrations/` directory.
 
-Let's get started. First, we need to install `knex` as a dependency so both its CLI and imported `Knex` types are available,
+Let's get started. First, we need to install the `knex` CLI as a development
+dependency so the `knex` command is available in the workspace:
 
 ```bash
-yarn workspace @internal/plugin-todo-backend add knex
+yarn workspace @internal/backstage-plugin-todo-backend add --dev knex
 ```
+
+We add `knex` as a dev dependency rather than a runtime dependency because
+the framework already provides a `knex` instance through `DatabaseService` —
+we only need the CLI locally to scaffold and run migrations.
 
 Now, running this command will scaffold a file in that `migrations/` directory for us.
 
 ```bash
-yarn workspace @internal/plugin-todo-backend knex migrate:make init --migrations-directory ./migrations
+yarn workspace @internal/backstage-plugin-todo-backend knex migrate:make init --migrations-directory ./migrations
 ```
 
 This should spit out a message like
@@ -183,7 +196,7 @@ import {
 +          logger.info('Running database migrations...');
 +
 +          const migrationsDir = resolvePackagePath(
-+            '@internal/plugin-todo-backend',
++            '@internal/backstage-plugin-todo-backend',
 +            'migrations',
 +          );
 +
@@ -243,16 +256,6 @@ export interface TodoItem {
 Notice the change to snake case as it has to match the database schema we have above. Now we need to transform `TodoItem` to `TodoDatabaseRow` for writes and `TodoDatabaseRow` to `TodoItem` for reads.
 
 ```diff title="src/services/TodoListService.ts"
-  private constructor(
-    logger: LoggerService,
-    catalog: typeof catalogServiceRef.T,
-+    database: Knex,
-  ) {
-    this.#logger = logger;
-    this.#catalog = catalog;
-+    this.#database = database;
-  }
-
 +  private toDatabaseRow(todo: TodoItem): TodoDatabaseRow {
 +    return {
 +      id: todo.id,

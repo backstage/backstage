@@ -81,8 +81,8 @@ sharing it through `todo-common` prevents drift.
 
 Implement `DocumentCollatorFactory`. The `type` field is the document type
 the engine indexes against; `getCollator` returns a `Readable` stream of your
-documents. Yield them from an async generator so the factory backpressures
-naturally for large todo sets:
+documents. Yield them from an async generator so the factory applies
+natural back-pressure for large todo sets:
 
 ```ts
 // plugins/search-backend-module-todo/src/TodoCollatorFactory.ts
@@ -94,7 +94,7 @@ import {
 import {
   TODO_SEARCH_TYPE,
   TodoSearchDocument,
-} from '@internal/plugin-todo-common';
+} from '@internal/backstage-plugin-todo-common';
 import type { TodoListService } from './services';
 
 export class TodoCollatorFactory implements DocumentCollatorFactory {
@@ -151,7 +151,7 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import { todoListServiceRef } from '@internal/plugin-todo-backend';
+import { todoListServiceRef } from '@internal/backstage-plugin-todo-backend';
 import { TodoCollatorFactory } from './TodoCollatorFactory';
 
 export const searchModuleTodoCollator = createBackendModule({
@@ -190,7 +190,7 @@ matches they are actually allowed to read. Set `visibilityPermission` on the
 factory and emit an `authorization` block on each document:
 
 ```ts
-import { todoReadPermission } from '@internal/plugin-todo-common';
+import { todoReadPermission } from '@internal/backstage-plugin-todo-common';
 
 export class TodoCollatorFactory implements DocumentCollatorFactory {
   public readonly type = TODO_SEARCH_TYPE;
@@ -225,7 +225,7 @@ import {
   createPlugin,
   createSearchResultListItemExtension,
 } from '@backstage/plugin-search-react';
-import { TODO_SEARCH_TYPE } from '@internal/plugin-todo-common';
+import { TODO_SEARCH_TYPE } from '@internal/backstage-plugin-todo-common';
 
 export const todoPlugin = createPlugin({ id: 'todo' /* ... */ });
 

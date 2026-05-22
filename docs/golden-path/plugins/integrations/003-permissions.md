@@ -25,7 +25,7 @@ Most plugins integrate at two levels:
 
 **The backend plugin** is where you define your permissions, register them with the framework, and enforce them inside your route handlers.
 
-**A common package** (for example, `@internal/plugin-todo-common`) is where you export the permission definitions so they can be referenced from anywhere: your backend, your frontend, and any policy that an adopter writes.
+**A common package** (for example, `@internal/backstage-plugin-todo-common`) is where you export the permission definitions so they can be referenced from anywhere: your backend, your frontend, and any policy that an adopter writes.
 
 The split matters because policy authors need to reference your permission objects when writing their own policies. If those definitions live inside your backend package, you're forcing a dependency on backend code where it doesn't belong.
 
@@ -64,13 +64,18 @@ import {
   createPermissionResourceRef,
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
-import { TODO_RESOURCE_TYPE } from '@internal/plugin-todo-common';
+import { TODO_RESOURCE_TYPE } from '@internal/backstage-plugin-todo-common';
 import { z } from 'zod/v3';
 import type { TodoItem } from './services/TodoListService';
 
+export interface TodoFilter {
+  key: string;
+  values: string[];
+}
+
 export const todoResourceRef = createPermissionResourceRef<
   TodoItem,
-  { createdBy: string }
+  TodoFilter
 >().with({
   pluginId: 'todo',
   resourceType: TODO_RESOURCE_TYPE,
@@ -87,12 +92,18 @@ export const isCreator = createPermissionRule({
     return todo.createdBy === userRef;
   },
   toQuery({ userRef }) {
-    return { property: 'createdBy', values: [userRef] };
+    return { key: 'createdBy', values: [userRef] };
   },
 });
 
 export const rules = { isCreator };
 ```
+
+The second type parameter to `createPermissionResourceRef` declares the
+filter shape your rules emit — your data layer is what knows how to apply
+it, so pick whatever generic shape your storage can interpret. The
+`{ key, values }` pair used above mirrors the catalog backend's own filter
+shape and is easy to translate into a `where ... in (...)` clause.
 
 The `apply` and `toQuery` functions must always have logically identical outcomes. If they diverge, users will see inconsistent results depending on whether the framework checks the database or a loaded resource.
 
@@ -106,7 +117,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { todoReadPermission } from '@internal/plugin-todo-common';
+import { todoReadPermission } from '@internal/backstage-plugin-todo-common';
 import { todoResourceRef, rules } from './service/rules';
 import { todoListServiceRef } from './services/TodoListService';
 
@@ -163,7 +174,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { todoReadPermission } from '@internal/plugin-todo-common';
+import { todoReadPermission } from '@internal/backstage-plugin-todo-common';
 import { todoListServiceRef } from './services/TodoListService';
 
 export async function createRouter({
@@ -234,8 +245,8 @@ Re-export these from your package's `src/index.ts`. An adopter can then write a 
 import {
   todoConditions,
   createTodoConditionalDecision,
-} from '@internal/plugin-todo-backend';
-import { todoReadPermission } from '@internal/plugin-todo-common';
+} from '@internal/backstage-plugin-todo-backend';
+import { todoReadPermission } from '@internal/backstage-plugin-todo-common';
 
 class MyPolicy implements PermissionPolicy {
   async handle(request: PolicyQuery, user?: PolicyQueryUser) {

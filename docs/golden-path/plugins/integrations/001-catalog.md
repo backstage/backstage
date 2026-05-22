@@ -85,7 +85,7 @@ read the annotation off `metadata.annotations`:
 ```ts
 // plugins/todo-backend/src/service/router.ts
 import { CatalogService } from '@backstage/plugin-catalog-node';
-import { TODO_SOURCE_ANNOTATION } from '@internal/plugin-todo-common';
+import { TODO_SOURCE_ANNOTATION } from '@internal/backstage-plugin-todo-common';
 
 router.get('/todos/by-entity/:ref', async (req, res) => {
   const credentials = await httpAuth.credentials(req, { allow: ['user'] });
@@ -114,7 +114,7 @@ in:
 ```tsx
 // plugins/todo/src/components/EntityTodoContent.tsx
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { TODO_SOURCE_ANNOTATION } from '@internal/plugin-todo-common';
+import { TODO_SOURCE_ANNOTATION } from '@internal/backstage-plugin-todo-common';
 
 export const isTodoAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[TODO_SOURCE_ANNOTATION]);
@@ -141,7 +141,7 @@ on the entity rather than as a confusing empty state in the UI:
 ```ts
 // plugins/catalog-backend-module-todo/src/TodoAnnotationProcessor.ts
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
-import { TODO_SOURCE_ANNOTATION } from '@internal/plugin-todo-common';
+import { TODO_SOURCE_ANNOTATION } from '@internal/backstage-plugin-todo-common';
 
 export class TodoAnnotationProcessor implements CatalogProcessor {
   getProcessorName() {
@@ -217,29 +217,43 @@ export const isTodoEntity = (entity: Entity): entity is TodoEntityV1alpha1 =>
 
 Pair the type with a JSON Schema. The schema is what the catalog uses to
 reject malformed entries at ingestion time, and it is also what powers
-auto-completion in `catalog-info.yaml` files:
+auto-completion in `catalog-info.yaml` files. The catalog model already
+defines the base `Entity` schema (apiVersion, kind, metadata) — your
+schema layers extra constraints on top through `allOf` + `$ref: "Entity"`:
 
 ```json
 // plugins/todo-common/src/schema/Todo.v1alpha1.schema.json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "required": ["apiVersion", "kind", "metadata", "spec"],
-  "properties": {
-    "apiVersion": { "const": "todo.backstage.io/v1alpha1" },
-    "kind": { "const": "Todo" },
-    "spec": {
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "TodoV1alpha1",
+  "description": "A unit of work tracked by the Todo plugin.",
+  "allOf": [
+    { "$ref": "Entity" },
+    {
       "type": "object",
-      "required": ["owner", "status"],
+      "required": ["spec"],
       "properties": {
-        "owner": { "type": "string", "minLength": 1 },
-        "status": { "enum": ["open", "in-progress", "done"] },
-        "dueDate": { "type": "string", "format": "date-time" }
+        "apiVersion": { "enum": ["todo.backstage.io/v1alpha1"] },
+        "kind": { "enum": ["Todo"] },
+        "spec": {
+          "type": "object",
+          "required": ["owner", "status"],
+          "properties": {
+            "owner": { "type": "string", "minLength": 1 },
+            "status": { "enum": ["open", "in-progress", "done"] },
+            "dueDate": { "type": "string", "format": "date-time" }
+          }
+        }
       }
     }
-  }
+  ]
 }
 ```
+
+The catalog model rejects schemas that try to declare reserved root
+fields (`apiVersion`, `kind`, `metadata`) directly, which is why we
+constrain them through the `allOf` branch instead of as bare top-level
+properties.
 
 ### Register the kind with the catalog model
 
@@ -290,7 +304,7 @@ with a one-line module reference:
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { CatalogModelSources } from '@backstage/catalog-model/alpha';
 import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { todoEntityModel } from '@internal/plugin-todo-common';
+import { todoEntityModel } from '@internal/backstage-plugin-todo-common';
 
 export const catalogModuleTodoEntityModel = createBackendModule({
   pluginId: 'catalog',

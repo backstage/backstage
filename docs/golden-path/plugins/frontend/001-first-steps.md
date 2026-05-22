@@ -14,9 +14,9 @@ Backstage repository's root directory:
 yarn new --select frontend-plugin --option pluginId=todo --option owner=
 ```
 
-This creates a new NPM package named something like `@internal/plugin-todo`,
-depending on the flags passed to the `new` command and your settings in the root
-`package.json`. For more options, see
+This creates a new NPM package named something like
+`@internal/backstage-plugin-todo`, depending on the flags passed to the `new`
+command and your settings in the root `package.json`. For more options, see
 [the CLI docs](../../../tooling/cli/03-commands.md#new).
 
 Creating the plugin takes a moment. Once the command finishes, a new folder
@@ -83,7 +83,7 @@ displays your real todo items instead.
 Run the plugin in isolation using its standalone development server:
 
 ```sh
-yarn workspace @internal/plugin-todo start
+yarn workspace @internal/backstage-plugin-todo start
 ```
 
 ## Common issues
