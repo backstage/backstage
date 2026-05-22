@@ -1425,8 +1425,9 @@ intent — a plugin maintainer's `versions set` advertises a new supported
 framework version, while an adopter's `versions set` upgrades their
 installation.
 
-- **`backstage-cli versions set <target>`** — Writes a specific framework
-  version to `backstage.json: version`. The argument may be:
+- **`backstage-cli versions set <target> [--skip-install]`** — Writes a
+  specific framework version to `backstage.json: version`. The argument
+  may be:
 
   - A full identifier (e.g. `2610.3.5`) — written through unchanged.
   - A release line (e.g. `2610`) — resolved at command time to the
@@ -1440,9 +1441,13 @@ installation.
   - The `next` dist-tag — resolves to the current `@next` preview
     framework version.
 
-  The command does not rewrite ranges in `package.json` files or run
-  `yarn install` itself; the Backstage Yarn plugin handles re-resolution
-  on the next `yarn install` via descriptor binding.
+  The command does not rewrite ranges in `package.json` files; the
+  Backstage Yarn plugin handles re-resolution via descriptor binding. By
+  default the command runs `yarn install` after editing `backstage.json`
+  so that the lockfile and `node_modules` immediately reflect the new
+  framework version. `--skip-install` opts out of that for callers who
+  want to defer the install (e.g. when chaining multiple commands or
+  when running in CI scripts that have their own install step).
 
 - **`backstage-cli versions upgrade`** — Refresh non-framework
   Backstage-ecosystem dependencies to their latest npm versions that are
