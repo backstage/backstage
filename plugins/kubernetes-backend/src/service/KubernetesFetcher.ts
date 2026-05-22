@@ -16,11 +16,6 @@
 
 import type { Cluster, CoreV1Api, Metrics } from '@kubernetes/client-node';
 import {
-  bufferFromFileOrString,
-  KubeConfig,
-  topPods,
-} from '@kubernetes/client-node';
-import {
   FetchResponseWrapper,
   KubernetesFetcher,
   ObjectFetchParams,
@@ -163,6 +158,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       ),
     ]);
     if (podMetrics.ok && podList.ok) {
+      const { topPods } = await import('@kubernetes/client-node');
       return topPods(
         {
           listPodForAllNamespaces: () => podList.json(),
@@ -216,7 +212,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return path;
   }
 
-  private fetchResource(
+  private async fetchResource(
     clusterDetails: ClusterDetails,
     credential: KubernetesCredential,
     resource: Pick<ObjectToFetch, 'group' | 'apiVersion' | 'plural'>,
@@ -236,9 +232,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
 
     if (this.isServiceAccountAuthentication(authProvider, clusterDetails)) {
-      [url, requestInit] = this.fetchArgsInCluster(credential);
+      [url, requestInit] = await this.fetchArgsInCluster(credential);
     } else if (!this.isCredentialMissing(authProvider, credential)) {
-      [url, requestInit] = this.fetchArgs(clusterDetails, credential);
+      [url, requestInit] = await this.fetchArgs(clusterDetails, credential);
     } else {
       return Promise.reject(
         new Error(
@@ -292,10 +288,11 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     };
   }
 
-  private fetchArgs(
+  private async fetchArgs(
     clusterDetails: ClusterDetails,
     credential: KubernetesCredential,
-  ): [URL, fetch.RequestInit] {
+  ): Promise<[URL, fetch.RequestInit]> {
+    const { bufferFromFileOrString } = await import('@kubernetes/client-node');
     const requestInit: RequestInit = {
       method: 'GET',
       headers: this.buildRequestHeaders(credential),
@@ -311,10 +308,11 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return [url, requestInit];
   }
 
-  private fetchArgsInCluster(
+  private async fetchArgsInCluster(
     credential: KubernetesCredential,
-  ): [URL, fetch.RequestInit] {
+  ): Promise<[URL, fetch.RequestInit]> {
     if (!this.inClusterCache) {
+      const { KubeConfig } = await import('@kubernetes/client-node');
       const kc = new KubeConfig();
       kc.loadFromCluster();
       const cluster = kc.getCurrentCluster() as Cluster;
