@@ -342,7 +342,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   ): string {
     const certPart =
       credential.type === 'x509 client certificate'
-        ? credential.cert + credential.key
+        ? `${credential.cert}|${credential.key}`
         : '';
     return `${clusterDetails.url}|${clusterDetails.skipTLSVerify ?? false}|${
       clusterDetails.caData ?? ''
