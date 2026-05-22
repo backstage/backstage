@@ -79,7 +79,7 @@ export type NextCatalogPageProps = {
     filterFunction?: (entity: Entity) => boolean;
     filterExpression?: string;
   }>;
-  pageSizeOptions?: number[];
+  pageSizeOptions: number[];
 };
 
 function buildColumnConfig(
@@ -264,7 +264,7 @@ export function NextCatalogPage(props: NextCatalogPageProps) {
             <CatalogFilterLayout.Content>
               <NextCatalogTable
                 columns={columns}
-                pageSizeOptions={props.pageSizeOptions ?? [20, 50, 100]}
+                pageSizeOptions={props.pageSizeOptions}
               />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
