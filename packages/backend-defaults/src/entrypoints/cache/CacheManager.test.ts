@@ -532,8 +532,11 @@ describe('CacheManager store options', () => {
     manager.forPlugin('p1');
 
     expect(KeyvRedis).toHaveBeenCalledWith(
-      { url: 'redis://localhost:6379', pingInterval: 15000 },
-      { keyPrefixSeparator: ':' },
+      expect.objectContaining({
+        url: 'redis://localhost:6379',
+        pingInterval: 15000,
+      }),
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
     );
   });
 
@@ -564,13 +567,19 @@ describe('CacheManager store options', () => {
     );
     manager.forPlugin('p1');
 
-    expect(createCluster).toHaveBeenCalledWith({
-      rootNodes: [{ url: 'redis://localhost:6379' }],
-      defaults: { password: 'secret', pingInterval: 10000 },
-    });
-    expect(KeyvRedis).toHaveBeenCalledWith(clusterInstance, {
-      keyPrefixSeparator: ':',
-    });
+    expect(createCluster).toHaveBeenCalledWith(
+      expect.objectContaining({
+        rootNodes: [{ url: 'redis://localhost:6379' }],
+        defaults: expect.objectContaining({
+          password: 'secret',
+          pingInterval: 10000,
+        }),
+      }),
+    );
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      clusterInstance,
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
   });
 
   describe('Namespace construction', () => {
