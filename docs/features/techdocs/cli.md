@@ -157,6 +157,7 @@ Options:
   --disableExternalFonts          Disable external font downloads for all TechDocs sites. Useful for air-gapped environments
                                   where Google fonts cannot be accessed. (default: false)
   --runAsDefaultUser              Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
+  --mkdocsParameterStrict         If present, the `--strict` option will be used when invoking mkdocs build.
   -v, --verbose                   Enable verbose output. (default: false)
   -h, --help                      display help for command
 ```
