@@ -29,6 +29,7 @@ export type RedisCacheStoreOptions = {
   type: 'redis';
   client?: KeyvRedisOptions;
   cluster?: RedisClusterOptions;
+  pingInterval?: number;
 };
 
 /**

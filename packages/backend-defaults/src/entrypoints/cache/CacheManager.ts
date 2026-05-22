@@ -38,6 +38,8 @@ import {
   InfinispanClientCacheInterface,
   InfinispanKeyvStore,
 } from './providers/infinispan/InfinispanKeyvStore';
+import type { KeyvRedisOptions } from '@keyv/redis';
+import type KeyvRedisClass from '@keyv/redis';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
 
@@ -182,6 +184,19 @@ export class CacheManager {
         'client.noNamespaceAffectsAll',
       ),
     };
+
+    const pingIntervalConfig = redisConfig.getOptional('client.pingInterval');
+    if (pingIntervalConfig !== undefined) {
+      if (typeof pingIntervalConfig === 'number') {
+        redisOptions.pingInterval = pingIntervalConfig;
+      } else {
+        redisOptions.pingInterval = durationToMilliseconds(
+          readDurationFromConfig(redisConfig, {
+            key: 'client.pingInterval',
+          }),
+        );
+      }
+    }
 
     if (redisConfig.has('cluster')) {
       const clusterConfig = redisConfig.getConfig('cluster');
@@ -329,9 +344,10 @@ export class CacheManager {
   }
 
   private createRedisStoreFactory(): StoreFactory {
-    const KeyvRedis = require('@keyv/redis').default;
-    const { createCluster } = require('@keyv/redis');
-    const stores: Record<string, typeof KeyvRedis> = {};
+    const KeyvRedis = require('@keyv/redis').default as typeof KeyvRedisClass;
+    const { createCluster } =
+      require('@keyv/redis') as typeof import('@keyv/redis');
+    const stores: Record<string, KeyvRedisClass<unknown>> = {};
 
     return (pluginId, defaultTtl) => {
       if (this.storeOptions?.type !== 'redis') {
@@ -340,16 +356,29 @@ export class CacheManager {
         );
       }
       if (!stores[pluginId]) {
-        const redisOptions = this.storeOptions?.client || {
+        const redisOptions: KeyvRedisOptions = this.storeOptions?.client || {
           keyPrefixSeparator: ':',
         };
         if (this.storeOptions?.cluster) {
-          // Create a Redis cluster
-          const cluster = createCluster(this.storeOptions?.cluster);
+          // Create a Redis cluster, merging pingInterval into defaults if configured
+          const clusterOpts = { ...this.storeOptions.cluster };
+          if (this.storeOptions.pingInterval) {
+            clusterOpts.defaults = {
+              ...clusterOpts.defaults,
+              pingInterval: this.storeOptions.pingInterval,
+            };
+          }
+          const cluster = createCluster(clusterOpts);
           stores[pluginId] = new KeyvRedis(cluster, redisOptions);
         } else {
           // Create a regular Redis connection
-          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
+          const connectionOptions = this.storeOptions?.pingInterval
+            ? {
+                url: this.connection,
+                pingInterval: this.storeOptions.pingInterval,
+              }
+            : this.connection;
+          stores[pluginId] = new KeyvRedis(connectionOptions, redisOptions);
         }
 
         // Always provide an error handler to avoid stopping the process

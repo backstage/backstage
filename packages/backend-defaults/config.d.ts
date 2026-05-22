@@ -817,6 +817,12 @@ export interface Config {
                * Defaults to `false`.
                */
               noNamespaceAffectsAll?: boolean;
+              /**
+               * Send `PING` command at interval. Supports a number in milliseconds
+               * or a human duration string like '10s'. Useful for environments
+               * with idle connection timeouts.
+               */
+              pingInterval?: number | HumanDuration | string;
             };
             /**
              * An optional Redis cluster configuration.

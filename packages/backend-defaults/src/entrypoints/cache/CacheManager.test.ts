@@ -511,6 +511,68 @@ describe('CacheManager store options', () => {
     });
   });
 
+  it('passes pingInterval to Redis client in non-clustered mode', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  pingInterval: 15000,
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      { url: 'redis://localhost:6379', pingInterval: 15000 },
+      { keyPrefixSeparator: ':' },
+    );
+  });
+
+  it('merges pingInterval into cluster defaults when configured', () => {
+    const clusterInstance = { fake: 'cluster' };
+    (createCluster as jest.Mock).mockReturnValue(clusterInstance);
+
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  pingInterval: 10000,
+                },
+                cluster: {
+                  rootNodes: [{ url: 'redis://localhost:6379' }],
+                  defaults: { password: 'secret' },
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(createCluster).toHaveBeenCalledWith({
+      rootNodes: [{ url: 'redis://localhost:6379' }],
+      defaults: { password: 'secret', pingInterval: 10000 },
+    });
+    expect(KeyvRedis).toHaveBeenCalledWith(clusterInstance, {
+      keyPrefixSeparator: ':',
+    });
+  });
+
   describe('Namespace construction', () => {
     it('returns pluginId when no store options are provided', () => {
       const result = (CacheManager as any).constructNamespace(
