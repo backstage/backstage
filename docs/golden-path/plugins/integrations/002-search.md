@@ -9,7 +9,7 @@ description: How to integrate your plugin with Backstage Search
 
 ### What is Backstage Search?
 
-[Backstage Search](../../../features/search/index.md) is the federated search
+[Backstage Search](../../../features/search/README.md) is the federated search
 layer that sits in front of every other plugin. It periodically indexes
 documents from contributing plugins into a single search engine, exposes a
 unified query API, and renders the results behind one search box on the
