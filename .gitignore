@@ -191,6 +191,3 @@ dist-storybook/
 # Personal allow patterns etc
 .claude/settings.local.json
 .claude/worktrees/
-
-skills-lock.json
-.claude/
