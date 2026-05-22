@@ -19,8 +19,11 @@ import { createFilterByQueryParamFromConfig } from '../../api/config';
 import { VisitedByType } from './VisitedByType';
 import { Visit, visitsApiRef } from '../../api';
 import { ContextValueOnly, useContext } from './Context';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useApiHolder } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
+import Typography from '@material-ui/core/Typography';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 /** @public */
 export type VisitedByTypeKind = 'recent' | 'top';
@@ -46,6 +49,10 @@ export const Content = ({
   kind,
 }: VisitedByTypeProps) => {
   const { setContext, setVisits, setLoading } = useContext();
+  const apiHolder = useApiHolder();
+  const visitsApi = apiHolder.get(visitsApiRef);
+  const { t } = useTranslationRef(homeTranslationRef);
+
   // Allows behavior override from properties
   useEffect(() => {
     const context: Partial<ContextValueOnly> = {};
@@ -62,10 +69,11 @@ export const Content = ({
   }, [setContext, kind, visits, loading, numVisitsOpen, numVisitsTotal]);
 
   const config = useApi(configApiRef);
-  // Fetches data from visitsApi in case visits and loading are not provided
-  const visitsApi = useApi(visitsApiRef);
   const { loading: reqLoading } = useAsync(async () => {
-    if (!visits && !loading && kind === 'recent') {
+    if (!visitsApi || visits || loading) {
+      return undefined;
+    }
+    if (kind === 'recent') {
       const filterBy = createFilterByQueryParamFromConfig(
         config.getOptionalConfigArray('home.recentVisits.filterBy') ?? [],
       );
@@ -77,7 +85,7 @@ export const Content = ({
         })
         .then(setVisits);
     }
-    if (!visits && !loading && kind === 'top') {
+    if (kind === 'top') {
       const filterBy = createFilterByQueryParamFromConfig(
         config.getOptionalConfigArray('home.topVisits.filterBy') ?? [],
       );
@@ -91,11 +99,25 @@ export const Content = ({
     }
     return undefined;
   }, [visitsApi, visits, loading, setVisits]);
+
   useEffect(() => {
     if (!loading) {
       setLoading(reqLoading);
     }
   }, [loading, setLoading, reqLoading]);
+
+  if (!visitsApi && !visits) {
+    return (
+      <>
+        <Typography variant="body2" color="textSecondary">
+          {t('visitList.disabled.title')}
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          {t('visitList.disabled.description')}
+        </Typography>
+      </>
+    );
+  }
 
   return <VisitedByType />;
 };

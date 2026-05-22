@@ -61,6 +61,7 @@ import {
   SearchFilterResultTypeBlueprint,
   SearchFilterBlueprint,
 } from '@backstage/plugin-search-react/alpha';
+import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
 import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
@@ -250,13 +251,33 @@ export const searchPage = PageBlueprint.makeWithOverrides({
   },
 });
 
+const homePageSearchBarWidget = HomePageWidgetBlueprint.make({
+  name: 'search-bar',
+  params: {
+    name: 'HomePageSearchBar',
+    title: 'Search',
+    description: 'A search bar that navigates to the search page on submit',
+    components: () =>
+      import('./components/HomePageComponent').then(m => ({
+        Content: m.HomePageSearchBar,
+      })),
+    componentProps: {
+      Renderer: ({
+        Content: SearchContent,
+      }: {
+        Content: () => JSX.Element;
+      }) => <SearchContent />,
+    },
+  },
+});
+
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'search',
   title: 'Search',
   icon: <SearchIcon fontSize="inherit" />,
   info: { packageJson: () => import('../package.json') },
-  extensions: [searchApi, searchPage],
+  extensions: [searchApi, searchPage, homePageSearchBarWidget],
   routes: {
     root: rootRouteRef,
   },

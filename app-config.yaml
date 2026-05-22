@@ -60,6 +60,89 @@ app:
         config:
           ownedKinds: ['Component', 'API', 'System']
 
+    # Visit tracking records which pages users navigate to and is disabled by default.
+    # Enable it to populate the Most Visited and Recently Visited widgets on the Home page.
+    # Visit data is stored via UserSettings storage if available, otherwise browser localStorage.
+    # - api:home/visits: true
+    # - app-root-element:home/visit-listener: true
+    - widget:home/random-joke: false
+    - home-page-widget:home/toolkit:
+        config:
+          tools:
+            - url: https://backstage.io/docs
+              label: Docs
+              icon: docs
+            - url: https://github.com/backstage/backstage
+              label: GitHub
+              icon: github
+            - url: https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md
+              label: Contributing
+              icon: docs
+            - url: https://backstage.io/plugins
+              label: Plugins Directory
+              icon: kind:component
+            - url: https://github.com/backstage/backstage/issues/new/choose
+              label: Submit New Issue
+              icon: github
+    - home-page-widget:home/world-clock:
+        config:
+          customTimeFormat:
+            hour12: false
+          clockConfigs:
+            - label: NYC
+              timeZone: America/New_York
+            - label: UTC
+              timeZone: UTC
+            - label: STO
+              timeZone: Europe/Stockholm
+            - label: TYO
+              timeZone: Asia/Tokyo
+    - page:home:
+        config:
+          defaultConfig:
+            - component: HomePageSearchBar
+              column: 0
+              row: 0
+              width: 24
+              height: 2
+              deletable: false
+            - component: GettingStarted
+              column: 0
+              row: 1
+              width: 4
+              height: 11
+            - component: HomePageStarredEntities
+              column: 4
+              row: 2
+              width: 4
+              height: 4
+            - component: HomePageRandomJoke
+              column: 8
+              row: 2
+              width: 4
+              height: 4
+            - component: HomePageToolkit
+              column: 4
+              row: 6
+              width: 4
+              height: 3
+            - component: HomePageWorldClock
+              column: 8
+              row: 6
+              width: 4
+              height: 3
+            - component: HomePageTopVisited
+              column: 4
+              row: 9
+              width: 4
+              height: 4
+            - component: HomePageRecentlyVisited
+              column: 8
+              row: 9
+              width: 4
+              height: 4
+           
+
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true
 
