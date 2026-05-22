@@ -47,6 +47,7 @@ BUIProvider
 builtins
 bundler
 bundlers
+backpressures
 bursty
 callout
 callouts
@@ -384,6 +385,7 @@ pubsub
 Pulumi
 pygments
 pymdownx
+queryable
 rankdir
 readme
 readmes
