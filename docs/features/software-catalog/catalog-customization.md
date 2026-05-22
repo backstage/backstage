@@ -331,7 +331,7 @@ app:
           version: 'v2'
 ```
 
-When v2 is enabled, the catalog plugin registers six default columns: `name`, `owner`, `type`, `lifecycle`, `description`, and `tags`.
+When v2 is enabled, the catalog plugin registers a set of default columns such as `name`, `owner`, `type`, `lifecycle`, `description`, and `tags`.
 
 ### Adding a column
 
@@ -353,6 +353,7 @@ export const costColumn = CatalogColumnBlueprint.make({
     ),
     orderField: 'metadata.annotations.cost.io/monthly',
     searchFields: ['metadata.annotations.cost.io/monthly'],
+    filter: 'kind:component',
   },
 });
 ```
@@ -369,25 +370,37 @@ export default createFrontendModule({
 });
 ```
 
-The `orderField` parameter makes the column header sortable, and the catalog backend handles the ordering. The `searchFields` parameter lists the entity fields the page includes in `fullTextFilter` when the user types in the search box. Both parameters are optional — omit them for purely visual columns.
+Column parameters:
 
-:::note Note
+| Parameter      | Description                                                                                                                                                                                                   |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`           | Stable column key (required).                                                                                                                                                                                 |
+| `label`        | Column header text, also used as the accessible name (required).                                                                                                                                              |
+| `cell`         | Render function `(entity) => ReactElement` returning a `<CellText>` or `<CellProfile>` element (required).                                                                                                    |
+| `orderField`   | Catalog field path used for server-side sorting. When set, the column header is clickable.                                                                                                                    |
+| `searchFields` | Catalog field paths included in `fullTextFilter` when the user types in the search box.                                                                                                                       |
+| `filter`       | Per-entity visibility predicate. Accepts a function, a filter predicate object, or a filter expression string. When no displayed entity matches, the entire column is hidden. Can also be set via app-config. |
+| `width`        | Column width — a number (pixels), percentage (`'30%'`), or fraction (`'1fr'`).                                                                                                                                |
 
-The `cell` callback must return a BUI cell element such as `<Cell>`, `<CellText>`, or `<CellProfile>` from `@backstage/ui`. A bare React node like `<span>...</span>` renders as an empty cell.
+### Configuring default columns
 
-:::
-
-### Disabling a default column
-
-To hide a default column, disable its extension through `app-config.yaml`:
+Default columns can be disabled, hidden, or filtered through `app-config.yaml`:
 
 ```yaml title="app-config.yaml"
 app:
   extensions:
+    # Remove a column entirely
     - catalog-column:catalog/tags: false
+    # Keep a column hidden but let its fields contribute to search
+    - catalog-column:catalog/description:
+        config:
+          hidden: true
+    # Show a column only for specific entity kinds
+    - catalog-column:catalog/lifecycle:
+        config:
+          filter:
+            kind: Component
 ```
-
-The same pattern applies to the other default columns: `catalog-column:catalog/name`, `catalog-column:catalog/owner`, `catalog-column:catalog/type`, `catalog-column:catalog/lifecycle`, and `catalog-column:catalog/description`.
 
 ## Entity page
 
