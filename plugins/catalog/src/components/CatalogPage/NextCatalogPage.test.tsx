@@ -349,8 +349,8 @@ describe('NextCatalogPage', () => {
               header: {
                 id: 'lifecycle',
                 label: 'Lifecycle',
-                filter: entity => entity.kind === 'Component',
               },
+              filterFunction: entity => entity.kind === 'Component',
               cell: () => (
                 <Cell>
                   <span data-testid="lifecycle-cell">prod</span>

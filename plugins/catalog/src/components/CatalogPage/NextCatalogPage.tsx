@@ -41,6 +41,7 @@ import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useMemo, useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { catalogTranslationRef } from '../..';
+import { buildFilterFn } from '../../alpha/filter/FilterWrapper';
 import {
   Content,
   CreateButton,
@@ -75,6 +76,8 @@ export type NextCatalogPageProps = {
   columns: Array<{
     header: CatalogColumnHeader;
     cell: (entity: Entity) => ReactElement;
+    filterFunction?: (entity: Entity) => boolean;
+    filterExpression?: string;
   }>;
   pageSizeOptions?: number[];
 };
@@ -82,18 +85,22 @@ export type NextCatalogPageProps = {
 function buildColumnConfig(
   columns: NextCatalogPageProps['columns'],
 ): ColumnConfig<EntityRow>[] {
-  return columns.map(({ header, cell }, index) => ({
-    id: header.id,
-    label: header.label,
-    header: header.header
-      ? () => <Column isRowHeader={index === 0}>{header.header!()}</Column>
-      : undefined,
-    width: header.width,
-    isSortable: Boolean(header.orderField),
-    isRowHeader: index === 0,
-    cell: row =>
-      header.filter && !header.filter(row.entity) ? <Cell /> : cell(row.entity),
-  }));
+  return columns.map(
+    ({ header, cell, filterFunction, filterExpression }, index) => {
+      const filter = buildFilterFn(filterFunction, filterExpression);
+      return {
+        id: header.id,
+        label: header.label,
+        header: header.header
+          ? () => <Column isRowHeader={index === 0}>{header.header!()}</Column>
+          : undefined,
+        width: header.width,
+        isSortable: Boolean(header.orderField),
+        isRowHeader: index === 0,
+        cell: row => (filter(row.entity) ? cell(row.entity) : <Cell />),
+      };
+    },
+  );
 }
 
 function NextCatalogTable(props: {

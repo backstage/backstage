@@ -30,6 +30,7 @@ import {
 import {
   catalogColumnCellDataRef,
   catalogColumnHeaderDataRef,
+  CatalogColumnBlueprint,
   defaultEntityContentGroupDefinitions,
   EntityContentBlueprint,
   EntityContextMenuItemBlueprint,
@@ -76,6 +77,8 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
     columns: createExtensionInput([
       catalogColumnHeaderDataRef.optional(),
       catalogColumnCellDataRef.optional(),
+      CatalogColumnBlueprint.dataRefs.filterFunction.optional(),
+      CatalogColumnBlueprint.dataRefs.filterExpression.optional(),
     ]),
   },
   configSchema: {
@@ -117,6 +120,12 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
             .map(c => ({
               header: c.get(catalogColumnHeaderDataRef),
               cell: c.get(catalogColumnCellDataRef),
+              filterFunction: c.get(
+                CatalogColumnBlueprint.dataRefs.filterFunction,
+              ),
+              filterExpression: c.get(
+                CatalogColumnBlueprint.dataRefs.filterExpression,
+              ),
             }))
             .filter(
               (
@@ -124,6 +133,8 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
               ): c is {
                 header: NonNullable<typeof c.header>;
                 cell: NonNullable<typeof c.cell>;
+                filterFunction: typeof c.filterFunction;
+                filterExpression: typeof c.filterExpression;
               } => Boolean(c.header && c.cell),
             );
           return (

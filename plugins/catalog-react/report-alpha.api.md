@@ -35,7 +35,7 @@ export const CatalogColumnBlueprint: ExtensionBlueprint<{
     header?: () => ReactElement;
     orderField?: string;
     searchFields?: string[];
-    filter?: (entity: Entity) => boolean;
+    filter?: string | FilterPredicate | ((entity: Entity) => boolean);
     width?: ColumnSize;
   };
   output:
@@ -52,13 +52,29 @@ export const CatalogColumnBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
+      >
+    | ExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
       >;
   inputs: {};
   config: {
     visible: boolean;
+    filter: FilterPredicate | undefined;
   };
   configInput: {
     visible?: boolean | undefined;
+    filter?: FilterPredicate | undefined;
   };
   dataRefs: {
     header: ConfigurableExtensionDataRef<
@@ -69,6 +85,16 @@ export const CatalogColumnBlueprint: ExtensionBlueprint<{
     cell: ConfigurableExtensionDataRef<
       (entity: Entity) => ReactElement,
       'catalog.column-cell',
+      {}
+    >;
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
       {}
     >;
   };
@@ -88,7 +114,6 @@ export type CatalogColumnHeader = {
   header?: () => ReactElement;
   orderField?: string;
   searchFields?: string[];
-  filter?: (entity: Entity) => boolean;
   width?: ColumnSize;
 };
 

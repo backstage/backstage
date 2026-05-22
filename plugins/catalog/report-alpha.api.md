@@ -1056,11 +1056,13 @@ const _default: OverridableFrontendPlugin<
     'page:catalog': OverridableExtensionDefinition<{
       config: {
         version: 'v1' | 'v2';
+        pageSizeOptions: number[];
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
         version?: 'v1' | 'v2' | undefined;
+        pageSizeOptions?: number[] | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };
@@ -1138,6 +1140,20 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               (entity: Entity) => ReactElement,
               'catalog.column-cell',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
               {
                 optional: true;
               }
@@ -1381,7 +1397,10 @@ export type NextCatalogPageProps = {
   columns: Array<{
     header: CatalogColumnHeader;
     cell: (entity: Entity) => ReactElement;
+    filterFunction?: (entity: Entity) => boolean;
+    filterExpression?: string;
   }>;
+  pageSizeOptions?: number[];
 };
 
 // (No @packageDocumentation comment for this package)

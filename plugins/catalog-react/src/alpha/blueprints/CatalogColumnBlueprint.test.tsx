@@ -19,6 +19,7 @@ import { CatalogColumnBlueprint } from './CatalogColumnBlueprint';
 import {
   catalogColumnCellDataRef,
   catalogColumnHeaderDataRef,
+  entityFilterFunctionDataRef,
 } from './extensionData';
 
 describe('CatalogColumnBlueprint', () => {
@@ -78,7 +79,7 @@ describe('CatalogColumnBlueprint', () => {
     expect(tester.get(catalogColumnCellDataRef)).toBeUndefined();
   });
 
-  it('preserves the per-row filter predicate on the header', () => {
+  it('yields the per-row filter as entityFilterFunctionDataRef', () => {
     const filter = (e: { kind: string }) => e.kind === 'Component';
     const ext = CatalogColumnBlueprint.make({
       name: 'filtered',
@@ -91,8 +92,24 @@ describe('CatalogColumnBlueprint', () => {
     });
 
     const tester = createExtensionTester(ext);
-    const header = tester.get(catalogColumnHeaderDataRef);
-    expect(header?.filter).toBe(filter);
+    expect(tester.get(entityFilterFunctionDataRef)).toBe(filter);
+  });
+
+  it('resolves a config filter predicate into entityFilterFunctionDataRef', () => {
+    const ext = CatalogColumnBlueprint.make({
+      name: 'config-filtered',
+      params: {
+        id: 'config-filtered',
+        label: 'Config Filtered',
+        cell: () => <span />,
+      },
+    });
+
+    const tester = createExtensionTester(ext, {
+      config: { filter: { kind: 'Component' } },
+    });
+    const filterFn = tester.get(entityFilterFunctionDataRef);
+    expect(typeof filterFn).toBe('function');
   });
 
   it('preserves the optional header render function', () => {

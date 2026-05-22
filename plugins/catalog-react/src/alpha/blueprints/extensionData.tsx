@@ -126,7 +126,6 @@ export type CatalogColumnHeader = {
   header?: () => ReactElement;
   orderField?: string;
   searchFields?: string[];
-  filter?: (entity: Entity) => boolean;
   width?: ColumnSize;
 };
 

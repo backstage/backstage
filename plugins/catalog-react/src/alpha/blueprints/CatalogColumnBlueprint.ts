@@ -22,7 +22,14 @@ import { z } from 'zod/v4';
 import {
   catalogColumnCellDataRef,
   catalogColumnHeaderDataRef,
+  entityFilterFunctionDataRef,
+  entityFilterExpressionDataRef,
 } from './extensionData';
+import {
+  createZodV4FilterPredicateSchema,
+  type FilterPredicate,
+} from '@backstage/filter-predicates';
+import { resolveEntityFilterData } from './resolveEntityFilterData';
 
 /**
  * Blueprint for contributing a column to the v2 catalog index page.
@@ -35,13 +42,20 @@ export const CatalogColumnBlueprint = createExtensionBlueprint({
   output: [
     catalogColumnHeaderDataRef.optional(),
     catalogColumnCellDataRef.optional(),
+    entityFilterFunctionDataRef.optional(),
+    entityFilterExpressionDataRef.optional(),
   ],
   dataRefs: {
     header: catalogColumnHeaderDataRef,
     cell: catalogColumnCellDataRef,
+    filterFunction: entityFilterFunctionDataRef,
+    filterExpression: entityFilterExpressionDataRef,
   },
   configSchema: {
     visible: z.boolean().default(true),
+    filter: z
+      .union([z.string(), createZodV4FilterPredicateSchema()])
+      .optional(),
   },
   *factory(
     params: {
@@ -51,20 +65,21 @@ export const CatalogColumnBlueprint = createExtensionBlueprint({
       header?: () => ReactElement;
       orderField?: string;
       searchFields?: string[];
-      filter?: (entity: Entity) => boolean;
+      filter?: string | FilterPredicate | ((entity: Entity) => boolean);
       width?: ColumnSize;
     },
-    { config },
+    { config, node },
   ) {
     if (!config.visible) {
       return;
     }
-    const { cell, ...header } = params;
+    const { cell, filter, ...header } = params;
     yield catalogColumnHeaderDataRef(
       Object.fromEntries(
         Object.entries(header).filter(([, v]) => v !== undefined),
       ) as typeof header,
     );
     yield catalogColumnCellDataRef(cell);
+    yield* resolveEntityFilterData(filter, config, node);
   },
 });
