@@ -43,6 +43,9 @@ backend:
         namespace: 'my-app'
         # Separator used between namespace and plugin ID (default: ':')
         keyPrefixSeparator: ':'
+        # Send PING commands at this interval to keep the connection alive
+        # When cluster mode is enabled, this is applied to all cluster node connections via cluster defaults
+        pingInterval: 60000
         # Other Redis-specific options...
         clearBatchSize: 1000
         useUnlink: false
