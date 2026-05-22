@@ -161,18 +161,13 @@ function NextCatalogTable(props: {
 
   const searchFields = useMemo(() => {
     const seen = new Set<string>();
-    const entityList = entities ?? [];
-    for (const { header, filterFunction, filterExpression } of props.columns) {
-      if ((filterFunction || filterExpression) && entityList.length > 0) {
-        const filter = buildFilterFn(filterFunction, filterExpression);
-        if (!entityList.some(e => filter(e))) continue;
-      }
+    for (const { header } of props.columns) {
       for (const f of header.searchFields ?? []) {
         seen.add(f);
       }
     }
     return [...seen];
-  }, [props.columns, entities]);
+  }, [props.columns]);
 
   const onSortChange = (descriptor: SortDescriptor) => {
     setSortDescriptor(descriptor);
@@ -258,7 +253,9 @@ export function NextCatalogPage(props: NextCatalogPageProps) {
         }
       />
       <Content>
-        <EntityListProvider pagination={{ mode: 'offset' }}>
+        <EntityListProvider
+          pagination={{ mode: 'offset', limit: props.pageSizeOptions[0] }}
+        >
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
