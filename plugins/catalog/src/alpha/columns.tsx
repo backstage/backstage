@@ -43,7 +43,7 @@ const ownerColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="owner" />,
     orderField: 'spec.owner',
     searchFields: ['spec.owner'],
-    filter: 'not:kind:location',
+    filter: 'not:kind:group,location,user',
     cell: entity => {
       const owner = (entity.spec as { owner?: unknown } | undefined)?.owner;
       return <CellText title={typeof owner === 'string' ? owner : ''} />;
@@ -59,6 +59,7 @@ const typeColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="type" />,
     orderField: 'spec.type',
     searchFields: ['spec.type'],
+    filter: 'not:kind:domain,user',
     cell: entity => {
       const type = (entity.spec as { type?: unknown } | undefined)?.type;
       return <CellText title={typeof type === 'string' ? type : ''} />;
@@ -74,7 +75,7 @@ const lifecycleColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="lifecycle" />,
     orderField: 'spec.lifecycle',
     searchFields: ['spec.lifecycle'],
-    filter: 'not:kind:location',
+    filter: 'not:kind:group,location,system,template,user',
     cell: entity => {
       const lifecycle = (entity.spec as { lifecycle?: unknown } | undefined)
         ?.lifecycle;
@@ -119,7 +120,7 @@ const systemColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="system" />,
     orderField: 'relations.partOf',
     searchFields: ['relations.partOf'],
-    filter: 'not:kind:location,system',
+    filter: 'not:kind:domain,group,location,system,template,user',
     cell: entity => {
       const partOf = entity.relations?.filter(r => r.type === 'partOf') ?? [];
       const systems = partOf
@@ -138,6 +139,7 @@ const targetsColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="targets" />,
     searchFields: ['spec.targets', 'spec.target'],
     filter: 'kind:location',
+    width: '2fr',
     cell: entity => {
       const spec = entity.spec as
         | { targets?: string[]; target?: string }
