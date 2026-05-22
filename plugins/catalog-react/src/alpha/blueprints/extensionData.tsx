@@ -126,6 +126,8 @@ export type CatalogColumnHeader = {
   header?: () => ReactElement;
   orderField?: string;
   searchFields?: string[];
+  /** When true, the column is not rendered but its `searchFields` still contribute to search. */
+  hidden?: boolean;
   width?: ColumnSize;
 };
 

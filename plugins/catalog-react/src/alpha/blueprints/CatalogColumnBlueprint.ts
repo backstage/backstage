@@ -52,7 +52,7 @@ export const CatalogColumnBlueprint = createExtensionBlueprint({
     filterExpression: entityFilterExpressionDataRef,
   },
   configSchema: {
-    visible: z.boolean().default(true),
+    hidden: z.boolean().default(false),
     filter: z
       .union([z.string(), createZodV4FilterPredicateSchema()])
       .optional(),
@@ -65,18 +65,20 @@ export const CatalogColumnBlueprint = createExtensionBlueprint({
       header?: () => ReactElement;
       orderField?: string;
       searchFields?: string[];
+      hidden?: boolean;
       filter?: string | FilterPredicate | ((entity: Entity) => boolean);
       width?: ColumnSize;
     },
     { config, node },
   ) {
-    if (!config.visible) {
-      return;
-    }
-    const { cell, filter, ...header } = params;
+    const { cell, filter, hidden: paramHidden, ...header } = params;
+    const isHidden = config.hidden || paramHidden;
     yield catalogColumnHeaderDataRef(
       Object.fromEntries(
-        Object.entries(header).filter(([, v]) => v !== undefined),
+        Object.entries({
+          ...header,
+          ...(isHidden ? { hidden: true } : {}),
+        }).filter(([, v]) => v !== undefined),
       ) as typeof header,
     );
     yield catalogColumnCellDataRef(cell);

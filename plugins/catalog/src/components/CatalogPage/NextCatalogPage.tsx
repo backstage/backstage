@@ -84,23 +84,36 @@ export type NextCatalogPageProps = {
 
 function buildColumnConfig(
   columns: NextCatalogPageProps['columns'],
+  entities: Entity[],
 ): ColumnConfig<EntityRow>[] {
-  return columns.map(
-    ({ header, cell, filterFunction, filterExpression }, index) => {
+  const resolved = columns.map(
+    ({ header, cell, filterFunction, filterExpression }) => {
       const filter = buildFilterFn(filterFunction, filterExpression);
-      return {
-        id: header.id,
-        label: header.label,
-        header: header.header
-          ? () => <Column isRowHeader={index === 0}>{header.header!()}</Column>
-          : undefined,
-        width: header.width,
-        isSortable: Boolean(header.orderField),
-        isRowHeader: index === 0,
-        cell: row => (filter(row.entity) ? cell(row.entity) : <Cell />),
-      };
+      const hasFilter = Boolean(filterFunction || filterExpression);
+      const hiddenByFilter = hasFilter && !entities.some(e => filter(e));
+      const isHidden = header.hidden || hiddenByFilter;
+      return { header, cell, filter, isHidden };
     },
   );
+
+  const firstVisibleIndex = resolved.findIndex(c => !c.isHidden);
+
+  return resolved.map(({ header, cell, filter, isHidden }, index) => ({
+    id: header.id,
+    label: header.label,
+    header: header.header
+      ? () => (
+          <Column isRowHeader={index === firstVisibleIndex}>
+            {header.header!()}
+          </Column>
+        )
+      : undefined,
+    width: header.width,
+    isSortable: Boolean(header.orderField),
+    isRowHeader: index === firstVisibleIndex,
+    isHidden,
+    cell: row => (filter(row.entity) ? cell(row.entity) : <Cell />),
+  }));
 }
 
 function NextCatalogTable(props: {
@@ -121,8 +134,8 @@ function NextCatalogTable(props: {
   );
 
   const columnConfig = useMemo(
-    () => buildColumnConfig(props.columns),
-    [props.columns],
+    () => buildColumnConfig(props.columns, entities ?? []),
+    [props.columns, entities],
   );
 
   const rowConfig = useMemo(
@@ -142,13 +155,18 @@ function NextCatalogTable(props: {
 
   const searchFields = useMemo(() => {
     const seen = new Set<string>();
-    for (const { header } of props.columns) {
+    const entityList = entities ?? [];
+    for (const { header, filterFunction, filterExpression } of props.columns) {
+      if (filterFunction || filterExpression) {
+        const filter = buildFilterFn(filterFunction, filterExpression);
+        if (!entityList.some(e => filter(e))) continue;
+      }
       for (const f of header.searchFields ?? []) {
         seen.add(f);
       }
     }
     return [...seen];
-  }, [props.columns]);
+  }, [props.columns, entities]);
 
   const onSortChange = (descriptor: SortDescriptor) => {
     setSortDescriptor(descriptor);

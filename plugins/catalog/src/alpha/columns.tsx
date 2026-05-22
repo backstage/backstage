@@ -43,6 +43,7 @@ const ownerColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="owner" />,
     orderField: 'spec.owner',
     searchFields: ['spec.owner'],
+    filter: 'not:kind:location',
     cell: entity => {
       const owner = (entity.spec as { owner?: unknown } | undefined)?.owner;
       return <CellText title={typeof owner === 'string' ? owner : ''} />;
@@ -73,6 +74,7 @@ const lifecycleColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="lifecycle" />,
     orderField: 'spec.lifecycle',
     searchFields: ['spec.lifecycle'],
+    filter: 'not:kind:location',
     cell: entity => {
       const lifecycle = (entity.spec as { lifecycle?: unknown } | undefined)
         ?.lifecycle;
@@ -90,6 +92,7 @@ const descriptionColumn = CatalogColumnBlueprint.make({
     label: 'Description',
     header: () => <EntityTableColumnTitle translationKey="description" />,
     searchFields: ['metadata.description'],
+    filter: 'not:kind:location',
     cell: entity => <CellText title={entity.metadata.description ?? ''} />,
   },
 });
@@ -101,17 +104,57 @@ const tagsColumn = CatalogColumnBlueprint.make({
     label: 'Tags',
     header: () => <EntityTableColumnTitle translationKey="tags" />,
     searchFields: ['metadata.tags'],
+    filter: entity => entity.kind !== 'Location',
     cell: entity => (
       <CellText title={(entity.metadata.tags ?? []).join(', ')} />
     ),
   },
 });
 
+const systemColumn = CatalogColumnBlueprint.make({
+  name: 'system',
+  params: {
+    id: 'system',
+    label: 'System',
+    header: () => <EntityTableColumnTitle translationKey="system" />,
+    orderField: 'relations.partOf',
+    searchFields: ['relations.partOf'],
+    filter: 'not:kind:location,system',
+    cell: entity => {
+      const partOf = entity.relations?.filter(r => r.type === 'partOf') ?? [];
+      const systems = partOf
+        .map(r => r.targetRef.split('/').pop() ?? r.targetRef)
+        .join(', ');
+      return <CellText title={systems} />;
+    },
+  },
+});
+
+const targetsColumn = CatalogColumnBlueprint.make({
+  name: 'targets',
+  params: {
+    id: 'targets',
+    label: 'Targets',
+    header: () => <EntityTableColumnTitle translationKey="targets" />,
+    searchFields: ['spec.targets', 'spec.target'],
+    filter: 'kind:location',
+    cell: entity => {
+      const spec = entity.spec as
+        | { targets?: string[]; target?: string }
+        | undefined;
+      const targets = spec?.targets ?? (spec?.target ? [spec.target] : []);
+      return <CellText title={targets.join(', ')} />;
+    },
+  },
+});
+
 const columns: ExtensionDefinition[] = [
   nameColumn,
+  systemColumn,
   ownerColumn,
   typeColumn,
   lifecycleColumn,
+  targetsColumn,
   descriptionColumn,
   tagsColumn,
 ];

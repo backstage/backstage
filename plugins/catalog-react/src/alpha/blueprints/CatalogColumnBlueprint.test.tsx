@@ -64,7 +64,7 @@ describe('CatalogColumnBlueprint', () => {
     expect(header).toEqual({ id: 'minimal', label: 'Minimal' });
   });
 
-  it('hides the column when config.visible is false', () => {
+  it('sets hidden on the header when config.hidden is true', () => {
     const ext = CatalogColumnBlueprint.make({
       name: 'hidden',
       params: {
@@ -74,9 +74,9 @@ describe('CatalogColumnBlueprint', () => {
       },
     });
 
-    const tester = createExtensionTester(ext, { config: { visible: false } });
-    expect(tester.get(catalogColumnHeaderDataRef)).toBeUndefined();
-    expect(tester.get(catalogColumnCellDataRef)).toBeUndefined();
+    const tester = createExtensionTester(ext, { config: { hidden: true } });
+    const header = tester.get(catalogColumnHeaderDataRef);
+    expect(header?.hidden).toBe(true);
   });
 
   it('yields the per-row filter as entityFilterFunctionDataRef', () => {
