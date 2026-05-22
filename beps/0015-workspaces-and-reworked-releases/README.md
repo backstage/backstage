@@ -1357,8 +1357,9 @@ already-locked descriptors.
 
 #### Bumping the framework version
 
-A workspace bumps its target framework version with a single command exposed
-by the standalone release CLI (`yarn release set-version <new-version>`):
+A workspace bumps its target framework version with the Backstage CLI
+(`backstage-cli versions set <new-version>`, see
+[Backstage CLI commands](#backstage-cli-commands) below):
 
 1. The command updates `backstage.json: version`.
 2. `yarn install` re-resolves the lockfile against the new framework
@@ -1402,23 +1403,70 @@ universally compatible — they pass the compatibility filter regardless of
 the adopter's pinned framework version, so they remain installable while
 their authors catch up. After a transition window of two named framework
 releases the Yarn plugin instead warns, and after a further two releases it
-errors. `backstage-cli versions:check` can flag missing metadata earlier so
-that plugin authors do not learn about it from broken installs.
+errors. `backstage-cli versions check` (see
+[Backstage CLI commands](#backstage-cli-commands)) can flag missing metadata
+earlier so that plugin authors do not learn about it from broken installs.
 
-#### Optional convenience tooling
+#### Backstage CLI commands
 
 Nothing in the design above adds commands to the Backstage Yarn plugin
 itself; re-resolution is driven by standard Yarn invocations (`yarn add`,
 `yarn up`, plus the descriptor invalidation that follows a framework
-version bump). As a separate, optional improvement, the existing
-`backstage-cli versions:bump` command — which already understands Backstage
-release lines and how `backstage.json` is laid out — could be adapted to
-wrap the common adopter workflows into a single command, for example
-combining a framework version bump with the equivalent of
-`yarn up '@backstage/*'` for adopters who want both in one step. This is
-not part of the core mechanism and the design works without it; it is
-listed here as a quality-of-life improvement that may be picked up
-alongside this BEP.
+version bump). Alongside this BEP, the `versions:bump` command in
+`@backstage/cli` is replaced by a smaller set of focused commands that
+match the simpler shape of the new world. The new commands use the
+space-separated form that the CLI has been migrating towards
+(`backstage-cli versions set …` rather than `backstage-cli versions:set …`).
+
+The same commands serve both plugin workspace maintainers and adopter
+projects; the underlying file edit (`backstage.json: version`) and Yarn
+resolution behavior are identical. The two audiences differ only in
+intent — a plugin maintainer's `versions set` advertises a new supported
+framework version, while an adopter's `versions set` upgrades their
+installation.
+
+- **`backstage-cli versions set <target>`** — Writes a specific framework
+  version to `backstage.json: version`. The argument may be:
+
+  - A full identifier (e.g. `2610.3.5`) — written through unchanged.
+  - A release line (e.g. `2610`) — resolved at command time to the
+    latest published `<line>.<minor>.<patch>` in that line, and the
+    resulting specific version is written. Plugin maintainers should
+    always end up with a specific version in their `backstage.json` so
+    that their CI does not silently drift onto newer framework versions.
+  - The `latest` dist-tag — resolves to whatever line and version the
+    npm `latest` dist-tag points to. This is the explicit cross-line
+    bump.
+  - The `next` dist-tag — resolves to the current `@next` preview
+    framework version.
+
+  The command does not rewrite ranges in `package.json` files or run
+  `yarn install` itself; the Backstage Yarn plugin handles re-resolution
+  on the next `yarn install` via descriptor binding.
+
+- **`backstage-cli versions upgrade`** — Refresh non-framework
+  Backstage-ecosystem dependencies to their latest npm versions that are
+  still compatible with the current framework pin. Wraps the equivalent
+  of `yarn up '@backstage/*'`. Does not touch `backstage.json: version`.
+  This is the command an adopter runs to pick up plugin updates without
+  bumping the framework. Plugin workspace maintainers rarely need it —
+  their own framework pin already governs their `node_modules`.
+
+- **`backstage-cli versions check`** — Status report. Prints the
+  currently-pinned framework version, whether a newer version exists in
+  the line, whether a newer line is available, which Backstage-ecosystem
+  deps have newer compatible versions on npm than what is locked, and
+  which dependencies are missing the `backstage.version` field (during
+  the transition window described in
+  [Plugins without the field](#plugins-without-the-field)).
+
+- **`backstage-cli versions migrate`** — Unchanged from today; handles
+  packages that have moved between npm scopes (for example to
+  `@backstage-community`). Continues to work the same way.
+
+The existing colon-separated `versions:bump`, `versions:check`, and
+`versions:migrate` commands are deprecated as part of this BEP and forward
+to the new commands for a transition period.
 
 ### Repository tooling
 
@@ -1544,12 +1592,12 @@ Concretely:
 - Move and refactor the community-plugins scripts into subcommands of that CLI
   (e.g. `list-changed-workspaces`, `check-needs-release`, `create-tag`).
 - Add the new subcommands needed by this BEP: `stage create|refresh|apply` (for
-  authoring and validating staged changes), `next-version` (for computing the
+  authoring and validating staged changes) and `next-version` (for computing the
   next `@next` identifier; see
-  [Next pre-release versioning](#next-pre-release-versioning)), and
-  `set-version` (for bumping the target framework version of a workspace;
-  see
-  [Workspace target framework version](#workspace-target-framework-version)).
+  [Next pre-release versioning](#next-pre-release-versioning)). Setting and
+  bumping the framework version of a workspace itself is the Backstage CLI's
+  responsibility, not this CLI's; see
+  [Backstage CLI commands](#backstage-cli-commands).
 - Update both repositories' workflows to invoke the CLI instead of duplicated
   scripts.
 
