@@ -9,11 +9,6 @@ docs_dir: docs/overview
 plugins:
   - techdocs-core
 
-# This CI-specific config validates only a small subset of pages.
-# Ignore documentation files intentionally omitted from this truncated nav.
-validation:
-  nav:
-    omitted_files: ignore
 
 # Minimal MkDocs configuration used by CI to validate core overview pages
 # without building the complete documentation site defined in mkdocs.yml.
