@@ -9,9 +9,6 @@ docs_dir: docs/overview
 plugins:
   - techdocs-core
 
-
-# Minimal MkDocs configuration used by CI to validate core overview pages
-# without building the complete documentation site defined in mkdocs.yml.
 nav:
   - Overview:
       - What is Backstage?: 'what-is-backstage.md'
