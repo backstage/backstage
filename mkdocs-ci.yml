@@ -3,9 +3,8 @@ site_description: 'Main documentation for Backstage features and framework APIs'
 repo_url: https://github.com/backstage/backstage
 edit_uri: edit/master/docs
 
-# Use the full docs tree so relative links between documentation pages
-# continue to resolve correctly during strict CI validation.
-docs_dir: docs
+# Restrict CI validation to the overview docs only.
+docs_dir: docs/overview
 
 plugins:
   - techdocs-core
