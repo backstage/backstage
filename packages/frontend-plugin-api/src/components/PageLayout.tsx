@@ -53,7 +53,7 @@ export interface PageLayoutProps {
  * Default implementation of PageLayout using plain HTML elements
  */
 function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
-  const { title, icon, headerActions, tabs, children } = props;
+  const { title, icon, noHeader, headerActions, tabs, children } = props;
 
   return (
     <div
@@ -65,7 +65,7 @@ function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
         minHeight: 0,
       }}
     >
-      {(title || tabs) && (
+      {!noHeader && (title || tabs) && (
         <header
           style={{
             borderBottom: '1px solid #ddd',

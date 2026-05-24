@@ -145,6 +145,7 @@ export const PageBlueprint = createExtensionBlueprint({
           <PageLayout
             title={resolvedTitle}
             icon={resolvedIcon}
+            noHeader={noHeader}
             tabs={tabs}
             titleLink={titleLink}
             headerActions={headerActions}
@@ -179,6 +180,7 @@ export const PageBlueprint = createExtensionBlueprint({
           <PageLayout
             title={resolvedTitle}
             icon={resolvedIcon}
+            noHeader={noHeader}
             titleLink={titleLink}
             headerActions={headerActions}
           />

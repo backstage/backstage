@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ReactNode } from 'react';
 import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import {
@@ -25,6 +26,27 @@ import {
   createExtensionInput,
 } from '../wiring';
 import { waitFor } from '@testing-library/react';
+
+// Replace the swappable page layout with a probe so we can assert which props
+// the blueprint forwards to it, independent of how a layout chooses to render.
+// `createElement` is used instead of JSX to keep the mock factory free of
+// references that Jest is not allowed to hoist.
+jest.mock('../components', () => {
+  const actual = jest.requireActual('../components');
+  const { createElement } = jest.requireActual('react');
+  return {
+    ...actual,
+    PageLayout: (props: { noHeader?: boolean; children?: ReactNode }) =>
+      createElement(
+        'div',
+        {
+          'data-testid': 'page-layout-probe',
+          'data-no-header': String(Boolean(props.noHeader)),
+        },
+        props.children,
+      ),
+  };
+});
 
 describe('PageBlueprint', () => {
   const mockRouteRef = createRouteRef();
@@ -162,6 +184,64 @@ describe('PageBlueprint', () => {
     const { getByTestId } = renderInTestApp(tester.reactElement());
 
     await waitFor(() => expect(getByTestId('test')).toBeInTheDocument());
+  });
+
+  it('forwards the noHeader option to the page layout for pages without a loader', async () => {
+    const withHeader = renderInTestApp(
+      createExtensionTester(
+        PageBlueprint.make({
+          name: 'with-header',
+          params: { path: '/test', title: 'Test' },
+        }),
+      ).reactElement(),
+    );
+    expect(await withHeader.findByTestId('page-layout-probe')).toHaveAttribute(
+      'data-no-header',
+      'false',
+    );
+    withHeader.unmount();
+
+    const withoutHeader = renderInTestApp(
+      createExtensionTester(
+        PageBlueprint.make({
+          name: 'without-header',
+          params: { path: '/test', title: 'Test', noHeader: true },
+        }),
+      ).reactElement(),
+    );
+    expect(
+      await withoutHeader.findByTestId('page-layout-probe'),
+    ).toHaveAttribute('data-no-header', 'true');
+  });
+
+  it('forwards the noHeader option to the page layout for pages with sub-pages', async () => {
+    const SubPageBlueprint = createExtensionBlueprint({
+      kind: 'sub-page',
+      attachTo: { id: 'page:parent-page', input: 'pages' },
+      output: [coreExtensionData.routePath, coreExtensionData.reactElement],
+      factory() {
+        return [
+          coreExtensionData.routePath('/sub'),
+          coreExtensionData.reactElement(<div>sub page</div>),
+        ];
+      },
+    });
+
+    const parentPage = PageBlueprint.make({
+      name: 'parent-page',
+      params: { path: '/test', title: 'Test', noHeader: true },
+    });
+
+    const tester = createExtensionTester(parentPage).add(
+      SubPageBlueprint.make({ name: 'sub', params: {} }),
+    );
+
+    const { findByTestId } = renderInTestApp(tester.reactElement());
+
+    expect(await findByTestId('page-layout-probe')).toHaveAttribute(
+      'data-no-header',
+      'true',
+    );
   });
 
   it('should allow defining additional inputs to the extension', async () => {
