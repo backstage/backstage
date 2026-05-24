@@ -1177,6 +1177,99 @@ for the plugin's resolution model), this means three useful properties:
   _if_ anything is going to change about Backstage's APIs, this is the boundary at
   which it happens — never inside a release line.
 
+#### Plugin support window
+
+The framework promises forward compatibility with plugins built against
+older named framework releases. The intent is to keep the plugin
+ecosystem usable across multiple framework upgrades without forcing every
+plugin to republish in lock-step: a plugin built with `2610` can keep
+working on `2710` even after the build-time APIs the plugin compiled
+against are no longer present in `2710`, as long as the framework still
+provides the runtime structures the plugin exports through. This is
+already a pattern we use in practice (the `app` and the framework
+defaults maintain compatibility shims for older plugin contracts); this
+BEP formalizes it as a published guarantee with a clear scope.
+
+The policy this BEP proposes is:
+
+> Each framework release supports plugins built against any of the four
+> most recent named framework releases (the framework's own line plus
+> the three preceding lines). Plugins built against framework lines
+> outside that window may still work, but the framework no longer
+> guarantees it.
+
+Four named releases corresponds to roughly two years given the
+twice-yearly cadence; that is long enough to give adopters a couple of
+upgrade cycles of breathing room without keeping decade-old compatibility
+shims alive forever. The window is not load-bearing in the design — it
+can be widened or narrowed by future BEPs (or per-line exceptions) — but
+having a single number written down makes the contract concrete.
+
+The supported window is published as the `supportedVersions` field in
+each framework manifest (see
+[Backstage release manifest](#backstage-release-manifest)). For
+example, the manifest for framework release `2710.1.3` would carry:
+
+```json
+"supportedVersions": ["2610", "2620", "2710"]
+```
+
+(assuming `2620` was a named release between `2610` and `2710`). The
+framework's own line is always included, alongside the older lines
+covered by the policy.
+
+The Yarn plugin uses this list when resolving non-framework packages: a
+plugin published with `backstage.version: "2610.5.0"` is a candidate for
+adopters on `2710.x.y` because `2610` appears in `supportedVersions`. A
+plugin published with `backstage.version: "2510.0.0"` is excluded — its
+build-time framework version is no longer in the supported window — and
+the resolver falls back to the most recent earlier version of the same
+package whose `backstage.version` line _is_ in the window. To pick up
+plugin versions outside the window, the adopter would have to roll back
+to a framework release that still supports them, or wait for the plugin
+to publish a new version targeting a supported line.
+
+Plugin authors do not opt into anything. Their published metadata
+records what they built against; the framework decides how far back to
+keep that working.
+
+This formalizes a guarantee, not a hard limit: a plugin built against an
+unsupported line _may_ still work in practice, particularly if it does
+not exercise APIs that were modified between its target line and the
+adopter's framework version. But because that is contingent on which
+framework APIs the plugin actually uses, it is not something the
+framework can promise mechanically; the resolver therefore excludes
+unsupported-line plugins by default. Adopters who want to opt in to a
+specific unsupported plugin version can install it explicitly, outside
+of `backstage:^` resolution.
+
+##### Proposed update to the Release & Versioning Policy
+
+The Backstage project publishes its versioning and skew policy at
+`docs/overview/versioning-policy.md`. The "Skew Policy" subsection there
+today expresses compatibility informally in terms of the "App Core" and
+"Plugin Core" package groups (frontend-system parlance from the current
+release model). Under this BEP that subsection would be replaced by a
+"Forward Compatibility" subsection that:
+
+- States the four-named-releases support window above as the
+  framework's commitment.
+- Refers to the framework manifest's `supportedVersions` field as the
+  authoritative, machine-readable expression of the window for any
+  given release.
+- Explains that the Yarn plugin enforces the window automatically when
+  resolving `backstage:^` ranges, and that adopters do not need to
+  reason about the older "App Core ahead of Plugin Core" distinction
+  because the framework version pin and per-plugin `backstage.version`
+  carry the necessary information.
+- Notes that plugins outside the window may still work, but only at the
+  adopter's risk.
+
+The actual edits to the policy document are out of scope for this BEP
+and would land alongside the rollout. The summary above is intended to
+make the proposed change concrete enough to evaluate while keeping the
+existing document intact.
+
 #### Promotion trigger
 
 There is no fixed calendar for when framework releases ship. The trigger is the same
@@ -1325,15 +1418,24 @@ When an adopter pins `backstage.json: version: "X"` and runs `yarn install`,
 the Yarn plugin:
 
 1. Resolves `X` to a concrete `<line>.<minor>.<patch>` — following the
-   line's `latest.json` pointer if `X` is line-only.
+   line's `latest.json` pointer if `X` is line-only — and reads the
+   manifest at that version.
 2. For each `backstage:^` dependency, checks the framework manifest for
    that version. If the package is present in the manifest (it is a
    framework package), the manifest-pinned version is used.
 3. Otherwise — the package is a non-framework Backstage-ecosystem package —
    the plugin queries the npm registry for the package's published
-   versions, reads `backstage.version` from each, filters to versions
-   where `backstage.version <= X`, and picks the highest semver among
-   them.
+   versions, reads `backstage.version` from each, and filters to versions
+   where:
+
+   - the line portion of `backstage.version` is present in the
+     manifest's `supportedVersions` list (the framework's declared
+     forward-compatibility window, see
+     [Plugin support window](#plugin-support-window)), and
+   - `backstage.version <= X` (the plugin was not built against a
+     framework version newer than what the adopter is pinned to).
+
+   The plugin picks the highest semver among the surviving candidates.
 
 Version comparison is plain numerical comparison on the full
 `<line>.<minor>.<patch>` identifier:
@@ -1444,14 +1546,15 @@ no shared state, no special permissions.
 
 Plugins published before this BEP rolls out do not carry a
 `backstage.version` field. The Yarn plugin treats those versions as
-universally compatible — they pass the compatibility filter regardless of
-the adopter's pinned framework version, so they remain installable while
-their authors catch up. After a transition window of two named framework
-releases the Yarn plugin instead warns, and after a further two releases it
-errors. `backstage-cli versions info` (see
-[Backstage CLI commands](#backstage-cli-commands)) surfaces missing metadata
-in its status report so that plugin authors do not learn about it from
-broken installs.
+universally compatible — they bypass both the `supportedVersions` line
+check and the upper-bound check, regardless of the adopter's pinned
+framework version, so they remain installable while their authors catch
+up. After a transition window of two named framework releases the Yarn
+plugin instead warns, and after a further two releases it errors.
+`backstage-cli versions info` (see
+[Backstage CLI commands](#backstage-cli-commands)) surfaces missing
+metadata in its status report so that plugin authors do not learn about
+it from broken installs.
 
 #### Backstage CLI commands
 
@@ -1832,8 +1935,9 @@ Each manifest is a JSON document of the form:
 
 ```json
 {
-  "releaseVersion": "2604.1.3",
-  "releaseLine": "2604",
+  "releaseVersion": "2710.1.3",
+  "releaseLine": "2710",
+  "supportedVersions": ["2610", "2620", "2710"],
   "packages": [
     {
       "name": "@backstage/frontend-plugin-api",
@@ -1852,11 +1956,24 @@ Each manifest is a JSON document of the form:
 ```
 
 Only framework packages appear in `packages[]`, each with a strict pin. The
-manifest answers a narrow question: "if I pin Backstage `2604.1.3`, which
+manifest answers a narrow question: "if I pin Backstage `2710.1.3`, which
 exact version of each framework package do I get?". Resolution of every
 other Backstage-ecosystem package is delegated to the npm registry per the
 [Workspace target framework version](#workspace-target-framework-version)
 rules.
+
+The top-level `supportedVersions` field is the framework's declaration of
+which previously-released framework lines this release maintains
+forward-compatibility with — it is the manifest-level expression of the
+policy described in
+[Plugin support window](#plugin-support-window). The list is always
+inclusive of the framework's own line and may include older lines for
+which the framework still provides runtime compatibility shims, even if
+the build-time APIs from those lines have since been removed. The Yarn
+plugin uses this list when resolving non-framework Backstage-ecosystem
+packages: a plugin's `backstage.version` line must be present in
+`supportedVersions` for the plugin version to be a candidate (see
+[Resolution semantics](#resolution-semantics)).
 
 #### How the manifest is maintained
 
@@ -1876,6 +1993,15 @@ The body of each manifest is built by:
    the publish — minor publishes advance `<minor>` and reset `<patch>` to `0`,
    patch publishes advance `<patch>` — and writing the result to a new immutable
    URL.
+4. Writing the `supportedVersions` list. When a new line opens, the
+   list is computed from the policy described in
+   [Plugin support window](#plugin-support-window) — the framework's own
+   line plus the previous N named lines that the policy commits to.
+   Subsequent publishes within the same line copy the list forward
+   unchanged. The list can also be edited explicitly during a publish
+   when an exception is needed (e.g. dropping a line that the framework
+   has determined is no longer safe to claim compatibility with), but
+   the default is always to apply the policy mechanically.
 
 Publishes from non-framework workspaces do not produce new manifests. Their
 effect on what an adopter resolves at install time is handled by the npm
@@ -1887,23 +2013,25 @@ This means an adopter using the Backstage Yarn plugin (which reads the
 `version` field from `backstage.json` and resolves Backstage package
 versions through it) can pin a Backstage release in two ways:
 
-- **Floating pin** (`version: "2604"` in `backstage.json`): the Yarn plugin reads
-  `release-2604/latest.json` on each resolve, picks up the most recent
+- **Floating pin** (`version: "2710"` in `backstage.json`): the Yarn plugin reads
+  `release-2710/latest.json` on each resolve, picks up the most recent
   framework manifest in that release line, and resolves framework package
   versions accordingly. Non-framework packages resolve to the latest
-  versions on npm whose `backstage.version` is `<=` the concrete framework
-  version this pin resolved to. The resolved versions are then locked in
-  `yarn.lock` and reused on every subsequent `yarn install` until the
-  adopter explicitly asks for a refresh (see
+  versions on npm whose `backstage.version` line is in the manifest's
+  `supportedVersions` list and whose full identifier is `<=` the concrete
+  framework version this pin resolved to. The resolved versions are then
+  locked in `yarn.lock` and reused on every subsequent `yarn install`
+  until the adopter explicitly asks for a refresh (see
   [When re-resolution happens](#when-re-resolution-happens)); the floating
   pin governs the snapshot that the next refresh produces, not what plain
   `yarn install` consults on every run.
-- **Frozen pin** (`version: "2604.1.3"` in `backstage.json`): the Yarn plugin
-  reads the immutable `release-2604.1.3.json` directly. Framework packages are
+- **Frozen pin** (`version: "2710.1.3"` in `backstage.json`): the Yarn plugin
+  reads the immutable `release-2710.1.3.json` directly. Framework packages are
   pinned strictly to the manifest's versions, and non-framework packages
-  resolve to the latest version on npm with `backstage.version <= 2604.1.3`.
-  Same lockfile semantics: once resolved, the versions stay until the
-  adopter explicitly refreshes.
+  resolve to the latest version on npm whose `backstage.version` line is
+  in `supportedVersions` and whose full identifier is `<= 2710.1.3`. Same
+  lockfile semantics: once resolved, the versions stay until the adopter
+  explicitly refreshes.
 
 When the framework workspace cuts a new named release (`2604` → `2610`), the
 publishing workflow stops updating the `release-2604/latest.json` pointer (the
@@ -1939,10 +2067,13 @@ versions. Two adjustments land alongside this BEP:
    resolves to a package that is not in the framework manifest, the plugin
    queries the npm registry for the package's published versions, reads
    `backstage.version` from each version's `package.json`, filters to
-   versions where `backstage.version <= adopter's framework version`, and
-   picks the highest semver among them. See
+   versions where the line of `backstage.version` is in the manifest's
+   `supportedVersions` list and the full identifier is `<= adopter's
+framework version`, and picks the highest semver among them. See
    [Workspace target framework version](#workspace-target-framework-version)
-   for the full rules.
+   for the full rules and
+   [Plugin support window](#plugin-support-window) for the policy behind
+   `supportedVersions`.
 
 ### OIDC binding mechanics
 
