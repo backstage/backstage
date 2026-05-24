@@ -1,7 +1,7 @@
 site_name: 'Backstage'
 site_description: 'Main documentation for Backstage features and framework APIs'
 repo_url: https://github.com/backstage/backstage
-edit_uri: edit/master/docs
+edit_uri: edit/master/docs/overview
 
 # Restrict CI validation to the overview docs only.
 docs_dir: docs/overview
