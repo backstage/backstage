@@ -194,7 +194,7 @@ export function createOAuthProviderFactory<TProfile>(options: {
   authenticator: OAuthAuthenticator<unknown, TProfile>;
   additionalScopes?: string[];
   stateTransform?: OAuthStateTransform;
-  profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
+  profileTransform?: ProfileTransform<OAuthAuthenticatorResponse<TProfile>>;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
   signInResolverFactories?: {
     [name in string]: SignInResolverFactory;
@@ -287,9 +287,11 @@ export interface OAuthAuthenticator<TContext, TProfile> {
   authenticate(
     input: OAuthAuthenticatorAuthenticateInput,
     ctx: TContext,
-  ): Promise<OAuthAuthenticatorResult<TProfile>>;
+  ): Promise<OAuthAuthenticatorResponse<TProfile>>;
   // (undocumented)
-  defaultProfileTransform: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
+  defaultProfileTransform: ProfileTransform<
+    OAuthAuthenticatorResponse<TProfile>
+  >;
   // (undocumented)
   initialize(ctx: { callbackUrl: string; config: Config }): TContext;
   // (undocumented)
@@ -301,7 +303,7 @@ export interface OAuthAuthenticator<TContext, TProfile> {
   refresh(
     input: OAuthAuthenticatorRefreshInput,
     ctx: TContext,
-  ): Promise<OAuthAuthenticatorResult<TProfile>>;
+  ): Promise<OAuthAuthenticatorResponse<TProfile>>;
   // (undocumented)
   scopes?: OAuthAuthenticatorScopeOptions;
   // @deprecated (undocumented)
@@ -346,6 +348,14 @@ export interface OAuthAuthenticatorRefreshInput {
   // (undocumented)
   scope: string;
   scopeAlreadyGranted?: boolean;
+}
+
+// @public
+export interface OAuthAuthenticatorResponse<TProfile> {
+  // (undocumented)
+  fullProfile?: TProfile;
+  // (undocumented)
+  session: OAuthSession;
 }
 
 // @public (undocumented)
@@ -416,7 +426,7 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   // (undocumented)
   isOriginAllowed: (origin: string) => boolean;
   // (undocumented)
-  profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
+  profileTransform?: ProfileTransform<OAuthAuthenticatorResponse<TProfile>>;
   // (undocumented)
   providerId: string;
   // (undocumented)
@@ -521,10 +531,10 @@ export class PassportOAuthAuthenticatorHelper {
   authenticate(
     input: OAuthAuthenticatorAuthenticateInput,
     options?: Record<string, string>,
-  ): Promise<OAuthAuthenticatorResult<PassportProfile>>;
+  ): Promise<OAuthAuthenticatorResponse<PassportProfile>>;
   // (undocumented)
   static defaultProfileTransform: ProfileTransform<
-    OAuthAuthenticatorResult<PassportProfile>
+    OAuthAuthenticatorResponse<PassportProfile>
   >;
   // (undocumented)
   fetchProfile(accessToken: string): Promise<PassportProfile>;
@@ -533,7 +543,7 @@ export class PassportOAuthAuthenticatorHelper {
   // (undocumented)
   refresh(
     input: OAuthAuthenticatorRefreshInput,
-  ): Promise<OAuthAuthenticatorResult<PassportProfile>>;
+  ): Promise<OAuthAuthenticatorResponse<PassportProfile>>;
   // (undocumented)
   start(
     input: OAuthAuthenticatorStartInput,
