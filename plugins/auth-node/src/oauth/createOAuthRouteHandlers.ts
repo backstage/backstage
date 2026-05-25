@@ -386,7 +386,7 @@ export function createOAuthRouteHandlers<TProfile>(
           },
         };
 
-        if (signInResolver) {
+        if (signInResolver && result.fullProfile) {
           const identity = await signInResolver(
             { profile, result },
             resolverContext,

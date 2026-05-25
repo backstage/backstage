@@ -1127,6 +1127,51 @@ describe('createOAuthRouteHandlers', () => {
       expect(getRefreshTokenCookie(agent).value).toBe('new-refresh-token');
     });
 
+    it('should skip sign-in resolver when fullProfile is not available', async () => {
+      const signInResolver = jest.fn(async () => ({
+        token: mockBackstageToken,
+      }));
+
+      const agent = request.agent(
+        wrapInApp(
+          createOAuthRouteHandlers({
+            ...baseConfig,
+            profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
+            signInResolver,
+          }),
+        ),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-refresh-token=refresh-token',
+        '127.0.0.1',
+        '/my-provider',
+      );
+
+      mockAuthenticator.refresh.mockImplementation(async ({ scope }) => ({
+        fullProfile: undefined as any,
+        session: { ...mockSession, scope },
+      }));
+
+      const res = await agent
+        .post('/my-provider/refresh')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .query({ scope: 'my-scope' });
+
+      expect(res.status).toBe(200);
+      expect(signInResolver).not.toHaveBeenCalled();
+      expect(res.body).toEqual({
+        profile: { email: 'em@i.l' },
+        providerInfo: {
+          accessToken: 'access-token',
+          expiresInSeconds: 3,
+          idToken: 'id-token',
+          scope: 'my-scope',
+        },
+      });
+      expect(res.body.backstageIdentity).toBeUndefined();
+    });
+
     it('should forward errors', async () => {
       const agent = request.agent(
         wrapInApp(createOAuthRouteHandlers(baseConfig)),
