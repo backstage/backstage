@@ -498,7 +498,7 @@ export default {
         ),
         sidebarElementWithIndex(
           { label: 'Publishing', description: 'Publishing your plugins.' },
-          ['plugins/publish-private', 'plugins/add-to-directory'],
+          ['plugins/add-to-directory'],
         ),
         'plugins/observability',
         sidebarElementWithIndex({ label: 'Okta' }, ['integrations/okta/org']),
