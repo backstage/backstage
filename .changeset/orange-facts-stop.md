@@ -2,4 +2,4 @@
 '@backstage/plugin-devtools': patch
 ---
 
-Migrated InfoDependenciesTable to Backstage UI by replacing the legacy Table from @backstage/core-components with the BUI Table, while keeping the existing data and behavior unchanged.
+Updated the dependencies view in DevTools to use the latest Backstage UI while keeping the same data and behavior.

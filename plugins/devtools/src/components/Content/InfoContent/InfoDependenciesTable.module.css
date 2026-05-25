@@ -1,4 +1,4 @@
 .container {
-  border-radius: var(--bui-space-1);
+  border-radius: var(--bui-radius-2);
   box-shadow: var(--bui-shadow);
 }
