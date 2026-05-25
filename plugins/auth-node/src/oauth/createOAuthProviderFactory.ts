@@ -23,7 +23,11 @@ import {
 import { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
 import { createOAuthRouteHandlers } from './createOAuthRouteHandlers';
 import { OAuthStateTransform } from './state';
-import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
+import {
+  OAuthAuthenticator,
+  OAuthAuthenticatorResponse,
+  OAuthAuthenticatorResult,
+} from './types';
 import { SignInResolverFactory } from '../sign-in/createSignInResolverFactory';
 
 /** @public */
@@ -31,7 +35,7 @@ export function createOAuthProviderFactory<TProfile>(options: {
   authenticator: OAuthAuthenticator<unknown, TProfile>;
   additionalScopes?: string[];
   stateTransform?: OAuthStateTransform;
-  profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
+  profileTransform?: ProfileTransform<OAuthAuthenticatorResponse<TProfile>>;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
   signInResolverFactories?: {
     [name in string]: SignInResolverFactory;

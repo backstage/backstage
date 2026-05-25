@@ -42,6 +42,7 @@ import {
 import {
   OAuthAuthenticator,
   OAuthAuthenticatorLogoutResult,
+  OAuthAuthenticatorResponse,
   OAuthAuthenticatorResult,
 } from './types';
 import { Config, readDurationFromConfig } from '@backstage/config';
@@ -58,7 +59,7 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   resolverContext: AuthResolverContext;
   additionalScopes?: string[];
   stateTransform?: OAuthStateTransform;
-  profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
+  profileTransform?: ProfileTransform<OAuthAuthenticatorResponse<TProfile>>;
   cookieConfigurer?: CookieConfigurer;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
 }
@@ -217,6 +218,7 @@ export function createOAuthRouteHandlers<TProfile>(
 
         const signInResult =
           signInResolver &&
+          hasFullProfile(result) &&
           (await signInResolver({ profile, result }, resolverContext));
 
         const grantedScopes = await scopeManager.handleCallback(req, {
@@ -386,7 +388,7 @@ export function createOAuthRouteHandlers<TProfile>(
           },
         };
 
-        if (signInResolver && result.fullProfile) {
+        if (signInResolver && hasFullProfile(result)) {
           const identity = await signInResolver(
             { profile, result },
             resolverContext,
@@ -401,4 +403,10 @@ export function createOAuthRouteHandlers<TProfile>(
       }
     },
   };
+}
+
+function hasFullProfile<TProfile>(
+  result: OAuthAuthenticatorResponse<TProfile>,
+): result is OAuthAuthenticatorResult<TProfile> {
+  return !!result.fullProfile;
 }

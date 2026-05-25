@@ -24,7 +24,7 @@ import { ProfileTransform } from '../types';
 import {
   OAuthAuthenticatorAuthenticateInput,
   OAuthAuthenticatorRefreshInput,
-  OAuthAuthenticatorResult,
+  OAuthAuthenticatorResponse,
   OAuthAuthenticatorStartInput,
 } from './types';
 
@@ -54,10 +54,10 @@ export type PassportOAuthDoneCallback = PassportDoneCallback<
 /** @public */
 export class PassportOAuthAuthenticatorHelper {
   static defaultProfileTransform: ProfileTransform<
-    OAuthAuthenticatorResult<PassportProfile>
+    OAuthAuthenticatorResponse<PassportProfile>
   > = async input => ({
     profile: PassportHelpers.transformProfile(
-      input.fullProfile ?? {},
+      (input.fullProfile ?? {}) as PassportProfile,
       input.session.idToken,
     ),
   });
@@ -86,7 +86,7 @@ export class PassportOAuthAuthenticatorHelper {
   async authenticate(
     input: OAuthAuthenticatorAuthenticateInput,
     options?: Record<string, string>,
-  ): Promise<OAuthAuthenticatorResult<PassportProfile>> {
+  ): Promise<OAuthAuthenticatorResponse<PassportProfile>> {
     const { result, privateInfo } =
       await PassportHelpers.executeFrameHandlerStrategy<
         PassportOAuthResult,
@@ -94,7 +94,7 @@ export class PassportOAuthAuthenticatorHelper {
       >(input.req, this.#strategy, options);
 
     return {
-      fullProfile: result.fullProfile as PassportProfile,
+      fullProfile: result.fullProfile,
       session: {
         accessToken: result.accessToken,
         tokenType: result.params.token_type ?? 'bearer',
@@ -108,7 +108,7 @@ export class PassportOAuthAuthenticatorHelper {
 
   async refresh(
     input: OAuthAuthenticatorRefreshInput,
-  ): Promise<OAuthAuthenticatorResult<PassportProfile>> {
+  ): Promise<OAuthAuthenticatorResponse<PassportProfile>> {
     const result = await PassportHelpers.executeRefreshTokenStrategy(
       this.#strategy,
       input.refreshToken,

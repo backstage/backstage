@@ -85,7 +85,7 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
       string
     >;
 
-    if (context_name !== input.fullProfile.organizationId) {
+    if (context_name !== input.fullProfile?.organizationId) {
       throw new Error(`ID token organizationId mismatch`);
     }
 

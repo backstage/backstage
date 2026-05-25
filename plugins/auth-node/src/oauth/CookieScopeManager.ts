@@ -17,7 +17,7 @@
 import express from 'express';
 import {
   OAuthAuthenticator,
-  OAuthAuthenticatorResult,
+  OAuthAuthenticatorResponse,
   OAuthAuthenticatorScopeOptions,
 } from './types';
 import { OAuthCookieManager } from './OAuthCookieManager';
@@ -117,7 +117,7 @@ export class CookieScopeManager {
   async handleCallback(
     req: express.Request,
     ctx: {
-      result: OAuthAuthenticatorResult<any>;
+      result: OAuthAuthenticatorResponse<any>;
       state: OAuthState;
       origin?: string;
     },
@@ -148,7 +148,7 @@ export class CookieScopeManager {
   async refresh(req: express.Request): Promise<{
     scope: string;
     scopeAlreadyGranted?: boolean;
-    commit(result: OAuthAuthenticatorResult<any>): Promise<string>;
+    commit(result: OAuthAuthenticatorResponse<any>): Promise<string>;
   }> {
     const requestScope = splitScope(req.query.scope?.toString());
     const grantedScope = splitScope(this.cookieManager?.getGrantedScopes(req));

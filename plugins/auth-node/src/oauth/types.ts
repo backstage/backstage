@@ -92,9 +92,26 @@ export interface OAuthAuthenticatorResult<TProfile> {
   session: OAuthSession;
 }
 
+/**
+ * Similar to {@link OAuthAuthenticatorResult}, but with an optional
+ * `fullProfile`. This is used as the return type for `authenticate` and
+ * `refresh` in {@link OAuthAuthenticator} to allow providers to skip
+ * fetching a user profile, for example when the access token targets
+ * a different resource and cannot be used to call the provider's user
+ * info endpoint.
+ *
+ * @public
+ */
+export interface OAuthAuthenticatorResponse<TProfile> {
+  fullProfile?: TProfile;
+  session: OAuthSession;
+}
+
 /** @public */
 export interface OAuthAuthenticator<TContext, TProfile> {
-  defaultProfileTransform: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
+  defaultProfileTransform: ProfileTransform<
+    OAuthAuthenticatorResponse<TProfile>
+  >;
   /** @deprecated use `scopes.persist` instead */
   shouldPersistScopes?: boolean;
   scopes?: OAuthAuthenticatorScopeOptions;
@@ -106,11 +123,11 @@ export interface OAuthAuthenticator<TContext, TProfile> {
   authenticate(
     input: OAuthAuthenticatorAuthenticateInput,
     ctx: TContext,
-  ): Promise<OAuthAuthenticatorResult<TProfile>>;
+  ): Promise<OAuthAuthenticatorResponse<TProfile>>;
   refresh(
     input: OAuthAuthenticatorRefreshInput,
     ctx: TContext,
-  ): Promise<OAuthAuthenticatorResult<TProfile>>;
+  ): Promise<OAuthAuthenticatorResponse<TProfile>>;
   logout?(
     input: OAuthAuthenticatorLogoutInput,
     ctx: TContext,

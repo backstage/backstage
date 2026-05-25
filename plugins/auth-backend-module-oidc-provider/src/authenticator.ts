@@ -26,7 +26,7 @@ import {
 } from 'openid-client';
 import {
   createOAuthAuthenticator,
-  OAuthAuthenticatorResult,
+  OAuthAuthenticatorResponse,
   PassportDoneCallback,
   PassportHelpers,
   PassportOAuthAuthenticatorHelper,
@@ -58,12 +58,12 @@ export type OidcAuthResult = {
 /** @public */
 export const oidcAuthenticator = createOAuthAuthenticator({
   defaultProfileTransform: async (
-    input: OAuthAuthenticatorResult<OidcAuthResult>,
+    input: OAuthAuthenticatorResponse<OidcAuthResult>,
   ) => ({
     profile: {
-      email: input.fullProfile.userinfo.email,
-      picture: input.fullProfile.userinfo.picture,
-      displayName: input.fullProfile.userinfo.name,
+      email: input.fullProfile?.userinfo.email,
+      picture: input.fullProfile?.userinfo.picture,
+      displayName: input.fullProfile?.userinfo.name,
     },
   }),
   scopes: {
@@ -174,7 +174,7 @@ export const oidcAuthenticator = createOAuthAuthenticator({
   async authenticate(
     input,
     ctx,
-  ): Promise<OAuthAuthenticatorResult<OidcAuthResult>> {
+  ): Promise<OAuthAuthenticatorResponse<OidcAuthResult>> {
     const { strategy } = await ctx.promise;
     const { result, privateInfo } =
       await PassportHelpers.executeFrameHandlerStrategy<
