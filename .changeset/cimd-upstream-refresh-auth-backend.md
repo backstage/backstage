@@ -7,5 +7,3 @@ CIMD and DCR offline sessions are now backed by upstream auth provider refresh t
 Upstream refresh tokens are protected by a split-knowledge encryption scheme: the encrypted token is stored on the client, while the decryption key is stored in the database. Neither side alone can reconstruct the upstream refresh token.
 
 This is a breaking change for existing CIMD/DCR offline sessions - they will be rejected on next refresh and users will need to re-authenticate.
-
-The sign-in provider is automatically detected from the user's web session - no configuration needed. Users must sign in via a web browser before approving offline sessions. The upstream auth flow reuses the provider's existing callback URL, so no additional URL registration is required.
