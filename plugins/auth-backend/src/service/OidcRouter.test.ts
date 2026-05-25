@@ -202,6 +202,10 @@ describe('OidcRouter', () => {
       lifecycle: mockLifecycle,
       catalog: mockCatalog,
       auth: mockAuth,
+      userInfo: {
+        addUserInfo: jest.fn(),
+        getUserInfo: jest.fn(),
+      } as any,
     });
 
     const oidcService = OidcService.create({

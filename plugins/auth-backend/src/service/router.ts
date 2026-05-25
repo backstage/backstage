@@ -22,6 +22,7 @@ import {
   DatabaseService,
   DiscoveryService,
   HttpAuthService,
+  LifecycleService,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
@@ -55,7 +56,7 @@ interface RouterOptions {
   catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
   httpAuth: HttpAuthService;
-  offlineAccess?: OfflineAccessService;
+  lifecycle: LifecycleService;
 }
 
 export async function createRouter(
@@ -68,6 +69,7 @@ export async function createRouter(
     database: db,
     tokenFactoryAlgorithm,
     providerFactories = {},
+    auth,
     httpAuth,
   } = options;
 
@@ -142,6 +144,12 @@ export async function createRouter(
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
+  const oidc = await OidcDatabase.create({ database });
+
+  const refreshTokensEnabled = config.getOptionalBoolean(
+    'auth.experimentalRefreshToken.enabled',
+  );
+
   const configuredProviders = bindProviderRouters(router, {
     providers: providerFactories,
     appUrl,
@@ -152,20 +160,30 @@ export async function createRouter(
     userInfo,
   });
 
-  const oidc = await OidcDatabase.create({ database });
+  const offlineAccess = refreshTokensEnabled
+    ? await OfflineAccessService.create({
+        config,
+        database: options.database,
+        logger,
+        lifecycle: options.lifecycle,
+        catalog: options.catalog,
+        auth: options.auth,
+        userInfo,
+        providers: configuredProviders,
+      })
+    : undefined;
 
   const oidcRouter = OidcRouter.create({
-    auth: options.auth,
-    tokenIssuer,
-    baseUrl: authUrl,
+    auth,
     appUrl,
-    userInfo,
-    oidc,
     logger,
     httpAuth,
     config,
-    offlineAccess: options.offlineAccess,
-    providers: configuredProviders,
+    baseUrl: authUrl,
+    tokenIssuer,
+    oidc,
+    userInfo,
+    offlineAccess,
   });
 
   router.use(oidcRouter.getRouter());

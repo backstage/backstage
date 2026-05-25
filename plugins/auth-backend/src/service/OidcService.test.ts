@@ -531,7 +531,7 @@ describe('OidcService', () => {
           userEntityRef: 'user:default/test',
         });
 
-        expect((result as { redirectUrl: string }).redirectUrl).toMatch(
+        expect(result.redirectUrl).toMatch(
           /^http:\/\/localhost:8080\/callback\?code=.+&state=test-state$/,
         );
       });
@@ -805,9 +805,7 @@ describe('OidcService', () => {
           userEntityRef: 'user:default/test',
         });
 
-        const code = new URL(
-          (authResult as { redirectUrl: string }).redirectUrl,
-        ).searchParams.get('code')!;
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
 
         const tokenResult = await service.exchangeCodeForToken({
           code,
@@ -865,9 +863,7 @@ describe('OidcService', () => {
           userEntityRef: 'user:default/test',
         });
 
-        const code = new URL(
-          (authResult as { redirectUrl: string }).redirectUrl,
-        ).searchParams.get('code')!;
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
 
         const tokenResult = await service.exchangeCodeForToken({
           code,
@@ -901,9 +897,7 @@ describe('OidcService', () => {
           userEntityRef: 'user:default/test',
         });
 
-        const code = new URL(
-          (authResult as { redirectUrl: string }).redirectUrl,
-        ).searchParams.get('code')!;
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
 
         await expect(
           service.exchangeCodeForToken({
@@ -920,6 +914,7 @@ describe('OidcService', () => {
           issueRefreshToken: jest
             .fn()
             .mockRejectedValue(new Error('DB constraint violation')),
+          getUpstreamAuthUrl: jest.fn().mockResolvedValue(undefined),
         } as unknown as OfflineAccessService;
 
         const { service, mocks } = await createOidcService({
@@ -946,9 +941,7 @@ describe('OidcService', () => {
           userEntityRef: 'user:default/test',
         });
 
-        const code = new URL(
-          (authResult as { redirectUrl: string }).redirectUrl,
-        ).searchParams.get('code')!;
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
 
         const tokenResult = await service.exchangeCodeForToken({
           code,
@@ -978,25 +971,26 @@ describe('OidcService', () => {
       it('should return upstreamAuthUrl when offline_access with upstream provider', async () => {
         const mockOfflineAccess = {
           issueRefreshToken: jest.fn().mockResolvedValue('mock-refresh-token'),
+          getUpstreamAuthUrl: jest
+            .fn()
+            .mockResolvedValue(
+              'http://mock-base-url/test-provider/start?flow=cimd_approval',
+            ),
         } as unknown as OfflineAccessService;
 
         const { service } = await createOidcService({
           databaseId,
-          config: {
-            auth: { providers: { 'test-provider': { development: {} } } },
-          },
           offlineAccess: mockOfflineAccess,
         });
-        (service as any).userInfo = mockUserInfoWithProvider();
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           scope: 'openid offline_access',
         });
@@ -1006,22 +1000,23 @@ describe('OidcService', () => {
           userEntityRef: 'user:default/test',
         });
 
-        const url = (result as { upstreamAuthUrl: string }).upstreamAuthUrl;
-        expect(url).toContain('/test-provider/start');
-        expect(url).toContain('flow=cimd_approval');
-        expect(url).toContain(encodeURIComponent(authSession.id));
+        expect(result.redirectUrl).toContain('flow=cimd_approval');
+        expect(mockOfflineAccess.getUpstreamAuthUrl).toHaveBeenCalledWith(
+          expect.objectContaining({
+            userEntityRef: 'user:default/test',
+            sessionId: authSession.id,
+          }),
+        );
       });
 
       it('should embed decryption key in auth code during completeUpstreamCallback', async () => {
         const mockOfflineAccess = {
           issueRefreshToken: jest.fn().mockResolvedValue('mock-refresh-token'),
+          getUpstreamAuthUrl: jest.fn().mockResolvedValue(undefined),
         } as unknown as OfflineAccessService;
 
         const { service, mocks } = await createOidcService({
           databaseId,
-          config: {
-            auth: { providers: { 'test-provider': { development: {} } } },
-          },
           offlineAccess: mockOfflineAccess,
         });
         (service as any).userInfo = mockUserInfoWithProvider();
@@ -1031,12 +1026,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           scope: 'openid offline_access',
           state: 'client-state',
@@ -1061,7 +1056,7 @@ describe('OidcService', () => {
 
         const tokenResult = await service.exchangeCodeForToken({
           code,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           grantType: 'authorization_code',
         });
 
@@ -1078,13 +1073,11 @@ describe('OidcService', () => {
       it('should throw when auth code is missing key but session has encrypted token', async () => {
         const mockOfflineAccess = {
           issueRefreshToken: jest.fn().mockResolvedValue('mock-refresh-token'),
+          getUpstreamAuthUrl: jest.fn().mockResolvedValue(undefined),
         } as unknown as OfflineAccessService;
 
         const { service, mocks } = await createOidcService({
           databaseId,
-          config: {
-            auth: { providers: { 'test-provider': { development: {} } } },
-          },
           offlineAccess: mockOfflineAccess,
         });
         (service as any).userInfo = mockUserInfoWithProvider();
@@ -1094,12 +1087,12 @@ describe('OidcService', () => {
 
         const client = await service.registerClient({
           clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
+          redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
+          redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
           scope: 'openid offline_access',
         });
@@ -1120,7 +1113,7 @@ describe('OidcService', () => {
         await expect(
           service.exchangeCodeForToken({
             code: codeOnly,
-            redirectUri: 'https://example.com/callback',
+            redirectUri: 'http://localhost:8080/callback',
             grantType: 'authorization_code',
           }),
         ).rejects.toThrow(
@@ -1686,13 +1679,13 @@ describe('OidcService', () => {
             userEntityRef: 'user:default/test',
           });
 
-          expect(
-            (approveResult as { redirectUrl: string }).redirectUrl,
-          ).toMatch(/^http:\/\/localhost:8080\/callback\?code=.+$/);
+          expect(approveResult.redirectUrl).toMatch(
+            /^http:\/\/localhost:8080\/callback\?code=.+$/,
+          );
 
-          const code = new URL(
-            (approveResult as { redirectUrl: string }).redirectUrl,
-          ).searchParams.get('code')!;
+          const code = new URL(approveResult.redirectUrl).searchParams.get(
+            'code',
+          )!;
           const tokenResult = await service.exchangeCodeForToken({
             code,
             redirectUri: 'http://localhost:8080/callback',
@@ -1747,9 +1740,9 @@ describe('OidcService', () => {
           });
 
           // Exchange code for token with verifier
-          const code = new URL(
-            (approveResult as { redirectUrl: string }).redirectUrl,
-          ).searchParams.get('code')!;
+          const code = new URL(approveResult.redirectUrl).searchParams.get(
+            'code',
+          )!;
           const tokenResult = await service.exchangeCodeForToken({
             code,
             redirectUri: 'http://localhost:8080/callback',

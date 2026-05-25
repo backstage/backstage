@@ -176,11 +176,6 @@ export class OidcRouter {
     httpAuth: HttpAuthService;
     config: RootConfigService;
     offlineAccess?: OfflineAccessService;
-    providers?: {
-      [
-        providerId: string
-      ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
-    };
   }) {
     return new OidcRouter(
       OidcService.create(options),
@@ -371,12 +366,7 @@ export class OidcRouter {
             userEntityRef,
           });
 
-          const redirectUrl =
-            'upstreamAuthUrl' in result
-              ? result.upstreamAuthUrl
-              : result.redirectUrl;
-
-          return res.json({ redirectUrl });
+          return res.json({ redirectUrl: result.redirectUrl });
         } catch (error) {
           throw OidcError.fromError(error);
         }
@@ -411,6 +401,42 @@ export class OidcRouter {
             });
 
             res.redirect(redirectUrl);
+          } catch (error) {
+            throw OidcError.fromError(error);
+          }
+        },
+      );
+
+      // Upstream auth completion endpoint
+      // Called by the provider's frameHandler (server-side POST) after the
+      // upstream OAuth flow completes during CIMD/DCR approval. Encrypts the
+      // upstream token, creates the auth code, and returns the CLI redirect URL.
+      router.post(
+        '/v1/sessions/:sessionId/upstream-complete',
+        async (req, res) => {
+          try {
+            const { sessionId } = validateRequest(
+              sessionIdParamSchema,
+              req.params,
+            );
+            const { token: upstreamRefreshToken, env: authProviderEnv } =
+              req.body;
+
+            if (!upstreamRefreshToken) {
+              throw new OidcError(
+                'invalid_request',
+                'Missing upstream token',
+                400,
+              );
+            }
+
+            const redirectUrl = await this.oidc.completeUpstreamCallback({
+              sessionId,
+              upstreamRefreshToken,
+              authProviderEnv,
+            });
+
+            res.json({ redirectUrl });
           } catch (error) {
             throw OidcError.fromError(error);
           }

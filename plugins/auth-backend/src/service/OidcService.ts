@@ -100,11 +100,6 @@ export class OidcService {
   private readonly config: RootConfigService;
   private readonly logger: LoggerService;
   private readonly offlineAccess?: OfflineAccessService;
-  private readonly providers?: {
-    [
-      providerId: string
-    ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
-  };
 
   private constructor(
     auth: AuthService,
@@ -115,11 +110,6 @@ export class OidcService {
     config: RootConfigService,
     logger: LoggerService,
     offlineAccess?: OfflineAccessService,
-    providers?: {
-      [
-        providerId: string
-      ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
-    },
   ) {
     this.auth = auth;
     this.tokenIssuer = tokenIssuer;
@@ -129,7 +119,6 @@ export class OidcService {
     this.config = config;
     this.logger = logger;
     this.offlineAccess = offlineAccess;
-    this.providers = providers;
   }
 
   static create(options: {
@@ -141,11 +130,6 @@ export class OidcService {
     config: RootConfigService;
     logger: LoggerService;
     offlineAccess?: OfflineAccessService;
-    providers?: {
-      [
-        providerId: string
-      ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
-    };
   }) {
     return new OidcService(
       options.auth,
@@ -156,7 +140,6 @@ export class OidcService {
       options.config,
       options.logger,
       options.offlineAccess,
-      options.providers,
     );
   }
 
@@ -449,7 +432,7 @@ export class OidcService {
   public async approveAuthorizationSession(opts: {
     sessionId: string;
     userEntityRef: string;
-  }): Promise<{ redirectUrl: string } | { upstreamAuthUrl: string }> {
+  }): Promise<{ redirectUrl: string }> {
     const { sessionId, userEntityRef } = opts;
     const session = await this.getValidPendingSession(sessionId);
 
@@ -460,22 +443,17 @@ export class OidcService {
     });
 
     const scopes = session.scope?.split(' ') ?? [];
-    const authProviderId =
-      scopes.includes('offline_access') && this.offlineAccess
-        ? await this.#getAuthProviderId(userEntityRef)
-        : undefined;
 
-    if (authProviderId) {
-      const env =
-        this.config.getOptionalString('auth.environment') ?? 'development';
+    if (scopes.includes('offline_access') && this.offlineAccess) {
+      const redirectUrl = await this.offlineAccess.getUpstreamAuthUrl({
+        userEntityRef,
+        sessionId: session.id,
+        baseUrl: this.baseUrl,
+      });
 
-      const startUrl = new URL(`${this.baseUrl}/${authProviderId}/start`);
-      startUrl.searchParams.set('env', env);
-      startUrl.searchParams.set('flow', 'cimd_approval');
-      startUrl.searchParams.set('redirectUrl', session.id);
-      startUrl.searchParams.set('scope', 'openid offline_access');
-
-      return { upstreamAuthUrl: startUrl.toString() };
+      if (redirectUrl) {
+        return { redirectUrl };
+      }
     }
 
     return { redirectUrl: await this.#createAuthCodeRedirect(session) };
@@ -679,9 +657,8 @@ export class OidcService {
     const scopes = session.scope?.split(' ') ?? [];
     if (scopes.includes('offline_access') && this.offlineAccess) {
       let upstreamRefreshToken: string | undefined;
-      let authProviderId: string | undefined;
 
-      if (session.encryptedUpstreamToken && session.authProviderId) {
+      if (session.encryptedUpstreamToken) {
         if (!upstreamTokenKey) {
           throw new AuthenticationError(
             'Authorization code is missing the upstream token decryption key',
@@ -691,7 +668,6 @@ export class OidcService {
           session.encryptedUpstreamToken,
           upstreamTokenKey,
         );
-        authProviderId = session.authProviderId;
       }
 
       try {
@@ -699,7 +675,7 @@ export class OidcService {
           userEntityRef: session.userEntityRef,
           oidcClientId: session.clientId,
           upstreamRefreshToken,
-          authProviderId,
+          authProviderId: session.authProviderId,
           authProviderEnv: session.authProviderEnv,
           grantedScope: session.scope ?? undefined,
         });
@@ -733,33 +709,11 @@ export class OidcService {
       throw new InputError('Refresh tokens are not enabled');
     }
 
-    const providers = this.providers;
     const { accessToken, refreshToken } =
       await this.offlineAccess.refreshAccessToken({
         refreshToken: params.refreshToken,
         tokenIssuer: this.tokenIssuer,
         clientId: params.clientId,
-        upstreamRefresh: providers
-          ? async ({
-              authProviderId,
-              refreshToken: upstreamToken,
-              env,
-              scope,
-            }) => {
-              const provider = providers[authProviderId];
-              if (!provider?.programmaticRefresh) {
-                throw new AuthenticationError(
-                  `No upstream refresh available for provider '${authProviderId}'`,
-                );
-              }
-              const result = await provider.programmaticRefresh(
-                upstreamToken,
-                env,
-                scope,
-              );
-              return result ?? {};
-            }
-          : undefined,
       });
 
     return {

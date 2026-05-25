@@ -35,6 +35,7 @@
 | `auth_provider_env`  | `character varying`        | true     | 255        | -                   |
 | `auth_provider_id`   | `character varying`        | true     | 255        | -                   |
 | `created_at`         | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
+| `granted_scope`      | `character varying`        | true     | 255        | -                   |
 | `id`                 | `character varying`        | false    | 255        | -                   |
 | `last_used_at`       | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
 | `oidc_client_id`     | `character varying`        | true     | 255        | -                   |

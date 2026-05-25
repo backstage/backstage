@@ -72,6 +72,7 @@ export interface AuthProviderRouteHandlers {
   programmaticRefresh?(
     refreshToken: string,
     env?: string,
+    scope?: string,
   ): Promise<
     | {
         refreshToken?: string;
@@ -406,6 +407,7 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
   programmaticRefresh(
     refreshToken: string,
     env?: string,
+    scope?: string,
   ): Promise<
     | {
         refreshToken?: string;

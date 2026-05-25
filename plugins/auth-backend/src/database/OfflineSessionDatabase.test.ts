@@ -386,6 +386,7 @@ describe('OfflineSessionDatabase', () => {
           upstreamTokenKey: null,
           authProviderId: null,
           authProviderEnv: null,
+          grantedScope: 'openid offline_access',
           createdAt: DateTime.now().toJSDate(),
           lastUsedAt: DateTime.now()
             .minus({ seconds: TOKEN_LIFETIME_SECONDS + 1 })
@@ -404,6 +405,7 @@ describe('OfflineSessionDatabase', () => {
           upstreamTokenKey: null,
           authProviderId: null,
           authProviderEnv: null,
+          grantedScope: 'openid offline_access',
           createdAt: DateTime.now()
             .minus({ seconds: MAX_ROTATION_LIFETIME_SECONDS + 1 })
             .toJSDate(),
@@ -422,6 +424,7 @@ describe('OfflineSessionDatabase', () => {
           upstreamTokenKey: null,
           authProviderId: null,
           authProviderEnv: null,
+          grantedScope: 'openid offline_access',
           createdAt: DateTime.now().toJSDate(),
           lastUsedAt: DateTime.now().toJSDate(),
         };

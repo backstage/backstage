@@ -198,7 +198,7 @@ export function createOAuthRouteHandlers<TProfile>(
         // CIMD/DCR approval flow: upstream provider redirects back here after
         // the user authenticates. Exchange the code, then redirect to the
         // OIDC upstream-complete endpoint which handles session creation.
-        if (state.flow === 'cimd_approval') {
+        if (state.flow === 'cimd_approval' && state.redirectUrl) {
           const result = await authenticator.authenticate(
             { req },
             authenticatorCtx,
@@ -210,19 +210,25 @@ export function createOAuthRouteHandlers<TProfile>(
             );
           }
 
-          const sessionId = state.redirectUrl;
-          if (!sessionId) {
+          const completeResponse = await fetch(state.redirectUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              token: result.session.refreshToken,
+              env: state.env,
+            }),
+          });
+
+          if (!completeResponse.ok) {
             throw new AuthenticationError(
-              'CIMD approval state is missing session ID',
+              'Failed to complete upstream auth session',
             );
           }
-          const completeUrl = new URL(
-            `${baseUrl}/v1/sessions/${sessionId}/upstream-complete`,
-          );
-          completeUrl.searchParams.set('token', result.session.refreshToken);
-          completeUrl.searchParams.set('env', state.env);
 
-          res.redirect(completeUrl.toString());
+          const { redirectUrl: cliRedirectUrl } =
+            (await completeResponse.json()) as { redirectUrl: string };
+
+          res.redirect(cliRedirectUrl);
           return;
         }
 

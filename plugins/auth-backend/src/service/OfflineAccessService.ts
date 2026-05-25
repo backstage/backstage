@@ -41,35 +41,22 @@ import {
 import { TokenIssuer } from '../identity/types';
 
 /**
- * Result of refreshing a token against the upstream auth provider.
- * @internal
- */
-export type UpstreamRefreshResult = {
-  /** The new upstream refresh token, if the provider rotated it. */
-  refreshToken?: string;
-};
-
-/**
- * Function that refreshes a token against the upstream auth provider.
- * @internal
- */
-export type UpstreamRefreshFn = (options: {
-  authProviderId: string;
-  refreshToken: string;
-  env?: string;
-  scope?: string;
-}) => Promise<UpstreamRefreshResult>;
-
-/**
  * Service for managing offline access (refresh tokens)
  * @internal
  */
 export class OfflineAccessService {
   readonly #offlineSessionDb: OfflineSessionDatabase;
   readonly #logger: LoggerService;
+  readonly #config: RootConfigService;
   readonly #dangerouslyDisableCatalogPresenceCheck: boolean;
   readonly #catalog: CatalogService;
   readonly #auth: AuthService;
+  readonly #userInfo: import('../database/UserInfoDatabase').UserInfoDatabase;
+  readonly #providers?: {
+    [
+      providerId: string
+    ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
+  };
 
   static async create(options: {
     config: RootConfigService;
@@ -78,6 +65,12 @@ export class OfflineAccessService {
     lifecycle: LifecycleService;
     catalog: CatalogService;
     auth: AuthService;
+    userInfo: import('../database/UserInfoDatabase').UserInfoDatabase;
+    providers?: {
+      [
+        providerId: string
+      ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
+    };
   }): Promise<OfflineAccessService> {
     const { config, database, logger, lifecycle } = options;
 
@@ -176,25 +169,76 @@ export class OfflineAccessService {
     return new OfflineAccessService(
       offlineSessionDb,
       logger,
+      config,
       dangerouslyDisableCatalogPresenceCheck,
       options.catalog,
       options.auth,
+      options.userInfo,
+      options.providers,
     );
   }
 
   private constructor(
     offlineSessionDb: OfflineSessionDatabase,
     logger: LoggerService,
+    config: RootConfigService,
     dangerouslyDisableCatalogPresenceCheck: boolean,
     catalog: CatalogService,
     auth: AuthService,
+    userInfo: import('../database/UserInfoDatabase').UserInfoDatabase,
+    providers?: {
+      [
+        providerId: string
+      ]: import('@backstage/plugin-auth-node').AuthProviderRouteHandlers;
+    },
   ) {
     this.#offlineSessionDb = offlineSessionDb;
     this.#logger = logger;
+    this.#config = config;
     this.#dangerouslyDisableCatalogPresenceCheck =
       dangerouslyDisableCatalogPresenceCheck;
     this.#catalog = catalog;
     this.#auth = auth;
+    this.#userInfo = userInfo;
+    this.#providers = providers;
+  }
+
+  /**
+   * If the user has an upstream OAuth provider configured, returns a URL
+   * to redirect to for upstream authentication. Returns undefined if
+   * upstream auth is not available (non-OAuth provider).
+   */
+  async getUpstreamAuthUrl(opts: {
+    userEntityRef: string;
+    sessionId: string;
+    baseUrl: string;
+  }): Promise<string | undefined> {
+    const { userEntityRef, sessionId, baseUrl } = opts;
+
+    const info = await this.#userInfo.getUserInfo(userEntityRef);
+    const authProviderId = info?.claims?.authProviderId as string | undefined;
+    if (!authProviderId) {
+      return undefined;
+    }
+
+    const provider = this.#providers?.[authProviderId];
+    if (!provider?.programmaticRefresh) {
+      return undefined;
+    }
+
+    const env =
+      this.#config.getOptionalString('auth.environment') ?? 'development';
+
+    const startUrl = new URL(`${baseUrl}/${authProviderId}/start`);
+    startUrl.searchParams.set('env', env);
+    startUrl.searchParams.set('flow', 'cimd_approval');
+    startUrl.searchParams.set(
+      'redirectUrl',
+      `${baseUrl}/v1/sessions/${sessionId}/upstream-complete`,
+    );
+    startUrl.searchParams.set('scope', 'openid offline_access');
+
+    return startUrl.toString();
   }
 
   /**
@@ -260,9 +304,8 @@ export class OfflineAccessService {
     refreshToken: string;
     tokenIssuer: TokenIssuer;
     clientId?: string;
-    upstreamRefresh?: UpstreamRefreshFn;
   }): Promise<{ accessToken: string; refreshToken: string }> {
-    const { refreshToken, tokenIssuer, clientId, upstreamRefresh } = options;
+    const { refreshToken, tokenIssuer, clientId } = options;
 
     let sessionId: string;
     try {
@@ -299,9 +342,10 @@ export class OfflineAccessService {
     let newUpstreamTokenKey: string | undefined;
 
     if (session.upstreamTokenKey && session.authProviderId) {
-      if (!upstreamRefresh) {
+      const provider = this.#providers?.[session.authProviderId];
+      if (!provider?.programmaticRefresh) {
         throw new AuthenticationError(
-          'Upstream refresh not available for this session',
+          `Upstream refresh not available for provider '${session.authProviderId}'`,
         );
       }
 
@@ -323,14 +367,14 @@ export class OfflineAccessService {
         throw new AuthenticationError('Invalid refresh token');
       }
 
-      let upstreamResult: UpstreamRefreshResult;
+      let upstreamResult: { refreshToken?: string };
       try {
-        upstreamResult = await upstreamRefresh({
-          authProviderId: session.authProviderId,
-          refreshToken: upstreamRefreshToken,
-          env: session.authProviderEnv ?? undefined,
-          scope: session.grantedScope ?? undefined,
-        });
+        const result = await provider.programmaticRefresh(
+          upstreamRefreshToken,
+          session.authProviderEnv ?? undefined,
+          session.grantedScope ?? undefined,
+        );
+        upstreamResult = result ?? {};
       } catch (error) {
         this.#logger.info(
           `Upstream refresh failed for user ${session.userEntityRef} ` +
