@@ -8,7 +8,7 @@
     // TODO(freben): Remove this later; it addresses a temporary issue in corepack
     // https://github.com/nodejs/corepack/issues/379
     // https://github.com/renovatebot/renovate/discussions/27465
-    corepack: '0.24.1',
+    corepack: '0.35.0',
   },
   // the default limit is 10 PRs
   prConcurrentLimit: 20,
