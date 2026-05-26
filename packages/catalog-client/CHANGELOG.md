@@ -1,5 +1,11 @@
 # @backstage/catalog-client
 
+## 1.16.0-next.0
+
+### Minor Changes
+
+- 8f20cc2: `CatalogApi.queryEntities` now accepts a `totalItems` option (`'include'` or `'exclude'`, default `'include'`) on initial requests. Pass `'exclude'` to skip the `totalItems` count when the caller doesn't need it.
+
 ## 1.15.1
 
 ### Patch Changes

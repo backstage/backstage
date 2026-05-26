@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.32-next.0
+
+### Patch Changes
+
+- 80b4370: Updated instructions for enabling the `catalog-unprocessed-entities` page
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+  - @backstage/core-compat-api@0.5.12-next.0
+
 ## 0.2.31
 
 ### Patch Changes

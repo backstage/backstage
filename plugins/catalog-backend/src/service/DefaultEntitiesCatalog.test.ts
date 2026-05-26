@@ -2190,7 +2190,6 @@ describe.each(databases.eachSupportedId())(
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
           logger: mockServices.logger.mock(),
-          stitcher,
         });
 
         const filter = { key: 'spec.should_include_this' };
@@ -2252,7 +2251,6 @@ describe.each(databases.eachSupportedId())(
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
           logger: mockServices.logger.mock(),
-          stitcher,
         });
 
         const response = await catalog.queryEntities({

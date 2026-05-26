@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.3.18-next.0
+
+### Patch Changes
+
+- a07e6a3: Updated internal usage of `AzureBlobStorageIntegration` (previously misspelled as `AzureBlobStorageIntergation`) following the rename in `@backstage/integration`.
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
 ## 0.3.17
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @backstage/plugin-app-visualizer
 
+## 0.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+
 ## 0.2.4
 
 ### Patch Changes

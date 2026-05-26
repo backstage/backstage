@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.7.13-next.0
+
+### Patch Changes
+
+- e846874: Alter column type for `ingestions.last_error` to remove the 255-character restriction.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.8.0-next.0
+  - @backstage/backend-defaults@0.17.2-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
 ## 0.7.12
 
 ### Patch Changes

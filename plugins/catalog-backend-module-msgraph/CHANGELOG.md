@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.10.1-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
 ## 0.10.0
 
 ### Minor Changes

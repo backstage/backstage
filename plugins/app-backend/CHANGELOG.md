@@ -1,5 +1,15 @@
 # @backstage/plugin-app-backend
 
+## 0.5.15-next.0
+
+### Patch Changes
+
+- ca450be: Added a new `app.disablePublicEntryPoint` config option that allows you to opt out of the automatic public sign-in entry point. When set to `true`, the app backend will skip serving the public entry point to unauthenticated users, even if the app was bundled with an `index-public-experimental` entry point.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-app-node@0.1.46-next.0
+
 ## 0.5.14
 
 ### Patch Changes

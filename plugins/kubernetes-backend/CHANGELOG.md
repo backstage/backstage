@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.5-next.0
+
+### Patch Changes
+
+- 998664c: chore(deps): Bump `ws` from 8.20.0 to 8.20.1
+- c4f935b: pool HTTPS agents per cluster in KubernetesFetcher
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/plugin-kubernetes-node@0.4.5-next.0
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
 ## 0.21.4
 
 ### Patch Changes

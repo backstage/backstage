@@ -1,5 +1,19 @@
 # @backstage/backend-defaults
 
+## 0.17.2-next.0
+
+### Patch Changes
+
+- a07e6a3: Updated `AzureBlobStorageUrlReader` to reference the correctly-named `AzureBlobStorageIntegration` type from `@backstage/integration`. The previously-used `AzureBlobStorageIntergation` is now an alias for the new type and remains a valid argument to the constructor.
+- def82d4: Fixed the built-in rate limiter throwing a validation error and refusing to start when `backend.rateLimit` is enabled. Requests are now keyed using the address normalization helper from `express-rate-limit`, which is required by newer versions of that library and ensures IPv6 clients are grouped by their address block rather than by individual address.
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/backend-app-api@1.7.1-next.0
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
 ## 0.17.1
 
 ### Patch Changes

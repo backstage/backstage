@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder
 
+## 1.38.0-next.0
+
+### Minor Changes
+
+- 3e5acb5: Extended the `RepoOwnerPicker` implementation with a custom variant for GitLab.
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.0
+  - @backstage/core-components@0.18.11-next.0
+  - @backstage/plugin-scaffolder-react@2.0.1-next.0
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/integration-react@1.2.19-next.0
+  - @backstage/plugin-techdocs-react@1.3.12-next.0
+  - @backstage/plugin-scaffolder-common@2.2.1-next.0
+
 ## 1.37.0
 
 ### Minor Changes
