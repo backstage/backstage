@@ -28,6 +28,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import {
+  CatalogColumnBlueprint,
   defaultEntityContentGroupDefinitions,
   EntityContentBlueprint,
   EntityContextMenuItemBlueprint,
@@ -70,6 +71,10 @@ export const CatalogExportConfigBlueprint = createExtensionBlueprint({
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([coreExtensionData.reactElement]),
+    columns: createExtensionInput([
+      CatalogColumnBlueprint.dataRefs.column,
+      CatalogColumnBlueprint.dataRefs.filter.optional(),
+    ]),
     exportConfig: createExtensionInput([catalogExportConfigDataRef.optional()]),
   },
   configSchema: {
@@ -109,6 +114,25 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
           filter.get(coreExtensionData.reactElement),
         );
 
+        const columnEntries = inputs.columns.map(col => ({
+          column: col.get(CatalogColumnBlueprint.dataRefs.column),
+          filter: col.get(CatalogColumnBlueprint.dataRefs.filter),
+        }));
+
+        const columnsFunc =
+          columnEntries.length > 0
+            ? ({ filters: entityFilters, entities }: any) => {
+                const context = {
+                  kind: entityFilters.kind?.value,
+                  type: entityFilters.type?.value,
+                  entities,
+                };
+                return columnEntries
+                  .filter(entry => !entry.filter || entry.filter(context))
+                  .map(entry => entry.column);
+              }
+            : undefined;
+
         // Merge export customizers from all attached extensions
         const mergedExportSettings: CatalogExportSettings = {
           ...config.exportSettings,
@@ -138,6 +162,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
         return (
           <NfsDefaultCatalogPage
             filters={<>{filters}</>}
+            columns={columnsFunc}
             pagination={config.pagination}
             exportSettings={
               mergedExportSettings.enabled ? mergedExportSettings : undefined

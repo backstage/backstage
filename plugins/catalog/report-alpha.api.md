@@ -7,6 +7,7 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { CatalogColumnFilterFn } from '@backstage/plugin-catalog-react/alpha';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
@@ -331,6 +332,174 @@ const _default: OverridableFrontendPlugin<
       >(
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'catalog-column:catalog/description': OverridableExtensionDefinition<{
+      kind: 'catalog-column';
+      name: 'description';
+      config: {
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+      };
+      output:
+        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<
+            CatalogColumnFilterFn,
+            'catalog.table-column-filter',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        column: TableColumn<any>;
+        filter?: CatalogColumnFilterFn;
+      };
+    }>;
+    'catalog-column:catalog/lifecycle': OverridableExtensionDefinition<{
+      kind: 'catalog-column';
+      name: 'lifecycle';
+      config: {
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+      };
+      output:
+        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<
+            CatalogColumnFilterFn,
+            'catalog.table-column-filter',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        column: TableColumn<any>;
+        filter?: CatalogColumnFilterFn;
+      };
+    }>;
+    'catalog-column:catalog/name': OverridableExtensionDefinition<{
+      kind: 'catalog-column';
+      name: 'name';
+      config: {
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+      };
+      output:
+        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<
+            CatalogColumnFilterFn,
+            'catalog.table-column-filter',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        column: TableColumn<any>;
+        filter?: CatalogColumnFilterFn;
+      };
+    }>;
+    'catalog-column:catalog/owner': OverridableExtensionDefinition<{
+      kind: 'catalog-column';
+      name: 'owner';
+      config: {
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+      };
+      output:
+        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<
+            CatalogColumnFilterFn,
+            'catalog.table-column-filter',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        column: TableColumn<any>;
+        filter?: CatalogColumnFilterFn;
+      };
+    }>;
+    'catalog-column:catalog/system': OverridableExtensionDefinition<{
+      kind: 'catalog-column';
+      name: 'system';
+      config: {
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+      };
+      output:
+        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<
+            CatalogColumnFilterFn,
+            'catalog.table-column-filter',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        column: TableColumn<any>;
+        filter?: CatalogColumnFilterFn;
+      };
+    }>;
+    'catalog-column:catalog/tags': OverridableExtensionDefinition<{
+      kind: 'catalog-column';
+      name: 'tags';
+      config: {
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+      };
+      output:
+        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<
+            CatalogColumnFilterFn,
+            'catalog.table-column-filter',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        column: TableColumn<any>;
+        filter?: CatalogColumnFilterFn;
+      };
+    }>;
+    'catalog-column:catalog/type': OverridableExtensionDefinition<{
+      kind: 'catalog-column';
+      name: 'type';
+      config: {
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+      };
+      output:
+        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<
+            CatalogColumnFilterFn,
+            'catalog.table-column-filter',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        column: TableColumn<any>;
+        filter?: CatalogColumnFilterFn;
+      };
     }>;
     'catalog-filter:catalog/kind': OverridableExtensionDefinition<{
       config: {
@@ -1190,6 +1359,25 @@ const _default: OverridableFrontendPlugin<
         >;
         filters: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        columns: ExtensionInput<
+          | ConfigurableExtensionDataRef<
+              TableColumn<any>,
+              'catalog.table-column',
+              {}
+            >
+          | ConfigurableExtensionDataRef<
+              CatalogColumnFilterFn,
+              'catalog.table-column-filter',
+              {
+                optional: true;
+              }
+            >,
           {
             singleton: false;
             optional: false;
