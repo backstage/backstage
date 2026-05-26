@@ -116,6 +116,10 @@
         display: block;
       }
     }
+
+    [data-stale] & {
+      opacity: 0.6;
+    }
   }
 
   .bui-MenuItemListBox {
@@ -187,6 +191,10 @@
   .bui-MenuSection {
     &:first-child .bui-MenuSectionHeader {
       padding-top: 0;
+    }
+
+    [data-stale] & {
+      opacity: 0.6;
     }
   }
 
@@ -281,6 +289,7 @@
     }
   }
 
+  .bui-MenuLoadingState,
   .bui-MenuEmptyState {
     padding-inline: var(--bui-space-3);
     padding-block: var(--bui-space-2);

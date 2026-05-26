@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useMemo } from 'react';
 import { ComboBox as AriaComboBox } from 'react-aria-components';
 import { useFilter } from 'react-aria';
 import { ComboboxProps } from './types';
@@ -25,6 +25,41 @@ import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { ComboboxInput } from './ComboboxInput';
 import { ComboboxListBox } from './ComboboxListBox';
+import type {
+  Option,
+  OptionSection,
+  OptionWithId,
+  OptionSectionWithId,
+} from '../Select/types';
+
+function addIds(
+  options: Array<Option | OptionSection> | undefined,
+): Array<OptionWithId | OptionSectionWithId> | undefined {
+  return (
+    options?.map(item => {
+      if ('options' in item) {
+        return {
+          ...item,
+          id: item.title,
+          options: item.options.map(o => ({ ...o, id: o.value })),
+        };
+      }
+      return { ...item, id: item.value };
+    }) ?? []
+  );
+}
+
+function disabledKeysFromOptions(
+  options: Array<Option | OptionSection> | undefined,
+): Iterable<string> | undefined {
+  return options?.flatMap(o =>
+    'options' in o
+      ? o.options.filter(o => o.disabled).map(o => o.value)
+      : o.disabled
+      ? [o.value]
+      : [],
+  );
+}
 
 /**
  * A text input combined with a dropdown list of options. The user can type to filter
@@ -49,10 +84,18 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       placeholder,
       isRequired,
       secondaryLabel,
+      isLoading,
     } = ownProps;
 
     const ariaLabel = restProps['aria-label'];
     const ariaLabelledBy = restProps['aria-labelledby'];
+
+    const isControlled = restProps.inputValue !== undefined;
+    const itemsWithIds = useMemo(() => addIds(options), [options]);
+    const disabledKeys = useMemo(
+      () => disabledKeysFromOptions(options),
+      [options],
+    );
 
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -66,9 +109,13 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       secondaryLabel || (isRequired ? 'Required' : null);
 
     return (
-      <AriaComboBox
+      <AriaComboBox<OptionWithId | OptionSectionWithId>
         className={classes.root}
         defaultFilter={contains}
+        allowsEmptyCollection
+        items={isControlled ? itemsWithIds : undefined}
+        defaultItems={!isControlled ? itemsWithIds : undefined}
+        disabledKeys={disabledKeys}
         {...dataAttributes}
         ref={ref}
         {...restProps}
@@ -82,7 +129,7 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
         <ComboboxInput icon={icon} placeholder={placeholder} />
         <FieldError />
         <Popover className={classes.popover} hideArrow {...dataAttributes}>
-          <ComboboxListBox options={options} />
+          <ComboboxListBox isLoading={isLoading} />
         </Popover>
       </AriaComboBox>
     );

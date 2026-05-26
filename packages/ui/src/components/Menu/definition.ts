@@ -80,6 +80,9 @@ export const MenuAutocompleteDefinition =
     propDefs: {
       ...menuPopoverPropDefs,
       placeholder: {},
+      inputValue: {},
+      onInputChange: {},
+      isLoading: {},
     },
   });
 
@@ -91,6 +94,9 @@ export const MenuAutocompleteListboxDefinition =
     propDefs: {
       ...menuPopoverPropDefs,
       placeholder: {},
+      inputValue: {},
+      onInputChange: {},
+      isLoading: {},
       selectionMode: { default: 'single' },
     },
   });
@@ -155,6 +161,15 @@ export const MenuSeparatorDefinition = defineComponent<MenuSeparatorOwnProps>()(
     },
   },
 );
+
+/** @internal */
+export const MenuLoadingStateDefinition = defineComponent<{}>()({
+  styles,
+  classNames: {
+    root: 'bui-MenuLoadingState',
+  },
+  propDefs: {},
+});
 
 /** @internal */
 export const MenuEmptyStateDefinition = defineComponent<{}>()({

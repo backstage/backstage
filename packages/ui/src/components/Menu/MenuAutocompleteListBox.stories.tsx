@@ -25,7 +25,7 @@ import {
 } from './index';
 import { Button, Flex, Text } from '../..';
 import { useEffect, useState } from 'react';
-import { Selection } from 'react-aria-components';
+import { Selection, useAsyncList } from 'react-aria-components';
 import { MemoryRouter } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 
@@ -178,6 +178,52 @@ export const Submenu = meta.story({
               </MenuAutocompleteListbox>
             </SubmenuTrigger>
           </Menu>
+        </MenuTrigger>
+      </Flex>
+    );
+  },
+});
+
+export const ServerSideFiltering = meta.story({
+  args: {
+    ...Default.input.args,
+  },
+  render: () => {
+    const list = useAsyncList<(typeof options)[0]>({
+      async load({ filterText, signal }) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        signal.throwIfAborted();
+        const filtered = options.filter(o =>
+          o.label
+            .toLocaleLowerCase('en-US')
+            .includes((filterText ?? '').toLocaleLowerCase('en-US')),
+        );
+        return { items: filtered };
+      },
+    });
+    const [selected, setSelected] = useState<Selection>(
+      new Set([options[2].value]),
+    );
+
+    return (
+      <Flex direction="column" gap="2" align="start">
+        <Text>Selected: {Array.from(selected).join(', ')}</Text>
+        <MenuTrigger isOpen>
+          <Button aria-label="Menu">Menu</Button>
+          <MenuAutocompleteListbox
+            placeholder="Search fruits..."
+            inputValue={list.filterText}
+            onInputChange={list.setFilterText}
+            isLoading={list.isLoading}
+            selectedKeys={selected}
+            onSelectionChange={setSelected}
+          >
+            {list.items.map(option => (
+              <MenuListBoxItem key={option.value} id={option.value}>
+                {option.label}
+              </MenuListBoxItem>
+            ))}
+          </MenuAutocompleteListbox>
         </MenuTrigger>
       </Flex>
     );

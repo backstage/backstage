@@ -30,20 +30,37 @@ import type { SelectOwnProps } from './types';
 interface SelectContentProps {
   searchable?: boolean;
   searchPlaceholder?: string;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+  isLoading?: boolean;
   options?: SelectOwnProps['options'];
 }
 
 export function SelectContent(props: SelectContentProps) {
   const { contains } = useFilter({ sensitivity: 'base' });
   const { ownProps } = useDefinition(SelectContentDefinition, props);
-  const { classes, searchable, searchPlaceholder, options } = ownProps;
+  const {
+    classes,
+    searchable,
+    searchPlaceholder,
+    searchValue,
+    onSearchChange,
+    isLoading,
+    options,
+  } = ownProps;
 
   if (!searchable) {
-    return <SelectListBox options={options} />;
+    return <SelectListBox options={options} isLoading={isLoading} />;
   }
 
+  const isControlled = searchValue !== undefined;
+
   return (
-    <Autocomplete filter={contains}>
+    <Autocomplete
+      filter={isControlled ? undefined : contains}
+      inputValue={isControlled ? searchValue : undefined}
+      onInputChange={isControlled ? onSearchChange : undefined}
+    >
       <SearchField
         autoFocus
         className={classes.root}
@@ -54,7 +71,7 @@ export function SelectContent(props: SelectContentProps) {
           <RiCloseCircleLine />
         </Button>
       </SearchField>
-      <SelectListBox options={options} />
+      <SelectListBox options={options} isLoading={isLoading} />
     </Autocomplete>
   );
 }

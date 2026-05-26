@@ -1036,6 +1036,7 @@ export const ComboboxDefinition: {
     readonly description: {};
     readonly isRequired: {};
     readonly className: {};
+    readonly isLoading: {};
   };
 };
 
@@ -1065,9 +1066,10 @@ export const ComboboxListBoxDefinition: {
   readonly classNames: {
     readonly root: 'bui-ComboboxList';
     readonly noResults: 'bui-ComboboxNoResults';
+    readonly loadingState: 'bui-ComboboxLoadingState';
   };
   readonly propDefs: {
-    readonly options: {};
+    readonly isLoading: {};
   };
 };
 
@@ -1090,6 +1092,7 @@ export type ComboboxOwnProps = {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   options?: Array<Option_2 | OptionSection>;
   placeholder?: string;
+  isLoading?: boolean;
   label?: FieldLabelProps['label'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
   description?: FieldLabelProps['description'];
@@ -1100,7 +1103,10 @@ export type ComboboxOwnProps = {
 // @public (undocumented)
 export interface ComboboxProps
   extends ComboboxOwnProps,
-    Omit<ComboBoxProps<Option_2>, keyof ComboboxOwnProps> {}
+    Omit<
+      ComboBoxProps<Option_2>,
+      keyof ComboboxOwnProps | 'items' | 'defaultItems'
+    > {}
 
 // @public
 export const ComboboxSectionDefinition: {
@@ -2110,6 +2116,9 @@ export const MenuAutocompleteListbox: (
 // @public (undocumented)
 export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
+  inputValue?: string;
+  onInputChange?: (value: string) => void;
+  isLoading?: boolean;
   selectionMode?: ListBoxProps<object>['selectionMode'];
 };
 
@@ -2121,6 +2130,9 @@ export interface MenuAutocompleteListBoxProps<T>
 // @public (undocumented)
 export type MenuAutocompleteOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
+  inputValue?: string;
+  onInputChange?: (value: string) => void;
+  isLoading?: boolean;
 };
 
 // @public (undocumented)
@@ -2767,6 +2779,9 @@ export const SelectDefinition: {
     readonly options: {};
     readonly searchable: {};
     readonly searchPlaceholder: {};
+    readonly searchValue: {};
+    readonly onSearchChange: {};
+    readonly isLoading: {};
     readonly label: {};
     readonly secondaryLabel: {};
     readonly description: {};
@@ -2782,6 +2797,9 @@ export type SelectOwnProps = {
   options?: Array<Option_2 | OptionSection>;
   searchable?: boolean;
   searchPlaceholder?: string;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+  isLoading?: boolean;
   label?: FieldLabelProps['label'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
   description?: FieldLabelProps['description'];

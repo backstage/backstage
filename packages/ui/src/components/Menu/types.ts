@@ -67,6 +67,23 @@ export interface MenuListBoxProps<T>
 /** @public */
 export type MenuAutocompleteOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
+
+  /**
+   * The current search input value (controlled). When set, disables the
+   * built-in client-side filter so the parent can supply server-filtered items.
+   */
+  inputValue?: string;
+
+  /**
+   * Handler called when the search input value changes.
+   */
+  onInputChange?: (value: string) => void;
+
+  /**
+   * Whether results are currently loading. Shows a loading indicator
+   * in the menu.
+   */
+  isLoading?: boolean;
 };
 
 /** @public */
@@ -77,6 +94,24 @@ export interface MenuAutocompleteProps<T>
 /** @public */
 export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
+
+  /**
+   * The current search input value (controlled). When set, disables the
+   * built-in client-side filter so the parent can supply server-filtered items.
+   */
+  inputValue?: string;
+
+  /**
+   * Handler called when the search input value changes.
+   */
+  onInputChange?: (value: string) => void;
+
+  /**
+   * Whether results are currently loading. Shows a loading indicator
+   * in the list.
+   */
+  isLoading?: boolean;
+
   selectionMode?: RAListBoxProps<object>['selectionMode'];
 };
 

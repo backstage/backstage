@@ -174,10 +174,6 @@
     min-width: 150px;
     outline: none;
     padding-block: var(--bui-space-1);
-
-    &[data-stale] {
-      opacity: 0.6;
-    }
   }
 
   .bui-SearchAutocompleteItem {
@@ -197,6 +193,10 @@
     &[data-hovered] .bui-SearchAutocompleteItemContent {
       background: var(--bui-bg-neutral-2);
       color: var(--bui-fg-primary);
+    }
+
+    [data-stale] & {
+      opacity: 0.6;
     }
   }
 

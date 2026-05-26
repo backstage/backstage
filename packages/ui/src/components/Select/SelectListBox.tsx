@@ -32,7 +32,15 @@ import type { Option, OptionSection, SelectOwnProps } from './types';
 
 interface SelectListBoxProps {
   options?: SelectOwnProps['options'];
+  isLoading?: boolean;
 }
+
+const LoadingState = () => {
+  const { ownProps } = useDefinition(SelectListBoxDefinition, {});
+  const { classes } = ownProps;
+
+  return <div className={classes.loadingState}>Searching...</div>;
+};
 
 const NoResults = () => {
   const { ownProps } = useDefinition(SelectListBoxDefinition, {});
@@ -78,10 +86,15 @@ function SelectSectionItems({ section }: { section: OptionSection }) {
 
 export function SelectListBox(props: SelectListBoxProps) {
   const { ownProps } = useDefinition(SelectListBoxDefinition, props);
-  const { classes, options } = ownProps;
+  const { classes, options, isLoading } = ownProps;
 
   return (
-    <ListBox className={classes.root} renderEmptyState={() => <NoResults />}>
+    <ListBox
+      className={classes.root}
+      aria-busy={isLoading || undefined}
+      data-stale={isLoading || undefined}
+      renderEmptyState={() => (isLoading ? <LoadingState /> : <NoResults />)}
+    >
       {options?.map(item =>
         'options' in item ? (
           <SelectSectionItems key={item.title} section={item} />

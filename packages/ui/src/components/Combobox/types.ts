@@ -46,6 +46,12 @@ export type ComboboxOwnProps = {
    */
   placeholder?: string;
 
+  /**
+   * Whether results are currently loading. Shows a loading indicator in the
+   * dropdown and keeps the popover open while items are being fetched.
+   */
+  isLoading?: boolean;
+
   label?: FieldLabelProps['label'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
   description?: FieldLabelProps['description'];
@@ -56,7 +62,10 @@ export type ComboboxOwnProps = {
 /** @public */
 export interface ComboboxProps
   extends ComboboxOwnProps,
-    Omit<AriaComboBoxProps<Option>, keyof ComboboxOwnProps> {}
+    Omit<
+      AriaComboBoxProps<Option>,
+      keyof ComboboxOwnProps | 'items' | 'defaultItems'
+    > {}
 
 /** @internal */
 export interface ComboboxInputOwnProps {
@@ -66,7 +75,7 @@ export interface ComboboxInputOwnProps {
 
 /** @internal */
 export interface ComboboxListBoxOwnProps {
-  options?: ComboboxOwnProps['options'];
+  isLoading?: boolean;
 }
 
 /** @internal */

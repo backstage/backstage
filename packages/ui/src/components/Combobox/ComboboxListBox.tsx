@@ -28,7 +28,15 @@ import {
   ComboboxListBoxItemDefinition,
   ComboboxSectionDefinition,
 } from './definition';
-import type { Option, OptionSection, ComboboxListBoxOwnProps } from './types';
+import type { ComboboxListBoxOwnProps } from './types';
+import type { OptionWithId, OptionSectionWithId } from '../Select/types';
+
+const LoadingState = () => {
+  const { ownProps } = useDefinition(ComboboxListBoxDefinition, {});
+  const { classes } = ownProps;
+
+  return <div className={classes.loadingState}>Searching...</div>;
+};
 
 const NoResults = () => {
   const { ownProps } = useDefinition(ComboboxListBoxDefinition, {});
@@ -37,16 +45,15 @@ const NoResults = () => {
   return <div className={classes.noResults}>No results found.</div>;
 };
 
-function ComboboxItem({ option }: { option: Option }) {
+function ComboboxItem({ option }: { option: OptionWithId }) {
   const { ownProps } = useDefinition(ComboboxListBoxItemDefinition, {});
   const { classes } = ownProps;
 
   return (
     <ListBoxItem
-      id={option.value}
+      id={option.id}
       textValue={option.label}
       className={classes.root}
-      isDisabled={option.disabled}
     >
       <div className={classes.indicator}>
         <RiCheckLine aria-hidden="true" />
@@ -58,7 +65,7 @@ function ComboboxItem({ option }: { option: Option }) {
   );
 }
 
-function ComboboxSectionItems({ section }: { section: OptionSection }) {
+function ComboboxSectionItems({ section }: { section: OptionSectionWithId }) {
   const { ownProps } = useDefinition(ComboboxSectionDefinition, {});
   const { classes } = ownProps;
 
@@ -66,7 +73,7 @@ function ComboboxSectionItems({ section }: { section: OptionSection }) {
     <ListBoxSection className={classes.root}>
       <Header className={classes.header}>{section.title}</Header>
       {section.options.map(option => (
-        <ComboboxItem key={option.value} option={option} />
+        <ComboboxItem option={option} />
       ))}
     </ListBoxSection>
   );
@@ -74,17 +81,22 @@ function ComboboxSectionItems({ section }: { section: OptionSection }) {
 
 export function ComboboxListBox(props: ComboboxListBoxOwnProps) {
   const { ownProps } = useDefinition(ComboboxListBoxDefinition, props);
-  const { classes, options } = ownProps;
+  const { classes, isLoading } = ownProps;
 
   return (
-    <ListBox className={classes.root} renderEmptyState={() => <NoResults />}>
-      {options?.map(item =>
+    <ListBox<OptionWithId | OptionSectionWithId>
+      className={classes.root}
+      aria-busy={isLoading || undefined}
+      data-stale={isLoading || undefined}
+      renderEmptyState={() => (isLoading ? <LoadingState /> : <NoResults />)}
+    >
+      {item =>
         'options' in item ? (
-          <ComboboxSectionItems key={item.title} section={item} />
+          <ComboboxSectionItems key={item.id} section={item} />
         ) : (
-          <ComboboxItem key={item.value} option={item} />
-        ),
-      )}
+          <ComboboxItem key={item.id} option={item} />
+        )
+      }
     </ListBox>
   );
 }

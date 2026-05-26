@@ -44,6 +44,7 @@ import {
   MenuSectionDefinition,
   MenuSeparatorDefinition,
   MenuEmptyStateDefinition,
+  MenuLoadingStateDefinition,
 } from './definition';
 import type {
   MenuTriggerProps,
@@ -69,6 +70,12 @@ import { BgReset } from '../../hooks/useBg';
 
 // The height will be used for virtualized menus. It should match the size set in CSS for each menu item.
 const rowHeight = 32;
+
+const MenuLoadingState = () => {
+  const { ownProps } = useDefinition(MenuLoadingStateDefinition, {});
+
+  return <div className={ownProps.classes.root}>Searching...</div>;
+};
 
 const MenuEmptyState = () => {
   const { ownProps } = useDefinition(MenuEmptyStateDefinition, {});
@@ -188,14 +195,22 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
     maxHeight,
     style,
     placeholder,
+    inputValue,
+    isLoading,
+    onInputChange,
   } = ownProps;
   const { contains } = useFilter({ sensitivity: 'base' });
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+  const isControlled = inputValue !== undefined;
 
   const menuContent = (
     <RAMenu
       className={classes.content}
-      renderEmptyState={() => <MenuEmptyState />}
+      renderEmptyState={() =>
+        isLoading ? <MenuLoadingState /> : <MenuEmptyState />
+      }
+      aria-busy={isLoading || undefined}
+      data-stale={isLoading || undefined}
       style={{ width: newMaxWidth, maxHeight, ...style }}
       {...restProps}
     />
@@ -205,7 +220,11 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
     <RAPopover className={classes.root} placement={placement}>
       <BgReset>
         <Box bg="neutral" className={classes.inner}>
-          <RAAutocomplete filter={contains}>
+          <RAAutocomplete
+            filter={isControlled ? undefined : contains}
+            inputValue={isControlled ? inputValue : undefined}
+            onInputChange={isControlled ? onInputChange : undefined}
+          >
             <RASearchField
               className={classes.searchField}
               aria-label={placeholder || 'Search'}
@@ -254,14 +273,22 @@ export const MenuAutocompleteListbox = (
     maxHeight,
     style,
     placeholder,
+    inputValue,
+    isLoading,
+    onInputChange,
   } = ownProps;
   const { contains } = useFilter({ sensitivity: 'base' });
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+  const isControlled = inputValue !== undefined;
 
   const listBoxContent = (
     <RAListBox
       className={classes.content}
-      renderEmptyState={() => <MenuEmptyState />}
+      renderEmptyState={() =>
+        isLoading ? <MenuLoadingState /> : <MenuEmptyState />
+      }
+      aria-busy={isLoading || undefined}
+      data-stale={isLoading || undefined}
       selectionMode={selectionMode}
       style={{ width: newMaxWidth, maxHeight, ...style }}
       {...restProps}
@@ -272,7 +299,11 @@ export const MenuAutocompleteListbox = (
     <RAPopover className={classes.root} placement={placement}>
       <BgReset>
         <Box bg="neutral" className={classes.inner}>
-          <RAAutocomplete filter={contains}>
+          <RAAutocomplete
+            filter={isControlled ? undefined : contains}
+            inputValue={isControlled ? inputValue : undefined}
+            onInputChange={isControlled ? onInputChange : undefined}
+          >
             <RASearchField
               className={classes.searchField}
               aria-label={placeholder || 'Search'}

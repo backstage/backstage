@@ -41,6 +41,9 @@ export const SelectDefinition = defineComponent<SelectOwnProps>()({
     options: {},
     searchable: {},
     searchPlaceholder: {},
+    searchValue: {},
+    onSearchChange: {},
+    isLoading: {},
     label: {},
     secondaryLabel: {},
     description: {},
@@ -79,10 +82,14 @@ export const SelectContentDefinition = defineComponent<SelectContentOwnProps>()(
       root: 'bui-SelectSearchWrapper',
       search: 'bui-SelectSearch',
       searchClear: 'bui-SelectSearchClear',
+      loadingState: 'bui-SelectLoadingState',
     },
     propDefs: {
       searchable: {},
       searchPlaceholder: { default: 'Search...' },
+      searchValue: {},
+      onSearchChange: {},
+      isLoading: {},
       options: {},
     },
   },
@@ -98,9 +105,11 @@ export const SelectListBoxDefinition = defineComponent<SelectListBoxOwnProps>()(
     classNames: {
       root: 'bui-SelectList',
       noResults: 'bui-SelectNoResults',
+      loadingState: 'bui-SelectLoadingState',
     },
     propDefs: {
       options: {},
+      isLoading: {},
     },
   },
 );

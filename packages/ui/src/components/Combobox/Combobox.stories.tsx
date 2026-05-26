@@ -19,8 +19,9 @@ import { Combobox } from './Combobox';
 import { Flex } from '../Flex';
 import { Box } from '../Box';
 import { Text } from '../Text';
-import { Form } from 'react-aria-components';
+import { Form, useAsyncList } from 'react-aria-components';
 import { RiCloudLine } from '@remixicon/react';
+import { fn } from 'storybook/test';
 
 const meta = preview.meta({
   title: 'Backstage UI/Combobox',
@@ -86,6 +87,7 @@ export const Default = meta.story({
     options: fontOptions,
     placeholder: 'Pick a font',
     name: 'font',
+    onChange: fn(),
   },
 });
 
@@ -98,15 +100,14 @@ export const WithIcon = meta.story({
 
 export const WithSections = meta.story({
   args: {
-    label: 'Font Family',
+    ...Default.input.args,
     options: sectionedOptions,
-    placeholder: 'Pick a font',
-    name: 'font',
   },
 });
 
 export const AllowsCustomValue = meta.story({
   args: {
+    ...Default.input.args,
     label: 'Country',
     options: countries,
     placeholder: 'Type any country',
@@ -197,6 +198,7 @@ export const WithError = meta.story({
 
 export const WithLongNames = meta.story({
   args: {
+    ...Default.input.args,
     label: 'Document Template',
     options: [
       {
@@ -233,6 +235,41 @@ export const WithLongNamesAndPadding = meta.story({
       </div>
     ),
   ],
+});
+
+export const ServerSideFiltering = meta.story({
+  args: {
+    ...Default.input.args,
+    label: 'Country',
+    placeholder: 'Search countries...',
+    name: 'country',
+  },
+  render: function Render(args) {
+    const list = useAsyncList<(typeof countries)[0]>({
+      async load({ filterText, signal }) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        signal.throwIfAborted();
+        const filtered = countries
+          .filter(c =>
+            c.label
+              .toLocaleLowerCase('en-US')
+              .includes((filterText ?? '').toLocaleLowerCase('en-US')),
+          )
+          .map(c => ({ value: c.value, label: c.label }));
+        return { items: filtered };
+      },
+    });
+
+    return (
+      <Combobox
+        {...args}
+        inputValue={list.filterText}
+        onInputChange={list.setFilterText}
+        options={list.items}
+        isLoading={list.isLoading}
+      />
+    );
+  },
 });
 
 export const AutoBg = meta.story({

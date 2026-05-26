@@ -195,6 +195,10 @@
     outline: none;
     border-radius: var(--bui-radius-2);
 
+    [data-stale] & {
+      opacity: 0.6;
+    }
+
     &[data-focused] {
       background-color: var(--bui-bg-neutral-2);
     }
@@ -227,6 +231,10 @@
     &:first-child .bui-ComboboxSectionHeader {
       padding-top: 0;
     }
+
+    [data-stale] & {
+      opacity: 0.6;
+    }
   }
 
   .bui-ComboboxSectionHeader {
@@ -242,6 +250,7 @@
     text-transform: uppercase;
   }
 
+  .bui-ComboboxLoadingState,
   .bui-ComboboxNoResults {
     padding-inline: var(--bui-space-3);
     padding-block: var(--bui-space-2);

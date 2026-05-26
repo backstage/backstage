@@ -19,7 +19,7 @@ import { Select } from './Select';
 import { Flex } from '../Flex';
 import { Box } from '../Box';
 import { Text } from '../Text';
-import { Form } from 'react-aria-components';
+import { Form, useAsyncList } from 'react-aria-components';
 import { RiCloudLine } from '@remixicon/react';
 
 const meta = preview.meta({
@@ -137,6 +137,38 @@ export const WithSections = meta.story({
     label: 'Font Family',
     options: sectionedOptions,
     name: 'font',
+  },
+});
+
+export const SearchableServerSide = meta.story({
+  args: {
+    label: 'Country',
+    searchable: true,
+    searchPlaceholder: 'Search countries...',
+  },
+  render: function Render(args) {
+    const list = useAsyncList<(typeof countries)[0]>({
+      async load({ filterText, signal }) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        signal.throwIfAborted();
+        const filtered = countries.filter(c =>
+          c.label
+            .toLocaleLowerCase('en-US')
+            .includes((filterText ?? '').toLocaleLowerCase('en-US')),
+        );
+        return { items: filtered };
+      },
+    });
+
+    return (
+      <Select
+        {...args}
+        searchValue={list.filterText}
+        onSearchChange={list.setFilterText}
+        options={list.items.map(i => ({ value: i.value, label: i.label }))}
+        isLoading={list.isLoading}
+      />
+    );
   },
 });
 

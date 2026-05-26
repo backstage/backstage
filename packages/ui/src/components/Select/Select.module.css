@@ -175,6 +175,10 @@
     &[data-selected] .bui-SelectItemIndicator {
       opacity: 1;
     }
+
+    [data-stale] & {
+      opacity: 0.6;
+    }
   }
 
   .bui-SelectItemIndicator {
@@ -255,6 +259,10 @@
     &:first-child .bui-SelectSectionHeader {
       padding-top: 0;
     }
+
+    [data-stale] & {
+      opacity: 0.6;
+    }
   }
 
   .bui-SelectSectionHeader {
@@ -270,6 +278,7 @@
     text-transform: uppercase;
   }
 
+  .bui-SelectLoadingState,
   .bui-SelectNoResults {
     padding-inline: var(--bui-space-3);
     padding-block: var(--bui-space-2);

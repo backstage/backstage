@@ -22,8 +22,17 @@ import type { FieldLabelProps } from '../FieldLabel/types';
 /** @public */
 export type Option = { value: string; label: string; disabled?: boolean };
 
+/** @internal */
+export type OptionWithId = Option & { id: string };
+
 /** @public */
 export type OptionSection = { title: string; options: Option[] };
+
+/** @internal */
+export type OptionSectionWithId = Omit<OptionSection, 'options'> & {
+  id: string;
+  options: OptionWithId[];
+};
 
 /** @public */
 export type SelectOwnProps = {
@@ -57,6 +66,23 @@ export type SelectOwnProps = {
    */
   searchPlaceholder?: string;
 
+  /**
+   * The current search input value (controlled). When set, disables the
+   * built-in client-side filter so the parent can supply server-filtered options.
+   */
+  searchValue?: string;
+
+  /**
+   * Handler called when the search input value changes.
+   */
+  onSearchChange?: (value: string) => void;
+
+  /**
+   * Whether results are currently loading. Shows a loading indicator
+   * in the dropdown list.
+   */
+  isLoading?: boolean;
+
   label?: FieldLabelProps['label'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
   description?: FieldLabelProps['description'];
@@ -84,12 +110,16 @@ export interface SelectTriggerOwnProps {
 export interface SelectContentOwnProps {
   searchable?: boolean;
   searchPlaceholder?: string;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+  isLoading?: boolean;
   options?: SelectOwnProps['options'];
 }
 
 /** @internal */
 export interface SelectListBoxOwnProps {
   options?: SelectOwnProps['options'];
+  isLoading?: boolean;
 }
 
 /** @internal */

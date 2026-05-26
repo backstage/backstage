@@ -44,6 +44,7 @@ export const ComboboxDefinition = defineComponent<ComboboxOwnProps>()({
     description: {},
     isRequired: {},
     className: {},
+    isLoading: {},
   },
 });
 
@@ -78,9 +79,10 @@ export const ComboboxListBoxDefinition =
     classNames: {
       root: 'bui-ComboboxList',
       noResults: 'bui-ComboboxNoResults',
+      loadingState: 'bui-ComboboxLoadingState',
     },
     propDefs: {
-      options: {},
+      isLoading: {},
     },
   });
 
