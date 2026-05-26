@@ -47,7 +47,7 @@
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "yaml": "^2.0.0",
-    "yeoman-environment": "^3.9.1"
+    "yeoman-environment": "^6.0.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
