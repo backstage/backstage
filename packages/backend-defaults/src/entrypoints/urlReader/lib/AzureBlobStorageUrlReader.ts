@@ -85,7 +85,6 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     });
   };
 
-  private readonly credsManager: AzureCredentialsManager;
   private readonly integration: AzureBlobStorageIntegration;
   private readonly deps: {
     treeResponseFactory: ReadTreeResponseFactory;
