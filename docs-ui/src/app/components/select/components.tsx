@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Select } from '../../../../../packages/ui/src/components/Select/Select';
 import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
 import { RiCloudLine } from '@remixicon/react';
@@ -184,6 +185,48 @@ export const WithSections = () => (
     style={{ width: 300 }}
   />
 );
+
+export const SearchableServerSide = () => {
+  const [searchValue, setSearchValue] = useState('');
+  const [options, setOptions] = useState(countries);
+  const [isLoading, setIsLoading] = useState(false);
+  const abortRef = useRef<AbortController>();
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchValue(value);
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      if (!controller.signal.aborted) {
+        setOptions(
+          countries.filter(c =>
+            c.label.toLowerCase().includes(value.toLowerCase()),
+          ),
+        );
+        setIsLoading(false);
+      }
+    }, 500);
+    controller.signal.addEventListener('abort', () => clearTimeout(timer));
+  }, []);
+
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  return (
+    <Select
+      label="Country"
+      name="country"
+      searchable
+      searchPlaceholder="Search countries..."
+      searchValue={searchValue}
+      onSearchChange={handleSearchChange}
+      options={options}
+      isLoading={isLoading}
+      style={{ width: 300 }}
+    />
+  );
+};
 
 export const SearchableWithSections = () => (
   <Select

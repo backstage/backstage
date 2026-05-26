@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Combobox } from '../../../../../packages/ui/src/components/Combobox/Combobox';
 import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
 import { RiCloudLine } from '@remixicon/react';
@@ -139,6 +140,47 @@ export const DisabledOption = () => (
     style={{ width: 300 }}
   />
 );
+
+export const ServerSideFiltering = () => {
+  const [inputValue, setInputValue] = useState('');
+  const [options, setOptions] = useState(countries);
+  const [isLoading, setIsLoading] = useState(false);
+  const abortRef = useRef<AbortController>();
+
+  const handleInputChange = useCallback((value: string) => {
+    setInputValue(value);
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      if (!controller.signal.aborted) {
+        setOptions(
+          countries.filter(c =>
+            c.label.toLowerCase().includes(value.toLowerCase()),
+          ),
+        );
+        setIsLoading(false);
+      }
+    }, 500);
+    controller.signal.addEventListener('abort', () => clearTimeout(timer));
+  }, []);
+
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  return (
+    <Combobox
+      label="Country"
+      name="country"
+      placeholder="Search countries..."
+      inputValue={inputValue}
+      onInputChange={handleInputChange}
+      options={options}
+      isLoading={isLoading}
+      style={{ width: 300 }}
+    />
+  );
+};
 
 export const WithSections = () => (
   <Combobox

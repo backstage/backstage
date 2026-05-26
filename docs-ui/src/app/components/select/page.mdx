@@ -14,6 +14,7 @@ import {
   SearchableMultiple,
   WithSections,
   SearchableWithSections,
+  SearchableServerSide,
 } from './components';
 import {
   selectPropDefs,
@@ -34,6 +35,7 @@ import {
   selectDisabledOptionsSnippet,
   selectSectionsSnippet,
   selectSearchableSectionsSnippet,
+  selectServerSideSnippet,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -154,6 +156,19 @@ Combine search and multiple selection.
   open
   preview={<SearchableMultiple />}
   code={selectSearchableMultipleSnippet}
+/>
+
+### Server-side search
+
+Control the search value and supply pre-filtered options from a server or async
+source. When `searchValue` is set the built-in client-side filter is disabled.
+Use `isLoading` to show a loading indicator while results are being fetched.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<SearchableServerSide />}
+  code={selectServerSideSnippet}
 />
 
 ### With sections

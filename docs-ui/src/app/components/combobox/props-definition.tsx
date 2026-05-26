@@ -47,7 +47,13 @@ export const comboboxPropDefs: Record<string, PropDef> = {
   onInputChange: {
     type: 'enum',
     values: ['(value: string) => void'],
-    description: 'Called when the input text changes.',
+    description:
+      'Called when the input text changes. When both inputValue and onInputChange are set, the built-in client-side filter is disabled so you can supply server-filtered options.',
+  },
+  isLoading: {
+    type: 'boolean',
+    description:
+      'Whether results are currently loading. Shows a loading indicator in the dropdown and dims existing items.',
   },
   label: {
     type: 'string',

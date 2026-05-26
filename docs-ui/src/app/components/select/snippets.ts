@@ -134,6 +134,32 @@ export const selectSectionsSnippet = `<Select
   ]}
 />`;
 
+export const selectServerSideSnippet = `import { Select } from '@backstage/ui';
+import { useAsyncList } from 'react-aria-components';
+
+function ServerSideSelect() {
+  const list = useAsyncList({
+    async load({ filterText, signal }) {
+      const res = await fetch(\`/api/items?q=\${filterText}\`, { signal });
+      const items = await res.json();
+      return { items };
+    },
+  });
+
+  return (
+    <Select
+      label="Country"
+      name="country"
+      searchable
+      searchPlaceholder="Search countries..."
+      searchValue={list.filterText}
+      onSearchChange={list.setFilterText}
+      options={list.items}
+      isLoading={list.isLoading}
+    />
+  );
+}`;
+
 export const selectSearchableSectionsSnippet = `<Select
   name="font"
   label="Font Family"

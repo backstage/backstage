@@ -116,6 +116,21 @@ export const selectPropDefs: Record<string, PropDef> = {
     description:
       'Placeholder text for the search input when searchable is true.',
   },
+  searchValue: {
+    type: 'string',
+    description:
+      'Controlled search input value. When set, disables the built-in client-side filter so you can supply server-filtered options.',
+  },
+  onSearchChange: {
+    type: 'enum',
+    values: ['(value: string) => void'],
+    description: 'Called when the search input value changes.',
+  },
+  isLoading: {
+    type: 'boolean',
+    description:
+      'Whether results are currently loading. Shows a loading indicator in the dropdown and dims existing items.',
+  },
   isOpen: {
     type: 'boolean',
     description: 'Controlled open state. Use with onOpenChange.',

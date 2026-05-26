@@ -90,6 +90,31 @@ export const comboboxCustomValueSnippet = `<Combobox
   ]}
 />`;
 
+export const comboboxServerSideSnippet = `import { Combobox } from '@backstage/ui';
+import { useAsyncList } from 'react-aria-components';
+
+function ServerSideCombobox() {
+  const list = useAsyncList({
+    async load({ filterText, signal }) {
+      const res = await fetch(\`/api/items?q=\${filterText}\`, { signal });
+      const items = await res.json();
+      return { items };
+    },
+  });
+
+  return (
+    <Combobox
+      label="Country"
+      name="country"
+      placeholder="Search countries..."
+      inputValue={list.filterText}
+      onInputChange={list.setFilterText}
+      options={list.items}
+      isLoading={list.isLoading}
+    />
+  );
+}`;
+
 export const comboboxSectionsSnippet = `<Combobox
   name="font"
   label="Font Family"

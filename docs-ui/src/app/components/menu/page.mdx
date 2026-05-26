@@ -11,6 +11,7 @@ import {
   PreviewAutocompleteMenu,
   PreviewAutocompleteListbox,
   PreviewAutocompleteListboxMultiple,
+  PreviewAutocompleteServerSide,
 } from './components';
 import {
   menuTriggerPropDefs,
@@ -35,6 +36,7 @@ import {
   autocomplete,
   autocompleteListbox,
   autocompleteListboxMultiple,
+  autocompleteServerSide,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -202,6 +204,21 @@ The `href` prop works with both internal and external links.
   open
   preview={<PreviewAutocompleteMenu />}
   code={autocomplete}
+/>
+
+### Server-side autocomplete
+
+Control the search input value and supply pre-filtered items from a server or
+async source. When `inputValue` is set the built-in client-side filter is
+disabled. Use `isLoading` to show a loading indicator while results are being
+fetched. This pattern works for both `MenuAutocomplete` and
+`MenuAutocompleteListbox`.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<PreviewAutocompleteServerSide />}
+  code={autocompleteServerSide}
 />
 
 ### With list box

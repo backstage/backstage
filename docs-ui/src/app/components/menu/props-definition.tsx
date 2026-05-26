@@ -151,6 +151,21 @@ export const menuAutocompletePropDefs: Record<string, PropDef> = {
     type: 'string',
     description: 'Placeholder text for the search input.',
   },
+  inputValue: {
+    type: 'string',
+    description:
+      'Controlled search input value. When set, disables the built-in client-side filter so you can supply server-filtered items.',
+  },
+  onInputChange: {
+    type: 'enum',
+    values: ['(value: string) => void'],
+    description: 'Called when the search input value changes.',
+  },
+  isLoading: {
+    type: 'boolean',
+    description:
+      'Whether results are currently loading. Shows a loading indicator and dims existing items.',
+  },
   placement: {
     type: 'enum',
     values: [
@@ -220,6 +235,21 @@ export const menuAutocompleteListboxPropDefs: Record<string, PropDef> = {
   placeholder: {
     type: 'string',
     description: 'Placeholder text for the search input.',
+  },
+  inputValue: {
+    type: 'string',
+    description:
+      'Controlled search input value. When set, disables the built-in client-side filter so you can supply server-filtered items.',
+  },
+  onInputChange: {
+    type: 'enum',
+    values: ['(value: string) => void'],
+    description: 'Called when the search input value changes.',
+  },
+  isLoading: {
+    type: 'boolean',
+    description:
+      'Whether results are currently loading. Shows a loading indicator and dims existing items.',
   },
   placement: {
     type: 'enum',

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   MenuTrigger,
   Menu,
@@ -138,6 +139,66 @@ export const PreviewAutocompleteMenu = () => (
     </MenuTrigger>
   </MemoryRouter>
 );
+
+const autocompleteOptions = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'cherry', label: 'Cherry' },
+  { value: 'grape', label: 'Grape' },
+  { value: 'mango', label: 'Mango' },
+  { value: 'orange', label: 'Orange' },
+  { value: 'peach', label: 'Peach' },
+  { value: 'pear', label: 'Pear' },
+  { value: 'strawberry', label: 'Strawberry' },
+];
+
+export const PreviewAutocompleteServerSide = () => {
+  const [inputValue, setInputValue] = useState('');
+  const [items, setItems] = useState(autocompleteOptions);
+  const [isLoading, setIsLoading] = useState(false);
+  const abortRef = useRef<AbortController>();
+
+  const handleInputChange = useCallback((value: string) => {
+    setInputValue(value);
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      if (!controller.signal.aborted) {
+        setItems(
+          autocompleteOptions.filter(o =>
+            o.label.toLowerCase().includes(value.toLowerCase()),
+          ),
+        );
+        setIsLoading(false);
+      }
+    }, 500);
+    controller.signal.addEventListener('abort', () => clearTimeout(timer));
+  }, []);
+
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  return (
+    <MemoryRouter>
+      <MenuTrigger>
+        <Button variant="secondary">Search</Button>
+        <MenuAutocomplete
+          placeholder="Type to search..."
+          inputValue={inputValue}
+          onInputChange={handleInputChange}
+          isLoading={isLoading}
+        >
+          {items.map(option => (
+            <MenuItem key={option.value} id={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </MenuAutocomplete>
+      </MenuTrigger>
+    </MemoryRouter>
+  );
+};
 
 export const PreviewAutocompleteListbox = () => (
   <MemoryRouter>

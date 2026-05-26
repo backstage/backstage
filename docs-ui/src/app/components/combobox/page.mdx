@@ -11,6 +11,7 @@ import {
   DisabledOption,
   AllowsCustomValue,
   WithSections,
+  ServerSideFiltering,
 } from './components';
 import { comboboxPropDefs } from './props-definition';
 import {
@@ -28,6 +29,7 @@ import {
   comboboxDisabledOptionsSnippet,
   comboboxCustomValueSnippet,
   comboboxSectionsSnippet,
+  comboboxServerSideSnippet,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -140,6 +142,19 @@ nested `options` array.
   open
   preview={<WithSections />}
   code={comboboxSectionsSnippet}
+/>
+
+### Server-side filtering
+
+Control the input value and supply pre-filtered options from a server or async
+source. When `inputValue` is set the built-in client-side filter is disabled.
+Use `isLoading` to show a loading indicator while results are being fetched.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<ServerSideFiltering />}
+  code={comboboxServerSideSnippet}
 />
 
 ### Responsive

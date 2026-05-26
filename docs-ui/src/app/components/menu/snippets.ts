@@ -106,6 +106,36 @@ export const autocompleteListbox = `<MenuTrigger>
   </MenuAutocompleteListbox>
 </MenuTrigger>`;
 
+export const autocompleteServerSide = `import { useAsyncList } from 'react-aria-components';
+
+function ServerSideMenu() {
+  const list = useAsyncList({
+    async load({ filterText, signal }) {
+      const res = await fetch(\`/api/items?q=\${filterText}\`, { signal });
+      const items = await res.json();
+      return { items };
+    },
+  });
+
+  return (
+    <MenuTrigger>
+      <Button>Search</Button>
+      <MenuAutocomplete
+        placeholder="Type to search..."
+        inputValue={list.filterText}
+        onInputChange={list.setFilterText}
+        isLoading={list.isLoading}
+      >
+        {list.items.map(item => (
+          <MenuItem key={item.value} id={item.value}>
+            {item.label}
+          </MenuItem>
+        ))}
+      </MenuAutocomplete>
+    </MenuTrigger>
+  );
+}`;
+
 export const autocompleteListboxMultiple = `<MenuTrigger>
   <Button variant="secondary">Multi-select</Button>
   <MenuAutocompleteListbox
