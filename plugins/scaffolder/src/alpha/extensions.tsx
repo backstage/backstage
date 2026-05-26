@@ -37,9 +37,9 @@ import {
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
   scaffolderApiRef,
-  scaffolderLayoutRef,
   TemplateGroupFilter,
 } from '@backstage/plugin-scaffolder-react';
+import { scaffolderLayoutRef } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderClient } from '../api';
 
 export const scaffolderPage = PageBlueprint.makeWithOverrides({

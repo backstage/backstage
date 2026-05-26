@@ -20,3 +20,4 @@ export * from './hooks';
 export * from './overridableComponents';
 export * from './blueprints';
 export * from './extensions';
+export * from '../layouts';

@@ -10,6 +10,7 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
+import { Extension } from '@backstage/core-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
@@ -17,11 +18,12 @@ import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FieldSchema } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/utils';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
+import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
-import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import { LayoutOptions as LayoutOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { ReactElement } from 'react';
@@ -109,6 +111,11 @@ export function createScaffolderFormDecorator<
       : never,
   ) => Promise<void>;
 }): ScaffolderFormDecorator<TInput>;
+
+// @public
+export function createScaffolderLayout<TInputProps = unknown>(
+  options: LayoutOptions,
+): Extension<LayoutComponent<TInputProps>>;
 
 // @alpha
 export const DefaultTemplateOutputs: (props: {
@@ -212,6 +219,22 @@ export type FormValidation = {
   [name: string]: FieldValidation | FormValidation;
 };
 
+// @public
+export type LayoutComponent<_TInputProps> = () => null;
+
+// @public
+export interface LayoutOptions<P = any> {
+  // (undocumented)
+  component: LayoutTemplate<P>;
+  // (undocumented)
+  name: string;
+}
+
+// @public
+export type LayoutTemplate<T = any> = NonNullable<
+  FormProps_2<T>['uiSchema']
+>['ui:ObjectFieldTemplate'];
+
 // @alpha
 export interface ParsedTemplateSchema {
   // (undocumented)
@@ -286,6 +309,39 @@ export interface ScaffolderFormFieldsApi {
   // (undocumented)
   loadFormFields(): Promise<FormField[]>;
 }
+
+// @alpha
+export const scaffolderLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-layout';
+  params: ScaffolderLayoutBlueprintParams;
+  output: ExtensionDataRef<LayoutOptions<any>, 'scaffolder.layout-option', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    layout: ConfigurableExtensionDataRef<
+      LayoutOptions<any>,
+      'scaffolder.layout-option',
+      {}
+    >;
+  };
+}>;
+
+// @alpha
+export interface ScaffolderLayoutBlueprintParams {
+  // (undocumented)
+  layout: LayoutOptions;
+}
+
+// @alpha
+export const scaffolderLayoutRef: ConfigurableExtensionDataRef<
+  LayoutOptions<any>,
+  'scaffolder.layout-option',
+  {}
+>;
+
+// @public
+export const ScaffolderLayouts: ComponentType<PropsWithChildren<{}>>;
 
 // @alpha (undocumented)
 export function ScaffolderPageContextMenu(
@@ -364,7 +420,7 @@ export type StepperProps = {
     createButtonText?: ReactNode;
     reviewButtonText?: ReactNode;
   };
-  layouts?: LayoutOptions[];
+  layouts?: LayoutOptions_2[];
 };
 
 // @alpha

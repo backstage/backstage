@@ -17,12 +17,12 @@ import {
   createExtensionBlueprint,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
-import { LayoutOptions } from '../layouts';
+import { LayoutOptions } from '../../layouts';
 
 /**
  * The data reference for defining a layout in the scaffolder frontend.
  *
- * @public
+ * @alpha
  */
 export const scaffolderLayoutRef = createExtensionDataRef<LayoutOptions>().with(
   {
@@ -33,7 +33,7 @@ export const scaffolderLayoutRef = createExtensionDataRef<LayoutOptions>().with(
 /**
  * The parameters for defining a layout in the scaffolder frontend.
  *
- * @public
+ * @alpha
  */
 export interface ScaffolderLayoutBlueprintParams {
   layout: LayoutOptions;
@@ -42,7 +42,7 @@ export interface ScaffolderLayoutBlueprintParams {
 /**
  * The blueprint for defining a layout in the scaffolder frontend.
  *
- * @public
+ * @alpha
  */
 export const scaffolderLayoutBlueprint = createExtensionBlueprint({
   kind: 'scaffolder-layout',

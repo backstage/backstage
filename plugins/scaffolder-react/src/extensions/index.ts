@@ -14,4 +14,3 @@
  * limitations under the License.
  */
 export * from './createScaffolderFieldExtension';
-export * from './scaffolderLayoutBlueprint';
