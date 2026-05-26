@@ -58,7 +58,7 @@
       padding-left: var(--bui-space-9);
     }
 
-    &:has([data-disabled]) {
+    &[data-disabled] {
       opacity: 0.5;
       cursor: not-allowed;
     }
