@@ -37,6 +37,7 @@ import {
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
   scaffolderApiRef,
+  scaffolderLayoutRef,
   TemplateGroupFilter,
 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '../api';
@@ -70,7 +71,10 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
       )
       .optional(),
   },
-  factory(originalFactory, { apis, config }) {
+  inputs: {
+    layouts: createExtensionInput([scaffolderLayoutRef]),
+  },
+  factory(originalFactory, { apis, config, inputs }) {
     const formFieldsApi = apis.get(formFieldsApiRef);
 
     const groups: TemplateGroupFilter[] | undefined = config.groups?.map(
@@ -85,11 +89,13 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
       title: 'Templates',
       loader: async () => {
         const formFields = (await formFieldsApi?.loadFormFields()) ?? [];
+        const layouts = inputs.layouts.map(l => l.get(scaffolderLayoutRef));
 
         return import('./components/TemplatesSubPage').then(m => (
           <m.TemplatesSubPage
             formFields={formFields}
             groups={groups}
+            layouts={layouts}
             formProps={{
               EXPERIMENTAL_theme: config.enableBackstageUi ? 'bui' : 'mui',
             }}
