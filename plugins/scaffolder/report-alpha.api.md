@@ -565,7 +565,20 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        layouts: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            LayoutOptions<any>,
+            'scaffolder.layout-option',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
       kind: 'sub-page';
       name: 'templates';
       params: {

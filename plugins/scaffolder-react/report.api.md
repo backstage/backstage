@@ -7,12 +7,15 @@ import { Action as Action_2 } from '@backstage/plugin-scaffolder-common';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomValidator } from '@rjsf/utils';
 import { ElementType } from 'react';
 import { ErrorSchema } from '@rjsf/utils';
 import { ErrorTransformer } from '@rjsf/utils';
 import { Experimental_DefaultFormStateBehavior } from '@rjsf/utils';
 import { Extension } from '@backstage/core-plugin-api';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { FieldValidation } from '@rjsf/utils';
 import Form from '@rjsf/core';
 import { FormContextType } from '@rjsf/utils';
@@ -233,6 +236,36 @@ export type ScaffolderGetIntegrationsListOptions =
 // @public @deprecated
 export type ScaffolderGetIntegrationsListResponse =
   ScaffolderGetIntegrationsListResponse_2;
+
+// @public (undocumented)
+export const scaffolderLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-layout';
+  params: ScaffolderLayoutBlueprintParams;
+  output: ExtensionDataRef<LayoutOptions<any>, 'scaffolder.layout-option', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    layout: ConfigurableExtensionDataRef<
+      LayoutOptions<any>,
+      'scaffolder.layout-option',
+      {}
+    >;
+  };
+}>;
+
+// @public (undocumented)
+export interface ScaffolderLayoutBlueprintParams {
+  // (undocumented)
+  layout: LayoutOptions;
+}
+
+// @public (undocumented)
+export const scaffolderLayoutRef: ConfigurableExtensionDataRef<
+  LayoutOptions<any>,
+  'scaffolder.layout-option',
+  {}
+>;
 
 // @public
 export const ScaffolderLayouts: ComponentType<PropsWithChildren<{}>>;

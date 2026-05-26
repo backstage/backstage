@@ -19,16 +19,31 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { LayoutOptions } from '../layouts';
 
+/**
+ * The data reference for defining a layout in the scaffolder frontend.
+ *
+ * @public
+ */
 export const scaffolderLayoutRef = createExtensionDataRef<LayoutOptions>().with(
   {
     id: 'scaffolder.layout-option',
   },
 );
 
+/**
+ * The parameters for defining a layout in the scaffolder frontend.
+ *
+ * @public
+ */
 export interface ScaffolderLayoutBlueprintParams {
   layout: LayoutOptions;
 }
 
+/**
+ * The blueprint for defining a layout in the scaffolder frontend.
+ *
+ * @public
+ */
 export const scaffolderLayoutBlueprint = createExtensionBlueprint({
   kind: 'scaffolder-layout',
   attachTo: { id: 'sub-page:scaffolder/templates', input: 'layouts' },
