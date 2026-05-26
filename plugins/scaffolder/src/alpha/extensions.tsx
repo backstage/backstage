@@ -72,7 +72,7 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
       .optional(),
   },
   inputs: {
-    layouts: createExtensionInput([scaffolderLayoutRef]),
+    layouts: createExtensionInput([scaffolderLayoutRef], { optional: true }),
   },
   factory(originalFactory, { apis, config, inputs }) {
     const formFieldsApi = apis.get(formFieldsApiRef);
@@ -89,7 +89,7 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
       title: 'Templates',
       loader: async () => {
         const formFields = (await formFieldsApi?.loadFormFields()) ?? [];
-        const layouts = inputs.layouts.map(l => l.get(scaffolderLayoutRef));
+        const layouts = inputs.layouts?.map(l => l.get(scaffolderLayoutRef));
 
         return import('./components/TemplatesSubPage').then(m => (
           <m.TemplatesSubPage

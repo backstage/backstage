@@ -237,7 +237,7 @@ export type ScaffolderGetIntegrationsListOptions =
 export type ScaffolderGetIntegrationsListResponse =
   ScaffolderGetIntegrationsListResponse_2;
 
-// @public (undocumented)
+// @public
 export const scaffolderLayoutBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-layout';
   params: ScaffolderLayoutBlueprintParams;
@@ -254,13 +254,13 @@ export const scaffolderLayoutBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @public (undocumented)
+// @public
 export interface ScaffolderLayoutBlueprintParams {
   // (undocumented)
   layout: LayoutOptions;
 }
 
-// @public (undocumented)
+// @public
 export const scaffolderLayoutRef: ConfigurableExtensionDataRef<
   LayoutOptions<any>,
   'scaffolder.layout-option',

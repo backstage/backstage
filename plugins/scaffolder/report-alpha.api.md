@@ -574,7 +574,7 @@ const _default: OverridableFrontendPlugin<
           >,
           {
             singleton: false;
-            optional: false;
+            optional: true;
             internal: false;
           }
         >;

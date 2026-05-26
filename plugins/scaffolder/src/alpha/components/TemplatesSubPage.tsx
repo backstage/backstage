@@ -197,7 +197,16 @@ export function TemplatesSubPage(props: {
     ),
   ] as FieldExtensionOptions[];
 
-  const mergedLayouts = [...customLayouts, ...(props.layouts ?? [])];
+  const mergedLayouts = useMemo(() => {
+    const layoutsByName = new Map<string, LayoutOptions>();
+    for (const layout of customLayouts) {
+      layoutsByName.set(layout.name, layout);
+    }
+    for (const layout of props.layouts ?? []) {
+      layoutsByName.set(layout.name, layout);
+    }
+    return Array.from(layoutsByName.values());
+  }, [customLayouts, props.layouts]);
 
   return (
     <Routes>
