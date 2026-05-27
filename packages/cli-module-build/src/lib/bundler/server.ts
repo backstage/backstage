@@ -17,9 +17,10 @@
 import { AppConfig } from '@backstage/config';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { compact } from 'lodash';
 import { resolve as resolvePath } from 'node:path';
 import openBrowser from 'react-dev-utils/openBrowser';
-import { rspack } from '@rspack/core';
+import { Configuration, rspack } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
 
 import { targetPaths } from '@backstage/cli-common';
@@ -33,6 +34,12 @@ import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
+  const publicPaths = await resolveOptionalBundlingPaths({
+    targetDir: options.targetDir,
+    entry: 'src/index-public-experimental',
+    dist: 'dist/public',
+  });
+
   const targetPkg = await fs.readJson(paths.targetPackageJson);
 
   if (options.verifyVersions) {
@@ -155,7 +162,21 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       ...moduleFederationSharedDependenciesEntryPoint,
     ],
     moduleFederationRemote: options.moduleFederationRemote,
+    appMode: publicPaths ? 'protected' : 'public',
   });
+
+  let publicConfig: Configuration | undefined;
+  if (publicPaths) {
+    console.log(
+      chalk.yellow(
+        `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
+      ),
+    );
+    publicConfig = await createConfig(publicPaths, {
+      ...commonConfigOptions,
+      appMode: 'public',
+    });
+  }
 
   const bundler = (webpack ?? rspack) as typeof rspack;
   const DevServer: typeof RspackDevServer = webpack
@@ -166,20 +187,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     console.log(chalk.yellow(`⚠️  WARNING: Using legacy WebPack dev server.`));
   }
 
-  const publicPaths = await resolveOptionalBundlingPaths({
-    entry: 'src/index-public-experimental',
-    dist: 'dist/public',
-  });
-  if (publicPaths) {
-    console.log(
-      chalk.yellow(
-        `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
-      ),
-    );
-  }
-  const compiler = publicPaths
-    ? bundler([config, await createConfig(publicPaths, commonConfigOptions)])
-    : bundler(config);
+  const compiler = bundler(compact([config, publicConfig]));
 
   devServer = new DevServer(
     {
