@@ -30,9 +30,9 @@ export * from './components/FullPage';
 // UI components
 export * from './components/Accordion';
 export * from './components/Alert';
-export * from './components/Breadcrumbs';
 export * from './components/Avatar';
 export * from './components/Badge';
+export * from './components/Breadcrumbs';
 export * from './components/Button';
 export * from './components/Card';
 export * from './components/DatePicker';
