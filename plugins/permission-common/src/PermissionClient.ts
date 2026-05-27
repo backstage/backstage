@@ -180,6 +180,10 @@ export class PermissionClient implements PermissionEvaluator {
     requests: AuthorizeByNamePermissionRequest[],
     options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
+    if (!this.enabled) {
+      return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
+    }
+
     try {
       return await this.makeRequest(
         requests,

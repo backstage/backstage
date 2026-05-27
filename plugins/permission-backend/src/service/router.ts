@@ -21,6 +21,7 @@ import { InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   AuthorizeByNameResponse,
+  AuthorizePermissionResponse,
   AuthorizeResult,
   EvaluatePermissionResponse,
   IdentifiedPermissionMessage,
@@ -264,7 +265,7 @@ export async function createRouter(
       // loader); an unknown name almost always means the calling deployment
       // is missing the plugin that registers it, in which case denying access
       // is the safer default.
-      const denied: IdentifiedPermissionMessage<EvaluatePermissionResponse>[] =
+      const denied: IdentifiedPermissionMessage<AuthorizePermissionResponse>[] =
         [];
       const resolved: ResolvedRequest[] = [];
       for (const item of items) {
@@ -283,20 +284,29 @@ export async function createRouter(
         });
       }
 
+      // The by-name route always returns definitive ALLOW/DENY decisions.
+      // Resource permissions therefore require a resourceRef from all callers
+      // (direct users for enumeration safety, services so that conditional
+      // decisions can be resolved via applyConditions before serialization).
       if (
-        (auth.isPrincipal(credentials, 'none') && !disabledDefaultAuthPolicy) ||
-        (auth.isPrincipal(credentials, 'user') && !credentials.principal.actor)
+        resolved.some(
+          r =>
+            isResourcePermission(r.permission) && r.resourceRef === undefined,
+        )
       ) {
         if (
-          resolved.some(
-            r =>
-              isResourcePermission(r.permission) && r.resourceRef === undefined,
-          )
+          (auth.isPrincipal(credentials, 'none') &&
+            !disabledDefaultAuthPolicy) ||
+          (auth.isPrincipal(credentials, 'user') &&
+            !credentials.principal.actor)
         ) {
           throw new InputError(
             'Resource permissions require a resourceRef to be set. Direct user requests without a resourceRef are not allowed.',
           );
         }
+        throw new InputError(
+          'Resource permissions require a resourceRef to be set on the /authorize/by-name endpoint.',
+        );
       }
 
       const evaluated = await handleRequest(
@@ -312,13 +322,21 @@ export async function createRouter(
       // index without having to read `id` back.
       const byId = new Map<
         string,
-        IdentifiedPermissionMessage<EvaluatePermissionResponse>
+        IdentifiedPermissionMessage<AuthorizePermissionResponse>
       >();
       for (const entry of evaluated) {
-        byId.set(
-          entry.id,
-          entry as IdentifiedPermissionMessage<EvaluatePermissionResponse>,
-        );
+        const { id, result } = entry;
+        if (Array.isArray(result)) {
+          throw new Error(
+            `Batched resourceRef results are not supported by the /authorize/by-name endpoint (id ${id}).`,
+          );
+        }
+        if (result === AuthorizeResult.CONDITIONAL) {
+          throw new Error(
+            `Permission policy returned a conditional decision for ${id} on the /authorize/by-name endpoint, which only supports definitive decisions.`,
+          );
+        }
+        byId.set(id, { id, result });
       }
       for (const entry of denied) {
         byId.set(entry.id, entry);

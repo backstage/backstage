@@ -358,6 +358,22 @@ describe('PermissionClient', () => {
       ]);
     });
 
+    it('allows all without hitting the backend when permission.enabled is false', async () => {
+      const disabled = new PermissionClient({
+        discovery,
+        config: new ConfigReader({ permission: { enabled: false } }),
+      });
+      const response = await disabled.authorizeByName([
+        { name: 'catalog.entity.create' },
+        { name: 'catalog.entity.read', resourceRef: 'entity:test/foo' },
+      ]);
+      expect(response).toEqual([
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      expect(mockAuthorizeByNameHandler).not.toHaveBeenCalled();
+    });
+
     it('does not fall back on non-404 errors from /authorize/by-name', async () => {
       const fallbackClient = new PermissionClient({
         discovery,

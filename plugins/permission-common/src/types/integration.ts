@@ -15,7 +15,7 @@
  */
 
 import zodToJsonSchema from 'zod-to-json-schema';
-import { EvaluatePermissionResponse, PermissionMessageBatch } from './api';
+import { AuthorizePermissionResponse, PermissionMessageBatch } from './api';
 import { Permission } from './permission';
 
 /**
@@ -74,9 +74,12 @@ export type AuthorizeByNameRequest = PermissionMessageBatch<{
 /**
  * Response payload for the permission backend's `POST /authorize/by-name`
  * endpoint. Each entry mirrors the `id` of the corresponding request entry.
- * Unknown permission names resolve to a `DENY` decision.
+ * Unknown permission names resolve to a `DENY` decision. Decisions are
+ * always definitive (`ALLOW` or `DENY`): conditional decisions are rejected
+ * for non-resource permissions, and resolved via `applyConditions` when a
+ * `resourceRef` is present.
  *
  * @public
  */
 export type AuthorizeByNameResponse =
-  PermissionMessageBatch<EvaluatePermissionResponse>;
+  PermissionMessageBatch<AuthorizePermissionResponse>;

@@ -444,10 +444,10 @@ const RestrictedCard = PermissionExampleCardBlueprint.make({
 // not demonstrated here. The permission backend rejects user-initiated
 // authorize requests for resource permissions without a `resourceRef` (to
 // prevent enumeration), and an `if` predicate has no resource context to
-// provide. The predicate loader detects resource permissions resolved from the
-// installed catalog and treats them as ALLOW so the extension still renders;
-// the real gate should be placed at the resource itself, not on the
-// extension's visibility.
+// provide. Referencing a resource permission from an extension predicate
+// will cause the predicate loader to fail when it calls `authorizeByName`
+// without a `resourceRef`; the real gate should be placed at the resource
+// itself, not on the extension's visibility.
 
 // Feature flag-gated card — only instantiated when the user has
 // the experimental-card FF enabled.
