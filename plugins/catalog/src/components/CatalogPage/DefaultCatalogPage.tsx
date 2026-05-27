@@ -135,7 +135,7 @@ function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
         }
       />
       <Container>
-        <Content style={{ paddingLeft: 0, paddingRight: 0 }}>
+        <Content noPadding>
           <CatalogPageContent {...props} />
         </Content>
       </Container>
