@@ -36,6 +36,25 @@ export interface PageLayoutTab {
 export type PageTab = PageLayoutTab;
 
 /**
+ * A node in the plugin's route tree, used to derive breadcrumbs.
+ * @public
+ */
+export interface PageRouteTreeNode {
+  title: string;
+  path: string;
+  children?: PageRouteTreeNode[];
+}
+
+/**
+ * A breadcrumb segment for plugin page navigation.
+ * @public
+ */
+export interface PageLayoutBreadcrumb {
+  label: string;
+  href?: string;
+}
+
+/**
  * Props for the PageLayout component
  * @public
  */
@@ -46,6 +65,8 @@ export interface PageLayoutProps {
   titleLink?: string;
   headerActions?: Array<JSX.Element | null>;
   tabs?: PageLayoutTab[];
+  routeTree?: PageRouteTreeNode[];
+  breadcrumbs?: PageLayoutBreadcrumb[];
   children?: ReactNode;
 }
 
@@ -53,7 +74,7 @@ export interface PageLayoutProps {
  * Default implementation of PageLayout using plain HTML elements
  */
 function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
-  const { title, icon, headerActions, tabs, children } = props;
+  const { title, icon, headerActions, tabs, breadcrumbs, children } = props;
 
   return (
     <div
@@ -73,6 +94,32 @@ function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
             flexShrink: 0,
           }}
         >
+          {breadcrumbs && breadcrumbs.length > 0 && (
+            <nav
+              aria-label="Breadcrumb"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '8px 24px 0',
+                fontSize: '13px',
+                color: '#666',
+              }}
+            >
+              {breadcrumbs.map((crumb, i) => (
+                <span key={i}>
+                  {i > 0 && <span aria-hidden="true"> / </span>}
+                  {crumb.href ? (
+                    <a href={crumb.href} style={{ color: '#666' }}>
+                      {crumb.label}
+                    </a>
+                  ) : (
+                    <span>{crumb.label}</span>
+                  )}
+                </span>
+              ))}
+            </nav>
+          )}
           {title && (
             <div
               style={{

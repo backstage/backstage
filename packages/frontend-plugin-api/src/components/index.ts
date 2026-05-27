@@ -29,5 +29,7 @@ export {
   PageLayout,
   type PageLayoutProps,
   type PageLayoutTab,
+  type PageLayoutBreadcrumb,
+  type PageRouteTreeNode,
   type PageTab,
 } from './PageLayout';

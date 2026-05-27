@@ -34,6 +34,7 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { RouteTreeNode } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
@@ -1181,6 +1182,13 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              RouteTreeNode[],
+              'core.routing.children',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
@@ -1307,6 +1315,13 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               IconElement,
               'core.icon',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              RouteTreeNode[],
+              'core.routing.children',
               {
                 optional: true;
               }

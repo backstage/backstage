@@ -22,6 +22,7 @@ import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
+import { RouteTreeNode as RouteTreeNode_2 } from '@backstage/frontend-plugin-api';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 import type { z } from 'zod/v3';
@@ -422,6 +423,11 @@ export const coreExtensionData: {
   routeRef: ConfigurableExtensionDataRef_2<
     RouteRef<AnyRouteRefParams_2>,
     'core.routing.ref',
+    {}
+  >;
+  routeChildren: ConfigurableExtensionDataRef_2<
+    RouteTreeNode[],
+    'core.routing.children',
     {}
   >;
 };
@@ -2212,6 +2218,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
           {
             optional: true;
           }
+        >
+      | ConfigurableExtensionDataRef_2<
+          RouteTreeNode_2[],
+          'core.routing.children',
+          {
+            optional: true;
+          }
         >,
       {
         singleton: false;
@@ -2238,7 +2251,17 @@ export const PageLayout: {
 };
 
 // @public
+export interface PageLayoutBreadcrumb {
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
 export interface PageLayoutProps {
+  // (undocumented)
+  breadcrumbs?: PageLayoutBreadcrumb[];
   // (undocumented)
   children?: ReactNode;
   // (undocumented)
@@ -2247,6 +2270,8 @@ export interface PageLayoutProps {
   icon?: IconElement;
   // (undocumented)
   noHeader?: boolean;
+  // (undocumented)
+  routeTree?: PageRouteTreeNode[];
   // (undocumented)
   tabs?: PageLayoutTab[];
   // (undocumented)
@@ -2265,6 +2290,16 @@ export interface PageLayoutTab {
   id: string;
   // (undocumented)
   label: string;
+}
+
+// @public
+export interface PageRouteTreeNode {
+  // (undocumented)
+  children?: PageRouteTreeNode[];
+  // (undocumented)
+  path: string;
+  // (undocumented)
+  title: string;
 }
 
 // @public @deprecated (undocumented)
@@ -2436,6 +2471,16 @@ export const routeResolutionApiRef: ApiRef_2<
 };
 
 // @public
+export interface RouteTreeNode {
+  // (undocumented)
+  children?: RouteTreeNode[];
+  // (undocumented)
+  path: string;
+  // (undocumented)
+  title: string;
+}
+
+// @public
 export type SessionApi = {
   signIn(): Promise<void>;
   signOut(): Promise<void>;
@@ -2517,8 +2562,47 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
         {
           optional: true;
         }
+      >
+    | ExtensionDataRef_2<
+        RouteTreeNode_2[],
+        'core.routing.children',
+        {
+          optional: true;
+        }
       >;
-  inputs: {};
+  inputs: {
+    pages: ExtensionInput_2<
+      | ConfigurableExtensionDataRef_2<string, 'core.title', {}>
+      | ConfigurableExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef_2<string, 'core.routing.path', {}>
+      | ConfigurableExtensionDataRef_2<
+          RouteRef<AnyRouteRefParams_2>,
+          'core.routing.ref',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef_2<
+          IconElement,
+          'core.icon',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef_2<
+          RouteTreeNode_2[],
+          'core.routing.children',
+          {
+            optional: true;
+          }
+        >,
+      {
+        singleton: false;
+        optional: false;
+        internal: false;
+      }
+    >;
+  };
   config: {
     path: string | undefined;
     title: string | undefined;

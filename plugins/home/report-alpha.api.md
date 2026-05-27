@@ -18,6 +18,7 @@ import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteTreeNode } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha
@@ -134,6 +135,13 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               IconElement,
               'core.icon',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              RouteTreeNode[],
+              'core.routing.children',
               {
                 optional: true;
               }

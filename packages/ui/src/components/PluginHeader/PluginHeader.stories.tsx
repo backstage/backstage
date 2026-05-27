@@ -380,3 +380,63 @@ export const WithTabsPrefixMatchingDeep = meta.story({
     </MemoryRouter>
   ),
 });
+
+export const WithBreadcrumbs = meta.story({
+  args: {
+    title: 'With Breadcrumbs',
+    tabs: [
+      {
+        id: 'catalog',
+        label: 'Catalog',
+        href: '/catalog',
+        matchStrategy: 'prefix',
+      },
+      {
+        id: 'users',
+        label: 'Users',
+        href: '/catalog/users',
+        matchStrategy: 'prefix',
+      },
+      {
+        id: 'components',
+        label: 'Components',
+        href: '/catalog/components',
+        matchStrategy: 'prefix',
+      },
+    ],
+  },
+  render: args => (
+    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
+      <BUIProvider>
+        <PluginHeader {...args} />
+        <Container mt="6">
+          <Text as="p">
+            <strong>Current URL:</strong> /catalog/users/john/details
+          </Text>
+          <br />
+          <Text as="p">
+            Active tab is <strong>Users</strong> because:
+          </Text>
+          <ul>
+            <li>
+              <strong>Catalog</strong>: Matches since URL starts with /catalog
+            </li>
+            <li>
+              <strong>Users</strong>: Is active since URL starts with
+              /catalog/users, and is more specific (has more url segments) than
+              "Catalog"
+            </li>
+            <li>
+              <strong>Components</strong>: not active (URL doesn't start with
+              /catalog/components)
+            </li>
+          </ul>
+          <Text as="p">
+            This demonstrates how prefix matching works with deeply nested
+            routes.
+          </Text>
+        </Container>
+      </BUIProvider>
+    </MemoryRouter>
+  ),
+});

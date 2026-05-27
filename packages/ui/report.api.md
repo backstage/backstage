@@ -495,7 +495,6 @@ export const BreadcrumbDefinition: {
     readonly label: 'bui-BreadcrumbLabel';
     readonly current: 'bui-BreadcrumbLabel--current';
     readonly separator: 'bui-BreadcrumbSeparator';
-    readonly current: 'bui-BreadcrumbCurrent';
   };
   readonly propDefs: {
     readonly href: {};
@@ -2530,6 +2529,14 @@ export interface PasswordFieldProps
 export const PluginHeader: (props: PluginHeaderProps) => JSX_2.Element;
 
 // @public
+export interface PluginHeaderBreadcrumb {
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
 export const PluginHeaderDefinition: {
   readonly styles: {
     readonly [key: string]: string;
@@ -2548,6 +2555,7 @@ export const PluginHeaderDefinition: {
     readonly title: {};
     readonly titleLink: {};
     readonly customActions: {};
+    readonly breadcrumbs: {};
     readonly tabs: {};
     readonly onTabSelectionChange: {};
     readonly className: {};
@@ -2556,6 +2564,8 @@ export const PluginHeaderDefinition: {
 
 // @public
 export interface PluginHeaderOwnProps {
+  // (undocumented)
+  breadcrumbs?: PluginHeaderBreadcrumb[];
   // (undocumented)
   className?: string;
   // (undocumented)

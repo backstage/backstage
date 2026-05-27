@@ -16,6 +16,7 @@
 
 import type { PluginHeaderProps } from './types';
 import { Tabs, TabList, Tab } from '../Tabs';
+import { Breadcrumbs, Breadcrumb } from '../Breadcrumbs';
 import { useDefinition } from '../../hooks/useDefinition';
 import { PluginHeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
@@ -48,6 +49,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
     title,
     titleLink,
     customActions,
+    breadcrumbs,
     onTabSelectionChange,
   } = ownProps;
 
@@ -123,6 +125,8 @@ export const PluginHeader = (props: PluginHeaderProps) => {
 
   const titleText = title || 'Your plugin';
 
+  const hasBreadcrumbs = breadcrumbs && breadcrumbs.length > 0;
+
   return (
     <div ref={rootRef} className={classes.root}>
       <div className={classes.toolbar} data-has-tabs={hasTabs ? '' : undefined}>
@@ -130,17 +134,27 @@ export const PluginHeader = (props: PluginHeaderProps) => {
           <Box bg="neutral" className={classes.toolbarIcon} aria-hidden="true">
             {icon || <RiShapesLine />}
           </Box>
-          <h1 className={classes.toolbarName}>
-            {titleLink ? (
-              <Link href={titleLink} standalone variant="body-medium">
-                {titleText}
-              </Link>
-            ) : (
-              <Text as="span" variant="body-medium">
-                {titleText}
-              </Text>
-            )}
-          </h1>
+          {hasBreadcrumbs ? (
+            <Breadcrumbs className={classes.toolbarName}>
+              {breadcrumbs.map((crumb, i) => (
+                <Breadcrumb key={i} href={crumb.href}>
+                  {crumb.label}
+                </Breadcrumb>
+              ))}
+            </Breadcrumbs>
+          ) : (
+            <h1 className={classes.toolbarName}>
+              {titleLink ? (
+                <Link href={titleLink} standalone variant="body-medium">
+                  {titleText}
+                </Link>
+              ) : (
+                <Text as="span" variant="body-medium">
+                  {titleText}
+                </Text>
+              )}
+            </h1>
+          )}
         </div>
         <div className={classes.toolbarControls}>{actionChildren}</div>
       </div>

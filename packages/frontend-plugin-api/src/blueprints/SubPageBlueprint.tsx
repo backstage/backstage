@@ -15,14 +15,20 @@
  */
 
 import { z } from 'zod/v4';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import { coreExtensionData, createExtensionBlueprint } from '../wiring';
+import {
+  coreExtensionData,
+  createExtensionBlueprint,
+  createExtensionInput,
+} from '../wiring';
 import { ExtensionBoundary } from '../components';
 
 /**
  * Creates extensions that are sub-page React components attached to a parent page.
  * Sub-pages are rendered as tabs within the parent page's header.
+ * Sub-pages can also accept their own child sub-pages for nested routing.
  *
  * @public
  * @example
@@ -44,12 +50,23 @@ import { ExtensionBoundary } from '../components';
 export const SubPageBlueprint = createExtensionBlueprint({
   kind: 'sub-page',
   attachTo: { relative: { kind: 'page' }, input: 'pages' },
+  inputs: {
+    pages: createExtensionInput([
+      coreExtensionData.routePath,
+      coreExtensionData.reactElement,
+      coreExtensionData.title,
+      coreExtensionData.routeRef.optional(),
+      coreExtensionData.icon.optional(),
+      coreExtensionData.routeChildren.optional(),
+    ]),
+  },
   output: [
     coreExtensionData.routePath,
     coreExtensionData.reactElement,
     coreExtensionData.title,
     coreExtensionData.routeRef.optional(),
     coreExtensionData.icon.optional(),
+    coreExtensionData.routeChildren.optional(),
   ],
   configSchema: {
     path: z.string().optional(),
@@ -81,13 +98,46 @@ export const SubPageBlueprint = createExtensionBlueprint({
        */
       routeRef?: RouteRef;
     },
-    { config, node },
+    { config, node, inputs },
   ) {
     yield coreExtensionData.routePath(config.path ?? params.path);
     yield coreExtensionData.title(config.title ?? params.title);
-    yield coreExtensionData.reactElement(
-      ExtensionBoundary.lazy(node, params.loader),
-    );
+
+    if (inputs.pages.length > 0) {
+      const lazyContent = ExtensionBoundary.lazy(node, params.loader);
+      const firstChildPath = inputs.pages[0]?.get(coreExtensionData.routePath);
+
+      const SubPageWithChildren = () => (
+        <>
+          {lazyContent}
+          <Routes>
+            {firstChildPath && (
+              <Route index element={<Navigate to={firstChildPath} replace />} />
+            )}
+            {inputs.pages.map((page, index) => {
+              const path = page.get(coreExtensionData.routePath);
+              const element = page.get(coreExtensionData.reactElement);
+              return <Route key={index} path={`${path}/*`} element={element} />;
+            })}
+          </Routes>
+        </>
+      );
+
+      yield coreExtensionData.reactElement(<SubPageWithChildren />);
+
+      yield coreExtensionData.routeChildren(
+        inputs.pages.map(page => ({
+          path: page.get(coreExtensionData.routePath),
+          title: page.get(coreExtensionData.title),
+          children: page.get(coreExtensionData.routeChildren),
+        })),
+      );
+    } else {
+      yield coreExtensionData.reactElement(
+        ExtensionBoundary.lazy(node, params.loader),
+      );
+    }
+
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);
     }

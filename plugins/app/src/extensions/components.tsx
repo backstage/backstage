@@ -19,6 +19,7 @@ import {
   ErrorDisplay as SwappableErrorDisplay,
   PageLayout as SwappablePageLayout,
   type PageLayoutProps,
+  type PageRouteTreeNode,
 } from '@backstage/frontend-plugin-api';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import {
@@ -26,10 +27,54 @@ import {
   ErrorPanel,
   Progress as ProgressComponent,
 } from '@backstage/core-components';
-import { PluginHeader } from '@backstage/ui';
+import { PluginHeader, type PluginHeaderBreadcrumb } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';
-import { useResolvedPath } from 'react-router-dom';
+import { useResolvedPath, useLocation } from 'react-router-dom';
+
+function buildBreadcrumbs(
+  routeTree: PageRouteTreeNode[] | undefined,
+  pathname: string,
+  parentPath: string,
+  title: string | undefined,
+  titleLink: string | undefined,
+): PluginHeaderBreadcrumb[] | undefined {
+  if (!routeTree || routeTree.length === 0) return undefined;
+
+  const segments: PluginHeaderBreadcrumb[] = [
+    { label: title || 'Plugin', href: titleLink ?? parentPath },
+  ];
+
+  let currentNodes = routeTree;
+  let currentBasePath = parentPath;
+
+  while (currentNodes.length > 0) {
+    const match = currentNodes
+      .map(node => {
+        const nodePath = `${currentBasePath}/${node.path}`.replace(
+          /\/{2,}/g,
+          '/',
+        );
+        return { node, nodePath };
+      })
+      .filter(({ nodePath }) => pathname.startsWith(nodePath))
+      .sort((a, b) => b.nodePath.length - a.nodePath.length)[0];
+
+    if (!match) break;
+
+    segments.push({
+      label: match.node.title,
+      href: match.nodePath,
+    });
+
+    currentBasePath = match.nodePath;
+    currentNodes = match.node.children ?? [];
+  }
+
+  if (segments.length <= 1) return undefined;
+
+  return segments;
+}
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -82,10 +127,12 @@ export const PageLayout = SwappableComponentBlueprint.make({
           titleLink,
           headerActions,
           tabs,
+          routeTree,
           children,
         } = props;
         // TODO(Rugvip): Different solution to this path handling would be good
         const parentPath = useResolvedPath('.').pathname.replace(/\/$/, '');
+        const { pathname } = useLocation();
         const resolvedTabs = useMemo(
           () =>
             tabs?.map(tab => ({
@@ -96,6 +143,12 @@ export const PageLayout = SwappableComponentBlueprint.make({
               matchStrategy: 'prefix' as const,
             })),
           [tabs, parentPath],
+        );
+
+        const breadcrumbs = useMemo(
+          () =>
+            buildBreadcrumbs(routeTree, pathname, parentPath, title, titleLink),
+          [routeTree, pathname, parentPath, title, titleLink],
         );
 
         if (noHeader) {
@@ -109,6 +162,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
               icon={icon}
               titleLink={titleLink}
               tabs={resolvedTabs}
+              breadcrumbs={breadcrumbs}
               customActions={headerActions}
             />
             {children}

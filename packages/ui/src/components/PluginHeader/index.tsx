@@ -17,6 +17,7 @@
 export { PluginHeader } from './PluginHeader';
 export { PluginHeaderDefinition } from './definition';
 export type {
+  PluginHeaderBreadcrumb,
   PluginHeaderOwnProps,
   PluginHeaderProps,
   HeaderTab,

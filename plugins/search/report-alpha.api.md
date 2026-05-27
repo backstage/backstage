@@ -16,6 +16,7 @@ import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/core-plugin-api';
+import { RouteTreeNode } from '@backstage/frontend-plugin-api';
 import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
@@ -99,6 +100,13 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               IconElement,
               'core.icon',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              RouteTreeNode[],
+              'core.routing.children',
               {
                 optional: true;
               }
@@ -245,6 +253,13 @@ export const searchPage: OverridableExtensionDefinition<{
       | ConfigurableExtensionDataRef<
           IconElement,
           'core.icon',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          RouteTreeNode[],
+          'core.routing.children',
           {
             optional: true;
           }

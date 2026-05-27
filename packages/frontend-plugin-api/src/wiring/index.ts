@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { coreExtensionData } from './coreExtensionData';
+export { coreExtensionData, type RouteTreeNode } from './coreExtensionData';
 export { createExtension } from './createExtension';
 export {
   type ExtensionDefinition,

@@ -24,7 +24,12 @@ import {
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
+import {
+  ExtensionBoundary,
+  PageLayout,
+  type PageLayoutTab,
+  type PageRouteTreeNode,
+} from '../components';
 import { useApi } from '../apis/system';
 import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
@@ -60,6 +65,7 @@ export const PageBlueprint = createExtensionBlueprint({
       coreExtensionData.reactElement,
       coreExtensionData.title.optional(),
       coreExtensionData.icon.optional(),
+      coreExtensionData.routeChildren.optional(),
     ]),
   },
   output: [
@@ -133,6 +139,14 @@ export const PageBlueprint = createExtensionBlueprint({
         };
       });
 
+      const routeTree: PageRouteTreeNode[] = inputs.pages.map(page => ({
+        path: page.get(coreExtensionData.routePath),
+        title:
+          page.get(coreExtensionData.title) ||
+          page.get(coreExtensionData.routePath),
+        children: page.get(coreExtensionData.routeChildren),
+      }));
+
       const PageContent = () => {
         const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
         const routeResolutionApi = useApi(routeResolutionApiRef);
@@ -146,6 +160,7 @@ export const PageBlueprint = createExtensionBlueprint({
             title={resolvedTitle}
             icon={resolvedIcon}
             tabs={tabs}
+            routeTree={routeTree}
             titleLink={titleLink}
             headerActions={headerActions}
           >

@@ -19,6 +19,16 @@ import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing/RouteRef';
 import { createExtensionDataRef } from './createExtensionDataRef';
 
+/**
+ * A node in a plugin's route tree, used to derive breadcrumbs.
+ * @public
+ */
+export interface RouteTreeNode {
+  title: string;
+  path: string;
+  children?: RouteTreeNode[];
+}
+
 /** @public */
 export const coreExtensionData = {
   title: createExtensionDataRef<string>().with({ id: 'core.title' }),
@@ -29,4 +39,7 @@ export const coreExtensionData = {
   }),
   routePath: createExtensionDataRef<string>().with({ id: 'core.routing.path' }),
   routeRef: createExtensionDataRef<RouteRef>().with({ id: 'core.routing.ref' }),
+  routeChildren: createExtensionDataRef<RouteTreeNode[]>().with({
+    id: 'core.routing.children',
+  }),
 };
