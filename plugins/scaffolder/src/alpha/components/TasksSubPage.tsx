@@ -18,6 +18,8 @@ import { Routes, Route } from 'react-router-dom';
 import { Content } from '@backstage/core-components';
 import { OngoingTaskBody } from '../../components/OngoingTask';
 import { ListTaskPageContent } from '../../components/ListTasksPage';
+import { ComponentType } from 'react';
+import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-common';
 
 /**
  * Sub-page for the tasks tab. Renders the task list at the index route
@@ -25,7 +27,11 @@ import { ListTaskPageContent } from '../../components/ListTasksPage';
  *
  * @internal
  */
-export function TasksSubPage() {
+export function TasksSubPage(props: {
+  TemplateOuputsComponent?: ComponentType<{
+    output?: ScaffolderTaskOutput;
+  }>;
+}) {
   return (
     <Routes>
       <Route
@@ -36,7 +42,14 @@ export function TasksSubPage() {
           </Content>
         }
       />
-      <Route path=":taskId" element={<OngoingTaskBody />} />
+      <Route
+        path=":taskId"
+        element={
+          <OngoingTaskBody
+            TemplateOutputsComponent={props.TemplateOuputsComponent}
+          />
+        }
+      />
     </Routes>
   );
 }
