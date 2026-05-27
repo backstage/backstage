@@ -41,8 +41,8 @@ export const BreadcrumbDefinition = defineComponent<BreadcrumbOwnProps>()({
   styles,
   classNames: {
     root: 'bui-Breadcrumb',
-    segment: 'bui-BreadcrumbSegment',
-    current: 'bui-BreadcrumbSegment--current',
+    label: 'bui-BreadcrumbLabel',
+    current: 'bui-BreadcrumbLabel--current',
     separator: 'bui-BreadcrumbSeparator',
   },
   propDefs: {

@@ -22,6 +22,10 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
  * Useful for cases such as:
  *   - only applying a tooltip if a text has been truncated
  *
+ * Checks on mount and on each `checkTruncation` call (wire to hover/focus).
+ * No ResizeObserver — `truncated` may be stale between interactions, but is
+ * always fresh at the moment a tooltip would show.
+ *
  * @example
  * ```tsx
  * const { ref, truncated, checkTruncation } = useIsTruncated();

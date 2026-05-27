@@ -33,7 +33,7 @@
     min-width: 0;
   }
 
-  .bui-BreadcrumbSegment {
+  .bui-BreadcrumbLabel {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -46,7 +46,7 @@
     }
   }
 
-  a.bui-BreadcrumbSegment {
+  a.bui-BreadcrumbLabel {
     cursor: pointer;
 
     &[data-hovered] {
@@ -54,7 +54,7 @@
     }
   }
 
-  .bui-BreadcrumbSegment--current {
+  .bui-BreadcrumbLabel--current {
     max-width: none;
     font-weight: var(--bui-font-weight-bold);
   }

@@ -29,14 +29,13 @@ import type { BreadcrumbProps, BreadcrumbsProps } from './types';
 function BreadcrumbContent(props: {
   href?: string;
   isCurrent: boolean;
-  segmentClassName: string;
+  labelClassName: string;
   currentClassName: string;
   children: React.ReactNode;
 }) {
-  const { href, isCurrent, segmentClassName, currentClassName, children } =
-    props;
+  const { href, isCurrent, labelClassName, currentClassName, children } = props;
   const { ref, truncated, checkTruncation } = useIsTruncated();
-  const className = `${segmentClassName}${
+  const className = `${labelClassName}${
     isCurrent ? ` ${currentClassName}` : ''
   }`;
 
@@ -91,7 +90,7 @@ export const Breadcrumb = (props: BreadcrumbProps) => {
           <BreadcrumbContent
             href={href}
             isCurrent={isCurrent}
-            segmentClassName={classes.segment}
+            labelClassName={classes.label}
             currentClassName={classes.current}
           >
             {children}

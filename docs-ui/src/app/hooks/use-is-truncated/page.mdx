@@ -13,7 +13,7 @@ import { UseIsTruncatedExample } from './components';
 
 ## Usage
 
-Attach the `ref` to the element with CSS truncation (`text-overflow: ellipsis`). Call `checkTruncation` on hover or focus to update the `truncated` state. This is useful for conditionally showing a tooltip only when text is actually clipped.
+Attach the `ref` to an element with `text-overflow: ellipsis`. The hook checks truncation on mount and again each time you call `checkTruncation` (wire it to hover/focus). This avoids the cost of a ResizeObserver per element — `truncated` may be stale between interactions, but it's always fresh at the moment a tooltip would show.
 
 <Snippet
   align="center"

@@ -492,7 +492,8 @@ export const BreadcrumbDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Breadcrumb';
-    readonly link: 'bui-BreadcrumbLink';
+    readonly label: 'bui-BreadcrumbLabel';
+    readonly current: 'bui-BreadcrumbLabel--current';
     readonly separator: 'bui-BreadcrumbSeparator';
     readonly current: 'bui-BreadcrumbCurrent';
   };

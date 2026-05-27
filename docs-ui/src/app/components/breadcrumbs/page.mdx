@@ -40,7 +40,7 @@ import { BreadcrumbsDefinition, BreadcrumbDefinition } from '../../../utils/defi
 
 ### Truncation
 
-Non-current segments are capped at a max width. Overflowing text is truncated with an ellipsis, and a tooltip appears on hover. The current (last) segment has no max width and is displayed in bold.
+Non-current segments are capped at a max width. Overflowing text is truncated with an ellipsis. When a segment is truncated, a tooltip showing the full text appears on hover or focus. The current (last) segment has no max width and is displayed in bold — but if its container is constrained, it can still truncate and will also show a tooltip.
 
 <Snippet
   align="center"
