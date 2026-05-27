@@ -119,7 +119,7 @@ export const scaffolderTasksSubPage = SubPageBlueprint.makeWithOverrides({
             scaffolderTemplateOutputsComponentRef,
           );
         return import('./components/TasksSubPage').then(m => (
-          <m.TasksSubPage TemplateOuputsComponent={TemplateOutputsComponent} />
+          <m.TasksSubPage TemplateOutputsComponent={TemplateOutputsComponent} />
         ));
       },
     });

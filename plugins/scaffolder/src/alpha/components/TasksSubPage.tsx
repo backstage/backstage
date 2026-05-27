@@ -28,7 +28,7 @@ import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-common';
  * @internal
  */
 export function TasksSubPage(props: {
-  TemplateOuputsComponent?: ComponentType<{
+  TemplateOutputsComponent?: ComponentType<{
     output?: ScaffolderTaskOutput;
   }>;
 }) {
@@ -46,7 +46,7 @@ export function TasksSubPage(props: {
         path=":taskId"
         element={
           <OngoingTaskBody
-            TemplateOutputsComponent={props.TemplateOuputsComponent}
+            TemplateOutputsComponent={props.TemplateOutputsComponent}
           />
         }
       />

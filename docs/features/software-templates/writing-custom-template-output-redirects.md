@@ -109,7 +109,7 @@ import { testTemplateOutputRedirect } from './TestTemplateOutputRedirect';
 
 const scaffolderTemplateOutputsModule = createFrontendModule({
   pluginId: 'scaffolder',
-  extensions: [testTemplateOuputRedirect],
+  extensions: [testTemplateOutputRedirect],
 });
 
 const app = createApp({
