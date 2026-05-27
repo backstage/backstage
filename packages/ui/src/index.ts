@@ -75,6 +75,7 @@ export * from './types';
 export { useBreakpoint } from './hooks/useBreakpoint';
 export { useBgProvider, useBgConsumer, BgProvider } from './hooks/useBg';
 export type { BgContextValue, BgProviderProps } from './hooks/useBg';
+export { useIsTruncated } from './hooks/useIsTruncated';
 
 // Provider
 export { BUIProvider } from './provider';

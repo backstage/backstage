@@ -15,3 +15,4 @@
  */
 
 export * from './useDefinition';
+export { useIsTruncated } from './useIsTruncated';
