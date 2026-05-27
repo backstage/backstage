@@ -26,6 +26,11 @@ export const components: Page[] = [
     slug: 'box',
   },
   {
+    title: 'Breadcrumbs',
+    slug: 'breadcrumbs',
+    status: 'new',
+  },
+  {
     title: 'Button',
     slug: 'button',
   },
@@ -176,5 +181,10 @@ export const hooks: Page[] = [
   {
     title: 'useBreakpoint',
     slug: 'use-breakpoint',
+  },
+  {
+    title: 'useIsTruncated',
+    slug: 'use-is-truncated',
+    status: 'new',
   },
 ];

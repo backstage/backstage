@@ -1,0 +1,30 @@
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { PageTitle } from '@/components/PageTitle';
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { useIsTruncatedReturnDefs } from './props-definition';
+import { useIsTruncatedExampleSnippet } from './snippets';
+import { UseIsTruncatedExample } from './components';
+
+<PageTitle
+  title="useIsTruncated"
+  description="A hook to detect whether a text element is overflowing its container via CSS truncation."
+/>
+
+## Usage
+
+Attach the `ref` to the element with CSS truncation (`text-overflow: ellipsis`). Call `checkTruncation` on hover or focus to update the `truncated` state. This is useful for conditionally showing a tooltip only when text is actually clipped.
+
+<Snippet
+  align="center"
+  py={4}
+  height={80}
+  preview={<UseIsTruncatedExample />}
+  code={useIsTruncatedExampleSnippet}
+/>
+
+## Return Value
+
+<PropsTable data={useIsTruncatedReturnDefs} isHook />
+
+<ChangelogComponent hook="use-is-truncated" />

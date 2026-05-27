@@ -1,0 +1,76 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { breadcrumbsPropDefs, breadcrumbPropDefs } from './props-definition';
+import {
+  breadcrumbsUsageSnippet,
+  defaultSnippet,
+  truncationSnippet,
+  inheritsStyleSnippet,
+  mixedSegmentsSnippet,
+} from './snippets';
+import { Default, Truncation, InheritsStyle, MixedSegments } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { BreadcrumbsDefinition, BreadcrumbDefinition } from '../../../utils/definitions';
+
+<PageTitle
+  title="Breadcrumbs"
+  description="A navigation trail showing the current page's location within a hierarchy."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={breadcrumbsUsageSnippet} />
+
+## API reference
+
+### Breadcrumbs
+
+<PropsTable data={breadcrumbsPropDefs} />
+
+### Breadcrumb
+
+<PropsTable data={breadcrumbPropDefs} />
+
+## Examples
+
+### Truncation
+
+Non-current segments are capped at a max width. Overflowing text is truncated with an ellipsis, and a tooltip appears on hover. The current (last) segment has no max width and is displayed in bold.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Truncation />}
+  code={truncationSnippet}
+/>
+
+### Inherits style
+
+Breadcrumbs inherit font size and color from their parent, including the chevron separator which scales with the text.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<InheritsStyle />}
+  code={inheritsStyleSnippet}
+/>
+
+### Mixed segments
+
+Breadcrumbs can mix linked and plain-text segments. Segments without an `href` render as static text.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<MixedSegments />}
+  code={mixedSegmentsSnippet}
+/>
+
+<Theming definition={BreadcrumbsDefinition} />
+
+<ChangelogComponent component="breadcrumbs" />
