@@ -23,24 +23,25 @@ import { WrapperProviders } from './WrapperProviders';
 
 jest.setTimeout(60_000);
 
-describe('WrapperProviders', () => {
-  const applyDatabaseMigrations = jest.fn();
-  const databases = TestDatabases.create({
-    ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3', 'MYSQL_8'],
-  });
-  const config = new ConfigReader({});
-  const logger = mockServices.logger.mock();
-  const scheduler = {
-    scheduleTask: jest.fn(),
-  };
+const databases = TestDatabases.create({
+  ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3', 'MYSQL_8'],
+});
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+describe.each(databases.eachSupportedId())(
+  'WrapperProviders, %p',
+  databaseId => {
+    const applyDatabaseMigrations = jest.fn();
+    const config = new ConfigReader({});
+    const logger = mockServices.logger.mock();
+    const scheduler = {
+      scheduleTask: jest.fn(),
+    };
 
-  it.each(databases.eachSupportedId())(
-    'should initialize the providers in order, %p',
-    async databaseId => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should initialize the providers in order', async () => {
       const client = await databases.init(databaseId);
 
       const provider1: IncrementalEntityProvider<number, {}> = {
@@ -111,6 +112,6 @@ describe('WrapperProviders', () => {
           id: 'provider2',
         }),
       );
-    },
-  );
-});
+    });
+  },
+);

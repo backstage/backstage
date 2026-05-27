@@ -1,5 +1,14 @@
 # @backstage/filter-predicates
 
+## 0.1.3
+
+### Patch Changes
+
+- 691da8d: Filter predicates that mix operator keys (`$all`, `$any`, `$not`) with other keys are now rejected. Previously, a predicate like `{ kind: 'API', $not: { 'spec.type': 'dataset' } }` would silently drop the `kind` check. The correct form wraps conditions in `$all`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/config@1.3.8
+
 ## 0.1.3-next.0
 
 ### Patch Changes

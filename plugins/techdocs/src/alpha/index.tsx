@@ -21,7 +21,6 @@ import {
   createFrontendPlugin,
   ApiBlueprint,
   PageBlueprint,
-  NavItemBlueprint,
   PluginHeaderActionBlueprint,
   createExtensionInput,
   coreExtensionData,
@@ -139,6 +138,8 @@ const techDocsPage = PageBlueprint.make({
   params: {
     path: '/docs',
     routeRef: rootRouteRef,
+    title: 'Docs',
+    icon: <RiArticleLine />,
     loader: () =>
       import('./components/TechDocsIndexPageContent').then(m => (
         <m.TechDocsIndexPageContent />
@@ -265,15 +266,6 @@ const techDocsEntityContentEmptyState = createExtension({
   factory: () => [],
 });
 
-/** @alpha */
-const techDocsNavItem = NavItemBlueprint.make({
-  params: {
-    icon: () => <RiArticleLine />,
-    title: 'Docs',
-    routeRef: rootRouteRef,
-  },
-});
-
 const techDocsSupportAction = PluginHeaderActionBlueprint.make({
   params: defineParams =>
     defineParams({
@@ -293,7 +285,6 @@ export default createFrontendPlugin({
     techDocsClientApi,
     techDocsStorageApi,
     TechDocsAddonsApiExtension,
-    techDocsNavItem,
     techDocsSupportAction,
     techDocsPage,
     techDocsReaderPage,

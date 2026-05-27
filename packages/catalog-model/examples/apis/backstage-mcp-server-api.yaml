@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: backstage-mcp-server
+  description: An MCP server that exposes tools related to the Backstage ecosystem
+  tags:
+    - mcp
+    - ai
+spec:
+  type: mcp-server
+  lifecycle: experimental
+  owner: team-a
+  remotes:
+    - type: streamable-http
+      url: http://localhost:7007/api/mcp/v1

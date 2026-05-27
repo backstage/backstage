@@ -33,3 +33,7 @@ This is a (non-exhaustive) list of actions that are known to be part of the Acti
 - `scaffolder.list-scaffolder-tasks` (List Scaffolder Tasks): This allows you to list scaffolder tasks that have been created.
 - `scaffolder.execute-template` (Execute Scaffolder Template): Executes a Scaffolder template with its template ref and input parameter values.
 - `scaffolder.get-scaffolder-task-logs` (Get Scaffolder Task Logs): This allows you to fetch the logs of a given scaffolder task.
+
+### Search
+
+- `search.query` (Query Search Engine): Query the Backstage search engine for documents across all or selected document types.

@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "ApiV1alpha1McpServer",
+  "description": "An MCP (Model Context Protocol) server exposed as an API entity. See RFC backstage/backstage#32062.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "API",
+      "metadata": {
+        "name": "backstage-mcp-actions",
+        "title": "Backstage MCP Server",
+        "description": "Exposes tools related to the Backstage Ecosystem"
+      },
+      "spec": {
+        "type": "mcp-server",
+        "lifecycle": "experimental",
+        "owner": "backstage",
+        "remotes": [
+          {
+            "type": "streamable-http",
+            "url": "http://internal.backstage.company:7007/api/mcp-actions/v1"
+          }
+        ]
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
+        },
+        "kind": {
+          "enum": ["API"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["type", "lifecycle", "owner", "remotes"],
+          "properties": {
+            "type": {
+              "const": "mcp-server",
+              "description": "Discriminant for the MCP server specType."
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the MCP server.",
+              "examples": ["experimental", "production", "deprecated"],
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the MCP server.",
+              "examples": ["ai-platform-team", "user:john.johnson"],
+              "minLength": 1
+            },
+            "system": {
+              "type": "string",
+              "description": "An entity reference to the system that the MCP server belongs to.",
+              "minLength": 1
+            },
+            "remotes": {
+              "type": "array",
+              "minItems": 1,
+              "description": "Transport endpoints for the MCP server.",
+              "items": {
+                "type": "object",
+                "required": ["type", "url"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Transport type, e.g. streamable-http, stdio, sse.",
+                    "examples": ["streamable-http", "stdio", "sse"],
+                    "minLength": 1
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "Endpoint URL for the remote. For stdio transports this may be a command string.",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -129,26 +129,20 @@ A plugin might not always behave exactly the way you want. It could be that you 
 
 ```tsx
 import plugin from '@backstage/plugin-catalog';
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import { RiLayoutGridLine } from '@remixicon/react';
 
 export default plugin.withOverrides({
   // These overrides are merged with the original extensions
   extensions: [
-    // Override the catalog nav item to use a custom icon
-    plugin.getExtension('nav-item:catalog').override({
-      factory: origFactory => [
-        NavItemBlueprint.dataRefs.target({
-          ...origFactory().get(NavItemBlueprint.dataRefs.target),
-          icon: CustomCatalogIcon,
+    // Override the catalog index page with a custom icon and implementation
+    plugin.getExtension('page:catalog').override({
+      factory: origFactory =>
+        origFactory({
+          icon: <RiLayoutGridLine />,
+          loader: () =>
+            import('./CustomCatalogIndexPage').then(m => <m.Page />),
         }),
-      ],
-    }),
-    // Override the catalog index page with a completely custom implementation
-    PageBlueprint.make({
-      params: {
-        path: '/catalog',
-        routeRef: plugin.routes.catalogIndex,
-        loader: () => import('./CustomCatalogIndexPage').then(m => <m.Page />),
-      },
     }),
   ],
 });

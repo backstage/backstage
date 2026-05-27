@@ -20,7 +20,6 @@ import {
   fetchApiRef,
   ApiBlueprint,
   PageBlueprint,
-  NavItemBlueprint,
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
 
@@ -52,19 +51,12 @@ export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
   params: {
     path: '/catalog-unprocessed-entities',
     routeRef: rootRouteRef,
+    title: 'Unprocessed Entities',
+    icon: <QueueIcon fontSize="inherit" />,
     loader: () =>
       import('../components/UnprocessedEntities').then(m => (
         <m.NfsUnprocessedEntities />
       )),
-  },
-});
-
-/** @alpha */
-export const catalogUnprocessedEntitiesNavItem = NavItemBlueprint.make({
-  params: {
-    title: 'Unprocessed Entities',
-    routeRef: rootRouteRef,
-    icon: QueueIcon,
   },
 });
 
@@ -99,7 +91,6 @@ export default createFrontendPlugin({
   extensions: [
     catalogUnprocessedEntitiesApi,
     catalogUnprocessedEntitiesPage,
-    catalogUnprocessedEntitiesNavItem,
     unprocessedEntitiesDevToolsContent,
   ],
 });

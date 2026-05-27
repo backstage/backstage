@@ -28,6 +28,13 @@
     }
   }
 
+  .bui-Select {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1;
+  }
+
   .bui-SelectPopover {
     min-width: var(--trigger-width);
   }

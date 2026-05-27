@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
+import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { randomUUID as uuid } from 'node:crypto';
@@ -30,54 +26,52 @@ import { generateStableHash } from './util';
 
 jest.setTimeout(60_000);
 
-describe('DefaultProviderDatabase', () => {
-  const defaultLogger = mockServices.logger.mock();
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  async function createDatabase(
-    databaseId: TestDatabaseId,
-    logger: LoggerService = defaultLogger,
-  ) {
-    const knex = await databases.init(databaseId);
-    await applyDatabaseMigrations(knex);
-    return {
-      knex,
-      db: new DefaultProviderDatabase({
-        database: knex,
-        logger,
-      }),
-    };
-  }
+describe.each(databases.eachSupportedId())(
+  'DefaultProviderDatabase, %p',
+  databaseId => {
+    const defaultLogger = mockServices.logger.mock();
 
-  const insertRefRow = async (db: Knex, ref: DbRefreshStateReferencesRow) => {
-    return db<DbRefreshStateReferencesRow>('refresh_state_references').insert(
-      ref,
-    );
-  };
-
-  const insertRefreshStateRow = async (db: Knex, ref: DbRefreshStateRow) => {
-    await db<DbRefreshStateRow>('refresh_state').insert(ref);
-  };
-
-  const createLocations = async (db: Knex, entityRefs: string[]) => {
-    for (const ref of entityRefs) {
-      await insertRefreshStateRow(db, {
-        entity_id: uuid(),
-        entity_ref: ref,
-        unprocessed_entity: '{}',
-        processed_entity: '{}',
-        errors: '[]',
-        next_update_at: '2021-04-01 13:37:00',
-        last_discovery_at: '2021-04-01 13:37:00',
-      });
+    async function createDatabase(logger: LoggerService = defaultLogger) {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      return {
+        knex,
+        db: new DefaultProviderDatabase({
+          database: knex,
+          logger,
+        }),
+      };
     }
-  };
 
-  describe('replaceUnprocessedEntities', () => {
-    it.each(databases.eachSupportedId())(
-      'replaces all existing state correctly for simple dependency chains, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+    const insertRefRow = async (db: Knex, ref: DbRefreshStateReferencesRow) => {
+      return db<DbRefreshStateReferencesRow>('refresh_state_references').insert(
+        ref,
+      );
+    };
+
+    const insertRefreshStateRow = async (db: Knex, ref: DbRefreshStateRow) => {
+      await db<DbRefreshStateRow>('refresh_state').insert(ref);
+    };
+
+    const createLocations = async (db: Knex, entityRefs: string[]) => {
+      for (const ref of entityRefs) {
+        await insertRefreshStateRow(db, {
+          entity_id: uuid(),
+          entity_ref: ref,
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+      }
+    };
+
+    describe('replaceUnprocessedEntities', () => {
+      it('replaces all existing state correctly for simple dependency chains', async () => {
+        const { knex, db } = await createDatabase();
         /*
         config -> location:default/root -> location:default/root-1 -> location:default/root-2
         database -> location:default/second -> location:default/root-2
@@ -187,13 +181,10 @@ describe('DefaultProviderDatabase', () => {
               t.source_key === 'config',
           ),
         ).toBeTruthy();
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'should work for more complex chains, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('should work for more complex chains', async () => {
+        const { knex, db } = await createDatabase();
         /*
         config -> location:default/root -> location:default/root-1 -> location:default/root-2
         config -> location:default/root -> location:default/root-1a -> location:default/root-2
@@ -323,13 +314,10 @@ describe('DefaultProviderDatabase', () => {
               t.target_entity_ref === 'location:default/root-2',
           ),
         ).toBeFalsy();
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'should add new locations using the delta options, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('should add new locations using the delta options', async () => {
+        const { knex, db } = await createDatabase();
 
         // Existing state and references should stay
         await createLocations(knex, ['location:default/existing']);
@@ -393,13 +381,10 @@ describe('DefaultProviderDatabase', () => {
               t.target_entity_ref === 'location:default/existing',
           ),
         ).toBeTruthy();
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'should not remove locations that are referenced elsewhere, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('should not remove locations that are referenced elsewhere', async () => {
+        const { knex, db } = await createDatabase();
         /*
         config-1 -> location:default/root
         config-2 -> location:default/root
@@ -443,13 +428,10 @@ describe('DefaultProviderDatabase', () => {
             entity_ref: 'location:default/root',
           }),
         ]);
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'should remove old locations using the delta options, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('should remove old locations using the delta options', async () => {
+        const { knex, db } = await createDatabase();
         await createLocations(knex, ['location:default/new-root']);
 
         await insertRefRow(knex, {
@@ -492,13 +474,10 @@ describe('DefaultProviderDatabase', () => {
               t.target_entity_ref === 'location:default/new-root',
           ),
         ).toBeFalsy();
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'should update the location key during full replace, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('should update the location key during full replace', async () => {
+        const { knex, db } = await createDatabase();
         await createLocations(knex, ['location:default/removed']);
         await insertRefreshStateRow(knex, {
           entity_id: uuid(),
@@ -558,13 +537,10 @@ describe('DefaultProviderDatabase', () => {
             target_entity_ref: 'location:default/replaced',
           }),
         ]);
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'should support replacing modified entities during a full update, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('should support replacing modified entities during a full update', async () => {
+        const { knex, db } = await createDatabase();
 
         await db.transaction(async tx => {
           await db.replaceUnprocessedEntities(tx, {
@@ -689,14 +665,11 @@ describe('DefaultProviderDatabase', () => {
             target_entity_ref: 'component:default/a',
           },
         ]);
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'should successfully fall back from batch to individual mode on conflicts, %p',
-      async databaseId => {
+      it('should successfully fall back from batch to individual mode on conflicts', async () => {
         const fakeLogger = mockServices.logger.mock();
-        const { knex, db } = await createDatabase(databaseId, fakeLogger);
+        const { knex, db } = await createDatabase(fakeLogger);
 
         await createLocations(knex, ['component:default/a']);
 
@@ -738,14 +711,11 @@ describe('DefaultProviderDatabase', () => {
             }),
           ]),
         );
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'should gracefully handle accidental duplicate refresh state references when deletion happens during a full sync, %p',
-      async databaseId => {
+      it('should gracefully handle accidental duplicate refresh state references when deletion happens during a full sync', async () => {
         const fakeLogger = mockServices.logger.mock();
-        const { knex, db } = await createDatabase(databaseId, fakeLogger);
+        const { knex, db } = await createDatabase(fakeLogger);
 
         await createLocations(knex, ['component:default/a']);
 
@@ -768,14 +738,11 @@ describe('DefaultProviderDatabase', () => {
 
         const state = await knex<DbRefreshStateRow>('refresh_state').select();
         expect(state).toEqual([]);
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'should properly translate deltas into add/update/remove, %p',
-      async databaseId => {
+      it('should properly translate deltas into add/update/remove', async () => {
         const fakeLogger = mockServices.logger.mock();
-        const { knex, db } = await createDatabase(databaseId, fakeLogger);
+        const { knex, db } = await createDatabase(fakeLogger);
 
         const entity1Before: Entity = {
           apiVersion: '1',
@@ -950,14 +917,11 @@ describe('DefaultProviderDatabase', () => {
             location_key: 'new', // managed to update only the location key
           },
         ]);
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'can handle large deltas without exploding, %p',
-      async databaseId => {
+      it('can handle large deltas without exploding', async () => {
         const fakeLogger = mockServices.logger.mock();
-        const { knex, db } = await createDatabase(databaseId, fakeLogger);
+        const { knex, db } = await createDatabase(fakeLogger);
 
         const count = 10000;
         const padded = (n: number) => String(n).padStart(8, '0');
@@ -989,15 +953,12 @@ describe('DefaultProviderDatabase', () => {
           unprocessed_entity: JSON.stringify(entities[0].entity),
           unprocessed_hash: generateStableHash(entities[0].entity),
         });
-      },
-    );
-  });
+      });
+    });
 
-  describe('listReferenceSourceKeys', () => {
-    it.each(databases.eachSupportedId())(
-      'returns the source_keys from "refresh_state_references", %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+    describe('listReferenceSourceKeys', () => {
+      it('returns the source_keys from "refresh_state_references"', async () => {
+        const { knex, db } = await createDatabase();
 
         await createLocations(knex, [
           'location:default/root',
@@ -1018,13 +979,10 @@ describe('DefaultProviderDatabase', () => {
         );
 
         expect(res).toEqual(['bar', 'foo']);
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'returns only unique source_keys", %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('returns only unique source_keys"', async () => {
+        const { knex, db } = await createDatabase();
 
         await createLocations(knex, [
           'location:default/root',
@@ -1045,13 +1003,10 @@ describe('DefaultProviderDatabase', () => {
         );
 
         expect(res).toEqual(['foo']);
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'does not return null source_keys", %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('does not return null source_keys"', async () => {
+        const { knex, db } = await createDatabase();
 
         await createLocations(knex, [
           'location:default/root',
@@ -1071,7 +1026,7 @@ describe('DefaultProviderDatabase', () => {
         );
 
         expect(res).toEqual(['foo']);
-      },
-    );
-  });
-});
+      });
+    });
+  },
+);

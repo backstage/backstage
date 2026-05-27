@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PropsWithChildren, ReactElement } from 'react';
+import {
+  type CSSProperties,
+  type PropsWithChildren,
+  type ReactElement,
+} from 'react';
 
 import { MarkdownContent } from '@backstage/core-components';
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@backstage/ui';
+
+import { useScaffolderTheme } from '../Form/ScaffolderThemeContext';
 
 const useStyles = makeStyles(theme => ({
   markdownDescription: {
@@ -30,6 +37,12 @@ const useStyles = makeStyles(theme => ({
     },
   },
 }));
+
+const buiDescriptionStyle: CSSProperties = {
+  fontSize: 'var(--bui-font-size-2)',
+  color: 'var(--bui-fg-secondary)',
+  margin: 0,
+};
 
 /**
  * Props for the {@link ScaffolderField} component
@@ -46,14 +59,7 @@ export interface ScaffolderFieldProps {
   displayLabel?: boolean;
 }
 
-/**
- * A component to wrap up a input field which helps with formatting and supporting markdown
- * on the field types
- * @alpha
- */
-export const ScaffolderField = (
-  props: PropsWithChildren<ScaffolderFieldProps>,
-) => {
+const MuiScaffolderField = (props: PropsWithChildren<ScaffolderFieldProps>) => {
   const {
     children,
     displayLabel = true,
@@ -84,4 +90,38 @@ export const ScaffolderField = (
       {help}
     </FormControl>
   );
+};
+
+const BuiScaffolderField = (props: PropsWithChildren<ScaffolderFieldProps>) => {
+  const { children, displayLabel = true, errors, help, rawDescription } = props;
+
+  return (
+    <Box mb="3">
+      {children}
+      {displayLabel && rawDescription ? (
+        <div style={buiDescriptionStyle}>
+          <MarkdownContent content={rawDescription} linkTarget="_blank" />
+        </div>
+      ) : null}
+      {errors}
+      {help}
+    </Box>
+  );
+};
+
+/**
+ * A component to wrap up a input field which helps with formatting and supporting markdown
+ * on the field types
+ * @alpha
+ */
+export const ScaffolderField = (
+  props: PropsWithChildren<ScaffolderFieldProps>,
+) => {
+  const theme = useScaffolderTheme();
+
+  if (theme === 'bui') {
+    return <BuiScaffolderField {...props} />;
+  }
+
+  return <MuiScaffolderField {...props} />;
 };

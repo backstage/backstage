@@ -207,49 +207,66 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     request: { processBatchSize: number },
   ): Promise<GetProcessableEntitiesResult> {
     const knex = maybeTx as Knex.Transaction | Knex;
-
-    let itemsQuery = knex<DbRefreshStateRow>('refresh_state').select([
-      'entity_id',
-      'entity_ref',
-      'unprocessed_entity',
-      'result_hash',
-      'cache',
-      'errors',
-      'location_key',
-      'next_update_at',
-    ]);
-
-    // This avoids duplication of work because of race conditions and is
-    // also fast because locked rows are ignored rather than blocking.
-    // It's only available in MySQL and PostgreSQL
-    if (['mysql', 'mysql2', 'pg'].includes(knex.client.config.client)) {
-      itemsQuery = itemsQuery.forUpdate().skipLocked();
-    }
-
-    const items = await itemsQuery
-      .where('next_update_at', '<=', knex.fn.now())
-      .limit(request.processBatchSize)
-      .orderBy('next_update_at', 'asc');
+    const useLocking = ['mysql', 'mysql2', 'pg'].includes(
+      knex.client.config.client,
+    );
 
     const interval = this.options.refreshInterval();
 
-    const nextUpdateAt = (refreshInterval: number) => {
-      if (knex.client.config.client.includes('sqlite3')) {
-        return knex.raw(`datetime('now', ?)`, [`${refreshInterval} seconds`]);
-      } else if (knex.client.config.client.includes('mysql')) {
-        return knex.raw(`now() + interval ${refreshInterval} second`);
+    const nextUpdateAt = (
+      tx: Knex | Knex.Transaction,
+      refreshInterval: number,
+    ) => {
+      if (tx.client.config.client.includes('sqlite3')) {
+        return tx.raw(`datetime('now', ?)`, [`${refreshInterval} seconds`]);
+      } else if (tx.client.config.client.includes('mysql')) {
+        return tx.raw(`now() + interval ${refreshInterval} second`);
       }
-      return knex.raw(`now() + interval '${refreshInterval} seconds'`);
+      return tx.raw(`now() + interval '${refreshInterval} seconds'`);
     };
 
-    await knex<DbRefreshStateRow>('refresh_state')
-      .whereIn(
-        'entity_ref',
-        items.map(i => i.entity_ref),
-      )
-      .update({
-        next_update_at: nextUpdateAt(interval),
-      });
+    // The SELECT FOR UPDATE SKIP LOCKED + UPDATE must run inside a
+    // single transaction so that the row locks persist until
+    // next_update_at has been bumped.
+    const run = async (tx: Knex | Knex.Transaction) => {
+      const items: DbRefreshStateRow[] = await tx('refresh_state')
+        .select([
+          'entity_id',
+          'entity_ref',
+          'unprocessed_entity',
+          'result_hash',
+          'cache',
+          'errors',
+          'location_key',
+          'next_update_at',
+        ])
+        .where('next_update_at', '<=', tx.fn.now())
+        .limit(request.processBatchSize)
+        .orderBy('next_update_at', 'asc')
+        .modify(qb => {
+          if (useLocking) {
+            qb.forUpdate().skipLocked();
+          }
+        });
+
+      if (items.length > 0) {
+        await tx('refresh_state')
+          .whereIn(
+            'entity_ref',
+            items.map(i => i.entity_ref),
+          )
+          .update({
+            next_update_at: nextUpdateAt(tx, interval),
+          });
+      }
+
+      return items;
+    };
+
+    const items =
+      knex.isTransaction || !useLocking
+        ? await run(knex)
+        : await knex.transaction(run);
 
     return {
       items: items.map(

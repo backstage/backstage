@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-# Cleanes up orphaned entities for the provided Backstage URL, defaults to the local backend
+# Cleans up orphaned entities for the provided Backstage URL, defaults to the local backend
 BACKSTAGE_URL=${1:-'http://localhost:7007'}
 echo $BACKSTAGE_URL
 

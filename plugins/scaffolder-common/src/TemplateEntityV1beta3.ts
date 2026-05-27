@@ -57,7 +57,14 @@ export interface TemplateEntityV1beta3 extends Entity {
     EXPERIMENTAL_recovery?: TemplateRecoveryV1beta3;
 
     /**
-     * Form hooks to be run
+     * Form decorators to be run before submission.
+     */
+    formDecorators?: { id: string; input?: JsonObject }[];
+
+    /**
+     * Form decorators to be run before submission.
+     *
+     * @deprecated Use `spec.formDecorators` instead.
      */
     EXPERIMENTAL_formDecorators?: { id: string; input?: JsonObject }[];
 
@@ -164,6 +171,10 @@ export type TemplateParameterSchema = {
     description?: string;
     schema: JsonObject;
   }>;
+  formDecorators?: { id: string; input?: JsonObject }[];
+  /**
+   * @deprecated Use {@link TemplateParameterSchema.formDecorators} instead.
+   */
   EXPERIMENTAL_formDecorators?: { id: string; input?: JsonObject }[];
 };
 

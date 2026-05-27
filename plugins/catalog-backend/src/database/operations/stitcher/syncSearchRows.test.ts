@@ -190,20 +190,18 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
     );
   });
 
-  it('inserts a row when only original_value casing differs from existing', async () => {
-    // Two rows with the same (key, value) but different original_value
-    // casing must coexist — the case-insensitive MySQL collation must not
-    // cause the INSERT to skip the second row.
+  it('keeps one row when original_value casing differs for same key+value', async () => {
+    // Two entries with the same lowercased (key, value) but different
+    // original_value casing are deduplicated — the UNIQUE constraint on
+    // (entity_id, key, value) allows only one. The first occurrence wins,
+    // matching the first-wins semantics of buildEntitySearch.
     await syncSearchRows(knex, 'e1', [row('a', 'v', 'V')]);
     await syncSearchRows(knex, 'e1', [row('a', 'v', 'V'), row('a', 'v', 'v')]);
 
     const rows = await getSearchRows();
-    expect(rows).toHaveLength(2);
-    expect(rows).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ key: 'a', value: 'v', original_value: 'V' }),
-        expect.objectContaining({ key: 'a', value: 'v', original_value: 'v' }),
-      ]),
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toEqual(
+      expect.objectContaining({ key: 'a', value: 'v', original_value: 'V' }),
     );
   });
 
@@ -225,6 +223,27 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
     const rows = await getSearchRows();
     expect(rows).toHaveLength(3);
     expect(rows.map(r => r.value).sort()).toEqual(['java', 'python', 'rust']);
+  });
+
+  it('restores original_value when re-syncing after it was corrupted', async () => {
+    await syncSearchRows(knex, 'e1', [row('a', 'x', 'X')]);
+
+    // Corrupt the stored original_value (simulates stale or wrong data left
+    // by a previous stitcher run) without changing the key or value.
+    await knex('search')
+      .where({ entity_id: 'e1', key: 'a', value: 'x' })
+      .update({ original_value: 'corrupted' });
+
+    // Re-syncing the same desired rows should overwrite original_value back to
+    // 'X' via the ON CONFLICT DO UPDATE SET original_value = EXCLUDED.original_value
+    // clause inside syncSearchRows.
+    await syncSearchRows(knex, 'e1', [row('a', 'x', 'X')]);
+
+    const rows = await getSearchRows();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toEqual(
+      expect.objectContaining({ key: 'a', value: 'x', original_value: 'X' }),
+    );
   });
 
   it('simulates the typical steady-state case with one changed row', async () => {

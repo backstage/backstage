@@ -1,0 +1,153 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import {
+  Preview,
+  WithLabelAndDescription,
+  Sizes,
+  WithIcon,
+  Disabled,
+  DisabledOption,
+  AllowsCustomValue,
+  WithSections,
+} from './components';
+import { comboboxPropDefs } from './props-definition';
+import {
+  optionPropDefs,
+  optionSectionPropDefs,
+} from '../select/props-definition';
+import {
+  comboboxUsageSnippet,
+  comboboxDefaultSnippet,
+  comboboxDescriptionSnippet,
+  comboboxSizesSnippet,
+  comboboxDisabledSnippet,
+  comboboxResponsiveSnippet,
+  comboboxIconSnippet,
+  comboboxDisabledOptionsSnippet,
+  comboboxCustomValueSnippet,
+  comboboxSectionsSnippet,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { ComboboxDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  combobox: 'https://react-aria.adobe.com/ComboBox',
+};
+
+<PageTitle
+  title="Combobox"
+  description="A text input paired with a filterable dropdown for selecting or typing a value."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Preview />}
+  code={comboboxDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={comboboxUsageSnippet} />
+
+## API reference
+
+<PropsTable data={comboboxPropDefs} />
+
+<ReactAriaLink component="ComboBox" href={reactAriaUrls.combobox} />
+
+### Option types
+
+The `options` prop accepts an array containing either of the following shapes.
+
+#### `Option`
+
+<PropsTable data={optionPropDefs} />
+
+#### `OptionSection`
+
+<PropsTable data={optionSectionPropDefs} />
+
+## Examples
+
+### Label and description
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<WithLabelAndDescription />}
+  code={comboboxDescriptionSnippet}
+/>
+
+### Sizes
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Sizes />}
+  code={comboboxSizesSnippet}
+/>
+
+### With icon
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<WithIcon />}
+  code={comboboxIconSnippet}
+/>
+
+### Disabled
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Disabled />}
+  code={comboboxDisabledSnippet}
+/>
+
+### Disabled options
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<DisabledOption />}
+  code={comboboxDisabledOptionsSnippet}
+/>
+
+### Custom values
+
+Allow the user to type a value that is not in the option list by setting `allowsCustomValue`.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<AllowsCustomValue />}
+  code={comboboxCustomValueSnippet}
+/>
+
+### With sections
+
+Group options under section headings by passing objects with a `title` and a
+nested `options` array.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<WithSections />}
+  code={comboboxSectionsSnippet}
+/>
+
+### Responsive
+
+Size can change at different breakpoints.
+
+<CodeBlock code={comboboxResponsiveSnippet} />
+
+<Theming definition={ComboboxDefinition} />
+
+<ChangelogComponent component="combobox" />

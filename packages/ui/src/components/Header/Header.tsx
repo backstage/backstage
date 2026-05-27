@@ -24,6 +24,7 @@ import { sanitizeUrl } from '@braintree/sanitize-url';
 import { Lexer } from 'marked';
 import { Link } from '../Link';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Container } from '../Container';
 
 const getScrollParent = (element: HTMLElement | null): Element | null => {
   let parent = element?.parentElement;
@@ -152,7 +153,10 @@ export const Header = (props: HeaderProps) => {
 
   return (
     <>
-      <div className={classes.headerTop} data-sticky={sticky || undefined}>
+      <Container
+        className={classes.headerTop}
+        data-sticky={sticky || undefined}
+      >
         {tags && tags.length > 0 && (
           <ul className={classes.tags}>
             {tags.map((tag, i) => (
@@ -178,7 +182,7 @@ export const Header = (props: HeaderProps) => {
             ))}
           </ul>
         )}
-      </div>
+      </Container>
       {sticky && (
         <div
           ref={stickySentinelRef}
@@ -187,7 +191,7 @@ export const Header = (props: HeaderProps) => {
           aria-hidden="true"
         />
       )}
-      <div
+      <Container
         className={classes.content}
         data-sticky={sticky || undefined}
         data-stuck={isStuck || undefined}
@@ -242,8 +246,11 @@ export const Header = (props: HeaderProps) => {
           )}
         </div>
         <div className={classes.controls}>{customActions}</div>
-      </div>
-      <div className={classes.headerBottom} data-sticky={sticky || undefined}>
+      </Container>
+      <Container
+        className={classes.headerBottom}
+        data-sticky={sticky || undefined}
+      >
         {description && (
           <Text
             variant="body-medium"
@@ -278,7 +285,7 @@ export const Header = (props: HeaderProps) => {
             <HeaderNav tabs={tabs} activeTabId={activeTabId} />
           </div>
         )}
-      </div>
+      </Container>
     </>
   );
 };

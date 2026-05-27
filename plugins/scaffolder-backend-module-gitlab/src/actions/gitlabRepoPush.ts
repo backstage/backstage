@@ -83,6 +83,12 @@ export const createGitlabRepoPushAction = (options: {
                 'The action to be used for git commit. Defaults to create, but can be set to update or delete',
             })
             .optional(),
+        allowEmpty: z =>
+          z
+            .boolean({
+              description: 'Allow an empty commit to be created.',
+            })
+            .optional(),
       },
       output: {
         projectid: z =>
@@ -107,6 +113,7 @@ export const createGitlabRepoPushAction = (options: {
         sourcePath,
         token,
         commitAction,
+        allowEmpty,
       } = ctx.input;
 
       const { owner, repo, project } = parseRepoUrl(repoUrl, integrations);
@@ -212,12 +219,21 @@ export const createGitlabRepoPushAction = (options: {
         const commitId = await ctx.checkpoint({
           key: `commit.create.${repoID}.${branchName}`,
           fn: async () => {
-            const commit = await api.Commits.create(
-              repoID,
-              branchName,
-              ctx.input.commitMessage,
-              actions,
-            );
+            const commit =
+              allowEmpty !== undefined
+                ? await api.Commits.create(
+                    repoID,
+                    branchName,
+                    ctx.input.commitMessage,
+                    actions,
+                    { allowEmpty } as any,
+                  )
+                : await api.Commits.create(
+                    repoID,
+                    branchName,
+                    ctx.input.commitMessage,
+                    actions,
+                  );
             return commit.id;
           },
         });

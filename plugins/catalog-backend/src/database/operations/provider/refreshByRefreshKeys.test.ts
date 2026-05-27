@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import { TestDatabases } from '@backstage/backend-test-utils';
 import { randomUUID as uuid } from 'node:crypto';
 import { applyDatabaseMigrations } from '../../migrations';
 import { DbRefreshKeysRow, DbRefreshStateRow } from '../../tables';
@@ -23,19 +23,19 @@ import { refreshByRefreshKeys } from './refreshByRefreshKeys';
 
 jest.setTimeout(60_000);
 
-describe('refreshByRefreshKeys', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  async function createDatabase(databaseId: TestDatabaseId) {
-    const knex = await databases.init(databaseId);
-    await applyDatabaseMigrations(knex);
-    return knex;
-  }
+describe.each(databases.eachSupportedId())(
+  'refreshByRefreshKeys, %p',
+  databaseId => {
+    async function createDatabase() {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      return knex;
+    }
 
-  it.each(databases.eachSupportedId())(
-    'works for the simple path, %p',
-    async databaseId => {
-      const knex = await createDatabase(databaseId);
+    it('works for the simple path', async () => {
+      const knex = await createDatabase();
 
       const eid1 = uuid();
       await knex<DbRefreshStateRow>('refresh_state').insert({
@@ -89,6 +89,6 @@ describe('refreshByRefreshKeys', () => {
       expect(normalizeTimestamp(before2.next_update_at)).toEqual(
         normalizeTimestamp(after2.next_update_at),
       );
-    },
-  );
-});
+    });
+  },
+);

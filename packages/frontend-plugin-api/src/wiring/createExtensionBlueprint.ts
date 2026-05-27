@@ -48,8 +48,8 @@ import { describeParentCallSite } from '../routing/describeParentCallSite';
  * @remarks
  *
  * This function is primarily intended to enable the use of inferred type
- * parameters for blueprint params, but it can also be used to transoform the
- * params before they are handed ot the blueprint.
+ * parameters for blueprint params, but it can also be used to transform the
+ * params before they are handed to the blueprint.
  *
  * The function must return an object created with
  * {@link createExtensionBlueprintParams}.

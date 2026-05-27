@@ -98,6 +98,8 @@ export const authPlugin = createBackendPlugin({
               database,
               logger,
               lifecycle,
+              catalog,
+              auth,
             })
           : undefined;
 

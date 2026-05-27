@@ -21,7 +21,7 @@ Users are expected to already have created a Backstage application, but we have 
 
 ## Prerequisites
 
-The user should already have created a Backstage application (`create-app`) and pushed their code to an origin in a source control management system (Github, Gitlab, etc). They should have a handle on how their company builds and deploys code.
+The user should already have created a Backstage application (`create-app`) and pushed their code to an origin in a source control management system (GitHub, Gitlab, etc). They should have a handle on how their company builds and deploys code.
 
 ## Deploying Backstage
 
@@ -47,7 +47,7 @@ Use this section to walk through database options, talk through why Postgres is 
 
 ### Authentication
 
-By default, Backstage lets users login through a guest user. While that's a good fit for a solid developer experience locally, it can open up security holes when it's deployed to production. For that reason, you should configure a different authentication provider. See the docs at `auth/*`. A solid choice is Github authentication - your target audience with a developer portal should already have access to Github.
+By default, Backstage lets users login through a guest user. While that's a good fit for a solid developer experience locally, it can open up security holes when it's deployed to production. For that reason, you should configure a different authentication provider. See the docs at `auth/*`. A solid choice is GitHub authentication - your target audience with a developer portal should already have access to GitHub.
 
 ## Deployment Guides
 

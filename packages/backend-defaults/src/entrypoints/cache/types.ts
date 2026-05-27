@@ -18,6 +18,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { RedisClusterOptions, KeyvRedisOptions } from '@keyv/redis';
 import { KeyvValkeyOptions } from '@keyv/valkey';
+import { ClusterNode, ClusterOptions } from 'iovalkey';
 
 /**
  * Options for Redis cache store.
@@ -38,7 +39,10 @@ export type RedisCacheStoreOptions = {
 export type ValkeyCacheStoreOptions = {
   type: 'valkey';
   client?: KeyvValkeyOptions;
-  cluster?: RedisClusterOptions;
+  cluster?: {
+    rootNodes: Array<ClusterNode>;
+    options?: ClusterOptions;
+  };
 };
 
 /**

@@ -187,6 +187,24 @@ function validateMetadata(
   }
 }
 
+async function readCappedResponseBody(response: Response): Promise<string> {
+  if (!response.body) {
+    return '';
+  }
+
+  const chunks: Buffer[] = [];
+  let received = 0;
+  for await (const chunk of response.body) {
+    received += chunk.byteLength;
+    if (received > MAX_RESPONSE_BYTES) {
+      throw new InputError('Client metadata document too large');
+    }
+    chunks.push(Buffer.from(chunk));
+  }
+
+  return Buffer.concat(chunks).toString('utf8');
+}
+
 /**
  * Fetches and validates a CIMD metadata document.
  * @throws InputError if fetching or validation fails
@@ -228,8 +246,12 @@ export async function fetchCimdMetadata(opts: {
 
   let metadata: CimdMetadata;
   try {
-    metadata = await response.json();
-  } catch {
+    const responseBody = await readCappedResponseBody(response);
+    metadata = JSON.parse(responseBody) as CimdMetadata;
+  } catch (error) {
+    if (isError(error) && error.name === 'InputError') {
+      throw error;
+    }
     throw new InputError('Invalid client metadata document');
   }
 

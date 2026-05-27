@@ -62,8 +62,6 @@ export const TemplateGroup = (props: TemplateGroupProps) => {
     return null;
   }
 
-  const Card = CardComponent || TemplateCard;
-
   return (
     <Content>
       {titleComponent}
@@ -75,11 +73,19 @@ export const TemplateGroup = (props: TemplateGroupProps) => {
             }}
             key={stringifyEntityRef(template)}
           >
-            <Card
-              additionalLinks={additionalLinks}
-              template={template}
-              onSelected={onSelected}
-            />
+            {CardComponent ? (
+              <CardComponent
+                additionalLinks={additionalLinks}
+                template={template}
+                onSelected={onSelected}
+              />
+            ) : (
+              <TemplateCard
+                additionalLinks={additionalLinks}
+                template={template}
+                onSelected={() => onSelected(template)}
+              />
+            )}
           </AnalyticsContext>
         ))}
       </ItemCardGrid>

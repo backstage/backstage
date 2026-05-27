@@ -21,12 +21,12 @@ import { DbStitchQueueRow } from '../../tables';
 
 jest.setTimeout(60_000);
 
-describe('markDeferredStitchCompleted', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  it.each(databases.eachSupportedId())(
-    'completes only if unchanged %p',
-    async databaseId => {
+describe.each(databases.eachSupportedId())(
+  'markDeferredStitchCompleted, %p',
+  databaseId => {
+    it('completes only if unchanged', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -47,27 +47,49 @@ describe('markDeferredStitchCompleted', () => {
         );
       }
 
-      // Wrong ticket should not delete the row
+      // Wrong ticket should not delete the row, but should bump
+      // next_stitch_at to now() so the pending re-stitch is picked up
+      // immediately
       await markDeferredStitchCompleted({
         knex,
         entityRef: 'k:ns/n',
         stitchTicket: 'the-wrong-ticket',
+        result: 'succeeded',
       });
-      await expect(result()).resolves.toEqual([
+      const afterWrongTicket = await result();
+      expect(afterWrongTicket).toEqual([
         {
           entity_ref: 'k:ns/n',
           next_stitch_at: expect.anything(),
           stitch_ticket: 'the-ticket',
         },
       ]);
+      const bumped = new Date(afterWrongTicket[0].next_stitch_at as string);
+      expect(bumped.getFullYear()).toBeGreaterThan(1971);
 
       // Correct ticket should delete the row
       await markDeferredStitchCompleted({
         knex,
         entityRef: 'k:ns/n',
         stitchTicket: 'the-ticket',
+        result: 'succeeded',
       });
       await expect(result()).resolves.toEqual([]);
-    },
-  );
-});
+    });
+
+    it('does not fail when the row is already gone', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+
+      // Calling on a nonexistent row should not throw
+      await expect(
+        markDeferredStitchCompleted({
+          knex,
+          entityRef: 'k:ns/nonexistent',
+          stitchTicket: 'any-ticket',
+          result: 'succeeded',
+        }),
+      ).resolves.toBeUndefined();
+    });
+  },
+);

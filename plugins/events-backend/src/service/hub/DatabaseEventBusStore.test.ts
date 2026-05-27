@@ -29,13 +29,10 @@ const databases = TestDatabases.create({
   ids: ['POSTGRES_14', 'POSTGRES_18'],
 });
 
-const maybeDescribe =
-  databases.eachSupportedId().length > 0 ? describe : describe.skip;
-
-maybeDescribe('DatabaseEventBusStore', () => {
-  it.each(databases.eachSupportedId())(
-    'should clean up old events, %p',
-    async databaseId => {
+describe.each(databases.eachSupportedId())(
+  'DatabaseEventBusStore, %p',
+  databaseId => {
+    it('should clean up old events', async () => {
       const db = await databases.init(databaseId);
       const store = await DatabaseEventBusStore.forTest({ logger, db });
 
@@ -79,12 +76,9 @@ maybeDescribe('DatabaseEventBusStore', () => {
 
       const { events: events3 } = await store.readSubscription('tester-3');
       expect(events3.length).toBe(5);
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'should always clean up events outside the max age window, %p',
-    async databaseId => {
+    it('should always clean up events outside the max age window', async () => {
       const db = await databases.init(databaseId);
       const store = await DatabaseEventBusStore.forTest({
         logger,
@@ -132,12 +126,9 @@ maybeDescribe('DatabaseEventBusStore', () => {
 
       const { events: events3 } = await store.readSubscription('tester-3');
       expect(events3.length).toBe(0);
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'should not clean up events within the min age window, %p',
-    async databaseId => {
+    it('should not clean up events within the min age window', async () => {
       const db = await databases.init(databaseId);
       const store = await DatabaseEventBusStore.forTest({
         logger,
@@ -162,12 +153,9 @@ maybeDescribe('DatabaseEventBusStore', () => {
 
       const { events: events1 } = await store.readSubscription('tester-1');
       expect(events1.length).toBe(10);
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'should clean up a large number of events, %p',
-    async databaseId => {
+    it('should clean up a large number of events', async () => {
       const db = await databases.init(databaseId);
       const store = await DatabaseEventBusStore.forTest({
         logger,
@@ -197,12 +185,9 @@ maybeDescribe('DatabaseEventBusStore', () => {
       await expect(db('event_bus_events').count()).resolves.toEqual([
         { count: '5' },
       ]);
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'should perform well when looking up events by topic, %p',
-    async databaseId => {
+    it('should perform well when looking up events by topic', async () => {
       const db = await databases.init(databaseId);
       const store = await DatabaseEventBusStore.forTest({
         logger,
@@ -245,6 +230,6 @@ maybeDescribe('DatabaseEventBusStore', () => {
       ]);
 
       expect(duration).toBeLessThan(20);
-    },
-  );
-});
+    });
+  },
+);

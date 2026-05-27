@@ -34,5 +34,6 @@ import { coreServices } from '@backstage/backend-plugin-api';
 - [Root Logger Service](./root-logger.md) - Root-level logging.
 - [Scheduler Service](./scheduler.md) - Scheduling of distributed background tasks.
 - [Token Manager Service](./token-manager.md) - Deprecated service authentication service, use the [Auth Service](./auth.md) instead.
+- [Tracing Service](./tracing.md) - Plugin-scoped trace span emission with built-in principal enrichment (alpha).
 - [Url Reader Service](./url-reader.md) - Reading content from external systems.
 - [User Info Service](./user-info.md) - Authenticated user information retrieval.

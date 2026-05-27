@@ -28,6 +28,7 @@ export const createCatalogActions = (options: {
   actionsRegistry: ActionsRegistryService;
   catalog: CatalogService;
   modelHolder: ModelHolder | undefined;
+  useExperimentalCatalogLayersDescriptions?: boolean;
 }) => {
   createGetCatalogModelDescriptionAction(options);
   createGetCatalogEntityAction(options);

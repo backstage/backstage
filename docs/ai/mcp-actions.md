@@ -200,14 +200,21 @@ This can be enabled in the `auth-backend` plugin by using the `auth.experimental
 auth:
   experimentalClientIdMetadataDocuments:
     enabled: true
-    # Optional: restrict which `client_id` URLs are allowed (defaults to ['*'])
-    allowedClientIdPatterns:
-      - 'https://example.com/*'
-      - 'https://*.trusted-domain.com/*'
-    # Optional: restrict which redirect URIs are allowed (defaults to ['*'])
-    allowedRedirectUriPatterns:
-      - 'http://localhost:*'
-      - 'https://*.example.com/*'
+    # Optional: override which client_id URLs are allowed.
+    # Defaults to Claude, VS Code, and the built-in Backstage CLI.
+    # Note: setting this replaces the defaults entirely. The built-in
+    # CLI pattern is derived from your auth backend's base URL and
+    # must be re-added manually if you override this list.
+    # allowedClientIdPatterns:
+    #   - 'https://claude.ai/*'
+    #   - 'https://vscode.dev/*'
+    #   - 'https://my-custom-client.example.com/*'
+    # Optional: override which redirect URIs are allowed.
+    # Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
+    # allowedRedirectUriPatterns:
+    #   - 'http://localhost:*'
+    #   - 'http://127.0.0.1:*'
+    #   - 'http://[::1]:*'
 ```
 
 #### Dynamic Client Registration
@@ -224,10 +231,13 @@ This can be enabled in the `auth-backend` plugin by using the `auth.experimental
 auth:
   experimentalDynamicClientRegistration:
     enabled: true
-
-    # Optional: limit valid callback URLs for added security
-    allowedRedirectUriPatterns:
-      - cursor://*
+    # Optional: restrict which redirect URIs are allowed.
+    # Defaults to Cursor and loopback addresses (localhost, 127.0.0.1, [::1]).
+    # allowedRedirectUriPatterns:
+    #   - 'cursor://*'
+    #   - 'http://localhost:*'
+    #   - 'http://127.0.0.1:*'
+    #   - 'http://[::1]:*'
 ```
 
 ## Configuring MCP Clients
@@ -292,3 +302,51 @@ The MCP Actions Backend emits metrics for the following operations:
 - `mcp.server.session.duration`: The duration of the MCP session from the perspective of the server
 
 See the [OpenTelemetry tutorial](../tutorials/setup-opentelemetry.md) to learn how to make these metrics available.
+
+## Tracing
+
+The MCP Actions Backend emits a trace span for each `tools/call` invocation via the [Tracing Service](../backend-system/core-services/tracing.md), following the [OpenTelemetry server-side MCP semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/mcp/#server). Each span uses the name `tools/call <toolname>`, server kind, and includes the standard MCP attributes (`mcp.method.name`, `gen_ai.tool.name`, `gen_ai.operation.name`). Known Backstage errors (such as `InputError` or `NotFoundError`) are caught and returned as `isError: true` tool responses — the span is marked with `error.type=tool_error` in that case. Unhandled exceptions are recorded automatically by the Tracing Service and the span status is set to `ERROR`.
+
+In addition to those attributes, the Tracing Service automatically attaches the authenticated principal's type as `backstage.principal.type` (one of `user`, `service`, or `none`). Each `tools/call` span is also attributed to the plugin that owns the invoked action via `backstage.plugin.id` (e.g. `catalog`, `scaffolder`) — overriding the default `mcp-actions` value so tracing backends can filter activity by the source plugin rather than by the MCP transport.
+
+### Baggage propagation
+
+The MCP Actions routers propagate OpenTelemetry context from the incoming HTTP request headers so that trace parent and baggage survive through the MCP transport layer. The following low-cardinality identifier entries from the OpenTelemetry [`gen_ai.*` attribute registry](https://opentelemetry.io/docs/specs/semconv/registry/attributes/gen-ai/), when set by the MCP client in baggage, are automatically forwarded as attributes on the `tools/call` span:
+
+- `gen_ai.agent.id`
+- `gen_ai.agent.name`
+- `gen_ai.conversation.id`
+- `gen_ai.provider.name`
+- `gen_ai.request.model`
+
+This enables tracing backends to correlate MCP tool invocations back to the originating agent, conversation, or model without additional configuration. Other `gen_ai.*` baggage entries are intentionally not forwarded — baggage may be set by arbitrary upstream callers, and a broad prefix filter would let clients smuggle high-cardinality or payload-shaped keys (e.g. `gen_ai.tool.call.result`, `gen_ai.prompt`) onto the span and bypass the [tool payload capture flag](#capturing-tool-arguments-and-results).
+
+### Capturing the authenticated end user
+
+The Tracing Service can additionally include the authenticated principal's identity as `enduser.id` (the user entity ref for a user principal, the service subject for a service principal). This is gated behind a backend-wide configuration flag and is **disabled by default**:
+
+```yaml title="app-config.yaml"
+backend:
+  tracing:
+    capture:
+      endUser: true # defaults to false
+```
+
+This flag is honored by every plugin that creates spans through the [Tracing Service](../backend-system/core-services/tracing.md), not just MCP Actions.
+
+### Capturing tool arguments and results
+
+When `mcpActions.tracing.capture.toolPayload` is enabled, the tool's input arguments and output result are recorded on the span as `gen_ai.tool.call.arguments` and `gen_ai.tool.call.result`.
+
+```yaml title="app-config.yaml"
+mcpActions:
+  tracing:
+    capture:
+      toolPayload: true # defaults to false
+```
+
+:::warning
+These attributes are marked Opt-In by the OpenTelemetry GenAI semantic conventions because they may contain sensitive information — entity payloads, scaffolder inputs, free-form text, and so on. Only enable this flag if your tracing backend's data handling is appropriate for the kinds of payloads your MCP tools accept and produce.
+:::
+
+See the [OpenTelemetry tutorial](../tutorials/setup-opentelemetry.md) to learn how to make these spans available.

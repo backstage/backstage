@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { useEffect } from 'react';
-import { Progress, Select, SelectItem } from '@backstage/core-components';
+import {
+  Progress,
+  Select as MuiSelect,
+  SelectItem,
+} from '@backstage/core-components';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { useApi } from '@backstage/core-plugin-api';
@@ -22,6 +26,10 @@ import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import useAsync from 'react-use/esm/useAsync';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { Select as BuiSelect } from '@backstage/ui';
+import overrides from '../scaffolderFieldOverrides.module.css';
+import type { Key } from 'react-aria-components';
 
 export const RepoUrlPickerHost = (props: {
   host?: string;
@@ -30,6 +38,7 @@ export const RepoUrlPickerHost = (props: {
   rawErrors: string[];
   isDisabled?: boolean;
 }) => {
+  const theme = useScaffolderTheme();
   const { host, hosts, onChange, rawErrors, isDisabled } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -57,7 +66,7 @@ export const RepoUrlPickerHost = (props: {
 
   // If there are no allowedHosts provided, then show all integrations. Otherwise, only show integrations
   // that are provided in the dropdown for the user to choose from.
-  const hostsOptions: SelectItem[] = integrations
+  const hostsOptions = integrations
     ? integrations
         .filter(i => (hosts?.length ? hosts?.includes(i.host) : true))
         .map(i => ({ label: i.title, value: i.host }))
@@ -67,6 +76,27 @@ export const RepoUrlPickerHost = (props: {
     return <Progress />;
   }
 
+  if (theme === 'bui') {
+    return (
+      <BuiSelect
+        className={overrides.select}
+        label={t('fields.repoUrlPicker.host.title')}
+        description={t('fields.repoUrlPicker.host.description')}
+        isDisabled={isDisabled || hosts?.length === 1}
+        isInvalid={rawErrors?.length > 0 && !host}
+        selectedKey={host ?? null}
+        onSelectionChange={(key: Key | null) => {
+          if (key !== null) onChange(String(key));
+        }}
+        options={hostsOptions}
+        isRequired
+        data-testid="host-select"
+      />
+    );
+  }
+
+  const muiHostsOptions: SelectItem[] = hostsOptions;
+
   return (
     <>
       <FormControl
@@ -74,13 +104,13 @@ export const RepoUrlPickerHost = (props: {
         required
         error={rawErrors?.length > 0 && !host}
       >
-        <Select
+        <MuiSelect
           native
           disabled={isDisabled || hosts?.length === 1}
           label={t('fields.repoUrlPicker.host.title')}
           onChange={s => onChange(String(Array.isArray(s) ? s[0] : s))}
           selected={host}
-          items={hostsOptions}
+          items={muiHostsOptions}
           data-testid="host-select"
         />
 

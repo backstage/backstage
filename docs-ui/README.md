@@ -4,7 +4,7 @@ Backstage UI is our internal UI library built for Backstage. We built this websi
 
 ## How to run locally
 
-This website is built with Next.js and it is hosted on Github pages. To run it locally, you can run the following command:
+This website is built with Next.js and it is hosted on GitHub pages. To run it locally, you can run the following command:
 
 ```bash
 yarn start
@@ -12,7 +12,7 @@ yarn start
 
 ## Deployment
 
-Deployments are done automatically when a PR is merged into the `master` branch. We host the website using Github pages.
+Deployments are done automatically when a PR is merged into the `master` branch. We host the website using GitHub pages.
 
 ## Maintaining Component Changelogs
 

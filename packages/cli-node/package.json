@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-node",
-  "version": "0.3.2-next.1",
+  "version": "0.3.2",
   "description": "Node.js library for Backstage CLIs",
   "backstage": {
     "role": "node-library"
@@ -54,9 +54,6 @@
     "@types/proper-lockfile": "^4",
     "@types/yarnpkg__lockfile": "^1.1.4"
   },
-  "optionalDependencies": {
-    "keytar": "^7.9.0"
-  },
   "peerDependencies": {
     "@swc/core": "^1.15.6"
   },
@@ -64,5 +61,8 @@
     "@swc/core": {
       "optional": true
     }
+  },
+  "optionalDependencies": {
+    "keytar": "^7.9.0"
   }
 }

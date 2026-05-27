@@ -395,6 +395,7 @@ export class KubernetesBackendClient implements KubernetesApi {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
     kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
+    clustersCacheTtlMs?: number;
   });
   // (undocumented)
   getCluster(clusterName: string): Promise<{

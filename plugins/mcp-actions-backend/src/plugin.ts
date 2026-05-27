@@ -26,6 +26,7 @@ import {
   actionsRegistryServiceRef,
   actionsServiceRef,
   metricsServiceRef,
+  tracingServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
 import { parseServerConfigs } from './config';
 
@@ -49,6 +50,7 @@ export const mcpPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         config: coreServices.rootConfig,
         metrics: metricsServiceRef,
+        tracing: tracingServiceRef,
       },
       async init({
         actions,
@@ -59,16 +61,22 @@ export const mcpPlugin = createBackendPlugin({
         discovery,
         config,
         metrics,
+        tracing,
       }) {
         const serverConfigs = parseServerConfigs(config);
         const namespacedToolNames = config.getOptionalBoolean(
           'mcpActions.namespacedToolNames',
         );
+        const captureToolPayloads =
+          config.getOptionalBoolean('mcpActions.tracing.capture.toolPayload') ??
+          false;
 
         const mcpService = await McpService.create({
           actions,
           metrics,
           namespacedToolNames,
+          tracingService: tracing,
+          captureToolPayloads,
         });
 
         const router = Router();
@@ -81,6 +89,7 @@ export const mcpPlugin = createBackendPlugin({
               httpAuth,
               logger,
               metrics,
+              tracing,
               serverConfig,
             });
 
@@ -97,6 +106,7 @@ export const mcpPlugin = createBackendPlugin({
           const sseRouter = createSseRouter({
             mcpService,
             httpAuth,
+            tracing,
             serverConfig,
           });
 
@@ -105,6 +115,7 @@ export const mcpPlugin = createBackendPlugin({
             httpAuth,
             logger,
             metrics,
+            tracing,
             serverConfig,
           });
 

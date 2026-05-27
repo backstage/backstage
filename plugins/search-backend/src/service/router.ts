@@ -19,18 +19,10 @@ import { z } from 'zod/v3';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
-import {
-  PermissionAuthorizer,
-  PermissionEvaluator,
-  toPermissionEvaluator,
-} from '@backstage/plugin-permission-common';
-import {
-  DocumentTypeInfo,
-  IndexableResultSet,
-  SearchResultSet,
-} from '@backstage/plugin-search-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { DocumentTypeInfo } from '@backstage/plugin-search-common';
+import { filterResultSet, toSearchResults } from '../utils/search_result_utils';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
-import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
 import { createOpenApiRouter } from '../schema/openapi';
 import {
   AuthService,
@@ -61,7 +53,7 @@ export type RouterOptions = {
   engine: SearchEngine;
   types: Record<string, DocumentTypeInfo>;
   discovery?: DiscoveryService;
-  permissions: PermissionEvaluator | PermissionAuthorizer;
+  permissions: PermissionEvaluator;
   config: Config;
   logger: LoggerService;
   auth: AuthService;
@@ -70,8 +62,6 @@ export type RouterOptions = {
 
 const defaultMaxPageLimit = 100;
 const defaultMaxTermLength = 100;
-const allowedLocationProtocols = ['http:', 'https:'];
-
 /**
  * @internal
  */
@@ -79,15 +69,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = await createOpenApiRouter();
-  const {
-    engine: inputEngine,
-    types,
-    permissions,
-    config,
-    logger,
-    auth,
-    httpAuth,
-  } = options;
+  const { engine, types, config, logger, auth, httpAuth } = options;
 
   const maxPageLimit =
     config.getOptionalNumber('search.maxPageLimit') ?? defaultMaxPageLimit;
@@ -121,52 +103,6 @@ export async function createRouter(
       .optional(),
   });
 
-  let permissionEvaluator: PermissionEvaluator;
-  if ('authorizeConditional' in permissions) {
-    permissionEvaluator = permissions as PermissionEvaluator;
-  } else {
-    logger.warn(
-      'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
-    );
-    permissionEvaluator = toPermissionEvaluator(permissions);
-  }
-
-  const engine = config.getOptionalBoolean('permission.enabled')
-    ? new AuthorizedSearchEngine(
-        inputEngine,
-        types,
-        permissionEvaluator,
-        auth,
-        config,
-      )
-    : inputEngine;
-
-  const filterResultSet = ({ results, ...resultSet }: SearchResultSet) => ({
-    ...resultSet,
-    results: results.filter(result => {
-      const protocol = new URL(result.document.location, 'https://example.com')
-        .protocol;
-      const isAllowed = allowedLocationProtocols.includes(protocol);
-      if (!isAllowed) {
-        logger.info(
-          `Rejected search result for "${result.document.title}" as location protocol "${protocol}" is unsafe`,
-        );
-      }
-      return isAllowed;
-    }),
-  });
-
-  const toSearchResults = (resultSet: IndexableResultSet): SearchResultSet => ({
-    ...resultSet,
-    results: resultSet.results.map(result => ({
-      ...result,
-      document: {
-        ...result.document,
-        authorization: undefined,
-      },
-    })),
-  });
-
   router.get('/query', async (req, res) => {
     const parseResult = requestSchema.passthrough().safeParse(req.query);
 
@@ -195,7 +131,7 @@ export async function createRouter(
         credentials,
       });
 
-      res.json(filterResultSet(toSearchResults(resultSet)));
+      res.json(filterResultSet(toSearchResults(resultSet), logger));
     } catch (error) {
       // Log the error message here, but don't expose it to the user in the response
       logger.error(

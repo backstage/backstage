@@ -14,95 +14,23 @@
  * limitations under the License.
  */
 
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { IconComponent, useAnalytics } from '@backstage/core-plugin-api';
-import { getEntityRelations } from '@backstage/plugin-catalog-react';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import { useCallback } from 'react';
-import { CardHeader } from './CardHeader';
-import { usePermission } from '@backstage/plugin-permission-react';
-import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
-import { TemplateCardContent } from './TemplateCardContent';
-import { TemplateCardTags } from './TemplateCardTags';
-import { TemplateCardLinks } from './TemplateCardLinks';
-import { TemplateCardActions } from './TemplateCardActions';
+import { createSwappableComponent } from '@backstage/frontend-plugin-api';
+import type { TemplateCardComponentProps } from './TemplateCardImpl';
 
-const useStyles = makeStyles<Theme>(() => ({
-  actionContainer: { padding: '16px', flex: 1, alignItems: 'flex-end' },
-}));
+export type {
+  TemplateCardProps,
+  TemplateCardComponentProps,
+} from './TemplateCardImpl';
 
 /**
- * The Props for the {@link TemplateCard} component
+ * The `TemplateCard` component that is rendered in a list for each template.
+ * Apps using the new frontend system can replace it by registering a
+ * `SwappableComponentBlueprint` that targets `TemplateCard`.
+ *
  * @alpha
  */
-export interface TemplateCardProps {
-  template: TemplateEntityV1beta3;
-  additionalLinks?: {
-    icon: IconComponent;
-    text: string;
-    url: string;
-  }[];
-  onSelected?: (template: TemplateEntityV1beta3) => void;
-}
-
-/**
- * The `TemplateCard` component that is rendered in a list for each template
- * @alpha
- */
-export const TemplateCard = (props: TemplateCardProps) => {
-  const { additionalLinks, onSelected, template } = props;
-  const styles = useStyles();
-  const analytics = useAnalytics();
-  const ownedByRelations = getEntityRelations(template, RELATION_OWNED_BY);
-  const hasTags = !!template.metadata.tags?.length;
-  const hasLinks =
-    !!additionalLinks?.length || !!template.metadata.links?.length;
-  const displayDefaultDivider = !hasTags && !hasLinks;
-
-  const { allowed: canCreateTask } = usePermission({
-    permission: taskCreatePermission,
+export const TemplateCard =
+  createSwappableComponent<TemplateCardComponentProps>({
+    id: 'scaffolder.templateCard',
+    loader: () => import('./TemplateCardImpl').then(m => m.TemplateCardImpl),
   });
-  const handleChoose = useCallback(() => {
-    analytics.captureEvent('click', `Template has been opened`);
-    onSelected?.(template);
-  }, [analytics, onSelected, template]);
-
-  return (
-    <Card>
-      <CardHeader template={template} data-testid="template-card-header" />
-      <CardContent>
-        <Grid container spacing={2} data-testid="template-card-content">
-          <TemplateCardContent template={template} />
-          {displayDefaultDivider && (
-            <Grid item xs={12}>
-              <Divider data-testid="template-card-separator" />
-            </Grid>
-          )}
-          {hasTags && <TemplateCardTags template={template} />}
-          {hasLinks && (
-            <TemplateCardLinks
-              template={template}
-              additionalLinks={additionalLinks}
-            />
-          )}
-        </Grid>
-      </CardContent>
-      <CardActions
-        className={styles.actionContainer}
-        data-testid="template-card-actions"
-      >
-        <TemplateCardActions
-          canCreateTask={canCreateTask}
-          handleChoose={handleChoose}
-          ownedByRelations={ownedByRelations}
-        />
-      </CardActions>
-    </Card>
-  );
-};

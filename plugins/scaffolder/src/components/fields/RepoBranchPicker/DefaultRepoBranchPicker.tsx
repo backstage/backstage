@@ -16,9 +16,11 @@
 
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
+import MuiTextField from '@material-ui/core/TextField';
 
 import { BaseRepoBranchPickerProps } from './types';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { TextField as BuiTextField } from '@backstage/ui';
 
 /**
  * The underlying component that is rendered in the form for the `DefaultRepoBranchPicker`
@@ -34,7 +36,22 @@ export const DefaultRepoBranchPicker = ({
   isDisabled,
   required,
 }: BaseRepoBranchPickerProps) => {
+  const theme = useScaffolderTheme();
   const { branch } = state;
+
+  if (theme === 'bui') {
+    return (
+      <BuiTextField
+        label="Branch"
+        description="The branch of the repository"
+        isDisabled={isDisabled}
+        onChange={value => onChange({ branch: value })}
+        value={branch ?? ''}
+        isInvalid={rawErrors?.length > 0 && !branch}
+        isRequired={required}
+      />
+    );
+  }
 
   return (
     <FormControl
@@ -42,7 +59,7 @@ export const DefaultRepoBranchPicker = ({
       required={required}
       error={rawErrors?.length > 0 && !branch}
     >
-      <TextField
+      <MuiTextField
         id="branchInput"
         label="Branch"
         disabled={isDisabled}

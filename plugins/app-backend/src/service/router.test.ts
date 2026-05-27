@@ -21,7 +21,11 @@ import { resolve as resolvePath } from 'node:path';
 import request from 'supertest';
 import { createRouter } from './router';
 import { loadConfigSchema } from '@backstage/config-loader';
-import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockServices,
+  TestDatabases,
+} from '@backstage/backend-test-utils';
 
 jest.mock('../lib/config', () => ({
   injectConfig: jest.fn(),
@@ -133,6 +137,104 @@ describe('createRouter with static fallback handler', () => {
 
     const response3 = await request(app).get('/static/missing.txt');
     expect(response3.status).toBe(404);
+  });
+});
+
+describe('createRouter with public entry point', () => {
+  let app: express.Express;
+
+  beforeAll(async () => {
+    const router = await createRouter({
+      logger: mockServices.logger.mock(),
+      database: mockServices.database.mock(),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth({
+        defaultCredentials: mockCredentials.none(),
+      }),
+      config: mockServices.rootConfig({
+        data: {
+          app: { disableStaticFallbackCache: true },
+        },
+      }),
+      appPackageName: 'example-app',
+    });
+    app = express().use(router);
+  });
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('serves the public entry point to unauthenticated users', async () => {
+    const response = await request(app).get('/index.html');
+
+    expect(response.status).toBe(200);
+    expect(response.text.trim()).toBe('this is public index.html');
+  });
+
+  it('serves the main entry point to authenticated users', async () => {
+    const response = await request(app)
+      .get('/index.html')
+      .set('Cookie', mockCredentials.limitedUser.cookie());
+
+    expect(response.status).toBe(200);
+    expect(response.text.trim()).toBe('this is index.html');
+  });
+
+  it('handles sign-in and issues a user cookie', async () => {
+    const response = await request(app)
+      .post('/')
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send(`type=sign-in&token=${mockCredentials.user.token()}`);
+
+    expect(response.status).toBe(200);
+    expect(response.header['set-cookie']).toBeDefined();
+    expect(response.text.trim()).toBe('this is index.html');
+  });
+
+  it('rejects POST requests without a sign-in type', async () => {
+    const response = await request(app)
+      .post('/')
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send('type=something-else');
+
+    expect(response.status).toBe(500);
+  });
+});
+
+describe('createRouter with disablePublicEntryPoint', () => {
+  let app: express.Express;
+
+  beforeAll(async () => {
+    const router = await createRouter({
+      logger: mockServices.logger.mock(),
+      database: mockServices.database.mock(),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth({
+        defaultCredentials: mockCredentials.none(),
+      }),
+      config: mockServices.rootConfig({
+        data: {
+          app: {
+            disableStaticFallbackCache: true,
+            disablePublicEntryPoint: true,
+          },
+        },
+      }),
+      appPackageName: 'example-app',
+    });
+    app = express().use(router);
+  });
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('serves the main entry point to unauthenticated users', async () => {
+    const response = await request(app).get('/index.html');
+
+    expect(response.status).toBe(200);
+    expect(response.text.trim()).toBe('this is index.html');
   });
 });
 

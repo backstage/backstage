@@ -114,6 +114,7 @@ const ConditionalAutoLogout = ({
     // Events will be rebound as long as `stopOnMount` is not set.
     setPromptOpen(false);
     setRemainingTimeCountdown(0);
+    lastSeenOnlineStore.delete();
     identityApi.signOut();
   };
 
@@ -231,18 +232,37 @@ const parseConfig = (
 export const AutoLogout = (props: AutoLogoutProps): JSX.Element | null => {
   const identityApi = useApi(identityApiRef);
   const configApi = useApi(configApiRef);
-  const [isLogged, setIsLogged] = useState(false);
+  const [isLogged, setIsLogged] = useState<boolean | null>(null);
+  const lastSeenOnlineStore: TimestampStore = useMemo(
+    () => new DefaultTimestampStore(LAST_SEEN_ONLINE_STORAGE_KEY),
+    [],
+  );
+
   useEffect(() => {
-    // if the user is not logged in, the autologout feature won't affect the app even if enabled
-    async function isLoggedIn(identity: IdentityApi) {
-      if ((await identity.getCredentials()).token) {
-        setIsLogged(true);
-      } else {
+    let cancelled = false;
+
+    async function checkLogin(identity: IdentityApi) {
+      try {
+        const creds = await identity.getCredentials();
+        if (cancelled) return;
+        if (creds?.token) {
+          setIsLogged(true);
+        } else {
+          setIsLogged(false);
+          lastSeenOnlineStore.delete();
+        }
+      } catch (err) {
+        if (cancelled) return;
         setIsLogged(false);
+        lastSeenOnlineStore.delete();
       }
     }
-    isLoggedIn(identityApi);
-  }, [identityApi]);
+    checkLogin(identityApi);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [lastSeenOnlineStore, identityApi]);
 
   const {
     enabled,
@@ -274,10 +294,6 @@ export const AutoLogout = (props: AutoLogoutProps): JSX.Element | null => {
     }
   }, [idleTimeoutMinutes, promptBeforeIdleSeconds]);
 
-  const lastSeenOnlineStore: TimestampStore = useMemo(
-    () => new DefaultTimestampStore(LAST_SEEN_ONLINE_STORAGE_KEY),
-    [],
-  );
   const [promptOpen, setPromptOpen] = useState<boolean>(false);
 
   const [remainingTimeCountdown, setRemainingTimeCountdown] =
@@ -285,7 +301,8 @@ export const AutoLogout = (props: AutoLogoutProps): JSX.Element | null => {
 
   useLogoutDisconnectedUserEffect({
     enableEffect: logoutIfDisconnected,
-    autologoutIsEnabled: enabled && isLogged,
+    autologoutIsEnabled: enabled,
+    isLoggedIn: isLogged,
     idleTimeoutSeconds: idleTimeoutMinutes * 60,
     lastSeenOnlineStore,
     identityApi,

@@ -19,22 +19,40 @@ import { useMemo, PropsWithChildren } from 'react';
 import { FieldTemplate } from './FieldTemplate';
 import { DescriptionFieldTemplate } from './DescriptionFieldTemplate';
 import { FieldProps } from '@rjsf/utils';
-import { ScaffolderRJSFFormProps } from '@backstage/plugin-scaffolder-react';
+import {
+  ScaffolderRJSFFormProps,
+  type FormProps,
+} from '@backstage/plugin-scaffolder-react';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
+import { generateBuiTheme } from './BuiTheme';
+import {
+  ScaffolderThemeProvider,
+  type ScaffolderTheme,
+} from './ScaffolderThemeContext';
+import styles from './BuiTheme/Form.module.css';
 
-const WrappedForm = withTheme(MuiTheme);
+const MuiForm = withTheme(MuiTheme);
+const BuiForm = withTheme(generateBuiTheme());
 
 /**
  * The Form component
  * @alpha
  */
-export const Form = (props: PropsWithChildren<ScaffolderRJSFFormProps>) => {
+export const Form = (
+  props: PropsWithChildren<
+    ScaffolderRJSFFormProps & Pick<FormProps, 'EXPERIMENTAL_theme'>
+  >,
+) => {
+  const { EXPERIMENTAL_theme: themeProp, ...formProps } = props;
+  const theme: ScaffolderTheme = themeProp ?? 'mui';
+  const WrappedForm = theme === 'bui' ? BuiForm : MuiForm;
+
   // This is where we unbreak the changes from RJSF, and make it work with our custom fields so we don't pass on this
   // breaking change to our users. We will look more into a better API for this in scaffolderv2.
   const wrappedFields = useMemo(
     () =>
       Object.fromEntries(
-        Object.entries(props.fields ?? {}).map(([key, Component]) => [
+        Object.entries(formProps.fields ?? {}).map(([key, Component]) => [
           key,
           (wrapperProps: FieldProps) => {
             return (
@@ -50,19 +68,28 @@ export const Form = (props: PropsWithChildren<ScaffolderRJSFFormProps>) => {
           },
         ]),
       ),
-    [props.fields],
+    [formProps.fields],
   );
 
   const templates = useMemo(
-    () => ({
-      FieldTemplate,
-      DescriptionFieldTemplate,
-      ...props.templates,
-    }),
-    [props.templates],
+    () =>
+      theme === 'bui'
+        ? formProps.templates ?? {}
+        : {
+            FieldTemplate,
+            DescriptionFieldTemplate,
+            ...formProps.templates,
+          },
+    [formProps.templates, theme],
+  );
+
+  const form = (
+    <WrappedForm {...formProps} templates={templates} fields={wrappedFields} />
   );
 
   return (
-    <WrappedForm {...props} templates={templates} fields={wrappedFields} />
+    <ScaffolderThemeProvider value={theme}>
+      {theme === 'bui' ? <div className={styles.form}>{form}</div> : form}
+    </ScaffolderThemeProvider>
   );
 };

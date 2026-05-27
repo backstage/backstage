@@ -25,8 +25,8 @@ import {
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 import fs from 'fs-extra';
 import { validate as validateJsonSchema } from 'jsonschema';
-import nunjucks from 'nunjucks';
 import path from 'node:path';
+import nunjucks from 'nunjucks';
 import * as winston from 'winston';
 import {
   SecureTemplater,
@@ -47,6 +47,7 @@ import type {
 } from '@backstage/backend-plugin-api';
 import type { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { UserEntity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import {
   AuthorizeResult,
   PolicyDecision,
@@ -60,17 +61,16 @@ import {
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
-import { createDefaultFilters } from '../../lib/templating/filters/createDefaultFilters';
-import { scaffolderActionRules } from '../../service/rules';
-import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
-import { BackstageLoggerTransport, WinstonLogger } from './logger';
-import { convertFiltersToRecord } from '../../util/templating';
 import {
   CheckpointContext,
   CheckpointState,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { Config } from '@backstage/config';
 import { resolveDefaultEnvironment } from '../../lib/defaultEnvironment';
+import { createDefaultFilters } from '../../lib/templating/filters/createDefaultFilters';
+import { scaffolderActionRules } from '../../service/rules';
+import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
+import { convertFiltersToRecord } from '../../util/templating';
+import { BackstageLoggerTransport, WinstonLogger } from './logger';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -650,23 +650,24 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     // Track whether a status check global (always/failure) was invoked during rendering
     const statusCheckInvoked = { value: false };
 
-    const renderTemplate = await SecureTemplater.loadRenderer({
-      templateFilters: {
-        ...this.defaultTemplateFilters,
-        ...additionalTemplateFilters,
-      },
-      templateGlobals: {
-        ...additionalTemplateGlobals,
-        always: () => {
-          statusCheckInvoked.value = true;
-          return true;
+    const { render: renderTemplate, dispose } =
+      await SecureTemplater.loadRenderer({
+        templateFilters: {
+          ...this.defaultTemplateFilters,
+          ...additionalTemplateFilters,
         },
-        failure: () => {
-          statusCheckInvoked.value = true;
-          return taskState.failed;
+        templateGlobals: {
+          ...additionalTemplateGlobals,
+          always: () => {
+            statusCheckInvoked.value = true;
+            return true;
+          },
+          failure: () => {
+            statusCheckInvoked.value = true;
+            return taskState.failed;
+          },
         },
-      },
-    });
+      });
 
     try {
       await task.rehydrateWorkspace?.({ taskId, targetPath: workspacePath });
@@ -785,6 +786,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       return { output };
     } finally {
+      try {
+        dispose();
+      } catch {
+        // Ignore disposal errors so they don't mask the original failure.
+      }
       if (workspacePath) {
         await fs.remove(workspacePath);
       }
@@ -804,7 +810,7 @@ function scaffoldingTracker(metrics: MetricsService) {
     help: 'Duration of a task run',
     labelNames: ['template', 'result'],
   });
-  const promtStepCount = createCounterMetric({
+  const promStepCount = createCounterMetric({
     name: 'scaffolder_step_count',
     help: 'Count of step runs',
     labelNames: ['template', 'step', 'result'],
@@ -942,7 +948,7 @@ function scaffoldingTracker(metrics: MetricsService) {
         stepId: step.id,
         status: 'completed',
       });
-      promtStepCount.inc({
+      promStepCount.inc({
         template,
         step: step.name,
         result: 'ok',
@@ -958,7 +964,7 @@ function scaffoldingTracker(metrics: MetricsService) {
     }
 
     async function markCancelled() {
-      promtStepCount.inc({
+      promStepCount.inc({
         template,
         step: step.name,
         result: 'cancelled',
@@ -974,7 +980,7 @@ function scaffoldingTracker(metrics: MetricsService) {
     }
 
     async function markFailed() {
-      promtStepCount.inc({
+      promStepCount.inc({
         template,
         step: step.name,
         result: 'failed',

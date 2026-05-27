@@ -100,7 +100,7 @@ export interface HostDiscoveryOptions {
    * These endpoints have lower priority than any that are defined in
    * app-config, but higher priority than the fallback ones.
    *
-   * This parameter is usedful for example if you want to provide a shared
+   * This parameter is useful for example if you want to provide a shared
    * library of core services to your plugin developers, which is set up for the
    * default behaviors in your org. This alleviates the need for replicating any
    * given set of endpoint config in every backend that you deploy.

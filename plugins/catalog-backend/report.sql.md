@@ -114,6 +114,7 @@
 
 - `relations_source_entity_id_idx` (`originating_entity_id`)
 - `relations_source_entity_ref_idx` (`source_entity_ref`)
+- `relations_target_entity_ref_idx` (`target_entity_ref`)
 
 ## Table `search`
 
@@ -127,8 +128,9 @@
 ### Indices
 
 - `search_entity_id_idx` (`entity_id`)
-- `search_key_original_value_idx` (`key`, `original_value`)
-- `search_key_value_idx` (`key`, `value`)
+- `search_entity_key_value_idx` (`entity_id`, `key`, `value`) unique
+- `search_facets_covering_idx` (`key`, `original_value`, `entity_id`)
+- `search_key_value_entity_idx` (`key`, `value`, `entity_id`)
 
 ## Table `stitch_queue`
 

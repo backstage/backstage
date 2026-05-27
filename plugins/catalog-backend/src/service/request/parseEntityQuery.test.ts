@@ -152,6 +152,27 @@ describe('parseEntityQuery', () => {
         }),
       ).toThrow(/Invalid order field order/);
     });
+
+    it('parses totalItems include / exclude', () => {
+      expect(parseEntityQuery({ totalItems: 'exclude' })).toEqual(
+        expect.objectContaining({ totalItems: 'exclude' }),
+      );
+      expect(parseEntityQuery({ totalItems: 'include' })).toEqual(
+        expect.objectContaining({ totalItems: 'include' }),
+      );
+    });
+
+    it('omits totalItems when not provided', () => {
+      const result = parseEntityQuery({});
+      expect(result).not.toHaveProperty('totalItems');
+    });
+
+    it('throws on invalid totalItems value', () => {
+      expect(() =>
+        // @ts-expect-error - invalid enum value
+        parseEntityQuery({ totalItems: 'maybe' }),
+      ).toThrow(/Invalid totalItems value/);
+    });
   });
 
   describe('cursor request', () => {

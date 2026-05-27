@@ -24,7 +24,15 @@ import { SelectProps } from '../Select/Select';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
+export type TableFiltersClassKey =
+  | 'root'
+  | 'value'
+  | 'header'
+  /**
+   * @deprecated Use `'header'` instead. This was a typo in the original class key.
+   */
+  | 'heder'
+  | 'filters';
 
 const useFilterStyles = makeStyles(
   theme => ({
@@ -46,6 +54,13 @@ const useFilterStyles = makeStyles(
       justifyContent: 'space-between',
       borderBottom: `1px solid ${theme.palette.grey[500]}`,
     },
+    // Intentionally empty: the deprecated `heder` class is still applied to
+    // the same element as `header` so legacy theme overrides on
+    // `BackstageTableFilters.heder` continue to work. Keeping this rule empty
+    // (rather than duplicating `header`'s styles) avoids clobbering overrides
+    // on the canonical `header` key — JSS injects rules in key order, so an
+    // empty `heder` defined after `header` has no properties to override.
+    heder: {},
     filters: {
       display: 'flex',
       flexDirection: 'column',
@@ -98,7 +113,7 @@ export const Filters = (props: Props) => {
   // As material table doesn't provide a way to add a column filter tab we will make our own filter logic
   return (
     <Box className={classes.root}>
-      <Box className={classes.header}>
+      <Box className={`${classes.header} ${classes.heder}`}>
         <Box className={classes.value}>{t('table.filter.title')}</Box>
         <Button color="primary" onClick={handleClick}>
           {t('table.filter.clearAll')}

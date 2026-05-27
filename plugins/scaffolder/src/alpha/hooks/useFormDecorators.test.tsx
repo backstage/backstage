@@ -44,6 +44,12 @@ describe('useFormDecorators', () => {
   });
 
   const manifest: TemplateParameterSchema = {
+    formDecorators: [{ id: 'test', input: { test: 'hello' } }],
+    steps: [],
+    title: 'test',
+  };
+
+  const legacyManifest: TemplateParameterSchema = {
     EXPERIMENTAL_formDecorators: [{ id: 'test', input: { test: 'hello' } }],
     steps: [],
     title: 'test',
@@ -82,6 +88,39 @@ describe('useFormDecorators', () => {
     });
   });
 
+  it('should still run the form decorators when defined under the deprecated EXPERIMENTAL_formDecorators field', async () => {
+    const renderedHook = renderHook(() => useFormDecorators(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [mockApiRef, mockApiImplementation],
+            [
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                decorators: [mockDecorator],
+              }),
+            ],
+            [errorApiRef, { post: () => {} }],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+
+    await waitFor(async () => {
+      const result = renderedHook.result.current!;
+
+      await result.run({
+        formState: {},
+        secrets: {},
+        manifest: legacyManifest,
+      });
+
+      expect(mockApiImplementation.test).toHaveBeenCalledWith('hello');
+    });
+  });
+
   it('should return existing secrets and formstate', async () => {
     const renderedHook = renderHook(() => useFormDecorators(), {
       wrapper: ({ children }) => (
@@ -112,6 +151,112 @@ describe('useFormDecorators', () => {
 
       expect(secrets).toEqual({ test: 'hello' });
       expect(formState).toEqual({ test: 'formState' });
+    });
+  });
+
+  it('should apply zod schema defaults to the input when the template omits a field', async () => {
+    const greeted = jest.fn();
+    const greetDecorator = createScaffolderFormDecorator({
+      id: 'greet',
+      schema: {
+        input: {
+          name: z => z.string(),
+          greeting: z => z.string().default('hello'),
+        },
+      },
+      async decorator({ input }) {
+        greeted(input);
+      },
+    });
+
+    const greetManifest: TemplateParameterSchema = {
+      formDecorators: [{ id: 'greet', input: { name: 'world' } }],
+      steps: [],
+      title: 'test',
+    };
+
+    const renderedHook = renderHook(() => useFormDecorators(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                decorators: [greetDecorator],
+              }),
+            ],
+            [errorApiRef, { post: () => {} }],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+
+    await waitFor(async () => {
+      const result = renderedHook.result.current!;
+      await result.run({
+        formState: {},
+        secrets: {},
+        manifest: greetManifest,
+      });
+
+      expect(greeted).toHaveBeenCalledWith({
+        name: 'world',
+        greeting: 'hello',
+      });
+    });
+  });
+
+  it('should post a validation error and skip the decorator when the input fails the schema', async () => {
+    const decoratorFn = jest.fn();
+    const strictDecorator = createScaffolderFormDecorator({
+      id: 'strict',
+      schema: {
+        input: {
+          count: z => z.number(),
+        },
+      },
+      async decorator(ctx) {
+        decoratorFn(ctx.input);
+      },
+    });
+
+    const post = jest.fn();
+    const strictManifest: TemplateParameterSchema = {
+      formDecorators: [{ id: 'strict', input: { count: 'nope' } }],
+      steps: [],
+      title: 'test',
+    };
+
+    const renderedHook = renderHook(() => useFormDecorators(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                decorators: [strictDecorator],
+              }),
+            ],
+            [errorApiRef, { post }],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+
+    await waitFor(async () => {
+      const result = renderedHook.result.current!;
+      await result.run({
+        formState: {},
+        secrets: {},
+        manifest: strictManifest,
+      });
+
+      expect(decoratorFn).not.toHaveBeenCalled();
+      expect(post).toHaveBeenCalledWith(expect.any(Error));
     });
   });
 

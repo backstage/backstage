@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: AiResource
+metadata:
+  name: use-internal-apis
+  description: Agents must use internal API clients instead of raw HTTP calls
+spec:
+  type: rule
+  lifecycle: production
+  owner: team-a
+  system: artist-engagement-portal
+  disciplines:
+    - web
+    - backend
+  category: architecture
+  rationale: Ensures consistent error handling, authentication, and observability across all service calls

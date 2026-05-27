@@ -34,28 +34,29 @@ const getTask = async (knex: Knex): Promise<DbTasksRow> => {
   return (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 };
 
-describe('PluginTaskSchedulerJanitor', () => {
-  const logger = mockServices.logger.mock();
-  const databases = TestDatabases.create({
-    ids: [
-      /* 'MYSQL_8' not supported yet */
-      'POSTGRES_18',
-      'POSTGRES_14',
-      'SQLITE_3',
-      'MYSQL_8',
-    ],
-  });
-  const testScopedSignal = createTestScopedSignal();
+jest.setTimeout(60_000);
 
-  jest.setTimeout(60_000);
+const databases = TestDatabases.create({
+  ids: [
+    /* 'MYSQL_8' not supported yet */
+    'POSTGRES_18',
+    'POSTGRES_14',
+    'SQLITE_3',
+    'MYSQL_8',
+  ],
+});
 
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
+describe.each(databases.eachSupportedId())(
+  'PluginTaskSchedulerJanitor, %p',
+  databaseId => {
+    const logger = mockServices.logger.mock();
+    const testScopedSignal = createTestScopedSignal();
 
-  it.each(databases.eachSupportedId())(
-    'Should update date if current_run_expires_at expires, %p',
-    async databaseId => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('Should update date if current_run_expires_at expires', async () => {
       const knex = await databases.init(databaseId);
       await migrateBackendTasks(knex);
 
@@ -92,6 +93,6 @@ describe('PluginTaskSchedulerJanitor', () => {
           }),
         );
       });
-    },
-  );
-});
+    });
+  },
+);

@@ -77,6 +77,16 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
   const onClose = () => setSettingsDialogOpen(false);
   const { t } = useTranslationRef(homeTranslationRef);
 
+  // Prefer the corrected key, but fall back to the deprecated typo key so that
+  // existing translation overrides on `editSettingsTooptip` keep working.
+  const editSettingsTooltipText = t(
+    'widgetSettingsOverlay.editSettingsTooltip',
+  );
+  const editSettingsTooltip =
+    editSettingsTooltipText === 'Edit settings'
+      ? t('widgetSettingsOverlay.editSettingsTooptip')
+      : editSettingsTooltipText;
+
   return (
     <div className={styles.settingsOverlay}>
       {widget.settingsSchema && (
@@ -124,7 +134,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
       >
         {widget.settingsSchema && (
           <Grid item className="overlayGridItem">
-            <Tooltip title={t('widgetSettingsOverlay.editSettingsTooptip')}>
+            <Tooltip title={editSettingsTooltip}>
               <IconButton
                 color="primary"
                 onClick={() => setSettingsDialogOpen(true)}

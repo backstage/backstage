@@ -657,6 +657,119 @@ theme:
         ],
       ]);
     });
+
+    it.each(['README.md', 'readme.md', 'docs/README.md', 'docs/readme.md'])(
+      'should use a symlink to %s if docs/index.md does not exist',
+      async fileName => {
+        mockDir.setContent({
+          'information.md': 'information.md content',
+          [fileName]: ctx => ctx.symlink(mockDir.resolve('information.md')),
+        });
+
+        await patchIndexPreBuild({
+          inputDir: mockDir.path,
+          logger: mockLogger,
+        });
+
+        await expect(
+          fs.readFile(mockDir.resolve('docs/index.md'), 'utf-8'),
+        ).resolves.toEqual('information.md content');
+      },
+    );
+
+    it.each(['README.md', 'readme.md', 'docs/README.md', 'docs/readme.md'])(
+      'should reject a symlink from %s to outside of the current directory',
+      async fileName => {
+        const anotherMockDir = createMockDirectory();
+
+        mockDir.setContent({
+          'information.md': 'information.md content',
+          [fileName]: ctx => ctx.symlink(anotherMockDir.resolve('tmp/secret')),
+        });
+
+        anotherMockDir.setContent({
+          tmp: {
+            secret: 'password',
+          },
+        });
+
+        await expect(
+          patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger }),
+        ).rejects.toThrow(
+          /Source path .* is not allowed to refer to a location outside/i,
+        );
+      },
+    );
+
+    it.each(['README.md', 'readme.md', 'docs/README.md', 'docs/readme.md'])(
+      'should write %s to a symlink docs directory if docs/index.md does not exist',
+      async fileName => {
+        mockDir.setContent({
+          'target/docs': {},
+          docs: ctx => ctx.symlink('./target/docs'),
+          [fileName]: `${fileName} content`,
+        });
+
+        await patchIndexPreBuild({
+          inputDir: mockDir.path,
+          logger: mockLogger,
+        });
+
+        await expect(
+          fs.readFile(mockDir.resolve('target/docs/index.md'), 'utf-8'),
+        ).resolves.toEqual(`${fileName} content`);
+      },
+    );
+
+    it.each(['README.md', 'readme.md'])(
+      'should reject creating docs dir if target symlink points to non-existing directory outside of the current directory',
+      async fileName => {
+        const anotherMockDir = createMockDirectory();
+
+        mockDir.setContent({
+          docs: ctx => ctx.symlink(anotherMockDir.resolve('docs')),
+          'information.md': 'information.md content',
+          [fileName]: `${fileName} content`,
+        });
+
+        await expect(
+          patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger }),
+        ).rejects.toThrow(
+          /Target path .* is not allowed to refer to a location outside/i,
+        );
+
+        await expect(fs.exists(anotherMockDir.resolve('docs'))).resolves.toBe(
+          false,
+        );
+      },
+    );
+
+    it.each(['README.md', 'readme.md'])(
+      'should reject creating docs dir if target symlink points to existing directory outside of the current directory',
+      async fileName => {
+        const anotherMockDir = createMockDirectory();
+
+        mockDir.setContent({
+          docs: ctx => ctx.symlink(anotherMockDir.resolve('docs')),
+          'information.md': 'information.md content',
+          [fileName]: `${fileName} content`,
+        });
+
+        anotherMockDir.setContent({
+          docs: {},
+        });
+
+        await expect(
+          patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger }),
+        ).rejects.toThrow(
+          /Target path .* is not allowed to refer to a location outside/i,
+        );
+
+        await expect(
+          fs.exists(anotherMockDir.resolve('docs/index.md')),
+        ).resolves.toBe(false);
+      },
+    );
   });
 
   describe('addBuildTimestampMetadata', () => {

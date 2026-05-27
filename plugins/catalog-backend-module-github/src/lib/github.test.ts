@@ -20,7 +20,8 @@ import {
 } from '@backstage/backend-test-utils';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { graphql as graphqlOctokit } from '@octokit/graphql';
-import { graphql as graphqlMsw, HttpResponse } from 'msw';
+import { CacheService } from '@backstage/backend-plugin-api';
+import { graphql as graphqlMsw, http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { TeamTransformer, UserTransformer } from './defaultTransformers';
 import {
@@ -37,18 +38,18 @@ import {
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
   createGraphqlClient,
+  createRestClient,
   getOrganizationTeamsForUser,
+  isSuspended,
+  isGitHubEnterprise,
 } from './github';
 import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
 import { retry } from '@octokit/plugin-retry';
 
-jest.mock('@octokit/core', () => ({
-  ...jest.requireActual('@octokit/core'),
-  Octokit: {
-    plugin: jest.fn().mockReturnValue({ defaults: jest.fn() }),
-  },
-}));
+// Note: We do NOT mock @octokit/core globally because createRestClient
+// needs a real Octokit.plugin. The createGraphqlClient tests use a local
+// jest.spyOn instead.
 
 describe('github', () => {
   const server = setupServer();
@@ -215,6 +216,200 @@ describe('github', () => {
       await expect(
         getOrganizationUsers(graphql, 'a', 'token', undefined, undefined, true),
       ).resolves.toEqual(output);
+    });
+
+    it('reads members excluding suspended users via REST when restClient provided', async () => {
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'suspended-user',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+              {
+                login: 'active-user',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+            ],
+          },
+        },
+      };
+
+      const output = {
+        users: [
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              name: 'active-user',
+              description: 'c',
+            }),
+            spec: {
+              profile: { displayName: 'b', email: 'd', picture: 'e' },
+              memberOf: [],
+            },
+          }),
+        ],
+      };
+
+      server.use(
+        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
+      );
+
+      const mockRestClient = {
+        request: jest.fn().mockImplementation((route: string, params: any) => {
+          if (route === 'GET /versions') {
+            return Promise.resolve({
+              headers: { 'x-github-enterprise-version': '3.12.0' },
+            });
+          }
+          if (route === 'GET /users/{username}') {
+            if (params.username === 'suspended-user') {
+              return { data: { suspended_at: '2025-01-01T00:00:00Z' } };
+            }
+            return { data: { suspended_at: null } };
+          }
+          return { data: { role: 'member', state: 'active' } };
+        }),
+      } as any;
+
+      await expect(
+        getOrganizationUsers(
+          graphql,
+          'a',
+          'token',
+          undefined,
+          undefined,
+          true,
+          mockRestClient,
+        ),
+      ).resolves.toEqual(output);
+    });
+
+    it('reads members excluding org-membership-suspended users via REST', async () => {
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'org-suspended-user',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+              {
+                login: 'active-user',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+            ],
+          },
+        },
+      };
+
+      server.use(
+        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
+      );
+
+      const mockRestClient = {
+        request: jest.fn().mockImplementation((route: string, params: any) => {
+          if (route === 'GET /versions') {
+            return Promise.resolve({
+              headers: { 'x-github-enterprise-version': '3.12.0' },
+            });
+          }
+          if (route === 'GET /users/{username}') {
+            return { data: { suspended_at: null } };
+          }
+          if (route === 'GET /orgs/{org}/memberships/{username}') {
+            if (params.username === 'org-suspended-user') {
+              return { data: { role: 'suspended', state: 'active' } };
+            }
+            return { data: { role: 'member', state: 'active' } };
+          }
+          return { data: {} };
+        }),
+      } as any;
+
+      const result = await getOrganizationUsers(
+        graphql,
+        'a',
+        'token',
+        undefined,
+        undefined,
+        true,
+        mockRestClient,
+      );
+
+      expect(result.users).toHaveLength(1);
+      expect(result.users[0].metadata.name).toBe('active-user');
+    });
+
+    it('skips REST suspended user check on non-enterprise GitHub', async () => {
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'suspended-user',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+              {
+                login: 'active-user',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+            ],
+          },
+        },
+      };
+
+      server.use(
+        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
+      );
+
+      const nonEnterpriseRestClient = {
+        request: jest.fn().mockImplementation((route: string) => {
+          if (route === 'GET /versions') {
+            return Promise.resolve({ headers: {} });
+          }
+          throw new Error('isSuspended should not be called');
+        }),
+      } as any;
+
+      const result = await getOrganizationUsers(
+        graphql,
+        'a',
+        'token',
+        undefined,
+        undefined,
+        true,
+        nonEnterpriseRestClient,
+      );
+
+      // Both users should be returned because the REST check is skipped
+      // on non-enterprise (no suspendedAt field in query either since restClient is provided)
+      expect(result.users).toHaveLength(2);
+      expect(nonEnterpriseRestClient.request).toHaveBeenCalledTimes(1);
+      expect(nonEnterpriseRestClient.request).toHaveBeenCalledWith(
+        'GET /versions',
+      );
     });
   });
 
@@ -999,23 +1194,40 @@ describe('github', () => {
         defaults: graphqlDefaults,
       },
     }));
-    (Octokit.plugin as jest.Mock).mockReturnValue(mockedOctokit);
+
+    let pluginSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      pluginSpy = jest
+        .spyOn(Octokit, 'plugin')
+        .mockReturnValue(mockedOctokit as any);
+    });
+
+    afterEach(() => {
+      pluginSpy.mockRestore();
+    });
 
     const rateLimitOptions = {
       method: 'POST',
       url: '/graphql',
     };
-    const client = createGraphqlClient({
-      headers,
-      baseUrl,
-      logger,
-    });
+
     it('should return a graphql client with throttling and retry', async () => {
+      const client = createGraphqlClient({
+        headers,
+        baseUrl,
+        logger,
+      });
       expect(client).toBeDefined();
       expect(Octokit.plugin).toHaveBeenCalledWith(throttling, retry);
     });
 
     it('should return a graphql client with the correct options', async () => {
+      createGraphqlClient({
+        headers,
+        baseUrl,
+        logger,
+      });
       expect(graphqlDefaults).toHaveBeenCalledWith({
         baseUrl,
         headers,
@@ -1028,6 +1240,8 @@ describe('github', () => {
         { retryCount: 1, expectedResult: true },
         { retryCount: 2, expectedResult: false },
       ])('should return %s', async ({ retryCount, expectedResult }) => {
+        createGraphqlClient({ headers, baseUrl, logger });
+
         const throttleOptions = mockedOctokit.mock.calls[0][0].throttle;
 
         const result = throttleOptions.onRateLimit(
@@ -1047,6 +1261,8 @@ describe('github', () => {
         { retryCount: 1, expectedResult: true },
         { retryCount: 2, expectedResult: false },
       ])('should return %s', async ({ retryCount, expectedResult }) => {
+        createGraphqlClient({ headers, baseUrl, logger });
+
         const throttleOptions = mockedOctokit.mock.calls[0][0].throttle;
 
         const result = throttleOptions.onSecondaryRateLimit(
@@ -1058,6 +1274,407 @@ describe('github', () => {
 
         expect(result).toBe(expectedResult);
       });
+    });
+  });
+
+  describe('createRestClient', () => {
+    const baseUrl = 'https://api.github.com';
+    const orgUrl = 'https://github.com/my-org';
+
+    const mockCredentialsProvider = {
+      getCredentials: jest.fn().mockResolvedValue({
+        type: 'token' as const,
+        headers: { authorization: 'token test-token' },
+      }),
+    };
+
+    describe('conditional request caching', () => {
+      function createMockCache(): CacheService & {
+        store: Map<string, unknown>;
+      } {
+        const store = new Map<string, unknown>();
+        const cache: CacheService & { store: Map<string, unknown> } = {
+          store,
+          async get(key: string) {
+            return store.get(key) as any;
+          },
+          async set(key: string, value: unknown) {
+            store.set(key, value);
+          },
+          async delete(key: string) {
+            store.delete(key);
+          },
+          withOptions() {
+            return cache;
+          },
+        };
+        return cache;
+      }
+
+      it('caches responses using last-modified header', async () => {
+        let requestCount = 0;
+        server.use(
+          http.get(`${baseUrl}/users/testuser`, () => {
+            requestCount++;
+            return HttpResponse.json(
+              { login: 'testuser', suspended_at: null },
+              { headers: { 'Last-Modified': 'Thu, 01 Jan 2025 00:00:00 GMT' } },
+            );
+          }),
+        );
+
+        const cache = createMockCache();
+        const octokit = createRestClient({
+          baseUrl,
+          orgUrl,
+          credentialsProvider: mockCredentialsProvider,
+          logger: mockServices.logger.mock(),
+          cache,
+        });
+
+        await octokit.request('GET /users/{username}', {
+          username: 'testuser',
+        });
+
+        expect(requestCount).toBe(1);
+        const cached = cache.store.get(
+          `catalog-backend-module-github:GET:${baseUrl}/users/testuser`,
+        ) as any;
+        expect(cached.lastModified).toBe('Thu, 01 Jan 2025 00:00:00 GMT');
+        expect(cached.data).toEqual({ login: 'testuser', suspended_at: null });
+      });
+
+      it('sends if-modified-since on subsequent requests', async () => {
+        let receivedHeaders: Record<string, string> = {};
+        server.use(
+          http.get(`${baseUrl}/users/testuser`, ({ request }) => {
+            receivedHeaders = Object.fromEntries(request.headers.entries());
+            return HttpResponse.json(
+              { login: 'testuser', suspended_at: null },
+              { headers: { 'Last-Modified': 'Thu, 01 Jan 2025 00:00:00 GMT' } },
+            );
+          }),
+        );
+
+        const cache = createMockCache();
+        cache.store.set(
+          `catalog-backend-module-github:GET:${baseUrl}/users/testuser`,
+          {
+            lastModified: 'Wed, 01 Jan 2025 00:00:00 GMT',
+            data: { login: 'testuser', suspended_at: null },
+          },
+        );
+
+        const octokit = createRestClient({
+          baseUrl,
+          orgUrl,
+          credentialsProvider: mockCredentialsProvider,
+          logger: mockServices.logger.mock(),
+          cache,
+        });
+
+        await octokit.request('GET /users/{username}', {
+          username: 'testuser',
+        });
+
+        expect(receivedHeaders['if-modified-since']).toBe(
+          'Wed, 01 Jan 2025 00:00:00 GMT',
+        );
+      });
+
+      it('sends if-none-match when only etag is cached', async () => {
+        let receivedHeaders: Record<string, string> = {};
+        server.use(
+          http.get(`${baseUrl}/users/testuser`, ({ request }) => {
+            receivedHeaders = Object.fromEntries(request.headers.entries());
+            return HttpResponse.json(
+              { login: 'testuser', suspended_at: null },
+              { headers: { ETag: '"new-etag"' } },
+            );
+          }),
+        );
+
+        const cache = createMockCache();
+        cache.store.set(
+          `catalog-backend-module-github:GET:${baseUrl}/users/testuser`,
+          {
+            etag: '"old-etag"',
+            data: { login: 'testuser', suspended_at: null },
+          },
+        );
+
+        const octokit = createRestClient({
+          baseUrl,
+          orgUrl,
+          credentialsProvider: mockCredentialsProvider,
+          logger: mockServices.logger.mock(),
+          cache,
+        });
+
+        await octokit.request('GET /users/{username}', {
+          username: 'testuser',
+        });
+
+        expect(receivedHeaders['if-none-match']).toBe('"old-etag"');
+        expect(receivedHeaders['if-modified-since']).toBeUndefined();
+      });
+
+      it('returns cached data and headers on 304 response', async () => {
+        const cachedData = { login: 'testuser', suspended_at: null };
+        const cachedHeaders = {
+          'x-github-enterprise-version': '3.12.0',
+          'last-modified': 'Thu, 01 Jan 2025 00:00:00 GMT',
+        };
+
+        server.use(
+          http.get(`${baseUrl}/users/testuser`, () => {
+            return new HttpResponse(null, { status: 304 });
+          }),
+        );
+
+        const cache = createMockCache();
+        cache.store.set(
+          `catalog-backend-module-github:GET:${baseUrl}/users/testuser`,
+          {
+            lastModified: 'Thu, 01 Jan 2025 00:00:00 GMT',
+            headers: cachedHeaders,
+            data: cachedData,
+          },
+        );
+
+        const octokit = createRestClient({
+          baseUrl,
+          orgUrl,
+          credentialsProvider: mockCredentialsProvider,
+          logger: mockServices.logger.mock(),
+          cache,
+        });
+
+        const response = await octokit.request('GET /users/{username}', {
+          username: 'testuser',
+        });
+
+        expect(response.data).toEqual(cachedData);
+        expect(response.headers['x-github-enterprise-version']).toBe('3.12.0');
+      });
+
+      it('propagates non-304 errors', async () => {
+        server.use(
+          http.get(`${baseUrl}/users/testuser`, () => {
+            return new HttpResponse(JSON.stringify({ message: 'Not Found' }), {
+              status: 404,
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }),
+        );
+
+        const cache = createMockCache();
+        const octokit = createRestClient({
+          baseUrl,
+          orgUrl,
+          credentialsProvider: mockCredentialsProvider,
+          logger: mockServices.logger.mock(),
+          cache,
+        });
+
+        await expect(
+          octokit.request('GET /users/{username}', { username: 'testuser' }),
+        ).rejects.toThrow();
+      });
+
+      it('prefers last-modified over etag for conditional headers', async () => {
+        let receivedHeaders: Record<string, string> = {};
+        server.use(
+          http.get(`${baseUrl}/users/testuser`, ({ request }) => {
+            receivedHeaders = Object.fromEntries(request.headers.entries());
+            return HttpResponse.json({ login: 'testuser' });
+          }),
+        );
+
+        const cache = createMockCache();
+        cache.store.set(
+          `catalog-backend-module-github:GET:${baseUrl}/users/testuser`,
+          {
+            lastModified: 'Thu, 01 Jan 2025 00:00:00 GMT',
+            etag: '"some-etag"',
+            data: { login: 'testuser' },
+          },
+        );
+
+        const octokit = createRestClient({
+          baseUrl,
+          orgUrl,
+          credentialsProvider: mockCredentialsProvider,
+          logger: mockServices.logger.mock(),
+          cache,
+        });
+
+        await octokit.request('GET /users/{username}', {
+          username: 'testuser',
+        });
+
+        expect(receivedHeaders['if-modified-since']).toBe(
+          'Thu, 01 Jan 2025 00:00:00 GMT',
+        );
+        expect(receivedHeaders['if-none-match']).toBeUndefined();
+      });
+
+      it('uses distinct cache keys per user', async () => {
+        server.use(
+          http.get(`${baseUrl}/users/:username`, ({ params }) => {
+            return HttpResponse.json(
+              { login: params.username, suspended_at: null },
+              { headers: { 'Last-Modified': 'Thu, 01 Jan 2025 00:00:00 GMT' } },
+            );
+          }),
+        );
+
+        const cache = createMockCache();
+        const octokit = createRestClient({
+          baseUrl,
+          orgUrl,
+          credentialsProvider: mockCredentialsProvider,
+          logger: mockServices.logger.mock(),
+          cache,
+        });
+
+        await octokit.request('GET /users/{username}', {
+          username: 'user-a',
+        });
+        await octokit.request('GET /users/{username}', {
+          username: 'user-b',
+        });
+
+        expect(
+          cache.store.has(
+            `catalog-backend-module-github:GET:${baseUrl}/users/user-a`,
+          ),
+        ).toBe(true);
+        expect(
+          cache.store.has(
+            `catalog-backend-module-github:GET:${baseUrl}/users/user-b`,
+          ),
+        ).toBe(true);
+      });
+
+      it('works without a cache', async () => {
+        server.use(
+          http.get(`${baseUrl}/users/testuser`, () => {
+            return HttpResponse.json({ login: 'testuser' });
+          }),
+        );
+
+        const octokit = createRestClient({
+          baseUrl,
+          orgUrl,
+          credentialsProvider: mockCredentialsProvider,
+          logger: mockServices.logger.mock(),
+        });
+
+        const response = await octokit.request('GET /users/{username}', {
+          username: 'testuser',
+        });
+
+        expect(response.data).toEqual({ login: 'testuser' });
+      });
+    });
+  });
+
+  describe('isSuspended', () => {
+    it('returns true when the user account is suspended', async () => {
+      const octokit = {
+        request: jest.fn().mockImplementation((route: string) => {
+          if (route === 'GET /users/{username}') {
+            return { data: { suspended_at: '2025-01-01T00:00:00Z' } };
+          }
+          return { data: { role: 'member', state: 'active' } };
+        }),
+      } as any;
+
+      await expect(
+        isSuspended('suspended-user', octokit, { org: 'my-org' }),
+      ).resolves.toBe(true);
+    });
+
+    it('returns false for an active user', async () => {
+      const octokit = {
+        request: jest.fn().mockImplementation((route: string) => {
+          if (route === 'GET /users/{username}') {
+            return { data: { suspended_at: null } };
+          }
+          return { data: { role: 'member', state: 'active' } };
+        }),
+      } as any;
+
+      await expect(
+        isSuspended('active-user', octokit, { org: 'my-org' }),
+      ).resolves.toBe(false);
+    });
+
+    it('returns true when org membership is suspended', async () => {
+      const octokit = {
+        request: jest.fn().mockImplementation((route: string) => {
+          if (route === 'GET /users/{username}') {
+            return { data: { suspended_at: null } };
+          }
+          return { data: { role: 'suspended', state: 'active' } };
+        }),
+      } as any;
+
+      await expect(
+        isSuspended('org-suspended', octokit, { org: 'my-org' }),
+      ).resolves.toBe(true);
+    });
+
+    it('checks both user suspension and org membership', async () => {
+      const octokit = {
+        request: jest.fn().mockImplementation((route: string) => {
+          if (route === 'GET /users/{username}') {
+            return { data: { suspended_at: null } };
+          }
+          return { data: { role: 'member', state: 'active' } };
+        }),
+      } as any;
+
+      await isSuspended('some-user', octokit, { org: 'my-org' });
+
+      expect(octokit.request).toHaveBeenCalledTimes(2);
+      expect(octokit.request).toHaveBeenCalledWith('GET /users/{username}', {
+        username: 'some-user',
+      });
+      expect(octokit.request).toHaveBeenCalledWith(
+        'GET /orgs/{org}/memberships/{username}',
+        { org: 'my-org', username: 'some-user' },
+      );
+    });
+  });
+
+  describe('isGitHubEnterprise', () => {
+    it('returns true when x-github-enterprise-version header is present', async () => {
+      const octokit = {
+        request: jest.fn().mockResolvedValue({
+          headers: { 'x-github-enterprise-version': '3.12.0' },
+        }),
+      } as any;
+
+      await expect(isGitHubEnterprise(octokit)).resolves.toBe(true);
+      expect(octokit.request).toHaveBeenCalledWith('GET /versions');
+    });
+
+    it('returns false when x-github-enterprise-version header is absent', async () => {
+      const octokit = {
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+      } as any;
+
+      await expect(isGitHubEnterprise(octokit)).resolves.toBe(false);
+    });
+
+    it('returns false when the request throws', async () => {
+      const octokit = {
+        request: jest.fn().mockRejectedValue(new Error('Not Found')),
+      } as any;
+
+      await expect(isGitHubEnterprise(octokit)).resolves.toBe(false);
     });
   });
 

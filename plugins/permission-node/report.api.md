@@ -10,7 +10,6 @@ import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
 import { BackstageUserInfo } from '@backstage/backend-plugin-api';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
@@ -365,9 +364,6 @@ export type PolicyQuery = {
 
 // @public
 export type PolicyQueryUser = {
-  token: string;
-  expiresInSeconds?: number;
-  identity: BackstageUserIdentity;
   credentials: BackstageCredentials;
   info: BackstageUserInfo;
 };

@@ -58,6 +58,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/catalog-backend-module-backstage-openapi @backstage/maintainers @backstage/openapi-tooling-maintainers
 /plugins/catalog-backend-module-gitea             @backstage/maintainers @backstage/catalog-maintainers
 /plugins/catalog-backend-module-msgraph           @backstage/maintainers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-msgraph-incremental @backstage/maintainers @backstage/catalog-maintainers
 /plugins/catalog-backend-module-puppetdb          @backstage/maintainers @backstage/catalog-maintainers
 /plugins/catalog-graph                            @backstage/maintainers @backstage/catalog-maintainers @backstage/sda-se-reviewers
 /plugins/devtools                                 @backstage/maintainers @awanlin
@@ -85,6 +86,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/user-settings-common                     @backstage/maintainers @backstage/sda-se-reviewers
 
 /scripts                                          @backstage/operations-maintainers
+/workspaces/ui                                    @backstage/design-system-maintainers
 
 /packages/backend-plugin-api/src/services/definitions/AuditorService.ts   @backstage/maintainers @backstage/auditor-maintainers
 /packages/backend-defaults/src/entrypoints/auditor                        @backstage/maintainers @backstage/auditor-maintainers

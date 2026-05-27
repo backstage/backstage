@@ -501,7 +501,6 @@ export class CatalogBuilder {
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
       database: dbClient,
       logger,
-      stitcher,
       enableRelationsCompatibility,
     });
 
@@ -577,7 +576,6 @@ export class CatalogBuilder {
       knex: dbClient,
       processingDatabase,
       orchestrator,
-      stitcher,
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 1000,
       onProcessingError: event => {

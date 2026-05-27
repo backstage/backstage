@@ -1,0 +1,82 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { datePickerPropDefs } from './props-definition';
+import {
+  datePickerUsageSnippet,
+  withLabelSnippet,
+  sizesSnippet,
+  withDefaultValueSnippet,
+  disabledSnippet,
+} from './snippets';
+import { WithLabel, Sizes, WithDefaultValue, Disabled } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { DatePickerDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  datePicker: 'https://react-aria.adobe.com/DatePicker',
+};
+
+<PageTitle
+  title="DatePicker"
+  description="A date picker that combines a date field and a calendar popover for selecting a date."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithLabel />}
+  code={withLabelSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={datePickerUsageSnippet} />
+
+## API reference
+
+<PropsTable data={datePickerPropDefs} />
+
+<ReactAriaLink component="DatePicker" href={reactAriaUrls.datePicker} />
+
+## Examples
+
+### Sizes
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Sizes />}
+  code={sizesSnippet}
+  layout="side-by-side"
+/>
+
+### With default value
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithDefaultValue />}
+  code={withDefaultValueSnippet}
+  layout="side-by-side"
+/>
+
+### Disabled
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Disabled />}
+  code={disabledSnippet}
+  layout="side-by-side"
+/>
+
+<Theming definition={DatePickerDefinition} />
+
+<ChangelogComponent component="date-picker" />

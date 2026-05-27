@@ -29,18 +29,6 @@
     padding: var(--bui-space-3);
   }
 
-  .bui-Card[data-bg='neutral-1'] {
-    --bui-card-bg: var(--bui-bg-neutral-1);
-  }
-
-  .bui-Card[data-bg='neutral-2'] {
-    --bui-card-bg: var(--bui-bg-neutral-2);
-  }
-
-  .bui-Card[data-bg='neutral-3'] {
-    --bui-card-bg: var(--bui-bg-neutral-3);
-  }
-
   .bui-Card:has(.bui-CardHeader, .bui-CardBody, .bui-CardFooter) {
     padding: 0;
   }
@@ -127,8 +115,8 @@
       margin-bottom: -1.5rem;
       background: linear-gradient(
         to bottom,
-        var(--bui-card-bg),
-        rgb(from var(--bui-card-bg) r g b / 0)
+        var(--bui-bg-inherit),
+        rgb(from var(--bui-bg-inherit) r g b / 0)
       );
       pointer-events: none;
       opacity: 0;
@@ -146,8 +134,8 @@
       margin-top: -1.5rem;
       background: linear-gradient(
         to top,
-        var(--bui-card-bg),
-        rgb(from var(--bui-card-bg) r g b / 0)
+        var(--bui-bg-inherit),
+        rgb(from var(--bui-bg-inherit) r g b / 0)
       );
       pointer-events: none;
       opacity: 0;

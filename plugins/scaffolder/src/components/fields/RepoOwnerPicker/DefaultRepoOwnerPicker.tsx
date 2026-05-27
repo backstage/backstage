@@ -16,11 +16,13 @@
 
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
+import MuiTextField from '@material-ui/core/TextField';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { BaseRepoOwnerPickerProps } from './types';
 import { scaffolderTranslationRef } from '../../../translation';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { TextField as BuiTextField } from '@backstage/ui';
 
 /**
  * The underlying component that is rendered in the form for the `DefaultRepoOwnerPicker`
@@ -37,9 +39,26 @@ export const DefaultRepoOwnerPicker = ({
   required,
   schema,
 }: BaseRepoOwnerPickerProps) => {
+  const theme = useScaffolderTheme();
   const { owner } = state;
 
   const { t } = useTranslationRef(scaffolderTranslationRef);
+
+  if (theme === 'bui') {
+    return (
+      <BuiTextField
+        label={schema?.title ?? t('fields.repoOwnerPicker.title')}
+        description={
+          schema?.description ?? t('fields.repoOwnerPicker.description')
+        }
+        isDisabled={isDisabled}
+        onChange={value => onChange({ owner: value })}
+        value={owner ?? ''}
+        isInvalid={rawErrors?.length > 0 && !owner}
+        isRequired={required}
+      />
+    );
+  }
 
   return (
     <FormControl
@@ -47,7 +66,7 @@ export const DefaultRepoOwnerPicker = ({
       required={required}
       error={rawErrors?.length > 0 && !owner}
     >
-      <TextField
+      <MuiTextField
         id="ownerInput"
         label={schema?.title ?? t('fields.repoOwnerPicker.title')}
         disabled={isDisabled}

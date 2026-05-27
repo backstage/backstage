@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { RequestHandler } from 'express';
-import { rateLimit, Store } from 'express-rate-limit';
+import { ipKeyGenerator, rateLimit, Store } from 'express-rate-limit';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
 
@@ -59,10 +59,13 @@ export const rateLimitMiddleware = (options: {
     skipFailedRequests,
     passOnStoreError: passOnStoreError,
     keyGenerator(req, _res): string {
-      if (!req.ip) {
-        return req.socket.remoteAddress!;
-      }
-      return req.ip;
+      // `ipKeyGenerator` normalizes the address before it is used as a rate
+      // limiting key. This is required by express-rate-limit 8.x, which rejects
+      // key generators that reference `req.ip` directly, as a naive IPv6 key
+      // would let clients trivially bypass the limit by rotating addresses
+      // within their allotted block.
+      const ip = req.ip ?? req.socket.remoteAddress;
+      return ip ? ipKeyGenerator(ip) : '';
     },
     skip: (req, _res) => {
       return (

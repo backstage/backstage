@@ -240,14 +240,16 @@ export class CacheManager {
 
       valkeyOptions.cluster = {
         rootNodes: clusterConfig.get('rootNodes'),
-        defaults: clusterConfig.getOptional('defaults'),
-        minimizeConnections: clusterConfig.getOptionalBoolean(
-          'minimizeConnections',
-        ),
-        useReplicas: clusterConfig.getOptionalBoolean('useReplicas'),
-        maxCommandRedirections: clusterConfig.getOptionalNumber(
-          'maxCommandRedirections',
-        ),
+        options: {
+          redisOptions: clusterConfig.getOptional('defaults'),
+          scaleReads: clusterConfig.getOptionalBoolean('useReplicas')
+            ? 'slave'
+            : undefined,
+          maxRedirections: clusterConfig.getOptionalNumber(
+            'maxCommandRedirections',
+          ),
+          lazyConnect: clusterConfig.getOptionalBoolean('minimizeConnections'),
+        },
       };
     }
 
@@ -368,9 +370,7 @@ export class CacheManager {
 
   private createValkeyStoreFactory(): StoreFactory {
     const KeyvValkey = require('@keyv/valkey').default;
-    // `@keyv/valkey` doesn't export a `createCluster` function, but is compatible with the one from `@keyv/redis`
-    // See https://keyv.org/docs/storage-adapters/valkey
-    const { createCluster } = require('@keyv/redis');
+    const { Cluster } = require('iovalkey');
     const stores: Record<string, typeof KeyvValkey> = {};
 
     return (pluginId, defaultTtl) => {
@@ -382,8 +382,11 @@ export class CacheManager {
       if (!stores[pluginId]) {
         const valkeyOptions = this.storeOptions?.client;
         if (this.storeOptions?.cluster) {
-          // Create a Valkey cluster (Redis cluster under the hood)
-          const cluster = createCluster(this.storeOptions?.cluster);
+          // Create an iovalkey Cluster instance, which is the type that @keyv/valkey expects
+          const cluster = new Cluster(
+            this.storeOptions.cluster.rootNodes,
+            this.storeOptions.cluster.options,
+          );
           stores[pluginId] = new KeyvValkey(cluster, valkeyOptions);
         } else {
           // Create a regular Valkey connection

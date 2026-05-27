@@ -170,7 +170,7 @@ export function EntityTabsList(props: EntityTabsListProps) {
     return sorted;
   }, [items, groupDefinitions, aliasToGroup, defaultContentOrder]);
 
-  const selectedItem = items[selectedIndex];
+  const selectedItem = selectedIndex >= 0 ? items[selectedIndex] : undefined;
   const selectedGroup = resolveGroupId(
     selectedItem?.group,
     groupDefinitions,
@@ -185,7 +185,7 @@ export function EntityTabsList(props: EntityTabsListProps) {
         variant="scrollable"
         scrollButtons="auto"
         aria-label={t('entityTabs.tabsAriaLabel')}
-        value={selectedGroup ?? selectedItem?.id}
+        value={selectedGroup ?? selectedItem?.id ?? false}
       >
         {groups.map(([id, tabGroup]) => (
           <EntityTabsGroup

@@ -40,9 +40,9 @@ Once completed, all entities associated with the Location will be deleted from t
 `,
     schema: {
       input: z =>
-        z
-          .object({
-            type: z.union([
+        z.object({
+          type: z
+            .union([
               z.object({
                 locationId: z
                   .string()
@@ -55,11 +55,11 @@ Once completed, all entities associated with the Location will be deleted from t
                     `URL of the catalog-info.yaml file to unregister for example: https://github.com/backstage/demo/blob/master/catalog-info.yaml`,
                   ),
               }),
-            ]),
-          })
-          .describe(
-            'The type to the unregister-entity action. Either locationId or locationUrl must be provided.',
-          ),
+            ])
+            .describe(
+              'Identifies the entity to unregister. Provide either locationId or locationUrl.',
+            ),
+        }),
       output: z => z.object({}),
     },
     action: async ({ input: { type }, credentials }) => {

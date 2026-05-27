@@ -32,7 +32,6 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
   - [Packages](#packages)
   - [Routes](#routes)
   - [Extensions](#extensions)
-    - [Apis Nav Item](#apis-nav-item)
     - [Apis Explorer Page](#apis-explore-page)
     - [Apis Entity Cards](#apis-entities-cards)
       - [Has Apis Entity Card](#has-apis-entity-card)
@@ -135,94 +134,6 @@ Route binding is also possible through code. For more information, see [this](ht
 
 ### Extensions
 
-#### Apis Nav Item
-
-This [nav item](https://backstage.io/docs/reference/frontend-plugin-api.createnavitemextension) extension adds a link to the Apis Explorer page in the main app sidebar.
-
-| Kind       | Namespace  | Name | Id                  |
-| ---------- | ---------- | ---- | ------------------- |
-| `nav-item` | `api-docs` | -    | `nav-item:api-docs` |
-
-##### Disable
-
-This extension is enabled by default when you install the `api-docs` plugin, but you can disable it and prevent it from showing up in the sidebar by setting the following configuration:
-
-```yaml
-# app-config.yaml
-app:
-  extensions:
-    # this is the extension id and it follows the naming pattern bellow:
-    # <extension-kind>/<plugin-namespace>:<extension-name>
-    # example disabling the apis docs nav item extension
-    - nav-item:api-docs: false
-    # or
-    # - nav-item:api-docs:
-    #     disabled: true
-```
-
-To enable the extension again, simple remove the previous `nav-item:api-docs: false` configuration or do:
-
-```yaml
-# app-config.yaml
-app:
-  extensions:
-    # this is the extension id and it follows the naming pattern bellow:
-    # <extension-kind>/<plugin-namespace>:<extension-name>
-    - nav-item:api-docs
-    # or
-    # - nav-item:api-docs: true
-    # or
-    # - nav-item:api-docs:
-    #     disabled: false
-```
-
-##### Config
-
-The apis nav item can be customized under the `app.extensions.nav-item:api-docs.config` key in `app-config.yaml`. Configurations include:
-
-```yaml
-# app-config.yaml
-# example configuring the apis docs nav item extension
-app:
-  extensions:
-    # this is the extension id and it follows the naming pattern bellow:
-    # <extension-kind>/<plugin-namespace>:<extension-name>
-    - nav-item:api-docs:
-        config:
-          # The nav item title text, defaults to "APIs"
-          title: 'Apis Explorer'
-          # The nav item path text, defaults to "/api-docs"
-          path: '/apis-explorer'
-```
-
-##### Override
-
-The apis nav item icon can only be changed by overriding the extension, as the icon cannot be changed via the `app-config.yaml` file.
-
-Here is an example overriding the nav item extension with a custom icon component:
-
-```tsx
-import {
-  createFrontendModule,
-  createNavItemExtension,
-} from '@backstage/backstage-plugin-api';
-import { MyCustomApiDocsIcon } from './components';
-
-export default createFrontendModule({
-  pluginId: 'api-docs',
-  extensions: [
-    createNavItemExtension({
-      // It's your choice whether to use the original extension's title or a different one
-      title: 'APIs',
-      // Setting a custom icon component
-      icon: MyCustomApiDocsIcon,
-    }),
-  ],
-});
-```
-
-For more information about where to place extension overrides, see the official [documentation](https://backstage.io/docs/frontend-system/architecture/extension-overrides).
-
 #### Apis Explore Page
 
 This `api-docs` plugin installs an "Apis Explore" page extension that helps you visualize apis registered in the Backstage software catalog.
@@ -234,9 +145,6 @@ This `api-docs` plugin installs an "Apis Explore" page extension that helps you 
 ##### Disable/Enable
 
 The explore page extension is enable by default when you install the `api-docs` plugin, for disabling it, set the configuration below:
-
-> [!CAUTION]
-> The `api-docs` plugin also install a sidebar item that points to this page, remember to disable the nav item as well otherwise it will point to a not found page.
 
 ```yaml
 # app-config.yaml

@@ -34,6 +34,7 @@ describe('readMicrosoftGraphConfig', () => {
         id: 'target',
         target: 'target',
         tenantId: 'tenantId',
+        userFilter: 'accountEnabled eq true',
       },
     ];
     expect(actual).toEqual(expected);
@@ -50,7 +51,7 @@ describe('readMicrosoftGraphConfig', () => {
           clientSecret: 'clientSecret',
           authority: 'https://login.example.com/',
           userExpand: 'manager',
-          userFilter: 'accountEnabled eq true',
+          userFilter: "userType eq 'member'",
           userSelect: ['id', 'displayName', 'department'],
           groupExpand: 'member',
           groupSelect: ['id', 'displayName', 'description'],
@@ -68,7 +69,7 @@ describe('readMicrosoftGraphConfig', () => {
         clientSecret: 'clientSecret',
         authority: 'https://login.example.com/',
         userExpand: 'manager',
-        userFilter: 'accountEnabled eq true',
+        userFilter: "accountEnabled eq true and (userType eq 'member')",
         userSelect: ['id', 'displayName', 'department'],
         groupExpand: 'member',
         groupSelect: ['id', 'displayName', 'description'],
@@ -76,32 +77,6 @@ describe('readMicrosoftGraphConfig', () => {
       },
     ];
     expect(actual).toEqual(expected);
-  });
-
-  it('should fail if both userFilter and userGroupMemberFilter are set', () => {
-    const config = {
-      providers: [
-        {
-          tenantId: 'tenantId',
-          userFilter: 'accountEnabled eq true',
-          userGroupMemberFilter: 'any',
-        },
-      ],
-    };
-    expect(() => readMicrosoftGraphConfig(new ConfigReader(config))).toThrow();
-  });
-
-  it('should fail if both userFilter and userGroupMemberSearch are set', () => {
-    const config = {
-      providers: [
-        {
-          tenantId: 'tenantId',
-          userFilter: 'accountEnabled eq true',
-          userGroupMemberSearch: 'any',
-        },
-      ],
-    };
-    expect(() => readMicrosoftGraphConfig(new ConfigReader(config))).toThrow();
   });
 
   it('should fail if clientId is set without clientSecret', () => {
@@ -148,6 +123,7 @@ describe('readProviderConfigs', () => {
         id: 'customProviderId',
         target: 'https://graph.microsoft.com/v1.0',
         tenantId: 'tenantId',
+        userFilter: 'accountEnabled eq true',
         userPath: 'users',
         groupPath: 'groups',
       },
@@ -169,7 +145,7 @@ describe('readProviderConfigs', () => {
               queryMode: 'advanced',
               user: {
                 expand: 'manager',
-                filter: 'accountEnabled eq true',
+                filter: "userType eq 'member'",
                 select: ['id', 'displayName', 'department'],
                 path: '/groups/{groupId}/members',
               },
@@ -202,7 +178,7 @@ describe('readProviderConfigs', () => {
         authority: 'https://login.example.com/',
         queryMode: 'advanced',
         userExpand: 'manager',
-        userFilter: 'accountEnabled eq true',
+        userFilter: "accountEnabled eq true and (userType eq 'member')",
         userSelect: ['id', 'displayName', 'department'],
         userPath: '/groups/{groupId}/members',
         groupExpand: 'member',
@@ -221,7 +197,7 @@ describe('readProviderConfigs', () => {
     expect(actual).toEqual(expected);
   });
 
-  it('should fail if both userFilter and userGroupMemberFilter are set', () => {
+  it('should combine custom filter with accountEnabled filter by default', () => {
     const config = {
       catalog: {
         providers: {
@@ -229,38 +205,17 @@ describe('readProviderConfigs', () => {
             customProviderId: {
               tenantId: 'tenantId',
               user: {
-                filter: 'accountEnabled eq true',
-              },
-              userGroupMember: {
-                filter: 'any',
+                filter: "userType eq 'member'",
               },
             },
           },
         },
       },
     };
-    expect(() => readProviderConfigs(new ConfigReader(config))).toThrow();
-  });
-
-  it('should fail if both userFilter and userGroupMemberSearch are set', () => {
-    const config = {
-      catalog: {
-        providers: {
-          microsoftGraphOrg: {
-            customProviderId: {
-              tenantId: 'tenantId',
-              user: {
-                filter: 'accountEnabled eq true',
-              },
-              userGroupMember: {
-                search: 'any',
-              },
-            },
-          },
-        },
-      },
-    };
-    expect(() => readProviderConfigs(new ConfigReader(config))).toThrow();
+    const [result] = readProviderConfigs(new ConfigReader(config));
+    expect(result.userFilter).toBe(
+      "accountEnabled eq true and (userType eq 'member')",
+    );
   });
 
   it('should fail if clientId is set without clientSecret', () => {

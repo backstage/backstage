@@ -258,6 +258,28 @@ describe('evaluate', () => {
     });
   });
 
+  it('throws when operator keys are mixed with other keys', () => {
+    const entity = entities[0];
+    expect(() =>
+      evaluateFilterPredicate(
+        { kind: 'API', $not: { 'spec.type': 'dataset' } } as any,
+        entity,
+      ),
+    ).toThrow(/Operator \$not must be the only key/);
+    expect(() =>
+      evaluateFilterPredicate(
+        { kind: 'API', $all: [{ 'spec.type': 'service' }] } as any,
+        entity,
+      ),
+    ).toThrow(/Operator \$all must be the only key/);
+    expect(() =>
+      evaluateFilterPredicate(
+        { kind: 'API', $any: [{ 'spec.type': 'service' }] } as any,
+        entity,
+      ),
+    ).toThrow(/Operator \$any must be the only key/);
+  });
+
   it('handles unknown filter predicate operators and matchers', () => {
     const operator = { $unknown: 'foo' } as unknown as FilterPredicate;
     const value = { kind: { $unknown: 'foo' } } as unknown as FilterPredicate;

@@ -31,6 +31,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -120,6 +121,7 @@ export type EntityListContextProps<
     prev?: () => void;
   };
   totalItems?: number;
+  totalItemsLoading: boolean;
   limit: number;
   offset?: number;
   setLimit: (limit: number) => void;
@@ -141,15 +143,10 @@ export const OldEntityListContext = createContext<
   EntityListContextProps<any> | undefined
 >(undefined);
 
-type OutputState<EntityFilters extends DefaultEntityFilters> = {
-  appliedFilters: EntityFilters;
-  appliedCursor?: string;
-  entities: Entity[];
+type BackendState = {
   backendEntities: Entity[];
   pageInfo?: QueryEntitiesResponse['pageInfo'];
   totalItems?: number;
-  offset?: number;
-  limit?: number;
 };
 
 /**
@@ -178,16 +175,12 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // update of the URL or two catalog sidebar links with different catalog filters.
   const location = useLocation();
 
-  const getPaginationMode = (): PaginationMode => {
-    if (props.pagination === true) {
-      return 'cursor';
-    }
-    return typeof props.pagination === 'object'
-      ? props.pagination.mode ?? 'cursor'
-      : 'none';
-  };
-
-  const paginationMode = getPaginationMode();
+  let paginationMode: PaginationMode = 'none';
+  if (props.pagination === true) {
+    paginationMode = 'cursor';
+  } else if (typeof props.pagination === 'object') {
+    paginationMode = props.pagination.mode ?? 'cursor';
+  }
   const paginationLimit =
     typeof props.pagination === 'object' ? props.pagination.limit ?? 20 : 20;
 
@@ -236,187 +229,192 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   const [offset, setOffset] = useState<number | undefined>(initialOffset);
   const [limit, setLimit] = useState(initialLimit);
 
-  const [outputState, setOutputState] = useState<OutputState<EntityFilters>>(
-    () => {
-      return {
-        appliedFilters: {} as EntityFilters,
-        entities: [],
-        backendEntities: [],
-        pageInfo: {},
-        offset,
-        limit,
-      };
-    },
-  );
+  const [backendState, setBackendState] = useState<BackendState>({
+    backendEntities: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | undefined>();
 
-  // The main async filter worker. Note that while it has a lot of dependencies
-  // in terms of its implementation, the triggering only happens (debounced)
-  // based on the requested filters changing.
-  const [{ value: resolvedValue, loading, error }, refresh] = useAsyncFn(
-    async () => {
-      const kindValue =
-        requestedFilters.kind?.value?.toLocaleLowerCase('en-US');
-      const adjustedFilters =
-        kindValue === 'user' || kindValue === 'group'
-          ? { ...requestedFilters, owners: undefined }
-          : requestedFilters;
-      const compacted = compact(Object.values(adjustedFilters));
-      const entityFilter = reduceEntityFilters(compacted);
+  // Tracks the params of the last API call so identical requests are
+  // skipped even when requestedFilters changes (e.g. a label change
+  // or a frontend-only filter addition).
+  const lastFetchParamsRef = useRef<unknown>(undefined);
+  // Generation counter — only the most recent fetch updates state,
+  // so out-of-order responses from overlapping requests are discarded.
+  const fetchGenRef = useRef(0);
 
-      if (paginationMode !== 'none') {
-        if (cursor) {
-          if (cursor !== outputState.appliedCursor) {
-            const response = await catalogApi.queryEntities({
-              cursor,
-              limit,
-            });
-            return {
-              appliedFilters: requestedFilters,
-              appliedCursor: cursor,
-              backendEntities: response.items,
-              entities: response.items.filter(entityFilter),
-              pageInfo: response.pageInfo,
-              totalItems: response.totalItems,
-            };
-          }
-          const entities = outputState.backendEntities.filter(entityFilter);
+  // Adjusted filters remove the owners filter for user/group kinds,
+  // since ownership is not meaningful for those entity types.
+  const adjustedFilters = useMemo(() => {
+    const kindValue = requestedFilters.kind?.value?.toLocaleLowerCase('en-US');
+    return kindValue === 'user' || kindValue === 'group'
+      ? { ...requestedFilters, owners: undefined }
+      : requestedFilters;
+  }, [requestedFilters]);
+
+  const refresh = async () => {
+    const compacted = compact(Object.values(adjustedFilters));
+
+    let fetchParams: unknown;
+    let doFetch: () => Promise<BackendState>;
+
+    if (paginationMode !== 'none') {
+      if (cursor) {
+        fetchParams = { cursor, limit };
+        doFetch = async () => {
+          const response = await catalogApi.queryEntities({
+            cursor,
+            limit,
+            totalItems: 'exclude',
+          });
           return {
-            appliedFilters: requestedFilters,
-            appliedCursor: outputState.appliedCursor,
-            backendEntities: outputState.backendEntities,
-            entities,
-            pageInfo: outputState.pageInfo,
-            totalItems: outputState.totalItems,
-            limit: outputState.limit,
-            offset: outputState.offset,
+            backendEntities: response.items,
+            pageInfo: response.pageInfo,
           };
-        }
-
+        };
+      } else {
         const backendFilter = reduceCatalogFilters(compacted);
-        const previousBackendFilter = reduceCatalogFilters(
-          compact(Object.values(outputState.appliedFilters)),
-        );
-
-        if (
-          (paginationMode === 'offset' &&
-            (outputState.limit !== limit || outputState.offset !== offset)) ||
-          !isEqual(previousBackendFilter, backendFilter)
-        ) {
+        fetchParams = { ...backendFilter, limit, offset };
+        doFetch = async () => {
           const response = await catalogApi.queryEntities({
             ...backendFilter,
             limit,
             offset,
+            totalItems: 'exclude',
           });
           return {
-            appliedFilters: requestedFilters,
             backendEntities: response.items,
-            entities: response.items.filter(entityFilter),
             pageInfo: response.pageInfo,
-            totalItems: response.totalItems,
-            limit,
-            offset,
           };
-        }
-        const entities = outputState.backendEntities.filter(entityFilter);
-        return {
-          appliedFilters: requestedFilters,
-          backendEntities: outputState.backendEntities,
-          entities,
-          pageInfo: outputState.pageInfo,
-          totalItems: outputState.totalItems,
-          limit: outputState.limit,
-          offset: outputState.offset,
         };
       }
-
+    } else {
       const backendFilter = reduceBackendCatalogFilters(compacted);
       const { orderFields } = reduceCatalogFilters(compacted);
-      const previousBackendFilter = reduceBackendCatalogFilters(
-        compact(Object.values(outputState.appliedFilters)),
-      );
-
-      // TODO(mtlewis): currently entities will never be requested unless
-      // there's at least one filter, we should allow an initial request
-      // to happen with no filters.
-      if (!isEqual(previousBackendFilter, backendFilter)) {
-        // TODO(timbonicus): should limit fields here, but would need filter
-        // fields + table columns
+      fetchParams = { filter: backendFilter, order: orderFields };
+      doFetch = async () => {
         const response = await catalogApi.getEntities({
           filter: backendFilter,
           order: orderFields,
         });
-        const entities = response.items.filter(entityFilter);
-        return {
-          appliedFilters: requestedFilters,
-          backendEntities: response.items,
-          entities,
-          totalItems: entities.length,
-        };
-      }
-      const entities = outputState.backendEntities.filter(entityFilter);
-      return {
-        appliedFilters: requestedFilters,
-        backendEntities: outputState.backendEntities,
-        entities,
-        totalItems: entities.length,
+        return { backendEntities: response.items };
       };
-    },
-    [
-      catalogApi,
-      queryParameters,
-      requestedFilters,
-      outputState,
-      cursor,
-      paginationMode,
-      limit,
-      offset,
-    ],
-    { loading: true },
-  );
+    }
 
-  // Slight debounce on the refresh, since (especially on page load) several
-  // filters will be calling this in rapid succession.
-  useDebounce(refresh, 10, [requestedFilters, cursor, limit, offset]);
-
-  useEffect(() => {
-    if (resolvedValue === undefined) {
+    // No filters registered yet — wait for filter components to
+    // call updateFilters before making the first request.
+    // Exception: a cursor in the URL is a self-contained page reference
+    // that doesn't need filter state to be valid.
+    if (
+      compacted.length === 0 &&
+      lastFetchParamsRef.current === undefined &&
+      !cursor
+    ) {
+      setLoading(false);
       return;
     }
-    setOutputState(resolvedValue);
-    if (isMounted()) {
-      const queryParams = Object.keys(requestedFilters).reduce(
-        (params, key) => {
-          const filter = requestedFilters[key as keyof EntityFilters] as
-            | EntityFilter
-            | undefined;
-          if (filter?.toQueryValue) {
-            params[key] = filter.toQueryValue();
-          }
-          return params;
-        },
-        {} as Record<string, string | string[]>,
-      );
 
-      const oldParams = qs.parse(location.search, {
-        ignoreQueryPrefix: true,
-        arrayLimit: 10000,
-      });
-      const newParams = qs.stringify(
-        {
-          ...oldParams,
-          filters: queryParams,
-          ...(paginationMode === 'none' ? {} : { cursor, limit, offset }),
-        },
-        { addQueryPrefix: true, arrayFormat: 'repeat' },
-      );
-      const newUrl = `${window.location.pathname}${newParams}`;
-      // We use direct history manipulation since useSearchParams and
-      // useNavigate in react-router-dom cause unnecessary extra rerenders.
-      // Also make sure to replace the state rather than pushing, since we
-      // don't want there to be back/forward slots for every single filter
-      // change.
-      window.history?.replaceState(null, document.title, newUrl);
+    if (isEqual(fetchParams, lastFetchParamsRef.current)) {
+      return;
     }
+    lastFetchParamsRef.current = fetchParams;
+
+    const gen = ++fetchGenRef.current;
+    setLoading(true);
+    setError(undefined);
+
+    try {
+      const result = await doFetch();
+      if (gen === fetchGenRef.current) {
+        setBackendState(result);
+      }
+    } catch (e) {
+      if (gen === fetchGenRef.current) {
+        // Clear the ref so the same params can be retried, and so
+        // a response discarded due to a concurrent request (gen mismatch)
+        // doesn't permanently block fetching those params again.
+        lastFetchParamsRef.current = undefined;
+        setError(e as Error);
+      }
+    } finally {
+      if (gen === fetchGenRef.current) {
+        setLoading(false);
+      }
+    }
+  };
+
+  // Slight debounce on the refresh, since (especially on page load)
+  // several filters will be calling updateFilters in rapid succession.
+  useDebounce(refresh, 10, [adjustedFilters, cursor, limit, offset]);
+
+  // Fetch the total count separately, only when filters change. This is
+  // decoupled from the main list fetch so that page navigation doesn't
+  // re-run the expensive count query, and so that the count can arrive
+  // asynchronously without blocking the list response.
+  const [{ value: totalItems, loading: totalItemsLoading }, refreshCount] =
+    useAsyncFn(async () => {
+      if (paginationMode === 'none') {
+        return undefined;
+      }
+      const compacted = compact(Object.values(adjustedFilters));
+      if (compacted.length === 0) {
+        return undefined;
+      }
+      const backendFilter = reduceCatalogFilters(compacted);
+      try {
+        const response = await catalogApi.queryEntities({
+          ...backendFilter,
+          limit: 0,
+        });
+        return response.totalItems;
+      } catch {
+        return undefined;
+      }
+    }, [catalogApi, paginationMode, adjustedFilters]);
+
+  useDebounce(refreshCount, 10, [adjustedFilters]);
+
+  // Frontend filtering — synchronous, no debounce needed. Updates
+  // instantly when requestedFilters or backendEntities change.
+  const entities = useMemo(() => {
+    const compacted = compact(Object.values(adjustedFilters));
+    const entityFilter = reduceEntityFilters(compacted);
+    return backendState.backendEntities.filter(entityFilter);
+  }, [adjustedFilters, backendState.backendEntities]);
+
+  // Sync filter state to URL query parameters. We use direct history
+  // manipulation since useSearchParams and useNavigate in
+  // react-router-dom cause unnecessary extra rerenders. Also make sure
+  // to replace the state rather than pushing, since we don't want
+  // there to be back/forward slots for every single filter change.
+  useEffect(() => {
+    if (!isMounted() || Object.keys(requestedFilters).length === 0) {
+      return;
+    }
+    const queryParams = Object.keys(requestedFilters).reduce((params, key) => {
+      const filter = requestedFilters[key as keyof EntityFilters] as
+        | EntityFilter
+        | undefined;
+      if (filter?.toQueryValue) {
+        params[key] = filter.toQueryValue();
+      }
+      return params;
+    }, {} as Record<string, string | string[]>);
+
+    const oldParams = qs.parse(location.search, {
+      ignoreQueryPrefix: true,
+      arrayLimit: 10000,
+    });
+    const newParams = qs.stringify(
+      {
+        ...oldParams,
+        filters: queryParams,
+        ...(paginationMode === 'none' ? {} : { cursor, limit, offset }),
+      },
+      { addQueryPrefix: true, arrayFormat: 'repeat' },
+    );
+    const newUrl = `${window.location.pathname}${newParams}`;
+    window.history?.replaceState(null, document.title, newUrl);
   }, [
     cursor,
     isMounted,
@@ -424,7 +422,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     location.search,
     offset,
     requestedFilters,
-    resolvedValue,
     paginationMode,
   ]);
 
@@ -454,36 +451,34 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     [paginationMode],
   );
 
-  // Use resolvedValue directly when available to avoid an extra render cycle.
-  // Without this, there's a render where loading has flipped back to false but
-  // outputState hasn't been updated yet (it syncs via useEffect), causing a
-  // flash of stale data between the loading state and the new results.
-  const latestOutput = resolvedValue ?? outputState;
-
   const pageInfo = useMemo(() => {
     if (paginationMode !== 'cursor') {
       return undefined;
     }
 
-    const prevCursor = latestOutput.pageInfo?.prevCursor;
-    const nextCursor = latestOutput.pageInfo?.nextCursor;
+    const prevCursor = backendState.pageInfo?.prevCursor;
+    const nextCursor = backendState.pageInfo?.nextCursor;
     return {
       prev: prevCursor ? () => setCursor(prevCursor) : undefined,
       next: nextCursor ? () => setCursor(nextCursor) : undefined,
     };
-  }, [paginationMode, latestOutput.pageInfo]);
+  }, [paginationMode, backendState.pageInfo]);
 
   const value = useMemo(
     () => ({
-      filters: latestOutput.appliedFilters,
-      entities: latestOutput.entities,
-      backendEntities: latestOutput.backendEntities,
+      filters: requestedFilters,
+      entities,
+      backendEntities: backendState.backendEntities,
       updateFilters,
       queryParameters,
       loading,
       error,
       pageInfo,
-      totalItems: latestOutput.totalItems,
+      totalItems:
+        paginationMode === 'none'
+          ? entities.length
+          : totalItems ?? backendState.totalItems,
+      totalItemsLoading: paginationMode !== 'none' && totalItemsLoading,
       limit,
       offset,
       setLimit,
@@ -491,15 +486,19 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       paginationMode,
     }),
     [
-      latestOutput,
+      requestedFilters,
+      entities,
+      backendState,
+      totalItems,
+      totalItemsLoading,
       updateFilters,
       queryParameters,
       loading,
       error,
       pageInfo,
+      paginationMode,
       limit,
       offset,
-      paginationMode,
       setLimit,
       setOffset,
     ],

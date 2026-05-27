@@ -17,6 +17,7 @@
 import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import { DbSearchRow } from '../../tables';
+import { NULL_SENTINEL } from './util';
 
 // These are excluded in the generic loop, either because they do not make sense
 // to index, or because they are special-case always inserted whether they are
@@ -228,5 +229,16 @@ export function buildEntitySearch(
     );
   }
 
-  return mapToRows(raw, entityId);
+  const rows = mapToRows(raw, entityId);
+
+  // Deduplicate by (key, value). Duplicate array values in the entity data
+  // (e.g. tags: ['java', 'java']) produce identical search rows which would
+  // violate the unique constraint on (entity_id, key, value).
+  const seen = new Set<string>();
+  return rows.filter(row => {
+    const k = `${row.key}\0${row.value === null ? NULL_SENTINEL : row.value}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 }

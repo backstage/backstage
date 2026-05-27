@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { mockCredentials } from '@backstage/backend-test-utils';
 import {
   createCredentialsWithNonePrincipal,
   createCredentialsWithServicePrincipal,
   createCredentialsWithUserPrincipal,
+  toInternalBackstageCredentials,
 } from './helpers';
 
 describe('credentials', () => {
@@ -80,6 +82,51 @@ describe('credentials', () => {
         createCredentialsWithUserPrincipal('user:default/mock', 'my-token'),
       ),
     ).not.toMatch(/my-token/);
+  });
+
+  it('should convert mock credentials to internal form', () => {
+    expect(
+      toInternalBackstageCredentials(mockCredentials.none()),
+    ).toMatchObject({ version: 'v1', principal: { type: 'none' } });
+
+    expect(
+      toInternalBackstageCredentials(mockCredentials.user()),
+    ).toMatchObject({
+      version: 'v1',
+      token: mockCredentials.user.token(),
+      principal: { type: 'user', userEntityRef: 'user:default/mock' },
+    });
+
+    expect(
+      toInternalBackstageCredentials(
+        mockCredentials.user('user:default/other'),
+      ),
+    ).toMatchObject({
+      version: 'v1',
+      token: mockCredentials.user.token('user:default/other'),
+      principal: { type: 'user', userEntityRef: 'user:default/other' },
+    });
+
+    expect(
+      toInternalBackstageCredentials(mockCredentials.limitedUser()),
+    ).toMatchObject({
+      version: 'v1',
+      principal: { type: 'user', userEntityRef: 'user:default/mock' },
+    });
+
+    expect(
+      toInternalBackstageCredentials(mockCredentials.service()),
+    ).toMatchObject({
+      version: 'v1',
+      principal: { type: 'service', subject: 'external:test-service' },
+    });
+
+    expect(
+      toInternalBackstageCredentials(mockCredentials.service('plugin:other')),
+    ).toMatchObject({
+      version: 'v1',
+      principal: { type: 'service', subject: 'plugin:other' },
+    });
   });
 
   it('should have a serializable form both as strings and as JSON', () => {

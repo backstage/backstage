@@ -686,7 +686,7 @@ createApp({
 
 #### App Root Sidebar
 
-New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items. Nav items are auto-discovered from page extensions registered under `app/routes` (no explicit `NavItemBlueprint` required), with metadata from page config, nav item extensions, or plugin defaults.
+New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items. Nav items are auto-discovered from page extensions registered under `app/routes`, with metadata from page config or plugin defaults.
 
 In order to migrate your existing sidebar, you will want to create an override for the `app/nav` extension. You can do this by copying the standard of having a `src/modules/nav/` folder, which can contain an extension which you can install into the `app` in the form of a `module`.
 
@@ -740,14 +740,7 @@ The deprecated `items` prop (a flat list compatible with `<SidebarItem {...item}
 
 You might also notice that when you're rendering additional fixed icons for plugins (e.g. Search in a dedicated group) these might become duplicated, since that page is also included in `nav.rest()`. To exclude an item from the remaining list, call `nav.take('page:search')` before calling `nav.rest()` — you can discard the return value. Items that have been taken will not appear in `rest()`.
 
-You can also use the old `NavItemBlueprint`-based nav item extensions to disable items from the nav bar, these can be disabled in config without affecting the page itself:
-
-```yaml title="in app-config.yaml"
-app:
-  extensions:
-    - nav-item:search: false
-    - nav-item:catalog: false
-```
+To hide a page from the sidebar without disabling the page itself, use `nav.take('page:...')` in your custom sidebar implementation before calling `nav.rest()`, or disable the page extension in config with `page:<plugin-id>: false`.
 
 #### App Root Routes
 

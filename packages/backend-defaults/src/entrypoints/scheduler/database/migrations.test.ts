@@ -41,68 +41,65 @@ async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
 
 jest.setTimeout(60_000);
 
-describe('migrations', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  it.each(databases.eachSupportedId())(
-    '20250411000000_last_run.js, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
+describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
+  it('20250411000000_last_run.js', async () => {
+    const knex = await databases.init(databaseId);
 
-      await migrateUntilBefore(knex, '20250411000000_last_run.js');
+    await migrateUntilBefore(knex, '20250411000000_last_run.js');
 
-      await knex
-        .insert({
-          id: 'i',
-          settings_json: '{}',
-        })
-        .into('backstage_backend_tasks__tasks');
+    await knex
+      .insert({
+        id: 'i',
+        settings_json: '{}',
+      })
+      .into('backstage_backend_tasks__tasks');
 
-      await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
-        {
-          id: 'i',
-          settings_json: '{}',
-          next_run_start_at: null,
-          current_run_ticket: null,
-          current_run_started_at: null,
-          current_run_expires_at: null,
-        },
-      ]);
+    await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
+      {
+        id: 'i',
+        settings_json: '{}',
+        next_run_start_at: null,
+        current_run_ticket: null,
+        current_run_started_at: null,
+        current_run_expires_at: null,
+      },
+    ]);
 
-      await migrateUpOnce(knex);
+    await migrateUpOnce(knex);
 
-      await knex
-        .table('backstage_backend_tasks__tasks')
-        .update({ last_run_error_json: 'error' })
-        .where({ id: 'i' });
+    await knex
+      .table('backstage_backend_tasks__tasks')
+      .update({ last_run_error_json: 'error' })
+      .where({ id: 'i' });
 
-      await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
-        {
-          id: 'i',
-          settings_json: '{}',
-          next_run_start_at: null,
-          current_run_ticket: null,
-          current_run_started_at: null,
-          current_run_expires_at: null,
-          last_run_ended_at: null,
-          last_run_error_json: 'error',
-        },
-      ]);
+    await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
+      {
+        id: 'i',
+        settings_json: '{}',
+        next_run_start_at: null,
+        current_run_ticket: null,
+        current_run_started_at: null,
+        current_run_expires_at: null,
+        last_run_ended_at: null,
+        last_run_error_json: 'error',
+      },
+    ]);
 
-      await migrateDownOnce(knex);
+    await migrateDownOnce(knex);
 
-      await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
-        {
-          id: 'i',
-          settings_json: '{}',
-          next_run_start_at: null,
-          current_run_ticket: null,
-          current_run_started_at: null,
-          current_run_expires_at: null,
-        },
-      ]);
+    await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
+      {
+        id: 'i',
+        settings_json: '{}',
+        next_run_start_at: null,
+        current_run_ticket: null,
+        current_run_started_at: null,
+        current_run_expires_at: null,
+      },
+    ]);
 
-      await knex.destroy();
-    },
-  );
+    await knex.destroy();
+  });
 });

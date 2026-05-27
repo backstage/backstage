@@ -50,7 +50,7 @@ export function exitWithError(error: unknown): never {
       return exit(error.message, 64 /* command line usage error */);
     case 'AuthenticationError':
     case 'NotAllowedError':
-      return exit(error.message, 77 /* permissino denied */);
+      return exit(error.message, 77 /* permission denied */);
     case 'ExitCodeError':
       return exit(
         error.message,

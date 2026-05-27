@@ -11,7 +11,7 @@ those changes within your Backstage application, you will need to link the two
 together:
 
 ```text
-~/backstage                // cloned from Github
+~/backstage                // cloned from GitHub
 ~/my-backstage-application // generated using npx
 ```
 

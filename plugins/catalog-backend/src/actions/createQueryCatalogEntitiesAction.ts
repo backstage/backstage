@@ -17,22 +17,45 @@ import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
 
-export const createQueryCatalogEntitiesAction = ({
-  catalog,
-  actionsRegistry,
-}: {
-  catalog: CatalogService;
-  actionsRegistry: ActionsRegistryService;
-}) => {
-  actionsRegistry.register({
-    name: 'query-catalog-entities',
-    title: 'Query Catalog Entities',
-    attributes: {
-      destructive: false,
-      readOnly: true,
-      idempotent: true,
-    },
-    description: `
+const QUERY_SYNTAX = `
+## Query Syntax
+
+The query uses predicate expressions with dot-notation field paths.
+
+Simple matching:
+  { query: { kind: "Component" } }
+  { query: { kind: "Component", "spec.type": "service" } }
+
+Value operators:
+  { query: { kind: { "$in": ["API", "Component"] } } }
+  { query: { "metadata.annotations.backstage.io/techdocs-ref": { "$exists": true } } }
+  { query: { "metadata.tags": { "$contains": "java" } } }
+  { query: { "metadata.name": { "$hasPrefix": "team-" } } }
+
+Logical operators:
+  { query: { "$all": [{ kind: "Component" }, { "spec.lifecycle": "production" }] } }
+  { query: { "$any": [{ "spec.type": "service" }, { "spec.type": "website" }] } }
+  { query: { "$not": { kind: "Group" } } }
+
+Querying relations - find all entities owned by a specific group:
+  { query: { "relations.ownedby": "group:default/team-alpha" } }
+
+Combined example - find production services or websites with TechDocs:
+  { query: { "$all": [
+    { kind: "Component", "spec.lifecycle": "production" },
+    { "$any": [{ "spec.type": "service" }, { "spec.type": "website" }] },
+    { "metadata.annotations.backstage.io/techdocs-ref": { "$exists": true } }
+  ] } }
+
+## Other Options
+
+Limit returned fields: { fields: ["kind", "metadata.name", "metadata.namespace"] }
+Sort results: { orderFields: { field: "metadata.name", order: "asc" } }
+Full text search: { fullTextFilter: { term: "auth", fields: ["metadata.name", "metadata.title"] } }
+Pagination: Use limit (e.g. 20) and the returned nextPageCursor for subsequent requests via cursor.
+`;
+
+const INLINE_MODEL_DESCRIPTION = `
 Query entities from the Backstage Software Catalog using predicate filters.
 
 ## Catalog Model
@@ -76,43 +99,34 @@ Entities have bidirectional relations stored in the "relations" array. Common re
 Relations can be queried via "relations.<type>" e.g. "relations.ownedby: user:default/jane-doe". The value there must always be a valid entity reference.
 
 When querying for entity relationships, prefer using relations over spec fields. For example, use "relations.ownedby" instead of "spec.owner" to find entities owned by a particular group or user.
+${QUERY_SYNTAX}`;
 
-## Query Syntax
+const MODEL_REFERENCE_DESCRIPTION = `
+Query entities from the Backstage Software Catalog using predicate filters.
 
-The query uses predicate expressions with dot-notation field paths.
+For a complete list of entity kinds, fields, relations, and other queryable attributes available in the catalog, use \`get-catalog-model-description\`.
+${QUERY_SYNTAX}`;
 
-Simple matching:
-  { query: { kind: "Component" } }
-  { query: { kind: "Component", "spec.type": "service" } }
-
-Value operators:
-  { query: { kind: { "$in": ["API", "Component"] } } }
-  { query: { "metadata.annotations.backstage.io/techdocs-ref": { "$exists": true } } }
-  { query: { "metadata.tags": { "$contains": "java" } } }
-  { query: { "metadata.name": { "$hasPrefix": "team-" } } }
-
-Logical operators:
-  { query: { "$all": [{ kind: "Component" }, { "spec.lifecycle": "production" }] } }
-  { query: { "$any": [{ "spec.type": "service" }, { "spec.type": "website" }] } }
-  { query: { "$not": { kind: "Group" } } }
-
-Querying relations - find all entities owned by a specific group:
-  { query: { "relations.ownedby": "group:default/team-alpha" } }
-
-Combined example - find production services or websites with TechDocs:
-  { query: { "$all": [
-    { kind: "Component", "spec.lifecycle": "production" },
-    { "$any": [{ "spec.type": "service" }, { "spec.type": "website" }] },
-    { "metadata.annotations.backstage.io/techdocs-ref": { "$exists": true } }
-  ] } }
-
-## Other Options
-
-Limit returned fields: { fields: ["kind", "metadata.name", "metadata.namespace"] }
-Sort results: { orderFields: { field: "metadata.name", order: "asc" } }
-Full text search: { fullTextFilter: { term: "auth", fields: ["metadata.name", "metadata.title"] } }
-Pagination: Use limit (e.g. 20) and the returned nextPageCursor for subsequent requests via cursor.
-    `,
+export const createQueryCatalogEntitiesAction = ({
+  catalog,
+  actionsRegistry,
+  useExperimentalCatalogLayersDescriptions,
+}: {
+  catalog: CatalogService;
+  actionsRegistry: ActionsRegistryService;
+  useExperimentalCatalogLayersDescriptions?: boolean;
+}) => {
+  actionsRegistry.register({
+    name: 'query-catalog-entities',
+    title: 'Query Catalog Entities',
+    attributes: {
+      destructive: false,
+      readOnly: true,
+      idempotent: true,
+    },
+    description: useExperimentalCatalogLayersDescriptions
+      ? MODEL_REFERENCE_DESCRIPTION
+      : INLINE_MODEL_DESCRIPTION,
     schema: {
       input: z =>
         z.object({

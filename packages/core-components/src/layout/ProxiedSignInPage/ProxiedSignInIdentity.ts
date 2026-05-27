@@ -32,6 +32,16 @@ export const DEFAULTS = {
   tokenExpiryMarginMillis: 5 * 60 * 1000,
 } as const;
 
+// Decodes a base64url-encoded string. JWTs encode their segments using base64url
+// (RFC 7515), which substitutes '-' and '_' for '+' and '/' and omits padding.
+// `window.atob` only accepts standard base64, so translate back to that alphabet
+// and restore the padding before decoding.
+function decodeBase64Url(value: string): string {
+  const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
+  return window.atob(padded);
+}
+
 // When the token expires, with some margin
 export function tokenToExpiry(jwtToken: string | undefined): Date {
   const fallback = new Date(Date.now() + DEFAULTS.defaultTokenExpiryMillis);
@@ -40,7 +50,7 @@ export function tokenToExpiry(jwtToken: string | undefined): Date {
   }
 
   const [_header, rawPayload, _signature] = jwtToken.split('.');
-  const payload = JSON.parse(window.atob(rawPayload));
+  const payload = JSON.parse(decodeBase64Url(rawPayload));
   if (typeof payload.exp !== 'number') {
     return fallback;
   }

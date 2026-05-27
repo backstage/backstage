@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useMemo } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
   Table,
@@ -207,6 +207,95 @@ export const Search: Story = {
           }
           {...tableProps}
         />
+      </div>
+    );
+  },
+};
+
+export const SearchWithDebounce: Story = {
+  render: () => {
+    // Amplify the ~100-row mocked dataset to several thousand rows so the
+    // perf difference between debounced and non-debounced typing is visible.
+    const largeData = useMemo(() => {
+      const result: Data1Item[] = [];
+      for (let i = 0; i < 50; i++) {
+        for (const item of data1) {
+          result.push({ ...item, id: `${item.id}-${i}` });
+        }
+      }
+      return result;
+    }, []);
+
+    const columns: ColumnConfig<Data1Item>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => <CellText title={item.name} />,
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const searchFn = (items: Data1Item[], query: string) => {
+      const lowerQuery = query.toLowerCase();
+      return items.filter(
+        item =>
+          item.name.toLowerCase().includes(lowerQuery) ||
+          item.owner.name.toLowerCase().includes(lowerQuery) ||
+          item.type.toLowerCase().includes(lowerQuery),
+      );
+    };
+
+    const immediate = useTable({
+      mode: 'complete',
+      data: largeData,
+      paginationOptions: { pageSize: 10 },
+      searchFn,
+    });
+
+    const debounced = useTable({
+      mode: 'complete',
+      data: largeData,
+      paginationOptions: { pageSize: 10 },
+      searchFn,
+      searchDebounceMs: 200,
+    });
+
+    return (
+      <div style={{ display: 'grid', gap: '32px' }}>
+        <div>
+          <h3 style={{ marginBottom: '8px' }}>
+            Immediate (searchDebounceMs: 0)
+          </h3>
+          <SearchField
+            aria-label="Immediate search"
+            placeholder="Type to search..."
+            style={{ marginBottom: '16px' }}
+            {...immediate.search}
+          />
+          <Table columnConfig={columns} {...immediate.tableProps} />
+        </div>
+        <div>
+          <h3 style={{ marginBottom: '8px' }}>
+            Debounced (searchDebounceMs: 200)
+          </h3>
+          <SearchField
+            aria-label="Debounced search"
+            placeholder="Type to search..."
+            style={{ marginBottom: '16px' }}
+            {...debounced.search}
+          />
+          <Table columnConfig={columns} {...debounced.tableProps} />
+        </div>
       </div>
     );
   },

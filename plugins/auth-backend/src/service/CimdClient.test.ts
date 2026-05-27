@@ -328,6 +328,29 @@ describe('CimdClient', () => {
         ).rejects.toThrow('Invalid client metadata document');
       });
 
+      it('should throw for oversized JSON without content-length', async () => {
+        const oversizedMetadata = {
+          client_id: 'https://example.com/oauth-metadata.json',
+          client_name: 'x'.repeat(64 * 1024),
+          redirect_uris: ['http://localhost:8080/callback'],
+        };
+        const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(
+          new Response(JSON.stringify(oversizedMetadata), {
+            headers: { 'content-type': 'application/json' },
+          }),
+        );
+
+        try {
+          await expect(
+            fetchCimdMetadata({
+              clientId: 'https://example.com/oauth-metadata.json',
+            }),
+          ).rejects.toThrow('Client metadata document too large');
+        } finally {
+          fetchMock.mockRestore();
+        }
+      });
+
       it('should throw for client_id mismatch', async () => {
         const mismatchedMetadata = {
           client_id: 'https://different.com/metadata',

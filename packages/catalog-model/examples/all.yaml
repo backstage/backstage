@@ -5,6 +5,7 @@ metadata:
   description: A collection of all Backstage example entities, except users, groups, and templates
 spec:
   targets:
+    - ./all-ai-resources.yaml
     - ./all-apis.yaml
     - ./all-components.yaml
     - ./all-domains.yaml

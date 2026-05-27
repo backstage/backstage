@@ -22,22 +22,54 @@ import { DbStitchQueueRow } from '../../tables';
  *
  * @remarks
  *
- * This assumes that the stitching strategy is set to deferred.
+ * If the ticket still matches, the stitch_queue entry is deleted — no
+ * further stitching is needed.
  *
- * The row is only deleted from stitch_queue if the ticket hasn't changed. If
- * it has, it means that a new stitch request has been made, and the entity
- * should be stitched once more some time in the future - or is indeed already
- * being stitched concurrently with ourselves.
+ * If the ticket changed (a new stitch was requested while this one was
+ * in progress), the entry is kept and its next_stitch_at is bumped to
+ * now() so the re-stitch becomes immediately eligible for pickup.
+ *
+ * The `result` parameter controls how the bump behaves when the ticket
+ * doesn't match:
+ *
+ * - `'succeeded'`: The worker wrote its result successfully. A ticket
+ *   mismatch means a re-stitch was requested. Bump to now()
+ *   unconditionally — we're done, the next worker should start ASAP.
+ *
+ * - `'abandoned'`: The worker's write was blocked by a stale ticket.
+ *   We can't tell whether the ticket changed because of a re-stitch
+ *   request (nobody else is active) or because we timed out and
+ *   another worker claimed the entry. Bump to now() only if the
+ *   timestamp hasn't moved past what we'd have set — i.e. only move
+ *   it earlier, never later. This prevents extending the timeout
+ *   window of an active worker, while still making overdue entries
+ *   eligible immediately.
  */
 export async function markDeferredStitchCompleted(option: {
   knex: Knex | Knex.Transaction;
   entityRef: string;
   stitchTicket: string;
+  result: 'succeeded' | 'abandoned';
 }): Promise<void> {
-  const { knex, entityRef, stitchTicket } = option;
+  const { knex, entityRef, stitchTicket, result } = option;
 
-  await knex<DbStitchQueueRow>('stitch_queue')
+  const deleted = await knex<DbStitchQueueRow>('stitch_queue')
     .where('entity_ref', '=', entityRef)
     .andWhere('stitch_ticket', '=', stitchTicket)
     .delete();
+
+  if (!deleted) {
+    const update = knex<DbStitchQueueRow>('stitch_queue')
+      .where('entity_ref', '=', entityRef)
+      .update({ next_stitch_at: knex.fn.now() });
+
+    if (result === 'abandoned') {
+      // Only move the timestamp earlier, never later — if another
+      // worker pushed it forward, we don't want to undercut their
+      // timeout window.
+      update.where('next_stitch_at', '>', knex.fn.now());
+    }
+
+    await update;
+  }
 }

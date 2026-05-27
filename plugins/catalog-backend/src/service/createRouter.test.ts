@@ -19,7 +19,6 @@ import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
 import {
   mockCredentials,
   mockServices,
-  TestDatabaseId,
   TestDatabases,
 } from '@backstage/backend-test-utils';
 import type { Location } from '@backstage/catalog-client';
@@ -96,12 +95,6 @@ describe('createRouter readonly disabled', () => {
       httpAuth: mockServices.httpAuth(),
       locationAnalyzer,
       permissionsService,
-      statusStore: {
-        setStatus: jest.fn(),
-        deleteStatus: jest.fn(),
-        getStatuses: jest.fn().mockResolvedValue(new Map()),
-      } as any,
-      stitcher: { stitch: jest.fn() } as any,
       auditor: mockServices.auditor.mock(),
     });
     router.use(middleware.error());
@@ -171,9 +164,7 @@ describe('createRouter readonly disabled', () => {
         httpAuth: mockServices.httpAuth(),
         locationAnalyzer,
         permissionsService,
-        enableRelationsCompatibility: true,
-        statusStore: {} as any,
-        stitcher: {} as any,
+        enableRelationsCompatibility: true, // added
         auditor: mockServices.auditor.mock(),
       });
 
@@ -219,7 +210,7 @@ describe('createRouter readonly disabled', () => {
         },
         limit: 10000,
         credentials: mockCredentials.user(),
-        skipTotalItems: true,
+        totalItems: 'exclude',
       });
     });
 
@@ -236,8 +227,6 @@ describe('createRouter readonly disabled', () => {
         locationAnalyzer,
         permissionsService,
         enableRelationsCompatibility: true,
-        statusStore: {} as any,
-        stitcher: {} as any,
         auditor: mockServices.auditor.mock(),
       });
       app = await wrapServer(express().use(router));
@@ -972,8 +961,6 @@ describe('createRouter readonly disabled', () => {
         httpAuth: mockServices.httpAuth(),
         orchestrator: { process: jest.fn() },
         permissionsService: mockServices.permissions(),
-        statusStore: {} as any,
-        stitcher: {} as any,
         auditor: mockServices.auditor.mock(),
       });
       router.use(middleware.error());
@@ -1501,12 +1488,6 @@ describe('createRouter readonly and raw json enabled', () => {
       httpAuth: mockServices.httpAuth(),
       orchestrator: { process: jest.fn() },
       permissionsService,
-      statusStore: {
-        setStatus: jest.fn(),
-        deleteStatus: jest.fn(),
-        getStatuses: jest.fn().mockResolvedValue(new Map()),
-      } as any,
-      stitcher: { stitch: jest.fn() } as any,
       auditor: mockServices.auditor.mock(),
     });
     router.use(middleware.error());
@@ -1698,65 +1679,59 @@ describe('createRouter readonly and raw json enabled', () => {
   });
 });
 
-describe('POST /locations/by-query works end to end', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  async function createTestRouter(databaseId: TestDatabaseId) {
-    const knex = await databases.init(databaseId);
-    await applyDatabaseMigrations(knex);
+describe.each(databases.eachSupportedId())(
+  'POST /locations/by-query works end to end, %p',
+  databaseId => {
+    async function createTestRouter() {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
 
-    const mockScmEvents = {
-      subscribe: jest.fn(),
-      publish: jest.fn(),
-      markEventActionTaken: jest.fn(),
-    };
+      const mockScmEvents = {
+        subscribe: jest.fn(),
+        publish: jest.fn(),
+        markEventActionTaken: jest.fn(),
+      };
 
-    const store = new DefaultLocationStore(knex, mockScmEvents, {
-      refresh: false,
-      unregister: false,
-      move: false,
-    });
-    await store.connect({ applyMutation: jest.fn(), refresh: jest.fn() });
+      const store = new DefaultLocationStore(knex, mockScmEvents, {
+        refresh: false,
+        unregister: false,
+        move: false,
+      });
+      await store.connect({ applyMutation: jest.fn(), refresh: jest.fn() });
 
-    const locationService = new DefaultLocationService(
-      store,
-      { process: jest.fn() },
-      {
-        allowedLocationTypes: ['url'],
-        defaultLocationConflictStrategy: 'reject',
-      },
-    );
+      const locationService = new DefaultLocationService(
+        store,
+        { process: jest.fn() },
+        {
+          allowedLocationTypes: ['url'],
+          defaultLocationConflictStrategy: 'reject',
+        },
+      );
 
-    const router = await createRouter({
-      locationService,
-      logger: mockServices.logger.mock(),
-      config: new ConfigReader(undefined),
-      auth: mockServices.auth(),
-      httpAuth: mockServices.httpAuth(),
-      orchestrator: { process: jest.fn() },
-      permissionsService: mockServices.permissions(),
-      statusStore: {
-        setStatus: jest.fn(),
-        deleteStatus: jest.fn(),
-        getStatuses: jest.fn().mockResolvedValue(new Map()),
-      } as any,
-      stitcher: { stitch: jest.fn() } as any,
-      auditor: mockServices.auditor.mock(),
-    });
+      const router = await createRouter({
+        locationService,
+        logger: mockServices.logger.mock(),
+        config: new ConfigReader(undefined),
+        auth: mockServices.auth(),
+        httpAuth: mockServices.httpAuth(),
+        orchestrator: { process: jest.fn() },
+        permissionsService: mockServices.permissions(),
+        auditor: mockServices.auditor.mock(),
+      });
 
-    const errorMiddleware = MiddlewareFactory.create({
-      logger: mockServices.logger.mock(),
-      config: mockServices.rootConfig(),
-    });
-    router.use(errorMiddleware.error());
+      const errorMiddleware = MiddlewareFactory.create({
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig(),
+      });
+      router.use(errorMiddleware.error());
 
-    return { knex, app: express().use(router) };
-  }
+      return { knex, app: express().use(router) };
+    }
 
-  it.each(databases.eachSupportedId())(
-    'paginates through locations correctly, %p',
-    async databaseId => {
-      const { knex, app } = await createTestRouter(databaseId);
+    it('paginates through locations correctly', async () => {
+      const { knex, app } = await createTestRouter();
 
       // Insert 5 locations directly into the database
       const locations = [
@@ -1843,13 +1818,10 @@ describe('POST /locations/by-query works end to end', () => {
         totalItems: 5,
         pageInfo: {},
       });
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'filters locations with query parameter, %p',
-    async databaseId => {
-      const { knex, app } = await createTestRouter(databaseId);
+    it('filters locations with query parameter', async () => {
+      const { knex, app } = await createTestRouter();
 
       // Insert locations with different types
       const locations = [
@@ -1898,9 +1870,9 @@ describe('POST /locations/by-query works end to end', () => {
         totalItems: 2,
         pageInfo: {},
       });
-    },
-  );
-});
+    });
+  },
+);
 
 function mockCursor(partialCursor?: Partial<Cursor>): Cursor {
   return {

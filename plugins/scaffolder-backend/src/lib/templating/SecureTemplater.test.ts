@@ -18,7 +18,7 @@ import { SecureTemplater } from './SecureTemplater';
 
 describe('SecureTemplater', () => {
   it('should render some templates', async () => {
-    const render = await SecureTemplater.loadRenderer();
+    const { render, dispose } = await SecureTemplater.loadRenderer();
     expect(render('${{ test }}', { test: 'my-value' })).toBe('my-value');
 
     expect(render('${{ test | dump }}', { test: 'my-value' })).toBe(
@@ -36,13 +36,28 @@ describe('SecureTemplater', () => {
         test: 'my-value',
       }),
     ).toThrow(/expected name as lookup value, got ./);
+
+    dispose();
+
+    expect(() => render('${{ test }}', { test: 'my-value' })).toThrow(
+      /disposed/i,
+    );
   });
 
+  it('should allow dispose to be called more than once', async () => {
+    const { dispose } = await SecureTemplater.loadRenderer();
+
+    dispose();
+
+    expect(() => dispose()).not.toThrow();
+  });
   it('should make cookiecutter compatibility available when requested', async () => {
-    const renderWith = await SecureTemplater.loadRenderer({
-      cookiecutterCompat: true,
-    });
-    const renderWithout = await SecureTemplater.loadRenderer();
+    const { render: renderWith, dispose: disposeWith } =
+      await SecureTemplater.loadRenderer({
+        cookiecutterCompat: true,
+      });
+    const { render: renderWithout, dispose: disposeWithout } =
+      await SecureTemplater.loadRenderer();
 
     // Same two tests repeated to make sure switching back and forth works
     expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
@@ -61,6 +76,8 @@ describe('SecureTemplater', () => {
       /Error: filter not found: jsonify/,
     );
     expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
+    disposeWith();
+    disposeWithout();
   });
 
   it('should make parseRepoUrl available when requested', async () => {
@@ -72,10 +89,12 @@ describe('SecureTemplater', () => {
 
     const projectSlug = jest.fn(() => 'my-owner/my-repo');
 
-    const renderWith = await SecureTemplater.loadRenderer({
-      templateFilters: { parseRepoUrl, projectSlug },
-    });
-    const renderWithout = await SecureTemplater.loadRenderer();
+    const { render: renderWith, dispose: disposeWith } =
+      await SecureTemplater.loadRenderer({
+        templateFilters: { parseRepoUrl, projectSlug },
+      });
+    const { render: renderWithout, dispose: disposeWithout } =
+      await SecureTemplater.loadRenderer();
 
     const ctx = {
       repoUrl: 'https://my-host.com/my-owner/my-repo',
@@ -101,6 +120,8 @@ describe('SecureTemplater', () => {
     expect(parseRepoUrl.mock.calls).toEqual([
       ['https://my-host.com/my-owner/my-repo'],
     ]);
+    disposeWith();
+    disposeWithout();
   });
 
   it('should make additional filters available when requested', async () => {
@@ -108,10 +129,12 @@ describe('SecureTemplater', () => {
     const mockFilter2 = jest.fn((var1, var2) => `${var1} ${var2}`);
     const mockFilter3 = jest.fn((var1, var2) => ({ var1, var2 }));
     const mockFilter4 = jest.fn(() => undefined);
-    const renderWith = await SecureTemplater.loadRenderer({
-      templateFilters: { mockFilter1, mockFilter2, mockFilter3, mockFilter4 },
-    });
-    const renderWithout = await SecureTemplater.loadRenderer();
+    const { render: renderWith, dispose: disposeWith } =
+      await SecureTemplater.loadRenderer({
+        templateFilters: { mockFilter1, mockFilter2, mockFilter3, mockFilter4 },
+      });
+    const { render: renderWithout, dispose: disposeWithout } =
+      await SecureTemplater.loadRenderer();
 
     const ctx = { inputValue: 'the input value' };
 
@@ -149,16 +172,20 @@ describe('SecureTemplater', () => {
     expect(mockFilter3.mock.calls).toEqual([
       ['the input value', 'another extra arg'],
     ]);
+    disposeWith();
+    disposeWithout();
   });
   it('should make additional globals available when requested', async () => {
     const mockGlobal1 = jest.fn(() => 'awesome global function');
     const mockGlobal2 = 'foo';
     const mockGlobal3 = 123456;
     const mockGlobal4 = jest.fn(() => undefined);
-    const renderWith = await SecureTemplater.loadRenderer({
-      templateGlobals: { mockGlobal1, mockGlobal2, mockGlobal3, mockGlobal4 },
-    });
-    const renderWithout = await SecureTemplater.loadRenderer();
+    const { render: renderWith, dispose: disposeWith } =
+      await SecureTemplater.loadRenderer({
+        templateGlobals: { mockGlobal1, mockGlobal2, mockGlobal3, mockGlobal4 },
+      });
+    const { render: renderWithout, dispose: disposeWithout } =
+      await SecureTemplater.loadRenderer();
 
     const ctx = {};
 
@@ -172,10 +199,12 @@ describe('SecureTemplater', () => {
     expect(() => renderWithout('${{ mockGlobal1() }}', ctx)).toThrow(
       /Error: Unable to call `mockGlobal1`/,
     );
+    disposeWith();
+    disposeWithout();
   });
 
   it('should not allow helpers to be rewritten', async () => {
-    const render = await SecureTemplater.loadRenderer({
+    const { render, dispose } = await SecureTemplater.loadRenderer({
       templateFilters: {
         parseRepoUrl: () => ({
           repo: 'my-repo',
@@ -202,10 +231,11 @@ describe('SecureTemplater', () => {
         host: 'my-host.com',
       }),
     );
+    dispose();
   });
 
   it('allows pollution during a single template execution', async () => {
-    const render = await SecureTemplater.loadRenderer();
+    const { render, dispose } = await SecureTemplater.loadRenderer();
 
     const ctx = {
       x: 'foo',
@@ -218,5 +248,6 @@ describe('SecureTemplater', () => {
       ),
     ).toBe('');
     expect(() => render('${{ x }}', ctx)).toThrow();
+    dispose();
   });
 });

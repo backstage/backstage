@@ -16,15 +16,7 @@
 
 import { Knex } from 'knex';
 import { DbSearchRow } from '../../tables';
-import { BATCH_SIZE } from './util';
-
-// The Postgres sync uses COALESCE(x, NULL_SENTINEL) to allow Postgres to
-// include nullable columns in the Hash Cond of anti-joins (IS NOT DISTINCT
-// FROM prevents this). As a consequence, values that are exactly this
-// sentinel character are not searchable — they would be treated as NULL.
-// This is the SOH (Start of Heading) control character which does not
-// appear in real entity metadata.
-const NULL_SENTINEL = '\x01';
+import { BATCH_SIZE, NULL_SENTINEL } from './util';
 
 function filterSentinelValues(entries: DbSearchRow[]): DbSearchRow[] {
   return entries.filter(
@@ -48,14 +40,30 @@ export async function syncSearchRows(
   entityId: string,
   searchEntries: DbSearchRow[],
 ): Promise<void> {
+  // Dedup by (key, value) — the UNIQUE constraint on (entity_id, key, value)
+  // rejects duplicates, and the same lowercased value with different original
+  // casing is semantically a single entry. Keep the first occurrence, which
+  // matches the first-wins semantics of buildEntitySearch so that both layers
+  // consistently pick the same original_value for a given input order.
+  const dedupMap = new Map<string, DbSearchRow>();
+  for (const entry of searchEntries) {
+    const k = `${entry.key}\0${
+      entry.value === null ? NULL_SENTINEL : entry.value
+    }`;
+    if (!dedupMap.has(k)) {
+      dedupMap.set(k, entry);
+    }
+  }
+  const deduped = [...dedupMap.values()];
+
   const client = knex.client.config.client;
 
   if (client === 'pg') {
-    await syncPostgres(knex, entityId, searchEntries);
+    await syncPostgres(knex, entityId, deduped);
   } else if (client.includes('mysql')) {
-    await syncMysql(knex, entityId, searchEntries);
+    await syncMysql(knex, entityId, deduped);
   } else {
-    await syncBulkReplace(knex, entityId, searchEntries);
+    await syncBulkReplace(knex, entityId, deduped);
   }
 }
 
@@ -110,6 +118,8 @@ async function syncPostgres(
         AND COALESCE(s.value, chr(1)) = COALESCE(d.value, chr(1))
         AND COALESCE(s.original_value, chr(1)) = COALESCE(d.original_value, chr(1))
     )
+    ON CONFLICT (entity_id, key, value)
+    DO UPDATE SET original_value = EXCLUDED.original_value
     `,
     [keys, values, originalValues, entityId, entityId, entityId],
   );

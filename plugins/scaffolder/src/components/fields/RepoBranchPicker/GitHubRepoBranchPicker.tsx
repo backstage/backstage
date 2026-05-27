@@ -18,11 +18,14 @@ import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import MuiTextField from '@material-ui/core/TextField';
+import MuiAutocomplete from '@material-ui/lab/Autocomplete';
 import { useCallback, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { BaseRepoBranchPickerProps } from './types';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
+import type { Key } from 'react-aria-components';
 
 /**
  * The underlying component that is rendered in the form for the `GitHubRepoBranchPicker`
@@ -41,6 +44,7 @@ export const GitHubRepoBranchPicker = ({
 }: BaseRepoBranchPickerProps<{
   accessToken?: string;
 }>) => {
+  const theme = useScaffolderTheme();
   const { host, owner, repository, branch } = state;
 
   const [availableBranches, setAvailableBranches] = useState<string[]>([]);
@@ -76,13 +80,35 @@ export const GitHubRepoBranchPicker = ({
 
   useDebounce(updateAvailableBranches, 500, [updateAvailableBranches]);
 
+  if (theme === 'bui') {
+    const options = availableBranches.map(b => ({ label: b, value: b }));
+
+    return (
+      <BuiAutocomplete
+        label="Branch"
+        description="The branch of the repository"
+        inputValue={branch ?? ''}
+        onInputChange={value => onChange({ branch: value })}
+        onSelectionChange={(key: Key | null) => {
+          if (key !== null) {
+            onChange({ branch: String(key) });
+          }
+        }}
+        options={options}
+        isDisabled={isDisabled}
+        isRequired={required}
+        isInvalid={rawErrors?.length > 0 && !branch}
+      />
+    );
+  }
+
   return (
     <FormControl
       margin="normal"
       required={required}
       error={rawErrors?.length > 0 && !branch}
     >
-      <Autocomplete
+      <MuiAutocomplete
         value={branch}
         onChange={(_, newValue) => {
           onChange({ branch: newValue || '' });
@@ -90,7 +116,7 @@ export const GitHubRepoBranchPicker = ({
         disabled={isDisabled}
         options={availableBranches}
         renderInput={params => (
-          <TextField
+          <MuiTextField
             {...params}
             label="Branch"
             disabled={isDisabled}

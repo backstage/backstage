@@ -25,6 +25,7 @@ import {
   ActionsServiceAction,
   MetricsServiceHistogram,
   MetricsService,
+  TracingService,
 } from '@backstage/backend-plugin-api/alpha';
 import { version } from '@backstage/plugin-mcp-actions-backend/package.json';
 import { NotFoundError } from '@backstage/errors';
@@ -34,18 +35,63 @@ import { handleErrors } from './handleErrors';
 import { bucketBoundaries, McpServerOperationAttributes } from '../metrics';
 import { FilterRule, McpServerConfig } from '../config';
 
+function safeStringify(value: unknown): string {
+  try {
+    return JSON.stringify(value) ?? String(value);
+  } catch {
+    return String(value);
+  }
+}
+
+// Baggage is propagated from untrusted callers, so we forward only an
+// explicit allowlist of low-cardinality identifier keys from the OTel
+// `gen_ai.*` registry.
+const PROPAGATED_BAGGAGE_ATTRIBUTES: ReadonlySet<string> = new Set([
+  'gen_ai.agent.id',
+  'gen_ai.agent.name',
+  'gen_ai.conversation.id',
+  'gen_ai.provider.name',
+  'gen_ai.request.model',
+]);
+
+// Cap each forwarded baggage value before it lands on a span attribute.
+// Baggage values are caller-controlled strings of unbounded length;
+// allowlisting keys protects against arbitrary attribute names but not
+// against pathologically large values inflating exported span sizes.
+const BAGGAGE_ATTRIBUTE_VALUE_MAX_LENGTH = 256;
+
+function baggageAttributes(
+  tracingService: TracingService,
+): Record<string, string> {
+  const baggage = tracingService.propagation.getActiveBaggage();
+  if (!baggage) return {};
+  const attrs: Record<string, string> = {};
+  for (const [key, entry] of baggage.getAllEntries()) {
+    if (PROPAGATED_BAGGAGE_ATTRIBUTES.has(key)) {
+      attrs[key] = entry.value.slice(0, BAGGAGE_ATTRIBUTE_VALUE_MAX_LENGTH);
+    }
+  }
+  return attrs;
+}
+
 export class McpService {
   private readonly actions: ActionsService;
   private readonly namespacedToolNames: boolean;
+  private readonly tracingService: TracingService;
+  private readonly captureToolPayloads: boolean;
   private readonly operationDuration: MetricsServiceHistogram<McpServerOperationAttributes>;
 
   constructor(
     actions: ActionsService,
     metrics: MetricsService,
+    tracingService: TracingService,
     namespacedToolNames?: boolean,
+    captureToolPayloads?: boolean,
   ) {
     this.actions = actions;
     this.namespacedToolNames = namespacedToolNames ?? true;
+    this.tracingService = tracingService;
+    this.captureToolPayloads = captureToolPayloads ?? false;
     this.operationDuration =
       metrics.createHistogram<McpServerOperationAttributes>(
         'mcp.server.operation.duration',
@@ -60,13 +106,23 @@ export class McpService {
   static async create({
     actions,
     metrics,
+    tracingService,
     namespacedToolNames,
+    captureToolPayloads,
   }: {
     actions: ActionsService;
     metrics: MetricsService;
+    tracingService: TracingService;
     namespacedToolNames?: boolean;
+    captureToolPayloads?: boolean;
   }) {
-    return new McpService(actions, metrics, namespacedToolNames);
+    return new McpService(
+      actions,
+      metrics,
+      tracingService,
+      namespacedToolNames,
+      captureToolPayloads,
+    );
   }
 
   getServer({
@@ -79,7 +135,6 @@ export class McpService {
     const server = new McpServer(
       {
         name: serverConfig?.name ?? 'backstage',
-        // TODO: this version will most likely change in the future.
         version,
         ...(serverConfig?.description && {
           description: serverConfig.description,
@@ -103,9 +158,6 @@ export class McpService {
         return {
           tools: actions.map(action => ({
             inputSchema: action.schema.input,
-            // todo(blam): this is unfortunately not supported by most clients yet.
-            // When this is provided you need to provide structuredContent instead.
-            // outputSchema: action.schema.output,
             name: this.getToolName(action),
             description: action.description,
             annotations: {
@@ -136,43 +188,78 @@ export class McpService {
       let isError = false;
 
       try {
-        const result = await handleErrors(async () => {
-          const { actions: allActions } = await this.actions.list({
+        return await this.tracingService.startActiveSpan(
+          `tools/call ${params.name}`,
+          {
+            kind: 'server',
             credentials,
-          });
-          const actions = serverConfig
-            ? this.filterActions(allActions, serverConfig)
-            : allActions;
+            attributes: {
+              ...baggageAttributes(this.tracingService),
+              'mcp.method.name': 'tools/call',
+              'gen_ai.tool.name': params.name,
+              'gen_ai.operation.name': 'execute_tool',
+              ...(this.captureToolPayloads && {
+                'gen_ai.tool.call.arguments': safeStringify(params.arguments),
+              }),
+            },
+          },
+          async span => {
+            const result = await handleErrors(async () => {
+              const { actions: allActions } = await this.actions.list({
+                credentials,
+              });
+              const actions = serverConfig
+                ? this.filterActions(allActions, serverConfig)
+                : allActions;
 
-          const action = actions.find(a => this.getToolName(a) === params.name);
+              const action = actions.find(
+                a => this.getToolName(a) === params.name,
+              );
 
-          if (!action) {
-            throw new NotFoundError(`Action "${params.name}" not found`);
-          }
+              if (!action) {
+                throw new NotFoundError(`Action "${params.name}" not found`);
+              }
 
-          const { output } = await this.actions.invoke({
-            id: action.id,
-            input: params.arguments as JsonObject,
-            credentials,
-          });
+              // Re-attribute the span to the plugin that owns the action.
+              // This runs after the span has started, so head-based samplers
+              // still see the default `mcp-actions` value when deciding
+              // whether to record the span. The pluginId is only known after
+              // resolving the action via `actions.list`, so the reattribution
+              // is unavoidable.
+              span.setAttribute('backstage.plugin.id', action.pluginId);
 
-          return {
-            // todo(blam): unfortunately structuredContent is not supported by most clients yet.
-            // so the validation for the output happens in the default actions registry
-            // and we return it as json text instead for now.
-            content: [
-              {
-                type: 'text',
-                text: ['```json', JSON.stringify(output, null, 2), '```'].join(
-                  '\n',
-                ),
-              },
-            ],
-          };
-        });
+              const { output } = await this.actions.invoke({
+                id: action.id,
+                input: params.arguments as JsonObject,
+                credentials,
+              });
 
-        isError = !!(result as { isError?: boolean })?.isError;
-        return result;
+              if (this.captureToolPayloads) {
+                span.setAttribute(
+                  'gen_ai.tool.call.result',
+                  safeStringify(output),
+                );
+              }
+
+              return {
+                content: [
+                  {
+                    type: 'text',
+                    text: safeStringify(output),
+                  },
+                ],
+                structuredContent: output,
+              };
+            });
+
+            isError = !!(result as { isError?: boolean })?.isError;
+            if (isError) {
+              span.setAttribute('error.type', 'tool_error');
+              span.setStatus({ code: 'error', message: 'tool_error' });
+            }
+            return result;
+          },
+        );
       } catch (err) {
         errorType = err instanceof Error ? err.name : 'Error';
         throw err;

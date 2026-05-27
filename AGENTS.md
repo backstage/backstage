@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 Backstage is an open platform for building developer portals. This is a TypeScript monorepo using Yarn workspaces.
 
 ## Key Directories

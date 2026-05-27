@@ -17,27 +17,14 @@
 import { Config } from '@backstage/config';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
-import splitToChunks from 'lodash/chunk';
 import { DateTime } from 'luxon';
 import { getDeferredStitchableEntities } from '../database/operations/stitcher/getDeferredStitchableEntities';
-import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { performStitching } from '../database/operations/stitcher/performStitching';
-import { DbRefreshStateRow } from '../database/tables';
 import { startTaskPipeline } from '../processing/TaskPipeline';
 import { progressTracker } from './progressTracker';
-import {
-  Stitcher,
-  StitchingStrategy,
-  stitchingStrategyFromConfig,
-} from './types';
+import { StitchingStrategy, stitchingStrategyFromConfig } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
-import {
-  StitchingStatusMerger,
-  EntityStatusQuery,
-} from '@backstage/plugin-catalog-node/alpha';
-import { DefaultCatalogStatusStore } from '../database/DefaultCatalogStatusStore';
-import { JsonObject } from '@backstage/types';
 
 type DeferredStitchItem = Awaited<
   ReturnType<typeof getDeferredStitchableEntities>
@@ -50,14 +37,11 @@ type StitchProgressTracker = ReturnType<typeof progressTracker>;
  * ingestion process, and stitching them together into the final entity JSON
  * shape.
  */
-export class DefaultStitcher implements Stitcher {
+export class DefaultStitcher {
   private readonly knex: Knex;
   private readonly logger: LoggerService;
   private readonly strategy: StitchingStrategy;
-  private readonly stitchingStatusMergers: StitchingStatusMerger[];
-  private readonly statusStore: DefaultCatalogStatusStore;
   private readonly tracker: StitchProgressTracker;
-  #cleanupCounter = 0;
   private stopFunc?: () => void;
 
   static fromConfig(
@@ -66,17 +50,15 @@ export class DefaultStitcher implements Stitcher {
       knex: Knex;
       logger: LoggerService;
       metrics: MetricsService;
-      stitchingStatusMergers?: StitchingStatusMerger[];
-      statusStore: DefaultCatalogStatusStore;
     },
   ): DefaultStitcher {
     return new DefaultStitcher({
       knex: options.knex,
       logger: options.logger,
       metrics: options.metrics,
-      strategy: stitchingStrategyFromConfig(config),
-      stitchingStatusMergers: options.stitchingStatusMergers,
-      statusStore: options.statusStore,
+      strategy: stitchingStrategyFromConfig(config, {
+        logger: options.logger,
+      }),
     });
   }
 
@@ -85,14 +67,10 @@ export class DefaultStitcher implements Stitcher {
     logger: LoggerService;
     metrics: MetricsService;
     strategy: StitchingStrategy;
-    stitchingStatusMergers?: StitchingStatusMerger[];
-    statusStore: DefaultCatalogStatusStore;
   }) {
     this.knex = options.knex;
     this.logger = options.logger;
     this.strategy = options.strategy;
-    this.stitchingStatusMergers = options.stitchingStatusMergers ?? [];
-    this.statusStore = options.statusStore;
     this.tracker = progressTracker(
       options.knex,
       options.logger,
@@ -100,143 +78,38 @@ export class DefaultStitcher implements Stitcher {
     );
   }
 
-  private async preFetchStatus(
-    entityRefs: string[],
-  ): Promise<Map<string, Record<string, JsonObject>>> {
-    if (!this.stitchingStatusMergers?.length || entityRefs.length === 0) {
-      return new Map();
-    }
-
-    const statuses = await this.statusStore.getStatuses(entityRefs);
-
-    const query: EntityStatusQuery = {
-      getStatuses: async (refs: string[]) => {
-        return this.statusStore.getStatuses(refs);
-      },
-    };
-
-    for (const merger of this.stitchingStatusMergers) {
-      if (merger.preFetch) {
-        try {
-          await merger.preFetch({ entityRefs, query });
-        } catch (error) {
-          this.logger.warn('StitchingStatusMerger preFetch failed', error);
-        }
-      }
-    }
-
-    return statuses;
-  }
-
-  async stitch(options: {
-    entityRefs?: Iterable<string>;
-    entityIds?: Iterable<string>;
-  }) {
-    const { entityRefs, entityIds } = options;
-
-    if (this.strategy.mode === 'deferred') {
-      await markForStitching({
-        knex: this.knex,
-        strategy: this.strategy,
-        entityRefs,
-        entityIds,
-      });
-      return;
-    }
-
-    if (entityRefs) {
-      const refs = Array.isArray(entityRefs) ? entityRefs : [...entityRefs];
-      // Direct stitch calls (e.g. from REST API) read fresh status from the
-      // store to avoid serving stale data from a previous prefetch cycle.
-      for (const entityRef of refs) {
-        await this.#stitchOne({ entityRef, prefetchedStatuses: new Map() });
-      }
-    }
-
-    if (entityIds) {
-      const chunks = splitToChunks(
-        Array.isArray(entityIds) ? entityIds : [...entityIds],
-        100,
-      );
-      for (const chunk of chunks) {
-        const rows = await this.knex<DbRefreshStateRow>('refresh_state')
-          .select('entity_ref')
-          .whereIn('entity_id', chunk);
-
-        const prefetchedStatuses = await this.preFetchStatus(
-          rows.map(r => r.entity_ref),
-        );
-
-        for (const row of rows) {
-          await this.#stitchOne({
-            entityRef: row.entity_ref,
-            prefetchedStatuses,
-          });
-        }
-      }
-    }
-  }
-
   async start() {
-    if (this.strategy.mode === 'deferred') {
-      if (this.stopFunc) {
-        throw new Error('Processing engine is already started');
-      }
-
-      const { pollingInterval, stitchTimeout } = this.strategy;
-
-      const stopPipeline = startTaskPipeline<
-        DeferredStitchItem & {
-          prefetchedStatuses: Map<string, Record<string, JsonObject>>;
-        }
-      >({
-        lowWatermark: 2,
-        highWatermark: 5,
-        pollingIntervalMs: durationToMilliseconds(pollingInterval),
-        loadTasks: async count => {
-          const items = await this.#getStitchableEntities(count, stitchTimeout);
-          const prefetchedStatuses = await this.preFetchStatus(
-            items.map(i => i.entityRef),
-          );
-
-          if (++this.#cleanupCounter % 10 === 0) {
-            try {
-              const cleaned = await this.statusStore.cleanOrphanedStatuses();
-              if (cleaned > 0) {
-                this.logger.debug(`Cleaned up ${cleaned} orphaned status rows`);
-              }
-            } catch (error) {
-              this.logger.warn(
-                'Failed to clean up orphaned status rows',
-                error,
-              );
-            }
-          }
-
-          return items.map(item => ({ ...item, prefetchedStatuses }));
-        },
-        processTask: async item => {
-          return await this.#stitchOne({
-            entityRef: item.entityRef,
-            stitchTicket: item.stitchTicket,
-            stitchRequestedAt: item.stitchRequestedAt,
-            prefetchedStatuses: item.prefetchedStatuses,
-          });
-        },
-      });
-
-      this.stopFunc = () => {
-        stopPipeline();
-      };
+    if (this.stopFunc) {
+      throw new Error('Stitcher is already started');
     }
+
+    const { pollingInterval, stitchTimeout } = this.strategy;
+
+    const stopPipeline = startTaskPipeline<DeferredStitchItem>({
+      lowWatermark: 2,
+      highWatermark: 5,
+      pollingIntervalMs: durationToMilliseconds(pollingInterval),
+      loadTasks: async count => {
+        return await this.#getStitchableEntities(count, stitchTimeout);
+      },
+      processTask: async item => {
+        return await this.#stitchOne({
+          entityRef: item.entityRef,
+          stitchTicket: item.stitchTicket,
+          stitchRequestedAt: item.stitchRequestedAt,
+        });
+      },
+    });
+
+    this.stopFunc = () => {
+      stopPipeline();
+    };
   }
 
   async stop() {
-    if (this.strategy.mode === 'deferred') {
-      if (this.stopFunc) {
-        this.stopFunc();
-        this.stopFunc = undefined;
-      }
+    if (this.stopFunc) {
+      this.stopFunc();
+      this.stopFunc = undefined;
     }
   }
 
@@ -255,9 +128,8 @@ export class DefaultStitcher implements Stitcher {
 
   async #stitchOne(options: {
     entityRef: string;
-    stitchTicket?: string;
+    stitchTicket: string;
     stitchRequestedAt?: DateTime;
-    prefetchedStatuses?: Map<string, Record<string, JsonObject>>;
   }) {
     const track = this.tracker.stitchStart({
       entityRef: options.entityRef,
@@ -268,12 +140,8 @@ export class DefaultStitcher implements Stitcher {
       const result = await performStitching({
         knex: this.knex,
         logger: this.logger,
-        strategy: this.strategy,
         entityRef: options.entityRef,
         stitchTicket: options.stitchTicket,
-        stitchingStatusMergers: this.stitchingStatusMergers,
-        statusStore: this.statusStore,
-        prefetchedStatuses: options.prefetchedStatuses ?? new Map(),
       });
       track.markComplete(result);
     } catch (error) {

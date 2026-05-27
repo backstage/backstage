@@ -23,6 +23,10 @@ import {
   opsFromCatalogModelKind,
 } from './modelActions/addKind';
 import {
+  type CatalogModelAddKindVersionDefinition,
+  opsFromCatalogModelAddKindVersion,
+} from './modelActions/addKindVersion';
+import {
   type CatalogModelLabelDefinition,
   opsFromCatalogModelLabel,
 } from './modelActions/addLabel';
@@ -87,6 +91,10 @@ export interface CatalogModelLayerBuilder {
    * Adds a new kind to the model.
    */
   addKind(kind: CatalogModelKindDefinition): void;
+  /**
+   * Adds one or more versions to an already-declared kind.
+   */
+  addKindVersion(definition: CatalogModelAddKindVersionDefinition): void;
   /**
    * Updates an existing kind in the model.
    */
@@ -166,6 +174,11 @@ export class DefaultCatalogModelLayerBuilder
 
   addKind(kind: CatalogModelKindDefinition): void {
     const ops = opsFromCatalogModelKind(kind);
+    this.#ops.push(...ops);
+  }
+
+  addKindVersion(definition: CatalogModelAddKindVersionDefinition): void {
+    const ops = opsFromCatalogModelAddKindVersion(definition);
     this.#ops.push(...ops);
   }
 

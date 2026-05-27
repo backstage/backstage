@@ -133,6 +133,17 @@ export interface Config {
        * @visibility backend
        */
       maxTokensPerUser?: number;
+      /**
+       * Disables the check that verifies the user's catalog entity still
+       * exists when refreshing a token. This is an escape hatch for
+       * Backstage instances that allow sign-in without a corresponding
+       * catalog user entity. Without the check, refresh tokens for
+       * removed or offboarded users remain valid until they naturally
+       * expire.
+       * @default false
+       * @visibility backend
+       */
+      dangerouslyDisableCatalogPresenceCheck?: boolean;
     };
 
     /**
@@ -152,7 +163,8 @@ export interface Config {
 
       /**
        * A list of allowed URI patterns to use for redirect URIs during
-       * dynamic client registration. Defaults to '[*]' which allows any redirect URI.
+       * dynamic client registration.
+       * Defaults to Cursor and loopback addresses (localhost, 127.0.0.1, [::1]).
        */
       allowedRedirectUriPatterns?: string[];
     };
@@ -172,7 +184,8 @@ export interface Config {
       /**
        * A list of allowed URI patterns for client_id URLs.
        * Uses glob-style pattern matching where `*` matches any characters.
-       * Defaults to ['*'] which allows any client_id URL.
+       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', '{baseUrl}/.well-known/oauth-client/cli.json']`
+       * where `{baseUrl}` is the auth backend's base URL.
        *
        * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
        */
@@ -181,7 +194,7 @@ export interface Config {
       /**
        * A list of allowed URI patterns for redirect URIs.
        * Uses glob-style pattern matching where `*` matches any characters.
-       * Defaults to ['*'] which allows any redirect URI.
+       * Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
        *
        * @example ['http://localhost:*', 'http://127.0.0.1:*\/callback']
        */

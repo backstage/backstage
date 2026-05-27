@@ -386,6 +386,120 @@ describe('KubernetesBackendClient', () => {
     );
   });
 
+  describe('getClusters caching', () => {
+    let fetchCount: number;
+
+    beforeEach(() => {
+      fetchCount = 0;
+      identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
+      worker.use(
+        http.get('http://localhost:1234/api/kubernetes/clusters', () => {
+          fetchCount++;
+          return HttpResponse.json({
+            items: [{ name: 'cluster-a', authProvider: 'aws' }],
+          });
+        }),
+      );
+    });
+
+    it('does not cache by default', async () => {
+      await backendClient.getClusters();
+      await backendClient.getClusters();
+
+      expect(fetchCount).toBe(2);
+    });
+
+    it('returns cached results within TTL when caching is enabled', async () => {
+      const cachingClient = new KubernetesBackendClient({
+        discoveryApi: UrlPatternDiscovery.compile(
+          'http://localhost:1234/api/{{ pluginId }}',
+        ),
+        fetchApi,
+        kubernetesAuthProvidersApi,
+        clustersCacheTtlMs: 60_000,
+      });
+
+      const first = await cachingClient.getClusters();
+      const second = await cachingClient.getClusters();
+
+      expect(first).toEqual(second);
+      expect(fetchCount).toBe(1);
+    });
+
+    it('coalesces concurrent requests into a single fetch', async () => {
+      const cachingClient = new KubernetesBackendClient({
+        discoveryApi: UrlPatternDiscovery.compile(
+          'http://localhost:1234/api/{{ pluginId }}',
+        ),
+        fetchApi,
+        kubernetesAuthProvidersApi,
+        clustersCacheTtlMs: 60_000,
+      });
+
+      const [first, second, third] = await Promise.all([
+        cachingClient.getClusters(),
+        cachingClient.getClusters(),
+        cachingClient.getClusters(),
+      ]);
+
+      expect(first).toEqual(second);
+      expect(second).toEqual(third);
+      expect(fetchCount).toBe(1);
+    });
+
+    it('rejects negative TTL values', () => {
+      expect(
+        () =>
+          new KubernetesBackendClient({
+            discoveryApi: UrlPatternDiscovery.compile(
+              'http://localhost:1234/api/{{ pluginId }}',
+            ),
+            fetchApi,
+            kubernetesAuthProvidersApi,
+            clustersCacheTtlMs: -1,
+          }),
+      ).toThrow('clustersCacheTtlMs must be a finite number >= 0');
+    });
+
+    it('rejects NaN TTL values', () => {
+      expect(
+        () =>
+          new KubernetesBackendClient({
+            discoveryApi: UrlPatternDiscovery.compile(
+              'http://localhost:1234/api/{{ pluginId }}',
+            ),
+            fetchApi,
+            kubernetesAuthProvidersApi,
+            clustersCacheTtlMs: NaN,
+          }),
+      ).toThrow('clustersCacheTtlMs must be a finite number >= 0');
+    });
+
+    it('fetches again after TTL expires', async () => {
+      jest.useFakeTimers();
+      try {
+        const cachingClient = new KubernetesBackendClient({
+          discoveryApi: UrlPatternDiscovery.compile(
+            'http://localhost:1234/api/{{ pluginId }}',
+          ),
+          fetchApi,
+          kubernetesAuthProvidersApi,
+          clustersCacheTtlMs: 1000,
+        });
+
+        await cachingClient.getClusters();
+        expect(fetchCount).toBe(1);
+
+        jest.advanceTimersByTime(1001);
+
+        await cachingClient.getClusters();
+        expect(fetchCount).toBe(2);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+  });
+
   describe('proxy', () => {
     beforeEach(() => {
       worker.use(

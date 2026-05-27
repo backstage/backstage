@@ -38,7 +38,7 @@ jobs:
 
       # These two steps add labels based on user input in the issue form
       - name: Parse issue form
-        uses: stefanbuck/github-issue-parser@10dcc54158ba4c137713d9d69d70a2da63b6bda3 # v3
+        uses: stefanbuck/github-issue-parser@cb6e97157cbf851e3a393ff8d57c93a484cc323f # v3
         id: issue-parser
         with:
           template-path: .github/ISSUE_TEMPLATE/.common.yaml

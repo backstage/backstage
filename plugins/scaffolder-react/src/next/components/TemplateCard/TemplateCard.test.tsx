@@ -405,7 +405,7 @@ describe('TemplateCard', () => {
 
     fireEvent.click(getByRole('button', { name: 'Choose' }));
 
-    expect(mockOnSelected).toHaveBeenCalledWith(mockTemplate);
+    expect(mockOnSelected).toHaveBeenCalledWith();
   });
   it('should not render the choose button when user has insufficient permissions', async () => {
     const mockTemplate: TemplateEntityV1beta3 = {

@@ -73,34 +73,20 @@ You don't need to provide any extra configuration, but you have to be sure that 
 
 ## Form Decorators
 
-Form decorators provide the ability to run arbitrary code before the form is submitted along with secrets to the `scaffolder-backend` plugin. They are provided to the `app` using a Utility API.
+Form decorators provide the ability to run arbitrary code before the form is submitted along with secrets to the `scaffolder-backend` plugin.
 
-#### Installation
+#### Configuring templates
 
-To install the Form Decorators, add the following to your `packages/app/src/apis.ts`:
-
-```ts
-  createApiFactory({
-    api: formDecoratorsApiRef,
-    deps: {},
-    factory: () =>
-      DefaultScaffolderFormDecoratorsApi.create({
-        decorators: [
-          // add decorators here
-        ],
-      }),
-  }),
-```
-
-And then you'll also need to define which decorators run in each template using the `EXPERIMENTAL_formDecorators` key in the template's `spec`:
+Define which decorators run in each template using the `formDecorators` key in the template's `spec`:
 
 ```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: my-template
 spec:
-  EXPERIMENTAL_formDecorators:
-    - id: myDecorator
+  formDecorators:
+    - id: mockDecorator
       input:
         test: something funky
 
@@ -108,36 +94,67 @@ spec:
   steps: ...
 ```
 
-#### Creating a Decorator
+:::note
+The legacy `EXPERIMENTAL_formDecorators` field is still supported but deprecated. Migrate to `formDecorators` when possible.
+:::
 
-You can create a decorator using the simple helper method `createScaffolderFormDecorator`:
+#### Creating a decorator
+
+Create a decorator with `createScaffolderFormDecorator` and register it as an extension using `FormDecoratorBlueprint`:
 
 ```ts
-export const mockDecorator = createScaffolderFormDecorator({
-  // give the decorator a name
-  id: 'mockDecorator',
+import { createScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
 
-  // define the schema for the input that can be provided in `template.yaml`
+const mockDecorator = createScaffolderFormDecorator({
+  id: 'mockDecorator',
   schema: {
     input: {
       test: z => z.string(),
     },
   },
   deps: {
-    // define dependencies here
     githubApi: githubAuthApiRef,
   },
   decorator: async (
-    // Context has all the things needed to write simple decorators
     { setSecrets, setFormState, input: { test } },
-    // Depepdencies injected here
     { githubApi },
   ) => {
-    // mutate the form state
-    setFormState(state => ({ ...state, test, mock: 'MOCK' }));
-
-    // mutate the form secrets
-    setSecrets(state => ({ ...state, GITHUB_TOKEN: 'MOCK_TOKEN' }));
+    const token = await githubApi.getAccessToken(['repo']);
+    setFormState(state => ({ ...state, test }));
+    setSecrets(state => ({ ...state, GITHUB_TOKEN: token }));
   },
 });
+```
+
+#### Installation (new frontend system)
+
+Register your decorator as an extension using `FormDecoratorBlueprint`:
+
+```ts
+import { FormDecoratorBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+
+export const myDecoratorExtension = FormDecoratorBlueprint.make({
+  name: 'my-decorator',
+  params: {
+    decorator: mockDecorator,
+  },
+});
+```
+
+Then install the extension in your app or plugin.
+
+#### Installation (legacy frontend system)
+
+For apps using the legacy frontend system, provide decorators through a Utility API in `packages/app/src/apis.ts`:
+
+```ts
+createApiFactory({
+  api: formDecoratorsApiRef,
+  deps: {},
+  factory: () =>
+    DefaultScaffolderFormDecoratorsApi.create({
+      decorators: [mockDecorator],
+    }),
+}),
 ```

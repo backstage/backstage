@@ -177,6 +177,16 @@ const analytics = useAnalytics();
 analytics.captureEvent('deploy', serviceName);
 ```
 
+The events you capture should reflect user intent and domain actions your
+plugin is uniquely responsible for, rather than generic clicks or UI
+lifecycle events. Many `@backstage/ui` components (such as `Link`,
+`ButtonLink`, `Tab`, `MenuItem`, `Tag`, and `Table` rows) often capture
+`click` events automatically, so you rarely need to instrument
+navigation-style clicks by hand. If one of those components is the right UI
+primitive but the default event is not what you want to capture, pass the
+`noTrack` prop to suppress it and call `captureEvent` from your own click
+handler instead.
+
 ### Providing Extra Attributes
 
 Additional dimensional `attributes` as well as a numeric `value` can be provided

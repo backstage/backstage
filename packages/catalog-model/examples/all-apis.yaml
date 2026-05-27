@@ -5,6 +5,7 @@ metadata:
   description: A collection of all Backstage example APIs
 spec:
   targets:
+    - ./apis/backstage-mcp-server-api.yaml
     - ./apis/hello-world-api.yaml
     - ./apis/hello-world-trpc-api.yaml
     - ./apis/petstore-api.yaml

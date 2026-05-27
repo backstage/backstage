@@ -39,7 +39,7 @@
 | `created_at`             | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
 | `id`                     | `uuid`                     | false    | -          | -                   |
 | `ingestion_completed_at` | `timestamp with time zone` | true     | -          | -                   |
-| `last_error`             | `character varying`        | true     | 255        | -                   |
+| `last_error`             | `text`                     | true     | -          | -                   |
 | `next_action`            | `character varying`        | false    | 255        | -                   |
 | `next_action_at`         | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
 | `provider_name`          | `character varying`        | false    | 255        | -                   |

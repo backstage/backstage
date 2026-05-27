@@ -43,7 +43,7 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize, sortBy } from 'lodash';
 import pluralize from 'pluralize';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useRef } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
@@ -110,16 +110,18 @@ export const CatalogTable = (props: CatalogTableProps) => {
     filters,
     pageInfo,
     totalItems,
+    totalItemsLoading,
     paginationMode,
   } = entityListContext;
 
-  // For non-paginated tables, only show the full loading indicator when
-  // there's no data yet (initial load). During filter changes we keep stale
-  // data visible and let the new results swap in seamlessly. For paginated
-  // tables we always show loading, since stale data from a different page
-  // would be misleading.
-  const isLoading =
-    paginationMode === 'none' ? loading && entities.length === 0 : loading;
+  // Track whether we've ever received data. The full-table spinner should
+  // only show on the truly initial load — not when a filter change
+  // empties the client-side entity list before the backend responds.
+  const hasHadData = useRef(false);
+  if (entities.length > 0) {
+    hasHadData.current = true;
+  }
+  const isLoading = loading && !hasHadData.current;
 
   const tableColumns = useMemo(
     () =>
@@ -195,29 +197,46 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  const currentKind = filters.kind?.label || '';
+  // Derive the title's kind label from the displayed entities so the
+  // title stays consistent with the rows during filter transitions.
+  // Use the filter's label when it matches (it has proper casing),
+  // otherwise fall back to the entity's kind field directly.
+  const displayedKind = entities[0]?.kind ?? filters.kind?.value;
+  const displayedKindLabel =
+    displayedKind?.toLocaleLowerCase('en-US') ===
+    filters.kind?.value?.toLocaleLowerCase('en-US')
+      ? filters.kind?.label || ''
+      : displayedKind || '';
   const currentType = filters.type?.value || '';
-  const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
+  // Show the count as long as we have one. Hide it only when new rows
+  // have arrived but the count hasn't caught up yet — at that point
+  // the old count would be wrong for the new data.
+  const countIsStale = !loading && totalItemsLoading;
+  const currentCount =
+    typeof totalItems === 'number' && !countIsStale ? ` (${totalItems})` : '';
+  const somethingIsLoading = loading || totalItemsLoading;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(
     filters.user?.value ?? t('catalogTable.allFilters'),
   );
-  const titleText =
+  const titleBase =
     props.title ||
-    [titlePreamble, currentType, pluralize(currentKind), currentCount]
+    [titlePreamble, currentType, pluralize(displayedKindLabel)]
       .filter(s => s)
       .join(' ');
-  const title =
-    loading && !isLoading ? (
-      <span
-        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5em' }}
-      >
-        {titleText}
+  const title = props.title ? (
+    titleBase
+  ) : (
+    <span
+      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5em' }}
+    >
+      {titleBase}
+      {currentCount}
+      {somethingIsLoading && !isLoading && (
         <CircularProgress size="0.8em" data-testid="loading-indicator" />
-      </span>
-    ) : (
-      titleText
-    );
+      )}
+    </span>
+  );
 
   const actions = props.actions || defaultActions;
   const options: TableProps['options'] = {

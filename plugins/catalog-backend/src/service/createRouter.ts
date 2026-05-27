@@ -238,7 +238,7 @@ export async function createRouter(
                       limit,
                       filter,
                       orderFields: order,
-                      skipTotalItems: true,
+                      totalItems: 'exclude',
                     }
                   : { credentials, fields, limit, cursor },
               );

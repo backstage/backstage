@@ -31,6 +31,13 @@ jobs:
 
       - run: echo NOOP
 
+  typos-noop:
+    runs-on: ubuntu-latest
+
+    name: Spell Check
+    steps:
+      - run: echo NOOP
+
   test-noop:
     runs-on: ubuntu-latest
 

@@ -94,13 +94,14 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
+        cache: coreServices.cache,
         config: coreServices.rootConfig,
         events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },
 
-      async init({ catalog, config, events, logger, scheduler }) {
+      async init({ catalog, cache, config, events, logger, scheduler }) {
         const definitions = readDefinitionsFromConfig(config);
 
         for (const definition of definitions) {
@@ -127,6 +128,9 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
                 definitions.length === 1 && definition.orgs?.length === 1,
               pageSizes: definition.pageSizes,
               excludeSuspendedUsers: definition.excludeSuspendedUsers,
+              cache,
+              experimental_checkForSuspendedUsersWithRest:
+                definition.experimental_checkForSuspendedUsersWithRest,
             }),
           );
         }
@@ -146,6 +150,7 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     organizationMembers?: number;
   };
   excludeSuspendedUsers?: boolean;
+  experimental_checkForSuspendedUsersWithRest?: boolean;
   useVerifiedEmails?: boolean;
 }> {
   const baseKey = 'catalog.providers.githubOrg';
@@ -176,6 +181,9 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
       : undefined,
     excludeSuspendedUsers:
       c.getOptionalBoolean('excludeSuspendedUsers') ?? false,
+    experimental_checkForSuspendedUsersWithRest:
+      c.getOptionalBoolean('experimental_checkForSuspendedUsersWithRest') ??
+      false,
     useVerifiedEmails:
       c.getOptionalBoolean('defaultUserTransformer.useVerifiedEmails') ?? false,
   }));

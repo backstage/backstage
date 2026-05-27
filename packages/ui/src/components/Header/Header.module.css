@@ -17,6 +17,12 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
+  .bui-HeaderTop.bui-HeaderTop,
+  .bui-HeaderContent.bui-HeaderContent {
+    flex: none;
+    margin-bottom: 0;
+  }
+
   .bui-HeaderBottom {
     display: flex;
     flex-direction: column;
@@ -24,12 +30,9 @@
     margin-bottom: var(--bui-space-5);
   }
 
-  .bui-HeaderTop,
-  .bui-HeaderContent,
-  .bui-HeaderBottom {
-    width: 100%;
-    padding-inline: var(--bui-space-5);
-    box-sizing: border-box;
+  .bui-HeaderBottom.bui-HeaderBottom {
+    flex: none;
+    margin-bottom: var(--bui-space-5);
   }
 
   .bui-HeaderStickySentinel {

@@ -54,7 +54,7 @@ const useStyles = makeStyles(
       width: '100%',
     },
   }),
-  { name: 'ScaffolderCustomFieldExtensionsPlaygroud' },
+  { name: 'ScaffolderCustomFieldExtensionsPlayground' },
 );
 
 export const CustomFieldPlayground = ({

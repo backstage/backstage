@@ -15,3 +15,5 @@
  */
 
 export { Form } from './Form';
+export { useScaffolderTheme } from './ScaffolderThemeContext';
+export type { ScaffolderTheme } from './ScaffolderThemeContext';

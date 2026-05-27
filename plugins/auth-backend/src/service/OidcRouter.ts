@@ -331,6 +331,7 @@ export class OidcRouter {
 
           return res.json({
             id: session.id,
+            clientId: session.clientId,
             clientName: session.clientName,
             scope: session.scope,
             redirectUri: session.redirectUri,

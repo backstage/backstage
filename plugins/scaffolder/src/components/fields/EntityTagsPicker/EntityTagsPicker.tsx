@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ChangeEvent, useState } from 'react';
+import { type Key, ChangeEvent, useCallback, useMemo, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import useEffectOnce from 'react-use/esm/useEffectOnce';
 import { GetEntityFacetsRequest } from '@backstage/catalog-client';
@@ -25,7 +25,12 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { EntityTagsPickerProps } from './schema';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
-import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  ScaffolderField,
+  useScaffolderTheme,
+} from '@backstage/plugin-scaffolder-react/alpha';
+import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
+import { chipStyle, chipRemoveStyle } from '../buiChipStyles';
 
 export { EntityTagsPickerSchema } from './schema';
 
@@ -36,6 +41,7 @@ export { EntityTagsPickerSchema } from './schema';
  * @public
  */
 export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
+  const theme = useScaffolderTheme();
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
     formData,
@@ -103,8 +109,116 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
     }
   };
 
+  // BUI: computed tag options
+  const buiTagOptions = useMemo(() => {
+    if (!existingTags) return [];
+    return Object.keys(existingTags).sort((a, b) =>
+      showCounts ? existingTags[b] - existingTags[a] : a.localeCompare(b),
+    );
+  }, [existingTags, showCounts]);
+
+  const selectedTags = useMemo(() => formData || [], [formData]);
+  const availableOptions = useMemo(
+    () =>
+      buiTagOptions
+        .filter(tag => !selectedTags.includes(tag))
+        .map(tag => ({
+          value: tag,
+          label:
+            showCounts && existingTags ? `${tag} (${existingTags[tag]})` : tag,
+        })),
+    [buiTagOptions, selectedTags, showCounts, existingTags],
+  );
+
+  const handleSelectionChange = useCallback(
+    (key: Key | null) => {
+      if (key !== null) {
+        const tag = String(key);
+        if (!selectedTags.includes(tag)) {
+          onChange([...selectedTags, tag]);
+        }
+        setInputValue('');
+        setInputError(false);
+      } else if (inputValue) {
+        const newTag = inputValue.toLocaleLowerCase('en-US').trim();
+        const isValid = tagValidator(newTag);
+        const isDuplicate = selectedTags.includes(newTag);
+        setInputError(!isValid);
+
+        if (isValid && !isDuplicate) {
+          onChange([...selectedTags, newTag]);
+          setInputValue('');
+        }
+      }
+    },
+    [selectedTags, onChange, inputValue, tagValidator],
+  );
+
+  const handleRemove = useCallback(
+    (tag: string) => {
+      onChange(selectedTags.filter(item => item !== tag));
+    },
+    [selectedTags, onChange],
+  );
+
   // Initialize field to always return an array
   useEffectOnce(() => onChange(formData || []));
+
+  if (theme === 'bui') {
+    return (
+      <ScaffolderField
+        rawErrors={rawErrors}
+        rawDescription={
+          (helperText as string) ?? uiSchema['ui:description'] ?? description
+        }
+        required={required}
+        disabled={isDisabled}
+        errors={errors}
+      >
+        <div>
+          {selectedTags.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 'var(--bui-space-1)',
+                marginBottom: 'var(--bui-space-2)',
+              }}
+            >
+              {selectedTags.map(tag => (
+                <span key={tag} style={chipStyle}>
+                  {tag}
+                  {!isDisabled && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemove(tag)}
+                      style={chipRemoveStyle}
+                      aria-label={`Remove ${tag}`}
+                    >
+                      &times;
+                    </button>
+                  )}
+                </span>
+              ))}
+            </div>
+          )}
+          <BuiAutocomplete
+            label={title}
+            isRequired={required}
+            isDisabled={isDisabled}
+            selectedKey={null}
+            inputValue={inputValue}
+            onInputChange={setInputValue}
+            onSelectionChange={handleSelectionChange}
+            isLoading={loading}
+            options={availableOptions}
+            allowsCustomValue
+            isInvalid={inputError || (rawErrors && rawErrors.length > 0)}
+          />
+        </div>
+      </ScaffolderField>
+    );
+  }
 
   return (
     <ScaffolderField

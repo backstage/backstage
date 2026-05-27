@@ -60,8 +60,9 @@ export interface Config {
 
           /**
            * The filter to apply to extract users.
+           * Combined with the base `accountEnabled eq true` filter.
            *
-           * E.g. "accountEnabled eq true and userType eq 'member'"
+           * E.g. "userType eq 'member'"
            */
           userFilter?: string;
           /**
@@ -162,8 +163,9 @@ export interface Config {
               expand?: string;
               /**
                * The filter to apply to extract users.
+               * Combined with the base `accountEnabled eq true` filter
                *
-               * E.g. "accountEnabled eq true and userType eq 'member'"
+               * E.g. "userType eq 'member'"
                */
               filter?: string;
               /**
@@ -295,8 +297,9 @@ export interface Config {
                 expand?: string;
                 /**
                  * The filter to apply to extract users.
+                 * Combined with the base `accountEnabled eq true` filter
                  *
-                 * E.g. "accountEnabled eq true and userType eq 'member'"
+                 * E.g. "userType eq 'member'"
                  */
                 filter?: string;
                 /**

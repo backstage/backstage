@@ -83,9 +83,7 @@ export const apiEntityModel = createCatalogModelLayer({
               defaultNamespace: 'inherit',
             },
           ],
-          schema: {
-            jsonSchema,
-          },
+          schema: { jsonSchema },
         },
       ],
     });

@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: example-ai-resources
+  description: A collection of all Backstage example AI resources
+spec:
+  targets:
+    - ./ai-resources/frontend-design-skill.yaml
+    - ./ai-resources/use-internal-apis-rule.yaml

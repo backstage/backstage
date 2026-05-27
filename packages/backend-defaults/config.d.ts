@@ -1187,6 +1187,52 @@ export interface Config {
     };
 
     /**
+     * Tracing-related backend configuration. Honored by Backstage backend
+     * plugins that emit OpenTelemetry trace spans.
+     */
+    tracing?: {
+      /**
+       * Opt-in capture of attributes that may identify users or contain
+       * sensitive data on backend trace spans.
+       */
+      capture?: {
+        /**
+         * When true, backend plugins emitting trace spans for authenticated
+         * requests SHOULD include the authenticated principal's identity as
+         * `enduser.id` (the user entity ref for a user principal, or the
+         * service subject for a service principal). Defaults to false.
+         */
+        endUser?: boolean;
+      };
+      /**
+       * Plugin-specific tracing configuration. Each plugin can override
+       * tracer instrumentation scope metadata.
+       */
+      plugin?: {
+        [pluginId: string]: {
+          /**
+           * Tracer configuration for this plugin.
+           */
+          tracer?: {
+            /**
+             * Custom tracer name. If not set, defaults to
+             * backstage-plugin-{pluginId}.
+             */
+            name?: string;
+            /**
+             * Version for the tracer.
+             */
+            version?: string;
+            /**
+             * Schema URL for the tracer.
+             */
+            schemaUrl?: string;
+          };
+        };
+      };
+    };
+
+    /**
      * Options to configure the default RootLoggerService.
      */
     logger?: {

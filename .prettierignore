@@ -3,6 +3,7 @@
 .yarn
 dist
 microsite
+workspaces
 docs-ui/.next
 docs-ui/public
 docs-ui/out

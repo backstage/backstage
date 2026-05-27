@@ -41,11 +41,19 @@ function validateRedirectUri(
   const normalized = `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
 
   if (!allowedPatterns.some(pattern => matcher.isMatch(normalized, pattern))) {
-    throw new InputError('Invalid redirect_uri');
+    throw new InputError(`Invalid redirect_uri '${normalized}'`);
   }
 }
 
 const LOOPBACK_HOSTS = ['localhost', '127.0.0.1', '[::1]'];
+const LOOPBACK_REDIRECT_PATTERNS = [
+  'http://localhost:*',
+  'http://localhost/*',
+  'http://127.0.0.1:*',
+  'http://127.0.0.1/*',
+  'http://[::1]:*',
+  'http://[::1]/*',
+];
 
 /**
  * RFC 8252 Section 7.3: For loopback redirect URIs, the authorization server
@@ -213,7 +221,11 @@ export class OidcService {
 
     const allowedRedirectUriPatterns = this.config.getOptionalStringArray(
       'auth.experimentalDynamicClientRegistration.allowedRedirectUriPatterns',
-    ) ?? ['*'];
+    ) ?? [
+      'cursor://*',
+      'https://www.cursor.com/*',
+      ...LOOPBACK_REDIRECT_PATTERNS,
+    ];
 
     for (const redirectUri of opts.redirectUris ?? []) {
       validateRedirectUri(redirectUri, allowedRedirectUriPatterns);
@@ -297,17 +309,22 @@ export class OidcService {
   }
 
   private getCimdConfig() {
+    const enabled =
+      this.config.getOptionalBoolean(
+        'auth.experimentalClientIdMetadataDocuments.enabled',
+      ) ?? false;
+
+    const cliClientId = `${this.baseUrl}/.well-known/oauth-client/cli.json`;
+
     return {
-      enabled:
-        this.config.getOptionalBoolean(
-          'auth.experimentalClientIdMetadataDocuments.enabled',
-        ) ?? false,
+      enabled,
       allowedClientIdPatterns: this.config.getOptionalStringArray(
         'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
-      ) ?? ['*'],
-      allowedRedirectUriPatterns: this.config.getOptionalStringArray(
-        'auth.experimentalClientIdMetadataDocuments.allowedRedirectUriPatterns',
-      ) ?? ['*'],
+      ) ?? ['https://claude.ai/*', 'https://vscode.dev/*', cliClientId],
+      allowedRedirectUriPatterns:
+        this.config.getOptionalStringArray(
+          'auth.experimentalClientIdMetadataDocuments.allowedRedirectUriPatterns',
+        ) ?? LOOPBACK_REDIRECT_PATTERNS,
     };
   }
 
@@ -344,7 +361,7 @@ export class OidcService {
         matcher.isMatch(opts.clientId, pattern),
       )
     ) {
-      throw new InputError('Invalid client_id');
+      throw new InputError(`Invalid client_id '${opts.clientId}'`);
     }
 
     const cimdClient = await fetchCimdMetadata({
@@ -356,7 +373,9 @@ export class OidcService {
       validateRedirectUri(opts.redirectUri, cimd.allowedRedirectUriPatterns);
 
       if (!matchesRedirectUri(opts.redirectUri, cimdClient.redirectUris)) {
-        throw new InputError('Redirect URI not registered');
+        throw new InputError(
+          `Invalid redirect_uri '${opts.redirectUri}', not registered in client metadata`,
+        );
       }
     }
 
@@ -377,7 +396,7 @@ export class OidcService {
     }
 
     if (opts.redirectUri && !client.redirectUris.includes(opts.redirectUri)) {
-      throw new InputError('Invalid redirect_uri');
+      throw new InputError(`Invalid redirect_uri '${opts.redirectUri}'`);
     }
 
     return {

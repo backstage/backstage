@@ -478,6 +478,7 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   };
   config?: JsonObject;
   features?: FrontendFeature[];
+  mountPath?: string;
   initialRouteEntries?: string[];
   apis?: readonly [...TestApiPairs<TApiPairs>];
 };

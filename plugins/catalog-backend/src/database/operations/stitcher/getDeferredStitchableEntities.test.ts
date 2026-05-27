@@ -21,12 +21,12 @@ import { getDeferredStitchableEntities } from './getDeferredStitchableEntities';
 
 jest.setTimeout(60_000);
 
-describe('getDeferredStitchableEntities', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  it.each(databases.eachSupportedId())(
-    'selects the right rows %p',
-    async databaseId => {
+describe.each(databases.eachSupportedId())(
+  'getDeferredStitchableEntities, %p',
+  databaseId => {
+    it('selects the right rows', async () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -83,6 +83,6 @@ describe('getDeferredStitchableEntities', () => {
 
       expect(+new Date(hitRowAfter!)).toBeGreaterThan(+new Date(hitRowBefore!));
       expect(+new Date(missRowAfter!)).toEqual(+new Date(missRowBefore!));
-    },
-  );
-});
+    });
+  },
+);

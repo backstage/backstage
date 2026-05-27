@@ -18,6 +18,10 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import {
+  CachedUserInfoService,
+  UserInfoCacheEntry,
+} from './CachedUserInfoService';
 import { DefaultUserInfoService } from './DefaultUserInfoService';
 
 /**
@@ -34,7 +38,13 @@ export const userInfoServiceFactory = createServiceFactory({
   deps: {
     discovery: coreServices.discovery,
   },
-  async factory({ discovery }) {
-    return new DefaultUserInfoService({ discovery });
+  createRootContext() {
+    return new Map<string, UserInfoCacheEntry>();
+  },
+  async factory({ discovery }, entries) {
+    return new CachedUserInfoService(
+      new DefaultUserInfoService({ discovery }),
+      { entries },
+    );
   },
 });

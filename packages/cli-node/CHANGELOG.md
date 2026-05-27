@@ -1,5 +1,14 @@
 # @backstage/cli-node
 
+## 0.3.2
+
+### Patch Changes
+
+- 357d639: Fixed a bug in `PackageGraph.listChangedPackages` where removed dependencies were not detected during lockfile analysis. The dependency graph from the previous lockfile was not being merged, causing transitive dependency removals to be missed.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/cli-common@0.2.2
+
 ## 0.3.2-next.1
 
 ### Patch Changes

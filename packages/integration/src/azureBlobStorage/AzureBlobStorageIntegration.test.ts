@@ -15,11 +15,11 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { AzureBlobStorageIntergation } from './AzureBlobStorageIntegration';
+import { AzureBlobStorageIntegration } from './AzureBlobStorageIntegration';
 
 describe('AzureBlobStorageIntegration', () => {
   it('has a working factory', () => {
-    const integrations = AzureBlobStorageIntergation.factory({
+    const integrations = AzureBlobStorageIntegration.factory({
       config: new ConfigReader({
         integrations: {
           azureBlobStorage: [
@@ -40,7 +40,7 @@ describe('AzureBlobStorageIntegration', () => {
   });
 
   it('returns the basics', () => {
-    const integration = new AzureBlobStorageIntergation({
+    const integration = new AzureBlobStorageIntegration({
       host: 'myaccount.blob.core.windows.net',
     } as any);
     expect(integration.type).toBe('azureBlobStorage');
@@ -49,7 +49,7 @@ describe('AzureBlobStorageIntegration', () => {
 
   describe('resolveUrl', () => {
     it('works for valid URLs', () => {
-      const integration = new AzureBlobStorageIntergation({
+      const integration = new AzureBlobStorageIntegration({
         host: 'blob.core.windows.net',
       } as any);
 
@@ -63,7 +63,7 @@ describe('AzureBlobStorageIntegration', () => {
   });
 
   it('resolve edit URL', () => {
-    const integration = new AzureBlobStorageIntergation({
+    const integration = new AzureBlobStorageIntegration({
       host: 'myaccount.blob.core.windows.net',
     } as any);
 

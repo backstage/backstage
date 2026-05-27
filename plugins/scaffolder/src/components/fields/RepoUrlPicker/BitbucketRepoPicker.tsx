@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Select, SelectItem } from '@backstage/core-components';
+import { Select as MuiSelect, SelectItem } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import MuiTextField from '@material-ui/core/TextField';
+import MuiAutocomplete from '@material-ui/lab/Autocomplete';
 import { useCallback, useEffect, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { scaffolderTranslationRef } from '../../../translation';
 import { BaseRepoUrlPickerProps } from './types';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { Select as BuiSelect } from '@backstage/ui';
+import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
+import overrides from '../scaffolderFieldOverrides.module.css';
+import type { Key } from 'react-aria-components';
 
 /**
  * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
@@ -42,6 +47,7 @@ export const BitbucketRepoPicker = (
     accessToken?: string;
   }>,
 ) => {
+  const theme = useScaffolderTheme();
   const {
     allowedOwners = [],
     allowedProjects = [],
@@ -54,12 +60,6 @@ export const BitbucketRepoPicker = (
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const { host, workspace, project } = state;
-  const ownerItems: SelectItem[] = allowedOwners
-    ? allowedOwners?.map(i => ({ label: i, value: i }))
-    : [];
-  const projectItems: SelectItem[] = allowedProjects
-    ? allowedProjects?.map(i => ({ label: i, value: i }))
-    : [];
 
   useEffect(() => {
     if (host === 'bitbucket.org' && allowedOwners.length) {
@@ -151,9 +151,7 @@ export const BitbucketRepoPicker = (
       })
       .then(({ results }) => {
         onChange({
-          availableRepos: results.map(r => {
-            return { name: r.id };
-          }),
+          availableRepos: results.map(r => ({ name: r.id })),
         });
       })
       .catch(() => {
@@ -162,6 +160,114 @@ export const BitbucketRepoPicker = (
   }, [scaffolderApi, accessToken, host, workspace, project, onChange]);
 
   useDebounce(updateAvailableRepositories, 500, [updateAvailableRepositories]);
+
+  if (theme === 'bui') {
+    const renderWorkspacePicker = () => {
+      if (host !== 'bitbucket.org') return null;
+
+      if (allowedOwners?.length) {
+        const ownerItems = allowedOwners.map(i => ({ label: i, value: i }));
+
+        return (
+          <BuiSelect
+            className={overrides.select}
+            label={t('fields.bitbucketRepoPicker.workspaces.title')}
+            description={t('fields.bitbucketRepoPicker.workspaces.description')}
+            isDisabled={isDisabled || allowedOwners.length === 1}
+            isInvalid={rawErrors?.length > 0 && !workspace}
+            selectedKey={workspace ?? null}
+            onSelectionChange={(key: Key | null) => {
+              if (key !== null) onChange({ workspace: String(key) });
+            }}
+            options={ownerItems}
+            isRequired
+          />
+        );
+      }
+
+      const workspaceOptions = availableWorkspaces.map(w => ({
+        label: w,
+        value: w,
+      }));
+
+      return (
+        <BuiAutocomplete
+          label={t('fields.bitbucketRepoPicker.workspaces.inputTitle')}
+          description={t('fields.bitbucketRepoPicker.workspaces.description')}
+          inputValue={workspace ?? ''}
+          onInputChange={value => onChange({ workspace: value })}
+          onSelectionChange={(key: Key | null) => {
+            if (key !== null) {
+              onChange({ workspace: String(key) });
+            }
+          }}
+          options={workspaceOptions}
+          isDisabled={isDisabled}
+          isRequired
+          isInvalid={rawErrors?.length > 0 && !workspace}
+        />
+      );
+    };
+
+    const renderProjectPicker = () => {
+      if (allowedProjects?.length) {
+        const projectItems = allowedProjects.map(i => ({ label: i, value: i }));
+
+        return (
+          <BuiSelect
+            className={overrides.select}
+            label={t('fields.bitbucketRepoPicker.project.title')}
+            description={t('fields.bitbucketRepoPicker.project.description')}
+            isDisabled={isDisabled || allowedProjects.length === 1}
+            isInvalid={rawErrors?.length > 0 && !project}
+            selectedKey={project ?? null}
+            onSelectionChange={(key: Key | null) => {
+              if (key !== null) onChange({ project: String(key) });
+            }}
+            options={projectItems}
+            isRequired
+          />
+        );
+      }
+
+      const projectOptions = availableProjects.map(p => ({
+        label: p,
+        value: p,
+      }));
+
+      return (
+        <BuiAutocomplete
+          label={t('fields.bitbucketRepoPicker.project.inputTitle')}
+          description={t('fields.bitbucketRepoPicker.project.description')}
+          inputValue={project ?? ''}
+          onInputChange={value => onChange({ project: value })}
+          onSelectionChange={(key: Key | null) => {
+            if (key !== null) {
+              onChange({ project: String(key) });
+            }
+          }}
+          options={projectOptions}
+          isDisabled={isDisabled}
+          isRequired
+          isInvalid={rawErrors?.length > 0 && !project}
+        />
+      );
+    };
+
+    return (
+      <>
+        {renderWorkspacePicker()}
+        {renderProjectPicker()}
+      </>
+    );
+  }
+
+  const ownerItems: SelectItem[] = allowedOwners
+    ? allowedOwners?.map(i => ({ label: i, value: i }))
+    : [];
+  const projectItems: SelectItem[] = allowedProjects
+    ? allowedProjects?.map(i => ({ label: i, value: i }))
+    : [];
 
   return (
     <>
@@ -172,7 +278,7 @@ export const BitbucketRepoPicker = (
           error={rawErrors?.length > 0 && !workspace}
         >
           {allowedOwners?.length ? (
-            <Select
+            <MuiSelect
               native
               label={t('fields.bitbucketRepoPicker.workspaces.title')}
               onChange={s =>
@@ -183,14 +289,14 @@ export const BitbucketRepoPicker = (
               items={ownerItems}
             />
           ) : (
-            <Autocomplete
+            <MuiAutocomplete
               value={workspace}
               onChange={(_, newValue) => {
                 onChange({ workspace: newValue || '' });
               }}
               options={availableWorkspaces}
               renderInput={params => (
-                <TextField
+                <MuiTextField
                   {...params}
                   label={t('fields.bitbucketRepoPicker.workspaces.inputTitle')}
                   disabled={isDisabled}
@@ -213,7 +319,7 @@ export const BitbucketRepoPicker = (
         error={rawErrors?.length > 0 && !project}
       >
         {allowedProjects?.length ? (
-          <Select
+          <MuiSelect
             native
             label={t('fields.bitbucketRepoPicker.project.title')}
             onChange={s =>
@@ -224,7 +330,7 @@ export const BitbucketRepoPicker = (
             items={projectItems}
           />
         ) : (
-          <Autocomplete
+          <MuiAutocomplete
             value={project}
             onChange={(_, newValue) => {
               onChange({ project: newValue || '' });
@@ -232,7 +338,7 @@ export const BitbucketRepoPicker = (
             options={availableProjects}
             disabled={isDisabled}
             renderInput={params => (
-              <TextField
+              <MuiTextField
                 {...params}
                 label={t('fields.bitbucketRepoPicker.project.inputTitle')}
                 disabled={isDisabled}

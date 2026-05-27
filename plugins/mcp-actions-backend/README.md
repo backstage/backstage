@@ -135,6 +135,10 @@ When errors are thrown from MCP actions, the backend will handle and surface err
 
 See [Backstage Errors](https://backstage.io/docs/reference/errors/) for a full list of supported errors.
 
+### Response Format
+
+Tool execution results are returned in a format compliant with the MCP specification, including both a plain-text representation in the `content` array and the raw JSON result in the `structuredContent` field. This ensures that AI clients can process the data either as text or as structured data for more precise tool use.
+
 When writing MCP tools, use the appropriate error from `@backstage/errors` when applicable:
 
 ```ts

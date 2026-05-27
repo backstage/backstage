@@ -33,6 +33,7 @@ describe('parseQueryEntitiesParams', () => {
         orderField: ['metadata.name,desc'],
         fullTextFilterTerm: 'query',
         fullTextFilterFields: ['metadata.name', 'metadata.namespace'],
+        totalItems: 'exclude' as const,
       };
       const parsedObj = parseQueryEntitiesParams(
         validRequest,
@@ -46,6 +47,7 @@ describe('parseQueryEntitiesParams', () => {
         term: 'query',
         fields: ['metadata.name', 'metadata.namespace'],
       });
+      expect(parsedObj.totalItems).toBe('exclude');
       expect(parsedObj).not.toHaveProperty('authorizationToken');
       expect(parsedObj).not.toHaveProperty('cursor');
     });
@@ -57,6 +59,7 @@ describe('parseQueryEntitiesParams', () => {
       expect(parsedObj.orderFields).toBeUndefined();
       expect(parsedObj.filter).toBeUndefined();
       expect(parsedObj.fullTextFilter).toEqual({ term: '', fields: undefined });
+      expect(parsedObj.totalItems).toBeUndefined();
       expect(parsedObj).not.toHaveProperty('authorizationToken');
       expect(parsedObj).not.toHaveProperty('cursor');
     });
@@ -65,6 +68,8 @@ describe('parseQueryEntitiesParams', () => {
       { filter: 3 },
       { orderField: ['metadata.uid,diagonal'] },
       { fields: [4] },
+      { totalItems: 'maybe' },
+      { totalItems: 42 },
     ])('should throw if some parameter is not valid %p', (params: any) => {
       expect(() => parseQueryEntitiesParams(params)).toThrow();
     });

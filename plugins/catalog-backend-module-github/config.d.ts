@@ -271,6 +271,14 @@ export interface Config {
             excludeSuspendedUsers?: boolean;
 
             /**
+             * (Optional) When set to true alongside `excludeSuspendedUsers`, use the GitHub REST API
+             * to check for suspended users instead of the GraphQL `suspendedAt` field.
+             * REST responses are cached using conditional HTTP requests to minimize rate limit usage.
+             * Default: `false`.
+             */
+            experimental_checkForSuspendedUsersWithRest?: boolean;
+
+            /**
              * (Optional) Configuration for the default user transformer.
              * These options only apply when using the built-in transformer;
              * they have no effect if a custom transformer is set via the
@@ -344,6 +352,14 @@ export interface Config {
              * Default: `false`.
              */
             excludeSuspendedUsers?: boolean;
+
+            /**
+             * (Optional) When set to true alongside `excludeSuspendedUsers`, use the GitHub REST API
+             * to check for suspended users instead of the GraphQL `suspendedAt` field.
+             * REST responses are cached using conditional HTTP requests to minimize rate limit usage.
+             * Default: `false`.
+             */
+            experimental_checkForSuspendedUsersWithRest?: boolean;
 
             /**
              * (Optional) Configuration for the default user transformer.

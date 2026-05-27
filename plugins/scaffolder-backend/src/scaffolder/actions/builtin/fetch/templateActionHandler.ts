@@ -107,84 +107,92 @@ export async function createTemplateActionHandler<
     ctx.input.values,
   );
 
-  const renderTemplate = await SecureTemplater.loadRenderer({
-    cookiecutterCompat: ctx.input.cookiecutterCompat,
-    templateFilters,
-    templateGlobals,
-    nunjucksConfigs: {
-      trimBlocks: ctx.input.trimBlocks,
-      lstripBlocks: ctx.input.lstripBlocks,
-    },
-  });
+  const { render: renderTemplate, dispose } =
+    await SecureTemplater.loadRenderer({
+      cookiecutterCompat: ctx.input.cookiecutterCompat,
+      templateFilters,
+      templateGlobals,
+      nunjucksConfigs: {
+        trimBlocks: ctx.input.trimBlocks,
+        lstripBlocks: ctx.input.lstripBlocks,
+      },
+    });
+  try {
+    for (const location of allEntriesInTemplate) {
+      let renderContents: boolean;
 
-  for (const location of allEntriesInTemplate) {
-    let renderContents: boolean;
-
-    let localOutputPath = location;
-    if (extension) {
-      renderContents = extname(localOutputPath) === extension;
-      if (renderContents) {
-        localOutputPath = localOutputPath.slice(0, -extension.length);
-      }
-      // extension is mutual exclusive with copyWithoutRender/copyWithoutTemplating,
-      // therefore the output path is always rendered.
-      localOutputPath = renderTemplate(localOutputPath, context);
-    } else {
-      renderContents = !nonTemplatedEntries.has(location);
-      // The logic here is a bit tangled because it depends on two variables.
-      // If renderFilename is true, which means copyWithoutTemplating is used,
-      // then the path is always rendered.
-      // If renderFilename is false, which means copyWithoutRender is used,
-      // then matched file/directory won't be processed, same as before.
-      if (renderFilename) {
+      let localOutputPath = location;
+      if (extension) {
+        renderContents = extname(localOutputPath) === extension;
+        if (renderContents) {
+          localOutputPath = localOutputPath.slice(0, -extension.length);
+        }
+        // extension is mutual exclusive with copyWithoutRender/copyWithoutTemplating,
+        // therefore the output path is always rendered.
         localOutputPath = renderTemplate(localOutputPath, context);
       } else {
-        localOutputPath = renderContents
-          ? renderTemplate(localOutputPath, context)
-          : localOutputPath;
+        renderContents = !nonTemplatedEntries.has(location);
+        // The logic here is a bit tangled because it depends on two variables.
+        // If renderFilename is true, which means copyWithoutTemplating is used,
+        // then the path is always rendered.
+        // If renderFilename is false, which means copyWithoutRender is used,
+        // then matched file/directory won't be processed, same as before.
+        if (renderFilename) {
+          localOutputPath = renderTemplate(localOutputPath, context);
+        } else {
+          localOutputPath = renderContents
+            ? renderTemplate(localOutputPath, context)
+            : localOutputPath;
+        }
       }
-    }
 
-    if (containsSkippedContent(localOutputPath)) {
-      continue;
-    }
+      if (containsSkippedContent(localOutputPath)) {
+        continue;
+      }
 
-    const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
-    if (fs.existsSync(outputPath) && !ctx.input.replace) {
-      continue;
-    }
+      const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
+      if (fs.existsSync(outputPath) && !ctx.input.replace) {
+        continue;
+      }
 
-    if (!renderContents && !extension) {
-      ctx.logger.info(`Copying file/directory ${location} without processing.`);
-    }
-
-    if (location.endsWith('/')) {
-      ctx.logger.info(`Writing directory ${location} to template output path.`);
-      await fs.ensureDir(outputPath);
-    } else {
-      const inputFilePath = resolveSafeChildPath(templateDir, location);
-      const stats = await fs.promises.lstat(inputFilePath);
-
-      if (stats.isSymbolicLink() || (await isBinaryFile(inputFilePath))) {
+      if (!renderContents && !extension) {
         ctx.logger.info(
-          `Copying file binary or symbolic link at ${location}, to template output path.`,
+          `Copying file/directory ${location} without processing.`,
         );
-        await fs.copy(inputFilePath, outputPath);
+      }
+
+      if (location.endsWith('/')) {
+        ctx.logger.info(
+          `Writing directory ${location} to template output path.`,
+        );
+        await fs.ensureDir(outputPath);
       } else {
-        const statsObj = await fs.stat(inputFilePath);
-        ctx.logger.info(
-          `Writing file ${location} to template output path with mode ${statsObj.mode}.`,
-        );
-        const inputFileContents = await fs.readFile(inputFilePath, 'utf-8');
-        await fs.outputFile(
-          outputPath,
-          renderContents
-            ? renderTemplate(inputFileContents, context)
-            : inputFileContents,
-          { mode: statsObj.mode },
-        );
+        const inputFilePath = resolveSafeChildPath(templateDir, location);
+        const stats = await fs.promises.lstat(inputFilePath);
+
+        if (stats.isSymbolicLink() || (await isBinaryFile(inputFilePath))) {
+          ctx.logger.info(
+            `Copying file binary or symbolic link at ${location}, to template output path.`,
+          );
+          await fs.copy(inputFilePath, outputPath);
+        } else {
+          const statsObj = await fs.stat(inputFilePath);
+          ctx.logger.info(
+            `Writing file ${location} to template output path with mode ${statsObj.mode}.`,
+          );
+          const inputFileContents = await fs.readFile(inputFilePath, 'utf-8');
+          await fs.outputFile(
+            outputPath,
+            renderContents
+              ? renderTemplate(inputFileContents, context)
+              : inputFileContents,
+            { mode: statsObj.mode },
+          );
+        }
       }
     }
+  } finally {
+    dispose();
   }
   ctx.logger.info(`Template result written to ${outputDir}`);
 }

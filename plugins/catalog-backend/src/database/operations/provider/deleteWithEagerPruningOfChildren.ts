@@ -16,11 +16,8 @@
 
 import { Knex } from 'knex';
 import lodash from 'lodash';
-import {
-  DbFinalEntitiesRow,
-  DbRefreshStateReferencesRow,
-  DbRefreshStateRow,
-} from '../../tables';
+import { DbRefreshStateReferencesRow } from '../../tables';
+import { markForStitching } from '../stitcher/markForStitching';
 
 /**
  * Given a number of entity refs originally created by a given entity provider
@@ -56,6 +53,10 @@ export async function deleteWithEagerPruningOfChildren(options: {
       await knex
         .delete()
         .from('refresh_state')
+        .whereIn('entity_ref', refsToDelete);
+      await knex
+        .delete()
+        .from('stitch_queue')
         .whereIn('entity_ref', refsToDelete);
     }
 
@@ -239,7 +240,7 @@ async function markEntitiesAffectedByDeletionForStitching(options: {
   // change, but not here - this code by its very definition is meant to not
   // leave any orphans behind, so we can simplify away that.
   const affectedIds = await knex
-    .select('refresh_state.entity_id AS entity_id')
+    .distinct('refresh_state.entity_id AS entity_id')
     .from('relations')
     .join(
       'refresh_state',
@@ -249,19 +250,8 @@ async function markEntitiesAffectedByDeletionForStitching(options: {
     .whereIn('relations.target_entity_ref', entityRefs)
     .then(rows => rows.map(row => row.entity_id));
 
-  for (const ids of lodash.chunk(affectedIds, 1000)) {
-    await knex
-      .table<DbFinalEntitiesRow>('final_entities')
-      .update({
-        hash: 'force-stitching',
-      })
-      .whereIn('entity_id', ids);
-    await knex
-      .table<DbRefreshStateRow>('refresh_state')
-      .update({
-        result_hash: 'force-stitching',
-        next_update_at: knex.fn.now(),
-      })
-      .whereIn('entity_id', ids);
-  }
+  await markForStitching({
+    knex,
+    entityIds: affectedIds,
+  });
 }

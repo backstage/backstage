@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { InputError } from '@backstage/errors';
 import { JsonValue } from '@backstage/types';
 import { FilterPredicate, FilterPredicateValue } from './types';
 import { getJsonValueAtPath } from './getJsonValueAtPath';
@@ -36,12 +37,27 @@ export function evaluateFilterPredicate(
   }
 
   if ('$all' in predicate) {
+    if (Object.keys(predicate).length !== 1) {
+      throw new InputError(
+        'Operator $all must be the only key in the predicate, wrap in $all to combine with other conditions',
+      );
+    }
     return predicate.$all.every(f => evaluateFilterPredicate(f, value));
   }
   if ('$any' in predicate) {
+    if (Object.keys(predicate).length !== 1) {
+      throw new InputError(
+        'Operator $any must be the only key in the predicate, wrap in $all to combine with other conditions',
+      );
+    }
     return predicate.$any.some(f => evaluateFilterPredicate(f, value));
   }
   if ('$not' in predicate) {
+    if (Object.keys(predicate).length !== 1) {
+      throw new InputError(
+        'Operator $not must be the only key in the predicate, wrap in $all to combine with other conditions',
+      );
+    }
     return !evaluateFilterPredicate(predicate.$not, value);
   }
 

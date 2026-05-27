@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-lint",
-  "version": "0.1.2-next.0",
+  "version": "0.1.2",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -19,6 +19,7 @@
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-lint",
   "files": [
     "dist",
     "bin"
@@ -46,6 +47,5 @@
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0",
     "@types/shell-quote": "^1.7.5"
-  },
-  "bin": "bin/backstage-cli-module-lint"
+  }
 }

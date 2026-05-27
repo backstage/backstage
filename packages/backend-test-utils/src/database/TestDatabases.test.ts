@@ -18,24 +18,14 @@ import { TestDatabases } from './TestDatabases';
 
 jest.setTimeout(60_000);
 
-describe('TestDatabases', () => {
-  describe('each create', () => {
-    const dbs = TestDatabases.create();
+const dbs = TestDatabases.create();
 
-    it.each(dbs.eachSupportedId())(
-      'creates distinct %p databases',
-      async databaseId => {
-        if (!dbs.supports(databaseId)) {
-          return;
-        }
-        const db1 = await dbs.init(databaseId);
-        const db2 = await dbs.init(databaseId);
-        await db1.schema.createTable('a', table => table.string('x').primary());
-        await db2.schema.createTable('a', table => table.string('y').primary());
-        await expect(db1.select({ a: db1.raw('1') })).resolves.toEqual([
-          { a: 1 },
-        ]);
-      },
-    );
+describe.each(dbs.eachSupportedId())('TestDatabases, %p', databaseId => {
+  it('creates distinct databases', async () => {
+    const db1 = await dbs.init(databaseId);
+    const db2 = await dbs.init(databaseId);
+    await db1.schema.createTable('a', table => table.string('x').primary());
+    await db2.schema.createTable('a', table => table.string('y').primary());
+    await expect(db1.select({ a: db1.raw('1') })).resolves.toEqual([{ a: 1 }]);
   });
 });

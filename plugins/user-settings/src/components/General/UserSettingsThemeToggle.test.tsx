@@ -56,4 +56,44 @@ describe('<UserSettingsThemeToggle />', () => {
     fireEvent.click(themeButton);
     expect(themeApi?.getActiveThemeId()).toBe('light-theme');
   });
+
+  it('uses translated name instead of theme.title for built-in light/dark themes', async () => {
+    const builtInLightTheme: AppTheme = {
+      id: 'light',
+      title: 'My Custom Light',
+      variant: 'light',
+      Provider: ({ children }) => (
+        <ThemeProvider theme={lightTheme}>
+          <CssBaseline>{children}</CssBaseline>
+        </ThemeProvider>
+      ),
+    };
+
+    const builtInDarkTheme: AppTheme = {
+      id: 'dark',
+      title: 'My Custom Dark',
+      variant: 'dark',
+      Provider: ({ children }) => (
+        <ThemeProvider theme={lightTheme}>
+          <CssBaseline>{children}</CssBaseline>
+        </ThemeProvider>
+      ),
+    };
+
+    const builtInApiRegistry = TestApiRegistry.from([
+      appThemeApiRef,
+      AppThemeSelector.createWithStorage([builtInLightTheme, builtInDarkTheme]),
+    ]);
+
+    await renderInTestApp(
+      <ApiProvider apis={builtInApiRegistry}>
+        <UserSettingsThemeToggle />
+      </ApiProvider>,
+    );
+
+    expect(screen.getByText('Light')).toBeInTheDocument();
+    expect(screen.getByText('Dark')).toBeInTheDocument();
+    expect(screen.queryByText('My Custom Light')).not.toBeInTheDocument();
+    expect(screen.queryByText('My Custom Dark')).not.toBeInTheDocument();
+  });
 });

@@ -1,5 +1,49 @@
 # @backstage/frontend-plugin-api
 
+## 0.17.0
+
+### Minor Changes
+
+- 44d77e9: **BREAKING**: Removed the deprecated `NavItemBlueprint`. Navigation items are now discovered from `PageBlueprint` extensions based on their `title` and `icon` params.
+
+  If you were still using `NavItemBlueprint`, migrate by moving `title` and `icon` to your `PageBlueprint` instead:
+
+  ```diff
+  -const navItem = NavItemBlueprint.make({
+  -  params: { title: 'Example', icon: ExampleIcon, routeRef },
+  -});
+   const page = PageBlueprint.make({
+     params: {
+  +    title: 'Example',
+  +    icon: <ExampleIcon fontSize="inherit" />,
+       routeRef,
+       path: '/example',
+       loader: () => import('./Page').then(m => <m.Page />),
+     },
+   });
+  ```
+
+  `PageBlueprint` expects an `IconElement` rather than a Material UI `IconComponent`, so this is also a good time to switch to [Remix Icon](https://remixicon.com/) if you were using Material UI icons only for the nav item:
+
+  ```diff
+  -import ExampleIcon from '@material-ui/icons/Extension';
+  +import { RiPuzzleLine } from '@remixicon/react';
+   ...
+  -    icon: ExampleIcon,
+  +    icon: <RiPuzzleLine />,
+  ```
+
+- 8738203: **BREAKING**: Removed the deprecated property form of `PortableSchema.schema`. The `schema` member is now a plain method that must be called as `schema()` — direct property access like `schema.type` or `schema.properties` is no longer supported.
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 72a552f: Updated error messages and deprecation warnings to clarify that the `zod/v4` subpath export from the Zod v3 package is not supported by `configSchema`, since it does not include JSON Schema conversion. The `zod` dependency has been bumped to `^4.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/filter-predicates@0.1.3
+
 ## 0.17.0-next.1
 
 ### Patch Changes

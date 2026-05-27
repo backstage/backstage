@@ -94,6 +94,7 @@ export type GetEntitiesByQuery = {
     orderField?: Array<string>;
     cursor?: string;
     filter?: Array<string>;
+    totalItems?: 'include' | 'exclude';
     fullTextFilterTerm?: string;
     fullTextFilterFields?: Array<string>;
   };

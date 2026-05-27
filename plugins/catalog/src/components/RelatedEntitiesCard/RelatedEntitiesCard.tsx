@@ -140,6 +140,10 @@ RelatedEntitiesCard.asResourceEntities = asResourceEntities;
 RelatedEntitiesCard.systemEntityColumns = systemEntityColumns;
 RelatedEntitiesCard.systemEntityHelpLink = systemEntityHelpLink;
 RelatedEntitiesCard.asSystemEntities = asSystemEntities;
+RelatedEntitiesCard.domainEntityColumns = domainEntityColumns;
+/**
+ * @deprecated Use `RelatedEntitiesCard.domainEntityColumns` instead. This was a typo in the original property name.
+ */
 RelatedEntitiesCard.domainEntityColums = domainEntityColumns;
 RelatedEntitiesCard.domainEntityHelpLink = domainEntityHelpLink;
 RelatedEntitiesCard.asDomainEntities = asDomainEntities;

@@ -33,7 +33,7 @@ export type ScaffolderFormDecoratorContext<
   ) => void;
 };
 
-/** @alpha */
+/** @public */
 export type ScaffolderFormDecorator<TInput extends JsonObject = JsonObject> = {
   readonly $$type: '@backstage/scaffolder/FormDecorator';
   readonly id: string;

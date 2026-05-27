@@ -41,7 +41,7 @@ internally.
 
 ![Enter some variables](../../assets/software-templates/template-picked.png)
 
-Templates generally consist of a set of steps, and each step can have its own set of required or optional inputs, as you can see in the image below we are now prompted to input some Github repository information.
+Templates generally consist of a set of steps, and each step can have its own set of required or optional inputs, as you can see in the image below we are now prompted to input some GitHub repository information.
 
 ![Enter Backstage vars](../../assets/software-templates/template-picked-2.png)
 

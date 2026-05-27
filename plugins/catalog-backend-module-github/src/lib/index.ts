@@ -20,6 +20,7 @@ export {
   getOrganizationRepositories,
   getOrganizationTeams,
   getOrganizationUsers,
+  createRestClient,
   type GithubUser,
   type GithubTeam,
   type GithubPageSizes,

@@ -111,6 +111,18 @@ export type UseTableCompleteOptions<
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
   filterFn?: (data: T[], filter: TFilter) => T[];
   searchFn?: (data: T[], search: string) => T[];
+  /**
+   * Trailing-edge debounce delay (ms) applied to the search value before it
+   * reaches `searchFn`. Defaults to `0` — no debounce, no extra render. The
+   * controlled `search` / `onSearchChange` surface is unaffected.
+   */
+  searchDebounceMs?: number;
+  /**
+   * Trailing-edge debounce delay (ms) applied to the filter value before it
+   * reaches `filterFn`. Defaults to `0` — no debounce, no extra render. The
+   * controlled `filter` / `onFilterChange` surface is unaffected.
+   */
+  filterDebounceMs?: number;
 } & (
     | {
         data: T[] | undefined;

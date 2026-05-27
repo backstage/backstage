@@ -466,6 +466,7 @@ export type EntityListContextProps<
     prev?: () => void;
   };
   totalItems?: number;
+  totalItemsLoading: boolean;
   limit: number;
   offset?: number;
   setLimit: (limit: number) => void;

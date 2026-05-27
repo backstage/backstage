@@ -25,7 +25,7 @@ const formDecoratorExtensionDataRef =
   });
 
 /**
- * @alpha
+ * @public
  * Creates extensions that are Field Extensions for the Scaffolder
  * */
 export const FormDecoratorBlueprint = createExtensionBlueprint({
