@@ -15,6 +15,7 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
  * Tracks whether a text element is overflowing its container via CSS truncation.
@@ -43,6 +44,11 @@ export function useIsTruncated() {
       setTruncated(el.scrollWidth > el.clientWidth);
     }
   }, []);
+
+  // Check on mount before paint so the tooltip state is correct immediately
+  useIsomorphicLayoutEffect(() => {
+    checkTruncation();
+  }, [checkTruncation]);
 
   return { ref, truncated, checkTruncation };
 }
