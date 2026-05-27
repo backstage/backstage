@@ -177,4 +177,9 @@ export const hooks: Page[] = [
     title: 'useBreakpoint',
     slug: 'use-breakpoint',
   },
+  {
+    title: 'useIsTruncated',
+    slug: 'use-is-truncated',
+    status: 'new',
+  },
 ];
