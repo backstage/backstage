@@ -80,11 +80,14 @@ function BreadcrumbContent(props: {
  * @public
  */
 export const Breadcrumb = (props: BreadcrumbProps) => {
-  const { ownProps } = useDefinition(BreadcrumbDefinition, props);
+  const { ownProps, restProps, dataAttributes } = useDefinition(
+    BreadcrumbDefinition,
+    props,
+  );
   const { classes, href, children } = ownProps;
 
   return (
-    <RACBreadcrumb className={classes.root}>
+    <RACBreadcrumb className={classes.root} {...dataAttributes} {...restProps}>
       {({ isCurrent }) => (
         <>
           <BreadcrumbContent
@@ -113,10 +116,15 @@ export const Breadcrumb = (props: BreadcrumbProps) => {
  * @public
  */
 export const Breadcrumbs = (props: BreadcrumbsProps) => {
-  const { ownProps } = useDefinition(BreadcrumbsDefinition, props);
-  const { classes } = ownProps;
+  const { ownProps, restProps, dataAttributes } = useDefinition(
+    BreadcrumbsDefinition,
+    props,
+  );
+  const { classes, children } = ownProps;
 
   return (
-    <RACBreadcrumbs className={classes.root}>{props.children}</RACBreadcrumbs>
+    <RACBreadcrumbs className={classes.root} {...dataAttributes} {...restProps}>
+      {children}
+    </RACBreadcrumbs>
   );
 };
