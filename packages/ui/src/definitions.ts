@@ -51,6 +51,10 @@ export {
   GridDefinition,
   GridItemDefinition,
 } from './components/Grid/definition';
+export {
+  BreadcrumbsDefinition,
+  BreadcrumbDefinition,
+} from './components/Breadcrumbs/definition';
 export { PluginHeaderDefinition } from './components/PluginHeader/definition';
 export {
   HeaderDefinition,
