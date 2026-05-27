@@ -23,16 +23,6 @@
     margin-bottom: 0;
   }
 
-  /* The Header acts as page chrome and should span the full available width
-     rather than inheriting Container's 120rem cap, which would shift the
-     title and customActions inward on very wide viewports. */
-  .bui-HeaderTop.bui-HeaderTop,
-  .bui-HeaderContent.bui-HeaderContent,
-  .bui-HeaderBottom.bui-HeaderBottom {
-    max-width: none;
-    margin-inline: 0;
-  }
-
   .bui-HeaderBottom {
     display: flex;
     flex-direction: column;

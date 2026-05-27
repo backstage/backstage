@@ -24,7 +24,7 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { HeaderPage } from '@backstage/ui';
+import { Container, HeaderPage } from '@backstage/ui';
 import {
   CatalogFilterLayout,
   DefaultFilters,
@@ -134,9 +134,11 @@ function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
           </>
         }
       />
-      <Content>
-        <CatalogPageContent {...props} />
-      </Content>
+      <Container>
+        <Content style={{ paddingLeft: 0, paddingRight: 0 }}>
+          <CatalogPageContent {...props} />
+        </Content>
+      </Container>
     </EntityListProvider>
   );
 }
