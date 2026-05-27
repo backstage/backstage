@@ -181,25 +181,31 @@ export class OfflineSessionDatabase {
     id: string,
     expectedTokenHash: string,
     newTokenHash: string,
-    newUpstreamTokenKey?: string,
+    options?: {
+      newUpstreamTokenKey?: string;
+      skipLifetimeChecks?: boolean;
+    },
   ): Promise<OfflineSession | undefined> {
-    const now = DateTime.utc();
-    const tokenLifetimeThreshold = now
-      .minus({ seconds: this.#tokenLifetimeSeconds })
-      .toJSDate();
-    const maxRotationThreshold = now
-      .minus({ seconds: this.#maxRotationLifetimeSeconds })
-      .toJSDate();
-
     return await this.#knex.transaction(async trx => {
-      // Lock the row and verify token hash matches
-      const row = await trx<DbOfflineSessionRow>(TABLE_NAME)
+      let query = trx<DbOfflineSessionRow>(TABLE_NAME)
         .where('id', id)
-        .where('token_hash', expectedTokenHash)
-        .where('last_used_at', '>=', tokenLifetimeThreshold)
-        .where('created_at', '>=', maxRotationThreshold)
-        .forUpdate()
-        .first();
+        .where('token_hash', expectedTokenHash);
+
+      if (!options?.skipLifetimeChecks) {
+        const now = DateTime.utc();
+        const tokenLifetimeThreshold = now
+          .minus({ seconds: this.#tokenLifetimeSeconds })
+          .toJSDate();
+        const maxRotationThreshold = now
+          .minus({ seconds: this.#maxRotationLifetimeSeconds })
+          .toJSDate();
+
+        query = query
+          .where('last_used_at', '>=', tokenLifetimeThreshold)
+          .where('created_at', '>=', maxRotationThreshold);
+      }
+
+      const row = await query.forUpdate().first();
 
       if (!row) {
         return undefined;
@@ -210,8 +216,8 @@ export class OfflineSessionDatabase {
         .update({
           token_hash: newTokenHash,
           last_used_at: trx.fn.now(),
-          ...(newUpstreamTokenKey !== undefined && {
-            upstream_token_key: newUpstreamTokenKey,
+          ...(options?.newUpstreamTokenKey !== undefined && {
+            upstream_token_key: options.newUpstreamTokenKey,
           }),
         });
 

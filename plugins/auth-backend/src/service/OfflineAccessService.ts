@@ -29,6 +29,7 @@ import { randomUUID as uuid } from 'node:crypto';
 import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
 import {
   generateRefreshToken,
+  buildUpstreamRefreshToken,
   getRefreshTokenId,
   getEncryptedUpstreamToken,
   verifyRefreshToken,
@@ -264,24 +265,30 @@ export class OfflineAccessService {
 
     const sessionId = uuid();
 
-    let encryptedUpstream: string | undefined;
+    let token: string;
+    let tokenHash: string;
     let upstreamTokenKey: string | undefined;
 
     if (upstreamRefreshToken) {
       upstreamTokenKey = generateEncryptionKey();
-      encryptedUpstream = encryptToken(upstreamRefreshToken, upstreamTokenKey);
+      const encryptedUpstream = encryptToken(
+        upstreamRefreshToken,
+        upstreamTokenKey,
+      );
+      const result = buildUpstreamRefreshToken(sessionId, encryptedUpstream);
+      token = result.token;
+      tokenHash = result.nonce;
+    } else {
+      const result = await generateRefreshToken(sessionId);
+      token = result.token;
+      tokenHash = result.hash;
     }
-
-    const { token, hash } = await generateRefreshToken(
-      sessionId,
-      encryptedUpstream,
-    );
 
     await this.#offlineSessionDb.createSession({
       id: sessionId,
       userEntityRef,
       oidcClientId,
-      tokenHash: hash,
+      tokenHash,
       upstreamTokenKey,
       authProviderId,
       authProviderEnv,
@@ -320,28 +327,20 @@ export class OfflineAccessService {
       throw new AuthenticationError('Invalid refresh token');
     }
 
-    if (this.#offlineSessionDb.isSessionExpired(session)) {
-      await this.#offlineSessionDb.deleteSession(sessionId);
-      throw new AuthenticationError('Invalid refresh token');
-    }
-
     if (clientId && session.oidcClientId && clientId !== session.oidcClientId) {
       throw new AuthenticationError(
         'Refresh token was not issued to this client',
       );
     }
 
-    const isValid = await verifyRefreshToken(refreshToken, session.tokenHash);
-    if (!isValid) {
-      throw new AuthenticationError('Invalid refresh token');
-    }
-
-    // If the session has an upstream token, validate against the upstream provider.
-    // Otherwise fall back to the catalog presence check for non-OAuth providers.
-    let newEncryptedUpstream: string | undefined;
+    let newRefreshToken: string;
+    let newHash: string;
     let newUpstreamTokenKey: string | undefined;
+    let skipLifetimeChecks = false;
 
     if (session.upstreamTokenKey && session.authProviderId) {
+      // Upstream-backed session: verify by decryption, no scrypt or lifetime checks.
+      // The upstream provider is the source of truth for session validity.
       const provider = this.#providers?.[session.authProviderId];
       if (!provider?.programmaticRefresh) {
         throw new AuthenticationError(
@@ -385,50 +384,66 @@ export class OfflineAccessService {
         throw new AuthenticationError('Upstream session is no longer valid');
       }
 
-      // Re-encrypt the upstream token (may have been rotated by the provider)
       const currentUpstreamToken =
         upstreamResult.refreshToken ?? upstreamRefreshToken;
       newUpstreamTokenKey = generateEncryptionKey();
-      newEncryptedUpstream = encryptToken(
+      const newEncryptedUpstream = encryptToken(
         currentUpstreamToken,
         newUpstreamTokenKey,
       );
-    } else if (!this.#dangerouslyDisableCatalogPresenceCheck) {
-      try {
-        const entity = await this.#catalog.getEntityByRef(
-          session.userEntityRef,
-          { credentials: await this.#auth.getOwnServiceCredentials() },
-        );
-        if (!entity) {
-          this.#logger.info(
-            `Rejecting refresh for user ${session.userEntityRef} - catalog entity not found, revoking session ${sessionId}`,
-          );
-          await this.#offlineSessionDb.deleteSession(sessionId);
-          throw new AuthenticationError(
-            'User entity no longer exists in the catalog',
-          );
-        }
-      } catch (error) {
-        if ((error as { name?: string }).name === 'AuthenticationError') {
-          throw error;
-        }
-        this.#logger.warn(
-          `Failed to validate catalog user existence for ${session.userEntityRef}, rejecting refresh`,
-          error,
-        );
-        throw new AuthenticationError('Unable to validate user existence');
+      const result = buildUpstreamRefreshToken(sessionId, newEncryptedUpstream);
+      newRefreshToken = result.token;
+      newHash = result.nonce;
+      skipLifetimeChecks = true;
+    } else {
+      // Local session: verify with scrypt hash and enforce lifetime windows.
+      if (this.#offlineSessionDb.isSessionExpired(session)) {
+        await this.#offlineSessionDb.deleteSession(sessionId);
+        throw new AuthenticationError('Invalid refresh token');
       }
+
+      const isValid = await verifyRefreshToken(refreshToken, session.tokenHash);
+      if (!isValid) {
+        throw new AuthenticationError('Invalid refresh token');
+      }
+
+      if (!this.#dangerouslyDisableCatalogPresenceCheck) {
+        try {
+          const entity = await this.#catalog.getEntityByRef(
+            session.userEntityRef,
+            { credentials: await this.#auth.getOwnServiceCredentials() },
+          );
+          if (!entity) {
+            this.#logger.info(
+              `Rejecting refresh for user ${session.userEntityRef} - catalog entity not found, revoking session ${sessionId}`,
+            );
+            await this.#offlineSessionDb.deleteSession(sessionId);
+            throw new AuthenticationError(
+              'User entity no longer exists in the catalog',
+            );
+          }
+        } catch (error) {
+          if ((error as { name?: string }).name === 'AuthenticationError') {
+            throw error;
+          }
+          this.#logger.warn(
+            `Failed to validate catalog user existence for ${session.userEntityRef}, rejecting refresh`,
+            error,
+          );
+          throw new AuthenticationError('Unable to validate user existence');
+        }
+      }
+
+      const result = await generateRefreshToken(sessionId);
+      newRefreshToken = result.token;
+      newHash = result.hash;
     }
 
-    const { token: newRefreshToken, hash: newHash } =
-      await generateRefreshToken(sessionId, newEncryptedUpstream);
-
-    // Atomically swap the hash (and upstream key if applicable)
     const rotatedSession = await this.#offlineSessionDb.getAndRotateToken(
       sessionId,
       session.tokenHash,
       newHash,
-      newUpstreamTokenKey,
+      { newUpstreamTokenKey, skipLifetimeChecks },
     );
 
     if (!rotatedSession) {

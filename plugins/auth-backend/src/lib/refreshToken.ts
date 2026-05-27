@@ -121,6 +121,24 @@ function parseRefreshTokenParts(
 }
 
 /**
+ * Build a refresh token for an upstream-backed session without scrypt hashing.
+ * The encrypted upstream token in the 3-part format provides proof of possession
+ * via decryption, so scrypt is redundant. A random nonce is stored in the DB
+ * for atomic compare-and-swap during rotation.
+ *
+ * @internal
+ */
+export function buildUpstreamRefreshToken(
+  id: string,
+  encryptedUpstreamToken: string,
+): { token: string; nonce: string } {
+  const randomPart = randomBytes(32).toString('base64url');
+  const token = `${id}.${randomPart}.${encryptedUpstreamToken}`;
+  const nonce = randomBytes(32).toString('base64url');
+  return { token, nonce };
+}
+
+/**
  * Verify a refresh token against a stored hash
  *
  * @param token - The refresh token to verify
