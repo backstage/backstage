@@ -37,6 +37,8 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
  *   <Tooltip>{label}</Tooltip>
  * </TooltipTrigger>
  * ```
+ *
+ * @public
  */
 export function useIsTruncated() {
   const ref = useRef<HTMLElement>(null);

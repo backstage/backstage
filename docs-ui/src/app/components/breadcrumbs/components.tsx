@@ -58,6 +58,22 @@ export const InheritsStyle = () => {
   );
 };
 
+export const Collapsed = () => {
+  return (
+    <MemoryRouter>
+      <Breadcrumbs>
+        <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
+        <Breadcrumb href="/my-plugin/docs">Docs</Breadcrumb>
+        <Breadcrumb href="/my-plugin/docs/guides">Guides</Breadcrumb>
+        <Breadcrumb href="/my-plugin/docs/guides/setup">Setup</Breadcrumb>
+        <Breadcrumb href="/my-plugin/docs/guides/setup/intro">
+          Introduction
+        </Breadcrumb>
+      </Breadcrumbs>
+    </MemoryRouter>
+  );
+};
+
 export const MixedSegments = () => {
   return (
     <MemoryRouter>

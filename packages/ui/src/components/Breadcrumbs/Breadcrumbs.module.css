@@ -59,6 +59,30 @@
     font-weight: var(--bui-font-weight-bold);
   }
 
+  .bui-BreadcrumbEllipsis {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-3);
+  }
+
+  .bui-BreadcrumbEllipsisTrigger {
+    all: unset;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    line-height: 1;
+    letter-spacing: 0.1em;
+
+    &[data-focus-visible] {
+      border-radius: var(--bui-radius-1);
+      outline: 2px solid var(--bui-color-focus);
+    }
+
+    &[data-hovered] {
+      text-decoration: underline;
+    }
+  }
+
   .bui-BreadcrumbSeparator {
     color: var(--bui-fg-tertiary);
     flex-shrink: 0;

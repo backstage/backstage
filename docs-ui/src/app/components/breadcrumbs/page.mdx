@@ -6,14 +6,24 @@ import {
   breadcrumbsUsageSnippet,
   defaultSnippet,
   truncationSnippet,
+  collapsedSnippet,
   inheritsStyleSnippet,
   mixedSegmentsSnippet,
 } from './snippets';
-import { Default, Truncation, InheritsStyle, MixedSegments } from './components';
+import {
+  Default,
+  Truncation,
+  Collapsed,
+  InheritsStyle,
+  MixedSegments,
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
-import { BreadcrumbsDefinition, BreadcrumbDefinition } from '../../../utils/definitions';
+import {
+  BreadcrumbsDefinition,
+  BreadcrumbDefinition,
+} from '../../../utils/definitions';
 
 <PageTitle
   title="Breadcrumbs"
@@ -47,6 +57,17 @@ Non-current segments are capped at a max width. Overflowing text is truncated wi
   py={4}
   preview={<Truncation />}
   code={truncationSnippet}
+/>
+
+### Collapsed
+
+When there are 5 or more segments, the middle items automatically collapse into an ellipsis menu. The first segment and the last two segments stay visible. Clicking the ellipsis button opens a menu with the hidden segments.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Collapsed />}
+  code={collapsedSnippet}
 />
 
 ### Inherits style

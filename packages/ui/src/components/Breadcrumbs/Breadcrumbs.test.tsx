@@ -16,6 +16,7 @@
 
 import { type PropsWithChildren } from 'react';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BUIProvider } from '../../provider';
 import { Breadcrumbs, Breadcrumb } from './Breadcrumbs';
 
@@ -118,5 +119,96 @@ describe('Breadcrumbs', () => {
     expect(container.querySelectorAll('.bui-BreadcrumbSeparator')).toHaveLength(
       0,
     );
+  });
+
+  describe('collapsing', () => {
+    it('should not collapse when there are 4 or fewer items', () => {
+      render(
+        <Breadcrumbs>
+          <Breadcrumb href="/a">First</Breadcrumb>
+          <Breadcrumb href="/b">Second</Breadcrumb>
+          <Breadcrumb href="/c">Third</Breadcrumb>
+          <Breadcrumb href="/d">Fourth</Breadcrumb>
+        </Breadcrumbs>,
+        { wrapper: Wrapper },
+      );
+
+      expect(screen.getAllByRole('listitem')).toHaveLength(4);
+      expect(
+        screen.queryByLabelText('Show more breadcrumbs'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should collapse middle items into an ellipsis menu at 5+ items', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/docs">Docs</Breadcrumb>
+          <Breadcrumb href="/guides">Guides</Breadcrumb>
+          <Breadcrumb href="/guides/setup">Setup</Breadcrumb>
+          <Breadcrumb href="/guides/setup/intro">Introduction</Breadcrumb>
+        </Breadcrumbs>,
+        { wrapper: Wrapper },
+      );
+
+      // keep first & last-TWO breadcrumbs
+      expect(screen.getByText('Home')).toBeInTheDocument();
+      expect(
+        screen.getByLabelText('Show more breadcrumbs'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Setup')).toBeInTheDocument();
+      expect(screen.getByText('Introduction')).toBeInTheDocument();
+
+      expect(screen.queryByText('Docs')).not.toBeInTheDocument();
+      expect(screen.queryByText('Guides')).not.toBeInTheDocument();
+
+      // rest are in menu
+      await user.click(screen.getByLabelText('Show more breadcrumbs'));
+
+      const menuItems = await screen.findAllByRole('menuitem');
+      expect(menuItems).toHaveLength(2);
+      expect(menuItems[0]).toHaveTextContent('Docs');
+      expect(menuItems[1]).toHaveTextContent('Guides');
+    });
+
+    it('should keep the last item marked as current', () => {
+      render(
+        <Breadcrumbs>
+          <Breadcrumb href="/a">First</Breadcrumb>
+          <Breadcrumb href="/b">Second</Breadcrumb>
+          <Breadcrumb href="/c">Third</Breadcrumb>
+          <Breadcrumb href="/d">Fourth</Breadcrumb>
+          <Breadcrumb href="/e">Fifth</Breadcrumb>
+        </Breadcrumbs>,
+        { wrapper: Wrapper },
+      );
+
+      expect(screen.getByText('Fifth').closest('li')).toHaveAttribute(
+        'data-current',
+        'true',
+      );
+    });
+
+    it('should render a separator after the ellipsis', () => {
+      render(
+        <Breadcrumbs>
+          <Breadcrumb href="/a">First</Breadcrumb>
+          <Breadcrumb href="/b">Second</Breadcrumb>
+          <Breadcrumb href="/c">Third</Breadcrumb>
+          <Breadcrumb href="/d">Fourth</Breadcrumb>
+          <Breadcrumb href="/e">Fifth</Breadcrumb>
+        </Breadcrumbs>,
+        { wrapper: Wrapper },
+      );
+
+      const ellipsisItem = screen
+        .getByLabelText('Show more breadcrumbs')
+        .closest('li')!;
+      expect(
+        ellipsisItem.querySelector('.bui-BreadcrumbSeparator'),
+      ).not.toBeNull();
+    });
   });
 });

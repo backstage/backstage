@@ -116,6 +116,34 @@ export const TruncatingBehaviour = meta.story({
   ),
 });
 
+export const CollapsesWhenMoreThanFiveItems = meta.story({
+  args: {},
+  decorators: [withRouter(['/my-plugin/docs/guides/setup/intro'])],
+  render: () => {
+    const breadcrumbs = (
+      <Breadcrumbs>
+        <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
+        <Breadcrumb href="/my-plugin/docs">Docs</Breadcrumb>
+        <Breadcrumb href="/my-plugin/docs/guides">Guides</Breadcrumb>
+        <Breadcrumb href="/my-plugin/docs/guides/setup">Setup</Breadcrumb>
+        <Breadcrumb href="/my-plugin/docs/guides/setup/intro">
+          Introduction
+        </Breadcrumb>
+      </Breadcrumbs>
+    );
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        {breadcrumbs}
+        <div style={{ fontSize: '24px', color: '#98c379' }}>
+          <p style={{ margin: '0 0 4px', opacity: 0.6 }}>24px, green</p>
+          {breadcrumbs}
+        </div>
+      </div>
+    );
+  },
+});
+
 export const MixedSegmentTypes = meta.story({
   args: {},
   decorators: [withRouter(['/create/edit/custom-fields/details'])],

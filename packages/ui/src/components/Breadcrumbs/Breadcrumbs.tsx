@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { Children, isValidElement } from 'react';
 import {
   Breadcrumbs as RACBreadcrumbs,
   Breadcrumb as RACBreadcrumb,
+  Button as RACButton,
   Link,
 } from 'react-aria-components';
 import { Focusable } from 'react-aria';
@@ -24,6 +26,7 @@ import { RiArrowRightSLine } from '@remixicon/react';
 import { useDefinition, useIsTruncated } from '../../hooks';
 import { BreadcrumbsDefinition, BreadcrumbDefinition } from './definition';
 import { Tooltip, TooltipTrigger } from '../Tooltip';
+import { MenuTrigger, Menu, MenuItem } from '../Menu';
 import type { BreadcrumbProps, BreadcrumbsProps } from './types';
 
 function BreadcrumbContent(props: {
@@ -110,8 +113,46 @@ export const Breadcrumb = (props: BreadcrumbProps) => {
   );
 };
 
+const COLLAPSE_THRESHOLD = 5;
+const ITEMS_BEFORE = 1;
+const ITEMS_AFTER = 2;
+
+function CollapsedBreadcrumb(props: {
+  items: Array<{ href?: string; label: React.ReactNode }>;
+  ellipsisClassName: string;
+  triggerClassName: string;
+  separatorClassName: string;
+}) {
+  const { items, ellipsisClassName, triggerClassName, separatorClassName } =
+    props;
+
+  return (
+    <RACBreadcrumb className={ellipsisClassName}>
+      <MenuTrigger>
+        {/* Plain button instead of ButtonIcon to avoid padding that shifts the breadcrumb baseline */}
+        <RACButton
+          className={triggerClassName}
+          aria-label="Show more breadcrumbs"
+        >
+          …
+        </RACButton>
+        <Menu>
+          {items.map((item, i) => (
+            <MenuItem key={i} href={item.href}>
+              {item.label}
+            </MenuItem>
+          ))}
+        </Menu>
+      </MenuTrigger>
+      <RiArrowRightSLine className={separatorClassName} aria-hidden="true" />
+    </RACBreadcrumb>
+  );
+}
+
 /**
  * A breadcrumb navigation bar built on React Aria's Breadcrumbs.
+ * When there are 5 or more items, middle items collapse into an
+ * ellipsis menu — the first item and last two items stay visible.
  *
  * @public
  */
@@ -122,9 +163,38 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
   );
   const { classes, children } = ownProps;
 
+  const childArray = Children.toArray(children).filter(isValidElement);
+  let renderedChildren: React.ReactNode = children;
+
+  if (childArray.length >= COLLAPSE_THRESHOLD) {
+    const beforeItems = childArray.slice(0, ITEMS_BEFORE);
+    const collapsedItems = childArray.slice(
+      ITEMS_BEFORE,
+      childArray.length - ITEMS_AFTER,
+    );
+    const afterItems = childArray.slice(childArray.length - ITEMS_AFTER);
+
+    const menuItems = collapsedItems.map(child => ({
+      href: (child.props as BreadcrumbProps).href,
+      label: (child.props as BreadcrumbProps).children,
+    }));
+
+    renderedChildren = [
+      ...beforeItems,
+      <CollapsedBreadcrumb
+        key="__bui-breadcrumb-ellipsis"
+        items={menuItems}
+        ellipsisClassName={classes.ellipsis}
+        triggerClassName={classes.ellipsisTrigger}
+        separatorClassName={classes.separator}
+      />,
+      ...afterItems,
+    ];
+  }
+
   return (
     <RACBreadcrumbs className={classes.root} {...dataAttributes} {...restProps}>
-      {children}
+      {renderedChildren}
     </RACBreadcrumbs>
   );
 };

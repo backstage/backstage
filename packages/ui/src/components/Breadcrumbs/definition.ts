@@ -26,6 +26,9 @@ export const BreadcrumbsDefinition = defineComponent<BreadcrumbsOwnProps>()({
   styles,
   classNames: {
     root: 'bui-Breadcrumbs',
+    ellipsis: 'bui-BreadcrumbEllipsis',
+    ellipsisTrigger: 'bui-BreadcrumbEllipsisTrigger',
+    separator: 'bui-BreadcrumbSeparator',
   },
   propDefs: {
     children: {},

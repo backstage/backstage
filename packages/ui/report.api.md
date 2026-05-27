@@ -43,6 +43,7 @@ import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import type { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
+import { RefObject } from 'react';
 import { RowProps as RowProps_2 } from 'react-aria-components';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
@@ -495,7 +496,6 @@ export const BreadcrumbDefinition: {
     readonly label: 'bui-BreadcrumbLabel';
     readonly current: 'bui-BreadcrumbLabel--current';
     readonly separator: 'bui-BreadcrumbSeparator';
-    readonly current: 'bui-BreadcrumbCurrent';
   };
   readonly propDefs: {
     readonly href: {};
@@ -524,6 +524,9 @@ export const BreadcrumbsDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Breadcrumbs';
+    readonly ellipsis: 'bui-BreadcrumbEllipsis';
+    readonly ellipsisTrigger: 'bui-BreadcrumbEllipsisTrigger';
+    readonly separator: 'bui-BreadcrumbSeparator';
   };
   readonly propDefs: {
     readonly children: {};
@@ -3677,6 +3680,13 @@ export const useBreakpoint: () => {
   breakpoint: Breakpoint;
   up: (key: Breakpoint) => boolean;
   down: (key: Breakpoint) => boolean;
+};
+
+// @public
+export function useIsTruncated(): {
+  ref: RefObject<HTMLElement>;
+  truncated: boolean;
+  checkTruncation: () => void;
 };
 
 // @public

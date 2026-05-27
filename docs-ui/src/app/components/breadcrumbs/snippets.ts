@@ -31,6 +31,14 @@ export const inheritsStyleSnippet = `<div style={{ fontSize: '24px', color: '#98
   </Breadcrumbs>
 </div>`;
 
+export const collapsedSnippet = `<Breadcrumbs>
+  <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
+  <Breadcrumb href="/my-plugin/docs">Docs</Breadcrumb>
+  <Breadcrumb href="/my-plugin/docs/guides">Guides</Breadcrumb>
+  <Breadcrumb href="/my-plugin/docs/guides/setup">Setup</Breadcrumb>
+  <Breadcrumb href="/my-plugin/docs/guides/setup/intro">Introduction</Breadcrumb>
+</Breadcrumbs>`;
+
 export const mixedSegmentsSnippet = `<Breadcrumbs>
   <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
   <Breadcrumb>Label without link</Breadcrumb>
