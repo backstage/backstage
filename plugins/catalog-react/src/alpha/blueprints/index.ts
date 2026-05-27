@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { CatalogFilterBlueprint } from './CatalogFilterBlueprint';
+export {
+  CatalogFilterBlueprint,
+  type CatalogFilterDescriptor,
+  type CatalogFacetFilterDescriptor,
+  type CatalogOptionsFilterDescriptor,
+  type CatalogCustomFilterDescriptor,
+} from './CatalogFilterBlueprint';
 export { EntityCardBlueprint } from './EntityCardBlueprint';
 export { EntityContentBlueprint } from './EntityContentBlueprint';
 export {

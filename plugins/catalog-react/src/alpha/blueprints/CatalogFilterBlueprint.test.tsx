@@ -14,96 +14,151 @@
  * limitations under the License.
  */
 import { CatalogFilterBlueprint } from './CatalogFilterBlueprint';
-import {
-  coreExtensionData,
-  createExtension,
-  createExtensionInput,
-} from '@backstage/frontend-plugin-api';
-import {
-  createExtensionTester,
-  renderInTestApp,
-} from '@backstage/frontend-test-utils';
-import { waitFor, screen } from '@testing-library/react';
+import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { z } from 'zod/v4';
 
 describe('CatalogFilterBlueprint', () => {
-  it('should create an extension with sane defaults', () => {
+  it('should create a facet filter descriptor from model-based params', () => {
     const extension = CatalogFilterBlueprint.make({
+      name: 'test',
       params: {
-        loader: async () => <div />,
+        label: 'Test',
+        path: 'metadata.test',
+        mode: 'multi',
+        defaultValue: ['a', 'b'],
       },
     });
-    expect(extension).toMatchInlineSnapshot(`
-      {
-        "$$type": "@backstage/ExtensionDefinition",
-        "T": undefined,
-        "attachTo": {
-          "id": "page:catalog",
-          "input": "filters",
-        },
-        "configSchema": undefined,
-        "disabled": false,
-        "factory": [Function],
-        "if": undefined,
-        "inputs": {},
-        "kind": "catalog-filter",
-        "name": undefined,
-        "output": [
-          [Function],
-        ],
-        "override": [Function],
-        "toString": [Function],
-        "version": "v2",
-      }
-    `);
+
+    const tester = createExtensionTester(extension);
+    const descriptor = tester.get(
+      CatalogFilterBlueprint.dataRefs.filterDescriptor,
+    );
+
+    expect(descriptor).toEqual({
+      type: 'facet',
+      label: 'Test',
+      path: 'metadata.test',
+      mode: 'multi',
+      defaultValue: ['a', 'b'],
+    });
   });
 
-  it('should allow overriding of inputs and config', async () => {
+  it('should create a facet filter descriptor with single mode and no default', () => {
+    const extension = CatalogFilterBlueprint.make({
+      name: 'kind',
+      params: {
+        label: 'Kind',
+        path: 'kind',
+        mode: 'single',
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+    const descriptor = tester.get(
+      CatalogFilterBlueprint.dataRefs.filterDescriptor,
+    );
+
+    expect(descriptor).toEqual({
+      type: 'facet',
+      label: 'Kind',
+      path: 'kind',
+      mode: 'single',
+      defaultValue: undefined,
+    });
+  });
+
+  it('should create a custom filter descriptor from deprecated loader params', () => {
+    const extension = CatalogFilterBlueprint.make({
+      name: 'custom',
+      params: {
+        loader: async () => <div>custom filter</div>,
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+    const descriptor = tester.get(
+      CatalogFilterBlueprint.dataRefs.filterDescriptor,
+    );
+
+    expect(descriptor.type).toBe('custom');
+    expect(descriptor).toHaveProperty('element');
+  });
+
+  it('should create an options filter descriptor with static options and toFilter', () => {
+    const toFilter = jest.fn((selected: string[]) => {
+      if (!selected.length) return undefined;
+      return {
+        getCatalogFilters: () => ({ status: selected }),
+      };
+    });
+
+    const extension = CatalogFilterBlueprint.make({
+      name: 'status',
+      params: {
+        label: 'Status',
+        mode: 'multi',
+        options: [
+          { label: 'Active', value: 'active' },
+          { label: 'Inactive', value: 'inactive' },
+        ],
+        toFilter,
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+    const descriptor = tester.get(
+      CatalogFilterBlueprint.dataRefs.filterDescriptor,
+    );
+
+    expect(descriptor).toMatchObject({
+      type: 'options',
+      label: 'Status',
+      mode: 'multi',
+      deps: {},
+      options: [
+        { label: 'Active', value: 'active' },
+        { label: 'Inactive', value: 'inactive' },
+      ],
+    });
+
+    const optionsDescriptor = descriptor as Extract<
+      typeof descriptor,
+      { type: 'options' }
+    >;
+    const filter = optionsDescriptor.toFilter(['active'], {});
+    expect(toFilter).toHaveBeenCalledWith(['active'], {});
+    expect(filter).toEqual({
+      getCatalogFilters: expect.any(Function),
+    });
+  });
+
+  it('should support makeWithOverrides to inject config into model params', () => {
     const extension = CatalogFilterBlueprint.makeWithOverrides({
-      name: 'test-name',
-      inputs: {
-        mock: createExtensionInput([coreExtensionData.reactElement]),
+      name: 'with-config',
+      configSchema: {
+        initialFilter: z.string().default('component'),
       },
-      config: {
-        schema: {
-          test: z => z.string(),
-        },
-      },
-      factory(originalFactory, { config, inputs }) {
+      factory(originalFactory, { config }) {
         return originalFactory({
-          loader: async () => (
-            <div data-testid="test">
-              config: {config.test}
-              <div data-testid="contents">
-                {inputs.mock.map((i, k) => (
-                  <div key={k}>{i.get(coreExtensionData.reactElement)}</div>
-                ))}
-              </div>
-            </div>
-          ),
+          label: 'Kind',
+          path: 'kind',
+          mode: 'single',
+          defaultValue: config.initialFilter,
         });
       },
     });
 
-    const mockExtension = createExtension({
-      attachTo: { id: 'catalog-filter:test-name', input: 'mock' },
-      output: [coreExtensionData.reactElement],
-      factory() {
-        return [coreExtensionData.reactElement(<div>im a mock</div>)];
-      },
-    });
-
-    renderInTestApp(
-      createExtensionTester(extension, { config: { test: 'mock test config' } })
-        .add(mockExtension)
-        .reactElement(),
+    const tester = createExtensionTester(extension);
+    const descriptor = tester.get(
+      CatalogFilterBlueprint.dataRefs.filterDescriptor,
     );
 
-    await waitFor(() => {
-      expect(screen.getByTestId('test')).toBeInTheDocument();
-      expect(screen.getByTestId('test')).toHaveTextContent(
-        'config: mock test config',
-      );
-      expect(screen.getByTestId('contents')).toHaveTextContent('im a mock');
+    expect(descriptor).toEqual({
+      type: 'facet',
+      label: 'Kind',
+      path: 'kind',
+      mode: 'single',
+      defaultValue: 'component',
     });
   });
 });

@@ -17,18 +17,6 @@
 import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { z } from 'zod/v4';
 
-const catalogTagCatalogFilter = CatalogFilterBlueprint.make({
-  name: 'tag',
-  params: {
-    loader: async () => {
-      const { EntityTagPicker } = await import(
-        '@backstage/plugin-catalog-react'
-      );
-      return <EntityTagPicker />;
-    },
-  },
-});
-
 const catalogKindCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   name: 'kind',
   configSchema: {
@@ -36,12 +24,10 @@ const catalogKindCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config }) {
     return originalFactory({
-      loader: async () => {
-        const { EntityKindPicker } = await import(
-          '@backstage/plugin-catalog-react'
-        );
-        return <EntityKindPicker initialFilter={config.initialFilter} />;
-      },
+      label: 'Kind',
+      path: 'kind',
+      mode: 'single',
+      defaultValue: config.initialFilter,
     });
   },
 });
@@ -49,12 +35,36 @@ const catalogKindCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
 const catalogTypeCatalogFilter = CatalogFilterBlueprint.make({
   name: 'type',
   params: {
-    loader: async () => {
-      const { EntityTypePicker } = await import(
-        '@backstage/plugin-catalog-react'
-      );
-      return <EntityTypePicker />;
-    },
+    label: 'Type',
+    path: 'spec.type',
+    mode: 'single',
+  },
+});
+
+const catalogTagCatalogFilter = CatalogFilterBlueprint.make({
+  name: 'tag',
+  params: {
+    label: 'Tags',
+    path: 'metadata.tags',
+    mode: 'multi',
+  },
+});
+
+const catalogLifecycleCatalogFilter = CatalogFilterBlueprint.make({
+  name: 'lifecycle',
+  params: {
+    label: 'Lifecycle',
+    path: 'spec.lifecycle',
+    mode: 'multi',
+  },
+});
+
+const catalogNamespaceCatalogFilter = CatalogFilterBlueprint.make({
+  name: 'namespace',
+  params: {
+    label: 'Namespace',
+    path: 'metadata.namespace',
+    mode: 'multi',
   },
 });
 
@@ -75,38 +85,40 @@ const catalogModeCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   },
 });
 
-const catalogNamespaceCatalogFilter = CatalogFilterBlueprint.make({
-  name: 'namespace',
-  params: {
-    loader: async () => {
-      const { EntityNamespacePicker } = await import(
-        '@backstage/plugin-catalog-react'
-      );
-      return <EntityNamespacePicker />;
-    },
-  },
-});
-
-const catalogLifecycleCatalogFilter = CatalogFilterBlueprint.make({
-  name: 'lifecycle',
-  params: {
-    loader: async () => {
-      const { EntityLifecyclePicker } = await import(
-        '@backstage/plugin-catalog-react'
-      );
-      return <EntityLifecyclePicker />;
-    },
-  },
-});
-
 const catalogProcessingStatusCatalogFilter = CatalogFilterBlueprint.make({
   name: 'processing-status',
   params: {
-    loader: async () => {
-      const { EntityProcessingStatusPicker } = await import(
-        '@backstage/plugin-catalog-react'
-      );
-      return <EntityProcessingStatusPicker />;
+    label: 'Processing Status',
+    mode: 'multi',
+    options: [
+      { label: 'Is Orphan', value: 'orphan' },
+      { label: 'Has Error', value: 'error' },
+    ],
+    toFilter(selected) {
+      if (!selected.length) return undefined;
+      return {
+        getCatalogFilters() {
+          const filters: Record<string, string | string[]> = {};
+          if (selected.includes('orphan')) {
+            filters['metadata.annotations.backstage.io/orphan'] = 'true';
+          }
+          return filters;
+        },
+        filterEntity(entity) {
+          if (selected.includes('orphan')) {
+            const orphan = entity.metadata.annotations?.['backstage.io/orphan'];
+            if (orphan !== 'true') return false;
+          }
+          if (selected.includes('error')) {
+            const status = (entity as any)?.status?.items;
+            if (!status || status.length === 0) return false;
+          }
+          return true;
+        },
+        toQueryValue() {
+          return selected;
+        },
+      };
     },
   },
 });
@@ -128,7 +140,7 @@ const catalogListCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   },
 });
 
-// this is the default order that the filters will be applied in
+// the default order that the filters will be applied in
 export default [
   catalogKindCatalogFilter,
   catalogTypeCatalogFilter,

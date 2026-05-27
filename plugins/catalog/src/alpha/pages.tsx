@@ -28,6 +28,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import {
+  CatalogFilterBlueprint,
   defaultEntityContentGroupDefinitions,
   EntityContentBlueprint,
   EntityContextMenuItemBlueprint,
@@ -69,7 +70,9 @@ export const CatalogExportConfigBlueprint = createExtensionBlueprint({
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
-    filters: createExtensionInput([coreExtensionData.reactElement]),
+    filters: createExtensionInput([
+      CatalogFilterBlueprint.dataRefs.filterDescriptor,
+    ]),
     exportConfig: createExtensionInput([catalogExportConfigDataRef.optional()]),
   },
   configSchema: {
@@ -105,9 +108,41 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
         const { NfsDefaultCatalogPage } = await import(
           '../components/CatalogPage/DefaultCatalogPage'
         );
-        const filters = inputs.filters.map(filter =>
-          filter.get(coreExtensionData.reactElement),
+        const { FacetFilterPicker } = await import(
+          './components/FacetFilterPicker'
         );
+        const { OptionsFilterPicker } = await import(
+          './components/OptionsFilterPicker'
+        );
+
+        const descriptors = inputs.filters.map(filter =>
+          filter.get(CatalogFilterBlueprint.dataRefs.filterDescriptor),
+        );
+
+        const filterElements = descriptors.map(descriptor => {
+          switch (descriptor.type) {
+            case 'custom':
+              return descriptor.element;
+            case 'options':
+              return (
+                <OptionsFilterPicker
+                  key={descriptor.label}
+                  filterKey={descriptor.label}
+                  {...descriptor}
+                />
+              );
+            case 'facet':
+              return (
+                <FacetFilterPicker
+                  key={descriptor.path}
+                  filterKey={descriptor.path}
+                  {...descriptor}
+                />
+              );
+            default:
+              return null;
+          }
+        });
 
         // Merge export customizers from all attached extensions
         const mergedExportSettings: CatalogExportSettings = {
@@ -137,7 +172,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
 
         return (
           <NfsDefaultCatalogPage
-            filters={<>{filters}</>}
+            filters={<>{filterElements}</>}
             pagination={config.pagination}
             exportSettings={
               mergedExportSettings.enabled ? mergedExportSettings : undefined

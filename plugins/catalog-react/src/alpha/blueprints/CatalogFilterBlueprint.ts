@@ -16,23 +16,140 @@
 
 import {
   ExtensionBoundary,
-  coreExtensionData,
   createExtensionBlueprint,
+  createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { EntityFilter } from '../../types';
 
 /**
- * Creates Catalog Filter Extensions
+ * Describes a facet-based catalog filter rendered by the catalog page controller.
+ * The available options are fetched from catalog facets using the given path,
+ * and selections map directly to catalog backend filters.
+ * @alpha
+ */
+export interface CatalogFacetFilterDescriptor {
+  type: 'facet';
+  label: string;
+  path: string;
+  mode: 'single' | 'multi';
+  defaultValue?: string | string[];
+}
+
+/**
+ * Describes a catalog filter with static options and a custom filter factory.
+ * The options are defined upfront, and a toFilter function maps selections
+ * to an EntityFilter using injected API dependencies.
+ * @alpha
+ */
+export interface CatalogOptionsFilterDescriptor {
+  type: 'options';
+  label: string;
+  mode: 'single' | 'multi';
+  defaultValue?: string | string[];
+  options: Array<{ label: string; value: string }>;
+  deps: Record<string, ApiRef<unknown>>;
+  toFilter(
+    selected: string[],
+    deps: Record<string, unknown>,
+  ): EntityFilter | undefined | Promise<EntityFilter | undefined>;
+}
+
+/**
+ * Describes a catalog filter that provides its own rendering.
+ * @alpha
+ */
+export interface CatalogCustomFilterDescriptor {
+  type: 'custom';
+  element: JSX.Element;
+}
+
+/**
+ * @alpha
+ */
+export type CatalogFilterDescriptor =
+  | CatalogFacetFilterDescriptor
+  | CatalogOptionsFilterDescriptor
+  | CatalogCustomFilterDescriptor;
+
+const catalogFilterDescriptorDataRef =
+  createExtensionDataRef<CatalogFilterDescriptor>().with({
+    id: 'catalog.filter-descriptor',
+  });
+
+/**
+ * Creates catalog filter extensions.
+ *
+ * Supports three styles:
+ * - Facet-based: provide a label, entity path, and selection mode. The catalog
+ *   page fetches available values and renders the picker.
+ * - Options-based: provide static options with a toFilter function that maps
+ *   selections to EntityFilter objects, with API dependencies injected.
+ * - Custom component (deprecated): provide a loader that returns JSX.
+ *
  * @alpha
  */
 export const CatalogFilterBlueprint = createExtensionBlueprint({
   kind: 'catalog-filter',
   attachTo: { id: 'page:catalog', input: 'filters' },
-  output: [coreExtensionData.reactElement],
-  factory(params: { loader: () => Promise<JSX.Element> }, { node }) {
+  output: [catalogFilterDescriptorDataRef],
+  dataRefs: {
+    filterDescriptor: catalogFilterDescriptorDataRef,
+  },
+  factory(
+    params:
+      | {
+          label: string;
+          path: string;
+          mode: 'single' | 'multi';
+          defaultValue?: string | string[];
+        }
+      | {
+          label: string;
+          mode: 'single' | 'multi';
+          defaultValue?: string | string[];
+          options: Array<{ label: string; value: string }>;
+          deps?: Record<string, ApiRef<unknown>>;
+          toFilter(
+            selected: string[],
+            deps: Record<string, unknown>,
+          ): EntityFilter | undefined | Promise<EntityFilter | undefined>;
+        }
+      | {
+          /** @deprecated Use the model-based params instead. */
+          loader: () => Promise<JSX.Element>;
+        },
+    { node },
+  ) {
+    if ('loader' in params) {
+      return [
+        catalogFilterDescriptorDataRef({
+          type: 'custom',
+          element: ExtensionBoundary.lazy(node, params.loader),
+        }),
+      ];
+    }
+    if ('options' in params) {
+      return [
+        catalogFilterDescriptorDataRef({
+          type: 'options',
+          label: params.label,
+          mode: params.mode,
+          defaultValue: params.defaultValue,
+          options: params.options,
+          deps: params.deps ?? {},
+          toFilter: params.toFilter,
+        }),
+      ];
+    }
     return [
-      coreExtensionData.reactElement(
-        ExtensionBoundary.lazy(node, params.loader),
-      ),
+      catalogFilterDescriptorDataRef({
+        type: 'facet',
+        label: params.label,
+        path: params.path,
+        mode: params.mode,
+        defaultValue: params.defaultValue,
+      }),
     ];
   },
 });
