@@ -48,105 +48,161 @@ export const Default = meta.story({
   ),
 });
 
-export const RootOnly = meta.story({
+export const CollapsingBehaviour = meta.story({
   args: {},
-  decorators: [withRouter(['/my-plugin'])],
-  render: () => (
-    <Breadcrumbs>
-      <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-    </Breadcrumbs>
-  ),
-});
-
-export const InheritsStyle = meta.story({
-  args: {},
-  decorators: [withRouter(['/my-plugin/settings/theme'])],
+  decorators: [withRouter(['/'])],
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <div style={{ fontSize: '12px', color: '#e06c75' }}>
-        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>12px, red</p>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>1 segment</p>
         <Breadcrumbs>
-          <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-          <Breadcrumb href="/my-plugin/settings">Settings</Breadcrumb>
-          <Breadcrumb href="/my-plugin/settings/theme">Theme</Breadcrumb>
+          <Breadcrumb href="/home">Home</Breadcrumb>
         </Breadcrumbs>
       </div>
-      <div style={{ fontSize: '16px', color: '#61afef' }}>
-        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>16px, blue</p>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>2 segments</p>
         <Breadcrumbs>
-          <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-          <Breadcrumb href="/my-plugin/settings">Settings</Breadcrumb>
-          <Breadcrumb href="/my-plugin/settings/theme">Theme</Breadcrumb>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
         </Breadcrumbs>
       </div>
-      <div style={{ fontSize: '24px', color: '#98c379' }}>
-        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>24px, green</p>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>4 segments</p>
         <Breadcrumbs>
-          <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-          <Breadcrumb href="/my-plugin/settings">Settings</Breadcrumb>
-          <Breadcrumb href="/my-plugin/settings/theme">Theme</Breadcrumb>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
         </Breadcrumbs>
       </div>
-      <div style={{ fontSize: '36px', color: '#c678dd' }}>
-        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>36px, purple</p>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          5 segments — middle items collapse into a menu
+        </p>
         <Breadcrumbs>
-          <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-          <Breadcrumb href="/my-plugin/settings">Settings</Breadcrumb>
-          <Breadcrumb href="/my-plugin/settings/theme">Theme</Breadcrumb>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup/intro">
+            Introduction
+          </Breadcrumb>
+        </Breadcrumbs>
+      </div>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          7 segments — more items collapse
+        </p>
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup/intro">Intro</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup/intro/config">
+            Config
+          </Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup/intro/config/advanced">
+            Advanced
+          </Breadcrumb>
         </Breadcrumbs>
       </div>
     </div>
   ),
 });
 
-export const TruncatingBehaviour = meta.story({
+export const InheritsColourAndFontSize = meta.story({
   args: {},
-  decorators: [withRouter(['/create/edit/custom-fields/details'])],
+  decorators: [withRouter(['/'])],
   render: () => (
-    <Breadcrumbs>
-      <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-      <Breadcrumb href="/my-plugin/subpage">Page with short name</Breadcrumb>
-      <Breadcrumb href="/my-plugin/subpage/sub-subpage">
-        Page with long name that gets truncated
-      </Breadcrumb>
-      <Breadcrumb href="/my-plugin/subpage/sub-subpage/sub-sub-subpage">
-        Page with long name that gets truncated
-      </Breadcrumb>
-    </Breadcrumbs>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div style={{ fontSize: '12px', color: '#e06c75' }}>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>12px, red</p>
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
+      </div>
+      <div style={{ fontSize: '12px', color: '#e06c75' }}>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          12px, red — with collapsing
+        </p>
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup/intro">
+            Introduction
+          </Breadcrumb>
+        </Breadcrumbs>
+      </div>
+      <div style={{ fontSize: '24px', color: '#61afef' }}>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>24px, blue</p>
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
+      </div>
+      <div style={{ fontSize: '24px', color: '#61afef' }}>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          24px, blue — with collapsing
+        </p>
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup/intro">
+            Introduction
+          </Breadcrumb>
+        </Breadcrumbs>
+      </div>
+    </div>
   ),
 });
 
-export const CollapsesWhenMoreThanFiveItems = meta.story({
+export const TruncatesLongSegments = meta.story({
   args: {},
-  decorators: [withRouter(['/my-plugin/docs/guides/setup/intro'])],
-  render: () => {
-    const breadcrumbs = (
-      <Breadcrumbs>
-        <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-        <Breadcrumb href="/my-plugin/docs">Docs</Breadcrumb>
-        <Breadcrumb href="/my-plugin/docs/guides">Guides</Breadcrumb>
-        <Breadcrumb href="/my-plugin/docs/guides/setup">Setup</Breadcrumb>
-        <Breadcrumb href="/my-plugin/docs/guides/setup/intro">
-          Introduction
-        </Breadcrumb>
-      </Breadcrumbs>
-    );
-
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-        {breadcrumbs}
-        <div style={{ fontSize: '24px', color: '#98c379' }}>
-          <p style={{ margin: '0 0 4px', opacity: 0.6 }}>24px, green</p>
-          {breadcrumbs}
-        </div>
+  decorators: [withRouter(['/'])],
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          Default size — hover truncated segments to see tooltip. Try resizing
+          the window to see tooltips appear/disappear as segments overflow
+        </p>
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/catalog">
+            A very long breadcrumb label that will be truncated by CSS
+          </Breadcrumb>
+          <Breadcrumb href="/home/catalog/details">
+            Another extremely long segment name that overflows its container
+          </Breadcrumb>
+        </Breadcrumbs>
       </div>
-    );
-  },
+      <div style={{ fontSize: '24px' }}>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>24px</p>
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/catalog">
+            A very long breadcrumb label that will be truncated by CSS
+          </Breadcrumb>
+          <Breadcrumb href="/home/catalog/details">
+            Another extremely long segment name that overflows its container
+          </Breadcrumb>
+        </Breadcrumbs>
+      </div>
+    </div>
+  ),
 });
 
 export const MixedSegmentTypes = meta.story({
   args: {},
-  decorators: [withRouter(['/create/edit/custom-fields/details'])],
+  decorators: [withRouter(['/'])],
   render: () => (
     <Breadcrumbs>
       <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>

@@ -50,7 +50,7 @@ import {
 
 ### Truncation
 
-Non-current segments are capped at a max width. Overflowing text is truncated with an ellipsis. When a segment is truncated, a tooltip showing the full text appears on hover or focus. The current (last) segment has no max width and is displayed in bold — but if its container is constrained, it can still truncate and will also show a tooltip.
+Non-current segments are capped at a max width. Overflowing text is truncated with an ellipsis. When a segment is truncated, a tooltip showing the full text appears on hover or focus. Truncation state updates automatically on window resize, so tooltips appear or disappear as segments overflow. The current (last) segment has no max width — but if its container is constrained, it can still truncate and will also show a tooltip.
 
 <Snippet
   align="center"

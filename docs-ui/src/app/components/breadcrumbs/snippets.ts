@@ -13,35 +13,36 @@ export const defaultSnippet = `<Breadcrumbs>
 </Breadcrumbs>`;
 
 export const truncationSnippet = `<Breadcrumbs>
-  <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-  <Breadcrumb href="/my-plugin/subpage">Page with short name</Breadcrumb>
-  <Breadcrumb href="/my-plugin/subpage/sub-subpage">
-    Page with a long name that gets truncated
+  <Breadcrumb href="/home">Home</Breadcrumb>
+  <Breadcrumb href="/home/catalog">
+    A very long breadcrumb label that will be truncated by CSS
   </Breadcrumb>
-  <Breadcrumb href="/my-plugin/subpage/sub-subpage/details">
-    Current page with a long name is not truncated
+  <Breadcrumb href="/home/catalog/details">
+    Another extremely long segment name that overflows its container
   </Breadcrumb>
 </Breadcrumbs>`;
 
-export const inheritsStyleSnippet = `<div style={{ fontSize: '24px', color: '#98c379' }}>
+export const inheritsStyleSnippet = `<div style={{ fontSize: '24px', color: '#61afef' }}>
   <Breadcrumbs>
-    <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-    <Breadcrumb href="/my-plugin/settings">Settings</Breadcrumb>
-    <Breadcrumb href="/my-plugin/settings/theme">Theme</Breadcrumb>
+    <Breadcrumb href="/home">Home</Breadcrumb>
+    <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+    <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
   </Breadcrumbs>
 </div>`;
 
 export const collapsedSnippet = `<Breadcrumbs>
-  <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-  <Breadcrumb href="/my-plugin/docs">Docs</Breadcrumb>
-  <Breadcrumb href="/my-plugin/docs/guides">Guides</Breadcrumb>
-  <Breadcrumb href="/my-plugin/docs/guides/setup">Setup</Breadcrumb>
-  <Breadcrumb href="/my-plugin/docs/guides/setup/intro">Introduction</Breadcrumb>
+  <Breadcrumb href="/home">Home</Breadcrumb>
+  <Breadcrumb href="/home/docs">Docs</Breadcrumb>
+  <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
+  <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
+  <Breadcrumb href="/home/docs/guides/setup/intro">Introduction</Breadcrumb>
 </Breadcrumbs>`;
 
 export const mixedSegmentsSnippet = `<Breadcrumbs>
   <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-  <Breadcrumb>Label without link</Breadcrumb>
-  <Breadcrumb href="/my-plugin/subpage">Subpage</Breadcrumb>
-  <Breadcrumb href="/my-plugin/subpage/details">Details</Breadcrumb>
+  <Breadcrumb>Breadcrumb with no href</Breadcrumb>
+  <Breadcrumb href="/my-plugin/subpage">Breadcrumb with href</Breadcrumb>
+  <Breadcrumb href="/my-plugin/subpage/sub-subpage">
+    Breadcrumb with href but is last
+  </Breadcrumb>
 </Breadcrumbs>`;
