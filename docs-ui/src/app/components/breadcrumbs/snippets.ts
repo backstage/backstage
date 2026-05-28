@@ -38,6 +38,17 @@ export const collapsedSnippet = `<Breadcrumbs>
   <Breadcrumb href="/home/docs/guides/setup/intro">Introduction</Breadcrumb>
 </Breadcrumbs>`;
 
+export const customStylingSnippet = `<div style={{
+  '--bui-Breadcrumbs-color-current': 'var(--bui-fg-primary)',
+  '--bui-Breadcrumbs-font-weight-current': 'var(--bui-font-weight-regular)',
+}}>
+  <Breadcrumbs>
+    <Breadcrumb href="/home">Home</Breadcrumb>
+    <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+    <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+  </Breadcrumbs>
+</div>`;
+
 export const mixedSegmentsSnippet = `<Breadcrumbs>
   <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
   <Breadcrumb>Breadcrumb with no href</Breadcrumb>

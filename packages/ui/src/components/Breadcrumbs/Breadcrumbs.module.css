@@ -23,13 +23,13 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: var(--bui-space-3);
+    gap: var(--bui-Breadcrumbs-gap, var(--bui-space-3));
   }
 
   .bui-Breadcrumb {
     display: flex;
     align-items: center;
-    gap: var(--bui-space-3);
+    gap: var(--bui-Breadcrumbs-gap, var(--bui-space-3));
     min-width: 3rem;
   }
 
@@ -38,7 +38,12 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     text-decoration: none;
-    max-width: 165px;
+    max-width: var(--bui-Breadcrumbs-max-width, 165px);
+    color: var(--bui-Breadcrumbs-color, inherit);
+    font-weight: var(
+      --bui-Breadcrumbs-font-weight,
+      var(--bui-font-weight-regular)
+    );
 
     &[data-focus-visible] {
       border-radius: var(--bui-radius-1);
@@ -55,14 +60,18 @@
   }
 
   .bui-BreadcrumbLabel--current {
-    max-width: none;
-    font-weight: var(--bui-font-weight-bold);
+    max-width: var(--bui-Breadcrumbs-max-width-current, none);
+    color: var(--bui-Breadcrumbs-color-current, inherit);
+    font-weight: var(
+      --bui-Breadcrumbs-font-weight-current,
+      var(--bui-font-weight-bold)
+    );
   }
 
   .bui-BreadcrumbEllipsis {
     display: flex;
     align-items: center;
-    gap: var(--bui-space-3);
+    gap: var(--bui-Breadcrumbs-gap, var(--bui-space-3));
   }
 
   .bui-BreadcrumbEllipsisTrigger {
@@ -84,9 +93,9 @@
   }
 
   .bui-BreadcrumbSeparator {
-    color: var(--bui-fg-tertiary);
+    color: var(--bui-Breadcrumbs-separator-color, var(--bui-fg-tertiary));
     flex-shrink: 0;
-    width: 1em;
-    height: 1em;
+    width: var(--bui-Breadcrumbs-separator-size, 1em);
+    height: var(--bui-Breadcrumbs-separator-size, 1em);
   }
 }

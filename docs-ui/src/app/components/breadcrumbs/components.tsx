@@ -95,6 +95,30 @@ export const Collapsed = () => {
   );
 };
 
+export const CustomStyling = () => {
+  return (
+    <MemoryRouter>
+      <div
+        style={
+          {
+            fontSize: '18px',
+            color: '#c678dd',
+            '--bui-Breadcrumbs-color-current': 'var(--bui-fg-primary)',
+            '--bui-Breadcrumbs-font-weight-current':
+              'var(--bui-font-weight-regular)',
+          } as Record<string, string>
+        }
+      >
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
+      </div>
+    </MemoryRouter>
+  );
+};
+
 export const MixedSegments = () => {
   return (
     <MemoryRouter>

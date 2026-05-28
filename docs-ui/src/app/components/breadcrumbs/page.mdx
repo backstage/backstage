@@ -9,6 +9,7 @@ import {
   collapsedSnippet,
   inheritsStyleSnippet,
   mixedSegmentsSnippet,
+  customStylingSnippet,
 } from './snippets';
 import {
   Default,
@@ -16,7 +17,9 @@ import {
   Collapsed,
   InheritsStyle,
   MixedSegments,
+  CustomStyling,
 } from './components';
+import * as Table from '@/components/Table/Table';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -90,6 +93,78 @@ Breadcrumbs can mix linked and plain-text segments. Segments without an `href` r
   py={4}
   preview={<MixedSegments />}
   code={mixedSegmentsSnippet}
+/>
+
+## Customisation
+
+Set these CSS custom properties on a parent element or directly on the Breadcrumbs component to override default styling. All tokens are component-scoped and will not affect other components.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Token</Table.HeaderCell>
+      <Table.HeaderCell>Default</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-color`</Table.Cell>
+      <Table.Cell>`inherit`</Table.Cell>
+      <Table.Cell>Colour of non-current segments</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-color-current`</Table.Cell>
+      <Table.Cell>`inherit`</Table.Cell>
+      <Table.Cell>Colour of the current (last) segment</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-font-weight`</Table.Cell>
+      <Table.Cell>`--bui-font-weight-regular`</Table.Cell>
+      <Table.Cell>Font weight of non-current segments</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-font-weight-current`</Table.Cell>
+      <Table.Cell>`--bui-font-weight-bold`</Table.Cell>
+      <Table.Cell>Font weight of the current segment</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-max-width`</Table.Cell>
+      <Table.Cell>`165px`</Table.Cell>
+      <Table.Cell>
+        Max width of non-current segments before truncation
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-max-width-current`</Table.Cell>
+      <Table.Cell>`none`</Table.Cell>
+      <Table.Cell>
+        Max width of the current segment before truncation
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-separator-color`</Table.Cell>
+      <Table.Cell>`--bui-fg-tertiary`</Table.Cell>
+      <Table.Cell>Colour of the separator icon</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-separator-size`</Table.Cell>
+      <Table.Cell>`1em`</Table.Cell>
+      <Table.Cell>Width and height of the separator icon</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-gap`</Table.Cell>
+      <Table.Cell>`--bui-space-3`</Table.Cell>
+      <Table.Cell>Spacing between segments and separators</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<CustomStyling />}
+  code={customStylingSnippet}
 />
 
 <Theming definition={BreadcrumbsDefinition} />

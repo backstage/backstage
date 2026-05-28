@@ -214,3 +214,71 @@ export const MixedSegmentTypes = meta.story({
     </Breadcrumbs>
   ),
 });
+
+export const CustomStyling = meta.story({
+  args: {},
+  decorators: [withRouter(['/'])],
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div
+        style={
+          {
+            fontSize: '18px',
+            color: '#c678dd',
+            '--bui-Breadcrumbs-font-weight-current':
+              'var(--bui-font-weight-regular)',
+            '--bui-Breadcrumbs-color-current': 'var(--bui-fg-primary)',
+          } as Record<string, string>
+        }
+      >
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          Parent sets 18px purple — current segment overridden to regular weight
+          and foreground colour
+        </p>
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
+      </div>
+      <div
+        style={
+          {
+            '--bui-Breadcrumbs-gap': 'var(--bui-space-10)',
+            '--bui-Breadcrumbs-separator-size': '1.4em',
+          } as Record<string, string>
+        }
+      >
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          Wider gap and larger separator
+        </p>
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
+      </div>
+      <div
+        style={
+          {
+            '--bui-Breadcrumbs-max-width': '100px',
+            '--bui-Breadcrumbs-max-width-current': '200px',
+          } as Record<string, string>
+        }
+      >
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          Custom max-width — segments capped at 100px, current at 200px
+        </p>
+        <Breadcrumbs>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/catalog">
+            A long breadcrumb label that truncates earlier
+          </Breadcrumb>
+          <Breadcrumb href="/home/catalog/details">
+            Current segment also truncates at 200px instead of unlimited
+          </Breadcrumb>
+        </Breadcrumbs>
+      </div>
+    </div>
+  ),
+});
