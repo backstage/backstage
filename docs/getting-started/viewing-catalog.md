@@ -55,7 +55,7 @@ For each kind of entity, a set of columns display information regarding the enti
 - `Tags` - an optional field that can be used for searching
 - `Actions` - see [Catalog Actions](#catalog-actions)
 
-You can modify the columns associated with each kind of entity, following the instructions in [Customizing columns, actions, and table options](../features/software-catalog/catalog-customization.md#customizing-columns-actions-and-table-options).
+You can modify the columns associated with each kind of entity, following the instructions in [Customizing catalog table columns](../features/software-catalog/catalog-customization.md#customizing-catalog-table-columns).
 
 ## Catalog Actions
 
@@ -69,7 +69,7 @@ From left to right, the actions are:
 - Edit - Edit the `catalog-info.yaml` file that defines the entity. See [Updating a Component](../getting-started/update-a-component.md)
 - Star - Designate the entity as a favorite. You can [filter](../getting-started/filter-catalog.md) the catalog for starred entities.
 
-[Customizing columns, actions, and table options](../features/software-catalog/catalog-customization.md#customizing-columns-actions-and-table-options) describes how you can modify the actions that are displayed.
+[Customizing catalog table columns](../features/software-catalog/catalog-customization.md#customizing-catalog-table-columns) describes how you can modify the actions that are displayed.
 
 ## Viewing entity details
 
