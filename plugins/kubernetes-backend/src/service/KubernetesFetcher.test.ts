@@ -1686,11 +1686,7 @@ describe('KubernetesFetcher', () => {
       });
     });
 
-    // Note: Testing the null response.body check (lines 263-273) is not feasible with MSW.
-    // The Fetch API spec ensures response.body is almost always present for successful responses,
-    // making this a defensive check for an extremely rare edge case. MSW's interception architecture
-    // prevents simulating a null body on a successful response. The code path exists for safety
-    // but cannot be easily unit tested without invasive mocking that would reduce test value.
+    // MSW cannot simulate a null response.body, so this defensive path is untested
 
     it('should yield ERROR event for 401 Unauthorized', async () => {
       worker.use(
@@ -1971,106 +1967,27 @@ describe('KubernetesFetcher', () => {
       expect(events[1].type).toBe('MODIFIED');
     });
 
-    it('should respect namespace option', async () => {
+    it('should respect namespace, labelSelector, and resourceVersion options', async () => {
       const pod = {
         apiVersion: 'v1',
         kind: 'Pod',
         metadata: {
           name: 'test-pod',
           namespace: 'my-namespace',
-          resourceVersion: '100',
-        },
-      };
-
-      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
-
-      let requestedUrl = '';
-      worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          requestedUrl = req.url.pathname;
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
-          }
-          return res(ctx.status(400));
-        }),
-      );
-
-      const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
-        { namespace: 'my-namespace' },
-      )) {
-        events.push(event);
-      }
-
-      expect(events).toHaveLength(1);
-      expect(requestedUrl).toBe('/api/v1/namespaces/my-namespace/pods');
-    });
-
-    it('should respect labelSelector option', async () => {
-      const pod = {
-        apiVersion: 'v1',
-        kind: 'Pod',
-        metadata: {
-          name: 'test-pod',
-          resourceVersion: '100',
+          resourceVersion: '12345',
           labels: { app: 'frontend' },
         },
       };
 
       const watchData = JSON.stringify({ type: 'ADDED', object: pod });
 
+      let requestedUrl = '';
       let labelSelectorParam = '';
-      worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          labelSelectorParam = req.url.searchParams.get('labelSelector') || '';
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
-          }
-          return res(ctx.status(400));
-        }),
-      );
-
-      const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
-        { labelSelector: 'app=frontend' },
-      )) {
-        events.push(event);
-      }
-
-      expect(events).toHaveLength(1);
-      expect(labelSelectorParam).toBe('app=frontend');
-    });
-
-    it('should respect resourceVersion option', async () => {
-      const pod = {
-        apiVersion: 'v1',
-        kind: 'Pod',
-        metadata: { name: 'test-pod', resourceVersion: '12345' },
-      };
-
-      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
-
       let resourceVersionParam = '';
       worker.use(
         rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          requestedUrl = req.url.pathname;
+          labelSelectorParam = req.url.searchParams.get('labelSelector') || '';
           resourceVersionParam =
             req.url.searchParams.get('resourceVersion') || '';
           if (req.url.searchParams.get('watch') === 'true') {
@@ -2091,16 +2008,22 @@ describe('KubernetesFetcher', () => {
         '',
         'v1',
         'pods',
-        { resourceVersion: '12345' },
+        {
+          namespace: 'my-namespace',
+          labelSelector: 'app=frontend',
+          resourceVersion: '12345',
+        },
       )) {
         events.push(event);
       }
 
       expect(events).toHaveLength(1);
+      expect(requestedUrl).toBe('/api/v1/namespaces/my-namespace/pods');
+      expect(labelSelectorParam).toBe('app=frontend');
       expect(resourceVersionParam).toBe('12345');
     });
 
-    it('should respect timeoutSeconds option', async () => {
+    it('should respect timeoutSeconds, allowWatchBookmarks, sendInitialEvents, and resourceVersionMatch options', async () => {
       const pod = {
         apiVersion: 'v1',
         kind: 'Pod',
@@ -2110,91 +2033,15 @@ describe('KubernetesFetcher', () => {
       const watchData = JSON.stringify({ type: 'ADDED', object: pod });
 
       let timeoutSecondsParam = '';
-      worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          timeoutSecondsParam =
-            req.url.searchParams.get('timeoutSeconds') || '';
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
-          }
-          return res(ctx.status(400));
-        }),
-      );
-
-      const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
-        { timeoutSeconds: 300 },
-      )) {
-        events.push(event);
-      }
-
-      expect(events).toHaveLength(1);
-      expect(timeoutSecondsParam).toBe('300');
-    });
-
-    it('should respect allowWatchBookmarks option', async () => {
-      const pod = {
-        apiVersion: 'v1',
-        kind: 'Pod',
-        metadata: { name: 'test-pod', resourceVersion: '100' },
-      };
-
-      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
-
       let allowWatchBookmarksParam = '';
-      worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          allowWatchBookmarksParam =
-            req.url.searchParams.get('allowWatchBookmarks') || '';
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
-          }
-          return res(ctx.status(400));
-        }),
-      );
-
-      const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
-        { allowWatchBookmarks: true },
-      )) {
-        events.push(event);
-      }
-
-      expect(events).toHaveLength(1);
-      expect(allowWatchBookmarksParam).toBe('true');
-    });
-
-    it('should respect sendInitialEvents and resourceVersionMatch options', async () => {
-      const pod = {
-        apiVersion: 'v1',
-        kind: 'Pod',
-        metadata: { name: 'test-pod', resourceVersion: '100' },
-      };
-
-      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
-
       let sendInitialEventsParam = '';
       let resourceVersionMatchParam = '';
       worker.use(
         rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          timeoutSecondsParam =
+            req.url.searchParams.get('timeoutSeconds') || '';
+          allowWatchBookmarksParam =
+            req.url.searchParams.get('allowWatchBookmarks') || '';
           sendInitialEventsParam =
             req.url.searchParams.get('sendInitialEvents') || '';
           resourceVersionMatchParam =
@@ -2218,15 +2065,18 @@ describe('KubernetesFetcher', () => {
         'v1',
         'pods',
         {
+          timeoutSeconds: 300,
+          allowWatchBookmarks: true,
           sendInitialEvents: true,
           resourceVersionMatch: 'NotOlderThan',
-          allowWatchBookmarks: true,
         },
       )) {
         events.push(event);
       }
 
       expect(events).toHaveLength(1);
+      expect(timeoutSecondsParam).toBe('300');
+      expect(allowWatchBookmarksParam).toBe('true');
       expect(sendInitialEventsParam).toBe('true');
       expect(resourceVersionMatchParam).toBe('NotOlderThan');
     });
