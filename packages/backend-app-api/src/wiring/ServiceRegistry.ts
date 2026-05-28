@@ -252,15 +252,20 @@ export class ServiceRegistry {
   get<T, TInstances extends 'singleton' | 'multiton'>(
     ref: ServiceRef<T, 'plugin' | 'root', TInstances>,
     pluginId: string,
-  ):
-    | [Promise<TInstances extends 'multiton' ? T[] : T>, true]
-    | [undefined, false] {
+  ): [Promise<TInstances extends 'multiton' ? T[] : T> | undefined, boolean] {
     this.#instantiatedFactories.add(ref.id);
 
     const resolvedFactory = this.#resolveFactory(ref, pluginId);
 
     if (!resolvedFactory) {
-      return [undefined, false];
+      return [
+        ref.multiton
+          ? (Promise.resolve([]) as
+              | Promise<TInstances extends 'multiton' ? T[] : T>
+              | undefined)
+          : undefined,
+        false,
+      ];
     }
 
     const resultPromise = resolvedFactory
