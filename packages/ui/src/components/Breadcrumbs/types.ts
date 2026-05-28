@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import type { TextOwnProps } from '../Text/types';
+
 /**
  * Own props for the {@link Breadcrumb} component.
  *
  * @public
  */
 export interface BreadcrumbOwnProps {
+  as?: TextOwnProps['as'];
   href?: string;
   children: React.ReactNode;
 }

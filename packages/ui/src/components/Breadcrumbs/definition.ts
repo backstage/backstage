@@ -49,6 +49,7 @@ export const BreadcrumbDefinition = defineComponent<BreadcrumbOwnProps>()({
     separator: 'bui-BreadcrumbSeparator',
   },
   propDefs: {
+    as: { default: 'span' },
     href: {},
     children: {},
   },

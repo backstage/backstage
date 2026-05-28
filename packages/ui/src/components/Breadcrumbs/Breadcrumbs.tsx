@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+/**
+ * Uses RAC Breadcrumbs for accessibility (aria-current, keyboard nav, semantic nav/ol).
+ * RAC expects its own primitives as children — substituting BUI Link or Text breaks the
+ * ARIA wiring. Underline and typography styles are matched via CSS tokens instead.
+ */
+
 import { Children, isValidElement } from 'react';
-// RAC Link is used instead of BUI Link because RAC Breadcrumb expects its own
-// Link primitive to wire up aria-current and breadcrumb navigation semantics.
 import {
   Breadcrumbs as RACBreadcrumbs,
   Breadcrumb as RACBreadcrumb,
@@ -30,15 +34,25 @@ import { BreadcrumbsDefinition, BreadcrumbDefinition } from './definition';
 import { Tooltip, TooltipTrigger } from '../Tooltip';
 import { MenuTrigger, Menu, MenuItem } from '../Menu';
 import type { BreadcrumbProps, BreadcrumbsProps } from './types';
+import { TextOwnProps } from '../Text';
 
 function BreadcrumbContent(props: {
+  as?: TextOwnProps['as'];
   href?: string;
   isCurrent: boolean;
   labelClassName: string;
   currentClassName: string;
   children: React.ReactNode;
 }) {
-  const { href, isCurrent, labelClassName, currentClassName, children } = props;
+  const {
+    as = 'span',
+    href,
+    isCurrent,
+    labelClassName,
+    currentClassName,
+    children,
+  } = props;
+  const Component = as as React.ElementType;
   const { ref, truncated } = useIsTruncated();
   const className = `${labelClassName}${
     isCurrent ? ` ${currentClassName}` : ''
@@ -55,9 +69,9 @@ function BreadcrumbContent(props: {
       </Link>
     ) : (
       <Focusable>
-        <span className={className} ref={ref as React.Ref<HTMLSpanElement>}>
+        <Component className={className} ref={ref}>
           {children}
-        </span>
+        </Component>
       </Focusable>
     );
 
@@ -82,13 +96,14 @@ export const Breadcrumb = (props: BreadcrumbProps) => {
     BreadcrumbDefinition,
     props,
   );
-  const { classes, href, children } = ownProps;
+  const { classes, as, href, children } = ownProps;
 
   return (
     <RACBreadcrumb className={classes.root} {...dataAttributes} {...restProps}>
       {({ isCurrent }) => (
         <>
           <BreadcrumbContent
+            as={as}
             href={href}
             isCurrent={isCurrent}
             labelClassName={classes.label}

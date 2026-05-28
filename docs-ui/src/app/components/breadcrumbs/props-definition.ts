@@ -5,6 +5,28 @@ export const breadcrumbsPropDefs: Record<string, PropDef> = {
 };
 
 export const breadcrumbPropDefs: Record<string, PropDef> = {
+  as: {
+    type: 'enum',
+    values: [
+      'span',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'p',
+      'div',
+      'label',
+      'strong',
+      'em',
+      'small',
+      'legend',
+    ],
+    default: 'span',
+    description:
+      'The HTML element to render for non-link breadcrumbs. Ignored when href is provided and the item is not the current segment.',
+  },
   href: {
     type: 'string',
     description:

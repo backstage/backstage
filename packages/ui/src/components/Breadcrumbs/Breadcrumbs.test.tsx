@@ -103,6 +103,19 @@ describe('Breadcrumbs', () => {
     expect(screen.getByText('No Link').tagName).toBe('SPAN');
   });
 
+  it('should render the current item with a custom element when as is provided', () => {
+    render(
+      <Breadcrumbs>
+        <Breadcrumb href="/home">Home</Breadcrumb>
+        <Breadcrumb as="h2">Page Title</Breadcrumb>
+      </Breadcrumbs>,
+      { wrapper: Wrapper },
+    );
+
+    const title = screen.getByText('Page Title');
+    expect(title.tagName).toBe('H2');
+  });
+
   it('should render a single breadcrumb as current with no separators', () => {
     const { container } = render(
       <Breadcrumbs>
