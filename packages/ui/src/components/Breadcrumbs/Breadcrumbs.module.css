@@ -35,37 +35,11 @@
   }
 
   .bui-BreadcrumbLabel {
-    margin: 0;
-    padding: 0;
-    font-size: inherit;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-decoration: none;
     max-width: var(--bui-Breadcrumbs-max-width, 165px);
-    color: var(--bui-Breadcrumbs-color, inherit);
-    font-weight: var(
-      --bui-Breadcrumbs-font-weight,
-      var(--bui-font-weight-regular)
-    );
-
-    &[data-focus-visible] {
-      border-radius: var(--bui-radius-1);
-      outline: 2px solid var(--bui-color-focus);
-    }
-  }
-
-  a.bui-BreadcrumbLabel {
-    cursor: pointer;
   }
 
   .bui-BreadcrumbLabel--current {
     max-width: var(--bui-Breadcrumbs-max-width-current, none);
-    color: var(--bui-Breadcrumbs-color-current, inherit);
-    font-weight: var(
-      --bui-Breadcrumbs-font-weight-current,
-      var(--bui-font-weight-bold)
-    );
   }
 
   .bui-BreadcrumbEllipsis {
@@ -86,21 +60,25 @@
       border-radius: var(--bui-radius-1);
       outline: 2px solid var(--bui-color-focus);
     }
-  }
 
-  a.bui-BreadcrumbLabel[data-hovered],
-  .bui-BreadcrumbEllipsisTrigger[data-hovered] {
-    text-decoration-line: underline;
-    text-decoration-style: solid;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 2px;
-    text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+    &[data-hovered] {
+      text-decoration-line: underline;
+      text-decoration-style: solid;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+      text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+    }
   }
 
   .bui-BreadcrumbSeparator {
+    display: flex;
+    align-items: center;
     color: var(--bui-Breadcrumbs-separator-color, var(--bui-fg-tertiary));
     flex-shrink: 0;
-    width: var(--bui-Breadcrumbs-separator-size, 1em);
-    height: var(--bui-Breadcrumbs-separator-size, 1em);
+
+    & > svg {
+      width: var(--bui-Breadcrumbs-separator-size, 1em);
+      height: var(--bui-Breadcrumbs-separator-size, 1em);
+    }
   }
 }

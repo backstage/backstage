@@ -15,7 +15,11 @@
  */
 
 import { defineComponent } from '../../hooks/useDefinition';
-import type { BreadcrumbsOwnProps, BreadcrumbOwnProps } from './types';
+import type {
+  BreadcrumbsOwnProps,
+  BreadcrumbSegmentOwnProps,
+  BreadcrumbCurrentOwnProps,
+} from './types';
 import styles from './Breadcrumbs.module.css';
 
 /**
@@ -33,24 +37,51 @@ export const BreadcrumbsDefinition = defineComponent<BreadcrumbsOwnProps>()({
   propDefs: {
     children: {},
     className: {},
+    separator: {},
+    variant: {},
+    weight: {},
+    color: {},
   },
 });
 
 /**
- * Component definition for Breadcrumb.
+ * Component definition for BreadcrumbSegment.
  * @public
  */
-export const BreadcrumbDefinition = defineComponent<BreadcrumbOwnProps>()({
-  styles,
-  classNames: {
-    root: 'bui-Breadcrumb',
-    label: 'bui-BreadcrumbLabel',
-    current: 'bui-BreadcrumbLabel--current',
-    separator: 'bui-BreadcrumbSeparator',
-  },
-  propDefs: {
-    as: { default: 'span' },
-    href: {},
-    children: {},
-  },
-});
+export const BreadcrumbSegmentDefinition =
+  defineComponent<BreadcrumbSegmentOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-Breadcrumb',
+      label: 'bui-BreadcrumbLabel',
+      separator: 'bui-BreadcrumbSeparator',
+    },
+    propDefs: {
+      href: {},
+      variant: {},
+      weight: {},
+      color: {},
+      children: {},
+    },
+  });
+
+/**
+ * Component definition for BreadcrumbCurrent.
+ * @public
+ */
+export const BreadcrumbCurrentDefinition =
+  defineComponent<BreadcrumbCurrentOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-Breadcrumb',
+      label: 'bui-BreadcrumbLabel',
+      current: 'bui-BreadcrumbLabel--current',
+    },
+    propDefs: {
+      as: { default: 'span' },
+      variant: {},
+      weight: {},
+      color: {},
+      children: {},
+    },
+  });

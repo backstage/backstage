@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-export { Breadcrumbs, Breadcrumb } from './Breadcrumbs';
-export { BreadcrumbsDefinition, BreadcrumbDefinition } from './definition';
+export {
+  Breadcrumbs,
+  BreadcrumbSegment,
+  BreadcrumbCurrent,
+} from './Breadcrumbs';
+export {
+  BreadcrumbsDefinition,
+  BreadcrumbSegmentDefinition,
+  BreadcrumbCurrentDefinition,
+} from './definition';
 export type {
-  BreadcrumbOwnProps,
-  BreadcrumbProps,
+  BreadcrumbTextProps,
   BreadcrumbsOwnProps,
   BreadcrumbsProps,
+  BreadcrumbSegmentOwnProps,
+  BreadcrumbSegmentProps,
+  BreadcrumbCurrentOwnProps,
+  BreadcrumbCurrentProps,
 } from './types';

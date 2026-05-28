@@ -16,7 +16,11 @@
 
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
-import { Breadcrumbs, Breadcrumb } from './Breadcrumbs';
+import {
+  Breadcrumbs,
+  BreadcrumbSegment,
+  BreadcrumbCurrent,
+} from './Breadcrumbs';
 import { MemoryRouter } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 
@@ -41,9 +45,9 @@ export const Default = meta.story({
   decorators: [withRouter(['/my-plugin/settings/theme'])],
   render: () => (
     <Breadcrumbs>
-      <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>
-      <Breadcrumb href="/my-plugin/settings">Settings</Breadcrumb>
-      <Breadcrumb href="/my-plugin/settings/theme">Theme</Breadcrumb>
+      <BreadcrumbSegment href="/my-plugin">My Plugin</BreadcrumbSegment>
+      <BreadcrumbSegment href="/my-plugin/settings">Settings</BreadcrumbSegment>
+      <BreadcrumbCurrent>Theme</BreadcrumbCurrent>
     </Breadcrumbs>
   ),
 });
@@ -56,23 +60,23 @@ export const CollapsingBehaviour = meta.story({
       <div>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>1 segment</p>
         <Breadcrumbs>
-          <Breadcrumb href="/home">Home</Breadcrumb>
+          <BreadcrumbCurrent>Home</BreadcrumbCurrent>
         </Breadcrumbs>
       </div>
       <div>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>2 segments</p>
         <Breadcrumbs>
-          <Breadcrumb href="/home">Home</Breadcrumb>
-          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
+          <BreadcrumbSegment href="/home">Home</BreadcrumbSegment>
+          <BreadcrumbCurrent>Docs</BreadcrumbCurrent>
         </Breadcrumbs>
       </div>
       <div>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>4 segments</p>
         <Breadcrumbs>
-          <Breadcrumb href="/home">Home</Breadcrumb>
-          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
-          <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
-          <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
+          <BreadcrumbSegment href="/home">Home</BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/docs">Docs</BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/docs/guides">Guides</BreadcrumbSegment>
+          <BreadcrumbCurrent>Setup</BreadcrumbCurrent>
         </Breadcrumbs>
       </div>
       <div>
@@ -80,13 +84,13 @@ export const CollapsingBehaviour = meta.story({
           5 segments — middle items collapse into a menu
         </p>
         <Breadcrumbs>
-          <Breadcrumb href="/home">Home</Breadcrumb>
-          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
-          <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
-          <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
-          <Breadcrumb href="/home/docs/guides/setup/intro">
-            Introduction
-          </Breadcrumb>
+          <BreadcrumbSegment href="/home">Home</BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/docs">Docs</BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/docs/guides">Guides</BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/docs/guides/setup">
+            Setup
+          </BreadcrumbSegment>
+          <BreadcrumbCurrent>Introduction</BreadcrumbCurrent>
         </Breadcrumbs>
       </div>
       <div>
@@ -94,17 +98,19 @@ export const CollapsingBehaviour = meta.story({
           7 segments — more items collapse
         </p>
         <Breadcrumbs>
-          <Breadcrumb href="/home">Home</Breadcrumb>
-          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
-          <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
-          <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
-          <Breadcrumb href="/home/docs/guides/setup/intro">Intro</Breadcrumb>
-          <Breadcrumb href="/home/docs/guides/setup/intro/config">
+          <BreadcrumbSegment href="/home">Home</BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/docs">Docs</BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/docs/guides">Guides</BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/docs/guides/setup">
+            Setup
+          </BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/docs/guides/setup/intro">
+            Intro
+          </BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/docs/guides/setup/intro/config">
             Config
-          </Breadcrumb>
-          <Breadcrumb href="/home/docs/guides/setup/intro/config/advanced">
-            Advanced
-          </Breadcrumb>
+          </BreadcrumbSegment>
+          <BreadcrumbCurrent>Advanced</BreadcrumbCurrent>
         </Breadcrumbs>
       </div>
     </div>
@@ -181,25 +187,25 @@ export const TruncatesLongSegments = meta.story({
           the window to see tooltips appear/disappear as segments overflow
         </p>
         <Breadcrumbs>
-          <Breadcrumb href="/home">Home</Breadcrumb>
-          <Breadcrumb href="/home/catalog">
+          <BreadcrumbSegment href="/home">Home</BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/catalog">
             A very long breadcrumb label that will be truncated by CSS
-          </Breadcrumb>
-          <Breadcrumb href="/home/catalog/details">
+          </BreadcrumbSegment>
+          <BreadcrumbCurrent>
             Another extremely long segment name that overflows its container
-          </Breadcrumb>
+          </BreadcrumbCurrent>
         </Breadcrumbs>
       </div>
       <div style={{ fontSize: '24px' }}>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>24px</p>
         <Breadcrumbs>
-          <Breadcrumb href="/home">Home</Breadcrumb>
-          <Breadcrumb href="/home/catalog">
+          <BreadcrumbSegment href="/home">Home</BreadcrumbSegment>
+          <BreadcrumbSegment href="/home/catalog">
             A very long breadcrumb label that will be truncated by CSS
-          </Breadcrumb>
-          <Breadcrumb href="/home/catalog/details">
+          </BreadcrumbSegment>
+          <BreadcrumbCurrent>
             Another extremely long segment name that overflows its container
-          </Breadcrumb>
+          </BreadcrumbCurrent>
         </Breadcrumbs>
       </div>
     </div>

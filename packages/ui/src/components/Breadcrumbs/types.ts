@@ -17,31 +17,24 @@
 import type { TextOwnProps } from '../Text/types';
 
 /**
- * Own props for the {@link Breadcrumb} component.
+ * Shared text styling props used by Breadcrumbs, BreadcrumbSegment, and BreadcrumbCurrent.
  *
  * @public
  */
-export interface BreadcrumbOwnProps {
-  as?: TextOwnProps['as'];
-  href?: string;
-  children: React.ReactNode;
-}
-
-/**
- * Props for the {@link Breadcrumb} component.
- *
- * @public
- */
-export interface BreadcrumbProps extends BreadcrumbOwnProps {}
+export type BreadcrumbTextProps = Pick<
+  TextOwnProps,
+  'variant' | 'weight' | 'color'
+>;
 
 /**
  * Own props for the {@link Breadcrumbs} component.
  *
  * @public
  */
-export interface BreadcrumbsOwnProps {
+export interface BreadcrumbsOwnProps extends BreadcrumbTextProps {
   children: React.ReactNode;
   className?: string;
+  separator?: React.ReactNode;
 }
 
 /**
@@ -50,3 +43,37 @@ export interface BreadcrumbsOwnProps {
  * @public
  */
 export interface BreadcrumbsProps extends BreadcrumbsOwnProps {}
+
+/**
+ * Own props for the {@link BreadcrumbSegment} component.
+ *
+ * @public
+ */
+export interface BreadcrumbSegmentOwnProps extends BreadcrumbTextProps {
+  href: string;
+  children: React.ReactNode;
+}
+
+/**
+ * Props for the {@link BreadcrumbSegment} component.
+ *
+ * @public
+ */
+export interface BreadcrumbSegmentProps extends BreadcrumbSegmentOwnProps {}
+
+/**
+ * Own props for the {@link BreadcrumbCurrent} component.
+ *
+ * @public
+ */
+export interface BreadcrumbCurrentOwnProps extends BreadcrumbTextProps {
+  as?: TextOwnProps['as'];
+  children: React.ReactNode;
+}
+
+/**
+ * Props for the {@link BreadcrumbCurrent} component.
+ *
+ * @public
+ */
+export interface BreadcrumbCurrentProps extends BreadcrumbCurrentOwnProps {}

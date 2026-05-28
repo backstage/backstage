@@ -14,112 +14,104 @@
  * limitations under the License.
  */
 
-/**
- * Uses RAC Breadcrumbs for accessibility (aria-current, keyboard nav, semantic nav/ol).
- * RAC expects its own primitives as children — substituting BUI Link or Text breaks the
- * ARIA wiring. Underline and typography styles are matched via CSS tokens instead.
- */
-
-import { Children, isValidElement } from 'react';
-import {
-  Breadcrumbs as RACBreadcrumbs,
-  Breadcrumb as RACBreadcrumb,
-  Button as RACButton,
-  Link,
-} from 'react-aria-components';
-import { Focusable } from 'react-aria';
+import { Children, createContext, isValidElement, useContext } from 'react';
+import { Button as RACButton } from 'react-aria-components';
 import { RiArrowRightSLine } from '@remixicon/react';
 import { useDefinition, useIsTruncated } from '../../hooks';
-import { BreadcrumbsDefinition, BreadcrumbDefinition } from './definition';
+import {
+  BreadcrumbsDefinition,
+  BreadcrumbSegmentDefinition,
+  BreadcrumbCurrentDefinition,
+} from './definition';
 import { Tooltip, TooltipTrigger } from '../Tooltip';
+import { Link } from '../Link';
+import { Text } from '../Text';
 import { MenuTrigger, Menu, MenuItem } from '../Menu';
-import type { BreadcrumbProps, BreadcrumbsProps } from './types';
-import { TextOwnProps } from '../Text';
+import type {
+  BreadcrumbTextProps,
+  BreadcrumbSegmentProps,
+  BreadcrumbCurrentProps,
+  BreadcrumbsProps,
+} from './types';
 
-function BreadcrumbContent(props: {
-  as?: TextOwnProps['as'];
-  href?: string;
-  isCurrent: boolean;
-  labelClassName: string;
-  currentClassName: string;
-  children: React.ReactNode;
-}) {
-  const {
-    as = 'span',
-    href,
-    isCurrent,
-    labelClassName,
-    currentClassName,
-    children,
-  } = props;
-  const Component = as as React.ElementType;
-  const { ref, truncated } = useIsTruncated();
-  const className = `${labelClassName}${
-    isCurrent ? ` ${currentClassName}` : ''
-  }`;
-
-  const content =
-    href && !isCurrent ? (
-      <Link
-        href={href}
-        className={className}
-        ref={ref as React.Ref<HTMLAnchorElement>}
-      >
-        {children}
-      </Link>
-    ) : (
-      <Focusable>
-        <Component className={className} ref={ref}>
-          {children}
-        </Component>
-      </Focusable>
-    );
-
-  return (
-    <TooltipTrigger delay={300} isDisabled={!truncated}>
-      {content}
-      <Tooltip>{children}</Tooltip>
-    </TooltipTrigger>
-  );
-}
+const BreadcrumbsContext = createContext<BreadcrumbTextProps>({});
 
 /**
- * A single breadcrumb item. Renders as a link when `href` is provided,
- * or as plain text for the current (last) item. The chevron separator
- * is rendered automatically for non-current items. A tooltip is shown
- * when the text is truncated.
+ * A breadcrumb segment that renders as a link.
+ * A tooltip is shown when the text is truncated.
  *
  * @public
  */
-export const Breadcrumb = (props: BreadcrumbProps) => {
+export const BreadcrumbSegment = (props: BreadcrumbSegmentProps) => {
   const { ownProps, restProps, dataAttributes } = useDefinition(
-    BreadcrumbDefinition,
+    BreadcrumbSegmentDefinition,
     props,
   );
-  const { classes, as, href, children } = ownProps;
+  const { classes, href, variant, weight, color, children } = ownProps;
+  const ctx = useContext(BreadcrumbsContext);
+  const { ref, truncated } = useIsTruncated();
 
   return (
-    <RACBreadcrumb className={classes.root} {...dataAttributes} {...restProps}>
-      {({ isCurrent }) => (
-        <>
-          <BreadcrumbContent
-            as={as}
-            href={href}
-            isCurrent={isCurrent}
-            labelClassName={classes.label}
-            currentClassName={classes.current}
-          >
-            {children}
-          </BreadcrumbContent>
-          {!isCurrent && (
-            <RiArrowRightSLine
-              className={classes.separator}
-              aria-hidden="true"
-            />
-          )}
-        </>
-      )}
-    </RACBreadcrumb>
+    <li className={classes.root} {...dataAttributes} {...restProps}>
+      <TooltipTrigger delay={300} isDisabled={!truncated}>
+        <Link
+          href={href}
+          className={classes.label}
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          variant={variant ?? ctx.variant}
+          weight={weight ?? ctx.weight}
+          color={color ?? ctx.color}
+          standalone
+          truncate
+        >
+          {children}
+        </Link>
+        <Tooltip>{children}</Tooltip>
+      </TooltipTrigger>
+    </li>
+  );
+};
+
+/**
+ * The current (last) breadcrumb item. Renders as plain text with
+ * `aria-current="page"`. Supports the `as` prop for semantic elements.
+ * A tooltip is shown when the text is truncated.
+ *
+ * @public
+ */
+export const BreadcrumbCurrent = (props: BreadcrumbCurrentProps) => {
+  const { ownProps, restProps, dataAttributes } = useDefinition(
+    BreadcrumbCurrentDefinition,
+    props,
+  );
+  const { classes, as, variant, weight, color, children } = ownProps;
+  const ctx = useContext(BreadcrumbsContext);
+  const { ref, truncated } = useIsTruncated();
+  const className = `${classes.label} ${classes.current}`;
+
+  return (
+    <li
+      className={classes.root}
+      aria-current="page"
+      data-current
+      {...dataAttributes}
+      {...restProps}
+    >
+      <TooltipTrigger delay={300} isDisabled={!truncated}>
+        <Text
+          as={as}
+          className={className}
+          ref={ref as React.Ref<HTMLElement>}
+          variant={variant ?? ctx.variant}
+          weight={weight ?? ctx.weight}
+          color={color ?? ctx.color}
+          truncate
+        >
+          {children}
+        </Text>
+        <Tooltip>{children}</Tooltip>
+      </TooltipTrigger>
+    </li>
   );
 };
 
@@ -131,36 +123,48 @@ function CollapsedBreadcrumb(props: {
   items: Array<{ href?: string; label: React.ReactNode }>;
   ellipsisClassName: string;
   triggerClassName: string;
-  separatorClassName: string;
 }) {
-  const { items, ellipsisClassName, triggerClassName, separatorClassName } =
-    props;
-
   return (
-    <RACBreadcrumb className={ellipsisClassName}>
+    <li className={props.ellipsisClassName}>
       <MenuTrigger>
-        {/* Plain button instead of ButtonIcon to avoid padding that shifts the breadcrumb baseline */}
         <RACButton
-          className={triggerClassName}
+          className={props.triggerClassName}
           aria-label="Show more breadcrumbs"
         >
           …
         </RACButton>
         <Menu>
-          {items.map((item, i) => (
+          {props.items.map((item, i) => (
             <MenuItem key={i} href={item.href}>
               {item.label}
             </MenuItem>
           ))}
         </Menu>
       </MenuTrigger>
-      <RiArrowRightSLine className={separatorClassName} aria-hidden="true" />
-    </RACBreadcrumb>
+    </li>
   );
 }
 
+function interleave(
+  items: React.ReactNode[],
+  separator: React.ReactNode,
+): React.ReactNode[] {
+  const result: React.ReactNode[] = [];
+  items.forEach((child, i) => {
+    result.push(child);
+    if (i < items.length - 1) {
+      result.push(
+        <li key={`__bui-sep-${i}`} role="presentation" aria-hidden="true">
+          {separator}
+        </li>,
+      );
+    }
+  });
+  return result;
+}
+
 /**
- * A breadcrumb navigation bar built on React Aria's Breadcrumbs.
+ * A breadcrumb navigation bar.
  * When there are 5 or more items, middle items collapse into an
  * ellipsis menu — the first item and last two items stay visible.
  *
@@ -171,40 +175,50 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
     BreadcrumbsDefinition,
     props,
   );
-  const { classes, children } = ownProps;
+  const { classes, separator, variant, weight, color, children } = ownProps;
 
   const childArray = Children.toArray(children).filter(isValidElement);
-  let renderedChildren: React.ReactNode = children;
+  const totalItems = childArray.length;
+  let items: React.ReactNode[];
 
-  if (childArray.length >= COLLAPSE_THRESHOLD) {
+  if (totalItems >= COLLAPSE_THRESHOLD) {
     const beforeItems = childArray.slice(0, ITEMS_BEFORE);
     const collapsedItems = childArray.slice(
       ITEMS_BEFORE,
-      childArray.length - ITEMS_AFTER,
+      totalItems - ITEMS_AFTER,
     );
-    const afterItems = childArray.slice(childArray.length - ITEMS_AFTER);
+    const afterItems = childArray.slice(totalItems - ITEMS_AFTER);
 
     const menuItems = collapsedItems.map(child => ({
-      href: (child.props as BreadcrumbProps).href,
-      label: (child.props as BreadcrumbProps).children,
+      href: (child.props as BreadcrumbSegmentProps).href,
+      label: (child.props as BreadcrumbSegmentProps).children,
     }));
 
-    renderedChildren = [
+    items = [
       ...beforeItems,
       <CollapsedBreadcrumb
         key="__bui-breadcrumb-ellipsis"
         items={menuItems}
         ellipsisClassName={classes.ellipsis}
         triggerClassName={classes.ellipsisTrigger}
-        separatorClassName={classes.separator}
       />,
       ...afterItems,
     ];
+  } else {
+    items = childArray;
   }
 
+  const separatorNode = (
+    <span className={classes.separator} aria-hidden="true">
+      {separator ?? <RiArrowRightSLine />}
+    </span>
+  );
+
   return (
-    <RACBreadcrumbs className={classes.root} {...dataAttributes} {...restProps}>
-      {renderedChildren}
-    </RACBreadcrumbs>
+    <BreadcrumbsContext.Provider value={{ variant, weight, color }}>
+      <nav aria-label="Breadcrumbs" {...dataAttributes} {...restProps}>
+        <ol className={classes.root}>{interleave(items, separatorNode)}</ol>
+      </nav>
+    </BreadcrumbsContext.Provider>
   );
 };

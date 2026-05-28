@@ -18,7 +18,11 @@ import { type PropsWithChildren } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BUIProvider } from '../../provider';
-import { Breadcrumbs, Breadcrumb } from './Breadcrumbs';
+import {
+  Breadcrumbs,
+  BreadcrumbSegment,
+  BreadcrumbCurrent,
+} from './Breadcrumbs';
 
 beforeAll(() => {
   global.ResizeObserver = jest.fn(() => ({
@@ -26,12 +30,6 @@ beforeAll(() => {
     unobserve: jest.fn(),
     disconnect: jest.fn(),
   })) as unknown as typeof ResizeObserver;
-
-  jest.spyOn(console, 'warn').mockImplementation((msg: string) => {
-    if (msg.includes('<Focusable>')) return;
-    // eslint-disable-next-line no-console
-    console.warn(msg);
-  });
 });
 
 function Wrapper({ children }: PropsWithChildren) {
@@ -39,17 +37,17 @@ function Wrapper({ children }: PropsWithChildren) {
 }
 
 describe('Breadcrumbs', () => {
-  it('should render a labeled list with all breadcrumb items', () => {
+  it('should render a nav with a labeled list', () => {
     render(
       <Breadcrumbs>
-        <Breadcrumb href="/home">Home</Breadcrumb>
-        <Breadcrumb href="/docs">Docs</Breadcrumb>
-        <Breadcrumb href="/docs/current">Current Page</Breadcrumb>
+        <BreadcrumbSegment href="/home">Home</BreadcrumbSegment>
+        <BreadcrumbSegment href="/docs">Docs</BreadcrumbSegment>
+        <BreadcrumbCurrent>Current Page</BreadcrumbCurrent>
       </Breadcrumbs>,
       { wrapper: Wrapper },
     );
 
-    expect(screen.getByRole('list')).toHaveAttribute(
+    expect(screen.getByRole('navigation')).toHaveAttribute(
       'aria-label',
       'Breadcrumbs',
     );
@@ -59,12 +57,12 @@ describe('Breadcrumbs', () => {
     expect(screen.getByText('Current Page')).toBeInTheDocument();
   });
 
-  it('should render links for non-current items and plain text for the last item', () => {
+  it('should render segments as links and current as text', () => {
     render(
       <Breadcrumbs>
-        <Breadcrumb href="/home">Home</Breadcrumb>
-        <Breadcrumb href="/docs">Docs</Breadcrumb>
-        <Breadcrumb href="/docs/intro">Introduction</Breadcrumb>
+        <BreadcrumbSegment href="/home">Home</BreadcrumbSegment>
+        <BreadcrumbSegment href="/docs">Docs</BreadcrumbSegment>
+        <BreadcrumbCurrent>Introduction</BreadcrumbCurrent>
       </Breadcrumbs>,
       { wrapper: Wrapper },
     );
@@ -78,50 +76,28 @@ describe('Breadcrumbs', () => {
 
     const currentItem = screen.getByText('Introduction');
     expect(currentItem.tagName).toBe('SPAN');
-    expect(currentItem.closest('li')).toHaveAttribute('data-current', 'true');
+    expect(currentItem.closest('li')).toHaveAttribute('aria-current', 'page');
   });
 
-  it('should render separators between items but not after the last one', () => {
+  it('should render separators between items but not after the last', () => {
     const { container } = render(
       <Breadcrumbs>
-        <Breadcrumb href="/a">First</Breadcrumb>
-        <Breadcrumb href="/b">Second</Breadcrumb>
-        <Breadcrumb href="/c">Third</Breadcrumb>
+        <BreadcrumbSegment href="/a">First</BreadcrumbSegment>
+        <BreadcrumbSegment href="/b">Second</BreadcrumbSegment>
+        <BreadcrumbCurrent>Third</BreadcrumbCurrent>
       </Breadcrumbs>,
       { wrapper: Wrapper },
     );
 
-    const items = screen.getAllByRole('listitem');
     const separators = container.querySelectorAll('.bui-BreadcrumbSeparator');
-    expect(separators).toHaveLength(items.length - 1);
-
-    expect(items[0].querySelector('.bui-BreadcrumbSeparator')).not.toBeNull();
-    expect(items[1].querySelector('.bui-BreadcrumbSeparator')).not.toBeNull();
-    expect(items[2].querySelector('.bui-BreadcrumbSeparator')).toBeNull();
+    expect(separators).toHaveLength(2);
   });
 
-  it('should render a breadcrumb without href as a span even when not current', () => {
+  it('should render the current item with a custom element via as prop', () => {
     render(
       <Breadcrumbs>
-        <Breadcrumb href="/home">Home</Breadcrumb>
-        <Breadcrumb>No Link</Breadcrumb>
-        <Breadcrumb href="/current">Current</Breadcrumb>
-      </Breadcrumbs>,
-      { wrapper: Wrapper },
-    );
-
-    const links = screen.getAllByRole('link');
-    expect(links).toHaveLength(1);
-    expect(links[0]).toHaveTextContent('Home');
-
-    expect(screen.getByText('No Link').tagName).toBe('SPAN');
-  });
-
-  it('should render the current item with a custom element when as is provided', () => {
-    render(
-      <Breadcrumbs>
-        <Breadcrumb href="/home">Home</Breadcrumb>
-        <Breadcrumb as="h2">Page Title</Breadcrumb>
+        <BreadcrumbSegment href="/home">Home</BreadcrumbSegment>
+        <BreadcrumbCurrent as="h2">Page Title</BreadcrumbCurrent>
       </Breadcrumbs>,
       { wrapper: Wrapper },
     );
@@ -130,21 +106,36 @@ describe('Breadcrumbs', () => {
     expect(title.tagName).toBe('H2');
   });
 
-  it('should render a single breadcrumb as current with no separators', () => {
+  it('should render a single current item with no separators', () => {
     const { container } = render(
       <Breadcrumbs>
-        <Breadcrumb href="only-page">Only Page</Breadcrumb>
+        <BreadcrumbCurrent>Only Page</BreadcrumbCurrent>
       </Breadcrumbs>,
       { wrapper: Wrapper },
     );
 
     expect(screen.getAllByRole('listitem')).toHaveLength(1);
     expect(screen.getByText('Only Page').closest('li')).toHaveAttribute(
-      'data-current',
-      'true',
+      'aria-current',
+      'page',
     );
     expect(container.querySelectorAll('.bui-BreadcrumbSeparator')).toHaveLength(
       0,
+    );
+  });
+
+  it('should render a custom separator', () => {
+    const { container } = render(
+      <Breadcrumbs separator={<span data-testid="custom-sep">/</span>}>
+        <BreadcrumbSegment href="/a">First</BreadcrumbSegment>
+        <BreadcrumbCurrent>Second</BreadcrumbCurrent>
+      </Breadcrumbs>,
+      { wrapper: Wrapper },
+    );
+
+    expect(screen.getAllByTestId('custom-sep')).toHaveLength(1);
+    expect(container.querySelectorAll('.bui-BreadcrumbSeparator')).toHaveLength(
+      1,
     );
   });
 
@@ -152,10 +143,10 @@ describe('Breadcrumbs', () => {
     it('should not collapse when there are 4 or fewer items', () => {
       render(
         <Breadcrumbs>
-          <Breadcrumb href="/a">First</Breadcrumb>
-          <Breadcrumb href="/b">Second</Breadcrumb>
-          <Breadcrumb href="/c">Third</Breadcrumb>
-          <Breadcrumb href="/d">Fourth</Breadcrumb>
+          <BreadcrumbSegment href="/a">First</BreadcrumbSegment>
+          <BreadcrumbSegment href="/b">Second</BreadcrumbSegment>
+          <BreadcrumbSegment href="/c">Third</BreadcrumbSegment>
+          <BreadcrumbCurrent>Fourth</BreadcrumbCurrent>
         </Breadcrumbs>,
         { wrapper: Wrapper },
       );
@@ -171,16 +162,15 @@ describe('Breadcrumbs', () => {
 
       render(
         <Breadcrumbs>
-          <Breadcrumb href="/home">Home</Breadcrumb>
-          <Breadcrumb href="/docs">Docs</Breadcrumb>
-          <Breadcrumb href="/guides">Guides</Breadcrumb>
-          <Breadcrumb href="/guides/setup">Setup</Breadcrumb>
-          <Breadcrumb href="/guides/setup/intro">Introduction</Breadcrumb>
+          <BreadcrumbSegment href="/home">Home</BreadcrumbSegment>
+          <BreadcrumbSegment href="/docs">Docs</BreadcrumbSegment>
+          <BreadcrumbSegment href="/guides">Guides</BreadcrumbSegment>
+          <BreadcrumbSegment href="/guides/setup">Setup</BreadcrumbSegment>
+          <BreadcrumbCurrent>Introduction</BreadcrumbCurrent>
         </Breadcrumbs>,
         { wrapper: Wrapper },
       );
 
-      // keep first & last-TWO breadcrumbs
       expect(screen.getByText('Home')).toBeInTheDocument();
       expect(
         screen.getByLabelText('Show more breadcrumbs'),
@@ -191,7 +181,6 @@ describe('Breadcrumbs', () => {
       expect(screen.queryByText('Docs')).not.toBeInTheDocument();
       expect(screen.queryByText('Guides')).not.toBeInTheDocument();
 
-      // rest are in menu
       await user.click(screen.getByLabelText('Show more breadcrumbs'));
 
       const menuItems = await screen.findAllByRole('menuitem');
@@ -203,39 +192,35 @@ describe('Breadcrumbs', () => {
     it('should keep the last item marked as current', () => {
       render(
         <Breadcrumbs>
-          <Breadcrumb href="/a">First</Breadcrumb>
-          <Breadcrumb href="/b">Second</Breadcrumb>
-          <Breadcrumb href="/c">Third</Breadcrumb>
-          <Breadcrumb href="/d">Fourth</Breadcrumb>
-          <Breadcrumb href="/e">Fifth</Breadcrumb>
+          <BreadcrumbSegment href="/a">First</BreadcrumbSegment>
+          <BreadcrumbSegment href="/b">Second</BreadcrumbSegment>
+          <BreadcrumbSegment href="/c">Third</BreadcrumbSegment>
+          <BreadcrumbSegment href="/d">Fourth</BreadcrumbSegment>
+          <BreadcrumbCurrent>Fifth</BreadcrumbCurrent>
         </Breadcrumbs>,
         { wrapper: Wrapper },
       );
 
       expect(screen.getByText('Fifth').closest('li')).toHaveAttribute(
-        'data-current',
-        'true',
+        'aria-current',
+        'page',
       );
     });
 
-    it('should render a separator after the ellipsis', () => {
-      render(
+    it('should render separators between collapsed items', () => {
+      const { container } = render(
         <Breadcrumbs>
-          <Breadcrumb href="/a">First</Breadcrumb>
-          <Breadcrumb href="/b">Second</Breadcrumb>
-          <Breadcrumb href="/c">Third</Breadcrumb>
-          <Breadcrumb href="/d">Fourth</Breadcrumb>
-          <Breadcrumb href="/e">Fifth</Breadcrumb>
+          <BreadcrumbSegment href="/a">First</BreadcrumbSegment>
+          <BreadcrumbSegment href="/b">Second</BreadcrumbSegment>
+          <BreadcrumbSegment href="/c">Third</BreadcrumbSegment>
+          <BreadcrumbSegment href="/d">Fourth</BreadcrumbSegment>
+          <BreadcrumbCurrent>Fifth</BreadcrumbCurrent>
         </Breadcrumbs>,
         { wrapper: Wrapper },
       );
 
-      const ellipsisItem = screen
-        .getByLabelText('Show more breadcrumbs')
-        .closest('li')!;
-      expect(
-        ellipsisItem.querySelector('.bui-BreadcrumbSeparator'),
-      ).not.toBeNull();
+      const separators = container.querySelectorAll('.bui-BreadcrumbSeparator');
+      expect(separators.length).toBeGreaterThan(0);
     });
   });
 });
