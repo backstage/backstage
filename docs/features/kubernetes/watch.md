@@ -130,7 +130,7 @@ client certificates, service account, OIDC, etc.) work with watch connections.
   without missing changes.
 - **No informer behavior.** This is a low-level watch primitive. It does not
   maintain a local cache, perform automatic list-watch initialization, or handle
-  periodic resync. These higher-level patterns can be built on top of the watch
+  periodic resynchronization. These higher-level patterns can be built on top of the watch
   API.
 - **Single resource type per call.** Each `watchResource()` call watches one
   resource type. To watch multiple resource types, make separate calls.
