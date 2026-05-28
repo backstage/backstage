@@ -498,6 +498,9 @@ export const BreadcrumbDefinition: {
     readonly separator: 'bui-BreadcrumbSeparator';
   };
   readonly propDefs: {
+    readonly as: {
+      readonly default: 'span';
+    };
     readonly href: {};
     readonly children: {};
   };
@@ -505,6 +508,8 @@ export const BreadcrumbDefinition: {
 
 // @public
 export interface BreadcrumbOwnProps {
+  // (undocumented)
+  as?: TextOwnProps['as'];
   // (undocumented)
   children: React.ReactNode;
   // (undocumented)
