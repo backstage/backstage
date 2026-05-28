@@ -29,7 +29,7 @@ const ctx = (kind?: string): CatalogColumnFilterContext => ({
 
 function getFilter(extension: any): CatalogColumnFilterFn | undefined {
   return createExtensionTester(extension).get(
-    CatalogColumnBlueprint.dataRefs.filter,
+    CatalogColumnBlueprint.dataRefs.filter.optional(),
   );
 }
 

@@ -69,7 +69,7 @@ export interface CatalogColumnFilterContext {
   // (undocumented)
   kind?: string;
   // (undocumented)
-  type?: string;
+  type?: string | string[];
 }
 
 // @alpha

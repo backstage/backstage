@@ -129,10 +129,9 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
           filters: entityFilters,
           entities,
         }) => {
-          const typeValue = entityFilters.type?.value;
           const context: CatalogColumnFilterContext = {
             kind: entityFilters.kind?.value,
-            type: Array.isArray(typeValue) ? typeValue[0] : typeValue,
+            type: entityFilters.type?.value,
             entities,
           };
           return columnEntries

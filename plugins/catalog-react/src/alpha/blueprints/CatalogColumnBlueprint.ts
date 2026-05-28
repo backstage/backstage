@@ -32,7 +32,7 @@ import {
  */
 export interface CatalogColumnFilterContext {
   kind?: string;
-  type?: string;
+  type?: string | string[];
   entities: Entity[];
 }
 
