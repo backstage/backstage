@@ -168,7 +168,13 @@ export const TruncatesLongSegments = meta.story({
   args: {},
   decorators: [withRouter(['/'])],
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '2rem',
+      }}
+    >
       <div>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
           Default size — hover truncated segments to see tooltip. Try resizing

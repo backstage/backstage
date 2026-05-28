@@ -24,6 +24,7 @@
     margin: 0;
     padding: 0;
     gap: var(--bui-Breadcrumbs-gap, var(--bui-space-3));
+    min-width: 0;
   }
 
   .bui-Breadcrumb {
