@@ -397,6 +397,8 @@ export interface KubernetesWatchOptions {
   labelSelector?: string;
   namespace?: string;
   resourceVersion?: string;
+  resourceVersionMatch?: string;
+  sendInitialEvents?: boolean;
   timeoutSeconds?: number;
 }
 
