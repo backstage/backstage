@@ -35,6 +35,9 @@
   }
 
   .bui-BreadcrumbLabel {
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
