@@ -19,12 +19,12 @@ import { StaticAssetsStore } from './StaticAssetsStore';
 
 jest.setTimeout(60_000);
 
-describe('StaticAssetsStore', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  it.each(databases.eachSupportedId())(
-    'should store and retrieve assets, %p',
-    async databaseId => {
+describe.each(databases.eachSupportedId())(
+  'StaticAssetsStore, %p',
+  databaseId => {
+    it('should store and retrieve assets', async () => {
       const knex = await databases.init(databaseId);
 
       const store = await StaticAssetsStore.create({
@@ -61,12 +61,9 @@ describe('StaticAssetsStore', () => {
       await expect(
         store.getAsset('does-not-exist.txt'),
       ).resolves.toBeUndefined();
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'should update assets timestamps, but not contents, %p',
-    async databaseId => {
+    it('should update assets timestamps, but not contents', async () => {
       const knex = await databases.init(databaseId);
 
       const store = await StaticAssetsStore.create({
@@ -112,12 +109,9 @@ describe('StaticAssetsStore', () => {
 
       const sameBar = await store.getAsset('bar');
       expect(oldBar!.lastModifiedAt).toEqual(sameBar!.lastModifiedAt);
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'should trim old assets, %p',
-    async databaseId => {
+    it('should trim old assets', async () => {
       const knex = await databases.init(databaseId);
 
       const store = await StaticAssetsStore.create({
@@ -157,12 +151,9 @@ describe('StaticAssetsStore', () => {
 
       await expect(store.getAsset('new')).resolves.toBeDefined();
       await expect(store.getAsset('old')).resolves.toBeUndefined();
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'should isolate assets in namespace, %p',
-    async databaseId => {
+    it('should isolate assets in namespace', async () => {
       const knex = await databases.init(databaseId);
 
       const store = await StaticAssetsStore.create({
@@ -197,6 +188,6 @@ describe('StaticAssetsStore', () => {
       await otherStore.trimAssets({ maxAgeSeconds: 0 });
 
       await expect(otherStore.getAsset('bar')).resolves.not.toBeDefined();
-    },
-  );
-});
+    });
+  },
+);

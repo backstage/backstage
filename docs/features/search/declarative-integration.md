@@ -52,16 +52,15 @@ _Example disabling the search page extension_
 app:
   extensions:
     - page:search: false # ✨
-    - nav-item:search: false # ✨
 ```
 
-_Example setting the search sidebar item title_
+_Example setting the search page title (used in the sidebar)_
 
 ```yaml
 # app-config.yaml
 app:
   extensions:
-    - nav-item:search: # ✨
+    - page:search: # ✨
         config:
           title: 'Search Page'
 ```

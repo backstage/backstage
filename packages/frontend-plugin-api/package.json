@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-plugin-api",
-  "version": "0.17.0-next.1",
+  "version": "0.17.0",
   "backstage": {
     "role": "web-library"
   },
@@ -44,6 +44,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/filter-predicates": "workspace:^",
     "@backstage/types": "workspace:^",
@@ -54,7 +55,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",

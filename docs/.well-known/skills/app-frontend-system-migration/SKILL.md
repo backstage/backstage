@@ -60,7 +60,7 @@ Even with feature discovery enabled, you can disable specific extensions via con
 app:
   extensions:
     - page:techdocs: false
-    - nav-item:search: false
+    - page:search: false
 ```
 
 ### How Discovery Works with Manual Imports

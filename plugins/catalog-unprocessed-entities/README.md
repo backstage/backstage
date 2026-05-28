@@ -32,18 +32,17 @@ Requires the `@backstage/plugin-catalog-backend-module-unprocessed` module to be
 yarn --cwd packages/app add @backstage/plugin-catalog-unprocessed-entities
 ```
 
-Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+The page is disabled by default. To enable it, add the following to your app configuration:
 
-You can optionally add unprocessed entities as a tab in DevTools through configuration:
-
-```yaml
-app:
-  extensions:
-    # Enable the catalog-unprocessed-entities tab in devtools
-    - devtools-content:catalog-unprocessed-entities: true
-    # Disable the catalog-unprocessed-entities element outside devtools including the sidebar
-    - page:catalog-unprocessed-entities: false
+```diff
+  app:
+    extensions:
++     - page:catalog-unprocessed-entities
 ```
+
+Alternatively, unprocessed entities are available as a tab in [DevTools](https://github.com/backstage/backstage/tree/master/plugins/devtools) without any additional configuration if the DevTools plugin is installed.
+
+For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
 ## Old Frontend System
 
@@ -63,7 +62,7 @@ import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unproc
 />;
 ```
 
-## Customization
+### Customization
 
 If you want to use the provided endpoints in a different way, you can use the ApiRef doing the following:
 
@@ -96,11 +95,11 @@ const app = createApp({
 });
 ```
 
-## Getting started
+## Development
 
 Your plugin has been added to the example app in this repository,
 meaning you'll be able to access it by running `yarn start` in the root directory,
-and then navigating to [/catalog-unprocessed-entities](http://localhost:3000/catalog-unprocessed-entities).
+and then navigating to [/devtools/unprocessed-entities](http://localhost:3000/devtools/unprocessed-entities).
 
 You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
 This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.

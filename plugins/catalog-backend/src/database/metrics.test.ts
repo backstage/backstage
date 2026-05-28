@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import { TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { randomUUID as uuid } from 'node:crypto';
 import { applyDatabaseMigrations } from './migrations';
@@ -23,10 +23,10 @@ import { createEntitiesCountByKind, queryEntitiesCountByKind } from './metrics';
 
 jest.setTimeout(60_000);
 
-describe('metrics', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  async function createDatabase(databaseId: TestDatabaseId) {
+describe.each(databases.eachSupportedId())('metrics, %p', databaseId => {
+  async function createDatabase() {
     const knex = await databases.init(databaseId);
     await applyDatabaseMigrations(knex);
     return knex;
@@ -55,108 +55,99 @@ describe('metrics', () => {
   }
 
   describe('queryEntitiesCountByKind', () => {
-    it.each(databases.eachSupportedId())(
-      'counts entities grouped by the kind in entity_ref, %p',
-      async databaseId => {
-        const knex = await createDatabase(databaseId);
+    it('counts entities grouped by the kind in entity_ref', async () => {
+      const knex = await createDatabase();
 
-        await insertEntity(knex, {
-          entityRef: 'component:default/svc-a',
-          finalEntity: '{"kind":"Component"}',
-        });
-        await insertEntity(knex, {
-          entityRef: 'component:default/svc-b',
-          finalEntity: '{"kind":"Component"}',
-        });
-        await insertEntity(knex, {
-          entityRef: 'api:default/api-a',
-          finalEntity: '{"kind":"API"}',
-        });
-        await insertEntity(knex, {
-          entityRef: 'system:other/sys-a',
-          finalEntity: '{"kind":"System"}',
-        });
-        // Not yet stitched -- must be excluded from the count
-        await insertEntity(knex, {
-          entityRef: 'component:default/pending',
-          finalEntity: null,
-        });
+      await insertEntity(knex, {
+        entityRef: 'component:default/svc-a',
+        finalEntity: '{"kind":"Component"}',
+      });
+      await insertEntity(knex, {
+        entityRef: 'component:default/svc-b',
+        finalEntity: '{"kind":"Component"}',
+      });
+      await insertEntity(knex, {
+        entityRef: 'api:default/api-a',
+        finalEntity: '{"kind":"API"}',
+      });
+      await insertEntity(knex, {
+        entityRef: 'system:other/sys-a',
+        finalEntity: '{"kind":"System"}',
+      });
+      // Not yet stitched -- must be excluded from the count
+      await insertEntity(knex, {
+        entityRef: 'component:default/pending',
+        finalEntity: null,
+      });
 
-        const result = await queryEntitiesCountByKind(knex);
+      const result = await queryEntitiesCountByKind(knex);
 
-        expect(Object.fromEntries(result)).toEqual({
-          component: 2,
-          api: 1,
-          system: 1,
-        });
-      },
-    );
+      expect(Object.fromEntries(result)).toEqual({
+        component: 2,
+        api: 1,
+        system: 1,
+      });
+    });
   });
 
   describe('createEntitiesCountByKind', () => {
-    it.each(databases.eachSupportedId())(
-      'serves cached results within the TTL and refreshes after, %p',
-      async databaseId => {
-        const knex = await createDatabase(databaseId);
-        const getCount = createEntitiesCountByKind(knex, { ttlMs: 50 });
+    it('serves cached results within the TTL and refreshes after', async () => {
+      const knex = await createDatabase();
+      const getCount = createEntitiesCountByKind(knex, { ttlMs: 50 });
 
-        await insertEntity(knex, {
-          entityRef: 'component:default/one',
-          finalEntity: '{}',
-        });
+      await insertEntity(knex, {
+        entityRef: 'component:default/one',
+        finalEntity: '{}',
+      });
 
-        const first = await getCount();
-        expect(Object.fromEntries(first)).toEqual({ component: 1 });
+      const first = await getCount();
+      expect(Object.fromEntries(first)).toEqual({ component: 1 });
 
-        // A change made within the TTL window must not be visible yet.
-        await insertEntity(knex, {
-          entityRef: 'component:default/two',
-          finalEntity: '{}',
-        });
-        const cached = await getCount();
-        expect(Object.fromEntries(cached)).toEqual({ component: 1 });
+      // A change made within the TTL window must not be visible yet.
+      await insertEntity(knex, {
+        entityRef: 'component:default/two',
+        finalEntity: '{}',
+      });
+      const cached = await getCount();
+      expect(Object.fromEntries(cached)).toEqual({ component: 1 });
 
-        // After the TTL elapses the next call hits the database again.
-        await new Promise(resolve => setTimeout(resolve, 80));
-        const refreshed = await getCount();
-        expect(Object.fromEntries(refreshed)).toEqual({ component: 2 });
-      },
-    );
+      // After the TTL elapses the next call hits the database again.
+      await new Promise(resolve => setTimeout(resolve, 80));
+      const refreshed = await getCount();
+      expect(Object.fromEntries(refreshed)).toEqual({ component: 2 });
+    });
 
-    it.each(databases.eachSupportedId())(
-      'coalesces overlapping callers into a single underlying query, %p',
-      async databaseId => {
-        const knex = await createDatabase(databaseId);
-        const getCount = createEntitiesCountByKind(knex, { ttlMs: 50 });
+    it('coalesces overlapping callers into a single underlying query', async () => {
+      const knex = await createDatabase();
+      const getCount = createEntitiesCountByKind(knex, { ttlMs: 50 });
 
-        await insertEntity(knex, {
-          entityRef: 'component:default/one',
-          finalEntity: '{}',
-        });
+      await insertEntity(knex, {
+        entityRef: 'component:default/one',
+        finalEntity: '{}',
+      });
 
-        const finalEntitiesQueries: string[] = [];
-        knex.on('query', (q: { sql: string }) => {
-          if (
-            /from\s+["`]?final_entities["`]?/i.test(q.sql) &&
-            /^\s*select/i.test(q.sql)
-          ) {
-            finalEntitiesQueries.push(q.sql);
-          }
-        });
-
-        // Five concurrent callers should result in one query, not five.
-        const results = await Promise.all([
-          getCount(),
-          getCount(),
-          getCount(),
-          getCount(),
-          getCount(),
-        ]);
-        expect(finalEntitiesQueries).toHaveLength(1);
-        for (const r of results) {
-          expect(Object.fromEntries(r)).toEqual({ component: 1 });
+      const finalEntitiesQueries: string[] = [];
+      knex.on('query', (q: { sql: string }) => {
+        if (
+          /from\s+["`]?final_entities["`]?/i.test(q.sql) &&
+          /^\s*select/i.test(q.sql)
+        ) {
+          finalEntitiesQueries.push(q.sql);
         }
-      },
-    );
+      });
+
+      // Five concurrent callers should result in one query, not five.
+      const results = await Promise.all([
+        getCount(),
+        getCount(),
+        getCount(),
+        getCount(),
+        getCount(),
+      ]);
+      expect(finalEntitiesQueries).toHaveLength(1);
+      for (const r of results) {
+        expect(Object.fromEntries(r)).toEqual({ component: 1 });
+      }
+    });
   });
 });

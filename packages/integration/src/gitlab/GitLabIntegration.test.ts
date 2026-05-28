@@ -496,7 +496,7 @@ describe('parseRetryAfterMs', () => {
     expect(parseRetryAfterMs(pastDate, 5000)).toBe(0);
   });
 
-  it('returns fallback for null or unparseable values', () => {
+  it('returns fallback for null or unparsable values', () => {
     expect(parseRetryAfterMs(null, 5000)).toBe(5000);
     expect(parseRetryAfterMs('', 5000)).toBe(5000);
     expect(parseRetryAfterMs('not-a-date-or-number', 5000)).toBe(5000);

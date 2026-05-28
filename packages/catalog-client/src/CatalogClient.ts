@@ -326,6 +326,7 @@ export class CatalogClient implements CatalogApi {
         offset,
         orderFields,
         fullTextFilter,
+        totalItems,
       } = request;
       params.filter = this.getFilterValue(filter);
 
@@ -342,6 +343,9 @@ export class CatalogClient implements CatalogApi {
       }
       if (fields.length) {
         params.fields = fields;
+      }
+      if (totalItems !== undefined) {
+        params.totalItems = totalItems;
       }
 
       const normalizedFullTextFilterTerm = fullTextFilter?.term?.trim();
@@ -387,6 +391,7 @@ export class CatalogClient implements CatalogApi {
         orderFields,
         fullTextFilter,
         fields,
+        totalItems,
       } = request;
 
       let filterPredicate: FilterPredicate | undefined;
@@ -424,6 +429,9 @@ export class CatalogClient implements CatalogApi {
       }
       if (fields?.length) {
         body.fields = fields;
+      }
+      if (totalItems !== undefined) {
+        body.totalItems = totalItems;
       }
     } else {
       body.cursor = request.cursor;

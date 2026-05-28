@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-org",
-  "version": "0.7.4-next.1",
+  "version": "0.7.5-next.0",
   "description": "A Backstage plugin that helps you create entity pages for your organization",
   "backstage": {
     "role": "frontend-plugin",
@@ -65,7 +65,7 @@
     "lodash": "^4.17.21",
     "p-limit": "^3.1.0",
     "pluralize": "^8.0.0",
-    "qs": "^6.10.1",
+    "qs": "^6.15.2",
     "react-use": "^17.2.4",
     "zod": "^4.0.0"
   },

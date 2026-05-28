@@ -153,3 +153,90 @@ Below is an example of a more elaborate setup where we have three different back
 In this example we have split out the Catalog and Search plugins into one backend deployment. The proxy routes all traffic for `/api/catalog/` and `/api/search/` to this instance. With this separation we're able to scale and deploy these two plugins independently, and they are also isolated from both a performance and security perspective. Likewise the TechDocs and Scaffolder plugins are split out as well, and then we route the rest of the traffic to our instance that contains the App, Auth, and Proxy plugins.
 
 We also see how each of the plugins have their own logical database, but are often set up to share the actual Database Management System (DBMS) instance. This is of course not a requirement, and you can choose to further divide or consolidate the databases as you see fit.
+
+## Startup Configuration
+
+The `backend.startup` configuration block lets you control how the backend behaves when plugins or plugin modules fail to boot during startup. By default, any plugin or module boot failure is fatal and causes the backend to abort. This configuration lets you make specific plugins or modules optional, or flip the default so that all are optional unless explicitly required.
+
+### Plugin Boot Failure Handling
+
+If a plugin fails to boot, the backend aborts startup by default. You can change this per-plugin using `onPluginBootFailure: continue`:
+
+```yaml
+backend:
+  startup:
+    plugins:
+      catalog:
+        onPluginBootFailure: continue
+```
+
+With this configuration, if the `catalog` plugin crashes during startup, the backend will log the error and continue starting up the remaining plugins. This is useful when troubleshooting data-dependent issues, as it allows you to leave a crashing plugin installed while still allowing the rest of the backend to serve requests.
+
+### Plugin Module Boot Failure Handling
+
+You can apply the same control to individual plugin modules using `onPluginModuleBootFailure`:
+
+```yaml
+backend:
+  startup:
+    plugins:
+      catalog:
+        modules:
+          github: # moduleId as declared in createBackendModule({ moduleId: '...' })
+            onPluginModuleBootFailure: continue
+```
+
+This allows the `github` catalog module to fail without bringing down the `catalog` plugin or the rest of the backend. Note that the key under `modules` is the `moduleId` declared in `createBackendModule`, not the plugin or entity provider name.
+
+### Setting a Global Default
+
+Instead of opting each plugin into `continue` mode individually, you can flip the global default so that all plugins continue on failure, and only specific ones are required to succeed:
+
+```yaml
+backend:
+  startup:
+    default:
+      onPluginBootFailure: continue
+    plugins:
+      auth:
+        onPluginBootFailure: abort
+```
+
+In this example, all plugins are optional except `auth`, which is explicitly set to `abort` and is therefore required to start successfully.
+
+The same `default` mechanism works for modules via `onPluginModuleBootFailure`:
+
+```yaml
+backend:
+  startup:
+    default:
+      onPluginModuleBootFailure: continue
+    plugins:
+      catalog:
+        modules:
+          github:
+            onPluginModuleBootFailure: abort
+```
+
+### Full Configuration Reference
+
+```yaml
+backend:
+  startup:
+    # Global defaults applied when not specified per-plugin or per-module
+    default:
+      # Defaults to 'abort'. Set to 'continue' to make all plugins optional by default.
+      onPluginBootFailure: abort # or continue
+      # Defaults to 'abort'. Set to 'continue' to make all plugin modules optional by default.
+      onPluginModuleBootFailure: abort # or continue
+
+    # Per-plugin and per-module overrides
+    plugins:
+      <pluginId>:
+        # Override the default boot failure behavior for this specific plugin.
+        onPluginBootFailure: abort # or continue
+        modules:
+          <moduleId>:
+            # Override the default boot failure behavior for this specific plugin module.
+            onPluginModuleBootFailure: abort # or continue
+```

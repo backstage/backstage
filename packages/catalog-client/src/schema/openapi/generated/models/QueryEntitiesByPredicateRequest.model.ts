@@ -31,7 +31,18 @@ export interface QueryEntitiesByPredicateRequest {
   fullTextFilter?: QueryEntitiesByPredicateRequestFullTextFilter;
   fields?: Array<string>;
   /**
+   * Controls whether the response\'s `totalItems` field is computed. Pass `exclude` to skip the count when the caller doesn\'t need it. Defaults to `include`.
+   */
+  totalItems?: QueryEntitiesByPredicateRequestTotalItemsEnum;
+  /**
    * A type representing all allowed JSON object values.
    */
   query?: { [key: string]: any };
 }
+
+/**
+ * @public
+ */
+export type QueryEntitiesByPredicateRequestTotalItemsEnum =
+  | 'include'
+  | 'exclude';

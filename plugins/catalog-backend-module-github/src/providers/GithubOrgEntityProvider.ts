@@ -15,6 +15,7 @@
  */
 
 import {
+  CacheService,
   LoggerService,
   SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
@@ -32,6 +33,7 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
+import { Octokit } from '@octokit/core';
 import { graphql } from '@octokit/graphql';
 import {
   MembershipEvent,
@@ -52,6 +54,7 @@ import {
   createAddEntitiesOperation,
   createGraphqlClient,
   createRemoveEntitiesOperation,
+  createRestClient,
   DEFAULT_PAGE_SIZES,
   DeferredEntitiesBuilder,
   getOrganizationTeam,
@@ -61,6 +64,8 @@ import {
   getOrganizationUsers,
   GithubPageSizes,
   GithubTeam,
+  isGitHubEnterprise,
+  isSuspended,
 } from '../lib/github';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
 import {
@@ -70,6 +75,7 @@ import {
 } from '../lib/org';
 import { parseGithubOrgUrl } from '../lib/util';
 import { withLocations } from '../lib/withLocations';
+import { memoize } from 'lodash';
 
 const EVENT_TOPICS = [
   'github.membership',
@@ -150,6 +156,21 @@ export interface GithubOrgEntityProviderOptions {
    * Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
    */
   excludeSuspendedUsers?: boolean;
+
+  /**
+   * Optional cache service used for conditional HTTP request caching when
+   * checking suspended users via the REST API.
+   */
+  cache?: CacheService;
+
+  /**
+   * When set to true alongside `excludeSuspendedUsers`, use the GitHub REST API
+   * to check for suspended users instead of the GraphQL `suspendedAt` field.
+   * REST responses are cached using conditional HTTP requests to minimize rate
+   * limit usage.
+   * @defaultValue false
+   */
+  experimental_checkForSuspendedUsersWithRest?: boolean;
 }
 
 /**
@@ -159,6 +180,7 @@ export interface GithubOrgEntityProviderOptions {
  */
 export class GithubOrgEntityProvider implements EntityProvider {
   private readonly credentialsProvider: GithubCredentialsProvider;
+  private cachedRestClient?: Octokit;
   private connection?: EntityProviderConnection;
   private scheduleFn?: () => Promise<void>;
 
@@ -189,6 +211,9 @@ export class GithubOrgEntityProvider implements EntityProvider {
       events: options.events,
       pageSizes: options.pageSizes,
       excludeSuspendedUsers: options.excludeSuspendedUsers,
+      cache: options.cache,
+      experimental_checkForSuspendedUsersWithRest:
+        options.experimental_checkForSuspendedUsersWithRest,
     });
 
     provider.schedule(options.schedule);
@@ -208,6 +233,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
       teamTransformer?: TeamTransformer;
       pageSizes?: Partial<GithubPageSizes>;
       excludeSuspendedUsers?: boolean;
+      cache?: CacheService;
+      experimental_checkForSuspendedUsersWithRest?: boolean;
     },
   ) {
     this.credentialsProvider =
@@ -225,6 +252,41 @@ export class GithubOrgEntityProvider implements EntityProvider {
       ...DEFAULT_PAGE_SIZES,
       ...this.options.pageSizes,
     };
+  }
+
+  private get useRestSuspendedCheck(): boolean {
+    return (
+      !!this.options.excludeSuspendedUsers &&
+      !!this.options.experimental_checkForSuspendedUsersWithRest
+    );
+  }
+
+  private isGitHubEnterprise = memoize(() =>
+    isGitHubEnterprise(this.getRestClient()),
+  );
+
+  private getRestClient(): Octokit {
+    if (!this.cachedRestClient) {
+      this.cachedRestClient = createRestClient({
+        baseUrl: this.options.gitHubConfig.apiBaseUrl,
+        orgUrl: this.options.orgUrl,
+        credentialsProvider: this.credentialsProvider,
+        logger: this.options.logger,
+        cache: this.options.cache,
+      });
+    }
+    return this.cachedRestClient;
+  }
+
+  private async shouldExclude(login: string, org: string): Promise<boolean> {
+    if (!this.useRestSuspendedCheck) {
+      return false;
+    }
+    const restClient = this.getRestClient();
+    return (
+      (await this.isGitHubEnterprise()) &&
+      (await isSuspended(login, restClient, { org }))
+    );
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
@@ -263,6 +325,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
     const pageSizes = this.getPageSizes();
+
     const { users } = await getOrganizationUsers(
       client,
       org,
@@ -270,6 +333,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       this.options.userTransformer,
       pageSizes,
       this.options.excludeSuspendedUsers,
+      this.useRestSuspendedCheck ? this.getRestClient() : undefined,
     );
     const { teams } = await getOrganizationTeams(
       client,
@@ -358,6 +422,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       await this.onMembershipChangedInOrganization(
         membershipEvent,
         addEntitiesOperation,
+        removeEntitiesOperation,
       );
     }
 
@@ -399,6 +464,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       this.options.userTransformer,
       pageSizes,
       this.options.excludeSuspendedUsers,
+      this.useRestSuspendedCheck ? this.getRestClient() : undefined,
     );
 
     if (!isGroupEntity(team)) {
@@ -461,7 +527,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
 
   private async onMembershipChangedInOrganization(
     event: MembershipEvent,
-    createDeltaOperation: DeferredEntitiesBuilder,
+    addEntitiesOperation: DeferredEntitiesBuilder,
+    removeEntitiesOperation: DeferredEntitiesBuilder,
   ) {
     if (!this.connection) {
       throw new Error('Not initialized');
@@ -512,31 +579,47 @@ export class GithubOrgEntityProvider implements EntityProvider {
       },
     );
 
-    const mutationEntities: Entity[] = [team];
+    const addedEntities: Entity[] = [team];
+    const removedEntities: Entity[] = [];
 
     if (user && isUserEntity(user)) {
-      const teamTransformer =
-        this.options.teamTransformer || defaultOrganizationTeamTransformer;
-      const { teams } = await getOrganizationTeamsForUser(
-        client,
-        org,
-        login,
-        teamTransformer,
-        pageSizes,
-      );
+      if (await this.shouldExclude(login, org)) {
+        removedEntities.push(user);
+      } else {
+        const teamTransformer =
+          this.options.teamTransformer || defaultOrganizationTeamTransformer;
+        const { teams } = await getOrganizationTeamsForUser(
+          client,
+          org,
+          login,
+          teamTransformer,
+          pageSizes,
+        );
 
-      if (areGroupEntities(teams)) {
-        assignGroupsToUser(user, teams);
+        if (areGroupEntities(teams)) {
+          assignGroupsToUser(user, teams);
+        }
+
+        addedEntities.push(user);
       }
-
-      mutationEntities.push(user);
     }
 
-    const { added, removed } = createDeltaOperation(org, mutationEntities);
+    const materializedAddOperation = addEntitiesOperation(org, addedEntities);
+    const materializedRemoveOperation = removeEntitiesOperation(
+      org,
+      removedEntities,
+    );
+
     await this.connection.applyMutation({
       type: 'delta',
-      removed,
-      added,
+      removed: [
+        ...materializedAddOperation.removed,
+        ...materializedRemoveOperation.removed,
+      ],
+      added: [
+        ...materializedAddOperation.added,
+        ...materializedRemoveOperation.added,
+      ],
     });
   }
 
@@ -607,6 +690,14 @@ export class GithubOrgEntityProvider implements EntityProvider {
       node_id,
     } = event.membership.user;
     const org = event.organization.login;
+
+    if (
+      event.action === 'member_added' &&
+      (await this.shouldExclude(login, org))
+    ) {
+      return;
+    }
+
     const { headers } = await this.credentialsProvider.getCredentials({
       url: this.options.orgUrl,
     });

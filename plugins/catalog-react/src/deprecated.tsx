@@ -73,6 +73,7 @@ export function MockEntityListContextProvider<
       error: value?.error,
       totalItems:
         value?.totalItems ?? (value?.entities ?? defaultValues.entities).length,
+      totalItemsLoading: value?.totalItemsLoading ?? false,
       limit: value?.limit ?? 20,
       offset: value?.offset,
       setLimit: value?.setLimit ?? (() => {}),

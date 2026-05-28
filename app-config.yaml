@@ -63,14 +63,16 @@ app:
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true
 
-    - nav-item:search: false
-    - nav-item:user-settings: false
-    - nav-item:catalog
-    - nav-item:api-docs
-    - nav-item:scaffolder
-    - nav-item:app-visualizer
+    # Opt in to the experimental BUI scaffolder form theme
+    - sub-page:scaffolder/templates:
+        config:
+          enableBackstageUi: true
 
     # Pages
+    - page:catalog:
+        config:
+          exportSettings:
+            enabled: true
     - page:catalog/entity:
         config:
           showNavItemIcons: true
@@ -94,6 +96,16 @@ app:
             # example adding a new group
             - custom:
                 title: Custom
+
+    - sub-page:scaffolder/templates:
+        config:
+          groups:
+            - title: Recommended Services
+              filter:
+                spec.type: service
+            - title: Documentation
+              filter:
+                spec.type: documentation
 
     # Entity page cards
     - entity-card:catalog/about:
@@ -272,6 +284,7 @@ catalog:
     pullRequestBranchName: backstage-integration
   rules:
     - allow:
+        - AiResource
         - Component
         - API
         - Resource
@@ -340,15 +353,8 @@ scaffolder:
 auth:
   experimentalDynamicClientRegistration:
     enabled: true
-    allowedRedirectUriPatterns:
-      - cursor://*
-      - http://localhost:*
-      - http://127.0.0.1:*
   experimentalClientIdMetadataDocuments:
     enabled: true
-    allowedRedirectUriPatterns:
-      - http://127.0.0.1:*
-      - http://localhost:*
 
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
   # the auth-backend.

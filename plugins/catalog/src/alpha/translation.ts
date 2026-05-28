@@ -148,6 +148,17 @@ export const catalogTranslationRef = createTranslationRef({
         'This entity is not referenced by any location and is therefore not receiving updates.',
       actionButtonTitle: 'Delete entity',
     },
+    catalogExportButton: {
+      triggerButtonTitle: 'Export selection',
+      dialogTitle: 'Export catalog selection',
+      formatLabel: 'Format',
+      columnsLabel: 'Columns',
+      cancelButtonTitle: 'Cancel',
+      confirmButtonTitle: 'Confirm',
+      exportingButtonTitle: 'Exporting…',
+      successMessage: 'Catalog exported successfully',
+      errorMessage: 'Failed to export catalog: {{errorMessage}}',
+    },
     entityProcessingErrorsDescription: 'The error below originates from',
     entityRelationWarningDescription:
       "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ",

@@ -1821,43 +1821,6 @@ export const microsoftAuthApiRef: ApiRef_2<
   readonly $$type: '@backstage/ApiRef';
 };
 
-// @public @deprecated
-export const NavItemBlueprint: ExtensionBlueprint_2<{
-  kind: 'nav-item';
-  params: {
-    title: string;
-    icon: IconComponent;
-    routeRef: RouteRef<undefined>;
-  };
-  output: ExtensionDataRef_2<
-    {
-      title: string;
-      icon: IconComponent;
-      routeRef: RouteRef<undefined>;
-    },
-    'core.nav-item.target',
-    {}
-  >;
-  inputs: {};
-  config: {
-    title: string | undefined;
-  };
-  configInput: {
-    title?: string | undefined;
-  };
-  dataRefs: {
-    target: ConfigurableExtensionDataRef_2<
-      {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      },
-      'core.nav-item.target',
-      {}
-    >;
-  };
-}>;
-
 // @public (undocumented)
 export const NotFoundErrorPage: {
   (props: NotFoundErrorPageProps): JSX.Element | null;

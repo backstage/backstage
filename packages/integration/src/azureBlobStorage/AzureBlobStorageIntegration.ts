@@ -26,15 +26,15 @@ import {
  *
  * @public
  */
-export class AzureBlobStorageIntergation implements ScmIntegration {
-  static factory: ScmIntegrationsFactory<AzureBlobStorageIntergation> = ({
+export class AzureBlobStorageIntegration implements ScmIntegration {
+  static factory: ScmIntegrationsFactory<AzureBlobStorageIntegration> = ({
     config,
   }) => {
     const configs = readAzureBlobStorageIntegrationConfigs(
       config.getOptionalConfigArray('integrations.azureBlobStorage') ?? [],
     );
     return basicIntegrations(
-      configs.map(c => new AzureBlobStorageIntergation(c)),
+      configs.map(c => new AzureBlobStorageIntegration(c)),
       i => i.config.host,
     );
   };
@@ -69,3 +69,20 @@ export class AzureBlobStorageIntergation implements ScmIntegration {
     return url;
   }
 }
+
+/**
+ * Microsoft Azure Blob storage based integration.
+ *
+ * @public
+ * @deprecated Use {@link AzureBlobStorageIntegration} instead. This was a typo in the original class name.
+ */
+export const AzureBlobStorageIntergation = AzureBlobStorageIntegration;
+
+/**
+ * Microsoft Azure Blob storage based integration.
+ *
+ * @public
+ * @deprecated Use {@link AzureBlobStorageIntegration} instead. This was a typo in the original class name.
+ */
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type AzureBlobStorageIntergation = AzureBlobStorageIntegration;

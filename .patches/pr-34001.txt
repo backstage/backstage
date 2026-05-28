@@ -1,1 +1,0 @@
-Fix facets endpoint performance regression when filters or permissions are applied

@@ -15,7 +15,6 @@ import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
-import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { JSXElementConstructor } from 'react';
@@ -470,31 +469,6 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-      };
-    }>;
-    'nav-item:api-docs': OverridableExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {
-        title: string | undefined;
-      };
-      configInput: {
-        title?: string | undefined;
-      };
-      output: ExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef_2<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef_2<undefined>;
       };
     }>;
     'page:api-docs': OverridableExtensionDefinition<{

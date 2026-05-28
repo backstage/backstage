@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-info",
-  "version": "0.1.2-next.0",
+  "version": "0.1.2",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -19,6 +19,7 @@
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-info",
   "files": [
     "dist",
     "bin"
@@ -41,6 +42,5 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0"
-  },
-  "bin": "bin/backstage-cli-module-info"
+  }
 }

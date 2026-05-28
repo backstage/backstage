@@ -394,16 +394,29 @@ export async function createConfig(
       }),
     },
     plugins,
-    ...(options.moduleFederationRemote && {
+    ignoreWarnings: [
+      // @protobufjs/inquire uses require(moduleName) with a dynamic argument.
+      // Since protobufjs >=7.5.9 this code path is never exercised (the
+      // bundler-safe optional module lookups backport replaced all call sites),
+      // but webpack/rspack still statically analyzes the source and emits a
+      // "Critical dependency" warning. Safe to suppress.
+      // See https://github.com/protobufjs/protobuf.js/issues/2057
+      {
+        module: /@protobufjs[\\/]inquire/,
+        message:
+          /Critical dependency: the request of a dependency is an expression/,
+      },
       // TODO: remove this warning skipping as soon as the corresponding bundler limitation
       // described in issue https://github.com/web-infra-dev/rspack/issues/13635 is fixed
       // when PR: https://github.com/web-infra-dev/rspack/pull/13636 is merged.
-      ignoreWarnings: [
-        {
-          message:
-            /No version specified and unable to automatically determine one\. No version in description file/,
-        },
-      ],
-    }),
+      ...(options.moduleFederationRemote
+        ? [
+            {
+              message:
+                /No version specified and unable to automatically determine one\. No version in description file/,
+            },
+          ]
+        : []),
+    ],
   };
 }

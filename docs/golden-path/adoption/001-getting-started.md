@@ -19,7 +19,7 @@ At a high level, Backstage is a framework for building developer portals. When i
 
 A few examples,
 
-> My company tracks everything with spreadsheets. We have a list of all Github repos and who owns them, but it's becoming more and more of an issue to keep up to date. Teams aren't proactively updating it when new projects are created and it quickly falls out of date with reorgs and team charter changes.
+> My company tracks everything with spreadsheets. We have a list of all GitHub repos and who owns them, but it's becoming more and more of an issue to keep up to date. Teams aren't proactively updating it when new projects are created and it quickly falls out of date with reorgs and team charter changes.
 
 Backstage can help! We provide a core plugin called Software Catalog that automates this process. Teams are asked to maintain a file in their repo with this ownership information and it gets automatically ingested into Backstage where you can view all projects in a single location.
 
@@ -31,7 +31,7 @@ It's important to note that Backstage shouldn't be fully replacing these tools, 
 
 > We have been struggling recently with getting teams to use a standard template for new services. There's no standard set of libraries these services are using or standard infra management. It's increasingly difficult as a platform team to manage everything.
 
-Backstage can help here too! The Scaffolder provides a templating framework that you can plug a Golden Path implementation to. Similar to Github template repos, this can provide a standard base for teams to create based off of.
+Backstage can help here too! The Scaffolder provides a templating framework that you can plug a Golden Path implementation to. Similar to GitHub template repos, this can provide a standard base for teams to create based off of.
 
 > Our platform teams have been getting more and more support requests to help debug onboarding steps. We've documented these areas really well and there are plenty of examples in Git, but teams keep running into the same issues. It's always either a bad copy paste or they forget to update a template variable. We've started looking into a custom templating solution for this.
 

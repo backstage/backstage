@@ -35,6 +35,8 @@ import { DatabaseService } from '@backstage/backend-plugin-api';
 import { randomUUID as uuid } from 'node:crypto';
 import { DatabaseNotificationsStore, generateSettingsHash } from '../database';
 
+jest.setTimeout(60_000);
+
 const databases = TestDatabases.create();
 let store: DatabaseNotificationsStore;
 

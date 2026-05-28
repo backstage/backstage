@@ -371,3 +371,11 @@ the site.
 | app-config         | Use code style: `app-config.yaml`.                                                                                                     |
 | open source        | Two words, lowercase (unless starting a sentence).                                                                                     |
 | backend system     | Lowercase when referring to the Backstage backend framework.                                                                           |
+
+## General word list
+
+A list of general terms and words to be used consistently across the site.
+
+| Term   | Usage                                                           |
+| :----- | :-------------------------------------------------------------- |
+| GitHub | Use GitHub in documentation. In code, use `github` (lowercase). |
