@@ -239,9 +239,11 @@ export class ServiceRegistry {
       if (factory.service.scope === scope) {
         // Root-scoped services are eager by default, plugin-scoped are lazy by default
         if (scope === 'root' && factory.initialization !== 'lazy') {
-          await this.get(factory.service, pluginId);
+          const [promise] = this.get(factory.service, pluginId);
+          await promise;
         } else if (scope === 'plugin' && factory.initialization === 'always') {
-          await this.get(factory.service, pluginId);
+          const [promise] = this.get(factory.service, pluginId);
+          await promise;
         }
       }
     }
@@ -250,20 +252,18 @@ export class ServiceRegistry {
   get<T, TInstances extends 'singleton' | 'multiton'>(
     ref: ServiceRef<T, 'plugin' | 'root', TInstances>,
     pluginId: string,
-  ): Promise<TInstances extends 'multiton' ? T[] : T> | undefined {
+  ):
+    | [Promise<TInstances extends 'multiton' ? T[] : T>, true]
+    | [undefined, false] {
     this.#instantiatedFactories.add(ref.id);
 
     const resolvedFactory = this.#resolveFactory(ref, pluginId);
 
     if (!resolvedFactory) {
-      return ref.multiton
-        ? (Promise.resolve([]) as
-            | Promise<TInstances extends 'multiton' ? T[] : T>
-            | undefined)
-        : undefined;
+      return [undefined, false];
     }
 
-    return resolvedFactory
+    const resultPromise = resolvedFactory
       .then(factories => {
         return Promise.all(
           factories.map(factory => {
@@ -281,8 +281,8 @@ export class ServiceRegistry {
                       `Failed to instantiate 'root' scoped service '${ref.id}' because it depends on '${serviceRef.scope}' scoped service '${serviceRef.id}'.`,
                     );
                   }
-                  const target = this.get(serviceRef, pluginId)!;
-                  rootDeps.push(target.then(impl => [name, impl]));
+                  const [target, _] = this.get(serviceRef, pluginId);
+                  rootDeps.push(target!.then(impl => [name, impl]));
                 }
 
                 existing = Promise.all(rootDeps).then(entries =>
@@ -302,8 +302,8 @@ export class ServiceRegistry {
 
               for (const [name, serviceRef] of Object.entries(factory.deps)) {
                 if (serviceRef.scope === 'root') {
-                  const target = this.get(serviceRef, pluginId)!;
-                  rootDeps.push(target.then(impl => [name, impl]));
+                  const [target, _] = this.get(serviceRef, pluginId);
+                  rootDeps.push(target!.then(impl => [name, impl]));
                 }
               }
 
@@ -331,8 +331,8 @@ export class ServiceRegistry {
               >();
 
               for (const [name, serviceRef] of Object.entries(factory.deps)) {
-                const target = this.get(serviceRef, pluginId)!;
-                allDeps.push(target.then(impl => [name, impl]));
+                const [target, _] = this.get(serviceRef, pluginId);
+                allDeps.push(target!.then(impl => [name, impl]));
               }
 
               result = implementation.context
@@ -354,5 +354,10 @@ export class ServiceRegistry {
         );
       })
       .then(results => (ref.multiton ? results : results[0]));
+
+    return [
+      resultPromise as Promise<TInstances extends 'multiton' ? T[] : T>,
+      true,
+    ];
   }
 }

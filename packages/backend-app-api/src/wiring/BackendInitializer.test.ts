@@ -49,6 +49,18 @@ function mkNoopFactory(ref: ServiceRef<{}, 'plugin'>) {
   );
 }
 
+function mkFalsyFactory(ref: ServiceRef<undefined, 'plugin'>) {
+  const fn = jest.fn().mockReturnValue(undefined);
+  return Object.assign(
+    fn,
+    createServiceFactory({
+      service: ref,
+      deps: {},
+      factory: fn,
+    }),
+  );
+}
+
 const testPlugin = createBackendPlugin({
   pluginId: 'test',
   register(reg) {
@@ -1285,6 +1297,26 @@ describe('BackendInitializer', () => {
     await expect(init.start()).rejects.toThrow(
       "Service or extension point dependencies of module 'test-mod' for plugin 'test' are missing for the following ref(s): serviceRef{a}",
     );
+  });
+
+  it('should allow modules with dependencies that return a falsy value', async () => {
+    const ref = createServiceRef<undefined>({ id: 'falsy' });
+    const factory = mkFalsyFactory(ref);
+
+    const init = new BackendInitializer([...baseFactories, factory]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'tester',
+        register(reg) {
+          reg.registerInit({
+            deps: { ref },
+            async init() {},
+          });
+        },
+      }),
+    );
+
+    await expect(init.start()).resolves.not.toThrow();
   });
 
   it('should properly load double-default CJS modules', async () => {
