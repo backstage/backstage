@@ -15,6 +15,8 @@
  */
 
 import { Children, isValidElement } from 'react';
+// RAC Link is used instead of BUI Link because RAC Breadcrumb expects its own
+// Link primitive to wire up aria-current and breadcrumb navigation semantics.
 import {
   Breadcrumbs as RACBreadcrumbs,
   Breadcrumb as RACBreadcrumb,

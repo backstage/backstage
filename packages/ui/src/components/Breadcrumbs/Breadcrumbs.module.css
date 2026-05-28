@@ -53,10 +53,6 @@
 
   a.bui-BreadcrumbLabel {
     cursor: pointer;
-
-    &[data-hovered] {
-      text-decoration: underline;
-    }
   }
 
   .bui-BreadcrumbLabel--current {
@@ -86,10 +82,15 @@
       border-radius: var(--bui-radius-1);
       outline: 2px solid var(--bui-color-focus);
     }
+  }
 
-    &[data-hovered] {
-      text-decoration: underline;
-    }
+  a.bui-BreadcrumbLabel[data-hovered],
+  .bui-BreadcrumbEllipsisTrigger[data-hovered] {
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
   }
 
   .bui-BreadcrumbSeparator {
