@@ -112,6 +112,7 @@ deduplication
 deliverables
 denormalized
 dependabot
+deployer
 deps
 dequeue
 dequeueing
@@ -149,6 +150,7 @@ esbuild
 eslint
 ESModule
 ESModules
+etcd
 etag
 Expedia
 facto
@@ -439,6 +441,7 @@ SCMs
 scrollable
 scrollbar
 scrollbars
+SDK
 sdks
 SearchField
 seb
@@ -550,6 +553,7 @@ undici
 ungrouped
 unicode
 unmanaged
+unmarshal
 unmount
 unregister
 unregistering

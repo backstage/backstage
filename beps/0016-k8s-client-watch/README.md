@@ -68,11 +68,11 @@ No Backstage issue -- open or closed -- was found that proposed adding watch or 
 
 ### Non-Goals
 
-- Building a full informer implementation with local caching, automatic reconnection, resync, and resource version tracking. This is future work that builds on the watch primitive. The watch options do include `sendInitialEvents` and `resourceVersionMatch` from KEP-3157 to support the watch-list streaming pattern on clusters that support it (Kubernetes 1.32+), but higher-level informer logic is deferred to a future phase.
+- Building a full informer implementation with local caching, automatic reconnection, resynchronization, and resource version tracking. This is future work that builds on the watch primitive. The watch options do include `sendInitialEvents` and `resourceVersionMatch` from KEP-3157 to support the watch-list streaming pattern on clusters that support it (Kubernetes 1.32+), but higher-level informer logic is deferred to a future phase.
 - Modifying the frontend Kubernetes plugin or its React components to consume watch events directly.
 - Replacing the existing LIST-based fetch operations. Watch support is additive; existing `fetchObjectsForService` and related methods remain unchanged.
 - Implementing WebSocket-based watches. The standard Kubernetes watch API uses chunked HTTP streaming (newline-delimited JSON), not WebSockets.
-- Integrating with the upstream `@kubernetes/client-node` Watch or Informer classes. The Backstage Kubernetes plugin uses a custom fetch-based REST client (established in [PR #15250](https://github.com/backstage/backstage/pull/15250)) rather than the SDK's typed API clients, and this proposal extends that same custom client.
+- Integrating with the upstream `@kubernetes/client-node` Watch or Informer classes. The Backstage Kubernetes plugin uses a custom fetch-based REST client (established in [PR #15250](https://github.com/backstage/backstage/pull/15250)) rather than the typed API clients from the SDK, and this proposal extends that same custom client.
 
 ## Proposal
 
@@ -256,7 +256,7 @@ The watch primitive proposed here is designed to serve as the foundation for a h
 - **Continuous WATCH**: Open a watch connection from the LIST's resource version to receive incremental updates.
 - **Local Cache**: Maintain an in-memory store of all watched resources, updated in real-time.
 - **Automatic Reconnection**: Handle `410 Gone` errors (expired resource versions) by re-listing and restarting the watch.
-- **Periodic Resync**: Optionally re-list at intervals to guard against missed events.
+- **Periodic Resynchronization**: Optionally re-list at intervals to guard against missed events.
 - **Event Handlers**: Provide `on('add' | 'update' | 'delete', callback)` hooks for consumers.
 
 This layered approach -- watch first, informer second -- follows the same architecture used by the official Kubernetes JavaScript client (`Watch` class -> `ListWatch` / `makeInformer`) and allows each layer to be independently tested and adopted.
@@ -275,7 +275,7 @@ The informer pattern would also take advantage of the `sendInitialEvents` and `r
 
 **Phase 2: Informer abstraction (future BEP)**
 
-- Build `KubernetesInformer` on top of `watchResource` with local caching, reconnection, and resync.
+- Build `KubernetesInformer` on top of `watchResource` with local caching, reconnection, and resynchronization.
 - Leverage the `sendInitialEvents` watch option (already available in Phase 1) to implement efficient initial state loading without a separate LIST call on clusters that support KEP-3157.
 - Consider exposing informer state through the Backstage events system for cross-plugin consumption.
 
@@ -296,9 +296,9 @@ Each phase can be delivered independently. Phase 1 is fully backward compatible 
 
 ### 1. Use the `@kubernetes/client-node` Watch and Informer classes directly
 
-The official Kubernetes JavaScript client provides `Watch`, `Informer`, and `makeInformer` APIs that implement the full list+watch+cache pattern. However, the Backstage Kubernetes plugin deliberately moved away from the SDK's typed API clients in [PR #15250](https://github.com/backstage/backstage/pull/15250) (December 2022) due to three concerns: (1) the SDK's promise-rejection-on-non-2xx design made graceful multi-cluster error handling nearly impossible, (2) awkward positional parameter APIs, and (3) a dependency on the deprecated `request` library.
+The official Kubernetes JavaScript client provides `Watch`, `Informer`, and `makeInformer` APIs that implement the full list+watch+cache pattern. However, the Backstage Kubernetes plugin deliberately moved away from the typed API clients provided by the SDK in [PR #15250](https://github.com/backstage/backstage/pull/15250) (December 2022) due to three concerns: (1) the promise-rejection-on-non-2xx design of the SDK made graceful multi-cluster error handling nearly impossible, (2) awkward positional parameter APIs, and (3) a dependency on the deprecated `request` library.
 
-While concerns (2) and (3) have been addressed in the SDK's 1.x release, the error handling concern -- the primary motivation -- remains. The SDK still rejects promises on non-2xx responses, which is incompatible with the Backstage pattern of treating errors as structured data. Additionally, `@kubernetes/client-node` 1.x is ESM-only, which has caused [migration friction](https://github.com/backstage/backstage/issues/28325) in the Backstage ecosystem.
+While concerns (2) and (3) have been addressed in the 1.x release of the SDK, the error handling concern -- the primary motivation -- remains. The SDK still rejects promises on non-2xx responses, which is incompatible with the Backstage pattern of treating errors as structured data. Additionally, `@kubernetes/client-node` 1.x is ESM-only, which has caused [migration friction](https://github.com/backstage/backstage/issues/28325) in the Backstage ecosystem.
 
 Building watch support on top of the existing custom fetch-based client is more consistent with the established architecture and avoids reintroducing the problems that motivated the original switch.
 
@@ -312,7 +312,7 @@ Polling at short intervals (e.g., every few seconds) would provide more timely d
 
 ### 4. Wait for `@kubernetes/client-node` to address the error handling concern
 
-The SDK's error handling model (promise rejection on non-2xx) has been its design since inception and shows no signs of changing -- the 1.x rewrite improved the error type from `HttpError` to `ApiException` but kept the throw-on-error behavior. Waiting for a fundamental API redesign that may never come would indefinitely block a capability that would benefit Backstage users today.
+The error handling model of the SDK (promise rejection on non-2xx) has been its design since inception and shows no signs of changing -- the 1.x rewrite improved the error type from `HttpError` to `ApiException` but kept the throw-on-error behavior. Waiting for a fundamental API redesign that may never come would indefinitely block a capability that would benefit Backstage users today.
 
 ### 5. Introduce a separate `KubernetesWatcher` interface instead of extending `KubernetesFetcher`
 
