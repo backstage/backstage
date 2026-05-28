@@ -19,6 +19,7 @@ export {
   type AnalyticsImplementationFactory,
 } from './AnalyticsImplementationBlueprint';
 export { ApiBlueprint } from './ApiBlueprint';
+export { NavItemBlueprint } from './NavItemBlueprint';
 export { AppRootElementBlueprint } from './AppRootElementBlueprint';
 export { PageBlueprint } from './PageBlueprint';
 export { SubPageBlueprint } from './SubPageBlueprint';
