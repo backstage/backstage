@@ -21,6 +21,12 @@ import { BUIProvider } from '../../provider';
 import { Breadcrumbs, Breadcrumb } from './Breadcrumbs';
 
 beforeAll(() => {
+  global.ResizeObserver = jest.fn(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+  })) as unknown as typeof ResizeObserver;
+
   jest.spyOn(console, 'warn').mockImplementation((msg: string) => {
     if (msg.includes('<Focusable>')) return;
     // eslint-disable-next-line no-console

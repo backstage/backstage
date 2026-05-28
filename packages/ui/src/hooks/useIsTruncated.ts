@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 const DEBOUNCE_MS = 150;
@@ -23,7 +23,7 @@ const DEBOUNCE_MS = 150;
  * Tracks whether a text element is overflowing its container via CSS truncation.
  * Useful for conditionally showing a tooltip only when text is truncated.
  *
- * Checks on mount and on window resize (debounced).
+ * Checks on mount and whenever the element resizes (via ResizeObserver, debounced).
  *
  * @example
  * ```tsx
@@ -45,28 +45,21 @@ export function useIsTruncated() {
 
   useIsomorphicLayoutEffect(() => {
     const el = ref.current;
-    if (el) {
-      setTruncated(el.scrollWidth > el.clientWidth);
-    }
-  }, []);
+    if (!el) return undefined;
 
-  useEffect(() => {
+    const check = () => setTruncated(el.scrollWidth > el.clientWidth);
+    check();
+
     let timerId: ReturnType<typeof setTimeout>;
-
-    const handleResize = () => {
+    const observer = new ResizeObserver(() => {
       clearTimeout(timerId);
-      timerId = setTimeout(() => {
-        const el = ref.current;
-        if (el) {
-          setTruncated(el.scrollWidth > el.clientWidth);
-        }
-      }, DEBOUNCE_MS);
-    };
+      timerId = setTimeout(check, DEBOUNCE_MS);
+    });
+    observer.observe(el);
 
-    window.addEventListener('resize', handleResize);
     return () => {
       clearTimeout(timerId);
-      window.removeEventListener('resize', handleResize);
+      observer.disconnect();
     };
   }, []);
 
