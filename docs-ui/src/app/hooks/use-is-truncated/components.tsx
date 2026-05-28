@@ -8,7 +8,7 @@ import {
 import { Focusable } from 'react-aria';
 
 export function UseIsTruncatedExample() {
-  const { ref, truncated, checkTruncation } = useIsTruncated();
+  const { ref, truncated } = useIsTruncated();
 
   return (
     <div style={{ maxWidth: 150 }}>
@@ -16,8 +16,6 @@ export function UseIsTruncatedExample() {
         <Focusable>
           <span
             ref={ref as React.Ref<HTMLSpanElement>}
-            onMouseEnter={checkTruncation}
-            onFocus={checkTruncation}
             style={{
               display: 'block',
               overflow: 'hidden',

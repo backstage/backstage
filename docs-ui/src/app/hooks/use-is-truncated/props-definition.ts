@@ -12,10 +12,4 @@ export const useIsTruncatedReturnDefs: Record<string, PropDef> = {
     description:
       'Whether the element is currently truncated (scrollWidth exceeds clientWidth).',
   },
-  checkTruncation: {
-    type: 'enum',
-    values: ['() => void'],
-    description:
-      'Call this on hover or focus to re-check truncation state. Kept on-demand to avoid layout thrashing.',
-  },
 };

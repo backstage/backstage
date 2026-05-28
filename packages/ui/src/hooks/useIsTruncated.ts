@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import { useCallback, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+
+const DEBOUNCE_MS = 150;
 
 /**
  * Tracks whether a text element is overflowing its container via CSS truncation.
- * Useful for cases such as:
- *   - only applying a tooltip if a text has been truncated
+ * Useful for conditionally showing a tooltip only when text is truncated.
  *
- * Checks on mount and on each `checkTruncation` call (wire to hover/focus).
- * No ResizeObserver — `truncated` may be stale between interactions, but is
- * always fresh at the moment a tooltip would show.
+ * Checks on mount and on window resize (debounced).
  *
  * @example
  * ```tsx
- * const { ref, truncated, checkTruncation } = useIsTruncated();
+ * const { ref, truncated } = useIsTruncated();
  *
  * <TooltipTrigger isDisabled={!truncated}>
- *   <span ref={ref} onMouseEnter={checkTruncation}>
+ *   <span ref={ref}>
  *     {label}
  *   </span>
  *   <Tooltip>{label}</Tooltip>
@@ -44,17 +43,32 @@ export function useIsTruncated() {
   const ref = useRef<HTMLElement>(null);
   const [truncated, setTruncated] = useState(false);
 
-  const checkTruncation = useCallback(() => {
+  useIsomorphicLayoutEffect(() => {
     const el = ref.current;
     if (el) {
       setTruncated(el.scrollWidth > el.clientWidth);
     }
   }, []);
 
-  // Check on mount before paint so the tooltip state is correct immediately
-  useIsomorphicLayoutEffect(() => {
-    checkTruncation();
-  }, [checkTruncation]);
+  useEffect(() => {
+    let timerId: ReturnType<typeof setTimeout>;
 
-  return { ref, truncated, checkTruncation };
+    const handleResize = () => {
+      clearTimeout(timerId);
+      timerId = setTimeout(() => {
+        const el = ref.current;
+        if (el) {
+          setTruncated(el.scrollWidth > el.clientWidth);
+        }
+      }, DEBOUNCE_MS);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timerId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return { ref, truncated };
 }

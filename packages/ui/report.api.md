@@ -3686,7 +3686,6 @@ export const useBreakpoint: () => {
 export function useIsTruncated(): {
   ref: RefObject<HTMLElement>;
   truncated: boolean;
-  checkTruncation: () => void;
 };
 
 // @public

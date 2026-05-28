@@ -37,7 +37,7 @@ function BreadcrumbContent(props: {
   children: React.ReactNode;
 }) {
   const { href, isCurrent, labelClassName, currentClassName, children } = props;
-  const { ref, truncated, checkTruncation } = useIsTruncated();
+  const { ref, truncated } = useIsTruncated();
   const className = `${labelClassName}${
     isCurrent ? ` ${currentClassName}` : ''
   }`;
@@ -48,19 +48,12 @@ function BreadcrumbContent(props: {
         href={href}
         className={className}
         ref={ref as React.Ref<HTMLAnchorElement>}
-        onHoverStart={checkTruncation}
-        onFocus={checkTruncation}
       >
         {children}
       </Link>
     ) : (
       <Focusable>
-        <span
-          className={className}
-          ref={ref as React.Ref<HTMLSpanElement>}
-          onMouseEnter={checkTruncation}
-          onFocus={checkTruncation}
-        >
+        <span className={className} ref={ref as React.Ref<HTMLSpanElement>}>
           {children}
         </span>
       </Focusable>

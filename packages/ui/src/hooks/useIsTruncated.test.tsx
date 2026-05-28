@@ -39,6 +39,14 @@ function setElementDimensions(
   });
 }
 
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
+
 describe('useIsTruncated', () => {
   it('should detect initial overflow on mount', () => {
     const scrollWidthSpy = jest
@@ -63,32 +71,64 @@ describe('useIsTruncated', () => {
     expect(hookResult.ref.current).toBeInstanceOf(HTMLSpanElement);
   });
 
-  it('should report truncated as true when element starts overflowing', () => {
+  it('should update truncated on window resize after debounce', () => {
     render(<TestHarness />);
+    expect(hookResult.truncated).toBe(false);
 
     setElementDimensions(hookResult.ref.current!, 200, 100);
-    act(() => hookResult.checkTruncation());
-
+    act(() => {
+      window.dispatchEvent(new Event('resize'));
+      jest.advanceTimersByTime(150);
+    });
     expect(hookResult.truncated).toBe(true);
   });
 
-  it('should reset truncated to false when overflow is resolved', () => {
+  it('should debounce rapid resize events', () => {
     render(<TestHarness />);
 
     setElementDimensions(hookResult.ref.current!, 200, 100);
-    act(() => hookResult.checkTruncation());
+    act(() => {
+      window.dispatchEvent(new Event('resize'));
+      jest.advanceTimersByTime(50);
+      window.dispatchEvent(new Event('resize'));
+      jest.advanceTimersByTime(50);
+      window.dispatchEvent(new Event('resize'));
+    });
+    expect(hookResult.truncated).toBe(false);
+
+    act(() => jest.advanceTimersByTime(150));
+    expect(hookResult.truncated).toBe(true);
+  });
+
+  it('should reset truncated to false when overflow is resolved after resize', () => {
+    const scrollWidthSpy = jest
+      .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
+      .mockReturnValue(200);
+    const clientWidthSpy = jest
+      .spyOn(HTMLElement.prototype, 'clientWidth', 'get')
+      .mockReturnValue(100);
+
+    render(<TestHarness />);
     expect(hookResult.truncated).toBe(true);
 
+    scrollWidthSpy.mockRestore();
+    clientWidthSpy.mockRestore();
+
     setElementDimensions(hookResult.ref.current!, 100, 100);
-    act(() => hookResult.checkTruncation());
+    act(() => {
+      window.dispatchEvent(new Event('resize'));
+      jest.advanceTimersByTime(150);
+    });
     expect(hookResult.truncated).toBe(false);
   });
 
-  it('should return a stable checkTruncation callback across renders', () => {
-    const { rerender } = render(<TestHarness />);
-    const first = hookResult.checkTruncation;
+  it('should remove the resize listener on unmount', () => {
+    const removeSpy = jest.spyOn(window, 'removeEventListener');
+    const { unmount } = render(<TestHarness />);
 
-    rerender(<TestHarness />);
-    expect(hookResult.checkTruncation).toBe(first);
+    unmount();
+
+    expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+    removeSpy.mockRestore();
   });
 });

@@ -2,13 +2,12 @@ export const useIsTruncatedExampleSnippet = `import { useIsTruncated } from '@ba
 import { TooltipTrigger, Tooltip } from '@backstage/ui';
 
 function TruncatedLabel({ text }: { text: string }) {
-  const { ref, truncated, checkTruncation } = useIsTruncated();
+  const { ref, truncated } = useIsTruncated();
 
   return (
     <TooltipTrigger isDisabled={!truncated}>
       <span
         ref={ref}
-        onMouseEnter={checkTruncation}
         style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150 }}
       >
         {text}
