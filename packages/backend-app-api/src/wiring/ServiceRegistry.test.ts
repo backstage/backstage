@@ -89,39 +89,45 @@ const refDefault2b = createServiceRef<{ x: number }>({
 });
 
 describe('ServiceRegistry', () => {
-  it('should return undefined if there is no factory defined', async () => {
+  it('should return [false] if there is no factory defined', async () => {
     const registry = ServiceRegistry.create([]);
-    expect(registry.get(ref1, 'catalog')[0]).toBe(undefined);
+    await expect(registry.get(ref1, 'catalog')).resolves.toEqual([false]);
   });
 
   it('should return an implementation for a registered ref', async () => {
     const registry = ServiceRegistry.create([sf1]);
-    await expect(registry.get(ref1, 'catalog')[0]).resolves.toEqual({ x: 1 });
-    await expect(registry.get(ref1, 'scaffolder')[0]).resolves.toEqual({
-      x: 1,
-    });
-    expect(await registry.get(ref1, 'catalog')[0]).toBe(
-      await registry.get(ref1, 'catalog')[0],
+    await expect(registry.get(ref1, 'catalog')).resolves.toEqual([
+      true,
+      { x: 1 },
+    ]);
+    await expect(registry.get(ref1, 'scaffolder')).resolves.toEqual([
+      true,
+      { x: 1 },
+    ]);
+    expect(await registry.get(ref1, 'catalog')).toEqual(
+      await registry.get(ref1, 'catalog'),
     );
-    expect(await registry.get(ref1, 'scaffolder')[0]).toBe(
-      await registry.get(ref1, 'scaffolder')[0],
+    expect((await registry.get(ref1, 'scaffolder'))[1]).toBe(
+      (await registry.get(ref1, 'scaffolder'))[1],
     );
-    expect(await registry.get(ref1, 'catalog')[0]).not.toBe(
-      await registry.get(ref1, 'scaffolder')[0],
+    expect((await registry.get(ref1, 'catalog'))[1]).not.toBe(
+      (await registry.get(ref1, 'scaffolder'))[1],
     );
   });
 
   it('should handle multiple factories with different serviceRefs', async () => {
     const registry = ServiceRegistry.create([sf1, sf2]);
 
-    await expect(registry.get(ref1, 'catalog')[0]).resolves.toEqual({
-      x: 1,
-    });
-    await expect(registry.get(ref2, 'catalog')[0]).resolves.toEqual({
-      x: 2,
-    });
-    expect(await registry.get(ref1, 'catalog')[0]).not.toBe(
-      await registry.get(ref2, 'catalog')[0],
+    await expect(registry.get(ref1, 'catalog')).resolves.toEqual([
+      true,
+      { x: 1 },
+    ]);
+    await expect(registry.get(ref2, 'catalog')).resolves.toEqual([
+      true,
+      { x: 2 },
+    ]);
+    expect((await registry.get(ref1, 'catalog'))[1]).not.toBe(
+      (await registry.get(ref2, 'catalog'))[1],
     );
   });
 
@@ -135,7 +141,7 @@ describe('ServiceRegistry', () => {
       },
     });
     const registry = ServiceRegistry.create([factory, sf1]);
-    await expect(registry.get(ref2, 'catalog')[0]).rejects.toThrow(
+    await expect(registry.get(ref2, 'catalog')).rejects.toThrow(
       "Failed to instantiate 'root' scoped service '2' because it depends on 'plugin' scoped service '1'.",
     );
   });
@@ -149,9 +155,10 @@ describe('ServiceRegistry', () => {
       },
     });
     const registry = ServiceRegistry.create([factory, sf2]);
-    await expect(registry.get(ref1, 'catalog')[0]).resolves.toEqual({
-      x: 2,
-    });
+    await expect(registry.get(ref1, 'catalog')).resolves.toEqual([
+      true,
+      { x: 2 },
+    ]);
   });
 
   it('should be possible for root scoped services to depend on root scoped services', async () => {
@@ -164,9 +171,10 @@ describe('ServiceRegistry', () => {
       },
     });
     const registry = ServiceRegistry.create([factory, sf2]);
-    await expect(registry.get(ref, 'catalog')[0]).resolves.toEqual({
-      x: 2,
-    });
+    await expect(registry.get(ref, 'catalog')).resolves.toEqual([
+      true,
+      { x: 2 },
+    ]);
   });
 
   it('should return the pluginId from the pluginMetadata service', async () => {
@@ -179,31 +187,35 @@ describe('ServiceRegistry', () => {
       },
     });
     const registry = ServiceRegistry.create([factory]);
-    await expect(registry.get(ref, 'catalog')[0]).resolves.toEqual({
-      pluginId: 'catalog',
-    });
+    await expect(registry.get(ref, 'catalog')).resolves.toEqual([
+      true,
+      { pluginId: 'catalog' },
+    ]);
   });
 
   it('should use the last factory for each ref', async () => {
     const registry = ServiceRegistry.create([sf2, sf2b]);
-    await expect(registry.get(ref2, 'catalog')[0]).resolves.toEqual({
-      x: 22,
-    });
+    await expect(registry.get(ref2, 'catalog')).resolves.toEqual([
+      true,
+      { x: 22 },
+    ]);
   });
 
   it('should use added service factories for each ref', async () => {
     const registry = ServiceRegistry.create([sf2]);
     registry.add(sf2b);
-    await expect(registry.get(ref2, 'catalog')[0]).resolves.toEqual({
-      x: 22,
-    });
+    await expect(registry.get(ref2, 'catalog')).resolves.toEqual([
+      true,
+      { x: 22 },
+    ]);
   });
 
   it('should not allow factories to be added after instantiation', async () => {
     const registry = ServiceRegistry.create([sf2]);
-    await expect(registry.get(ref2, 'catalog')[0]).resolves.toEqual({
-      x: 2,
-    });
+    await expect(registry.get(ref2, 'catalog')).resolves.toEqual([
+      true,
+      { x: 2 },
+    ]);
     expect(() => registry.add(sf2b)).toThrow(
       'Unable to set service factory with id 2, service has already been instantiated',
     );
@@ -219,34 +231,38 @@ describe('ServiceRegistry', () => {
 
   it('should use the defaultFactory from the ref if not provided to the registry', async () => {
     const registry = ServiceRegistry.create([]);
-    await expect(registry.get(refDefault1, 'catalog')[0]).resolves.toEqual({
-      x: 10,
-    });
+    await expect(registry.get(refDefault1, 'catalog')).resolves.toEqual([
+      true,
+      { x: 10 },
+    ]);
   });
 
   it('should not use the defaultFactory from the ref if provided to the registry', async () => {
     const registry = ServiceRegistry.create([sf1]);
-    await expect(registry.get(refDefault1, 'catalog')[0]).resolves.toEqual({
-      x: 1,
-    });
+    await expect(registry.get(refDefault1, 'catalog')).resolves.toEqual([
+      true,
+      { x: 1 },
+    ]);
   });
 
   it('should handle duplicate defaultFactories by duplicating the implementations', async () => {
     const registry = ServiceRegistry.create([]);
-    await expect(registry.get(refDefault2a, 'catalog')[0]).resolves.toEqual({
-      x: 20,
-    });
-    await expect(registry.get(refDefault2b, 'catalog')[0]).resolves.toEqual({
-      x: 220,
-    });
-    expect(await registry.get(refDefault2a, 'catalog')[0]).toBe(
-      await registry.get(refDefault2a, 'catalog')[0],
+    await expect(registry.get(refDefault2a, 'catalog')).resolves.toEqual([
+      true,
+      { x: 20 },
+    ]);
+    await expect(registry.get(refDefault2b, 'catalog')).resolves.toEqual([
+      true,
+      { x: 220 },
+    ]);
+    expect((await registry.get(refDefault2a, 'catalog'))[1]).toBe(
+      (await registry.get(refDefault2a, 'catalog'))[1],
     );
-    expect(await registry.get(refDefault2b, 'catalog')[0]).toBe(
-      await registry.get(refDefault2b, 'catalog')[0],
+    expect((await registry.get(refDefault2b, 'catalog'))[1]).toBe(
+      (await registry.get(refDefault2b, 'catalog'))[1],
     );
-    expect(await registry.get(refDefault2a, 'catalog')[0]).not.toBe(
-      await registry.get(refDefault2b, 'catalog')[0],
+    expect((await registry.get(refDefault2a, 'catalog'))[1]).not.toBe(
+      (await registry.get(refDefault2b, 'catalog'))[1],
     );
   });
 
@@ -265,8 +281,8 @@ describe('ServiceRegistry', () => {
 
     const registry = ServiceRegistry.create([]);
     await Promise.all([
-      expect(registry.get(ref, 'catalog')[0]).resolves.toBeUndefined(),
-      expect(registry.get(ref, 'catalog')[0]).resolves.toBeUndefined(),
+      expect(registry.get(ref, 'catalog')).resolves.toEqual([true, undefined]),
+      expect(registry.get(ref, 'catalog')).resolves.toEqual([true, undefined]),
     ]);
     expect(factoryLoader).toHaveBeenCalledTimes(1);
   });
@@ -284,11 +300,11 @@ describe('ServiceRegistry', () => {
     const registry = ServiceRegistry.create([myFactory]);
 
     await Promise.all([
-      registry.get(ref1, 'catalog')[0]!,
-      registry.get(ref1, 'catalog')[0]!,
-      registry.get(ref1, 'catalog')[0]!,
-      registry.get(ref1, 'scaffolder')[0]!,
-      registry.get(ref1, 'scaffolder')[0]!,
+      registry.get(ref1, 'catalog'),
+      registry.get(ref1, 'catalog'),
+      registry.get(ref1, 'catalog'),
+      registry.get(ref1, 'scaffolder'),
+      registry.get(ref1, 'scaffolder'),
     ]);
 
     expect(createRootContext).toHaveBeenCalledTimes(1);
@@ -306,11 +322,11 @@ describe('ServiceRegistry', () => {
     const registry = ServiceRegistry.create([myFactory]);
 
     await Promise.all([
-      registry.get(ref1, 'catalog')[0]!,
-      registry.get(ref1, 'catalog')[0]!,
-      registry.get(ref1, 'catalog')[0]!,
-      registry.get(ref1, 'scaffolder')[0]!,
-      registry.get(ref1, 'scaffolder')[0]!,
+      registry.get(ref1, 'catalog'),
+      registry.get(ref1, 'catalog'),
+      registry.get(ref1, 'catalog'),
+      registry.get(ref1, 'scaffolder'),
+      registry.get(ref1, 'scaffolder'),
     ]);
 
     expect(factory).toHaveBeenCalledTimes(2);
@@ -327,7 +343,7 @@ describe('ServiceRegistry', () => {
 
     const registry = ServiceRegistry.create([myFactory]);
 
-    await expect(registry.get(ref1, 'catalog')[0]).rejects.toThrow(
+    await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' for 'catalog' because the following dependent services are missing: '2'",
     );
   });
@@ -354,7 +370,7 @@ describe('ServiceRegistry', () => {
 
     const registry = ServiceRegistry.create([factoryA, factoryB]);
 
-    await expect(registry.get(refA, 'catalog')[0]).rejects.toThrow(
+    await expect(registry.get(refA, 'catalog')).rejects.toThrow(
       "Failed to instantiate service 'a' for 'catalog' because the factory function threw an error, Error: Failed to instantiate service 'b' for 'catalog' because the following dependent services are missing: 'c', 'd'",
     );
   });
@@ -567,7 +583,7 @@ describe('ServiceRegistry', () => {
 
     const registry = ServiceRegistry.create([myFactory]);
 
-    await expect(registry.get(ref1, 'catalog')[0]).rejects.toThrow(
+    await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' because createRootContext threw an error, Error: top-level error",
     );
   });
@@ -583,7 +599,7 @@ describe('ServiceRegistry', () => {
 
     const registry = ServiceRegistry.create([myFactory]);
 
-    await expect(registry.get(ref1, 'catalog')[0]).rejects.toThrow(
+    await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' for 'catalog' because the factory function threw an error, Error: error in plugin",
     );
   });
@@ -598,7 +614,7 @@ describe('ServiceRegistry', () => {
 
     const registry = ServiceRegistry.create([]);
 
-    await expect(registry.get(ref, 'catalog')[0]).rejects.toThrow(
+    await expect(registry.get(ref, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' because the default factory loader threw an error, Error: default factory error",
     );
   });

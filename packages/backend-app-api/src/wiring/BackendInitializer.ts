@@ -218,12 +218,12 @@ export class BackendInitializer {
         }
         result.set(name, epImpl);
       } else {
-        const [impl, ok] = this.#serviceRegistry.get(
+        const [ok, impl] = await this.#serviceRegistry.get(
           ref as ServiceRef<unknown>,
           pluginId,
         );
         if (ok) {
-          result.set(name, await impl);
+          result.set(name, impl);
         } else {
           missingRefs.add(ref);
         }
@@ -299,11 +299,10 @@ export class BackendInitializer {
     // backend instances, each instance will log the error, because we can't
     // determine which instance the error came from.
     if (process.env.NODE_ENV !== 'test') {
-      const [rootLoggerPromise] = this.#serviceRegistry.get(
+      const [, rootLogger] = await this.#serviceRegistry.get(
         coreServices.rootLogger,
         'root',
       );
-      const rootLogger = await rootLoggerPromise;
       this.#unhandledRejectionHandler = (reason: Error) => {
         rootLogger
           ?.child({ type: 'unhandledRejection' })
@@ -321,16 +320,14 @@ export class BackendInitializer {
     // Initialize all root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
 
-    const [rootConfigPromise] = this.#serviceRegistry.get(
+    const [, rootConfig] = await this.#serviceRegistry.get(
       coreServices.rootConfig,
       'root',
     );
-    const rootConfig = await rootConfigPromise;
-    const [rootLoggerPromise] = this.#serviceRegistry.get(
+    const [, rootLogger] = await this.#serviceRegistry.get(
       coreServices.rootLogger,
       'root',
     );
-    const rootLogger = await rootLoggerPromise;
 
     const allRegistrations = this.#registrations.flatMap(f =>
       f.getRegistrations(),
@@ -610,11 +607,10 @@ export class BackendInitializer {
       shutdown(): Promise<void>;
     }
   > {
-    const [lifecycleServicePromise] = this.#serviceRegistry.get(
+    const [, lifecycleService] = await this.#serviceRegistry.get(
       coreServices.rootLifecycle,
       'root',
     );
-    const lifecycleService = await lifecycleServicePromise;
 
     const service = lifecycleService as any;
     if (
@@ -633,11 +629,10 @@ export class BackendInitializer {
   ): Promise<
     LifecycleService & { startup(): Promise<void>; shutdown(): Promise<void> }
   > {
-    const [lifecycleServicePromise] = this.#serviceRegistry.get(
+    const [, lifecycleService] = await this.#serviceRegistry.get(
       coreServices.lifecycle,
       pluginId,
     );
-    const lifecycleService = await lifecycleServicePromise;
 
     const service = lifecycleService as any;
     if (
@@ -667,12 +662,12 @@ export class BackendInitializer {
             `Feature loaders can only depend on root scoped services, but '${name}' is scoped to '${ref.scope}'. Offending loader is ${loader.description}`,
           );
         }
-        const [implPromise, ok] = this.#serviceRegistry.get(
+        const [ok, impl] = await this.#serviceRegistry.get(
           ref as ServiceRef<unknown>,
           'root',
         );
         if (ok) {
-          deps.set(name, await implPromise);
+          deps.set(name, impl);
         } else {
           missingRefs.add(ref);
         }

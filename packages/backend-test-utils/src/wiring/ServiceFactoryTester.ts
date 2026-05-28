@@ -96,12 +96,11 @@ export class ServiceFactoryTester<
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
   ): Promise<TInstances extends 'multiton' ? TService[] : TService> {
     const [pluginId] = args;
-    const [instancePromise, _] = this.#registry.get(
+    const [, instance] = await this.#registry.get(
       this.#subject,
       pluginId ?? 'test',
     );
-    const instance = await instancePromise!;
-    return instance;
+    return instance!;
   }
 
   /**
@@ -120,12 +119,11 @@ export class ServiceFactoryTester<
     ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
   ): Promise<TGetInstances extends 'multiton' ? TGetService[] : TGetService> {
     const [pluginId] = args;
-    const [instancePromise, _] = await this.#registry.get(
+    const [ok, instance] = await this.#registry.get(
       service,
       pluginId ?? 'test',
     );
-    const instance = await instancePromise;
-    if (instance === undefined) {
+    if (!ok) {
       throw new Error(`Service '${service.id}' not found`);
     }
     return instance;
