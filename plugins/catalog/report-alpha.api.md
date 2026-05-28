@@ -343,7 +343,7 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | undefined;
       };
       output:
-        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<TableColumn<{}>, 'catalog.table-column', {}>
         | ExtensionDataRef<
             CatalogColumnFilterFn,
             'catalog.table-column-filter',
@@ -353,7 +353,7 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {};
       params: {
-        column: TableColumn<any>;
+        column: TableColumn<{}>;
         filter?: CatalogColumnFilterFn;
       };
     }>;
@@ -367,7 +367,7 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | undefined;
       };
       output:
-        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<TableColumn<{}>, 'catalog.table-column', {}>
         | ExtensionDataRef<
             CatalogColumnFilterFn,
             'catalog.table-column-filter',
@@ -377,7 +377,7 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {};
       params: {
-        column: TableColumn<any>;
+        column: TableColumn<{}>;
         filter?: CatalogColumnFilterFn;
       };
     }>;
@@ -391,7 +391,7 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | undefined;
       };
       output:
-        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<TableColumn<{}>, 'catalog.table-column', {}>
         | ExtensionDataRef<
             CatalogColumnFilterFn,
             'catalog.table-column-filter',
@@ -401,7 +401,7 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {};
       params: {
-        column: TableColumn<any>;
+        column: TableColumn<{}>;
         filter?: CatalogColumnFilterFn;
       };
     }>;
@@ -415,7 +415,7 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | undefined;
       };
       output:
-        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<TableColumn<{}>, 'catalog.table-column', {}>
         | ExtensionDataRef<
             CatalogColumnFilterFn,
             'catalog.table-column-filter',
@@ -425,7 +425,7 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {};
       params: {
-        column: TableColumn<any>;
+        column: TableColumn<{}>;
         filter?: CatalogColumnFilterFn;
       };
     }>;
@@ -439,7 +439,7 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | undefined;
       };
       output:
-        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<TableColumn<{}>, 'catalog.table-column', {}>
         | ExtensionDataRef<
             CatalogColumnFilterFn,
             'catalog.table-column-filter',
@@ -449,7 +449,7 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {};
       params: {
-        column: TableColumn<any>;
+        column: TableColumn<{}>;
         filter?: CatalogColumnFilterFn;
       };
     }>;
@@ -463,7 +463,7 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | undefined;
       };
       output:
-        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<TableColumn<{}>, 'catalog.table-column', {}>
         | ExtensionDataRef<
             CatalogColumnFilterFn,
             'catalog.table-column-filter',
@@ -473,7 +473,7 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {};
       params: {
-        column: TableColumn<any>;
+        column: TableColumn<{}>;
         filter?: CatalogColumnFilterFn;
       };
     }>;
@@ -487,7 +487,7 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | undefined;
       };
       output:
-        | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+        | ExtensionDataRef<TableColumn<{}>, 'catalog.table-column', {}>
         | ExtensionDataRef<
             CatalogColumnFilterFn,
             'catalog.table-column-filter',
@@ -497,7 +497,7 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {};
       params: {
-        column: TableColumn<any>;
+        column: TableColumn<{}>;
         filter?: CatalogColumnFilterFn;
       };
     }>;
@@ -1367,7 +1367,7 @@ const _default: OverridableFrontendPlugin<
         >;
         columns: ExtensionInput<
           | ConfigurableExtensionDataRef<
-              TableColumn<any>,
+              TableColumn<{}>,
               'catalog.table-column',
               {}
             >

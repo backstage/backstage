@@ -29,11 +29,11 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 export const CatalogColumnBlueprint: ExtensionBlueprint<{
   kind: 'catalog-column';
   params: {
-    column: TableColumn<any>;
+    column: TableColumn<{}>;
     filter?: CatalogColumnFilterFn;
   };
   output:
-    | ExtensionDataRef<TableColumn<any>, 'catalog.table-column', {}>
+    | ExtensionDataRef<TableColumn<{}>, 'catalog.table-column', {}>
     | ExtensionDataRef<
         CatalogColumnFilterFn,
         'catalog.table-column-filter',
@@ -50,7 +50,7 @@ export const CatalogColumnBlueprint: ExtensionBlueprint<{
   };
   dataRefs: {
     column: ConfigurableExtensionDataRef<
-      TableColumn<any>,
+      TableColumn<{}>,
       'catalog.table-column',
       {}
     >;

@@ -18,7 +18,10 @@ import {
   CatalogColumnBlueprint,
   type CatalogColumnFilterContext,
 } from '@backstage/plugin-catalog-react/alpha';
+import { type TableColumn } from '@backstage/core-components';
 import { columnFactories } from '../components/CatalogTable/columns';
+
+const col = (c: TableColumn<any>): TableColumn<{}> => c;
 
 const kindsWithoutSystem = [
   'user',
@@ -46,14 +49,14 @@ function hideForKinds(kinds: string[]) {
 const catalogNameColumn = CatalogColumnBlueprint.make({
   name: 'name',
   params: {
-    column: columnFactories.createNameColumn(),
+    column: col(columnFactories.createNameColumn()),
   },
 });
 
 const catalogSystemColumn = CatalogColumnBlueprint.make({
   name: 'system',
   params: {
-    column: columnFactories.createSystemColumn(),
+    column: col(columnFactories.createSystemColumn()),
     filter: hideForKinds(kindsWithoutSystem),
   },
 });
@@ -61,7 +64,7 @@ const catalogSystemColumn = CatalogColumnBlueprint.make({
 const catalogOwnerColumn = CatalogColumnBlueprint.make({
   name: 'owner',
   params: {
-    column: columnFactories.createOwnerColumn(),
+    column: col(columnFactories.createOwnerColumn()),
     filter: hideForKinds(kindsWithoutOwner),
   },
 });
@@ -69,7 +72,7 @@ const catalogOwnerColumn = CatalogColumnBlueprint.make({
 const catalogTypeColumn = CatalogColumnBlueprint.make({
   name: 'type',
   params: {
-    column: columnFactories.createSpecTypeColumn(),
+    column: col(columnFactories.createSpecTypeColumn()),
     filter: ({ kind }) => {
       if (!kind) return true;
       const k = kind.toLocaleLowerCase('en-US');
@@ -81,7 +84,7 @@ const catalogTypeColumn = CatalogColumnBlueprint.make({
 const catalogLifecycleColumn = CatalogColumnBlueprint.make({
   name: 'lifecycle',
   params: {
-    column: columnFactories.createSpecLifecycleColumn(),
+    column: col(columnFactories.createSpecLifecycleColumn()),
     filter: hideForKinds(kindsWithoutLifecycle),
   },
 });
@@ -89,7 +92,7 @@ const catalogLifecycleColumn = CatalogColumnBlueprint.make({
 const catalogDescriptionColumn = CatalogColumnBlueprint.make({
   name: 'description',
   params: {
-    column: columnFactories.createMetadataDescriptionColumn(),
+    column: col(columnFactories.createMetadataDescriptionColumn()),
     filter: ({ kind }) => {
       if (!kind) return true;
       return kind.toLocaleLowerCase('en-US') !== 'location';
@@ -100,7 +103,7 @@ const catalogDescriptionColumn = CatalogColumnBlueprint.make({
 const catalogTagsColumn = CatalogColumnBlueprint.make({
   name: 'tags',
   params: {
-    column: columnFactories.createTagsColumn(),
+    column: col(columnFactories.createTagsColumn()),
     filter: ({ kind }) => {
       if (!kind) return true;
       return kind.toLocaleLowerCase('en-US') !== 'location';

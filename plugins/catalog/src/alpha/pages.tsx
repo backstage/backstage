@@ -34,12 +34,18 @@ import {
   EntityContextMenuItemBlueprint,
   EntityHeaderBlueprint,
   EntityContentGroupDefinitions,
+  type CatalogColumnFilterContext,
 } from '@backstage/plugin-catalog-react/alpha';
 import CategoryIcon from '@material-ui/icons/Category';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
 import type { CatalogExportSettings } from '../components/CatalogExportButton';
+import { type TableColumn } from '@backstage/core-components';
+import type {
+  CatalogTableColumnsFunc,
+  CatalogTableRow,
+} from '../components/CatalogTable/types';
 
 const catalogExportConfigDataRef = createExtensionDataRef<{
   exporters?: CatalogExportSettings['exporters'];
@@ -119,19 +125,22 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
           filter: col.get(CatalogColumnBlueprint.dataRefs.filter),
         }));
 
-        const columnsFunc =
-          columnEntries.length > 0
-            ? ({ filters: entityFilters, entities }: any) => {
-                const context = {
-                  kind: entityFilters.kind?.value,
-                  type: entityFilters.type?.value,
-                  entities,
-                };
-                return columnEntries
-                  .filter(entry => !entry.filter || entry.filter(context))
-                  .map(entry => entry.column);
-              }
-            : undefined;
+        const columnsFunc: CatalogTableColumnsFunc = ({
+          filters: entityFilters,
+          entities,
+        }) => {
+          const typeValue = entityFilters.type?.value;
+          const context: CatalogColumnFilterContext = {
+            kind: entityFilters.kind?.value,
+            type: Array.isArray(typeValue) ? typeValue[0] : typeValue,
+            entities,
+          };
+          return columnEntries
+            .filter(entry => !entry.filter || entry.filter(context))
+            .map(
+              entry => entry.column,
+            ) as unknown as TableColumn<CatalogTableRow>[];
+        };
 
         // Merge export customizers from all attached extensions
         const mergedExportSettings: CatalogExportSettings = {

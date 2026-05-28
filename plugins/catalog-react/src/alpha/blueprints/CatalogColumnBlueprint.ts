@@ -21,11 +21,10 @@ import {
 import { TableColumn } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import {
-  FilterPredicate,
   createZodV4FilterPredicateSchema,
   filterPredicateToFilterFunction,
+  type FilterPredicate,
 } from '@backstage/filter-predicates';
-import { z } from 'zod/v4';
 
 /**
  * Context passed to catalog column filter functions to determine visibility.
@@ -48,7 +47,7 @@ export type CatalogColumnFilterFn = (
 
 /** @alpha */
 export const catalogColumnDataRef = createExtensionDataRef<
-  TableColumn<any>
+  TableColumn<{}>
 >().with({ id: 'catalog.table-column' });
 
 /** @alpha */
@@ -58,21 +57,12 @@ export const catalogColumnFilterDataRef =
   });
 
 function resolveConfigFilter(config: {
-  filter?: FilterPredicate | string;
+  filter?: FilterPredicate;
 }): CatalogColumnFilterFn | undefined {
-  if (typeof config.filter === 'string') {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `DEPRECATION WARNING: Using a string-based filter in the catalog column configuration is deprecated. Use a filter predicate object instead.`,
-    );
-    return undefined;
-  }
   if (config.filter) {
-    const predicateFn =
-      filterPredicateToFilterFunction<CatalogColumnFilterContext>(
-        config.filter,
-      );
-    return predicateFn;
+    return filterPredicateToFilterFunction<CatalogColumnFilterContext>(
+      config.filter,
+    );
   }
   return undefined;
 }
@@ -90,13 +80,11 @@ export const CatalogColumnBlueprint = createExtensionBlueprint({
     filter: catalogColumnFilterDataRef,
   },
   configSchema: {
-    filter: z
-      .union([z.string(), createZodV4FilterPredicateSchema()])
-      .optional(),
+    filter: createZodV4FilterPredicateSchema().optional(),
   },
   *factory(
     params: {
-      column: TableColumn<any>;
+      column: TableColumn<{}>;
       filter?: CatalogColumnFilterFn;
     },
     { config },

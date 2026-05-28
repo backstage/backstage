@@ -166,26 +166,4 @@ describe('CatalogColumnBlueprint', () => {
     // config blocks user
     expect(filterFn(ctx('user'))).toBe(false);
   });
-
-  it('should ignore string config filter and log deprecation warning', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
-
-    const tester = createExtensionTester(
-      CatalogColumnBlueprint.make({
-        name: 'test',
-        params: { column: mockColumn },
-      }),
-      { config: { filter: 'some-string' } },
-    );
-
-    // Access a data ref to trigger factory execution
-    tester.get(CatalogColumnBlueprint.dataRefs.column);
-
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('DEPRECATION WARNING'),
-    );
-    expect(tester.get(CatalogColumnBlueprint.dataRefs.filter)).toBeUndefined();
-
-    warnSpy.mockRestore();
-  });
 });
