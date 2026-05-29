@@ -111,6 +111,35 @@ function isOutOfTheBoxOption(
 }
 
 /**
+ * Helper function to authorize TechDocs read access for an entity.
+ * Throws NotAllowedError if access is denied.
+ *
+ * @internal
+ */
+async function authorizeTechDocsReadPermission(options: {
+  permissions: PermissionsService;
+  credentials: Parameters<PermissionsService['authorize']>[1]['credentials'];
+  entityRef: string;
+}): Promise<void> {
+  const { permissions, credentials, entityRef } = options;
+  const decision = await permissions.authorize(
+    [
+      {
+        permission: techDocsEntityReadPermission,
+        resourceRef: entityRef,
+      },
+    ],
+    { credentials },
+  );
+
+  if (decision[0].result === AuthorizeResult.DENY) {
+    throw new NotAllowedError(
+      `Access to TechDocs for '${entityRef}' is not permitted`,
+    );
+  }
+}
+
+/**
  * Creates a techdocs router.
  *
  * @internal
@@ -182,24 +211,12 @@ export async function createRouter(
       throw new NotFoundError(`Unable to get metadata for '${entityRef}'`);
     }
 
-    // Check TechDocs-specific permission if enabled
-    if (config.getOptionalBoolean('permission.enabled')) {
-      const decision = await permissions.authorize(
-        [
-          {
-            permission: techDocsEntityReadPermission,
-            resourceRef: entityRef,
-          },
-        ],
-        { credentials },
-      );
-
-      if (decision[0].result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(
-          `Access to TechDocs for '${entityRef}' is not permitted`,
-        );
-      }
-    }
+    // Check TechDocs-specific read permission
+    await authorizeTechDocsReadPermission({
+      permissions,
+      credentials,
+      entityRef,
+    });
 
     try {
       const techdocsMetadata = await publisher.fetchTechDocsMetadata(
@@ -208,9 +225,7 @@ export async function createRouter(
 
       res.json(techdocsMetadata);
     } catch (err) {
-      logger.info(
-        `Unable to get metadata for '${entityRef}' with error ${err}`,
-      );
+      logger.info(`Unable to get metadata for '${entityRef}'`, err as Error);
       throw new NotFoundError(`Unable to get metadata for '${entityRef}'`, err);
     }
   });
@@ -228,32 +243,18 @@ export async function createRouter(
       throw new NotFoundError(`Unable to get metadata for '${entityRef}'`);
     }
 
-    // Check TechDocs-specific permission if enabled
-    if (config.getOptionalBoolean('permission.enabled')) {
-      const decision = await permissions.authorize(
-        [
-          {
-            permission: techDocsEntityReadPermission,
-            resourceRef: entityRef,
-          },
-        ],
-        { credentials },
-      );
-
-      if (decision[0].result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(
-          `Access to TechDocs for '${entityRef}' is not permitted`,
-        );
-      }
-    }
+    // Check TechDocs-specific read permission
+    await authorizeTechDocsReadPermission({
+      permissions,
+      credentials,
+      entityRef,
+    });
 
     try {
       const locationMetadata = getLocationForEntity(entity, scmIntegrations);
       res.json({ ...entity, locationMetadata });
     } catch (err) {
-      logger.info(
-        `Unable to get metadata for '${entityRef}' with error ${err}`,
-      );
+      logger.info(`Unable to get metadata for '${entityRef}'`, err as Error);
       throw new NotFoundError(`Unable to get metadata for '${entityRef}'`, err);
     }
   });
@@ -275,24 +276,12 @@ export async function createRouter(
       throw new NotFoundError('Entity metadata UID missing');
     }
 
-    // Check TechDocs-specific permission if enabled
-    if (config.getOptionalBoolean('permission.enabled')) {
-      const decision = await permissions.authorize(
-        [
-          {
-            permission: techDocsEntityReadPermission,
-            resourceRef: entityRef,
-          },
-        ],
-        { credentials },
-      );
-
-      if (decision[0].result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(
-          `Access to TechDocs for '${entityRef}' is not permitted`,
-        );
-      }
-    }
+    // Check TechDocs-specific read permission
+    await authorizeTechDocsReadPermission({
+      permissions,
+      credentials,
+      entityRef,
+    });
 
     const responseHandler: DocsSynchronizerSyncOpts = createEventStream(res);
 
@@ -343,45 +332,32 @@ export async function createRouter(
   });
 
   // Ensures that the related entity exists and the current user has permission to view it.
-  if (config.getOptionalBoolean('permission.enabled')) {
-    router.use(
-      '/static/docs/:namespace/:kind/:name',
-      async (req, _res, next) => {
-        const { kind, namespace, name } = req.params;
-        const entityName = { kind, namespace, name };
-        const entityRef = stringifyEntityRef(entityName);
+  // Note: The entityLoader.load() call checks catalog.entity.read permission under the hood.
+  // This middleware adds TechDocs-specific permission checking via techdocs.entity.read.
+  router.use('/static/docs/:namespace/:kind/:name', async (req, _res, next) => {
+    const { kind, namespace, name } = req.params;
+    const entityName = { kind, namespace, name };
+    const entityRef = stringifyEntityRef(entityName);
 
-        const credentials = await httpAuth.credentials(req, {
-          allowLimitedAccess: true,
-        });
+    const credentials = await httpAuth.credentials(req, {
+      allowLimitedAccess: true,
+    });
 
-        const entity = await entityLoader.load(credentials, entityName);
+    const entity = await entityLoader.load(credentials, entityName);
 
-        if (!entity) {
-          throw new NotFoundError(`Entity not found for ${entityRef}`);
-        }
+    if (!entity) {
+      throw new NotFoundError(`Entity not found for ${entityRef}`);
+    }
 
-        // Check TechDocs-specific permission
-        const decision = await permissions.authorize(
-          [
-            {
-              permission: techDocsEntityReadPermission,
-              resourceRef: entityRef,
-            },
-          ],
-          { credentials },
-        );
+    // Check TechDocs-specific read permission
+    await authorizeTechDocsReadPermission({
+      permissions,
+      credentials,
+      entityRef,
+    });
 
-        if (decision[0].result === AuthorizeResult.DENY) {
-          throw new NotAllowedError(
-            `Access to TechDocs for '${entityRef}' is not permitted`,
-          );
-        }
-
-        next();
-      },
-    );
-  }
+    next();
+  });
 
   // If a cache manager was provided, attach the cache middleware.
   if (cache) {

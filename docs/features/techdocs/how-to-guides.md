@@ -866,7 +866,17 @@ downloaded:
 
 By default, TechDocs serves documentation to anyone who can view the entity in the catalog. However, you may want to restrict access to documentation independently from catalog visibility — for example, to protect sensitive security runbooks or internal architecture documents.
 
-TechDocs supports the Backstage permission framework through the `techdocs.entity.read` permission. When enabled, all TechDocs endpoints check this permission before serving content.
+TechDocs supports the Backstage permission framework through the `techdocs.entity.read` permission. When permissions are enabled, all TechDocs endpoints check this permission before serving content.
+
+### Understanding how TechDocs permissions work
+
+TechDocs uses **two layers of permission checks**:
+
+1. **Catalog entity permission** (`catalog.entity.read`): Before accessing TechDocs, the system first checks if the user can view the entity in the catalog. This happens automatically when loading entity metadata.
+
+2. **TechDocs permission** (`techdocs.entity.read`): After the catalog permission check passes, TechDocs checks this permission to determine if the user can access the documentation specifically.
+
+This means a user must have **both** permissions to access documentation. You can use this to create scenarios where users can see an entity in the catalog (its name, description, owner) but cannot access its documentation.
 
 ### Enable permissions
 
@@ -879,7 +889,7 @@ permission:
 
 ### Write a permission policy
 
-Create or update your permission policy to handle the `techdocs.entity.read` permission. Here's an example that restricts TechDocs access to entity owners:
+Create or update your permission policy to handle the `techdocs.entity.read` permission. Here's an example that restricts TechDocs access:
 
 ```typescript
 import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
@@ -887,7 +897,10 @@ import {
   PolicyDecision,
   AuthorizeResult,
 } from '@backstage/plugin-permission-common';
-import { PolicyQuery } from '@backstage/plugin-permission-node';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+} from '@backstage/plugin-permission-node';
 
 class MyPermissionPolicy implements PermissionPolicy {
   async handle(request: PolicyQuery): Promise<PolicyDecision> {
