@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: local-inference-server
+  description: A locally hosted AI model server exposing an inference API
+  title: Local Inference Server
+  tags:
+    - ai
+    - ai-model
+spec:
+  type: ai-model-server
+  lifecycle: experimental
+  owner: team-a
+  remotes:
+    - type: streamable-http
+      url: http://localhost:8080/v1

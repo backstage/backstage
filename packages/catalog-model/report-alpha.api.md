@@ -9,6 +9,25 @@ import { JsonValue } from '@backstage/types';
 import { SerializedError } from '@backstage/errors';
 
 // @alpha
+export interface AiModelServerApiEntity
+  extends Omit<ApiEntityV1alpha1, 'spec'> {
+  // (undocumented)
+  spec: {
+    type: 'ai-model-server';
+    lifecycle: string;
+    owner: string;
+    system?: string;
+    remotes: ApiRemote[];
+  };
+}
+
+// @alpha
+export const aiModelServerApiEntityModel: CatalogModelLayer;
+
+// @alpha
+export const aiModelServerApiEntityValidator: KindValidator;
+
+// @alpha
 export const aiResourceEntityModel: CatalogModelLayer;
 
 // @alpha
@@ -57,6 +76,12 @@ interface ApiEntityV1alpha1 extends Entity {
 }
 export { ApiEntityV1alpha1 as ApiEntity };
 export { ApiEntityV1alpha1 };
+
+// @alpha
+export type ApiRemote = {
+  type: string;
+  url: string;
+};
 
 // @alpha
 export type AsyncCatalogModelSourceGenerator = AsyncGenerator<
@@ -506,6 +531,11 @@ export type EntityStatusItem = {
 export type EntityStatusLevel = 'info' | 'warning' | 'error';
 
 // @alpha
+export function isAiModelServerApiEntity(
+  entity: ApiEntityV1alpha1 | AiModelServerApiEntity,
+): entity is AiModelServerApiEntity;
+
+// @alpha
 export const isAiResourceEntity: (
   entity: Entity,
 ) => entity is AiResourceEntityV1alpha1;
@@ -538,7 +568,7 @@ export interface McpServerApiEntity extends Omit<ApiEntityV1alpha1, 'spec'> {
     lifecycle: string;
     owner: string;
     system?: string;
-    remotes: McpServerRemote[];
+    remotes: ApiRemote[];
   };
 }
 
@@ -548,11 +578,8 @@ export const mcpServerApiEntityModel: CatalogModelLayer;
 // @alpha
 export const mcpServerApiEntityValidator: KindValidator;
 
-// @alpha
-export type McpServerRemote = {
-  type: string;
-  url: string;
-};
+// @alpha @deprecated (undocumented)
+export type McpServerRemote = ApiRemote;
 
 // @alpha
 export interface RuleAiResourceEntityV1alpha1

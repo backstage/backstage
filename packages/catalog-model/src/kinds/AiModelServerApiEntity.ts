@@ -17,18 +17,19 @@
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { ApiEntityV1alpha1 } from './ApiEntityV1alpha1';
 import type { ApiRemote } from './ApiRemote';
-import mcpServerSchema from '../schema/kinds/API.v1alpha1.mcp-server.schema.json';
+import aiModelServerSchema from '../schema/kinds/API.v1alpha1.ai-model-server.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
 /**
- * An MCP (Model Context Protocol) server represented as an API entity
- * (spec.type: 'mcp-server').
+ * An AI model server represented as an API entity
+ * (spec.type: 'ai-model-server').
  *
  * @alpha
  */
-export interface McpServerApiEntity extends Omit<ApiEntityV1alpha1, 'spec'> {
+export interface AiModelServerApiEntity
+  extends Omit<ApiEntityV1alpha1, 'spec'> {
   spec: {
-    type: 'mcp-server';
+    type: 'ai-model-server';
     lifecycle: string;
     owner: string;
     system?: string;
@@ -37,46 +38,39 @@ export interface McpServerApiEntity extends Omit<ApiEntityV1alpha1, 'spec'> {
 }
 
 /**
- * @alpha
- * @deprecated Use {@link ApiRemote} instead.
- */
-export type McpServerRemote = ApiRemote;
-
-/**
- * {@link KindValidator} for the `mcp-server` specType of API entities.
+ * {@link KindValidator} for the `ai-model-server` specType of API entities.
  *
  * @alpha
  */
-export const mcpServerApiEntityValidator =
-  ajvCompiledJsonSchemaValidator(mcpServerSchema);
+export const aiModelServerApiEntityValidator =
+  ajvCompiledJsonSchemaValidator(aiModelServerSchema);
 
 /**
- * Type guard: narrows an entity to the MCP server API subtype.
+ * Type guard: narrows an entity to the AI model server API subtype.
  *
  * @alpha
  */
-export function isMcpServerApiEntity(
-  entity: ApiEntityV1alpha1 | McpServerApiEntity,
-): entity is McpServerApiEntity {
-  return entity.spec.type === 'mcp-server';
+export function isAiModelServerApiEntity(
+  entity: ApiEntityV1alpha1 | AiModelServerApiEntity,
+): entity is AiModelServerApiEntity {
+  return entity.spec.type === 'ai-model-server';
 }
 
 /**
- * Extends the API kind with the mcp-server specType.
+ * Extends the API kind with the ai-model-server specType.
  *
  * @alpha
  */
-export const mcpServerApiEntityModel = createCatalogModelLayer({
-  layerId: 'catalog.backstage.io/kind-api-mcp-server',
+export const aiModelServerApiEntityModel = createCatalogModelLayer({
+  layerId: 'catalog.backstage.io/kind-api-ai-model-server',
   builder: model => {
     model.addKindVersion({
       kind: 'API',
       versions: [
         {
           name: ['v1alpha1', 'v1beta1'],
-          specType: 'mcp-server',
-          description:
-            'An MCP (Model Context Protocol) server exposed as an API entity.',
+          specType: 'ai-model-server',
+          description: 'An AI model server exposed as an API entity.',
           relationFields: [
             {
               selector: { path: 'spec.owner' },
@@ -92,7 +86,7 @@ export const mcpServerApiEntityModel = createCatalogModelLayer({
               defaultNamespace: 'inherit',
             },
           ],
-          schema: { jsonSchema: mcpServerSchema },
+          schema: { jsonSchema: aiModelServerSchema },
         },
       ],
     });

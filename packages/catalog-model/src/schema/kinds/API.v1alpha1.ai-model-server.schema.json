@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "ApiV1alpha1AiModelServer",
+  "description": "An AI model server exposed as an API entity. See RFC backstage/backstage#33060.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "API",
+      "metadata": {
+        "name": "local-inference-server",
+        "title": "Local Inference Server",
+        "description": "A locally hosted AI model server exposing an inference API"
+      },
+      "spec": {
+        "type": "ai-model-server",
+        "lifecycle": "experimental",
+        "owner": "backstage",
+        "remotes": [
+          {
+            "type": "streamable-http",
+            "url": "http://localhost:8080/v1"
+          }
+        ]
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
+        },
+        "kind": {
+          "enum": ["API"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["type", "lifecycle", "owner", "remotes"],
+          "properties": {
+            "type": {
+              "const": "ai-model-server",
+              "description": "Discriminant for the AI model server specType."
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the AI model server.",
+              "examples": ["experimental", "production", "deprecated"],
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the AI model server.",
+              "examples": ["ai-platform-team", "user:john.johnson"],
+              "minLength": 1
+            },
+            "system": {
+              "type": "string",
+              "description": "An entity reference to the system that the AI model server belongs to.",
+              "minLength": 1
+            },
+            "remotes": {
+              "type": "array",
+              "minItems": 1,
+              "description": "Inference endpoints for the AI model server.",
+              "items": {
+                "type": "object",
+                "required": ["type", "url"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Transport type, e.g. streamable-http, streamable-https, https.",
+                    "examples": [
+                      "streamable-http",
+                      "streamable-https",
+                      "https"
+                    ],
+                    "minLength": 1
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "Endpoint URL for the AI model server inference API.",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

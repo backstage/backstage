@@ -6,6 +6,7 @@ metadata:
 spec:
   targets:
     - ./apis/backstage-mcp-server-api.yaml
+    - ./apis/local-ai-model-server-api.yaml
     - ./apis/hello-world-api.yaml
     - ./apis/hello-world-trpc-api.yaml
     - ./apis/petstore-api.yaml
