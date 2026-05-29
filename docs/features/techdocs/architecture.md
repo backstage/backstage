@@ -136,6 +136,7 @@ process, making sure it's scalable. It is responsible for securely communicating
 with the cloud storage provider, for both fetching static generated sites and
 publishing the updates. There are other planned features like an authentication
 layer for users to determine whether they have the permission to view a
-particular docs site. There are a handful of features which are extremely hard
+particular docs site. See the [how-to guide on restricting access](./how-to-guides.md#how-to-restrict-access-to-techdocs-using-permissions) for details.
+There are a handful of features which are extremely hard
 to develop without a tightly integrated backend in place. Hence, support for
 `techdocs` without `techdocs-backend` is limited and challenging to develop.

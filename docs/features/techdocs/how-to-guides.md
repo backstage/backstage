@@ -861,3 +861,47 @@ downloaded:
 ```
 [Link text](https://example.com/foo.jpg){: download="foo.jpg" }
 ```
+
+## How to restrict access to TechDocs using permissions
+
+By default, TechDocs serves documentation to anyone who can view the entity in the catalog. However, you may want to restrict access to documentation independently from catalog visibility — for example, to protect sensitive security runbooks or internal architecture documents.
+
+TechDocs supports the Backstage permission framework through the `techdocs.entity.read` permission. When enabled, all TechDocs endpoints check this permission before serving content.
+
+### Enable permissions
+
+First, ensure the permission framework is enabled in your `app-config.yaml`:
+
+```yaml
+permission:
+  enabled: true
+```
+
+### Write a permission policy
+
+Create or update your permission policy to handle the `techdocs.entity.read` permission. Here's an example that restricts TechDocs access to entity owners:
+
+```typescript
+import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
+import {
+  PolicyDecision,
+  AuthorizeResult,
+} from '@backstage/plugin-permission-common';
+import { PolicyQuery } from '@backstage/plugin-permission-node';
+
+class MyPermissionPolicy implements PermissionPolicy {
+  async handle(request: PolicyQuery): Promise<PolicyDecision> {
+    if (request.permission.name === techDocsEntityReadPermission.name) {
+      // Your authorization logic here
+      // For example, check if user is an owner of the entity
+      return { result: AuthorizeResult.CONDITIONAL /* conditions */ };
+    }
+
+    return { result: AuthorizeResult.ALLOW };
+  }
+}
+```
+
+Since `techdocs.entity.read` uses the `catalog-entity` resource type, you can reuse existing catalog permission rules and conditions in your policy.
+
+For more details on writing permission policies, see the [permission documentation](../../permissions/writing-a-policy.md).
