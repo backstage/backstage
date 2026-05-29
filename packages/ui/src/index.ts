@@ -32,6 +32,7 @@ export * from './components/Accordion';
 export * from './components/Alert';
 export * from './components/Avatar';
 export * from './components/Badge';
+export * from './components/Breadcrumbs';
 export * from './components/Button';
 export * from './components/Card';
 export * from './components/DatePicker';
@@ -75,6 +76,7 @@ export * from './types';
 export { useBreakpoint } from './hooks/useBreakpoint';
 export { useBgProvider, useBgConsumer, BgProvider } from './hooks/useBg';
 export type { BgContextValue, BgProviderProps } from './hooks/useBg';
+export { useIsTruncated } from './hooks/useIsTruncated';
 
 // Provider
 export { BUIProvider } from './provider';

@@ -1,0 +1,117 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-Breadcrumbs {
+    /* customisable component-scoped properties */
+    --_gap: var(--bui-Breadcrumbs-gap, var(--bui-space-3));
+    --_max-width: var(--bui-Breadcrumbs-max-width, 165px);
+    --_color: var(--bui-Breadcrumbs-color, inherit);
+    --_font-weight: var(
+      --bui-Breadcrumbs-font-weight,
+      var(--bui-font-weight-regular)
+    );
+    --_max-width-current: var(--bui-Breadcrumbs-max-width-current, none);
+    --_color-current: var(--bui-Breadcrumbs-color-current, inherit);
+    --_font-weight-current: var(
+      --bui-Breadcrumbs-font-weight-current,
+      var(--bui-font-weight-bold)
+    );
+    --_separator-color: var(
+      --bui-Breadcrumbs-separator-color,
+      var(--bui-fg-tertiary)
+    );
+    --_separator-size: var(--bui-Breadcrumbs-separator-size, 1em);
+
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--_gap);
+    min-width: 0;
+  }
+
+  .bui-Breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--_gap);
+    min-width: 3rem;
+  }
+
+  .bui-BreadcrumbLabel {
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+    max-width: var(--_max-width);
+    color: var(--_color);
+    font-weight: var(--_font-weight);
+  }
+
+  a.bui-BreadcrumbLabel {
+    cursor: pointer;
+  }
+
+  .bui-BreadcrumbLabel--current {
+    max-width: var(--_max-width-current);
+    color: var(--_color-current);
+    font-weight: var(--_font-weight-current);
+  }
+
+  .bui-BreadcrumbEllipsis {
+    display: flex;
+    align-items: center;
+    gap: var(--_gap);
+  }
+
+  .bui-BreadcrumbEllipsisTrigger {
+    all: unset;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    line-height: 1;
+    letter-spacing: 0.1em;
+  }
+
+  a.bui-BreadcrumbLabel[data-focus-visible],
+  .bui-BreadcrumbEllipsisTrigger[data-focus-visible] {
+    border-radius: var(--bui-radius-1);
+    outline: 2px solid var(--bui-ring);
+    outline-offset: 2px;
+  }
+
+  a.bui-BreadcrumbLabel[data-hovered],
+  .bui-BreadcrumbEllipsisTrigger[data-hovered] {
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+  }
+
+  .bui-BreadcrumbSeparator {
+    color: var(--_separator-color);
+    flex-shrink: 0;
+    width: var(--_separator-size);
+    height: var(--_separator-size);
+  }
+}

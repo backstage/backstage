@@ -483,6 +483,79 @@ export type BoxUtilityProps = {
   maxHeight?: Responsive<string>;
 };
 
+// @public
+export const Breadcrumb: (props: BreadcrumbProps) => JSX_2.Element;
+
+// @public
+export const BreadcrumbDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Breadcrumb';
+    readonly label: 'bui-BreadcrumbLabel';
+    readonly current: 'bui-BreadcrumbLabel--current';
+    readonly separator: 'bui-BreadcrumbSeparator';
+  };
+  readonly propDefs: {
+    readonly as: {
+      readonly default: 'span';
+    };
+    readonly href: {};
+    readonly children: {};
+  };
+};
+
+// @public
+export interface BreadcrumbOwnProps {
+  // (undocumented)
+  as?: TextOwnProps['as'];
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  href?: string;
+}
+
+// @public
+export interface BreadcrumbProps extends BreadcrumbOwnProps {}
+
+// @public
+export const Breadcrumbs: (props: BreadcrumbsProps) => JSX_2.Element | null;
+
+// @public
+export const BreadcrumbsDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Breadcrumbs';
+    readonly ellipsis: 'bui-BreadcrumbEllipsis';
+    readonly ellipsisTrigger: 'bui-BreadcrumbEllipsisTrigger';
+    readonly separator: 'bui-BreadcrumbSeparator';
+  };
+  readonly propDefs: {
+    readonly 'aria-label': {};
+    readonly currentAs: {};
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export interface BreadcrumbsOwnProps {
+  // (undocumented)
+  'aria-label'?: string;
+  // (undocumented)
+  children: React.ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  currentAs?: BreadcrumbOwnProps['as'];
+}
+
+// @public
+export interface BreadcrumbsProps extends BreadcrumbsOwnProps {}
+
 // @public (undocumented)
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 

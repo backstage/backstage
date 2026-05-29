@@ -1,0 +1,172 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { breadcrumbsPropDefs, breadcrumbPropDefs } from './props-definition';
+import {
+  breadcrumbsUsageSnippet,
+  defaultSnippet,
+  truncationSnippet,
+  collapsedSnippet,
+  inheritsStyleSnippet,
+  mixedSegmentsSnippet,
+  customStylingSnippet,
+} from './snippets';
+import {
+  Default,
+  Truncation,
+  Collapsed,
+  InheritsStyle,
+  MixedSegments,
+  CustomStyling,
+} from './components';
+import * as Table from '@/components/Table/Table';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import {
+  BreadcrumbsDefinition,
+  BreadcrumbDefinition,
+} from '../../../utils/definitions';
+
+<PageTitle
+  title="Breadcrumbs"
+  description="A navigation trail showing the current page's location within a hierarchy. Renders a nav landmark with an aria-label for accessibility."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={breadcrumbsUsageSnippet} />
+
+## API reference
+
+### Breadcrumbs
+
+<PropsTable data={breadcrumbsPropDefs} />
+
+### Breadcrumb
+
+<PropsTable data={breadcrumbPropDefs} />
+
+## Examples
+
+### Truncation
+
+Non-current segments are capped at a max width. Overflowing text is truncated with an ellipsis. When a segment is truncated, a tooltip showing the full text appears on hover or focus. Truncation state updates automatically on window resize, so tooltips appear or disappear as segments overflow. The current (last) segment has no max width — but if its container is constrained, it can still truncate and will also show a tooltip.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Truncation />}
+  code={truncationSnippet}
+/>
+
+### Collapsed
+
+When there are 5 or more segments, the middle items automatically collapse into an ellipsis menu. The first segment and the last two segments stay visible. Clicking the ellipsis button opens a menu with the hidden segments.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Collapsed />}
+  code={collapsedSnippet}
+/>
+
+### Inherits style
+
+Breadcrumbs inherit font size and color from their parent, including the chevron separator which scales with the text.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<InheritsStyle />}
+  code={inheritsStyleSnippet}
+/>
+
+### Mixed segments
+
+Breadcrumbs can mix linked and plain-text segments. Segments without an `href` render as static text.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<MixedSegments />}
+  code={mixedSegmentsSnippet}
+/>
+
+## Customisation
+
+Set these CSS custom properties on a parent element or directly on the Breadcrumbs component to override default styling. All tokens are component-scoped and will not affect other components.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Token</Table.HeaderCell>
+      <Table.HeaderCell>Default</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-color`</Table.Cell>
+      <Table.Cell>`inherit`</Table.Cell>
+      <Table.Cell>Colour of non-current segments</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-color-current`</Table.Cell>
+      <Table.Cell>`inherit`</Table.Cell>
+      <Table.Cell>Colour of the current (last) segment</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-font-weight`</Table.Cell>
+      <Table.Cell>`--bui-font-weight-regular`</Table.Cell>
+      <Table.Cell>Font weight of non-current segments</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-font-weight-current`</Table.Cell>
+      <Table.Cell>`--bui-font-weight-bold`</Table.Cell>
+      <Table.Cell>Font weight of the current segment</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-max-width`</Table.Cell>
+      <Table.Cell>`165px`</Table.Cell>
+      <Table.Cell>
+        Max width of non-current segments before truncation
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-max-width-current`</Table.Cell>
+      <Table.Cell>`none`</Table.Cell>
+      <Table.Cell>
+        Max width of the current segment before truncation
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-separator-color`</Table.Cell>
+      <Table.Cell>`--bui-fg-tertiary`</Table.Cell>
+      <Table.Cell>Colour of the separator icon</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-separator-size`</Table.Cell>
+      <Table.Cell>`1em`</Table.Cell>
+      <Table.Cell>Width and height of the separator icon</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`--bui-Breadcrumbs-gap`</Table.Cell>
+      <Table.Cell>`--bui-space-3`</Table.Cell>
+      <Table.Cell>Spacing between segments and separators</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<CustomStyling />}
+  code={customStylingSnippet}
+/>
+
+<Theming definition={BreadcrumbsDefinition} />
+
+<ChangelogComponent component="breadcrumbs" />
