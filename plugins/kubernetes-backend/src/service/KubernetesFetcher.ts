@@ -21,7 +21,6 @@ import {
   ObjectFetchParams,
   ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
-// @ts-ignore - split2 doesn't have types
 import split2 from 'split2';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
@@ -316,6 +315,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         yield this.transformWatchEvent(data, resourcePath);
       }
     } finally {
+      stream.destroy();
       if (response.body && 'destroy' in response.body) {
         (response.body as any).destroy();
       }

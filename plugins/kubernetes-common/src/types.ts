@@ -348,7 +348,7 @@ export type KubernetesWatchEventType =
  */
 export type KubernetesWatchEvent =
   | {
-      type: 'ADDED' | 'MODIFIED' | 'DELETED' | 'BOOKMARK';
+      type: Exclude<KubernetesWatchEventType, 'ERROR'>;
       object: JsonObject;
       resourceVersion?: string;
     }
@@ -385,5 +385,5 @@ export interface KubernetesWatchOptions {
    * when using `sendInitialEvents` so the server can serve from its watch
    * cache rather than quorum-reading etcd.
    */
-  resourceVersionMatch?: string;
+  resourceVersionMatch?: 'NotOlderThan' | 'Exact';
 }

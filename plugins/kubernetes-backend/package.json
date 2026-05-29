@@ -79,6 +79,7 @@
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
     "@types/express": "^4.17.6",
+    "@types/split2": "^4.2.0",
     "msw": "^1.0.0",
     "supertest": "^7.0.0",
     "ws": "^8.20.1"

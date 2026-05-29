@@ -374,7 +374,7 @@ export const kubernetesResourcesReadPermission: BasicPermission;
 // @public
 export type KubernetesWatchEvent =
   | {
-      type: 'ADDED' | 'MODIFIED' | 'DELETED' | 'BOOKMARK';
+      type: Exclude<KubernetesWatchEventType, 'ERROR'>;
       object: JsonObject;
       resourceVersion?: string;
     }
@@ -397,7 +397,7 @@ export interface KubernetesWatchOptions {
   labelSelector?: string;
   namespace?: string;
   resourceVersion?: string;
-  resourceVersionMatch?: string;
+  resourceVersionMatch?: 'NotOlderThan' | 'Exact';
   sendInitialEvents?: boolean;
   timeoutSeconds?: number;
 }
