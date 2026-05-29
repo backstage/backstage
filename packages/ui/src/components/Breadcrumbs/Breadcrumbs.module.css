@@ -21,22 +21,7 @@
     /* customisable component-scoped properties */
     --_gap: var(--bui-Breadcrumbs-gap, var(--bui-space-3));
     --_max-width: var(--bui-Breadcrumbs-max-width, 165px);
-    --_color: var(--bui-Breadcrumbs-color, inherit);
-    --_font-weight: var(
-      --bui-Breadcrumbs-font-weight,
-      var(--bui-font-weight-regular)
-    );
     --_max-width-current: var(--bui-Breadcrumbs-max-width-current, none);
-    --_color-current: var(--bui-Breadcrumbs-color-current, inherit);
-    --_font-weight-current: var(
-      --bui-Breadcrumbs-font-weight-current,
-      var(--bui-font-weight-bold)
-    );
-    --_separator-color: var(
-      --bui-Breadcrumbs-separator-color,
-      var(--bui-fg-tertiary)
-    );
-    --_separator-size: var(--bui-Breadcrumbs-separator-size, 1em);
 
     display: flex;
     align-items: center;
@@ -57,14 +42,11 @@
   .bui-BreadcrumbLabel {
     margin: 0;
     padding: 0;
-    font-size: inherit;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     text-decoration: none;
     max-width: var(--_max-width);
-    color: var(--_color);
-    font-weight: var(--_font-weight);
   }
 
   a.bui-BreadcrumbLabel {
@@ -73,8 +55,6 @@
 
   .bui-BreadcrumbLabel--current {
     max-width: var(--_max-width-current);
-    color: var(--_color-current);
-    font-weight: var(--_font-weight-current);
   }
 
   .bui-BreadcrumbEllipsis {
@@ -109,9 +89,6 @@
   }
 
   .bui-BreadcrumbSeparator {
-    color: var(--_separator-color);
     flex-shrink: 0;
-    width: var(--_separator-size);
-    height: var(--_separator-size);
   }
 }

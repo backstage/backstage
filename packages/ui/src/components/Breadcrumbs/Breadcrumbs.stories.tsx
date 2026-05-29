@@ -16,6 +16,7 @@
 
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
+import { RiArrowRightSLine, RiMore2Line } from '@remixicon/react';
 import { Breadcrumbs } from './Breadcrumbs';
 import { Breadcrumb } from './Breadcrumb';
 import { MemoryRouter } from 'react-router-dom';
@@ -112,24 +113,24 @@ export const CollapsingBehaviour = meta.story({
   ),
 });
 
-export const InheritsColourAndFontSize = meta.story({
+export const VariantAndColor = meta.story({
   args: {},
   decorators: [withRouter(['/'])],
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <div style={{ fontSize: '12px', color: '#e06c75' }}>
-        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>12px, red</p>
-        <Breadcrumbs>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>body-x-small, danger</p>
+        <Breadcrumbs variant="body-x-small" color="danger">
           <Breadcrumb href="/home">Home</Breadcrumb>
           <Breadcrumb href="/home/settings">Settings</Breadcrumb>
           <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
         </Breadcrumbs>
       </div>
-      <div style={{ fontSize: '12px', color: '#e06c75' }}>
+      <div>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
-          12px, red — with collapsing
+          body-x-small, danger — with collapsing
         </p>
-        <Breadcrumbs>
+        <Breadcrumbs variant="body-x-small" color="danger">
           <Breadcrumb href="/home">Home</Breadcrumb>
           <Breadcrumb href="/home/docs">Docs</Breadcrumb>
           <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
@@ -139,19 +140,19 @@ export const InheritsColourAndFontSize = meta.story({
           </Breadcrumb>
         </Breadcrumbs>
       </div>
-      <div style={{ fontSize: '24px', color: '#61afef' }}>
-        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>24px, blue</p>
-        <Breadcrumbs>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>title-x-small, info</p>
+        <Breadcrumbs variant="title-x-small" color="info">
           <Breadcrumb href="/home">Home</Breadcrumb>
           <Breadcrumb href="/home/settings">Settings</Breadcrumb>
           <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
         </Breadcrumbs>
       </div>
-      <div style={{ fontSize: '24px', color: '#61afef' }}>
+      <div>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
-          24px, blue — with collapsing
+          title-x-small, info — with collapsing
         </p>
-        <Breadcrumbs>
+        <Breadcrumbs variant="title-x-small" color="info">
           <Breadcrumb href="/home">Home</Breadcrumb>
           <Breadcrumb href="/home/docs">Docs</Breadcrumb>
           <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
@@ -159,6 +160,18 @@ export const InheritsColourAndFontSize = meta.story({
           <Breadcrumb href="/home/docs/guides/setup/intro">
             Introduction
           </Breadcrumb>
+        </Breadcrumbs>
+      </div>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          Container sets body-large — one item overrides to danger
+        </p>
+        <Breadcrumbs variant="body-large">
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings" color="danger">
+            Settings (danger)
+          </Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
         </Breadcrumbs>
       </div>
     </div>
@@ -191,9 +204,9 @@ export const TruncatesLongSegments = meta.story({
           </Breadcrumb>
         </Breadcrumbs>
       </div>
-      <div style={{ fontSize: '24px' }}>
-        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>24px</p>
-        <Breadcrumbs>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>title-x-small</p>
+        <Breadcrumbs variant="title-x-small">
           <Breadcrumb href="/home">Home</Breadcrumb>
           <Breadcrumb href="/home/catalog">
             A very long breadcrumb label that will be truncated by CSS
@@ -227,56 +240,76 @@ export const CustomStyling = meta.story({
   decorators: [withRouter(['/'])],
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <div
-        style={
-          {
-            fontSize: '18px',
-            color: '#c678dd',
-            '--bui-Breadcrumbs-font-weight-current':
-              'var(--bui-font-weight-regular)',
-            '--bui-Breadcrumbs-color-current': 'var(--bui-fg-primary)',
-          } as Record<string, string>
-        }
-      >
+      <div>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
-          Parent sets 18px purple — current segment overridden to regular weight
-          and foreground colour
+          title-small, secondary — current segment overrides to regular weight
+          and primary colour
         </p>
-        <Breadcrumbs>
+        <Breadcrumbs variant="title-small" color="secondary">
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb
+            href="/home/settings/theme"
+            color="primary"
+            weight="regular"
+          >
+            Theme
+          </Breadcrumb>
+        </Breadcrumbs>
+      </div>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          Wider gap (CSS token on Breadcrumbs)
+        </p>
+        <Breadcrumbs
+          style={
+            {
+              '--bui-Breadcrumbs-gap': 'var(--bui-space-10)',
+            } as React.CSSProperties
+          }
+        >
           <Breadcrumb href="/home">Home</Breadcrumb>
           <Breadcrumb href="/home/settings">Settings</Breadcrumb>
           <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
         </Breadcrumbs>
       </div>
-      <div
-        style={
-          {
-            '--bui-Breadcrumbs-gap': 'var(--bui-space-10)',
-            '--bui-Breadcrumbs-separator-size': '1.4em',
-          } as Record<string, string>
-        }
-      >
+      <div>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
-          Wider gap and larger separator
+          Custom separator — larger, danger colour
         </p>
-        <Breadcrumbs>
+        <Breadcrumbs
+          separator={
+            <RiArrowRightSLine size="1.4em" color="var(--bui-fg-danger)" />
+          }
+        >
           <Breadcrumb href="/home">Home</Breadcrumb>
           <Breadcrumb href="/home/settings">Settings</Breadcrumb>
           <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
         </Breadcrumbs>
       </div>
-      <div
-        style={
-          {
-            '--bui-Breadcrumbs-max-width': '100px',
-            '--bui-Breadcrumbs-max-width-current': '200px',
-          } as Record<string, string>
-        }
-      >
+      <div>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
-          Custom max-width — segments capped at 100px, current at 200px
+          Custom separator — different icon
         </p>
-        <Breadcrumbs>
+        <Breadcrumbs separator={<RiMore2Line size="1em" />}>
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
+      </div>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          Custom max-width — segments capped at 100px, current at 200px (CSS
+          tokens on Breadcrumbs)
+        </p>
+        <Breadcrumbs
+          style={
+            {
+              '--bui-Breadcrumbs-max-width': '100px',
+              '--bui-Breadcrumbs-max-width-current': '200px',
+            } as React.CSSProperties
+          }
+        >
           <Breadcrumb href="/home">Home</Breadcrumb>
           <Breadcrumb href="/home/catalog">
             A long breadcrumb label that truncates earlier

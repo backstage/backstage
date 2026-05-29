@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-/**
- * Uses RAC Breadcrumbs for accessibility (aria-current, keyboard nav, semantic nav/ol).
- * RAC expects its own primitives as children — substituting BUI Link or Text breaks the
- * ARIA wiring. Underline and typography styles are matched via CSS tokens instead.
- */
-
 import { Children, cloneElement, isValidElement } from 'react';
 import { Breadcrumbs as RACBreadcrumbs } from 'react-aria-components';
 import { useDefinition } from '../../hooks';
 import { BreadcrumbsDefinition } from './definition';
 import { Breadcrumb } from './Breadcrumb';
 import { CollapsedBreadcrumb } from './CollapsedBreadcrumb';
+import { BreadcrumbsStyleProvider } from './BreadcrumbsContext';
 import type { BreadcrumbProps, BreadcrumbsProps } from './types';
 
 const COLLAPSE_THRESHOLD = 5;
@@ -50,9 +45,15 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
   const {
     'aria-label': ariaLabel = 'Breadcrumbs',
     currentAs,
+    separator,
+    variant,
+    color,
+    weight,
     classes,
     children,
   } = ownProps;
+
+  const contextValue = { variant, color, weight, separator };
 
   const childArray = Children.toArray(children)
     .filter(isValidElement)
@@ -105,14 +106,16 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
   }
 
   return (
-    <nav aria-label={ariaLabel}>
-      <RACBreadcrumbs
-        className={classes.root}
-        {...dataAttributes}
-        {...restProps}
-      >
-        {renderedChildren}
-      </RACBreadcrumbs>
-    </nav>
+    <BreadcrumbsStyleProvider value={contextValue}>
+      <nav aria-label={ariaLabel}>
+        <RACBreadcrumbs
+          className={classes.root}
+          {...dataAttributes}
+          {...restProps}
+        >
+          {renderedChildren}
+        </RACBreadcrumbs>
+      </nav>
+    </BreadcrumbsStyleProvider>
   );
 };

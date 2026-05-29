@@ -7,7 +7,7 @@ import {
   defaultSnippet,
   truncationSnippet,
   collapsedSnippet,
-  inheritsStyleSnippet,
+  variantAndColorSnippet,
   mixedSegmentsSnippet,
   customStylingSnippet,
 } from './snippets';
@@ -15,7 +15,7 @@ import {
   Default,
   Truncation,
   Collapsed,
-  InheritsStyle,
+  VariantAndColor,
   MixedSegments,
   CustomStyling,
 } from './components';
@@ -64,7 +64,7 @@ Non-current segments are capped at a max width. Overflowing text is truncated wi
 
 ### Collapsed
 
-When there are 5 or more segments, the middle items automatically collapse into an ellipsis menu. The first segment and the last two segments stay visible. Clicking the ellipsis button opens a menu with the hidden segments.
+When there are 5 or more segments, the middle items automatically collapse into an ellipsis menu. The first segment, one leading segment, and the current page stay visible. Clicking the ellipsis button opens a menu with the hidden segments.
 
 <Snippet
   align="center"
@@ -73,15 +73,15 @@ When there are 5 or more segments, the middle items automatically collapse into 
   code={collapsedSnippet}
 />
 
-### Inherits style
+### Variant and colour
 
-Breadcrumbs inherit font size and color from their parent, including the chevron separator which scales with the text.
+Set `variant`, `color`, and `weight` on `Breadcrumbs` to style all segments. Individual `Breadcrumb` items can override these props.
 
 <Snippet
   align="center"
   py={4}
-  preview={<InheritsStyle />}
-  code={inheritsStyleSnippet}
+  preview={<VariantAndColor />}
+  code={variantAndColorSnippet}
 />
 
 ### Mixed segments
@@ -97,7 +97,7 @@ Breadcrumbs can mix linked and plain-text segments. Segments without an `href` r
 
 ## Customisation
 
-Set these CSS custom properties on a parent element or directly on the Breadcrumbs component to override default styling. All tokens are component-scoped and will not affect other components.
+Typography (variant, colour, weight) is controlled via the `variant`, `color`, and `weight` props on `Breadcrumbs` and `Breadcrumb`. The separator can be replaced via the `separator` prop. Layout tokens below can be passed via the `style` prop on `Breadcrumbs` or set on a parent element.
 
 <Table.Root>
   <Table.Header>
@@ -108,26 +108,6 @@ Set these CSS custom properties on a parent element or directly on the Breadcrum
     </Table.HeaderRow>
   </Table.Header>
   <Table.Body>
-    <Table.Row>
-      <Table.Cell>`--bui-Breadcrumbs-color`</Table.Cell>
-      <Table.Cell>`inherit`</Table.Cell>
-      <Table.Cell>Colour of non-current segments</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`--bui-Breadcrumbs-color-current`</Table.Cell>
-      <Table.Cell>`inherit`</Table.Cell>
-      <Table.Cell>Colour of the current (last) segment</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`--bui-Breadcrumbs-font-weight`</Table.Cell>
-      <Table.Cell>`--bui-font-weight-regular`</Table.Cell>
-      <Table.Cell>Font weight of non-current segments</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`--bui-Breadcrumbs-font-weight-current`</Table.Cell>
-      <Table.Cell>`--bui-font-weight-bold`</Table.Cell>
-      <Table.Cell>Font weight of the current segment</Table.Cell>
-    </Table.Row>
     <Table.Row>
       <Table.Cell>`--bui-Breadcrumbs-max-width`</Table.Cell>
       <Table.Cell>`165px`</Table.Cell>
@@ -141,16 +121,6 @@ Set these CSS custom properties on a parent element or directly on the Breadcrum
       <Table.Cell>
         Max width of the current segment before truncation
       </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`--bui-Breadcrumbs-separator-color`</Table.Cell>
-      <Table.Cell>`--bui-fg-tertiary`</Table.Cell>
-      <Table.Cell>Colour of the separator icon</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`--bui-Breadcrumbs-separator-size`</Table.Cell>
-      <Table.Cell>`1em`</Table.Cell>
-      <Table.Cell>Width and height of the separator icon</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>`--bui-Breadcrumbs-gap`</Table.Cell>
