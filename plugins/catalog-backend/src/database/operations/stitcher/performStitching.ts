@@ -26,19 +26,11 @@ import { SerializedError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { createHash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
-import { StitchingStrategy } from '../../../stitching/types';
-import {
-  DbFinalEntitiesRow,
-  DbRefreshStateRow,
-  DbStitchQueueRow,
-} from '../../tables';
+import { DbFinalEntitiesRow, DbStitchQueueRow } from '../../tables';
 import { buildEntitySearch } from './buildEntitySearch';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
 import { syncSearchRows } from './syncSearchRows';
-import {
-  LoggerService,
-  isDatabaseConflictError,
-} from '@backstage/backend-plugin-api';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 function generateStableHash(entity: Entity) {
   return createHash('sha1')
@@ -59,56 +51,22 @@ const scriptProtocolPattern =
 export async function performStitching(options: {
   knex: Knex | Knex.Transaction;
   logger: LoggerService;
-  strategy: StitchingStrategy;
   entityRef: string;
-  stitchTicket?: string;
+  stitchTicket: string;
 }): Promise<'changed' | 'unchanged' | 'abandoned'> {
-  const { knex, logger, entityRef } = options;
-  const stitchTicket = options.stitchTicket;
+  const { knex, logger, entityRef, stitchTicket } = options;
 
-  // In deferred mode, the entity is removed from the stitch queue on ANY
-  // completion, except when an exception is thrown. In the latter case, the
-  // entity will be retried at a later time.
-  let removeFromStitchQueueOnCompletion = options.strategy.mode === 'deferred';
+  // The stitch queue is cleaned up on ANY completion — either by deleting
+  // the entry (ticket unchanged) or bumping next_stitch_at (re-stitch
+  // requested). Exceptions are the only case where we skip cleanup, so
+  // the entity gets retried at a later time.
+  let stitchResult: 'succeeded' | 'abandoned' | undefined;
 
   try {
-    const entityResult = await knex<DbRefreshStateRow>('refresh_state')
-      .where({ entity_ref: entityRef })
-      .limit(1)
-      .select('entity_id');
-    if (!entityResult.length) {
-      // Entity does no exist in refresh state table, no stitching required.
-      return 'abandoned';
-    }
-
-    // Ensure that a final_entities row exists for this entity.
-    try {
-      await knex<DbFinalEntitiesRow>('final_entities')
-        .insert({
-          entity_id: entityResult[0].entity_id,
-          hash: '',
-          entity_ref: entityRef,
-        })
-        .onConflict('entity_id')
-        .ignore();
-    } catch (error) {
-      // It's possible to hit a race where a refresh_state table delete + insert
-      // is done just after we read the entity_id from it. This conflict is safe
-      // to ignore because the current stitching operation will be triggered by
-      // the old entry, and the new entry will trigger it's own stitching that
-      // will update the entity.
-      if (isDatabaseConflictError(error)) {
-        logger.debug(`Skipping stitching of ${entityRef}, conflict`, error);
-        return 'abandoned';
-      }
-
-      throw error;
-    }
-
-    // Selecting from refresh_state and final_entities should yield exactly
-    // one row (except in abnormal cases where the stitch was invoked for
-    // something that didn't exist at all, in which case it's zero rows).
-    // The join with the temporary incoming_references still gives one row.
+    // Selecting from refresh_state (with an optional left join to
+    // final_entities for the previous hash) should yield exactly one row,
+    // except in abnormal cases where the entity was deleted between the
+    // stitch request and now.
     const [processedResult, relationsResult] = await Promise.all([
       knex
         .with('incoming_references', function incomingReferences(builder) {
@@ -149,6 +107,7 @@ export async function performStitching(options: {
       logger.debug(
         `Unable to stitch ${entityRef}, item does not exist in refresh state table`,
       );
+      stitchResult = 'abandoned';
       return 'abandoned';
     }
 
@@ -168,6 +127,7 @@ export async function performStitching(options: {
       logger.debug(
         `Unable to stitch ${entityRef}, the entity has not yet been processed`,
       );
+      stitchResult = 'abandoned';
       return 'abandoned';
     }
 
@@ -223,6 +183,7 @@ export async function performStitching(options: {
     const hash = generateStableHash(entity);
     if (hash === previousHash) {
       logger.debug(`Skipped stitching of ${entityRef}, no changes`);
+      stitchResult = 'succeeded';
       return 'unchanged';
     }
 
@@ -238,44 +199,83 @@ export async function performStitching(options: {
     // to write the search index.
     const searchEntries = buildEntitySearch(entityId, entity);
 
-    let updateQuery = knex<DbFinalEntitiesRow>('final_entities')
-      .update({
+    // Guard against concurrent stitchers: if our stitch_ticket no longer
+    // matches stitch_queue, another worker has newer data and we should
+    // not overwrite it. On PostgreSQL and SQLite, this is done atomically
+    // via a WHERE on the upsert merge path. MySQL does not support
+    // ON CONFLICT ... DO UPDATE ... WHERE, so it uses a separate check
+    // with a negligible TOCTOU window (self-corrects on the next ~1s
+    // stitch cycle).
+    const isMySQL = String(knex.client.config.client).includes('mysql');
+
+    if (isMySQL) {
+      const ticketValid = await knex<DbStitchQueueRow>('stitch_queue')
+        .where('entity_ref', entityRef)
+        .where('stitch_ticket', stitchTicket)
+        .first();
+      if (!ticketValid) {
+        logger.debug(
+          `Entity ${entityRef} is already stitched, skipping write.`,
+        );
+        stitchResult = 'abandoned';
+        return 'abandoned';
+      }
+    }
+
+    let upsert = knex<DbFinalEntitiesRow>('final_entities')
+      .insert({
+        entity_id: entityId,
+        entity_ref: entityRef,
         final_entity: JSON.stringify(entity),
         hash,
         last_updated_at: knex.fn.now(),
       })
-      .where('entity_id', entityId);
+      .onConflict('entity_id')
+      .merge(['final_entity', 'hash', 'last_updated_at']);
 
-    // In deferred mode, guard against concurrent stitchers by checking that
-    // the stitch_ticket in stitch_queue still matches what we were given.
-    if (options.strategy.mode === 'deferred' && stitchTicket) {
-      updateQuery = updateQuery.whereExists(
-        knex<DbStitchQueueRow>('stitch_queue')
-          .where('stitch_queue.entity_ref', entityRef)
-          .where('stitch_queue.stitch_ticket', stitchTicket)
-          .select(knex.raw('1')),
+    if (!isMySQL) {
+      upsert = upsert.where(
+        knex.raw(
+          'exists (select 1 from stitch_queue where entity_ref = ? and stitch_ticket = ?)',
+          [entityRef, stitchTicket],
+        ),
       );
     }
 
-    const amountOfRowsChanged = await updateQuery;
+    await upsert;
 
-    if (amountOfRowsChanged === 0) {
-      logger.debug(`Entity ${entityRef} is already stitched, skipping write.`);
-      return 'abandoned';
+    // Verify the write took effect. INSERT return values vary across
+    // database engines (row IDs vs row counts vs empty arrays), so we
+    // check the hash directly — we already know hash !== previousHash
+    // from the check above, so a mismatch means the write was blocked.
+    if (!isMySQL) {
+      const written = await knex<DbFinalEntitiesRow>('final_entities')
+        .where('entity_id', entityId)
+        .where('hash', hash)
+        .select(knex.raw('1'))
+        .first();
+      if (!written) {
+        logger.debug(
+          `Entity ${entityRef} is already stitched, skipping write.`,
+        );
+        stitchResult = 'abandoned';
+        return 'abandoned';
+      }
     }
 
     await syncSearchRows(knex, entityId, searchEntries);
 
+    stitchResult = 'succeeded';
     return 'changed';
   } catch (error) {
-    removeFromStitchQueueOnCompletion = false;
     throw error;
   } finally {
-    if (removeFromStitchQueueOnCompletion && stitchTicket) {
+    if (stitchResult) {
       await markDeferredStitchCompleted({
         knex: knex,
         entityRef,
         stitchTicket,
+        result: stitchResult,
       });
     }
   }

@@ -1,5 +1,12 @@
 # @backstage/plugin-notifications
 
+## 0.5.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+
 ## 0.5.17
 
 ### Patch Changes

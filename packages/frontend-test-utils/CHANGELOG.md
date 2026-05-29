@@ -1,5 +1,14 @@
 # @backstage/frontend-test-utils
 
+## 0.6.1-next.0
+
+### Patch Changes
+
+- 62dd4fc: Added a `mountPath` option to `renderInTestApp` that controls the route path pattern the test element is rendered at. When set, the element is wrapped in a `<Route>` with the given path, enabling `useParams()` to extract route parameters from the URL. Use together with `initialRouteEntries` to set a concrete URL that matches the pattern. This is useful for testing page components that depend on URL parameters, such as entity pages that use `useRouteRefParams`.
+- Updated dependencies
+  - @backstage/plugin-app@0.4.7-next.0
+  - @backstage/frontend-app-api@0.16.4-next.0
+
 ## 0.6.0
 
 ### Minor Changes

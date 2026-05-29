@@ -32,6 +32,7 @@ import {
   EntityPagination,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  TotalItemsMode,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
@@ -41,7 +42,7 @@ import {
   DbRelationsRow,
   DbSearchRow,
 } from '../database/tables';
-import { Stitcher } from '../stitching/types';
+import { markForStitching } from '../database/operations/stitcher/markForStitching';
 
 import {
   expandLegacyCompoundRelationsInEntity,
@@ -102,18 +103,15 @@ function stringifyPagination(
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: LoggerService;
-  private readonly stitcher: Stitcher;
   private readonly enableRelationsCompatibility: boolean;
 
   constructor(options: {
     database: Knex;
     logger: LoggerService;
-    stitcher: Stitcher;
     enableRelationsCompatibility?: boolean;
   }) {
     this.database = options.database;
     this.logger = options.logger;
-    this.stitcher = options.stitcher;
     this.enableRelationsCompatibility = Boolean(
       options.enableRelationsCompatibility,
     );
@@ -375,21 +373,17 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   ): Promise<QueryEntitiesResponse> {
     const limit = request.limit ?? DEFAULT_LIMIT;
 
-    const cursor: Omit<Cursor, 'orderFieldValues'> & {
-      orderFieldValues?: (string | null)[];
-      skipTotalItems: boolean;
-    } = {
-      orderFields: [],
+    const { totalItemsMode, ...cursor } = {
+      orderFields: [] as EntityOrder[],
       isPrevious: false,
       ...parseCursorFromRequest(request),
+    } satisfies Omit<Cursor, 'orderFieldValues'> & {
+      orderFieldValues?: (string | null)[];
+      totalItemsMode: TotalItemsMode;
     };
 
-    // For performance reasons we invoke the count query only on the first
-    // request. The result is then embedded into the cursor for subsequent
-    // requests. Therefore this can be undefined here, but will then get
-    // populated further down.
     const shouldComputeTotalItems =
-      cursor.totalItems === undefined && !cursor.skipTotalItems;
+      cursor.totalItems === undefined && totalItemsMode !== 'exclude';
     const isFetchingBackwards = cursor.isPrevious;
 
     if (cursor.orderFields.length > 1) {
@@ -397,10 +391,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     const sortField = cursor.orderFields.at(0);
+    const sortKey = sortField?.field.toLocaleLowerCase('en-US');
 
     const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
     const textFilterFields = cursor.fullTextFilter?.fields ?? [
-      sortField?.field || 'metadata.uid',
+      sortKey || 'metadata.uid',
     ];
 
     // Shared predicate logic applied to both the list CTE and the
@@ -425,8 +420,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       if (normalizedFullTextFilterTerm) {
         if (
           options?.searchInScope &&
+          sortField &&
           textFilterFields.length === 1 &&
-          textFilterFields[0] === sortField?.field
+          textFilterFields[0] === sortKey
         ) {
           q.andWhereRaw(
             'search.value like ?',
@@ -467,7 +463,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
               'final_entities.entity_id',
               'search.entity_id',
             )
-            .where('search.key', sortField.field)
+            .where('search.key', sortKey!)
+            .whereNotNull('search.value')
             .whereNotNull('final_entities.final_entity')
             .select({
               entity_id: 'final_entities.entity_id',
@@ -505,7 +502,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           this.database('search')
             .select(this.database.raw(1))
             .whereRaw('search.entity_id = final_entities.entity_id')
-            .where('search.key', sortField.field)
+            .where('search.key', sortKey!)
             .whereNotNull('search.value'),
         );
       }
@@ -540,52 +537,14 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       }
     }
 
-    // Add the ordering
     let order = sortField?.order ?? 'asc';
     if (isFetchingBackwards) {
       order = invertOrder(order);
     }
-    if (this.database.client.config.client === 'pg') {
-      // pg correctly orders by the column value and handling nulls in one go
-      dbQuery.orderBy([
-        ...(sortField
-          ? [
-              {
-                column: 'filtered.value',
-                order,
-                nulls: 'last',
-              },
-            ]
-          : []),
-        {
-          column: 'filtered.entity_id',
-          order,
-        },
-      ]);
-    } else {
-      // sqlite and mysql translate the above statement ONLY into "order by (value is null) asc"
-      // no matter what the order is, for some reason, so we have to manually add back the statement
-      // that translates to "order by value <order>" while avoiding to give an order
-      dbQuery.orderBy([
-        ...(sortField
-          ? [
-              {
-                column: 'filtered.value',
-                order: undefined,
-                nulls: 'last',
-              },
-              {
-                column: 'filtered.value',
-                order,
-              },
-            ]
-          : []),
-        {
-          column: 'filtered.entity_id',
-          order,
-        },
-      ]);
-    }
+    dbQuery.orderBy([
+      ...(sortField ? [{ column: 'filtered.value', order }] : []),
+      { column: 'filtered.entity_id', order },
+    ]);
 
     // Apply a manually set initial offset
     if (
@@ -606,7 +565,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     let totalItems: number;
     if (cursor.totalItems !== undefined) {
       totalItems = cursor.totalItems;
-    } else if (cursor.skipTotalItems) {
+    } else if (totalItemsMode === 'exclude') {
       totalItems = 0;
     } else if (countResult?.[0]) {
       totalItems = Number(countResult[0].count);
@@ -759,7 +718,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     });
 
     if (relationPeerRefs.size > 0) {
-      await this.stitcher.stitch({
+      await markForStitching({
+        knex: this.database,
         entityRefs: relationPeerRefs,
       });
     }
@@ -888,32 +848,33 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
 function parseCursorFromRequest(
   request?: QueryEntitiesRequest,
-): Partial<Cursor> & { skipTotalItems: boolean } {
+): Partial<Cursor> & { totalItemsMode: TotalItemsMode } {
   if (isQueryEntitiesInitialRequest(request)) {
     const {
       filter,
       query,
       orderFields: sortFields = [],
       fullTextFilter,
-      skipTotalItems = false,
+      totalItems: totalItemsMode = 'include',
     } = request;
     return {
       filter,
       query,
       orderFields: sortFields,
       fullTextFilter,
-      skipTotalItems,
+      totalItemsMode,
     };
   }
   if (isQueryEntitiesCursorRequest(request)) {
     return {
       ...request.cursor,
-      // Doesn't matter here
-      skipTotalItems: false,
+      // Doesn't matter — cursor already carries the computed totalItems
+      // number from the first page, so the count query is skipped regardless.
+      totalItemsMode: 'exclude',
     };
   }
   return {
-    skipTotalItems: false,
+    totalItemsMode: 'include',
   };
 }
 

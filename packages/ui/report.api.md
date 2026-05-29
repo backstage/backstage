@@ -37,6 +37,7 @@ import type { MenuProps as MenuProps_2 } from 'react-aria-components';
 import type { MenuSectionProps as MenuSectionProps_2 } from 'react-aria-components';
 import type { MenuTriggerProps as MenuTriggerProps_2 } from 'react-aria-components';
 import type { ModalOverlayProps } from 'react-aria-components';
+import type { NumberFieldProps as NumberFieldProps_2 } from 'react-aria-components';
 import { PopoverProps as PopoverProps_2 } from 'react-aria-components';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
@@ -2402,6 +2403,55 @@ export interface NoPagination {
   // (undocumented)
   type: 'none';
 }
+
+// @public
+export const NumberField: ForwardRefExoticComponent<
+  NumberFieldProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const NumberFieldDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-NumberField';
+    readonly inputWrapper: 'bui-InputWrapper';
+    readonly input: 'bui-Input';
+    readonly inputIcon: 'bui-InputIcon';
+    readonly stepperButtons: 'bui-StepperButtons';
+    readonly stepperButton: 'bui-StepperButton';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly icon: {};
+    readonly placeholder: {};
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
+  };
+};
+
+// @public (undocumented)
+export type NumberFieldOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  className?: string;
+  icon?: ReactNode;
+  placeholder?: string;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+};
+
+// @public (undocumented)
+export interface NumberFieldProps
+  extends Omit<NumberFieldProps_2, 'className' | 'description'>,
+    NumberFieldOwnProps {}
 
 // @public (undocumented)
 export interface OffsetParams<TFilter> {

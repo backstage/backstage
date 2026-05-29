@@ -175,25 +175,16 @@ export interface Config {
     orphanProviderStrategy?: 'keep' | 'delete';
 
     /**
-     * The strategy to use when stitching together the final entities. The default mode is "deferred".
+     * The strategy to use when stitching together the final entities.
      */
-    stitchingStrategy?:
-      | {
-          /**
-           * Perform stitching in-band immediately when needed.
-           *
-           * @deprecated Immediate mode stitching has been deprecated and will be removed in a future release. Migrate to deferred mode (the default).
-           */
-          mode: 'immediate';
-        }
-      | {
-          /** Defer stitching to be performed asynchronously */
-          mode: 'deferred';
-          /** Polling interval for tasks in seconds */
-          pollingInterval?: HumanDuration | string;
-          /** How long to wait for a stitch to complete before giving up in seconds */
-          stitchTimeout?: HumanDuration | string;
-        };
+    stitchingStrategy?: {
+      /** @deprecated Immediate mode has been removed. This field is ignored. */
+      mode?: string;
+      /** Polling interval for tasks in seconds */
+      pollingInterval?: HumanDuration | string;
+      /** How long to wait for a stitch to complete before giving up in seconds */
+      stitchTimeout?: HumanDuration | string;
+    };
 
     /**
      * The strategy to use when there is a conflict with a location being registered.

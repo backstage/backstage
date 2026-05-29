@@ -85,10 +85,9 @@ describe.each(databases.eachSupportedId())(
     }
 
     async function entitiesMarkedForStitching(knex: Knex) {
-      const rows = await knex<DbRefreshStateRow>('refresh_state')
+      const rows = await knex('stitch_queue')
         .orderBy('entity_ref')
-        .select('entity_ref')
-        .where('result_hash', '=', 'force-stitching');
+        .select('entity_ref');
       return rows.map(r => r.entity_ref);
     }
 

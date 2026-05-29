@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 2.0.3-next.0
+
+### Patch Changes
+
+- a07e6a3: Added the correctly-spelled `AzureBlobStorageIntegration` class export and deprecated the previous typoed `AzureBlobStorageIntergation` export. Existing usage of `AzureBlobStorageIntergation` continues to work; switch to `AzureBlobStorageIntegration` to avoid future removal.
+
 ## 2.0.2
 
 ### Patch Changes

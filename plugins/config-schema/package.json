@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-config-schema",
-  "version": "0.1.80",
+  "version": "0.1.81-next.0",
   "description": "A Backstage plugin that lets you browse the configuration schema of your app",
   "backstage": {
     "role": "frontend-plugin",

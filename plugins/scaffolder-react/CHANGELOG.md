@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-react
 
+## 2.0.1-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.0
+  - @backstage/core-components@0.18.11-next.0
+  - @backstage/frontend-test-utils@0.6.1-next.0
+  - @backstage/plugin-scaffolder-common@2.2.1-next.0
+
 ## 2.0.0
 
 ### Minor Changes

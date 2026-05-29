@@ -44,6 +44,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/filter-predicates": "workspace:^",
     "@backstage/types": "workspace:^",
@@ -54,7 +55,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",

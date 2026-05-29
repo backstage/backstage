@@ -42,5 +42,14 @@ export interface Config {
      * If you disable this, it is recommended to set a `staticFallbackHandler` instead.
      */
     disableStaticFallbackCache?: boolean;
+
+    /**
+     * Disables the public entry point used for unauthenticated sign-in pages.
+     * When the app is bundled with an `index-public-experimental` entry point,
+     * the app backend will automatically serve it to unauthenticated users.
+     * Set this to `true` to skip that behavior and always serve the main
+     * entry point instead.
+     */
+    disablePublicEntryPoint?: boolean;
   };
 }

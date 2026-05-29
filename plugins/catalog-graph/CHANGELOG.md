@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-graph
 
+## 0.6.5-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.0
+  - @backstage/core-components@0.18.11-next.0
+
 ## 0.6.4
 
 ### Patch Changes

@@ -227,5 +227,36 @@
     "@backstage/plugin-user-settings-backend": "0.4.3",
     "@backstage/plugin-user-settings-common": "0.1.0"
   },
-  "changesets": []
+  "changesets": [
+    "catalog-backend-totalitems-mode",
+    "catalog-client-totalitems-mode",
+    "catalog-react-split-count",
+    "create-app-1779809101",
+    "dependabot-84d9635",
+    "dependabot-a525941",
+    "disable-experimental-public-entrypoint",
+    "eager-birds-fly",
+    "fast-stars-smile",
+    "fix-azure-blob-storage-entity-provider-import",
+    "fix-azure-blob-storage-integration-class-name",
+    "fix-azure-blob-storage-url-reader-type",
+    "fix-entity-list-triple-fetch",
+    "fix-home-translation-key-typo",
+    "fix-related-entities-card-property-typo",
+    "fix-table-filters-class-key-typo",
+    "fix-test-route-matching",
+    "legal-results-kneel",
+    "notifications-backend-openapi-router",
+    "plenty-worms-happen",
+    "proxied-signin-base64url-token",
+    "rate-limit-ipv6-key-generator",
+    "remove-immediate-stitching",
+    "remove-protobufjs-pins",
+    "renovate-dcee473",
+    "search-extended-statistics",
+    "split-query-entities-count",
+    "stitch-claim-transaction",
+    "stitch-queue-no-overlap",
+    "two-books-sleep"
+  ]
 }

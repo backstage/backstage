@@ -35,6 +35,7 @@ import {
   useState,
 } from 'react';
 import { useLocation } from 'react-router-dom';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import useDebounce from 'react-use/esm/useDebounce';
 import useMountedState from 'react-use/esm/useMountedState';
 import { catalogApiRef } from '../api';
@@ -120,6 +121,7 @@ export type EntityListContextProps<
     prev?: () => void;
   };
   totalItems?: number;
+  totalItemsLoading: boolean;
   limit: number;
   offset?: number;
   setLimit: (limit: number) => void;
@@ -263,11 +265,11 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           const response = await catalogApi.queryEntities({
             cursor,
             limit,
+            totalItems: 'exclude',
           });
           return {
             backendEntities: response.items,
             pageInfo: response.pageInfo,
-            totalItems: response.totalItems,
           };
         };
       } else {
@@ -278,11 +280,11 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             ...backendFilter,
             limit,
             offset,
+            totalItems: 'exclude',
           });
           return {
             backendEntities: response.items,
             pageInfo: response.pageInfo,
-            totalItems: response.totalItems,
           };
         };
       }
@@ -344,6 +346,33 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // Slight debounce on the refresh, since (especially on page load)
   // several filters will be calling updateFilters in rapid succession.
   useDebounce(refresh, 10, [adjustedFilters, cursor, limit, offset]);
+
+  // Fetch the total count separately, only when filters change. This is
+  // decoupled from the main list fetch so that page navigation doesn't
+  // re-run the expensive count query, and so that the count can arrive
+  // asynchronously without blocking the list response.
+  const [{ value: totalItems, loading: totalItemsLoading }, refreshCount] =
+    useAsyncFn(async () => {
+      if (paginationMode === 'none') {
+        return undefined;
+      }
+      const compacted = compact(Object.values(adjustedFilters));
+      if (compacted.length === 0) {
+        return undefined;
+      }
+      const backendFilter = reduceCatalogFilters(compacted);
+      try {
+        const response = await catalogApi.queryEntities({
+          ...backendFilter,
+          limit: 0,
+        });
+        return response.totalItems;
+      } catch {
+        return undefined;
+      }
+    }, [catalogApi, paginationMode, adjustedFilters]);
+
+  useDebounce(refreshCount, 10, [adjustedFilters]);
 
   // Frontend filtering — synchronous, no debounce needed. Updates
   // instantly when requestedFilters or backendEntities change.
@@ -446,7 +475,10 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       error,
       pageInfo,
       totalItems:
-        paginationMode === 'none' ? entities.length : backendState.totalItems,
+        paginationMode === 'none'
+          ? entities.length
+          : totalItems ?? backendState.totalItems,
+      totalItemsLoading: paginationMode !== 'none' && totalItemsLoading,
       limit,
       offset,
       setLimit,
@@ -457,6 +489,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       requestedFilters,
       entities,
       backendState,
+      totalItems,
+      totalItemsLoading,
       updateFilters,
       queryParameters,
       loading,

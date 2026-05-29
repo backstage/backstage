@@ -23,7 +23,6 @@ import {
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { createDeferred } from '@backstage/types';
 import { Knex } from 'knex';
-import { default as catalogPlugin } from '../..';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import {
   SyntheticLoadEntitiesProcessor,
@@ -149,58 +148,9 @@ const databases = TestDatabases.create({
 });
 
 describePerformanceTest('stitchingPerformance', () => {
-  describe.each(databases.eachSupportedId())('%p', databaseId => {
-    it('runs stitching in immediate mode', async () => {
-      const knex = await databases.init(databaseId);
-      await applyDatabaseMigrations(knex);
-
-      const load: SyntheticLoadOptions = {
-        baseEntitiesCount: 1000,
-        baseRelationsCount: 3,
-        baseRelationsSkew: 0.3,
-        childrenCount: 3,
-      };
-
-      const config = {
-        backend: { baseUrl: 'http://localhost:7007' },
-        catalog: { stitchingStrategy: { mode: 'immediate' } },
-      };
-
-      const tracker = new Tracker(knex, load);
-
-      const backend = await startTestBackend({
-        features: [
-          catalogPlugin,
-          mockServices.rootConfig.factory({ data: config }),
-          mockServices.database.factory({ knex }),
-          createBackendModule({
-            pluginId: 'catalog',
-            moduleId: 'synthetic-load-entities',
-            register(reg) {
-              reg.registerInit({
-                deps: {
-                  catalog: catalogProcessingExtensionPoint,
-                },
-                async init({ catalog }) {
-                  catalog.addEntityProvider(
-                    new SyntheticLoadEntitiesProvider(load, tracker.events()),
-                  );
-                  catalog.addProcessor(
-                    new SyntheticLoadEntitiesProcessor(load),
-                  );
-                },
-              });
-            },
-          }),
-        ],
-      });
-
-      await expect(tracker.completion()).resolves.toBeUndefined();
-      await backend.stop();
-      await knex.destroy();
-    });
-
-    it('runs stitching in deferred mode', async () => {
+  it.each(databases.eachSupportedId())(
+    'runs stitching in deferred mode, %p',
+    async databaseId => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
@@ -248,6 +198,6 @@ describePerformanceTest('stitchingPerformance', () => {
       await expect(tracker.completion()).resolves.toBeUndefined();
       await backend.stop();
       await knex.destroy();
-    });
-  });
+    },
+  );
 });

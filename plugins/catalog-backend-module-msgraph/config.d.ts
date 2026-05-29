@@ -59,8 +59,9 @@ export interface Config {
           // they could also be configured "in code".
 
           /**
-           * The filter to apply to extract users.
-           * Combined with the base `accountEnabled eq true` filter.
+           * The filter to apply to extract users. Disabled users
+           * (`accountEnabled === false`) are always filtered out
+           * client-side regardless of this setting.
            *
            * E.g. "userType eq 'member'"
            */
@@ -163,7 +164,8 @@ export interface Config {
               expand?: string;
               /**
                * The filter to apply to extract users.
-               * Combined with the base `accountEnabled eq true` filter
+               * Disabled users (`accountEnabled === false`) are always
+               * filtered out client-side regardless of this setting.
                *
                * E.g. "userType eq 'member'"
                */
@@ -297,7 +299,8 @@ export interface Config {
                 expand?: string;
                 /**
                  * The filter to apply to extract users.
-                 * Combined with the base `accountEnabled eq true` filter
+                 * Disabled users (`accountEnabled === false`) are always
+                 * filtered out client-side regardless of this setting.
                  *
                  * E.g. "userType eq 'member'"
                  */

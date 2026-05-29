@@ -1,5 +1,12 @@
 # @backstage/cli-module-build
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- a1971ea: Suppress false-positive `@protobufjs/inquire` "Critical dependency" warning in the bundler. Since `protobufjs` 7.5.9, the dynamic require path in inquire is no longer exercised, but webpack/rspack still flags it during static analysis.
+- 8007b58: Updated dependency `embedded-postgres` to `18.3.0-beta.17`.
+
 ## 0.1.3
 
 ### Patch Changes

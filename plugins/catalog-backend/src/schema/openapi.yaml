@@ -285,6 +285,22 @@ components:
         Order descending by owner:
           value:
             - spec.owner,desc
+    totalItems:
+      name: totalItems
+      in: query
+      description: |
+        Controls whether the response's `totalItems` field is computed. Computing
+        the total may be expensive for large catalogs; pass `exclude` if the
+        caller does not need it (e.g. cursor-paginated UIs that only display the
+        count cosmetically). Defaults to `include`. New values may be added in
+        the future, such as an approximate mode.
+      required: false
+      allowReserved: true
+      schema:
+        type: string
+        enum:
+          - include
+          - exclude
   requestBodies: {}
   responses:
     ErrorResponse:
@@ -1084,6 +1100,7 @@ paths:
         - $ref: '#/components/parameters/orderField'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/totalItems'
         - name: fullTextFilterTerm
           in: query
           description: Text search term.
@@ -1162,6 +1179,15 @@ paths:
                   type: array
                   items:
                     type: string
+                totalItems:
+                  type: string
+                  enum:
+                    - include
+                    - exclude
+                  description: |
+                    Controls whether the response's `totalItems` field is
+                    computed. Pass `exclude` to skip the count when the caller
+                    doesn't need it. Defaults to `include`.
                 query:
                   $ref: '#/components/schemas/JsonObject'
   /entity-facets:
