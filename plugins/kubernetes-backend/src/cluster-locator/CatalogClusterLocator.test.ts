@@ -71,12 +71,15 @@ const entities: Entity[] = [
   },
 ];
 
+const allowedClusterUrls = ['https://apiserver.com'];
+
 describe('CatalogClusterLocator', () => {
   it('returns empty cluster details when the cluster is empty', async () => {
     const credentials = mockCredentials.user();
     const clusterSupplier = CatalogClusterLocator.fromConfig(
       catalogServiceMock({ entities: [] }),
       mockServices.auth(),
+      { allowedClusterUrls },
     );
 
     const result = await clusterSupplier.getClusters({ credentials });
@@ -89,6 +92,7 @@ describe('CatalogClusterLocator', () => {
     const clusterSupplier = CatalogClusterLocator.fromConfig(
       catalogServiceMock({ entities }),
       mockServices.auth(),
+      { allowedClusterUrls },
     );
 
     const result = await clusterSupplier.getClusters({ credentials });
@@ -101,10 +105,163 @@ describe('CatalogClusterLocator', () => {
     const clusterSupplier = CatalogClusterLocator.fromConfig(
       catalogServiceMock({ entities }),
       mockServices.auth(),
+      { allowedClusterUrls },
     );
 
     const result = await clusterSupplier.getClusters({ credentials });
     expect(result).toHaveLength(2);
     expect(result[1]).toMatchSnapshot();
+  });
+
+  describe('URL allowlist', () => {
+    it('falls back to the legacy (unsafe) behaviour and logs a deprecation warning when no allowlist is configured', async () => {
+      const credentials = mockCredentials.user();
+      const logger = mockServices.logger.mock();
+      const warnSpy = jest.spyOn(logger, 'warn');
+      const clusterSupplier = CatalogClusterLocator.fromConfig(
+        catalogServiceMock({ entities }),
+        mockServices.auth(),
+        { logger },
+      );
+
+      const result = await clusterSupplier.getClusters({ credentials });
+      expect(result).toHaveLength(2);
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy.mock.calls[0][0]).toMatch(/allowedClusterUrls/);
+
+      // The warning must only be logged once per process, not on every call.
+      await clusterSupplier.getClusters({ credentials });
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not log the deprecation warning when allowUnsafeClusterUrls is acknowledged', async () => {
+      const credentials = mockCredentials.user();
+      const logger = mockServices.logger.mock();
+      const warnSpy = jest.spyOn(logger, 'warn');
+      const clusterSupplier = CatalogClusterLocator.fromConfig(
+        catalogServiceMock({ entities }),
+        mockServices.auth(),
+        { allowUnsafeClusterUrls: true, logger },
+      );
+
+      const result = await clusterSupplier.getClusters({ credentials });
+      expect(result).toHaveLength(2);
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it('filters out entities whose api-server origin is not in the allowlist', async () => {
+      const credentials = mockCredentials.user();
+      const logger = mockServices.logger.mock();
+      const warnSpy = jest.spyOn(logger, 'warn');
+      const clusterSupplier = CatalogClusterLocator.fromConfig(
+        catalogServiceMock({
+          entities: [
+            ...entities,
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Resource',
+              metadata: {
+                annotations: {
+                  'kubernetes.io/api-server': 'https://attacker.example.com',
+                  'kubernetes.io/api-server-certificate-authority': 'caData',
+                  [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
+                },
+                name: 'evil',
+                namespace: 'default',
+              },
+              spec: {
+                type: 'kubernetes-cluster',
+              },
+            },
+          ],
+        }),
+        mockServices.auth(),
+        { allowedClusterUrls, logger },
+      );
+
+      const result = await clusterSupplier.getClusters({ credentials });
+
+      expect(result).toHaveLength(2);
+      expect(result.map(c => c.name)).toEqual(['owned', 'owned']);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /Ignoring catalog Kubernetes cluster 'evil'.*allowedClusterUrls/s,
+        ),
+      );
+    });
+
+    it('matches origins regardless of path/query suffix', async () => {
+      const credentials = mockCredentials.user();
+      const clusterSupplier = CatalogClusterLocator.fromConfig(
+        catalogServiceMock({
+          entities: [
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Resource',
+              metadata: {
+                annotations: {
+                  'kubernetes.io/api-server':
+                    'https://apiserver.com:6443/api?x=y',
+                  'kubernetes.io/api-server-certificate-authority': 'caData',
+                  [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
+                },
+                name: 'with-port-and-path',
+                namespace: 'default',
+              },
+              spec: {
+                type: 'kubernetes-cluster',
+              },
+            },
+          ],
+        }),
+        mockServices.auth(),
+        { allowedClusterUrls: ['https://apiserver.com:6443/anything'] },
+      );
+
+      const result = await clusterSupplier.getClusters({ credentials });
+      expect(result).toHaveLength(1);
+      expect(result[0].url).toEqual('https://apiserver.com:6443/api?x=y');
+    });
+
+    it('treats different ports as different origins', async () => {
+      const credentials = mockCredentials.user();
+      const clusterSupplier = CatalogClusterLocator.fromConfig(
+        catalogServiceMock({
+          entities: [
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Resource',
+              metadata: {
+                annotations: {
+                  'kubernetes.io/api-server': 'https://apiserver.com:8443',
+                  'kubernetes.io/api-server-certificate-authority': 'caData',
+                  [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
+                },
+                name: 'wrong-port',
+                namespace: 'default',
+              },
+              spec: {
+                type: 'kubernetes-cluster',
+              },
+            },
+          ],
+        }),
+        mockServices.auth(),
+        { allowedClusterUrls: ['https://apiserver.com'] },
+      );
+
+      const result = await clusterSupplier.getClusters({ credentials });
+      expect(result).toEqual([]);
+    });
+
+    it('rejects malformed allowlist entries up-front', () => {
+      expect(() =>
+        CatalogClusterLocator.fromConfig(
+          catalogServiceMock({ entities }),
+          mockServices.auth(),
+          { allowedClusterUrls: ['not-a-url'] },
+        ),
+      ).toThrow(/allowedClusterUrls/);
+    });
   });
 });

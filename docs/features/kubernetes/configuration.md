@@ -185,6 +185,53 @@ spec:
   owner: user:guest
 ```
 
+##### Trusting catalog-supplied cluster URLs
+
+The `kubernetes.io/api-server` annotation on a catalog Resource is the URL the
+backend will send credentials to when it talks to the cluster. Because catalog
+entities can in general be created by any actor with catalog write access,
+that URL must be treated as untrusted. If left unchecked, an attacker can
+register a malicious `kubernetes-cluster` Resource pointing at a server they
+control and exfiltrate the backend's cluster credentials (AWS STS bearer
+tokens, Azure / GCP tokens, or a user's OIDC token).
+
+To prevent this, the catalog cluster locator accepts an allowlist of trusted
+cluster API server origins (scheme + host + optional port). Only entities
+whose api-server annotation matches one of these origins are returned:
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: catalog
+      allowedClusterUrls:
+        - https://my-cluster.example.com
+        - https://eks-cluster.us-east-1.eks.amazonaws.com
+        - https://10.0.0.5:6443
+```
+
+> **Deprecation notice**
+>
+> If `allowedClusterUrls` is not configured the catalog locator currently
+> falls back to its legacy behaviour of trusting every URL supplied via
+> catalog annotations, with a loud deprecation warning. **A future release
+> will switch this default to deny-all** and `allowedClusterUrls` will
+> become required for the catalog locator to return any clusters. Configure
+> it now to avoid the upcoming breaking change.
+>
+> Adopters who consciously accept the risk in the meantime can silence the
+> warning by explicitly opting in:
+>
+> ```yaml
+> kubernetes:
+>   clusterLocatorMethods:
+>     - type: catalog
+>       allowUnsafeClusterUrls: true # NOT RECOMMENDED - retains SSRF
+> ```
+>
+> `allowUnsafeClusterUrls: true` does not protect against the upcoming
+> change of default to deny-all; configure `allowedClusterUrls` for real
+> protection.
+
 Note that it is insecure to store a Kubernetes service account token in an
 annotation on a catalog entity (where it could easily be accidentally revealed
 by the catalog API) -- therefore there is no annotation corresponding to the

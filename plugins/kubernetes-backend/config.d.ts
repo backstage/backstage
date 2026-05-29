@@ -72,6 +72,33 @@ export interface Config {
       | {
           /** @visibility frontend */
           type: 'catalog';
+          /**
+           * Allowlist of trusted cluster API server origins (scheme + host +
+           * optional port). The `kubernetes.io/api-server` annotation of a
+           * catalog `kubernetes-cluster` Resource must match one of these
+           * origins for the entity to be returned by the locator.
+           *
+           * This protects against an SSRF / credential exfiltration attack in
+           * which an actor with catalog write access registers a malicious
+           * cluster entity that causes the backend to send server-side
+           * credentials (AWS / Azure / GCP / OIDC tokens) to an arbitrary URL.
+           *
+           * If this option is omitted, the catalog locator returns no clusters
+           * (default-deny). Set `allowUnsafeClusterUrls: true` to temporarily
+           * restore the previous, unsafe behaviour.
+           *
+           * @visibility frontend
+           */
+          allowedClusterUrls?: string[];
+          /**
+           * Restores the pre-fix behaviour of trusting any URL supplied via
+           * catalog annotations. Enabling this re-introduces the SSRF that
+           * `allowedClusterUrls` is designed to prevent and should only be
+           * used as a short term migration aid.
+           *
+           * @visibility frontend
+           */
+          allowUnsafeClusterUrls?: boolean;
         }
       | {
           /** @visibility frontend */

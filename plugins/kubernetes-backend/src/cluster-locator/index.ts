@@ -86,7 +86,15 @@ export const getCombinedClusterSupplier = (
       const type = clusterLocatorMethod.getString('type');
       switch (type) {
         case 'catalog':
-          return CatalogClusterLocator.fromConfig(catalogService, auth);
+          return CatalogClusterLocator.fromConfig(catalogService, auth, {
+            logger,
+            allowedClusterUrls:
+              clusterLocatorMethod.getOptionalStringArray('allowedClusterUrls'),
+            allowUnsafeClusterUrls:
+              clusterLocatorMethod.getOptionalBoolean(
+                'allowUnsafeClusterUrls',
+              ) ?? false,
+          });
         case 'localKubectlProxy':
           return new LocalKubectlProxyClusterLocator();
         case 'config':

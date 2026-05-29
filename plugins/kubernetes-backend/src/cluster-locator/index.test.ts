@@ -132,7 +132,7 @@ describe('getCombinedClusterSupplier', () => {
                 { name: 'cluster', url: 'url', authProvider: 'authProvider' },
               ],
             },
-            { type: 'catalog' },
+            { type: 'catalog', allowUnsafeClusterUrls: true },
           ],
         },
       },
