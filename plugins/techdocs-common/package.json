@@ -46,6 +46,10 @@
     "postpack": "backstage-cli package postpack",
     "test": "backstage-cli package test"
   },
+  "dependencies": {
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^"
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
   }

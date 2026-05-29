@@ -16,7 +16,7 @@
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import {
   DocsBuildStrategy,
   GeneratorBuilder,
@@ -39,9 +39,12 @@ import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { durationToMilliseconds } from '@backstage/types';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -63,6 +66,7 @@ export type OutOfTheBoxDeploymentOptions = {
   catalog: CatalogService;
   httpAuth: HttpAuthService;
   auth: AuthService;
+  permissions: PermissionsService;
 };
 
 /**
@@ -78,6 +82,7 @@ export type RecommendedDeploymentOptions = {
   config: Config;
   cache: CacheService;
   docsBuildStrategy?: DocsBuildStrategy;
+  permissions: PermissionsService;
   buildLogTransport?: winston.transport;
   catalog: CatalogService;
   httpAuth: HttpAuthService;
@@ -114,8 +119,16 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const { publisher, config, logger, discovery, httpAuth, auth, catalog } =
-    options;
+  const {
+    publisher,
+    config,
+    logger,
+    discovery,
+    httpAuth,
+    auth,
+    catalog,
+    permissions,
+  } = options;
 
   const docsBuildStrategy =
     options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
@@ -158,6 +171,7 @@ export async function createRouter(
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
+    const entityRef = stringifyEntityRef(entityName);
 
     const credentials = await httpAuth.credentials(req);
 
@@ -165,9 +179,26 @@ export async function createRouter(
     const entity = await entityLoader.load(credentials, entityName);
 
     if (!entity) {
-      throw new NotFoundError(
-        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
+      throw new NotFoundError(`Unable to get metadata for '${entityRef}'`);
+    }
+
+    // Check TechDocs-specific permission if enabled
+    if (config.getOptionalBoolean('permission.enabled')) {
+      const decision = await permissions.authorize(
+        [
+          {
+            permission: techDocsEntityReadPermission,
+            resourceRef: entityRef,
+          },
+        ],
+        { credentials },
       );
+
+      if (decision[0].result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(
+          `Access to TechDocs for '${entityRef}' is not permitted`,
+        );
+      }
     }
 
     try {
@@ -178,29 +209,42 @@ export async function createRouter(
       res.json(techdocsMetadata);
     } catch (err) {
       logger.info(
-        `Unable to get metadata for '${stringifyEntityRef(
-          entityName,
-        )}' with error ${err}`,
+        `Unable to get metadata for '${entityRef}' with error ${err}`,
       );
-      throw new NotFoundError(
-        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
-        err,
-      );
+      throw new NotFoundError(`Unable to get metadata for '${entityRef}'`, err);
     }
   });
 
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
+    const entityRef = stringifyEntityRef(entityName);
 
     const credentials = await httpAuth.credentials(req);
 
     const entity = await entityLoader.load(credentials, entityName);
 
     if (!entity) {
-      throw new NotFoundError(
-        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
+      throw new NotFoundError(`Unable to get metadata for '${entityRef}'`);
+    }
+
+    // Check TechDocs-specific permission if enabled
+    if (config.getOptionalBoolean('permission.enabled')) {
+      const decision = await permissions.authorize(
+        [
+          {
+            permission: techDocsEntityReadPermission,
+            resourceRef: entityRef,
+          },
+        ],
+        { credentials },
       );
+
+      if (decision[0].result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(
+          `Access to TechDocs for '${entityRef}' is not permitted`,
+        );
+      }
     }
 
     try {
@@ -208,14 +252,9 @@ export async function createRouter(
       res.json({ ...entity, locationMetadata });
     } catch (err) {
       logger.info(
-        `Unable to get metadata for '${stringifyEntityRef(
-          entityName,
-        )}' with error ${err}`,
+        `Unable to get metadata for '${entityRef}' with error ${err}`,
       );
-      throw new NotFoundError(
-        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
-        err,
-      );
+      throw new NotFoundError(`Unable to get metadata for '${entityRef}'`, err);
     }
   });
 
@@ -225,17 +264,34 @@ export async function createRouter(
   // If a build is required, responds with a success when finished
   router.get('/sync/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
+    const entityName = { kind, namespace, name };
+    const entityRef = stringifyEntityRef(entityName);
 
     const credentials = await httpAuth.credentials(req);
 
-    const entity = await entityLoader.load(credentials, {
-      kind,
-      namespace,
-      name,
-    });
+    const entity = await entityLoader.load(credentials, entityName);
 
     if (!entity?.metadata?.uid) {
       throw new NotFoundError('Entity metadata UID missing');
+    }
+
+    // Check TechDocs-specific permission if enabled
+    if (config.getOptionalBoolean('permission.enabled')) {
+      const decision = await permissions.authorize(
+        [
+          {
+            permission: techDocsEntityReadPermission,
+            resourceRef: entityRef,
+          },
+        ],
+        { credentials },
+      );
+
+      if (decision[0].result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(
+          `Access to TechDocs for '${entityRef}' is not permitted`,
+        );
+      }
     }
 
     const responseHandler: DocsSynchronizerSyncOpts = createEventStream(res);
@@ -293,6 +349,7 @@ export async function createRouter(
       async (req, _res, next) => {
         const { kind, namespace, name } = req.params;
         const entityName = { kind, namespace, name };
+        const entityRef = stringifyEntityRef(entityName);
 
         const credentials = await httpAuth.credentials(req, {
           allowLimitedAccess: true,
@@ -301,8 +358,23 @@ export async function createRouter(
         const entity = await entityLoader.load(credentials, entityName);
 
         if (!entity) {
-          throw new NotFoundError(
-            `Entity not found for ${stringifyEntityRef(entityName)}`,
+          throw new NotFoundError(`Entity not found for ${entityRef}`);
+        }
+
+        // Check TechDocs-specific permission
+        const decision = await permissions.authorize(
+          [
+            {
+              permission: techDocsEntityReadPermission,
+              resourceRef: entityRef,
+            },
+          ],
+          { credentials },
+        );
+
+        if (decision[0].result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(
+            `Access to TechDocs for '${entityRef}' is not permitted`,
           );
         }
 

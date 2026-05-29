@@ -29,6 +29,7 @@ import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 jest.mock('./CachedEntityLoader');
 jest.mock('./DocsSynchronizer');
@@ -125,6 +126,7 @@ describe('createRouter', () => {
     docsBuildStrategy,
     auth: mockServices.auth(),
     httpAuth: mockServices.httpAuth(),
+    permissions: mockServices.permissions.mock(),
     catalog: mockCatalogService,
   };
   const recommendedOptions = {
@@ -136,6 +138,7 @@ describe('createRouter', () => {
     docsBuildStrategy,
     auth: mockServices.auth(),
     httpAuth: mockServices.httpAuth(),
+    permissions: mockServices.permissions.mock(),
     catalog: mockCatalogService,
   };
 
@@ -331,8 +334,15 @@ data: {"updated":true}
       const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
       publisher.docsRouter.mockReturnValue(docsRouter);
 
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+      });
+
       const app = await createApp({
         ...outOfTheBoxOptions,
+        permissions,
         config: new ConfigReader({
           permission: {
             enabled: true,
@@ -348,6 +358,36 @@ data: {"updated":true}
 
       expect(response.status).toBe(200);
       expect(MockCachedEntityLoader.prototype.load).toHaveBeenCalled();
+      expect(permissions.authorize).toHaveBeenCalled();
+    });
+
+    it('should deny access when TechDocs permission is denied', async () => {
+      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+      publisher.docsRouter.mockReturnValue(docsRouter);
+
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.DENY }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: new ConfigReader({
+          permission: {
+            enabled: true,
+          },
+        }),
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      const response = await request(app)
+        .get('/static/docs/default/component/test')
+        .send();
+
+      expect(response.status).toBe(403);
     });
 
     it('should not return assets without corresponding entity access', async () => {

@@ -112,6 +112,7 @@ export const techdocsPlugin = createBackendPlugin({
         cache: coreServices.cache,
         httpAuth: coreServices.httpAuth,
         auth: coreServices.auth,
+        permissions: coreServices.permissions,
         catalog: catalogServiceRef,
       },
       async init({
@@ -123,6 +124,7 @@ export const techdocsPlugin = createBackendPlugin({
         cache,
         httpAuth,
         auth,
+        permissions,
         catalog,
       }) {
         // Preparers are responsible for fetching source files for documentation.
@@ -166,6 +168,7 @@ export const techdocsPlugin = createBackendPlugin({
             discovery,
             httpAuth,
             auth,
+            permissions,
             catalog,
           }),
         );
