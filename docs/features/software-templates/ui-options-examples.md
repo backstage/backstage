@@ -367,6 +367,17 @@ owner:
 
 The input props that can be specified under `ui:options` for the `RepoUrlPicker` field extension.
 
+> **Security note**
+>
+> The `allowedHosts`, `allowedOwners`, `allowedRepos`, `allowedOrganizations`,
+> and `allowedProjects` options below are enforced both in the browser (by
+> the `RepoUrlPicker` field) and on the scaffolder backend when a task is
+> created via `POST /api/scaffolder/v2/tasks`. The backend rejects any
+> `repoUrl` value whose parsed `host` / `owner` / `repo` / `organization` /
+> `project` is not in the corresponding allowlist, so these settings can be
+> treated as a real policy boundary - not just a UI affordance. Fields
+> without any `allowed*` lists (or with an empty list) accept any value.
+
 ### `allowedHosts`
 
 The `allowedHosts` part should be set to where you wish to enable this template

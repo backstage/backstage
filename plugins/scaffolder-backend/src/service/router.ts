@@ -106,6 +106,7 @@ import {
   getWorkingDirectory,
   parseStringsParam,
 } from './helpers';
+import { validateRepoUrlPickerOptions } from './validateRepoUrlPickerOptions';
 
 import {
   convertFiltersToRecord,
@@ -577,6 +578,23 @@ export async function createRouter(
             });
 
             res.status(400).json({ errors: result.errors });
+            return;
+          }
+
+          const repoUrlPickerErrors = validateRepoUrlPickerOptions(
+            values,
+            parameters,
+            integrations,
+          );
+          if (repoUrlPickerErrors.length > 0) {
+            await auditorEvent?.fail({
+              error: new InputError(
+                `RepoUrlPicker allowlist violation: ${repoUrlPickerErrors
+                  .map(e => e.message)
+                  .join('; ')}`,
+              ),
+            });
+            res.status(400).json({ errors: repoUrlPickerErrors });
             return;
           }
         }
@@ -1058,6 +1076,26 @@ export async function createRouter(
             });
 
             res.status(400).json({ errors: result.errors });
+            return;
+          }
+
+          const repoUrlPickerErrors = validateRepoUrlPickerOptions(
+            body.values,
+            parameters,
+            integrations,
+          );
+          if (repoUrlPickerErrors.length > 0) {
+            await auditorEvent?.fail({
+              error: new InputError(
+                `RepoUrlPicker allowlist violation: ${repoUrlPickerErrors
+                  .map(e => e.message)
+                  .join('; ')}`,
+              ),
+              meta: {
+                templateRef: templateRef,
+              },
+            });
+            res.status(400).json({ errors: repoUrlPickerErrors });
             return;
           }
         }

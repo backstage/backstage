@@ -176,6 +176,7 @@ const createTestRouter = async (
     autocompleteHandlers?: Record<string, AutocompleteHandler>;
     actionsRegistry?: ActionsService;
     entities?: any[];
+    config?: ConfigReader;
   } = {},
 ) => {
   const logger = mockServices.logger.mock({
@@ -207,7 +208,7 @@ const createTestRouter = async (
   const permissionsRegistry = mockServices.permissionsRegistry.mock();
   const router = await createRouter({
     logger,
-    config: new ConfigReader({}),
+    config: overrides.config ?? new ConfigReader({}),
     database: createDatabase(),
     catalog,
     taskBroker,
@@ -1032,6 +1033,126 @@ describe('scaffolder router', () => {
           },
         }),
       );
+    });
+
+    describe('RepoUrlPicker ui:options enforcement', () => {
+      const repoUrlPickerTemplate = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['repoUrl'],
+            properties: {
+              repoUrl: {
+                type: 'string',
+                title: 'Repository Location',
+                'ui:field': 'RepoUrlPicker',
+                'ui:options': {
+                  allowedHosts: ['github.com'],
+                  allowedOwners: ['trusted-org'],
+                },
+              },
+            },
+          },
+        ],
+      });
+
+      const integrationsConfig = new ConfigReader({
+        integrations: {
+          github: [{ host: 'github.com', token: 'irrelevant' }],
+          gitlab: [{ host: 'gitlab.com', token: 'irrelevant' }],
+        },
+      });
+
+      it('accepts a repoUrl whose owner is in allowedOwners', async () => {
+        const { router, taskBroker } = await createTestRouter({
+          entities: [repoUrlPickerTemplate, mockUser],
+          config: integrationsConfig,
+        });
+        const broker =
+          taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+        broker.mockResolvedValue({ taskId: 'task-1' });
+
+        const response = await request(router)
+          .post('/v2/tasks')
+          .send({
+            templateRef: stringifyEntityRef({
+              kind: 'template',
+              name: 'create-react-app-template',
+            }),
+            values: {
+              repoUrl: 'github.com?owner=trusted-org&repo=my-repo',
+            },
+          });
+
+        expect(response.status).toEqual(201);
+        expect(broker).toHaveBeenCalled();
+      });
+
+      it('rejects a repoUrl whose owner is not in allowedOwners and does not dispatch the task', async () => {
+        const { router, taskBroker } = await createTestRouter({
+          entities: [repoUrlPickerTemplate, mockUser],
+          config: integrationsConfig,
+        });
+        const broker =
+          taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+        const response = await request(router)
+          .post('/v2/tasks')
+          .send({
+            templateRef: stringifyEntityRef({
+              kind: 'template',
+              name: 'create-react-app-template',
+            }),
+            values: {
+              repoUrl: 'github.com?owner=attacker-org&repo=my-repo',
+            },
+          });
+
+        expect(response.status).toEqual(400);
+        expect(response.body.errors).toEqual([
+          expect.objectContaining({
+            property: 'instance.repoUrl',
+            message: expect.stringMatching(
+              /owner 'attacker-org' is not in the allowed list/,
+            ),
+          }),
+        ]);
+        expect(broker).not.toHaveBeenCalled();
+      });
+
+      it('rejects a repoUrl whose host is not in allowedHosts and does not dispatch the task', async () => {
+        const { router, taskBroker } = await createTestRouter({
+          entities: [repoUrlPickerTemplate, mockUser],
+          config: integrationsConfig,
+        });
+        const broker =
+          taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+        const response = await request(router)
+          .post('/v2/tasks')
+          .send({
+            templateRef: stringifyEntityRef({
+              kind: 'template',
+              name: 'create-react-app-template',
+            }),
+            values: {
+              repoUrl: 'gitlab.com?owner=trusted-org&repo=my-repo',
+            },
+          });
+
+        expect(response.status).toEqual(400);
+        expect(response.body.errors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              property: 'instance.repoUrl',
+              message: expect.stringMatching(
+                /host 'gitlab.com' is not in the allowed list/,
+              ),
+            }),
+          ]),
+        );
+        expect(broker).not.toHaveBeenCalled();
+      });
     });
   });
 
