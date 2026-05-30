@@ -14,20 +14,33 @@
  * limitations under the License.
  */
 
-import { Table, TableColumn } from '@backstage/core-components';
+import { useMemo } from 'react';
+import {
+  Box,
+  CellText,
+  Flex,
+  SearchField,
+  Table,
+  Text,
+  useTable,
+  type ColumnConfig,
+} from '@backstage/ui';
 import { PackageDependency } from '@backstage/plugin-devtools-common';
 
-const columns: TableColumn[] = [
+type Row = PackageDependency & { id: string };
+
+const columns: ColumnConfig<Row>[] = [
   {
-    title: 'Name',
-    width: 'auto',
-    field: 'name',
-    defaultSort: 'asc',
+    id: 'name',
+    label: 'Name',
+    isRowHeader: true,
+    isSortable: true,
+    cell: item => <CellText title={item.name} />,
   },
   {
-    title: 'Versions',
-    width: 'auto',
-    field: 'versions',
+    id: 'versions',
+    label: 'Versions',
+    cell: item => <CellText title={item.versions} />,
   },
 ];
 
@@ -36,18 +49,46 @@ export const InfoDependenciesTable = ({
 }: {
   infoDependencies: PackageDependency[] | undefined;
 }) => {
+  const rows = useMemo<Row[] | undefined>(
+    () => infoDependencies?.map(d => ({ ...d, id: d.name })),
+    [infoDependencies],
+  );
+
+  const { tableProps, search } = useTable({
+    mode: 'complete',
+    data: rows,
+    paginationOptions: {
+      pageSize: 15,
+      pageSizeOptions: [15, 30, 100],
+    },
+    initialSort: { column: 'name', direction: 'ascending' },
+    sortFn: (items, { column, direction }) => {
+      return [...items].sort((a, b) => {
+        const aVal = column === 'name' ? a.name : a.versions;
+        const bVal = column === 'name' ? b.name : b.versions;
+        const cmp = aVal.localeCompare(bVal);
+        return direction === 'descending' ? -cmp : cmp;
+      });
+    },
+    searchFn: (items, query) => {
+      const lowerQuery = query.toLowerCase();
+      return items.filter(
+        item =>
+          item.name.toLowerCase().includes(lowerQuery) ||
+          item.versions.toLowerCase().includes(lowerQuery),
+      );
+    },
+  });
+
   return (
-    <Table
-      title="Package Dependencies"
-      options={{
-        paging: true,
-        pageSize: 15,
-        pageSizeOptions: [15, 30, 100],
-        loadingType: 'linear',
-        padding: 'dense',
-      }}
-      columns={columns}
-      data={infoDependencies || []}
-    />
+    <Box>
+      <Flex justify="between" align="center" pb="2">
+        <Text variant="title-medium" weight="bold">
+          Package Dependencies
+        </Text>
+        <SearchField aria-label="Filter" placeholder="Filter" {...search} />
+      </Flex>
+      <Table columnConfig={columns} {...tableProps} />
+    </Box>
   );
 };
