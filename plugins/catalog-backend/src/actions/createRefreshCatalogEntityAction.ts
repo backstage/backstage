@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
+import type { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { NotFoundError } from '@backstage/errors';
-import { CatalogService } from '@backstage/plugin-catalog-node';
+import type { CatalogService } from '@backstage/plugin-catalog-node';
 
 export const createRefreshCatalogEntityAction = ({
   catalog,
@@ -33,7 +33,7 @@ export const createRefreshCatalogEntityAction = ({
       readOnly: false,
       idempotent: true,
     },
-    description: `Triggers a refresh of a single entity in the Backstage software catalog, requeueing it for processing.
+    description: `Triggers a refresh of a single entity in the Backstage software catalog, requeuing it for processing.
 
 This is useful immediately after creating or updating an entity (for example, via a scaffolder template invoked by an MCP client) when the new data must be visible in the catalog before subsequent actions can read it.
 
@@ -43,17 +43,23 @@ Each entity is identified by its kind, namespace, and name. The default kind is 
         z.object({
           kind: z
             .string()
+            .min(1)
             .describe(
               `The kind of the entity to refresh, e.g. "Component", "API", "System". Defaults to "Component" if omitted.`,
             )
             .optional(),
           namespace: z
             .string()
+            .min(1)
             .describe(
               `The namespace of the entity to refresh. Defaults to "default" if omitted.`,
             )
             .optional(),
-          name: z.string().describe('The name of the entity to refresh.'),
+          name: z
+            .string()
+            .trim()
+            .min(1)
+            .describe('The name of the entity to refresh.'),
         }),
       output: z =>
         z.object({

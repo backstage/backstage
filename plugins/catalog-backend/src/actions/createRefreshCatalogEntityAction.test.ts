@@ -43,6 +43,10 @@ describe('createRefreshCatalogEntityAction', () => {
 
     const expectedRef = 'api:payments/orders-api';
     expect(result.output).toEqual({ entityRef: expectedRef });
+    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(
+      expectedRef,
+      expect.objectContaining({ credentials: expect.any(Object) }),
+    );
     expect(mockCatalog.refreshEntity).toHaveBeenCalledWith(
       expectedRef,
       expect.objectContaining({ credentials: expect.any(Object) }),
@@ -68,6 +72,10 @@ describe('createRefreshCatalogEntityAction', () => {
 
     const expectedRef = 'component:default/example-website';
     expect(result.output).toEqual({ entityRef: expectedRef });
+    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(
+      expectedRef,
+      expect.objectContaining({ credentials: expect.any(Object) }),
+    );
     expect(mockCatalog.refreshEntity).toHaveBeenCalledWith(
       expectedRef,
       expect.objectContaining({ credentials: expect.any(Object) }),
