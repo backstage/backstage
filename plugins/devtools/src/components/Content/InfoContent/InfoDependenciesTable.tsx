@@ -50,7 +50,7 @@ export const InfoDependenciesTable = ({
   infoDependencies: PackageDependency[] | undefined;
 }) => {
   const rows = useMemo<Row[] | undefined>(
-    () => infoDependencies?.map(d => ({ ...d, id: d.name })),
+    () => infoDependencies?.map((d, i) => ({ ...d, id: `${d.name}-${i}` })),
     [infoDependencies],
   );
 
