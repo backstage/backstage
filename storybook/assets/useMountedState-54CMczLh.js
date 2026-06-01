@@ -1,1 +1,0 @@
-import{ca as t}from"./iframe-t54gLFa0.js";function n(){var e=t.useRef(!1),r=t.useCallback(function(){return e.current},[]);return t.useEffect(function(){return e.current=!0,function(){e.current=!1}},[]),r}export{n as u};
