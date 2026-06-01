@@ -481,7 +481,8 @@ export async function createRouter(
               description: schema.description as string,
               schema,
             })),
-            EXPERIMENTAL_formDecorators:
+            formDecorators:
+              template.spec.formDecorators ??
               template.spec.EXPERIMENTAL_formDecorators,
           });
         } catch (err) {

@@ -16,7 +16,6 @@
 
 import { Knex } from 'knex';
 import uniq from 'lodash/uniq';
-import { StitchingStrategy } from '../../../stitching/types';
 import { DbRefreshStateRow } from '../../tables';
 import { markForStitching } from '../stitcher/markForStitching';
 
@@ -27,9 +26,8 @@ import { markForStitching } from '../stitcher/markForStitching';
  */
 export async function deleteOrphanedEntities(options: {
   knex: Knex.Transaction | Knex;
-  strategy: StitchingStrategy;
 }): Promise<number> {
-  const { knex, strategy } = options;
+  const { knex } = options;
 
   let total = 0;
 
@@ -83,7 +81,6 @@ export async function deleteOrphanedEntities(options: {
     // Mark all of the things that the orphans had relations to for stitching
     await markForStitching({
       knex,
-      strategy,
       entityIds: orphanRelationIds,
     });
   }

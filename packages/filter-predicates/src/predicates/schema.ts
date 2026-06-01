@@ -53,9 +53,9 @@ export function createZodV3FilterPredicateSchema(
     z.union([
       expressionSchema,
       primitiveSchema,
-      z.object({ $all: z.array(predicateSchema) }),
-      z.object({ $any: z.array(predicateSchema) }),
-      z.object({ $not: predicateSchema }),
+      z.object({ $all: z.array(predicateSchema) }).strict(),
+      z.object({ $any: z.array(predicateSchema) }).strict(),
+      z.object({ $not: predicateSchema }).strict(),
     ]),
   ) as zodV3.ZodType<FilterPredicate>;
 
@@ -104,9 +104,9 @@ export function createZodV4FilterPredicateSchema(): zodV4.ZodType<
     z.union([
       expressionSchema,
       primitiveSchema,
-      z.object({ $all: z.array(predicateSchema) }),
-      z.object({ $any: z.array(predicateSchema) }),
-      z.object({ $not: predicateSchema }),
+      z.object({ $all: z.array(predicateSchema) }).strict(),
+      z.object({ $any: z.array(predicateSchema) }).strict(),
+      z.object({ $not: predicateSchema }).strict(),
     ]),
   ) as zodV4.ZodType<FilterPredicate, FilterPredicate>;
 

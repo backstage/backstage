@@ -63,8 +63,18 @@ aws:
     - accountId: '444444444444'
       profile: my-profile-name
 
-    # Credentials can come from the AWS SDK's default creds chain
+    # Credentials can come from AssumeRoleWithWebIdentity using a token
+    # file rotated by an external process (the same primitive EKS IRSA
+    # uses, where the kubelet rotates a projected service account token).
+    # Useful for backends running outside AWS that need to assume roles
+    # in multiple accounts via OIDC. Cannot be combined with a profile,
+    # static credentials, or an externalId.
     - accountId: '555555555555'
+      roleName: 'my-iam-role-name'
+      webIdentityTokenFile: '/var/run/secrets/aws/token'
+
+    # Credentials can come from the AWS SDK's default creds chain
+    - accountId: '666666666666'
 
   # Credentials for accounts can fall back to a common role name.
   # This is useful for account discovery use cases where the account

@@ -33,6 +33,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
+import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
@@ -78,6 +79,38 @@ export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public (undocumented)
 export const CatalogEntityPage: () => JSX.Element;
+
+// @public
+export type CatalogExporter = (options: {
+  apis: ApiHolder;
+  columns: CatalogExportSettingsColumn[];
+  streamRequest?: StreamEntitiesRequest;
+}) => {
+  generator: AsyncGenerator<string, void, unknown>;
+  contentType: string;
+};
+
+// @public
+export interface CatalogExporterConfig {
+  exporter: CatalogExporter;
+  label?: string;
+}
+
+// @public
+export interface CatalogExportSettings {
+  columns?: CatalogExportSettingsColumn[];
+  disableBuiltinExporters?: boolean;
+  enabled?: boolean;
+  exporters?: Record<string, CatalogExporterConfig>;
+  onError?: (options: { error: Error }) => void;
+  onSuccess?: () => void;
+}
+
+// @public
+export interface CatalogExportSettingsColumn {
+  entityFilterKey: string;
+  title?: string;
+}
 
 // @public (undocumented)
 export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element;
@@ -295,6 +328,15 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
     readonly 'entityNotFound.docButtonTitle': 'DOCS';
     readonly 'entityTabs.tabsAriaLabel': 'Tabs';
+    readonly 'catalogExportButton.errorMessage': 'Failed to export catalog: {{errorMessage}}';
+    readonly 'catalogExportButton.cancelButtonTitle': 'Cancel';
+    readonly 'catalogExportButton.dialogTitle': 'Export catalog selection';
+    readonly 'catalogExportButton.triggerButtonTitle': 'Export selection';
+    readonly 'catalogExportButton.formatLabel': 'Format';
+    readonly 'catalogExportButton.columnsLabel': 'Columns';
+    readonly 'catalogExportButton.confirmButtonTitle': 'Confirm';
+    readonly 'catalogExportButton.exportingButtonTitle': 'Exporting…';
+    readonly 'catalogExportButton.successMessage': 'Catalog exported successfully';
     readonly entityProcessingErrorsDescription: 'The error below originates from';
     readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ";
     readonly 'hasComponentsCard.title': 'Has components';
@@ -327,6 +369,8 @@ export interface DefaultCatalogPageProps {
   columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
   emptyContent?: ReactNode;
+  // (undocumented)
+  exportSettings?: CatalogExportSettings;
   // (undocumented)
   filters?: ReactNode;
   // (undocumented)

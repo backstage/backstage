@@ -346,6 +346,7 @@ export type QueryEntitiesInitialRequest = {
     term: string;
     fields?: string[];
   };
+  totalItems?: 'include' | 'exclude';
 };
 
 // @public

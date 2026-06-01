@@ -37,6 +37,103 @@ app:
             limit: 20
 ```
 
+### Configuring Catalog Export
+
+The catalog export feature is available in the new frontend system and can be enabled via the `app-config.yaml`.
+This will enable a button, which by default contains options to export data from the catalog table in CSV and JSON format.
+When exporting, a dialog opens that lets the user choose the export format and select which columns to include.
+
+#### Basic Configuration
+
+To enable catalog export, add the following configuration:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:catalog:
+        config:
+          exportSettings:
+            enabled: true
+            # Optional: hide the built-in CSV and JSON formats, showing only your own supplied exporters
+            disableBuiltinExporters: false
+```
+
+This will display an "Export selection" button on the catalog index page that allows users to export the currently filtered catalog entities in CSV or JSON format.
+
+#### Advanced Configuration
+
+For advanced export customization like custom export formats, create a frontend module that provides a catalog export extension:
+
+```tsx title="src/catalogExportExtension.tsx"
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { CatalogExportConfigBlueprint } from '@backstage/plugin-catalog/alpha';
+import type { CatalogExporter } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+
+// Define custom export formats using streaming async generators
+const yamlExporter: CatalogExporter = ({ apis, columns, streamRequest }) => {
+  const catalogApi = apis.get(catalogApiRef);
+
+  // Return an async generator that yields YAML chunks
+  async function* generateYaml() {
+    for await (const page of catalogApi.streamEntities(streamRequest)) {
+      for (const entity of page) {
+        // Serialize each entity to YAML and yield immediately
+        yield serializeEntityToYaml(entity, columns);
+        yield '---\n'; // YAML document separator
+      }
+    }
+  }
+
+  return {
+    generator: generateYaml(),
+    contentType: 'application/x-yaml',
+  };
+};
+
+// Create the extension using the blueprint
+const catalogExportExtension = CatalogExportConfigBlueprint.make({
+  params: {
+    exporters: {
+      yaml: { exporter: yamlExporter, label: 'YAML' },
+    },
+    columns: [{ entityFilterKey: 'metadata.name', title: 'Name' }],
+    onSuccess: () => {
+      console.log('Export successful!');
+    },
+    onError: ({ error }) => {
+      console.error('Export failed:', error);
+    },
+  },
+});
+
+// Create the module that provides this extension
+export default createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [catalogExportExtension],
+});
+```
+
+Then register this module in your app features:
+
+```tsx title="packages/app-next/src/App.tsx"
+import catalogExportExtension from './catalogExportExtension';
+
+const app = createApp({
+  features: [
+    // ... other features
+    catalogExportExtension,
+  ],
+});
+```
+
+The `CatalogExportConfigBlueprint` supports the following properties:
+
+- **`exporters`** - Record of custom export format configurations (e.g., XML, YAML), each using the `CatalogExporterConfig` shape with an `exporter` function and optional `label`
+- **`columns`** - Custom columns to include in the export. Each column specifies an entity field path (`entityFilterKey`) and an optional display `title`. If not provided, defaults to Name, Type, Owner, and Description
+- **`onSuccess`** - Callback function invoked on successful export
+- **`onError`** - Callback function invoked if export fails, receives `{ error: Error }`
+
 ### Catalog filters
 
 The catalog index page includes a set of default filters (kind, type, owner, lifecycle, tag, namespace, processing status). These filters can be configured through extensions. For example, to set the initial kind filter:
@@ -181,12 +278,12 @@ export const CustomCatalogPage = () => {
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
 
   return (
-    <PageWithHeader title={orgName} themeId="home">
-      <Content>
-        <ContentHeader title="">
-          <SupportButton>All your software catalog entities</SupportButton>
-        </ContentHeader>
-        <EntityListProvider pagination>
+    <EntityListProvider pagination>
+      <PageWithHeader title={orgName} themeId="home">
+        <Content>
+          <ContentHeader title="">
+            <SupportButton>All your software catalog entities</SupportButton>
+          </ContentHeader>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
               <EntityKindPicker />
@@ -202,9 +299,9 @@ export const CustomCatalogPage = () => {
               <CatalogTable />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
-        </EntityListProvider>
-      </Content>
-    </PageWithHeader>
+        </Content>
+      </PageWithHeader>
+    </EntityListProvider>
   );
 };
 ```

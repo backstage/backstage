@@ -37,6 +37,11 @@ export { CheckboxDefinition } from './components/Checkbox/definition';
 export { CheckboxGroupDefinition } from './components/CheckboxGroup/definition';
 export { ComboboxDefinition } from './components/Combobox/definition';
 export { ContainerDefinition } from './components/Container/definition';
+export {
+  DatePickerDefinition,
+  DatePickerGroupDefinition,
+  DatePickerCalendarDefinition,
+} from './components/DatePicker/definition';
 export { DateRangePickerDefinition } from './components/DateRangePicker/definition';
 export { DialogDefinition } from './components/Dialog/definition';
 export { FieldErrorDefinition } from './components/FieldError/definition';
@@ -57,6 +62,7 @@ export {
   ListRowDefinition,
 } from './components/List/definition';
 export { MenuDefinition } from './components/Menu/definition';
+export { NumberFieldDefinition } from './components/NumberField/definition';
 export { PasswordFieldDefinition } from './components/PasswordField/definition';
 export { PopoverDefinition } from './components/Popover/definition';
 export { RadioGroupDefinition } from './components/RadioGroup/definition';

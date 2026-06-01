@@ -23,7 +23,7 @@ import {
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
-import Button from '@material-ui/core/Button';
+import { Button } from '@backstage/ui';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import MuiStep from '@material-ui/core/Step';
 import MuiStepLabel from '@material-ui/core/StepLabel';
@@ -293,18 +293,14 @@ export const Stepper = (stepperProps: StepperProps) => {
           >
             <div className={styles.footer}>
               <Button
-                onClick={handleBack}
+                variant="tertiary"
+                onPress={handleBack}
                 className={styles.backButton}
-                disabled={activeStep < 1 || isValidating}
+                isDisabled={activeStep < 1 || isValidating}
               >
                 {backLabel}
               </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={isValidating}
-              >
+              <Button variant="primary" type="submit" isDisabled={isValidating}>
                 {activeStep === steps.length - 1
                   ? reviewLabel
                   : t('stepper.nextButtonText')}
@@ -326,17 +322,17 @@ export const Stepper = (stepperProps: StepperProps) => {
             <ReviewStateComponent formState={stepsState} schemas={steps} />
             <div className={styles.footer}>
               <Button
-                onClick={handleBack}
+                variant="tertiary"
+                onPress={handleBack}
                 className={styles.backButton}
-                disabled={activeStep < 1}
+                isDisabled={activeStep < 1}
               >
                 {backLabel}
               </Button>
               <Button
-                disabled={isCreating}
-                variant="contained"
-                color="primary"
-                onClick={handleCreate}
+                variant="primary"
+                isDisabled={isCreating}
+                onPress={handleCreate}
               >
                 {createLabel}
               </Button>

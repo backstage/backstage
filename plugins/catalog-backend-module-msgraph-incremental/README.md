@@ -55,7 +55,8 @@ catalog:
         clientSecret: ${AZURE_CLIENT_SECRET}
         queryMode: advanced
         user:
-          filter: 'accountEnabled eq true'
+          # accountEnabled eq true is applied by default; add extra filters here
+          filter: "userType eq 'member'"
         group:
           filter: 'securityEnabled eq true'
         schedule:

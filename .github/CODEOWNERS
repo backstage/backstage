@@ -86,6 +86,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/user-settings-common                     @backstage/maintainers @backstage/sda-se-reviewers
 
 /scripts                                          @backstage/operations-maintainers
+/workspaces/ui                                    @backstage/design-system-maintainers
 
 /packages/backend-plugin-api/src/services/definitions/AuditorService.ts   @backstage/maintainers @backstage/auditor-maintainers
 /packages/backend-defaults/src/entrypoints/auditor                        @backstage/maintainers @backstage/auditor-maintainers

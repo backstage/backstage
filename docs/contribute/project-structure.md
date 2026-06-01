@@ -165,7 +165,7 @@ are separated out into their own folder, see further down.
 - [`techdocs-node/`](https://github.com/backstage/backstage/tree/master/plugins/techdocs-node) -
   Common node.js functionalities for TechDocs, to be shared between
   [techdocs-backend](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend)
-  plugin and [techdocs-cli](https://github.com/backstage/techdocs-cli).
+  plugin and [techdocs-cli](https://github.com/backstage/backstage/tree/master/packages/techdocs-cli).
 
 - [`test-utils/`](https://github.com/backstage/backstage/tree/master/packages/test-utils) -
   This package contains general purpose testing facilities for testing a

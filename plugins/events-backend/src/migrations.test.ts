@@ -45,60 +45,54 @@ const databases = TestDatabases.create({
   ids: ['POSTGRES_9', 'POSTGRES_14', 'POSTGRES_16'],
 });
 
-const maybeDescribe =
-  databases.eachSupportedId().length > 0 ? describe : describe.skip;
+describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
+  it('20240523100528_init.js', async () => {
+    const knex = await databases.init(databaseId);
 
-maybeDescribe('migrations', () => {
-  it.each(databases.eachSupportedId())(
-    '20240523100528_init.js, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
+    await migrateUntilBefore(knex, '20240523100528_init.js');
+    await migrateUpOnce(knex);
 
-      await migrateUntilBefore(knex, '20240523100528_init.js');
-      await migrateUpOnce(knex);
+    await knex('event_bus_events').insert({
+      topic: 'test',
+      created_by: 'abc',
+      data_json: JSON.stringify({ message: 'hello' }),
+      notified_subscribers: ['tester'],
+    });
+    await knex('event_bus_subscriptions').insert({
+      id: 'tester',
+      created_by: 'abc',
+      read_until: '5',
+      topics: ['test', 'test2'],
+    });
 
-      await knex('event_bus_events').insert({
-        topic: 'test',
+    await expect(knex('event_bus_events')).resolves.toEqual([
+      {
+        id: '1',
         created_by: 'abc',
+        topic: 'test',
         data_json: JSON.stringify({ message: 'hello' }),
+        created_at: expect.anything(),
         notified_subscribers: ['tester'],
-      });
-      await knex('event_bus_subscriptions').insert({
+      },
+    ]);
+    await expect(knex('event_bus_subscriptions')).resolves.toEqual([
+      {
         id: 'tester',
         created_by: 'abc',
+        created_at: expect.anything(),
+        updated_at: expect.anything(),
         read_until: '5',
         topics: ['test', 'test2'],
-      });
+      },
+    ]);
 
-      await expect(knex('event_bus_events')).resolves.toEqual([
-        {
-          id: '1',
-          created_by: 'abc',
-          topic: 'test',
-          data_json: JSON.stringify({ message: 'hello' }),
-          created_at: expect.anything(),
-          notified_subscribers: ['tester'],
-        },
-      ]);
-      await expect(knex('event_bus_subscriptions')).resolves.toEqual([
-        {
-          id: 'tester',
-          created_by: 'abc',
-          created_at: expect.anything(),
-          updated_at: expect.anything(),
-          read_until: '5',
-          topics: ['test', 'test2'],
-        },
-      ]);
+    await migrateDownOnce(knex);
 
-      await migrateDownOnce(knex);
+    // This looks odd - you might expect a .toThrow at the end but that
+    // actually is flaky for some reason specifically on sqlite when
+    // performing multiple runs in sequence
+    await expect(knex('event_bus_events')).rejects.toEqual(expect.anything());
 
-      // This looks odd - you might expect a .toThrow at the end but that
-      // actually is flaky for some reason specifically on sqlite when
-      // performing multiple runs in sequence
-      await expect(knex('event_bus_events')).rejects.toEqual(expect.anything());
-
-      await knex.destroy();
-    },
-  );
+    await knex.destroy();
+  });
 });

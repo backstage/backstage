@@ -129,5 +129,7 @@ export const LARGER_POOL_CONFIG = {
   pool: {
     min: 0,
     max: 50,
+    acquireTimeoutMillis: 30_000,
+    createTimeoutMillis: 30_000,
   },
 };

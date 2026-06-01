@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AiResourceV1alpha1Rule",
+  "description": "An AI resource of type 'rule', representing a governance rule or constraint for AI coding tools.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "AiResource",
+      "metadata": {
+        "name": "use-internal-apis",
+        "description": "Agents must use internal API clients instead of raw HTTP calls"
+      },
+      "spec": {
+        "type": "rule",
+        "lifecycle": "production",
+        "owner": "frontend-platform",
+        "disciplines": ["web", "backend"],
+        "category": "architecture",
+        "rationale": "Ensures consistent error handling, authentication, and observability across all service calls"
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha1"]
+        },
+        "kind": {
+          "enum": ["AiResource"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["type", "lifecycle", "owner", "category", "rationale"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["rule"],
+              "description": "The type of AI resource."
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the AI resource.",
+              "examples": ["experimental", "production", "deprecated"],
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the AI resource.",
+              "examples": ["frontend-platform", "user:john.johnson"],
+              "minLength": 1
+            },
+            "system": {
+              "type": "string",
+              "description": "An entity reference to the system that the AI resource belongs to.",
+              "minLength": 1
+            },
+            "disciplines": {
+              "type": "array",
+              "description": "Engineering disciplines this rule applies to.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "category": {
+              "type": "string",
+              "description": "The category of this rule.",
+              "examples": ["security", "architecture", "style"],
+              "minLength": 1
+            },
+            "rationale": {
+              "type": "string",
+              "description": "Explanation of why this rule exists.",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -18,7 +18,6 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
-  NavItemBlueprint,
   routeResolutionApiRef,
   appTreeApiRef,
   IconComponent,
@@ -27,6 +26,7 @@ import {
   RouteResolutionApi,
   useApi,
 } from '@backstage/frontend-plugin-api';
+import { legacyNavItemTargetDataRef } from './legacyNavItem';
 import {
   NavContentBlueprint,
   NavContentComponent,
@@ -248,7 +248,7 @@ export const AppNav = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
-    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
+    items: createExtensionInput([legacyNavItemTargetDataRef]),
     content: createExtensionInput([NavContentBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
@@ -264,7 +264,7 @@ export const AppNav = createExtension({
     yield coreExtensionData.reactElement(
       <NavContentRenderer
         legacyNavItems={inputs.items.map(item =>
-          item.get(NavItemBlueprint.dataRefs.target),
+          item.get(legacyNavItemTargetDataRef),
         )}
         Content={Content}
       />,

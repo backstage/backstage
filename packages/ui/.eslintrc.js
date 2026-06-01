@@ -3,7 +3,8 @@ module.exports = {
   extends: ['plugin:storybook/recommended'],
   rules: {
     'react/forbid-elements': 'off',
-    '@backstage/no-mixed-plugin-imports': 'off'
+    '@backstage/no-mixed-plugin-imports': 'off',
+    '@backstage/no-deprecated-bui-tokens': 'warn',
   },
 };
 

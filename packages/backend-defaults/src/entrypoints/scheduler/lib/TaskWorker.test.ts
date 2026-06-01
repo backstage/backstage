@@ -328,8 +328,9 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
     expect(fn1).toHaveBeenCalledTimes(0);
     await new Promise(resolve => setTimeout(resolve, 250));
     expect(fn1).toHaveBeenCalledTimes(0);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    expect(fn1.mock.calls.length).toBeGreaterThan(0);
+    await waitForExpect(() => {
+      expect(fn1).toHaveBeenCalled();
+    });
 
     // Start a second worker and make sure it waits but the first worker still works along
     const fn2 = jest.fn();

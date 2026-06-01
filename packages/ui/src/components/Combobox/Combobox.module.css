@@ -28,6 +28,13 @@
     }
   }
 
+  .bui-Combobox {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1;
+  }
+
   .bui-ComboboxPopover {
     min-width: var(--trigger-width);
 

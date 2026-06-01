@@ -928,25 +928,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/env@npm:16.2.3":
-  version: 16.2.3
-  resolution: "@next/env@npm:16.2.3"
-  checksum: 10/30ed128d8ffae47e58732ee134b78da36e2d6942da7479ec5e640d205b7822224daf2f07d7a69352dc362908eb260fc9fa7eaba1ce5e6311abeacc6ffb0fe90a
+"@next/env@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/env@npm:16.2.6"
+  checksum: 10/c8a0b7f09a7446a46d678798488ace125c5eec78fb0b3b19adb3fde1332f39bf41e1856b3fad19635c5b316ed3afc6ab4839702fe0f57b381c95f7d7ba2a36cf
   languageName: node
   linkType: hard
 
-"@next/eslint-plugin-next@npm:16.2.1":
-  version: 16.2.1
-  resolution: "@next/eslint-plugin-next@npm:16.2.1"
+"@next/eslint-plugin-next@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/eslint-plugin-next@npm:16.2.6"
   dependencies:
     fast-glob: "npm:3.3.1"
-  checksum: 10/8892f8ea6b2a642d9284f05098827f6c15acf3c7e2ff592430080355f8eb3cec7a70ba7543960819d69eff4eba75430eb6ce2fee4c8918abf0d8a9366fa0a59a
+  checksum: 10/2ee412966d41ac2072dd470a2a6f6ea178d26ead45ea5d4f24b248e81e1bea4d5b2ab8d268f0605f901b4b20401e264cd4e67a6770b474b56e66da50d88b6458
   languageName: node
   linkType: hard
 
-"@next/mdx@npm:16.2.1":
-  version: 16.2.1
-  resolution: "@next/mdx@npm:16.2.1"
+"@next/mdx@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/mdx@npm:16.2.6"
   dependencies:
     source-map: "npm:^0.7.0"
   peerDependencies:
@@ -957,62 +957,62 @@ __metadata:
       optional: true
     "@mdx-js/react":
       optional: true
-  checksum: 10/eed6747ac8dd048384eb0fd2cc5668bef3e2bc9c27c45a07c03dae8a2466638a26f46b440d6d27546c5f0fafc0df7dbacfe8f503f870e6e77a7c336d915500c4
+  checksum: 10/01881d7a3573557672330d3c8a696e753bcbc70b4db97bfe92396467980ae1afb40a9e856e2402393b9a785c3ec32477a68e0a9d9902eb33060f523156f57e73
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-arm64@npm:16.2.3":
-  version: 16.2.3
-  resolution: "@next/swc-darwin-arm64@npm:16.2.3"
+"@next/swc-darwin-arm64@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/swc-darwin-arm64@npm:16.2.6"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-x64@npm:16.2.3":
-  version: 16.2.3
-  resolution: "@next/swc-darwin-x64@npm:16.2.3"
+"@next/swc-darwin-x64@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/swc-darwin-x64@npm:16.2.6"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-gnu@npm:16.2.3":
-  version: 16.2.3
-  resolution: "@next/swc-linux-arm64-gnu@npm:16.2.3"
+"@next/swc-linux-arm64-gnu@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/swc-linux-arm64-gnu@npm:16.2.6"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-musl@npm:16.2.3":
-  version: 16.2.3
-  resolution: "@next/swc-linux-arm64-musl@npm:16.2.3"
+"@next/swc-linux-arm64-musl@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/swc-linux-arm64-musl@npm:16.2.6"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-gnu@npm:16.2.3":
-  version: 16.2.3
-  resolution: "@next/swc-linux-x64-gnu@npm:16.2.3"
+"@next/swc-linux-x64-gnu@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/swc-linux-x64-gnu@npm:16.2.6"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-musl@npm:16.2.3":
-  version: 16.2.3
-  resolution: "@next/swc-linux-x64-musl@npm:16.2.3"
+"@next/swc-linux-x64-musl@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/swc-linux-x64-musl@npm:16.2.6"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-win32-arm64-msvc@npm:16.2.3":
-  version: 16.2.3
-  resolution: "@next/swc-win32-arm64-msvc@npm:16.2.3"
+"@next/swc-win32-arm64-msvc@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/swc-win32-arm64-msvc@npm:16.2.6"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-win32-x64-msvc@npm:16.2.3":
-  version: 16.2.3
-  resolution: "@next/swc-win32-x64-msvc@npm:16.2.3"
+"@next/swc-win32-x64-msvc@npm:16.2.6":
+  version: 16.2.6
+  resolution: "@next/swc-win32-x64-msvc@npm:16.2.6"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -1558,8 +1558,8 @@ __metadata:
   linkType: hard
 
 "@uiw/codemirror-themes@npm:^4.23.7":
-  version: 4.25.9
-  resolution: "@uiw/codemirror-themes@npm:4.25.9"
+  version: 4.25.10
+  resolution: "@uiw/codemirror-themes@npm:4.25.10"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
     "@codemirror/state": "npm:^6.0.0"
@@ -1568,7 +1568,7 @@ __metadata:
     "@codemirror/language": ">=6.0.0"
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
-  checksum: 10/4a4fe7ae5f6c2bd37170b46c75ccabb67b47b7d3cee0de45c63fafe4f2b7569461b009e0ff5386480574e651627ed03c077833d53b6d3391102b79107ae39d15
+  checksum: 10/ff6fc4c70b858434c06ed8daa33becfa1a459c72a5fa0984a6cf3ee4a087943c631c6c97439705e616cd1b0d9a27c2ddf49f6cbcf88879be1add4a819259c460
   languageName: node
   linkType: hard
 
@@ -2336,7 +2336,7 @@ __metadata:
     "@lezer/highlight": "npm:^1.2.1"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"
-    "@next/mdx": "npm:16.2.1"
+    "@next/mdx": "npm:16.2.6"
     "@octokit/rest": "npm:^22.0.1"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@shikijs/transformers": "npm:^3.13.0"
@@ -2348,10 +2348,10 @@ __metadata:
     "@uiw/react-codemirror": "npm:^4.23.7"
     clsx: "npm:^2.1.1"
     eslint: "npm:^9"
-    eslint-config-next: "npm:16.2.1"
+    eslint-config-next: "npm:16.2.6"
     html-react-parser: "npm:^5.2.5"
     motion: "npm:^12.4.1"
-    next: "npm:16.2.3"
+    next: "npm:16.2.6"
     next-mdx-remote-client: "npm:^2.1.2"
     postcss: "npm:^8.5.10"
     postcss-import: "npm:^16.1.1"
@@ -2629,11 +2629,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-next@npm:16.2.1":
-  version: 16.2.1
-  resolution: "eslint-config-next@npm:16.2.1"
+"eslint-config-next@npm:16.2.6":
+  version: 16.2.6
+  resolution: "eslint-config-next@npm:16.2.6"
   dependencies:
-    "@next/eslint-plugin-next": "npm:16.2.1"
+    "@next/eslint-plugin-next": "npm:16.2.6"
     eslint-import-resolver-node: "npm:^0.3.6"
     eslint-import-resolver-typescript: "npm:^3.5.2"
     eslint-plugin-import: "npm:^2.32.0"
@@ -2648,7 +2648,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/3622048ff1883f801c14a21205e9f92fd83172362d6d006fc7a32ea178687a9e11aff0db3aa5fbfb86b32541b03ac127f12da8da12e8fff4430f4757e0ceecfd
+  checksum: 10/782d0e7b852f88f0ec2287c3581d8226e0b7331386bc325105e455a5f857fb18879e34f13e9fdedd7e083f6ce07d6cd19a3e524ee5a4d3e48ddf6c8ead99617c
   languageName: node
   linkType: hard
 
@@ -4570,36 +4570,36 @@ __metadata:
   linkType: hard
 
 "next-mdx-remote-client@npm:^2.1.2":
-  version: 2.1.9
-  resolution: "next-mdx-remote-client@npm:2.1.9"
+  version: 2.1.10
+  resolution: "next-mdx-remote-client@npm:2.1.10"
   dependencies:
     "@babel/code-frame": "npm:^7.29.0"
     "@mdx-js/mdx": "npm:^3.1.1"
     "@mdx-js/react": "npm:^3.1.1"
-    remark-mdx-remove-esm: "npm:^1.2.3"
+    remark-mdx-remove-esm: "npm:^1.3.1"
     serialize-error: "npm:^13.0.1"
     vfile: "npm:^6.0.3"
     vfile-matter: "npm:^5.0.1"
   peerDependencies:
     react: ">= 19.1.0"
     react-dom: ">= 19.1.0"
-  checksum: 10/cb75c6c162addcb45b6597ef1b4e3b681ab11b74b414722f56d715ed135b10bf3e31cde00a9a3d8154fd700d3a993e653e0335d99514692529aa371e58fff353
+  checksum: 10/d31eff6584adc3c2647ee7ebb1dc1b673a3d5a0eb28f51f2f35252807d1acc23b4448a5131f7df47911d3370c01c37eeb87a3bbb887e65c9242f4ec644e86c7a
   languageName: node
   linkType: hard
 
-"next@npm:16.2.3":
-  version: 16.2.3
-  resolution: "next@npm:16.2.3"
+"next@npm:16.2.6":
+  version: 16.2.6
+  resolution: "next@npm:16.2.6"
   dependencies:
-    "@next/env": "npm:16.2.3"
-    "@next/swc-darwin-arm64": "npm:16.2.3"
-    "@next/swc-darwin-x64": "npm:16.2.3"
-    "@next/swc-linux-arm64-gnu": "npm:16.2.3"
-    "@next/swc-linux-arm64-musl": "npm:16.2.3"
-    "@next/swc-linux-x64-gnu": "npm:16.2.3"
-    "@next/swc-linux-x64-musl": "npm:16.2.3"
-    "@next/swc-win32-arm64-msvc": "npm:16.2.3"
-    "@next/swc-win32-x64-msvc": "npm:16.2.3"
+    "@next/env": "npm:16.2.6"
+    "@next/swc-darwin-arm64": "npm:16.2.6"
+    "@next/swc-darwin-x64": "npm:16.2.6"
+    "@next/swc-linux-arm64-gnu": "npm:16.2.6"
+    "@next/swc-linux-arm64-musl": "npm:16.2.6"
+    "@next/swc-linux-x64-gnu": "npm:16.2.6"
+    "@next/swc-linux-x64-musl": "npm:16.2.6"
+    "@next/swc-win32-arm64-msvc": "npm:16.2.6"
+    "@next/swc-win32-x64-msvc": "npm:16.2.6"
     "@swc/helpers": "npm:0.5.15"
     baseline-browser-mapping: "npm:^2.9.19"
     caniuse-lite: "npm:^1.0.30001579"
@@ -4643,7 +4643,7 @@ __metadata:
       optional: true
   bin:
     next: dist/bin/next
-  checksum: 10/5164885daacbb36a771380e1b5efba524863e1bdf2b5a6c80413cbf1e3ab4e8ddab5716cd91ff94ca5c5c5deb2a12d1312d6d6ae994e16ebfa985fdda6134bc6
+  checksum: 10/41b2079b4788250e081d0d5e3db5923a61a660f11ad141673b956572fa465ea956322f9d79ddad1c3ad9fd75820a9f26f64c18bcdc1b731f43426ea2e1e08051
   languageName: node
   linkType: hard
 
@@ -5122,16 +5122,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remark-mdx-remove-esm@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "remark-mdx-remove-esm@npm:1.2.3"
+"remark-mdx-remove-esm@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "remark-mdx-remove-esm@npm:1.3.1"
   dependencies:
     "@types/mdast": "npm:^4.0.4"
     mdast-util-mdxjs-esm: "npm:^2.0.1"
     unist-util-remove: "npm:^4.0.0"
   peerDependencies:
     unified: ^11
-  checksum: 10/3ba2257b376cfe589da851f8df0c45ae78fea8b6090e2825cb009c87f81f4f3738aba682123eb380f5c658cfdd6bb84bf3b6158ed41adaac750728be9e78e672
+  checksum: 10/bdc7edb00ce80c5bed48b9a445d66a390a44e244b2c6da4ea9c7946d968520835a8b749705ada486f78108e13ac22af21ef3df36df4d9995a0b063f3f834b578
   languageName: node
   linkType: hard
 

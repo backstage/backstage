@@ -18,7 +18,6 @@ import {
   createExtensionInput,
   createFrontendPlugin,
   PageBlueprint,
-  NavItemBlueprint,
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { Content } from '@backstage/core-components';
@@ -38,6 +37,7 @@ const userSettingsPage = PageBlueprint.make({
     path: '/settings',
     routeRef: settingsRouteRef,
     title: 'Settings',
+    icon: <SettingsIcon fontSize="inherit" />,
   },
 });
 
@@ -95,15 +95,6 @@ const featureFlagsSettingsPage = SubPageBlueprint.make({
   },
 });
 
-/** @alpha */
-export const settingsNavItem = NavItemBlueprint.make({
-  params: {
-    routeRef: settingsRouteRef,
-    title: 'Settings',
-    icon: SettingsIcon,
-  },
-});
-
 /**
  * @alpha
  */
@@ -117,7 +108,6 @@ export default createFrontendPlugin({
     generalSettingsPage,
     authProvidersSettingsPage,
     featureFlagsSettingsPage,
-    settingsNavItem,
   ],
   routes: {
     root: settingsRouteRef,

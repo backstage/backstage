@@ -15,6 +15,7 @@ import type { ComponentProps } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import type { CSSProperties } from 'react';
+import type { DatePickerProps as DatePickerProps_2 } from 'react-aria-components';
 import type { DateRangePickerProps as DateRangePickerProps_2 } from 'react-aria-components';
 import type { DateValue } from '@internationalized/date';
 import type { DialogTriggerProps as DialogTriggerProps_2 } from 'react-aria-components';
@@ -36,6 +37,7 @@ import type { MenuProps as MenuProps_2 } from 'react-aria-components';
 import type { MenuSectionProps as MenuSectionProps_2 } from 'react-aria-components';
 import type { MenuTriggerProps as MenuTriggerProps_2 } from 'react-aria-components';
 import type { ModalOverlayProps } from 'react-aria-components';
+import type { NumberFieldProps as NumberFieldProps_2 } from 'react-aria-components';
 import { PopoverProps as PopoverProps_2 } from 'react-aria-components';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
@@ -1212,6 +1214,79 @@ export interface CursorResponse<T> {
 }
 
 // @public
+export const DatePicker: ForwardRefExoticComponent<
+  DatePickerProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const DatePickerCalendarDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePickerCalendar';
+    readonly header: 'bui-DatePickerCalendarHeader';
+    readonly heading: 'bui-DatePickerCalendarHeading';
+    readonly navButton: 'bui-DatePickerCalendarNavButton';
+    readonly grid: 'bui-DatePickerCalendarGrid';
+    readonly gridHeader: 'bui-DatePickerCalendarGridHeader';
+    readonly headerCell: 'bui-DatePickerCalendarHeaderCell';
+    readonly gridBody: 'bui-DatePickerCalendarGridBody';
+    readonly cell: 'bui-DatePickerCalendarCell';
+  };
+  readonly propDefs: {};
+};
+
+// @public
+export const DatePickerDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePicker';
+  };
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
+  };
+};
+
+// @public
+export const DatePickerGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DatePickerGroup';
+    readonly dateInput: 'bui-DatePickerDateInput';
+    readonly segment: 'bui-DatePickerSegment';
+    readonly button: 'bui-DatePickerButton';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {};
+};
+
+// @public (undocumented)
+export type DatePickerOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  className?: string;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+};
+
+// @public (undocumented)
+export interface DatePickerProps
+  extends Omit<DatePickerProps_2<DateValue>, 'className' | 'children'>,
+    DatePickerOwnProps {}
+
+// @public
 export const DateRangePicker: ForwardRefExoticComponent<
   DateRangePickerProps & RefAttributes<HTMLDivElement>
 >;
@@ -2255,6 +2330,55 @@ export interface NoPagination {
   type: 'none';
 }
 
+// @public
+export const NumberField: ForwardRefExoticComponent<
+  NumberFieldProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const NumberFieldDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-NumberField';
+    readonly inputWrapper: 'bui-InputWrapper';
+    readonly input: 'bui-Input';
+    readonly inputIcon: 'bui-InputIcon';
+    readonly stepperButtons: 'bui-StepperButtons';
+    readonly stepperButton: 'bui-StepperButton';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly icon: {};
+    readonly placeholder: {};
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
+  };
+};
+
+// @public (undocumented)
+export type NumberFieldOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  className?: string;
+  icon?: ReactNode;
+  placeholder?: string;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+};
+
+// @public (undocumented)
+export interface NumberFieldProps
+  extends Omit<NumberFieldProps_2, 'className' | 'description'>,
+    NumberFieldOwnProps {}
+
 // @public (undocumented)
 export interface OffsetParams<TFilter> {
   // (undocumented)
@@ -2361,6 +2485,7 @@ export const PasswordFieldDefinition: {
     readonly inputIcon: 'bui-PasswordFieldIcon';
     readonly inputVisibility: 'bui-PasswordFieldVisibility';
   };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;

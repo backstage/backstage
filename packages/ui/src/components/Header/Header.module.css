@@ -17,6 +17,12 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
+  .bui-HeaderTop.bui-HeaderTop,
+  .bui-HeaderContent.bui-HeaderContent {
+    flex: none;
+    margin-bottom: 0;
+  }
+
   .bui-HeaderBottom {
     display: flex;
     flex-direction: column;
@@ -24,12 +30,9 @@
     margin-bottom: var(--bui-space-5);
   }
 
-  .bui-HeaderTop,
-  .bui-HeaderContent,
-  .bui-HeaderBottom {
-    width: 100%;
-    padding-inline: var(--bui-space-5);
-    box-sizing: border-box;
+  .bui-HeaderBottom.bui-HeaderBottom {
+    flex: none;
+    margin-bottom: var(--bui-space-5);
   }
 
   .bui-HeaderStickySentinel {
@@ -125,8 +128,13 @@
     gap: var(--bui-space-1);
   }
 
-  .bui-HeaderBreadcrumbs .bui-HeaderBreadcrumbLink,
-  .bui-HeaderBreadcrumbsSmall .bui-HeaderBreadcrumbLinkSmall {
+  /*
+   * Link variant defaults have the same specificity as these contextual styles.
+   * Repeat the slot class so the Header styles win regardless of stylesheet order.
+   */
+  .bui-HeaderBreadcrumbs .bui-HeaderBreadcrumbLink.bui-HeaderBreadcrumbLink,
+  .bui-HeaderBreadcrumbsSmall
+    .bui-HeaderBreadcrumbLinkSmall.bui-HeaderBreadcrumbLinkSmall {
     max-width: 240px;
     overflow: hidden;
     font-family: var(--bui-font-regular);
@@ -136,11 +144,12 @@
     white-space: nowrap;
   }
 
-  .bui-HeaderBreadcrumbs .bui-HeaderBreadcrumbLink {
+  .bui-HeaderBreadcrumbs .bui-HeaderBreadcrumbLink.bui-HeaderBreadcrumbLink {
     font-size: inherit;
   }
 
-  .bui-HeaderBreadcrumbsSmall .bui-HeaderBreadcrumbLinkSmall {
+  .bui-HeaderBreadcrumbsSmall
+    .bui-HeaderBreadcrumbLinkSmall.bui-HeaderBreadcrumbLinkSmall {
     font-size: var(--bui-font-size-4);
   }
 

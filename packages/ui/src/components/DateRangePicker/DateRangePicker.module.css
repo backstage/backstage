@@ -26,7 +26,7 @@
     flex-direction: column;
     font-family: var(--bui-font-regular);
     width: 100%;
-    flex-shrink: 0;
+    flex: 1;
   }
 
   /* ============================================================

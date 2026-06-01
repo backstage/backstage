@@ -41,6 +41,11 @@ export interface Config {
        * @visibility secret
        */
       externalId?: string;
+
+      /**
+       * Path to a file on disk containing an OIDC web-identity token.
+       */
+      webIdentityTokenFile?: string;
     };
 
     /**
@@ -118,6 +123,11 @@ export interface Config {
        * @visibility secret
        */
       externalId?: string;
+
+      /**
+       * Path to a file on disk containing an OIDC web-identity token.
+       */
+      webIdentityTokenFile?: string;
     }>;
   };
 }
