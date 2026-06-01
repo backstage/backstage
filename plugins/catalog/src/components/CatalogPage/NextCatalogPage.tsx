@@ -71,6 +71,8 @@ interface EntityRow {
  *
  * @alpha
  */
+const DEFAULT_PAGE_SIZE_OPTIONS = [20, 50, 100];
+
 export type NextCatalogPageProps = {
   filters: ReactNode;
   columns: Array<{
@@ -79,7 +81,7 @@ export type NextCatalogPageProps = {
     filterFunction?: (entity: Entity) => boolean;
     filterExpression?: string;
   }>;
-  pageSizeOptions: number[];
+  pageSizeOptions?: number[];
 };
 
 function buildColumnConfig(
@@ -227,7 +229,11 @@ function NextCatalogTable(props: {
  * @alpha
  */
 export function NextCatalogPage(props: NextCatalogPageProps) {
-  const { filters, columns } = props;
+  const {
+    filters,
+    columns,
+    pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
+  } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const { t } = useTranslationRef(catalogTranslationRef);
@@ -254,14 +260,14 @@ export function NextCatalogPage(props: NextCatalogPageProps) {
       />
       <Content>
         <EntityListProvider
-          pagination={{ mode: 'offset', limit: props.pageSizeOptions[0] }}
+          pagination={{ mode: 'offset', limit: pageSizeOptions[0] }}
         >
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <NextCatalogTable
                 columns={columns}
-                pageSizeOptions={props.pageSizeOptions}
+                pageSizeOptions={pageSizeOptions}
               />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
