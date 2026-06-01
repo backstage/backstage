@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// Native HTML elements like <p> and <header> are used intentionally for
+// semantic markup. The react/forbid-elements rule predates the BUI migration.
+/* eslint-disable react/forbid-elements */
+
 import {
   Entity,
   ANNOTATION_LOCATION,
@@ -22,22 +26,40 @@ import {
 } from '@backstage/catalog-model';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import { Text, Alert } from '@backstage/ui';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';
 import { EntityRefLink } from '../../EntityRefLink';
-import { KeyValueListItem, ListItemText } from './common';
+import { makeStyles } from '@material-ui/core/styles';
+import { ListSection, ListItemRow } from './common';
+
 import { catalogReactTranslationRef } from '../../../translation';
+
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
+  header: {
+    paddingLeft: 'var(--bui-space-4)',
+    marginTop: 'var(--bui-space-4)',
+    marginBottom: 'var(--bui-space-4)',
+  },
+  headerLabel: {
+    margin: 0,
+    fontFamily: 'monospace',
+    fontSize: 'var(--bui-font-size-3)',
+    fontWeight: 'var(--bui-font-weight-regular)' as any,
+  },
+  entityList: {
+    marginTop: 'var(--bui-space-4)',
+  },
+  headerValue: {
+    margin: 0,
+    marginTop: 'var(--bui-space-1)',
+    fontFamily: 'monospace',
+    fontSize: 'var(--bui-font-size-3)',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
 });
 
@@ -63,7 +85,11 @@ function useColocated(entity: Entity): {
           ? [{ [`metadata.annotations.${ANNOTATION_LOCATION}`]: location }]
           : []),
         ...(origin
-          ? [{ [`metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`]: origin }]
+          ? [
+              {
+                [`metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`]: origin,
+              },
+            ]
           : []),
       ],
     });
@@ -82,15 +108,27 @@ function useColocated(entity: Entity): {
 }
 
 function EntityList(props: { entities: Entity[]; header?: [string, string] }) {
+  const classes = useStyles();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
-    <List dense>
-      {props.header && <KeyValueListItem key="header" entry={props.header} />}
-      {props.entities.map(entity => (
-        <ListItem key={stringifyEntityRef(entity)}>
-          <ListItemText primary={<EntityRefLink entityRef={entity} />} />
-        </ListItem>
-      ))}
-    </List>
+    <>
+      {props.header && (
+        <header className={classes.header}>
+          <h4 className={classes.headerLabel}>{props.header[0]}</h4>
+          <p className={classes.headerValue}>{props.header[1]}</p>
+        </header>
+      )}
+      <ListSection
+        aria-label={t('inspectEntityDialog.colocatedPage.entityListAriaLabel')}
+        className={classes.entityList}
+      >
+        {props.entities.map(entity => (
+          <ListItemRow key={stringifyEntityRef(entity)}>
+            <EntityRefLink entityRef={entity} />
+          </ListItemRow>
+        ))}
+      </ListSection>
+    </>
   );
 }
 
@@ -108,15 +146,19 @@ function Contents(props: { entity: Entity }) {
 
   if (!location && !originLocation) {
     return (
-      <Alert severity="warning">
-        {t('inspectEntityDialog.colocatedPage.alertNoLocation')}
-      </Alert>
+      <Alert
+        status="warning"
+        description={t('inspectEntityDialog.colocatedPage.alertNoLocation')}
+        mt="4"
+      />
     );
   } else if (!colocatedEntities?.length) {
     return (
-      <Alert severity="info">
-        {t('inspectEntityDialog.colocatedPage.alertNoEntity')}
-      </Alert>
+      <Alert
+        status="info"
+        description={t('inspectEntityDialog.colocatedPage.alertNoEntity')}
+        mt="4"
+      />
     );
   }
 
@@ -157,19 +199,11 @@ function Contents(props: { entity: Entity }) {
 }
 
 export function ColocatedPage(props: { entity: Entity }) {
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <>
-      <DialogContentText variant="h2">
-        {t('inspectEntityDialog.colocatedPage.title')}
-      </DialogContentText>
-      <DialogContentText>
-        {t('inspectEntityDialog.colocatedPage.description')}
-      </DialogContentText>
-      <div className={classes.root}>
-        <Contents entity={props.entity} />
-      </div>
+      <Text as="p">{t('inspectEntityDialog.colocatedPage.description')}</Text>
+      <Contents entity={props.entity} />
     </>
   );
 }

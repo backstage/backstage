@@ -84,7 +84,7 @@ import { HumanDuration, JsonObject } from '@backstage/types';
 import express from 'express';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'node:url';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { z } from 'zod/v3';
 import {
   DatabaseTaskStore,
@@ -481,7 +481,8 @@ export async function createRouter(
               description: schema.description as string,
               schema,
             })),
-            EXPERIMENTAL_formDecorators:
+            formDecorators:
+              template.spec.formDecorators ??
               template.spec.EXPERIMENTAL_formDecorators,
           });
         } catch (err) {
@@ -960,7 +961,8 @@ export async function createRouter(
           isTaskAuthorized,
         });
 
-        const after = Number(req.query.after) || undefined;
+        const after =
+          req.query.after !== undefined ? Number(req.query.after) : undefined;
 
         // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
         const timeout = setTimeout(() => {

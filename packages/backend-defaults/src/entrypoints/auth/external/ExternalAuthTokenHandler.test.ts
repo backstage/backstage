@@ -25,7 +25,7 @@ import {
 import { randomBytes } from 'node:crypto';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { DateTime } from 'luxon';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-incremental-ingestion",
-  "version": "0.7.11-next.1",
+  "version": "0.7.13-next.0",
   "description": "An entity provider for streaming large asset sources into the catalog",
   "backstage": {
     "role": "backend-plugin-module",
@@ -55,13 +55,11 @@
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
-    "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
-    "luxon": "^3.0.0",
-    "uuid": "^11.0.0"
+    "luxon": "^3.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

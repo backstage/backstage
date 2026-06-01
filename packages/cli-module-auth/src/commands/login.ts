@@ -343,6 +343,7 @@ async function persistInstance(options: {
       issuedAt: Date.now(),
       accessTokenExpiresAt: Date.now() + token.expires_in * 1000,
       selected: existing?.selected,
+      metadata: existing?.metadata,
     });
   });
 }

@@ -189,31 +189,20 @@ app:
 
 Overriding the card extension allows you to modify how it is implemented.
 
-> [!CAUTION]
-> To maintain the same level of configuration, you should define the same or an extended configuration schema.
-
 Here is an example overriding the card extension with a custom component:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'catalog-graph',
   extensions: [
-    EntityCardBlueprint.makeWithOverrides({
-      name: 'entity-relations',
-      config: {
-        schema: {
-          filter: z => z.string().optional(),
-          // Omitting the rest of default configs for simplicity in this example
-        },
-      },
-      factory(originalFactory, { config }) {
-        return originalFactory({
-          loader: () =>
-            import('./components').then(m => <m.MyEntityRelationsCard />),
-        });
+    EntityCardBlueprint.make({
+      name: 'relations',
+      params: {
+        loader: () =>
+          import('./components').then(m => <m.MyEntityRelationsCard />),
       },
     }),
   ],
@@ -291,29 +280,29 @@ app:
 Overriding the page extension allows you to modify how it is implemented.
 
 > [!CAUTION]
-> To maintain the same level of configuration, you need to define the same or an extended configuration schema. In order to avoid side effects on external plugins that expect this page to be associated with the default path and route reference, remember to use the same default path so that applications that use the default path still point to the same page and the same route reference.
+> In order to avoid side effects on external plugins that expect this page to be associated with the default path and route reference, remember to use the same default path so that applications that use the default path still point to the same page and the same route reference.
 
-Here is example overriding the page extension with a custom component:
+Here is an example overriding the page extension with a custom component:
 
 ```tsx
-import { createFrontendModule, createPageExtension, createSchemaFromZod } from '@backstage/backstage-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  createFrontendModule,
+  PageBlueprint,
+} from '@backstage/frontend-plugin-api';
 import { catalogGraphRouteRef } from '@backstage/plugin-catalog-graph';
 
 export default createFrontendModule({
   pluginId: 'catalog-graph',
   extensions: [
-    createPageExtension({
-      // Omitting name since it is an index page
-      path: '/catalog-graph',
-      routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
-      createSchemaFromZod(z => z.object({
-        path: z.string().default('/catalog-graph')
-        // Omitting the rest of default configs for simplicity in this example
-      })),
-      loader: () => import('./components').then(m => <m.CustomEntityRelationsPage />)
-    })
-  ]
+    PageBlueprint.make({
+      params: {
+        path: '/catalog-graph',
+        routeRef: catalogGraphRouteRef,
+        loader: () =>
+          import('./components').then(m => <m.CustomEntityRelationsPage />),
+      },
+    }),
+  ],
 });
 ```
 

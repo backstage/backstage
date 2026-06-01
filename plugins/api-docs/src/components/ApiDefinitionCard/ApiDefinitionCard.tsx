@@ -15,7 +15,10 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  useEntityPresentation,
+} from '@backstage/plugin-catalog-react';
 import { CardTab, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
@@ -30,17 +33,17 @@ export const ApiDefinitionCard = () => {
   const config = useApi(apiDocsConfigRef);
   const { getApiDefinitionWidget } = config;
   const { t } = useTranslationRef(apiDocsTranslationRef);
+  const { primaryTitle } = useEntityPresentation(entity);
 
   if (!entity) {
     return <Alert severity="error">{t('apiDefinitionCard.error.title')}</Alert>;
   }
 
   const definitionWidget = getApiDefinitionWidget(entity);
-  const entityTitle = entity.metadata.title ?? entity.metadata.name;
 
   if (definitionWidget) {
     return (
-      <TabbedCard title={entityTitle}>
+      <TabbedCard title={primaryTitle}>
         <CardTab label={definitionWidget.title} key="widget">
           {definitionWidget.component(entity.spec.definition)}
         </CardTab>
@@ -56,7 +59,7 @@ export const ApiDefinitionCard = () => {
 
   return (
     <TabbedCard
-      title={entityTitle}
+      title={primaryTitle}
       children={[
         // Has to be an array, otherwise typescript doesn't like that this has only a single child
         <CardTab label={entity.spec.type} key="raw">

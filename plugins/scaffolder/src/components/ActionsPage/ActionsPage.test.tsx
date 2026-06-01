@@ -22,6 +22,7 @@ import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
 import { rootRouteRef } from '../../routes';
 import { userEvent } from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
@@ -45,10 +46,20 @@ const apis = TestApiRegistry.from(
   [permissionApiRef, mockPermissionApi],
 );
 
-describe('TemplatePage', () => {
-  beforeEach(() => jest.resetAllMocks());
+async function selectAction(actionId: string) {
+  const row = await screen.findByRole('row', {
+    name: new RegExp(actionId),
+  });
+  await userEvent.click(row);
+}
 
-  it('renders action with input', async () => {
+describe('ActionsPage', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    window.location.hash = '';
+  });
+
+  it('renders actions in a table and shows detail on row click', async () => {
     scaffolderApiMock.listActions.mockResolvedValue([
       {
         id: 'test',
@@ -67,7 +78,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -77,13 +88,17 @@ describe('TemplatePage', () => {
         },
       },
     );
-    expect(rendered.getByText('Test title')).toBeInTheDocument();
-    expect(rendered.getByText('example description')).toBeInTheDocument();
-    expect(rendered.getByText('foobar')).toBeInTheDocument();
-    expect(rendered.queryByText('output')).not.toBeInTheDocument();
+
+    expect(
+      await screen.findByRole('row', { name: /test/ }),
+    ).toBeInTheDocument();
+
+    await selectAction('test');
+
+    expect(await screen.findByText('foobar *')).toBeInTheDocument();
   });
 
-  it('renders action with input and output', async () => {
+  it('renders action with input and output on row click', async () => {
     scaffolderApiMock.listActions.mockResolvedValue([
       {
         id: 'test',
@@ -111,7 +126,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -121,13 +136,14 @@ describe('TemplatePage', () => {
         },
       },
     );
-    expect(rendered.getByText('Test title')).toBeInTheDocument();
-    expect(rendered.getByText('example description')).toBeInTheDocument();
-    expect(rendered.getByText('foobar')).toBeInTheDocument();
-    expect(rendered.getByText('Test output')).toBeInTheDocument();
+
+    await selectAction('test');
+
+    expect(await screen.findByText('foobar *')).toBeInTheDocument();
+    expect(screen.getByText('buzz')).toBeInTheDocument();
   });
 
-  it('renders action with oneOf output', async () => {
+  it('renders action with oneOf output on row click', async () => {
     scaffolderApiMock.listActions.mockResolvedValue([
       {
         id: 'test',
@@ -168,7 +184,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -178,13 +194,16 @@ describe('TemplatePage', () => {
         },
       },
     );
-    expect(rendered.getByText('oneOf')).toBeInTheDocument();
-    expect(rendered.getByText('Test title')).toBeInTheDocument();
-    expect(rendered.getByText('Test output1')).toBeInTheDocument();
-    expect(rendered.getByText('Test output2')).toBeInTheDocument();
+
+    await selectAction('test');
+
+    expect(
+      await screen.findByRole('button', { name: /oneOf/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('foobar *')).toBeInTheDocument();
   });
 
-  it('renders action with multiple input types', async () => {
+  it('renders action with multiple input types on row click', async () => {
     scaffolderApiMock.listActions.mockResolvedValue([
       {
         id: 'test',
@@ -212,7 +231,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -222,11 +241,14 @@ describe('TemplatePage', () => {
         },
       },
     );
-    expect(rendered.getByText('array')).toBeInTheDocument();
-    expect(rendered.getByText('number')).toBeInTheDocument();
+
+    await selectAction('test');
+
+    expect(await screen.findByText('array')).toBeInTheDocument();
+    expect(screen.getByText('number')).toBeInTheDocument();
   });
 
-  it('renders action with oneOf input', async () => {
+  it('renders action with oneOf input on row click', async () => {
     scaffolderApiMock.listActions.mockResolvedValue([
       {
         id: 'test',
@@ -261,7 +283,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -271,14 +293,23 @@ describe('TemplatePage', () => {
         },
       },
     );
-    expect(rendered.getByText('oneOf')).toBeInTheDocument();
-    expect(rendered.getByText('Foo title')).toBeInTheDocument();
-    expect(rendered.getByText('Foo description')).toBeInTheDocument();
-    expect(rendered.getByText('Bar title')).toBeInTheDocument();
-    expect(rendered.getByText('Bar description')).toBeInTheDocument();
+
+    await selectAction('test');
+
+    const oneOfButton = await screen.findByRole('button', { name: /oneOf/ });
+    expect(oneOfButton).toBeInTheDocument();
+
+    expect(screen.queryByText('foo *')).not.toBeInTheDocument();
+
+    await userEvent.click(oneOfButton);
+
+    expect(await screen.findByText('foo *')).toBeInTheDocument();
+    expect(screen.getByText('Foo description')).toBeInTheDocument();
+    expect(screen.getByText('bar *')).toBeInTheDocument();
+    expect(screen.getByText('Bar description')).toBeInTheDocument();
   });
 
-  it('renders action with object input type', async () => {
+  it('renders action with expandable object input type', async () => {
     scaffolderApiMock.listActions.mockResolvedValue([
       {
         id: 'test',
@@ -307,7 +338,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -318,21 +349,20 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(rendered.getByText('Test object')).toBeInTheDocument();
-    const objectChip = rendered.getByText('object');
-    expect(objectChip).toBeInTheDocument();
+    await selectAction('test');
 
-    expect(rendered.queryByText('nested prop a')).not.toBeInTheDocument();
-    expect(rendered.queryByText('string')).not.toBeInTheDocument();
-    expect(rendered.queryByText('nested prop b')).not.toBeInTheDocument();
-    expect(rendered.queryByText('number')).not.toBeInTheDocument();
+    const objectButton = await screen.findByRole('button', { name: /object/ });
+    expect(objectButton).toBeInTheDocument();
 
-    await userEvent.click(objectChip);
+    expect(screen.queryByText(/^string$/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^number$/)).not.toBeInTheDocument();
 
-    expect(rendered.queryByText('nested prop a')).toBeInTheDocument();
-    expect(rendered.queryByText('string')).toBeInTheDocument();
-    expect(rendered.queryByText('nested prop b')).toBeInTheDocument();
-    expect(rendered.queryByText('number')).toBeInTheDocument();
+    await userEvent.click(objectButton);
+
+    expect(screen.queryByText('a')).toBeInTheDocument();
+    expect(screen.queryByText(/^string$/)).toBeInTheDocument();
+    expect(screen.queryByText('b')).toBeInTheDocument();
+    expect(screen.queryByText(/^number$/)).toBeInTheDocument();
   });
 
   it('renders action with nested object input type', async () => {
@@ -370,7 +400,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -381,27 +411,22 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(rendered.getByText('Test object')).toBeInTheDocument();
-    const objectChip = rendered.getByText('object');
-    expect(objectChip).toBeInTheDocument();
+    await selectAction('test');
 
-    expect(rendered.queryByText('nested object a')).not.toBeInTheDocument();
-    expect(rendered.queryByText('nested prop b')).not.toBeInTheDocument();
-    expect(rendered.queryByText('nested object c')).not.toBeInTheDocument();
+    const objectButton = await screen.findByRole('button', { name: /object/ });
+    expect(objectButton).toBeInTheDocument();
 
-    await userEvent.click(objectChip);
+    await userEvent.click(objectButton);
 
-    expect(rendered.queryByText('nested object a')).toBeInTheDocument();
-    expect(rendered.queryByText('nested prop b')).toBeInTheDocument();
-    expect(rendered.queryByText('nested object c')).not.toBeInTheDocument();
+    expect(screen.queryByText('a')).toBeInTheDocument();
+    expect(screen.queryByText('b')).toBeInTheDocument();
+    expect(screen.queryByText('c')).not.toBeInTheDocument();
 
-    const allObjectChips = rendered.getAllByText('object');
-    expect(allObjectChips.length).toBe(2);
-    await userEvent.click(allObjectChips[1]);
+    const allObjectButtons = screen.getAllByRole('button', { name: /object/ });
+    expect(allObjectButtons.length).toBe(2);
+    await userEvent.click(allObjectButtons[1]);
 
-    expect(rendered.queryByText('nested object a')).toBeInTheDocument();
-    expect(rendered.queryByText('nested prop b')).toBeInTheDocument();
-    expect(rendered.queryByText('nested object c')).toBeInTheDocument();
+    expect(screen.queryByText('c')).toBeInTheDocument();
   });
 
   it('renders action with object input type and no properties', async () => {
@@ -423,7 +448,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -434,15 +459,16 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(rendered.getByText('Test object')).toBeInTheDocument();
-    const objectChip = rendered.getByText('object');
-    expect(objectChip).toBeInTheDocument();
+    await selectAction('test');
 
-    expect(rendered.queryByText('No schema defined')).not.toBeInTheDocument();
+    const objectButton = await screen.findByRole('button', { name: /object/ });
+    expect(objectButton).toBeInTheDocument();
 
-    await userEvent.click(objectChip);
+    expect(screen.queryByText('No schema defined')).not.toBeInTheDocument();
 
-    expect(rendered.queryByText('No schema defined')).toBeInTheDocument();
+    await userEvent.click(objectButton);
+
+    expect(screen.queryByText('No schema defined')).toBeInTheDocument();
   });
 
   it('renders action with array(string) input type', async () => {
@@ -466,7 +492,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -477,8 +503,9 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(rendered.getByText('Test array')).toBeInTheDocument();
-    expect(rendered.getByText('array(string)')).toBeInTheDocument();
+    await selectAction('test');
+
+    expect(await screen.findByText('array(string)')).toBeInTheDocument();
   });
 
   it('renders action with array(object) input type', async () => {
@@ -519,7 +546,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -530,17 +557,19 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(rendered.getByText('Test array')).toBeInTheDocument();
-    const objectChip = rendered.getByText('array(object)');
-    expect(objectChip).toBeInTheDocument();
+    await selectAction('test');
 
-    expect(rendered.queryByText('nested object a')).not.toBeInTheDocument();
-    expect(rendered.queryByText('nested prop b')).not.toBeInTheDocument();
+    const arrayButton = await screen.findByRole('button', {
+      name: /array\(object\)/,
+    });
+    expect(arrayButton).toBeInTheDocument();
 
-    await userEvent.click(objectChip);
+    expect(screen.queryByText('b')).not.toBeInTheDocument();
 
-    expect(rendered.queryByText('nested object a')).toBeInTheDocument();
-    expect(rendered.queryByText('nested prop b')).toBeInTheDocument();
+    await userEvent.click(arrayButton);
+
+    expect(screen.queryByText('a')).toBeInTheDocument();
+    expect(screen.queryByText('b')).toBeInTheDocument();
   });
 
   it('renders action with array input type and no items', async () => {
@@ -560,7 +589,7 @@ describe('TemplatePage', () => {
         },
       },
     ]);
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -571,14 +600,16 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(rendered.getByText('array(unknown)')).toBeInTheDocument();
+    await selectAction('test');
+
+    expect(await screen.findByText('array(unknown)')).toBeInTheDocument();
   });
 
-  it('should filter an action', async () => {
+  it('should filter actions via the search field', async () => {
     scaffolderApiMock.listActions.mockResolvedValue([
       {
-        id: 'githut:repo:create',
-        description: 'Create a new Github repository',
+        id: 'github:repo:create',
+        description: 'Create a new GitHub repository',
         schema: {
           input: {
             type: 'object',
@@ -593,8 +624,8 @@ describe('TemplatePage', () => {
         },
       },
       {
-        id: 'githut:repo:push',
-        description: 'Push to a Github repository',
+        id: 'github:repo:push',
+        description: 'Push to a GitHub repository',
         schema: {
           input: {
             type: 'object',
@@ -610,7 +641,7 @@ describe('TemplatePage', () => {
       },
     ]);
 
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ActionsPage />
       </ApiProvider>,
@@ -622,32 +653,141 @@ describe('TemplatePage', () => {
     );
 
     expect(
-      rendered.getByRole('heading', { name: 'githut:repo:create' }),
+      await screen.findByRole('row', { name: /github:repo:create/ }),
     ).toBeInTheDocument();
     expect(
-      rendered.getByRole('heading', { name: 'githut:repo:push' }),
+      screen.getByRole('row', { name: /github:repo:push/ }),
     ).toBeInTheDocument();
 
-    // should filter actions when searching
     await userEvent.type(
-      rendered.getByPlaceholderText('Search for an action'),
+      screen.getByPlaceholderText('Search for an action'),
       'create',
     );
-    await userEvent.keyboard('[ArrowDown][Enter]');
+
     expect(
-      rendered.getByRole('heading', { name: 'githut:repo:create' }),
+      await screen.findByRole('row', { name: /github:repo:create/ }),
     ).toBeInTheDocument();
     expect(
-      rendered.queryByRole('heading', { name: 'githut:repo:push' }),
+      screen.queryByRole('row', { name: /github:repo:push/ }),
     ).not.toBeInTheDocument();
 
-    // should show all actions when clearing the search
-    await userEvent.click(rendered.getByTitle('Clear'));
+    await userEvent.click(screen.getByLabelText('Clear search'));
+
     expect(
-      rendered.getByRole('heading', { name: 'githut:repo:create' }),
+      await screen.findByRole('row', { name: /github:repo:create/ }),
     ).toBeInTheDocument();
     expect(
-      rendered.getByRole('heading', { name: 'githut:repo:push' }),
+      screen.getByRole('row', { name: /github:repo:push/ }),
+    ).toBeInTheDocument();
+  });
+
+  it('should pre-select the action matching the URL hash on load', async () => {
+    scaffolderApiMock.listActions.mockResolvedValue([
+      {
+        id: 'publish:github',
+        description: 'Publish to GitHub',
+        schema: {
+          input: {
+            type: 'object',
+            properties: {
+              repo: { title: 'Repo name', type: 'string' },
+            },
+          },
+        },
+      },
+      {
+        id: 'fetch:plain',
+        description: 'Fetch plain content',
+        schema: {},
+      },
+    ]);
+
+    window.location.hash = '#publish:github';
+
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ActionsPage />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create/actions': rootRouteRef,
+        },
+        routeEntries: ['/create/actions#publish:github'],
+      },
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: 'publish:github' }),
+    ).toBeInTheDocument();
+  });
+
+  it('should update the URL hash when selecting and deselecting actions', async () => {
+    scaffolderApiMock.listActions.mockResolvedValue([
+      {
+        id: 'publish:github',
+        description: 'Publish to GitHub',
+        schema: {},
+      },
+      {
+        id: 'fetch:plain',
+        description: 'Fetch plain content',
+        schema: {},
+      },
+    ]);
+
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ActionsPage />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create/actions': rootRouteRef,
+        },
+      },
+    );
+
+    await selectAction('publish:github');
+    expect(window.location.hash).toBe('#publish:github');
+
+    await selectAction('publish:github');
+    expect(window.location.hash).toBe('');
+  });
+
+  it('should keep search field focused when filtering causes empty then non-empty results', async () => {
+    scaffolderApiMock.listActions.mockResolvedValue([
+      {
+        id: 'github:repo:create',
+        description: 'Create a new GitHub repository',
+        schema: {},
+      },
+    ]);
+
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ActionsPage />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create/actions': rootRouteRef,
+        },
+      },
+    );
+
+    const searchField = screen.getByPlaceholderText('Search for an action');
+    await userEvent.click(searchField);
+    expect(searchField).toHaveFocus();
+
+    await userEvent.type(searchField, 'zzz-no-match');
+    expect(searchField).toHaveFocus();
+    expect(
+      screen.queryByRole('row', { name: /github:repo:create/ }),
+    ).not.toBeInTheDocument();
+
+    await userEvent.clear(searchField);
+    await userEvent.type(searchField, 'create');
+    expect(searchField).toHaveFocus();
+    expect(
+      await screen.findByRole('row', { name: /github:repo:create/ }),
     ).toBeInTheDocument();
   });
 });

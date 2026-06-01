@@ -15,6 +15,7 @@
  */
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { z } from 'zod/v4';
 import { RiTeamLine } from '@remixicon/react';
 import { catalogIndexRouteRef } from './routes';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
@@ -35,12 +36,9 @@ const EntityGroupProfileCard = EntityCardBlueprint.make({
 /** @alpha */
 const EntityMembersListCard = EntityCardBlueprint.makeWithOverrides({
   name: 'members-list',
-  config: {
-    schema: {
-      initialRelationAggregation: z =>
-        z.enum(['direct', 'aggregated']).optional(),
-      showAggregateMembersToggle: z => z.boolean().optional(),
-    },
+  configSchema: {
+    initialRelationAggregation: z.enum(['direct', 'aggregated']).optional(),
+    showAggregateMembersToggle: z.boolean().optional(),
   },
   factory(originalFactory, { config }) {
     return originalFactory({
@@ -61,13 +59,10 @@ const EntityMembersListCard = EntityCardBlueprint.makeWithOverrides({
 /** @alpha */
 const EntityOwnershipCard = EntityCardBlueprint.makeWithOverrides({
   name: 'ownership',
-  config: {
-    schema: {
-      initialRelationAggregation: z =>
-        z.enum(['direct', 'aggregated']).optional(),
-      showAggregateMembersToggle: z => z.boolean().optional(),
-      ownedKinds: z => z.array(z.string()).optional(),
-    },
+  configSchema: {
+    initialRelationAggregation: z.enum(['direct', 'aggregated']).optional(),
+    showAggregateMembersToggle: z.boolean().optional(),
+    ownedKinds: z.array(z.string()).optional(),
   },
   factory(originalFactory, { config }) {
     return originalFactory({
@@ -93,11 +88,9 @@ const EntityOwnershipCard = EntityCardBlueprint.makeWithOverrides({
 /** @alpha */
 const EntityUserProfileCard = EntityCardBlueprint.makeWithOverrides({
   name: 'user-profile',
-  config: {
-    schema: {
-      maxRelations: z => z.number().optional(),
-      hideIcons: z => z.boolean().default(false),
-    },
+  configSchema: {
+    maxRelations: z.number().optional(),
+    hideIcons: z.boolean().default(false),
   },
   factory(originalFactory, { config }) {
     return originalFactory({

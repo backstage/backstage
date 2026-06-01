@@ -16,7 +16,7 @@
 
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 
-/** @alpha */
+/** @public */
 export interface ScaffolderFormDecoratorsApi {
   getFormDecorators(): Promise<ScaffolderFormDecorator[]>;
 }

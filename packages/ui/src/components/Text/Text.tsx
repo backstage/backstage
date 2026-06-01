@@ -24,12 +24,9 @@ function TextComponent<T extends ElementType = 'span'>(
   props: TextProps<T>,
   ref: React.Ref<any>,
 ) {
-  // Cast to default TextProps so TypeScript can evaluate the
-  // ResolveHrefConstraint. The generic ElementType is only used for
-  // the `as` prop which doesn't include 'a', so href is never present.
   const { ownProps, restProps, dataAttributes } = useDefinition(
     TextDefinition,
-    props as TextProps,
+    props,
   );
   const { classes, as } = ownProps;
 

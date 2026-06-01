@@ -18,8 +18,11 @@ import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   coreExtensionData,
   createExtensionInput,
+  createExtensionDataRef,
+  createExtensionBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { z } from 'zod/v4';
 import {
   AsyncEntityProvider,
   entityRouteRef,
@@ -35,25 +38,62 @@ import CategoryIcon from '@material-ui/icons/Category';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
+import type { CatalogExportSettings } from '../components/CatalogExportButton';
+
+const catalogExportConfigDataRef = createExtensionDataRef<{
+  exporters?: CatalogExportSettings['exporters'];
+  columns?: CatalogExportSettings['columns'];
+  onSuccess?: CatalogExportSettings['onSuccess'];
+  onError?: CatalogExportSettings['onError'];
+}>().with({
+  id: 'catalog.export-customization',
+});
+
+/**
+ * Blueprint for creating catalog export configuration extensions.
+ * @public
+ */
+export const CatalogExportConfigBlueprint = createExtensionBlueprint({
+  kind: 'catalog-export-config',
+  attachTo: { id: 'page:catalog', input: 'exportConfig' },
+  output: [catalogExportConfigDataRef],
+  factory(params: {
+    exporters?: CatalogExportSettings['exporters'];
+    columns?: CatalogExportSettings['columns'];
+    onSuccess?: CatalogExportSettings['onSuccess'];
+    onError?: CatalogExportSettings['onError'];
+  }) {
+    return [catalogExportConfigDataRef(params)];
+  },
+});
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([coreExtensionData.reactElement]),
+    exportConfig: createExtensionInput([catalogExportConfigDataRef.optional()]),
   },
-  config: {
-    schema: {
-      pagination: z =>
-        z
-          .union([
-            z.boolean(),
-            z.object({
-              mode: z.enum(['cursor', 'offset']),
-              limit: z.number().optional(),
-              offset: z.number().optional(),
-            }),
-          ])
-          .default(true),
-    },
+  configSchema: {
+    pagination: z
+      .union([
+        z.boolean(),
+        z.object({
+          mode: z.enum(['cursor', 'offset']),
+          limit: z.number().optional(),
+          offset: z.number().optional(),
+        }),
+      ])
+      .default(true),
+    exportSettings: z
+      .object({
+        /** When true, displays the export button in the catalog interface. */
+        enabled: z.boolean().optional(),
+        /**
+         * When true, hides the built-in CSV and JSON export options.
+         * Useful when only custom exporters (provided via extensions) should be available.
+         */
+        disableBuiltinExporters: z.boolean().optional(),
+      })
+      .optional(),
   },
   factory(originalFactory, { inputs, config }) {
     return originalFactory({
@@ -68,10 +108,40 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
         const filters = inputs.filters.map(filter =>
           filter.get(coreExtensionData.reactElement),
         );
+
+        // Merge export customizers from all attached extensions
+        const mergedExportSettings: CatalogExportSettings = {
+          ...config.exportSettings,
+        };
+
+        for (const exportConfigInput of inputs.exportConfig) {
+          const data = exportConfigInput.get(catalogExportConfigDataRef);
+          if (data) {
+            if (data.exporters) {
+              mergedExportSettings.exporters = {
+                ...mergedExportSettings.exporters,
+                ...data.exporters,
+              };
+            }
+            if (data.columns && !mergedExportSettings.columns) {
+              mergedExportSettings.columns = data.columns;
+            }
+            if (data.onSuccess && !mergedExportSettings.onSuccess) {
+              mergedExportSettings.onSuccess = data.onSuccess;
+            }
+            if (data.onError && !mergedExportSettings.onError) {
+              mergedExportSettings.onError = data.onError;
+            }
+          }
+        }
+
         return (
           <NfsDefaultCatalogPage
             filters={<>{filters}</>}
             pagination={config.pagination}
+            exportSettings={
+              mergedExportSettings.enabled ? mergedExportSettings : undefined
+            }
           />
         );
       },
@@ -101,26 +171,25 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContextMenuItemBlueprint.dataRefs.filterFunction.optional(),
     ]),
   },
-  config: {
-    schema: {
-      groups: z =>
-        z
-          .array(
-            z.record(
-              z.string(),
-              z.object({
-                title: z.string(),
-                icon: z.string().optional(),
-                aliases: z.array(z.string()).optional(),
-                contentOrder: z.enum(['title', 'natural']).optional(),
-              }),
-            ),
-          )
-          .optional(),
-      defaultContentOrder: z =>
-        z.enum(['title', 'natural']).optional().default('title'),
-      showNavItemIcons: z => z.boolean().optional().default(false),
-    },
+  configSchema: {
+    groups: z
+      .array(
+        z.record(
+          z.string(),
+          z.object({
+            title: z.string(),
+            icon: z.string().optional(),
+            aliases: z.array(z.string()).optional(),
+            contentOrder: z.enum(['title', 'natural']).optional(),
+          }),
+        ),
+      )
+      .optional(),
+    defaultContentOrder: z
+      .enum(['title', 'natural'])
+      .optional()
+      .default('title'),
+    showNavItemIcons: z.boolean().optional().default(false),
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({

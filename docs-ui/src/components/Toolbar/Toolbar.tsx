@@ -78,6 +78,7 @@ export const Toolbar = ({ version }: ToolbarProps) => {
           defaultValue="backstage"
           value={selectedThemeName}
           onChange={setSelectedThemeName}
+          aria-label="Theme"
         >
           <Button className={styles.bubble}>
             <SelectValue />
@@ -128,11 +129,12 @@ export const Toolbar = ({ version }: ToolbarProps) => {
           onSelectionChange={setSelectedTheme}
           disallowEmptySelection
           className={styles.buttonGroup}
+          aria-label="Color scheme"
         >
-          <ToggleButton id="light">
+          <ToggleButton id="light" aria-label="Light theme">
             <RiSunLine aria-hidden="true" size={16} />
           </ToggleButton>
-          <ToggleButton id="dark">
+          <ToggleButton id="dark" aria-label="Dark theme">
             <RiMoonLine aria-hidden="true" size={16} />
           </ToggleButton>
         </ToggleButtonGroup>

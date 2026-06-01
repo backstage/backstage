@@ -43,9 +43,3 @@ export class DefaultSignalsService implements SignalsService {
     });
   }
 }
-
-/**
- * @public
- * @deprecated Use `DefaultSignalsService` instead
- */
-export const DefaultSignalService = DefaultSignalsService;

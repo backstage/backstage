@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType, useCallback } from 'react';
+import { ComponentType, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useApp, useRouteRef } from '@backstage/core-plugin-api';
@@ -41,6 +41,7 @@ import {
   TemplateCategoryPicker,
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import { createGroupsWithOther } from '../../lib/createGroupsWithOther';
 
 import { RegisterExistingButton } from './RegisterExistingButton';
 import {
@@ -54,10 +55,7 @@ import {
 } from '../../../routes';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
-import {
-  TranslationFunction,
-  useTranslationRef,
-} from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
 import {
@@ -87,17 +85,6 @@ export type TemplateListPageProps = {
   };
 };
 
-const createGroupsWithOther = (
-  groups: TemplateGroupFilter[],
-  t: TranslationFunction<typeof scaffolderTranslationRef.T>,
-): TemplateGroupFilter[] => [
-  ...groups,
-  {
-    title: t('templateListPage.templateGroups.otherTitle'),
-    filter: e => ![...groups].some(({ filter }) => filter(e)),
-  },
-];
-
 /**
  * @alpha
  */
@@ -119,14 +106,21 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  const groups = givenGroups.length
-    ? createGroupsWithOther(givenGroups, t)
-    : [
-        {
-          title: t('templateListPage.templateGroups.defaultTitle'),
-          filter: () => true,
-        },
-      ];
+  const groups = useMemo(
+    () =>
+      givenGroups.length
+        ? createGroupsWithOther(
+            givenGroups,
+            t('templateListPage.templateGroups.otherTitle'),
+          )
+        : [
+            {
+              title: t('templateListPage.templateGroups.defaultTitle'),
+              filter: () => true,
+            },
+          ],
+    [givenGroups, t],
+  );
 
   const scaffolderPageContextMenuProps = {
     onEditorClicked:

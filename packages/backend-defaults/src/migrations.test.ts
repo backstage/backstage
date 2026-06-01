@@ -41,83 +41,77 @@ async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
 
 jest.setTimeout(60_000);
 
-describe('migrations', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  it.each(databases.eachSupportedId())(
-    '20210928160613_init.js, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
+describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
+  it('20210928160613_init.js', async () => {
+    const knex = await databases.init(databaseId);
 
-      await migrateUntilBefore(knex, '20210928160613_init.js');
-      await migrateUpOnce(knex);
+    await migrateUntilBefore(knex, '20210928160613_init.js');
+    await migrateUpOnce(knex);
 
-      await knex('backstage_backend_tasks__tasks').insert({
+    await knex('backstage_backend_tasks__tasks').insert({
+      id: 'test',
+      settings_json: '{}',
+      next_run_start_at: knex.fn.now(),
+    });
+
+    await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
+      {
         id: 'test',
         settings_json: '{}',
-        next_run_start_at: knex.fn.now(),
-      });
+        next_run_start_at: expect.anything(),
+        current_run_ticket: null,
+        current_run_started_at: null,
+        current_run_expires_at: null,
+      },
+    ]);
 
-      await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
-        {
-          id: 'test',
-          settings_json: '{}',
-          next_run_start_at: expect.anything(),
-          current_run_ticket: null,
-          current_run_started_at: null,
-          current_run_expires_at: null,
-        },
-      ]);
+    await migrateDownOnce(knex);
 
-      await migrateDownOnce(knex);
+    // This looks odd - you might expect a .toThrow at the end but that
+    // actually is flaky for some reason specifically on sqlite when
+    // performing multiple runs in sequence
+    await expect(knex('backstage_backend_tasks__tasks')).rejects.toEqual(
+      expect.anything(),
+    );
 
-      // This looks odd - you might expect a .toThrow at the end but that
-      // actually is flaky for some reason specifically on sqlite when
-      // performing multiple runs in sequence
-      await expect(knex('backstage_backend_tasks__tasks')).rejects.toEqual(
-        expect.anything(),
-      );
+    await knex.destroy();
+  });
 
-      await knex.destroy();
-    },
-  );
+  it('20240712211735_nullable_next_run.js', async () => {
+    const knex = await databases.init(databaseId);
 
-  it.each(databases.eachSupportedId())(
-    '20240712211735_nullable_next_run.js, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
+    await migrateUntilBefore(knex, '20240712211735_nullable_next_run.js');
+    await migrateUpOnce(knex);
 
-      await migrateUntilBefore(knex, '20240712211735_nullable_next_run.js');
-      await migrateUpOnce(knex);
+    await knex('backstage_backend_tasks__tasks').insert({
+      id: 'test',
+      settings_json: '{}',
+      next_run_start_at: knex.raw('null'),
+    });
 
-      await knex('backstage_backend_tasks__tasks').insert({
+    await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
+      {
+        id: 'test',
+        settings_json: '{}',
+        next_run_start_at: null,
+        current_run_ticket: null,
+        current_run_started_at: null,
+        current_run_expires_at: null,
+      },
+    ]);
+
+    await migrateDownOnce(knex);
+
+    await expect(
+      knex('backstage_backend_tasks__tasks').insert({
         id: 'test',
         settings_json: '{}',
         next_run_start_at: knex.raw('null'),
-      });
+      }),
+    ).rejects.toEqual(expect.anything());
 
-      await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
-        {
-          id: 'test',
-          settings_json: '{}',
-          next_run_start_at: null,
-          current_run_ticket: null,
-          current_run_started_at: null,
-          current_run_expires_at: null,
-        },
-      ]);
-
-      await migrateDownOnce(knex);
-
-      await expect(
-        knex('backstage_backend_tasks__tasks').insert({
-          id: 'test',
-          settings_json: '{}',
-          next_run_start_at: knex.raw('null'),
-        }),
-      ).rejects.toEqual(expect.anything());
-
-      await knex.destroy();
-    },
-  );
+    await knex.destroy();
+  });
 });

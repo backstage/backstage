@@ -44,7 +44,7 @@ import {
   BitbucketCloudEntityProviderConfig,
   readProviderConfigs,
 } from './BitbucketCloudEntityProviderConfig';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 const DEFAULT_BRANCH = 'master';
 const TOPIC_REPO_PUSH = 'bitbucketCloud.repo:push';
@@ -154,7 +154,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: BitbucketCloudEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

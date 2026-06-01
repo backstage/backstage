@@ -99,18 +99,18 @@ const _default: OverridableFrontendPlugin<
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        height?: number | undefined;
-        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
-        direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
-        zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
-        title?: string | undefined;
-        showArrowHeads?: boolean | undefined;
+        kinds?: string[] | undefined;
         relations?: string[] | undefined;
         maxDepth?: number | undefined;
-        kinds?: string[] | undefined;
-        mergeRelations?: boolean | undefined;
-        relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
+        mergeRelations?: boolean | undefined;
+        showArrowHeads?: boolean | undefined;
+        direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
+        relationPairs?: [string, string][] | undefined;
+        zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
+        title?: string | undefined;
+        height?: number | undefined;
         filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
@@ -166,22 +166,22 @@ const _default: OverridableFrontendPlugin<
         title: string | undefined;
       };
       configInput: {
-        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
-        direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
-        zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
-        showArrowHeads?: boolean | undefined;
-        relations?: string[] | undefined;
-        maxDepth?: number | undefined;
-        rootEntityRefs?: string[] | undefined;
-        kinds?: string[] | undefined;
-        mergeRelations?: boolean | undefined;
-        relationPairs?: [string, string][] | undefined;
-        unidirectional?: boolean | undefined;
-        selectedRelations?: string[] | undefined;
         selectedKinds?: string[] | undefined;
+        selectedRelations?: string[] | undefined;
+        rootEntityRefs?: string[] | undefined;
+        maxDepth?: number | undefined;
+        unidirectional?: boolean | undefined;
+        mergeRelations?: boolean | undefined;
+        showArrowHeads?: boolean | undefined;
+        direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         showFilters?: boolean | undefined;
-        title?: string | undefined;
+        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
+        kinds?: string[] | undefined;
+        relations?: string[] | undefined;
+        relationPairs?: [string, string][] | undefined;
+        zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>

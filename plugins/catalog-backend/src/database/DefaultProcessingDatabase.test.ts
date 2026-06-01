@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
+import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
-import * as uuid from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import { applyDatabaseMigrations } from './migrations';
@@ -40,64 +36,62 @@ import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 jest.setTimeout(60_000);
 
-describe('DefaultProcessingDatabase', () => {
-  const defaultLogger = mockServices.logger.mock();
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  async function createDatabase(
-    databaseId: TestDatabaseId,
-    logger: LoggerService = defaultLogger,
-  ) {
-    const knex = await databases.init(databaseId);
-    await applyDatabaseMigrations(knex);
-    return {
-      knex,
-      db: new DefaultProcessingDatabase({
-        database: knex,
-        logger,
-        refreshInterval: createRandomProcessingInterval({
-          minSeconds: 100,
-          maxSeconds: 150,
+describe.each(databases.eachSupportedId())(
+  'DefaultProcessingDatabase, %p',
+  databaseId => {
+    const defaultLogger = mockServices.logger.mock();
+
+    async function createDatabase(logger: LoggerService = defaultLogger) {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      return {
+        knex,
+        db: new DefaultProcessingDatabase({
+          database: knex,
+          logger,
+          refreshInterval: createRandomProcessingInterval({
+            minSeconds: 100,
+            maxSeconds: 150,
+          }),
+          events: mockServices.events.mock(),
+          metrics: metricsServiceMock.mock(),
         }),
-        events: mockServices.events.mock(),
-        metrics: metricsServiceMock.mock(),
-      }),
-    };
-  }
-
-  const insertRefRow = async (db: Knex, ref: DbRefreshStateReferencesRow) => {
-    return db<DbRefreshStateReferencesRow>('refresh_state_references').insert(
-      ref,
-    );
-  };
-
-  const insertRefreshStateRow = async (db: Knex, ref: DbRefreshStateRow) => {
-    await db<DbRefreshStateRow>('refresh_state').insert(ref);
-  };
-
-  describe('updateProcessedEntity', () => {
-    let id: string;
-    let processedEntity: Entity;
-
-    beforeEach(() => {
-      id = uuid.v4();
-      processedEntity = {
-        apiVersion: '1',
-        kind: 'Location',
-        metadata: {
-          name: 'fakelocation',
-        },
-        spec: {
-          type: 'url',
-          target: 'somethingelse',
-        },
       };
-    });
+    }
 
-    it.each(databases.eachSupportedId())(
-      'fails when an entity is processed with a different locationKey, %p',
-      async databaseId => {
-        const { db } = await createDatabase(databaseId);
+    const insertRefRow = async (db: Knex, ref: DbRefreshStateReferencesRow) => {
+      return db<DbRefreshStateReferencesRow>('refresh_state_references').insert(
+        ref,
+      );
+    };
+
+    const insertRefreshStateRow = async (db: Knex, ref: DbRefreshStateRow) => {
+      await db<DbRefreshStateRow>('refresh_state').insert(ref);
+    };
+
+    describe('updateProcessedEntity', () => {
+      let id: string;
+      let processedEntity: Entity;
+
+      beforeEach(() => {
+        id = uuid();
+        processedEntity = {
+          apiVersion: '1',
+          kind: 'Location',
+          metadata: {
+            name: 'fakelocation',
+          },
+          spec: {
+            type: 'url',
+            target: 'somethingelse',
+          },
+        };
+      });
+
+      it('fails when an entity is processed with a different locationKey', async () => {
+        const { db } = await createDatabase();
         await db.transaction(async tx => {
           await expect(() =>
             db.updateProcessedEntity(tx, {
@@ -112,12 +106,9 @@ describe('DefaultProcessingDatabase', () => {
             `Conflicting write of processing result for ${id} with location key 'undefined'`,
           );
         });
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'fails when the locationKey is different, %p',
-      async databaseId => {
+      it('fails when the locationKey is different', async () => {
         const options = {
           id,
           processedEntity,
@@ -128,7 +119,7 @@ describe('DefaultProcessingDatabase', () => {
           refreshKeys: [],
           errors: "['something broke']",
         };
-        const { knex, db } = await createDatabase(databaseId);
+        const { knex, db } = await createDatabase();
         await insertRefreshStateRow(knex, {
           entity_id: id,
           entity_ref: 'location:default/fakelocation',
@@ -158,13 +149,10 @@ describe('DefaultProcessingDatabase', () => {
             `Conflicting write of processing result for ${id} with location key 'fail'`,
           ),
         );
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'updates the refresh state entry with the cache, processed entity and errors, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('updates the refresh state entry with the cache, processed entity and errors', async () => {
+        const { knex, db } = await createDatabase();
         await insertRefreshStateRow(knex, {
           entity_id: id,
           entity_ref: 'location:default/fakelocation',
@@ -197,13 +185,10 @@ describe('DefaultProcessingDatabase', () => {
         );
         expect(entities[0].errors).toEqual("['something broke']");
         expect(entities[0].location_key).toEqual('key');
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'removes old relations and stores the new relationships, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('removes old relations and stores the new relationships', async () => {
+        const { knex, db } = await createDatabase();
         await insertRefreshStateRow(knex, {
           entity_id: id,
           entity_ref: 'location:default/fakelocation',
@@ -282,13 +267,10 @@ describe('DefaultProcessingDatabase', () => {
             target_entity_ref: 'component:default/foo',
           },
         ]);
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'adds deferred entities to the refresh_state table to be picked up later, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('adds deferred entities to the refresh_state table to be picked up later', async () => {
+        const { knex, db } = await createDatabase();
         await insertRefreshStateRow(knex, {
           entity_id: id,
           entity_ref: 'location:default/fakelocation',
@@ -330,19 +312,15 @@ describe('DefaultProcessingDatabase', () => {
           .select();
 
         expect(refreshStateEntries).toHaveLength(1);
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'updates unprocessed entities with varying location keys, %p',
-      async databaseId => {
+      it('updates unprocessed entities with varying location keys', async () => {
         const mockLogger = {
           debug: jest.fn(),
           error: jest.fn(),
           warn: jest.fn(),
         };
         const { knex, db } = await createDatabase(
-          databaseId,
           mockLogger as unknown as Logger,
         );
 
@@ -479,19 +457,15 @@ describe('DefaultProcessingDatabase', () => {
             expect(mockLogger.error).not.toHaveBeenCalled();
           }
         });
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'stores the refresh keys for the entity where key length is 255 chars or less',
-      async databaseId => {
+      it('stores the refresh keys for the entity where key length is 255 chars or less', async () => {
         const mockLogger = {
           debug: jest.fn(),
           error: jest.fn(),
           warn: jest.fn(),
         };
         const { knex, db } = await createDatabase(
-          databaseId,
           mockLogger as unknown as Logger,
         );
         await insertRefreshStateRow(knex, {
@@ -536,19 +510,15 @@ describe('DefaultProcessingDatabase', () => {
           entity_id: id,
           key: 'protocol:foo-bar.com',
         });
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'stores the refresh keys for the entity where key length is greater than 255 chars',
-      async databaseId => {
+      it('stores the refresh keys for the entity where key length is greater than 255 chars', async () => {
         const mockLogger = {
           debug: jest.fn(),
           error: jest.fn(),
           warn: jest.fn(),
         };
         const { knex, db } = await createDatabase(
-          databaseId,
           mockLogger as unknown as Logger,
         );
         await insertRefreshStateRow(knex, {
@@ -597,15 +567,12 @@ describe('DefaultProcessingDatabase', () => {
           entity_id: id,
           key: `url:https://example.com/foo-bar-test-group/very-long-group-name-that-exceeds-255-characters-just-to-test-the-limits-of-url-length-in-the-catalog-info-yaml-file-and-see-how-the-back#sha256:edfb606500d184900e63891e5279d35bf0069ea251e90d15c0a430de6023d905`,
         });
-      },
-    );
-  });
+      });
+    });
 
-  describe('updateEntityCache', () => {
-    it.each(databases.eachSupportedId())(
-      'updates the entityCache, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+    describe('updateEntityCache', () => {
+      it('updates the entityCache', async () => {
+        const { knex, db } = await createDatabase();
         const id = '123';
         await insertRefreshStateRow(knex, {
           entity_id: id,
@@ -644,15 +611,12 @@ describe('DefaultProcessingDatabase', () => {
         ).select();
         expect(entities2.length).toBe(1);
         expect(entities2[0].cache).toEqual('{}');
-      },
-    );
-  });
+      });
+    });
 
-  describe('getProcessableEntities', () => {
-    it.each(databases.eachSupportedId())(
-      'should return entities to process, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+    describe('getProcessableEntities', () => {
+      it('should return entities to process', async () => {
+        const { knex, db } = await createDatabase();
         const entity = JSON.stringify({
           kind: 'Location',
           apiVersion: '1.0.0',
@@ -696,13 +660,10 @@ describe('DefaultProcessingDatabase', () => {
             }),
           ).resolves.toEqual({ items: [] });
         });
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'should update the next_refresh interval with a timestamp that includes refresh spread, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('should update the next_refresh interval with a timestamp that includes refresh spread', async () => {
+        const { knex, db } = await createDatabase();
         const entity = JSON.stringify({
           kind: 'Location',
           apiVersion: '1.0.0',
@@ -731,33 +692,30 @@ describe('DefaultProcessingDatabase', () => {
         const nextUpdate = timestampToDateTime(result[0].next_update_at);
         const nextUpdateDiff = nextUpdate.diff(now, 'seconds');
         expect(nextUpdateDiff.seconds).toBeGreaterThanOrEqual(90);
-      },
-    );
-  });
+      });
+    });
 
-  describe('listParents', () => {
-    let nextId = 1;
-    function makeEntity(ref: string) {
-      return {
-        entity_id: String(nextId++),
-        entity_ref: ref,
-        unprocessed_entity: JSON.stringify({
-          kind: 'Location',
-          apiVersion: '1.0.0',
-          metadata: {
-            name: 'xyz',
-          },
-        }),
-        errors: '[]',
-        next_update_at: '2019-01-01 23:00:00',
-        last_discovery_at: '2021-04-01 13:37:00',
-      };
-    }
+    describe('listParents', () => {
+      let nextId = 1;
+      function makeEntity(ref: string) {
+        return {
+          entity_id: String(nextId++),
+          entity_ref: ref,
+          unprocessed_entity: JSON.stringify({
+            kind: 'Location',
+            apiVersion: '1.0.0',
+            metadata: {
+              name: 'xyz',
+            },
+          }),
+          errors: '[]',
+          next_update_at: '2019-01-01 23:00:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        };
+      }
 
-    it.each(databases.eachSupportedId())(
-      'should return parents, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('should return parents', async () => {
+        const { knex, db } = await createDatabase();
 
         await knex<DbRefreshStateRow>('refresh_state').insert(
           makeEntity('location:default/root-1'),
@@ -803,7 +761,7 @@ describe('DefaultProcessingDatabase', () => {
           db.listParents(tx, { entityRefs: ['location:default/root-2'] }),
         );
         expect(result3.entityRefs).toEqual([]);
-      },
-    );
-  });
-});
+      });
+    });
+  },
+);

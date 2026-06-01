@@ -5,6 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CustomErrorBase } from '@backstage/errors';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
@@ -42,6 +43,12 @@ export interface BackendStartupResult {
   resultAt: Date;
 }
 
+// @public
+export function createExtensionPointFactoryMiddleware<T>(options: {
+  extensionPoint: ExtensionPoint<T>;
+  middleware: (original: T) => Promise<T>;
+}): ExtensionPointFactoryMiddleware;
+
 // @public (undocumented)
 export function createSpecializedBackend(
   options: CreateSpecializedBackendOptions,
@@ -51,6 +58,14 @@ export function createSpecializedBackend(
 export interface CreateSpecializedBackendOptions {
   // (undocumented)
   defaultServiceFactories: ServiceFactory[];
+  // (undocumented)
+  extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[];
+}
+
+// @public
+export interface ExtensionPointFactoryMiddleware {
+  // (undocumented)
+  $$type: '@backstage/ExtensionPointFactoryMiddleware';
 }
 
 // @public

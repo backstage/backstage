@@ -41,101 +41,95 @@ async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
 
 jest.setTimeout(60_000);
 
-describe('migrations', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  it.each(databases.eachSupportedId())(
-    '20211229105307_init.js, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
+describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
+  it('20211229105307_init.js', async () => {
+    const knex = await databases.init(databaseId);
 
-      await migrateUntilBefore(knex, '20211229105307_init.js');
-      await migrateUpOnce(knex);
+    await migrateUntilBefore(knex, '20211229105307_init.js');
+    await migrateUpOnce(knex);
 
-      await knex('static_assets_cache').insert({
+    await knex('static_assets_cache').insert({
+      path: 'main.js',
+      content: Buffer.from('some-script'),
+      last_modified_at: knex.fn.now(),
+    });
+
+    await expect(knex('static_assets_cache')).resolves.toEqual([
+      {
         path: 'main.js',
         content: Buffer.from('some-script'),
-        last_modified_at: knex.fn.now(),
-      });
+        last_modified_at: expect.anything(),
+      },
+    ]);
 
-      await expect(knex('static_assets_cache')).resolves.toEqual([
-        {
-          path: 'main.js',
-          content: Buffer.from('some-script'),
-          last_modified_at: expect.anything(),
-        },
-      ]);
+    await migrateDownOnce(knex);
 
-      await migrateDownOnce(knex);
+    // This looks odd - you might expect a .toThrow at the end but that
+    // actually is flaky for some reason specifically on sqlite when
+    // performing multiple runs in sequence
+    await expect(knex('static_assets_cache')).rejects.toEqual(
+      expect.anything(),
+    );
 
-      // This looks odd - you might expect a .toThrow at the end but that
-      // actually is flaky for some reason specifically on sqlite when
-      // performing multiple runs in sequence
-      await expect(knex('static_assets_cache')).rejects.toEqual(
-        expect.anything(),
-      );
+    await knex.destroy();
+  });
 
-      await knex.destroy();
-    },
-  );
+  it('20240113144027_assets-namespace.js', async () => {
+    const knex = await databases.init(databaseId);
 
-  it.each(databases.eachSupportedId())(
-    '20240113144027_assets-namespace.js, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
+    await migrateUntilBefore(knex, '20240113144027_assets-namespace.js');
 
-      await migrateUntilBefore(knex, '20240113144027_assets-namespace.js');
+    await knex('static_assets_cache').insert({
+      path: 'main.js',
+      content: Buffer.from('some-script'),
+      last_modified_at: knex.fn.now(),
+    });
 
-      await knex('static_assets_cache').insert({
+    await migrateUpOnce(knex);
+
+    await expect(knex('static_assets_cache')).resolves.toEqual([
+      {
         path: 'main.js',
         content: Buffer.from('some-script'),
-        last_modified_at: knex.fn.now(),
-      });
+        namespace: 'default',
+        last_modified_at: expect.anything(),
+      },
+    ]);
 
-      await migrateUpOnce(knex);
+    await knex('static_assets_cache').insert({
+      path: 'main.js',
+      content: Buffer.from('other-script'),
+      namespace: 'other',
+      last_modified_at: knex.fn.now(),
+    });
 
-      await expect(knex('static_assets_cache')).resolves.toEqual([
-        {
-          path: 'main.js',
-          content: Buffer.from('some-script'),
-          namespace: 'default',
-          last_modified_at: expect.anything(),
-        },
-      ]);
-
-      await knex('static_assets_cache').insert({
+    await expect(knex('static_assets_cache')).resolves.toEqual([
+      {
+        path: 'main.js',
+        content: Buffer.from('some-script'),
+        namespace: 'default',
+        last_modified_at: expect.anything(),
+      },
+      {
         path: 'main.js',
         content: Buffer.from('other-script'),
         namespace: 'other',
-        last_modified_at: knex.fn.now(),
-      });
+        last_modified_at: expect.anything(),
+      },
+    ]);
 
-      await expect(knex('static_assets_cache')).resolves.toEqual([
-        {
-          path: 'main.js',
-          content: Buffer.from('some-script'),
-          namespace: 'default',
-          last_modified_at: expect.anything(),
-        },
-        {
-          path: 'main.js',
-          content: Buffer.from('other-script'),
-          namespace: 'other',
-          last_modified_at: expect.anything(),
-        },
-      ]);
+    await migrateDownOnce(knex);
 
-      await migrateDownOnce(knex);
+    await expect(knex('static_assets_cache')).resolves.toEqual([
+      {
+        path: 'main.js',
+        content: Buffer.from('some-script'),
+        last_modified_at: expect.anything(),
+      },
+    ]);
 
-      await expect(knex('static_assets_cache')).resolves.toEqual([
-        {
-          path: 'main.js',
-          content: Buffer.from('some-script'),
-          last_modified_at: expect.anything(),
-        },
-      ]);
-
-      await knex.destroy();
-    },
-  );
+    await knex.destroy();
+  });
 });

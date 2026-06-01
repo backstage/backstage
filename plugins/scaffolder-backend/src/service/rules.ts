@@ -74,12 +74,6 @@ export const hasActionId = createActionPermissionRule({
   toQuery: () => ({}),
 });
 
-export const hasProperty = buildHasProperty({
-  name: 'HAS_PROPERTY',
-  valueSchema: z.union([z.string(), z.number(), z.boolean(), z.null()]),
-  validateProperty: false,
-});
-
 export const hasBooleanProperty = buildHasProperty({
   name: 'HAS_BOOLEAN_PROPERTY',
   valueSchema: z.boolean(),
@@ -147,7 +141,7 @@ export const isTaskOwner = createTaskPermissionRule({
     createdBy: z
       .array(z.string())
       .describe(
-        'List of creater entity refs; only tasks created by these users will be viewable',
+        'List of creator entity refs; only tasks created by these users will be viewable',
       ),
   }),
   apply: (resource, { createdBy }) => {

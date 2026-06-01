@@ -57,6 +57,7 @@ import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.j
 import { version as pluginAppVisualizer } from '../../../../plugins/app-visualizer/package.json';
 import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
 import { version as pluginAppReact } from '../../../../plugins/app-react/package.json';
+import { version as pluginAuth } from '../../../../plugins/auth/package.json';
 import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
 import { version as pluginAuthBackendModuleGithubProvider } from '../../../../plugins/auth-backend-module-github-provider/package.json';
 import { version as pluginAuthBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
@@ -71,6 +72,7 @@ import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
 import { version as pluginKubernetes } from '../../../../plugins/kubernetes/package.json';
 import { version as pluginKubernetesBackend } from '../../../../plugins/kubernetes-backend/package.json';
+import { version as pluginMcpActionsBackend } from '../../../../plugins/mcp-actions-backend/package.json';
 import { version as pluginNotifications } from '../../../../plugins/notifications/package.json';
 import { version as pluginNotificationsBackend } from '../../../../plugins/notifications-backend/package.json';
 import { version as pluginOrg } from '../../../../plugins/org/package.json';
@@ -123,6 +125,7 @@ export const packageVersions = {
   '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-app-react': pluginAppReact,
   '@backstage/plugin-app-visualizer': pluginAppVisualizer,
+  '@backstage/plugin-auth': pluginAuth,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
   '@backstage/plugin-auth-backend-module-github-provider':
     pluginAuthBackendModuleGithubProvider,
@@ -141,6 +144,7 @@ export const packageVersions = {
   '@backstage/plugin-catalog-import': pluginCatalogImport,
   '@backstage/plugin-kubernetes': pluginKubernetes,
   '@backstage/plugin-kubernetes-backend': pluginKubernetesBackend,
+  '@backstage/plugin-mcp-actions-backend': pluginMcpActionsBackend,
   '@backstage/plugin-notifications': pluginNotifications,
   '@backstage/plugin-notifications-backend': pluginNotificationsBackend,
   '@backstage/plugin-org': pluginOrg,

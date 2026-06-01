@@ -1572,6 +1572,46 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
       expect(subscriber!.closed).toBe(true);
     });
+
+    it('should handle after=0 query param correctly', async () => {
+      const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
+      let subscriber: ZenObservable.SubscriptionObserver<{
+        events: SerializedTaskEvent[];
+      }>;
+      (
+        taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
+      ).mockImplementation(() => {
+        return new ObservableImpl(observer => {
+          subscriber = observer;
+          observer.next({ events: [] });
+        });
+      });
+
+      const response = await request(router)
+        .get('/v2/tasks/a-random-id/events')
+        .query({ after: 0 });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+
+      expect(taskBroker.event$).toHaveBeenCalledTimes(1);
+      expect(taskBroker.event$).toHaveBeenCalledWith({
+        taskId: 'a-random-id',
+        after: 0,
+      });
+      expect(subscriber!.closed).toBe(true);
+    });
+
     it('disallows users from seeing events for tasks they do not own', async () => {
       const { permissions, router, taskBroker } = await createTestRouter();
 

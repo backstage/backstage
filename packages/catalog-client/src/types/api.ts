@@ -372,6 +372,8 @@ export type Location = {
   id: string;
   type: string;
   target: string;
+  /** The entity ref of the corresponding Location kind entity, e.g. `location:default/generated-<sha1hex>`. */
+  entityRef: string;
 };
 
 /**
@@ -486,6 +488,15 @@ export type QueryEntitiesInitialRequest = {
     term: string;
     fields?: string[];
   };
+  /**
+   * Controls whether the response's `totalItems` field is computed.
+   *
+   * `'include'` (default) — compute it. `'exclude'` — skip the count entirely;
+   * the response `totalItems` will be `0`. Useful for cursor-paginated UIs
+   * that only display the count cosmetically. Additional values may be added
+   * in the future.
+   */
+  totalItems?: 'include' | 'exclude';
 };
 
 /**
@@ -828,6 +839,19 @@ export interface CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+
+  /**
+   * Updates the type and target of an existing registered location.
+   *
+   * @param id - The location ID to update
+   * @param location - The new type and target for the location
+   * @param options - Additional options
+   */
+  updateLocation(
+    id: string,
+    location: { type?: string; target: string },
+    options?: CatalogRequestOptions,
+  ): Promise<Location>;
 
   /**
    * Gets a location associated with an entity.

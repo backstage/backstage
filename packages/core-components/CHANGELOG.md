@@ -1,5 +1,69 @@
 # @backstage/core-components
 
+## 0.18.11-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- a07e6a3: Added the correctly-spelled `'header'` literal to the `TableFiltersClassKey` union type and deprecated the previous typoed `'heder'` literal. The generated CSS class with the old key is preserved for backwards compatibility; switch to `'header'` to avoid future removal.
+- 8add9b9: Fixed the proxy-based sign-in page failing to read the session token when the proxy issues a token whose payload is encoded using the URL-safe base64 alphabet. Such tokens are now decoded correctly so sign-in no longer breaks.
+
+## 0.18.10
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- 021b368: Added stable DOM markers to the legacy Page and Header so adjacent layout components can coordinate spacing without relying on generated class names.
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/config@1.3.8
+
+## 0.18.10-next.1
+
+### Patch Changes
+
+- 021b368: Added stable DOM markers to the legacy Page and Header so adjacent layout components can coordinate spacing without relying on generated class names.
+
+## 0.18.10-next.0
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/theme@0.7.3
+  - @backstage/version-bridge@1.0.12
+
+## 0.18.9
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 320eed3: Resolved DOM nesting warning in OAuthRequestDialog by rendering secondary text as block-level spans.
+- 58b9f3f: Use Backstage Link component for markdown anchor rendering to ensure consistent internal and external link behavior.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/theme@0.7.3
+  - @backstage/config@1.3.7
+  - @backstage/core-plugin-api@1.12.5
+
+## 0.18.9-next.1
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 58b9f3f: Use Backstage Link component for markdown anchor rendering to ensure consistent internal and external link behavior.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/theme@0.7.3-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+
 ## 0.18.9-next.0
 
 ### Patch Changes

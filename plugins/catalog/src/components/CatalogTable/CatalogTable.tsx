@@ -29,24 +29,27 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import {
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
   getEntityRelations,
-  humanizeEntityRef,
   useEntityList,
   useStarredEntities,
+  type EntityPresentationApi,
 } from '@backstage/plugin-catalog-react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
-import { capitalize } from 'lodash';
+import { capitalize, sortBy } from 'lodash';
 import pluralize from 'pluralize';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useRef } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
 import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
+import { useApiHolder } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha';
 import { FavoriteToggleIcon } from '@backstage/core-components';
@@ -69,14 +72,13 @@ export interface CatalogTableProps {
   subtitle?: string;
 }
 
-const refCompare = (a: Entity, b: Entity) => {
-  const toRef = (entity: Entity) =>
-    entity.metadata.title ||
-    humanizeEntityRef(entity, {
-      defaultKind: 'Component',
-    });
-
-  return toRef(a).localeCompare(toRef(b));
+const sortEntities = (entities: Entity[], api?: EntityPresentationApi) => {
+  return sortBy(
+    entities,
+    e =>
+      entityPresentationSnapshot(e, { defaultKind: 'Component' }, api)
+        .primaryTitle,
+  );
 };
 
 /**
@@ -97,6 +99,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
     emptyContent,
   } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
+  const apis = useApiHolder();
+  const entityPresentationApi = apis.get(entityPresentationApiRef);
   const entityListContext = useEntityList();
 
   const {
@@ -106,16 +110,18 @@ export const CatalogTable = (props: CatalogTableProps) => {
     filters,
     pageInfo,
     totalItems,
+    totalItemsLoading,
     paginationMode,
   } = entityListContext;
 
-  // For non-paginated tables, only show the full loading indicator when
-  // there's no data yet (initial load). During filter changes we keep stale
-  // data visible and let the new results swap in seamlessly. For paginated
-  // tables we always show loading, since stale data from a different page
-  // would be misleading.
-  const isLoading =
-    paginationMode === 'none' ? loading && entities.length === 0 : loading;
+  // Track whether we've ever received data. The full-table spinner should
+  // only show on the truly initial load — not when a filter change
+  // empties the client-side entity list before the backend responds.
+  const hasHadData = useRef(false);
+  if (entities.length > 0) {
+    hasHadData.current = true;
+  }
+  const isLoading = loading && !hasHadData.current;
 
   const tableColumns = useMemo(
     () =>
@@ -191,29 +197,46 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  const currentKind = filters.kind?.label || '';
+  // Derive the title's kind label from the displayed entities so the
+  // title stays consistent with the rows during filter transitions.
+  // Use the filter's label when it matches (it has proper casing),
+  // otherwise fall back to the entity's kind field directly.
+  const displayedKind = entities[0]?.kind ?? filters.kind?.value;
+  const displayedKindLabel =
+    displayedKind?.toLocaleLowerCase('en-US') ===
+    filters.kind?.value?.toLocaleLowerCase('en-US')
+      ? filters.kind?.label || ''
+      : displayedKind || '';
   const currentType = filters.type?.value || '';
-  const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
+  // Show the count as long as we have one. Hide it only when new rows
+  // have arrived but the count hasn't caught up yet — at that point
+  // the old count would be wrong for the new data.
+  const countIsStale = !loading && totalItemsLoading;
+  const currentCount =
+    typeof totalItems === 'number' && !countIsStale ? ` (${totalItems})` : '';
+  const somethingIsLoading = loading || totalItemsLoading;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(
     filters.user?.value ?? t('catalogTable.allFilters'),
   );
-  const titleText =
+  const titleBase =
     props.title ||
-    [titlePreamble, currentType, pluralize(currentKind), currentCount]
+    [titlePreamble, currentType, pluralize(displayedKindLabel)]
       .filter(s => s)
       .join(' ');
-  const title =
-    loading && !isLoading ? (
-      <span
-        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5em' }}
-      >
-        {titleText}
+  const title = props.title ? (
+    titleBase
+  ) : (
+    <span
+      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5em' }}
+    >
+      {titleBase}
+      {currentCount}
+      {somethingIsLoading && !isLoading && (
         <CircularProgress size="0.8em" data-testid="loading-indicator" />
-      </span>
-    ) : (
-      titleText
-    );
+      )}
+    </span>
+  );
 
   const actions = props.actions || defaultActions;
   const options: TableProps['options'] = {
@@ -234,7 +257,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         actions={actions}
         subtitle={subtitle}
         options={options}
-        data={entities.map(toEntityRow)}
+        data={entities.map(e => toEntityRow(e, entityPresentationApi))}
         next={pageInfo?.next}
         prev={pageInfo?.prev}
       />
@@ -249,12 +272,14 @@ export const CatalogTable = (props: CatalogTableProps) => {
         actions={actions}
         subtitle={subtitle}
         options={options}
-        data={entities.map(toEntityRow)}
+        data={entities.map(e => toEntityRow(e, entityPresentationApi))}
       />
     );
   }
 
-  const rows = entities.sort(refCompare).map(toEntityRow);
+  const rows = sortEntities(entities, entityPresentationApi).map(e =>
+    toEntityRow(e, entityPresentationApi),
+  );
   const pageSize = 20;
   const showPagination = rows.length > pageSize;
 
@@ -280,7 +305,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
 CatalogTable.columns = columnFactories;
 CatalogTable.defaultColumnsFunc = defaultCatalogTableColumnsFunc;
 
-function toEntityRow(entity: Entity) {
+function toEntityRow(entity: Entity, api?: EntityPresentationApi) {
   const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'system',
   });
@@ -292,19 +317,25 @@ function toEntityRow(entity: Entity) {
       // This name is here for backwards compatibility mostly; the
       // presentation of refs in the table should in general be handled with
       // EntityRefLink / EntityName components
-      name: humanizeEntityRef(entity, {
-        defaultKind: 'Component',
-      }),
+      name: entityPresentationSnapshot(
+        entity,
+        { defaultKind: 'Component' },
+        api,
+      ).primaryTitle,
       entityRef: stringifyEntityRef(entity),
       ownedByRelationsTitle: ownedByRelations
-        .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
+        .map(
+          r =>
+            entityPresentationSnapshot(r, { defaultKind: 'group' }, api)
+              .primaryTitle,
+        )
         .join(', '),
       ownedByRelations,
       partOfSystemRelationTitle: partOfSystemRelations
-        .map(r =>
-          humanizeEntityRef(r, {
-            defaultKind: 'system',
-          }),
+        .map(
+          r =>
+            entityPresentationSnapshot(r, { defaultKind: 'system' }, api)
+              .primaryTitle,
         )
         .join(', '),
       partOfSystemRelations,

@@ -26,4 +26,8 @@ export interface Location {
   target: string;
   type: string;
   id: string;
+  /**
+   * The entity ref of the corresponding Location kind entity, e.g. location:default/generated-<sha1hex>.
+   */
+  entityRef: string;
 }

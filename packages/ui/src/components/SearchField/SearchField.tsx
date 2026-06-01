@@ -96,6 +96,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
           label={label}
           secondaryLabel={secondaryLabelText}
           description={description}
+          descriptionSlot="description"
         />
         <div
           className={classes.inputWrapper}

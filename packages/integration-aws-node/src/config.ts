@@ -62,6 +62,11 @@ export type AwsIntegrationAccountConfig = {
    * The unique identifier needed to assume the role to retrieve temporary AWS credentials
    */
   externalId?: string;
+
+  /**
+   * Path to a file on disk containing an OIDC web-identity token.
+   */
+  webIdentityTokenFile?: string;
 };
 
 /**
@@ -117,6 +122,11 @@ export type AwsIntegrationDefaultAccountConfig = {
    * The unique identifier needed to assume the role to retrieve temporary AWS credentials
    */
   externalId?: string;
+
+  /**
+   * Path to a file on disk containing an OIDC web-identity token.
+   */
+  webIdentityTokenFile?: string;
 };
 
 /**
@@ -158,6 +168,7 @@ function readAwsIntegrationAccountConfig(
     region: config.getOptionalString('region'),
     partition: config.getOptionalString('partition'),
     externalId: config.getOptionalString('externalId'),
+    webIdentityTokenFile: config.getOptionalString('webIdentityTokenFile'),
   };
 
   // Validate that the account config has the right combination of attributes
@@ -200,6 +211,30 @@ function readAwsIntegrationAccountConfig(
   if (!accountConfig.roleName && accountConfig.partition) {
     throw new Error(
       `AWS integration account ${accountConfig.accountId} has an IAM partition configured, but no role name.`,
+    );
+  }
+
+  if (accountConfig.webIdentityTokenFile && accountConfig.accessKeyId) {
+    throw new Error(
+      `AWS integration account ${accountConfig.accountId} has both a web identity token file and static credentials configured, but only one must be specified`,
+    );
+  }
+
+  if (accountConfig.webIdentityTokenFile && accountConfig.profile) {
+    throw new Error(
+      `AWS integration account ${accountConfig.accountId} has both a web identity token file and a profile configured, but only one must be specified`,
+    );
+  }
+
+  if (accountConfig.webIdentityTokenFile && !accountConfig.roleName) {
+    throw new Error(
+      `AWS integration account ${accountConfig.accountId} has a web identity token file configured, but no role name.`,
+    );
+  }
+
+  if (accountConfig.webIdentityTokenFile && accountConfig.externalId) {
+    throw new Error(
+      `AWS integration account ${accountConfig.accountId} has both a web identity token file and an external ID configured; AssumeRoleWithWebIdentity does not support external IDs.`,
     );
   }
 
@@ -256,6 +291,7 @@ function readAwsIntegrationAccountDefaultsConfig(
     partition: config.getOptionalString('partition'),
     region: config.getOptionalString('region'),
     externalId: config.getOptionalString('externalId'),
+    webIdentityTokenFile: config.getOptionalString('webIdentityTokenFile'),
   };
 
   // Validate that the account config has the right combination of attributes
@@ -274,6 +310,24 @@ function readAwsIntegrationAccountDefaultsConfig(
   if (!defaultAccountConfig.roleName && defaultAccountConfig.partition) {
     throw new Error(
       `AWS integration account default configuration has an IAM partition configured, but no role name.`,
+    );
+  }
+
+  if (
+    !defaultAccountConfig.roleName &&
+    defaultAccountConfig.webIdentityTokenFile
+  ) {
+    throw new Error(
+      `AWS integration account default configuration has a web identity token file configured, but no role name.`,
+    );
+  }
+
+  if (
+    defaultAccountConfig.webIdentityTokenFile &&
+    defaultAccountConfig.externalId
+  ) {
+    throw new Error(
+      `AWS integration account default configuration has both a web identity token file and an external ID configured; AssumeRoleWithWebIdentity does not support external IDs.`,
     );
   }
 

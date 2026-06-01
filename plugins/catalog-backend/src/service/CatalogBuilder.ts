@@ -106,9 +106,12 @@ import { filterAndSortProcessors, filterProviders } from './util';
 import { GenericScmEventRefreshProvider } from '../providers/GenericScmEventRefreshProvider';
 import { readScmEventHandlingConfig } from '../util/readScmEventHandlingConfig';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
+import { ModelProcessor } from '../processors/ModelProcessor';
+import { ModelHolder } from '../model/ModelHolder';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
+  modelHolder?: ModelHolder;
   database: DatabaseService;
   config: RootConfigService;
   reader: UrlReaderService;
@@ -432,7 +435,6 @@ export class CatalogBuilder {
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
       database: dbClient,
       logger,
-      stitcher,
       enableRelationsCompatibility,
     });
 
@@ -508,7 +510,6 @@ export class CatalogBuilder {
       knex: dbClient,
       processingDatabase,
       orchestrator,
-      stitcher,
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 1000,
       onProcessingError: event => {
@@ -629,9 +630,11 @@ export class CatalogBuilder {
     ];
 
     const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor();
-    // If the user adds a processor named 'BuiltinKindsEntityProcessor',
-    //   skip inclusion of the catalog-backend version.
+    // If the user adds a processor named 'BuiltinKindsEntityProcessor', skip
+    // inclusion of the catalog-backend version. Same if there's a model
+    // registered - then we are using the new model flow.
     if (
+      !this.env.modelHolder &&
       !this.processors.some(
         processor =>
           processor.getProcessorName() ===
@@ -639,6 +642,9 @@ export class CatalogBuilder {
       )
     ) {
       processors.push(builtinKindsEntityProcessor);
+    }
+    if (this.env.modelHolder) {
+      processors.push(new ModelProcessor(this.env.modelHolder));
     }
 
     const disableDefaultProcessors = config.getOptionalBoolean(

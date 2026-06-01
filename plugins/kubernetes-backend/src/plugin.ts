@@ -235,7 +235,7 @@ export const kubernetesPlugin = createBackendPlugin({
         auth,
         httpAuth,
       }) {
-        // TODO: this could do with a cleanup and push some of this initalization somewhere else
+        // TODO: this could do with a cleanup and push some of this initialization somewhere else
         if (config.has('kubernetes')) {
           const initializer = KubernetesInitializer.create({
             logger,

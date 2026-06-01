@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { CodeSnippet } from '@backstage/core-components';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import { Text } from '@backstage/ui';
 import YAML from 'yaml';
 import { sortKeys } from './util';
 import { catalogReactTranslationRef } from '../../../translation';
@@ -26,21 +26,14 @@ export function YamlPage(props: { entity: Entity }) {
   const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <>
-      <DialogContentText variant="h2">
-        {t('inspectEntityDialog.yamlPage.title')}
-      </DialogContentText>
-      <DialogContentText>
-        {t('inspectEntityDialog.yamlPage.description')}
-      </DialogContentText>
-      <DialogContentText>
-        <div style={{ fontSize: '75%' }} data-testid="code-snippet">
-          <CodeSnippet
-            text={YAML.stringify(sortKeys(props.entity))}
-            language="yaml"
-            showCopyCodeButton
-          />
-        </div>
-      </DialogContentText>
+      <Text as="p">{t('inspectEntityDialog.yamlPage.description')}</Text>
+      <div data-testid="code-snippet">
+        <CodeSnippet
+          text={YAML.stringify(sortKeys(props.entity))}
+          language="yaml"
+          showCopyCodeButton
+        />
+      </div>
     </>
   );
 }

@@ -2,14 +2,14 @@
 
 ## Unused dependencies (1)
 
-| Name            | Location     | Severity |
-| :-------------- | :----------- | :------- |
-| passport-oauth2 | plugins/auth-backend-module-guest-provider/package.json | error    |
+| Name            | Location          | Severity |
+| :-------------- | :---------------- | :------- |
+| passport-oauth2 | package.json:41:6 | error    |
 
 ## Unused devDependencies (2)
 
-| Name                          | Location     | Severity |
-| :---------------------------- | :----------- | :------- |
-| @backstage/backend-test-utils | plugins/auth-backend-module-guest-provider/package.json | error    |
-| express                       | plugins/auth-backend-module-guest-provider/package.json | error    |
+| Name                          | Location          | Severity |
+| :---------------------------- | :---------------- | :------- |
+| @backstage/backend-test-utils | package.json:44:6 | error    |
+| express                       | package.json:47:6 | error    |
 

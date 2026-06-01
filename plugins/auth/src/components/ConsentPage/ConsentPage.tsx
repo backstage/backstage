@@ -46,6 +46,14 @@ const ConsentPageLayout = ({ children }: { children: React.ReactNode }) => (
   </FullPage>
 );
 
+function getUrlHostname(value: string): string | undefined {
+  try {
+    return new URL(value).host;
+  } catch {
+    return undefined;
+  }
+}
+
 export const ConsentPage = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { state, handleAction } = useConsentSession({ sessionId });
@@ -131,6 +139,10 @@ export const ConsentPage = () => {
   const session = state.session;
   const isSubmitting = state.status === 'submitting';
   const appName = session.clientName ?? session.clientId;
+  const metadataHost = getUrlHostname(session.clientId);
+  const trustMessage = metadataHost
+    ? 'Make sure you trust this application and recognize the client metadata host and callback URL above. Only authorize applications you trust.'
+    : 'Make sure you trust this application and recognize the callback URL above. Only authorize applications you trust.';
 
   return (
     <ConsentPageLayout>
@@ -160,16 +172,42 @@ export const ConsentPage = () => {
                   By authorizing this application, you are granting it access to
                   your {appTitle} account. The application will receive an
                   access token that allows it to act on your behalf.
-                  <div className={styles.callbackUrl}>
-                    {session.redirectUri}
-                  </div>
+                  <dl className={styles.clientDetails}>
+                    {metadataHost && (
+                      <>
+                        <div className={styles.clientDetail}>
+                          <dt>Client metadata host</dt>
+                          <dd>{metadataHost}</dd>
+                        </div>
+                        <div className={styles.clientDetail}>
+                          <dt>Client metadata URL</dt>
+                          <dd className={styles.monospaceValue}>
+                            {session.clientId}
+                          </dd>
+                        </div>
+                      </>
+                    )}
+                    <div className={styles.clientDetail}>
+                      <dt>Callback URL</dt>
+                      <dd className={styles.monospaceValue}>
+                        {session.redirectUri}
+                      </dd>
+                    </div>
+                    {session.scope && (
+                      <div className={styles.clientDetail}>
+                        <dt>Requested scopes</dt>
+                        <dd className={styles.monospaceValue}>
+                          {session.scope}
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
                 </>
               }
             />
 
             <Text variant="body-small" color="secondary">
-              Make sure you trust this application and recognize the callback
-              URL above. Only authorize applications you trust.
+              {trustMessage}
             </Text>
           </Flex>
         </CardBody>

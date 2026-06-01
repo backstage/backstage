@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
+import { HeaderMetadataUsers } from './HeaderMetadataUsers';
+import { HeaderMetadataStatus } from './HeaderMetadataStatus';
 import type { HeaderNavTabItem } from './types';
-import { MemoryRouter, useLocation } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { Button, ButtonIcon, MenuTrigger, Menu, MenuItem } from '../../';
 import { RiMore2Line } from '@remixicon/react';
+import { Container } from '../Container';
 
 const meta = preview.meta({
   title: 'Backstage UI/Header',
@@ -88,26 +90,6 @@ const withRouter = (Story: StoryFn) => (
   </MemoryRouter>
 );
 
-/**
- * Derives activeTabId from the current router location by matching
- * the pathname against all tab hrefs (including group children).
- */
-function useActiveTabId(items: HeaderNavTabItem[]): string | undefined {
-  const location = useLocation();
-  return useMemo(() => {
-    for (const item of items) {
-      if ('items' in item) {
-        for (const child of item.items) {
-          if (child.href === location.pathname) return child.id;
-        }
-      } else if (item.href === location.pathname) {
-        return item.id;
-      }
-    }
-    return undefined;
-  }, [items, location.pathname]);
-}
-
 export const Default = meta.story({
   args: {
     title: 'Page Title',
@@ -116,9 +98,9 @@ export const Default = meta.story({
 
 export const WithTabs = meta.story({
   decorators: [withRouter],
-  render: () => {
-    const activeTabId = useActiveTabId(tabs);
-    return <Header title="Page Title" tabs={tabs} activeTabId={activeTabId} />;
+  args: {
+    ...Default.input.args,
+    tabs,
   },
 });
 
@@ -173,20 +155,206 @@ export const WithLongBreadcrumbs = meta.story({
   },
 });
 
+export const WithDescription = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    description:
+      'This is a description of the page. It can include [inline links](https://backstage.io).',
+  },
+});
+
+export const WithTags = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    tags: [
+      { label: 'TypeScript' },
+      { label: 'Platform', href: '/platform' },
+      { label: 'Gold' },
+    ],
+  },
+});
+
+export const WithMetadata = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    metadata: [
+      { label: 'Owner', value: 'platform-team' },
+      { label: 'Type', value: 'website' },
+    ],
+  },
+});
+
+const users = {
+  giles: {
+    name: 'Giles Peyton-Nicoll',
+    src: 'https://i.pravatar.cc/150?u=giles',
+    href: '/users/giles',
+  },
+  alice: {
+    name: 'Alice Johnson',
+    src: 'https://i.pravatar.cc/150?u=alicej',
+    href: '/users/alice',
+  },
+  bob: {
+    name: 'Bob Smith',
+    src: 'https://i.pravatar.cc/150?u=bob',
+    href: '/users/bob',
+  },
+  carol: {
+    name: 'Carol Williams',
+    src: 'https://i.pravatar.cc/150?u=carol',
+    href: '/users/carol',
+  },
+};
+
+export const WithMetadataUsers = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <Header
+      {...Default.input.args}
+      metadata={[
+        {
+          label: 'Owner',
+          value: <HeaderMetadataUsers users={[users.giles]} />,
+        },
+        {
+          label: 'Contributors',
+          value: (
+            <HeaderMetadataUsers
+              users={[users.alice, users.bob, users.carol]}
+            />
+          ),
+        },
+      ]}
+    />
+  ),
+});
+
+export const WithMetadataUsersNoLinks = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <Header
+      {...Default.input.args}
+      metadata={[
+        {
+          label: 'Owner',
+          value: (
+            <HeaderMetadataUsers
+              users={[{ name: users.giles.name, src: users.giles.src }]}
+            />
+          ),
+        },
+        {
+          label: 'Contributors',
+          value: (
+            <HeaderMetadataUsers
+              users={[
+                { name: users.alice.name, src: users.alice.src },
+                { name: users.bob.name, src: users.bob.src },
+                { name: users.carol.name, src: users.carol.src },
+              ]}
+            />
+          ),
+        },
+      ]}
+    />
+  ),
+});
+
+export const WithMetadataStatus = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <Header
+      {...Default.input.args}
+      metadata={[
+        {
+          label: 'Status',
+          value: <HeaderMetadataStatus label="Passing" color="success" />,
+        },
+        {
+          label: 'Build',
+          value: (
+            <HeaderMetadataStatus
+              label="Failed"
+              color="danger"
+              href="/builds/123"
+            />
+          ),
+        },
+        {
+          label: 'Coverage',
+          value: <HeaderMetadataStatus label="Warning" color="warning" />,
+        },
+      ]}
+    />
+  ),
+});
+
+export const WithDescriptionTagsAndMetadata = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <Header
+      {...Default.input.args}
+      description="This is a description of the page. It can include [inline links](https://backstage.io)."
+      tags={[
+        { label: 'TypeScript' },
+        { label: 'Platform', href: '/platform' },
+        { label: 'Gold' },
+      ]}
+      metadata={[
+        {
+          label: 'Owner',
+          value: <HeaderMetadataUsers users={[users.giles]} />,
+        },
+        {
+          label: 'Contributors',
+          value: (
+            <HeaderMetadataUsers
+              users={[users.alice, users.bob, users.carol]}
+            />
+          ),
+        },
+        { label: 'Type', value: 'website' },
+        { label: 'Tier', value: 'gold' },
+      ]}
+    />
+  ),
+});
+
 export const WithEverything = meta.story({
   decorators: [withRouter],
-  render: () => {
-    const activeTabId = useActiveTabId(tabs);
-    return (
-      <Header
-        title="Page Title"
-        tabs={tabs}
-        activeTabId={activeTabId}
-        customActions={<Button>Custom action</Button>}
-        breadcrumbs={[{ label: 'Home', href: '/' }]}
-      />
-    );
-  },
+  render: () => (
+    <Header
+      {...Default.input.args}
+      tabs={tabs}
+      customActions={<Button>Custom action</Button>}
+      breadcrumbs={[{ label: 'Home', href: '/' }]}
+      description="This is a description of the page. It can include [inline links](https://backstage.io)."
+      tags={[
+        { label: 'TypeScript' },
+        { label: 'Platform', href: '/platform' },
+        { label: 'Gold' },
+      ]}
+      metadata={[
+        { label: 'Type', value: 'website' },
+        {
+          label: 'Owner',
+          value: <HeaderMetadataUsers users={[users.giles]} />,
+        },
+        {
+          label: 'Contributors',
+          value: (
+            <HeaderMetadataUsers
+              users={[users.alice, users.bob, users.carol]}
+            />
+          ),
+        },
+      ]}
+    />
+  ),
 });
 
 const groupedTabs: HeaderNavTabItem[] = [
@@ -212,10 +380,141 @@ export const WithGroupedTabs = meta.story({
       </MemoryRouter>
     ),
   ],
-  render: () => {
-    const activeTabId = useActiveTabId(groupedTabs);
-    return (
-      <Header title="Page Title" tabs={groupedTabs} activeTabId={activeTabId} />
-    );
+  args: {
+    ...Default.input.args,
+    tabs: groupedTabs,
   },
+});
+
+export const WithExplicitActiveTab = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    tabs,
+    activeTabId: 'campaigns',
+  },
+});
+
+export const NonSticky = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <>
+      <Header
+        title="Sticky Page Title"
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
+      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the entire header scroll away with the rest of
+            the page content. Line {i + 1}.
+          </p>
+        ))}
+      </Container>
+    </>
+  ),
+});
+
+export const Sticky = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <>
+      <Header
+        title="Sticky Page Title"
+        sticky
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
+      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the title bar stick to the top while the tags,
+            description, and metadata scroll away. Line {i + 1}.
+          </p>
+        ))}
+      </Container>
+    </>
+  ),
+});
+
+export const StickyWithLongTitle = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <>
+      <Header
+        title="This is a very long page title that should demonstrate how the sticky Header behaves when the title takes up significantly more horizontal space than usual"
+        sticky
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
+      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the long title bar stick to the top while the
+            tags, description, and metadata scroll away. Line {i + 1}.
+          </p>
+        ))}
+      </Container>
+    </>
+  ),
+});
+
+export const StickyWithBreadcrumbsAndLongTitle = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <>
+      <Header
+        title="This is a very long page title that should demonstrate how sticky breadcrumbs and titles behave when both need to fit in the compact stuck state"
+        sticky
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Very Long Breadcrumb Name', href: '/long-breadcrumb' },
+        ]}
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
+      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the breadcrumb and long title bar stick to the
+            top while the tags, description, and metadata scroll away. Line{' '}
+            {i + 1}.
+          </p>
+        ))}
+      </Container>
+    </>
+  ),
 });

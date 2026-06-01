@@ -213,7 +213,6 @@ const getDefaultBranch = async (opts: {
   apiBaseUrl: string;
 }) => {
   const { project, repo, authorization, apiBaseUrl } = opts;
-  let response: Response;
 
   const options: RequestInit = {
     method: 'GET',
@@ -223,14 +222,10 @@ const getDefaultBranch = async (opts: {
     },
   };
 
-  try {
-    response = await fetch(
-      `${apiBaseUrl}/projects/${project}/repos/${repo}/default-branch`,
-      options,
-    );
-  } catch (error) {
-    throw error;
-  }
+  const response = await fetch(
+    `${apiBaseUrl}/projects/${project}/repos/${repo}/default-branch`,
+    options,
+  );
 
   const { displayId } = await response.json();
   const defaultBranch = displayId;

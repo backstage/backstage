@@ -26,6 +26,7 @@
     --active-tab-width: 0px;
     --active-tab-height: 0px;
     --active-transition-duration: 0s;
+    --active-tab-opacity: 0;
 
     --hovered-tab-left: 0px;
     --hovered-tab-right: 0px;
@@ -76,7 +77,7 @@
     border-radius: 4px;
     transition: left var(--active-transition-duration) ease-out,
       opacity 0.15s ease-out, width var(--active-transition-duration) ease-out;
-    opacity: 1;
+    opacity: var(--active-tab-opacity);
   }
 
   .bui-TabHovered {

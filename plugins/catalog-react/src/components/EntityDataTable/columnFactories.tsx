@@ -20,11 +20,11 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { Cell, CellText, Column, ColumnConfig, TableItem } from '@backstage/ui';
+import { EntityRefLink, EntityRefLinks } from '../EntityRefLink';
 import {
-  EntityRefLink,
-  EntityRefLinks,
-  humanizeEntityRef,
-} from '../EntityRefLink';
+  entityPresentationSnapshot,
+  EntityPresentationApi,
+} from '@backstage/plugin-catalog-react';
 import { EntityTableColumnTitle } from '../EntityTable/TitleColumn';
 import { getEntityRelations } from '../../utils';
 
@@ -41,6 +41,7 @@ export const columnFactories = Object.freeze({
   createEntityRefColumn(options: {
     defaultKind?: string;
     isRowHeader?: boolean;
+    entityPresentationApi?: EntityPresentationApi;
   }): EntityColumnConfig {
     const isRowHeader = options.isRowHeader ?? true;
     return {
@@ -63,8 +64,11 @@ export const columnFactories = Object.freeze({
         </Cell>
       ),
       sortValue: entity =>
-        entity.metadata?.title ||
-        humanizeEntityRef(entity, { defaultKind: options.defaultKind }),
+        entityPresentationSnapshot(
+          entity,
+          { defaultKind: options.defaultKind },
+          options.entityPresentationApi,
+        ).primaryTitle,
     };
   },
 
@@ -74,6 +78,7 @@ export const columnFactories = Object.freeze({
     relation: string;
     defaultKind?: string;
     filter?: { kind: string };
+    entityPresentationApi?: EntityPresentationApi;
   }): EntityColumnConfig {
     return {
       id: options.id,
@@ -98,7 +103,14 @@ export const columnFactories = Object.freeze({
       ),
       sortValue: entity =>
         getEntityRelations(entity, options.relation, options.filter)
-          .map(r => humanizeEntityRef(r, { defaultKind: options.defaultKind }))
+          .map(
+            r =>
+              entityPresentationSnapshot(
+                r,
+                { defaultKind: options.defaultKind },
+                options.entityPresentationApi,
+              ).primaryTitle,
+          )
           .join(', '),
     };
   },

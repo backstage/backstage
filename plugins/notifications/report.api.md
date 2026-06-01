@@ -14,6 +14,7 @@ import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TableProps } from '@backstage/core-components';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
@@ -48,6 +49,20 @@ export type GetTopicsOptions = GetNotificationsCommonOptions;
 export type GetTopicsResponse = {
   topics: string[];
 };
+
+// @public
+export const NotificationDescription: {
+  (props: NotificationDescriptionProps): JSX.Element | null;
+  ref: SwappableComponentRef<
+    NotificationDescriptionProps,
+    NotificationDescriptionProps
+  >;
+};
+
+// @public
+export interface NotificationDescriptionProps {
+  description: string;
+}
 
 // @public (undocumented)
 export interface NotificationsApi {
@@ -205,8 +220,9 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'table.bulkActions.returnSelectedAmongUnread': 'Return selected among unread';
     readonly 'table.bulkActions.saveSelectedForLater': 'Save selected for later';
     readonly 'table.bulkActions.undoSaveForSelected': 'Undo save for selected';
+    readonly 'table.confirmDialog.cancel': 'Cancel';
     readonly 'table.confirmDialog.title': 'Are you sure?';
-    readonly 'table.confirmDialog.markAllReadDescription': 'Mark <b>all</b> notifications as <b>read</b>.';
+    readonly 'table.confirmDialog.markAllReadDescription': 'Mark all notifications as read.';
     readonly 'table.confirmDialog.markAllReadConfirmation': 'Mark All';
     readonly 'filters.view.all': 'All';
     readonly 'filters.view.label': 'View';

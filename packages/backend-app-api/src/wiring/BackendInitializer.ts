@@ -25,7 +25,11 @@ import {
   createServiceFactory,
   ExtensionPointFactoryContext,
 } from '@backstage/backend-plugin-api';
-import { ServiceOrExtensionPoint } from './types';
+import {
+  ExtensionPointFactoryMiddleware,
+  ServiceOrExtensionPoint,
+} from './types';
+import { OpaqueExtensionPointFactoryMiddleware } from '@internal/backend';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type {
@@ -166,11 +170,17 @@ export class BackendInitializer {
   #serviceRegistry: ServiceRegistry;
   #registeredFeatures = new Array<Promise<BackendFeature>>();
   #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
+  #extensionPointFactoryMiddleware: ExtensionPointFactoryMiddleware[];
   #unhandledRejectionHandler?: (reason: Error) => void;
   #uncaughtExceptionHandler?: (error: Error) => void;
 
-  constructor(defaultApiFactories: ServiceFactory[]) {
+  constructor(
+    defaultApiFactories: ServiceFactory[],
+    extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[],
+  ) {
     this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
+    this.#extensionPointFactoryMiddleware =
+      extensionPointFactoryMiddleware ?? [];
   }
 
   async #getInitDeps(
@@ -195,18 +205,18 @@ export class BackendInitializer {
             `Rejected dependency on extension point ${ref.id} from outside of a module`,
           );
         }
-        result.set(
-          name,
-          ep.factory({
-            reportModuleStartupFailure: ({ error }) => {
-              resultCollector.amendPluginModuleResult(
-                pluginId,
-                moduleId,
-                error,
-              );
-            },
-          }),
-        );
+        let epImpl = ep.factory({
+          reportModuleStartupFailure: ({ error }) => {
+            resultCollector.amendPluginModuleResult(pluginId, moduleId, error);
+          },
+        });
+        for (const mw of this.#extensionPointFactoryMiddleware) {
+          const internal = OpaqueExtensionPointFactoryMiddleware.toInternal(mw);
+          if (internal.extensionPointId === ref.id) {
+            epImpl = await internal.middleware(epImpl);
+          }
+        }
+        result.set(name, epImpl);
       } else {
         const impl = await this.#serviceRegistry.get(
           ref as ServiceRef<unknown>,

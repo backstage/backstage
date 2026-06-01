@@ -62,6 +62,7 @@ nav:
           - Extending the model: 'features/software-catalog/extending-the-model.md'
           - External integrations: 'features/software-catalog/external-integrations.md'
           - Catalog Customization: 'features/software-catalog/catalog-customization.md'
+          - Entity Presentation: 'features/software-catalog/entity-presentation.md'
           - API: 'features/software-catalog/api.md'
           - FAQ: 'features/software-catalog/faq.md'
       - Kubernetes:

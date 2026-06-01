@@ -46,9 +46,25 @@ export type {
   MetricsServiceObservableUpDownCounter,
 } from './MetricsService';
 
+export type {
+  TracingService,
+  TracingServiceAttributeValue,
+  TracingServiceAttributes,
+  TracingServiceBaggage,
+  TracingServiceBaggageEntry,
+  TracingServiceContext,
+  TracingServiceContextAPI,
+  TracingServicePropagationAPI,
+  TracingServiceSpan,
+  TracingServiceSpanKind,
+  TracingServiceSpanOptions,
+  TracingServiceSpanStatus,
+} from './TracingService';
+
 export {
   actionsRegistryServiceRef,
   actionsServiceRef,
   metricsServiceRef,
   rootSystemMetadataServiceRef,
+  tracingServiceRef,
 } from './refs';

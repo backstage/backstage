@@ -556,13 +556,14 @@ describe('actionsRegistryServiceFactory', () => {
         input: {
           name: 'test',
         },
-        credentials: {
+        credentials: expect.objectContaining({
           $$type: '@backstage/BackstageCredentials',
+          version: 'v1',
           principal: {
             type: 'service',
             subject: 'user:default/mock',
           },
-        },
+        }),
         logger: expect.anything(),
       });
     });

@@ -42,7 +42,6 @@ export const ListDefinition = defineComponent<ListOwnProps>()({
 export const ListRowDefinition = defineComponent<ListRowOwnProps>()({
   styles,
   bg: 'consumer',
-  resolveHref: true,
   classNames: {
     root: 'bui-ListRow',
     check: 'bui-ListRowCheck',

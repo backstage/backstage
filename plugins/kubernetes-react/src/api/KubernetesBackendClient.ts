@@ -31,15 +31,38 @@ export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
   private readonly kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
+  private readonly clustersCacheTtlMs: number | undefined;
+  private clustersCache: { name: string; authProvider: string }[] | undefined;
+  private clustersCacheTimestamp = 0;
+  private clustersFetchPromise:
+    | Promise<{ name: string; authProvider: string }[]>
+    | undefined;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
     kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
+    /**
+     * When set, `getClusters()` results are cached for this many milliseconds.
+     * Useful when many proxy calls resolve cluster auth in quick succession.
+     */
+    clustersCacheTtlMs?: number;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi;
     this.kubernetesAuthProvidersApi = options.kubernetesAuthProvidersApi;
+    if (
+      options.clustersCacheTtlMs !== undefined &&
+      !(
+        Number.isFinite(options.clustersCacheTtlMs) &&
+        options.clustersCacheTtlMs >= 0
+      )
+    ) {
+      throw new Error(
+        `clustersCacheTtlMs must be a finite number >= 0, got ${options.clustersCacheTtlMs}`,
+      );
+    }
+    this.clustersCacheTtlMs = options.clustersCacheTtlMs;
   }
 
   private async handleResponse(response: Response): Promise<any> {
@@ -128,10 +151,40 @@ export class KubernetesBackendClient implements KubernetesApi {
   }
 
   async getClusters(): Promise<{ name: string; authProvider: string }[]> {
-    const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/clusters`;
-    const response = await this.fetchApi.fetch(url);
+    if (
+      this.clustersCacheTtlMs !== undefined &&
+      this.clustersCache &&
+      Date.now() - this.clustersCacheTimestamp < this.clustersCacheTtlMs
+    ) {
+      return this.clustersCache;
+    }
 
-    return (await this.handleResponse(response)).items;
+    if (this.clustersFetchPromise) {
+      return this.clustersFetchPromise;
+    }
+
+    const fetchPromise = (async () => {
+      const url = `${await this.discoveryApi.getBaseUrl(
+        'kubernetes',
+      )}/clusters`;
+      const response = await this.fetchApi.fetch(url);
+      return (await this.handleResponse(response)).items;
+    })();
+
+    if (this.clustersCacheTtlMs !== undefined) {
+      this.clustersFetchPromise = fetchPromise;
+    }
+
+    try {
+      const clusters = await fetchPromise;
+      if (this.clustersCacheTtlMs !== undefined) {
+        this.clustersCache = clusters;
+        this.clustersCacheTimestamp = Date.now();
+      }
+      return clusters;
+    } finally {
+      this.clustersFetchPromise = undefined;
+    }
   }
 
   async proxy(options: {

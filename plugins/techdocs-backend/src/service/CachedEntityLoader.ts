@@ -25,7 +25,7 @@ import {
 } from '@backstage/catalog-model';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 
-export type CachedEntityLoaderOptions = {
+type CachedEntityLoaderOptions = {
   catalog: CatalogService;
   cache: CacheService;
 };

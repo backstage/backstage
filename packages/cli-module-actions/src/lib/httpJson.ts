@@ -33,7 +33,12 @@ export async function httpJson<T>(url: string, init?: HttpInit): Promise<T> {
     },
   });
   if (!res.ok) {
-    throw await ResponseError.fromResponse(res);
+    const responseError = await ResponseError.fromResponse(res);
+    const causeMessage = responseError.cause?.message;
+    throw new Error(
+      causeMessage || `Request failed with ${res.status} ${res.statusText}`,
+      { cause: responseError },
+    );
   }
   return (await res.json()) as T;
 }

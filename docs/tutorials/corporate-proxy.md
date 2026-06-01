@@ -27,7 +27,3 @@ yarn start
 Per [ADR014](../architecture-decisions/adr014-use-fetch.md), Backstage backend code should use native `fetch()`, which works with Node.js's proxy out of the box. Some core packages and many [community plugins](https://github.com/backstage/community-plugins/) still use `node-fetch` (see [ADR013](../architecture-decisions/adr013-use-node-fetch.md)) or `cross-fetch` (for isomorphic packages). Both libraries delegate to `node:http`/`node:https` internally and do **not** set a custom HTTP agent by default, which means Node.js's proxy works for them as well.
 
 The exception is code that explicitly passes a custom `agent` to its fetch calls (e.g. the Kubernetes plugins, which use `new https.Agent(...)` for TLS client certificates). In those cases, the custom agent takes precedence and the built-in proxy is bypassed. This is generally the desired behavior, since those agents are configured for direct connections to specific endpoints like cluster APIs.
-
-## Legacy approach
-
-If you are on a Node.js version older than 22.21.0, you can use third-party packages to add proxy support. See the [legacy proxy setup guide](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/help-im-behind-a-corporate-proxy.md) for instructions using `undici`, `global-agent`, and `proxy-agent`.

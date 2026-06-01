@@ -1,5 +1,91 @@
 # @backstage/plugin-devtools
 
+## 0.1.40-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+  - @backstage/core-compat-api@0.5.12-next.0
+
+## 0.1.39
+
+### Patch Changes
+
+- b15ef55: Scheduled Tasks page now refreshes its table automatically after a task is triggered or cancelled, so the updated status is visible without reloading the browser.
+- 08c922e: Migrated `ConfigContent` component from Material UI to Backstage UI (BUI).
+- 44d77e9: Removed separate nav item extensions. Sidebar entries are now provided via `title` and `icon` on each plugin's page extension.
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/errors@1.3.1
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/core-compat-api@0.5.11
+  - @backstage/plugin-devtools-common@0.1.25
+  - @backstage/plugin-permission-react@0.5.1
+
+## 0.1.39-next.2
+
+### Patch Changes
+
+- 08c922e: Migrated `ConfigContent` component from Material UI to Backstage UI (BUI).
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.2
+  - @backstage/core-components@0.18.10-next.1
+
+## 0.1.39-next.1
+
+### Patch Changes
+
+- b15ef55: Scheduled Tasks page now refreshes its table automatically after a task is triggered or cancelled, so the updated status is visible without reloading the browser.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+
+## 0.1.39-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/core-compat-api@0.5.11-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/plugin-devtools-common@0.1.25-next.0
+  - @backstage/plugin-permission-react@0.5.1-next.0
+
+## 0.1.38
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0
+  - @backstage/errors@1.3.0
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/core-compat-api@0.5.10
+  - @backstage/plugin-permission-react@0.5.0
+  - @backstage/core-plugin-api@1.12.5
+  - @backstage/plugin-devtools-common@0.1.24
+
+## 0.1.38-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/core-compat-api@0.5.10-next.2
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+  - @backstage/plugin-permission-react@0.4.42-next.1
+  - @backstage/plugin-devtools-common@0.1.24-next.0
+
 ## 0.1.38-next.1
 
 ### Patch Changes

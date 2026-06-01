@@ -63,7 +63,7 @@ export function getGithubFileFetchUrl(
   }
 }
 
-export function chooseEndpoint(
+function chooseEndpoint(
   config: GithubIntegrationConfig,
   credentials: GithubCredentials,
 ): 'api' | 'raw' {

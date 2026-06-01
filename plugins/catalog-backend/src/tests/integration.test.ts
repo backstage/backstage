@@ -202,6 +202,7 @@ class WaitingProgressTracker implements ProgressTrackerWithErrorReports {
 class TestHarness {
   readonly #catalog: EntitiesCatalog;
   readonly #engine: CatalogProcessingEngine;
+  readonly #stitcher: DefaultStitcher;
   readonly #refresh: RefreshService;
   readonly #provider: TestProvider;
   readonly #proxyProgressTracker: ProxyProgressTracker;
@@ -224,11 +225,6 @@ class TestHarness {
         database: {
           client: 'better-sqlite3',
           connection: ':memory:',
-        },
-      },
-      catalog: {
-        stitchingStrategy: {
-          mode: 'immediate',
         },
       },
     });
@@ -287,7 +283,6 @@ class TestHarness {
     const catalog = new DefaultEntitiesCatalog({
       database: options.db,
       logger,
-      stitcher,
       enableRelationsCompatibility: options?.enableRelationsCompatibility,
     });
     const proxyProgressTracker = new ProxyProgressTracker(
@@ -300,7 +295,6 @@ class TestHarness {
       processingDatabase,
       knex: options.db,
       orchestrator,
-      stitcher,
       scheduler: mockServices.scheduler(),
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 50,
@@ -335,16 +329,8 @@ class TestHarness {
 
     return new TestHarness(
       catalog,
-      {
-        async start() {
-          await engine.start();
-          await stitcher.start();
-        },
-        async stop() {
-          await engine.stop();
-          await stitcher.stop();
-        },
-      },
+      engine,
+      stitcher,
       refresh,
       provider,
       proxyProgressTracker,
@@ -355,6 +341,7 @@ class TestHarness {
   constructor(
     catalog: EntitiesCatalog,
     engine: CatalogProcessingEngine,
+    stitcher: DefaultStitcher,
     refresh: RefreshService,
     provider: TestProvider,
     proxyProgressTracker: ProxyProgressTracker,
@@ -362,6 +349,7 @@ class TestHarness {
   ) {
     this.#catalog = catalog;
     this.#engine = engine;
+    this.#stitcher = stitcher;
     this.#refresh = refresh;
     this.#provider = provider;
     this.#proxyProgressTracker = proxyProgressTracker;
@@ -372,13 +360,25 @@ class TestHarness {
     const tracker = new WaitingProgressTracker(entityRefs);
     this.#proxyProgressTracker.setTracker(tracker);
 
-    this.#engine.start();
+    await this.#engine.start();
+    await this.#stitcher.start();
 
     const errors = await tracker.wait();
 
-    this.#engine.stop();
+    await this.#engine.stop();
     await tracker.waitForFinish();
 
+    // Wait for the stitch queue to drain while the stitcher is still running
+    const start = Date.now();
+    while (Date.now() - start < 10_000) {
+      const queue = await this.#db('stitch_queue').select('*');
+      if (queue.length === 0) {
+        break;
+      }
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+
+    await this.#stitcher.stop();
     this.#proxyProgressTracker.setTracker(new NoopProgressTracker());
 
     return errors;
@@ -411,7 +411,6 @@ class TestHarness {
   async removeOrphanedEntities() {
     await deleteOrphanedEntities({
       knex: this.#db,
-      strategy: { mode: 'immediate' },
     });
   }
 

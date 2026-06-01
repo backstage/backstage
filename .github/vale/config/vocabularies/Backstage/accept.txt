@@ -75,6 +75,7 @@ codemod
 codemods
 codeowners
 codescene
+Combobox
 composability
 composable
 config
@@ -102,6 +103,7 @@ dayjs
 debounce
 debounced
 debounces
+debouncing
 debuggability
 declaratively
 deduplicate
@@ -256,6 +258,7 @@ LocalStack
 lockdown
 lockfile
 lockfiles
+loopback
 lookbehind
 lookup
 lookups
@@ -287,6 +290,8 @@ misconfigured
 mkdocs
 Mkdocs
 modularization
+monopackage
+monopackages
 monorepo
 monorepos
 monospace
@@ -343,6 +348,7 @@ params
 parseable
 passthrough
 passwordless
+patcher
 Patrik
 pattison
 Peloton
@@ -385,6 +391,7 @@ readonly
 rebase
 rebasing
 Recharts
+recurse
 redactions
 Redash
 redis
@@ -482,6 +489,7 @@ subpath
 subpaths
 subroute
 subroutes
+subquery
 substring
 subtree
 superfences
@@ -533,6 +541,7 @@ TTLs
 Turbopack
 TSDoc
 typeahead
+typoed
 ui
 unassign
 unbreak
@@ -544,6 +553,7 @@ unmanaged
 unmount
 unregister
 unregistering
+unregisters
 unregistration
 unreviewed
 unstarred
@@ -568,6 +578,7 @@ VMware
 Vodafone
 VPCs
 VSCode
+walkthrough
 walkthroughs
 Wayfair
 Weaveworks

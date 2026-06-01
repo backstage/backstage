@@ -1,5 +1,23 @@
 # @backstage/eslint-plugin
 
+## 0.3.0
+
+### Minor Changes
+
+- ab1cdbb: Added a new `no-self-package-imports` lint rule, enabled as `error` in the recommended config, that reports when a package imports itself by its own name instead of using a relative path. This pattern causes circular initialization errors in bundled ESM and with `jest.requireActual`.
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- ab1cdbb: Added a new `no-self-package-imports` lint rule, enabled as `error` in the recommended config, that reports when a package imports itself by its own name instead of using a relative path. This pattern causes circular initialization errors in bundled ESM and with `jest.requireActual`.
+
+## 0.2.3
+
+### Patch Changes
+
+- df43b0e: Fixed `no-mixed-plugin-imports` rule to return `null` from non-fixable suggestion handlers and added an explicit `SuggestionReportDescriptor[]` type annotation, matching the stricter type checking in TypeScript 6.0.
+
 ## 0.2.3-next.0
 
 ### Patch Changes

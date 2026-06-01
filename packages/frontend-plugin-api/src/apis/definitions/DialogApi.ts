@@ -21,24 +21,31 @@ import { createApiRef } from '../system';
  *
  * @remarks
  *
- * Dialogs can be opened using either {@link DialogApi.show} or {@link DialogApi.showModal}.
+ * Dialogs are opened using {@link DialogApi.open}.
  *
  * @public
  */
 export interface DialogApiDialog<TResult = void> {
   /**
-   * Closes the dialog with that provided result.
+   * Closes the dialog with the provided result.
    *
    * @remarks
    *
-   * If the dialog is a modal dialog a result must always be provided. If it's a regular dialog then passing a result is optional.
+   * Whether a result is required depends on the `TResult` type parameter
+   * chosen when the dialog was opened. If the type includes `undefined`,
+   * calling `close()` without a result is allowed.
    */
   close(
     ...args: undefined extends TResult ? [result?: TResult] : [result: TResult]
   ): void;
 
   /**
-   * Replaces the content of the dialog with the provided element or component, causing it to be rerenedered.
+   * Replaces the rendered dialog with the provided element or component.
+   *
+   * @remarks
+   *
+   * Just like the element or component passed to {@link DialogApi.open}, the
+   * caller is responsible for providing the full dialog including all chrome.
    */
   update(
     elementOrComponent:
@@ -48,10 +55,6 @@ export interface DialogApiDialog<TResult = void> {
 
   /**
    * Wait until the dialog is closed and return the result.
-   *
-   * @remarks
-   *
-   * If the dialog is a modal dialog a result will always be returned. If it's a regular dialog then the result may be `undefined`.
    */
   result(): Promise<TResult>;
 }
@@ -63,51 +66,67 @@ export interface DialogApiDialog<TResult = void> {
  */
 export interface DialogApi {
   /**
-   * Opens a modal dialog and returns a handle to it.
+   * Opens a dialog and returns a handle to it.
    *
    * @remarks
    *
-   * This dialog can be closed by calling the `close` method on the returned handle, optionally providing a result.
-   * The dialog can also be closed by the user by clicking the backdrop or pressing the escape key.
-   *
-   * If the dialog is closed without a result, the result will be `undefined`.
+   * The provided element or component is rendered as-is in the app's React tree.
+   * It is the caller's responsibility to provide all dialog chrome, such as an
+   * overlay, backdrop, and dialog surface. This makes the method agnostic to the
+   * design library used for the dialog.
    *
    * @example
    *
-   * ### Example with inline dialog content
+   * ### Example with inline dialog element
    * ```tsx
-   * const dialog = dialogApi.show<boolean>(
-   *   <DialogContent>
-   *     <DialogTitle>Are you sure?</DialogTitle>
-   *     <DialogActions>
-   *       <Button onClick={() => dialog.close(true)}>Yes</Button>
-   *       <Button onClick={() => dialog.close(false)}>No</Button>
-   *     </DialogActions>
-   *   </DialogContent>
+   * const dialog = dialogApi.open<boolean>(
+   *   <Dialog isOpen onOpenChange={isOpen => !isOpen && dialog.close()}>
+   *     <DialogHeader>Are you sure?</DialogHeader>
+   *     <DialogBody>This action cannot be undone.</DialogBody>
+   *     <DialogFooter>
+   *       <Button onPress={() => dialog.close(false)}>Cancel</Button>
+   *       <Button onPress={() => dialog.close(true)}>Confirm</Button>
+   *     </DialogFooter>
+   *   </Dialog>
    * );
    * const result = await dialog.result();
    * ```
    *
    * @example
    *
-   * ### Example with separate dialog component
+   * ### Example with a dialog component
    * ```tsx
-   * function CustomDialog({ dialog }: { dialog: DialogApiDialog<boolean | undefined> }) {
+   * function ConfirmDialog({ dialog }: { dialog: DialogApiDialog<boolean> }) {
    *   return (
-   *     <DialogContent>
-   *       <DialogTitle>Are you sure?</DialogTitle>
-   *       <DialogActions>
-   *         <Button onClick={() => dialog.close(true)}>Yes</Button>
-   *         <Button onClick={() => dialog.close(false)}>No</Button>
-   *       </DialogActions>
-   *     </DialogContent>
-   *   )
+   *     <Dialog isOpen onOpenChange={isOpen => !isOpen && dialog.close()}>
+   *       <DialogHeader>Are you sure?</DialogHeader>
+   *       <DialogBody>This action cannot be undone.</DialogBody>
+   *       <DialogFooter>
+   *         <Button onPress={() => dialog.close(false)}>Cancel</Button>
+   *         <Button onPress={() => dialog.close(true)}>Confirm</Button>
+   *       </DialogFooter>
+   *     </Dialog>
+   *   );
    * }
-   * const result = await dialogApi.show(CustomDialog).result();
+   * const result = await dialogApi.open(ConfirmDialog).result();
    * ```
    *
+   * @param elementOrComponent - The element or component to render. If a component is provided, it will be provided with a `dialog` prop that contains the dialog handle.
+   */
+  open<TResult = void>(
+    elementOrComponent:
+      | JSX.Element
+      | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
+  ): DialogApiDialog<TResult>;
+
+  /**
+   * Opens a dialog with built-in dialog chrome and returns a handle to it.
+   *
+   * @deprecated Use {@link DialogApi.open} instead. The `open` method does not
+   * render any dialog chrome, giving the caller full control over the dialog
+   * presentation. This avoids focus trap conflicts across design libraries.
+   *
    * @param elementOrComponent - The element or component to render in the dialog. If a component is provided, it will be provided with a `dialog` prop that contains the dialog handle.
-   * @public
    */
   show<TResult = void>(
     elementOrComponent:
@@ -118,48 +137,13 @@ export interface DialogApi {
   ): DialogApiDialog<TResult | undefined>;
 
   /**
-   * Opens a modal dialog and returns a handle to it.
+   * Opens a modal dialog with built-in dialog chrome and returns a handle to it.
    *
-   * @remarks
-   *
-   * This dialog can not be closed in any other way than calling the `close` method on the returned handle and providing a result.
-   *
-   * @example
-   *
-   * ### Example with inline dialog content
-   * ```tsx
-   * const dialog = dialogApi.showModal<boolean>(
-   *   <DialogContent>
-   *     <DialogTitle>Are you sure?</DialogTitle>
-   *     <DialogActions>
-   *       <Button onClick={() => dialog.close(true)}>Yes</Button>
-   *       <Button onClick={() => dialog.close(false)}>No</Button>
-   *     </DialogActions>
-   *   </DialogContent>
-   * );
-   * const result = await dialog.result();
-   * ```
-   *
-   * @example
-   *
-   * ### Example with separate dialog component
-   * ```tsx
-   * function CustomDialog({ dialog }: { dialog: DialogApiDialog<boolean> }) {
-   *   return (
-   *     <DialogContent>
-   *       <DialogTitle>Are you sure?</DialogTitle>
-   *       <DialogActions>
-   *         <Button onClick={() => dialog.close(true)}>Yes</Button>
-   *         <Button onClick={() => dialog.close(false)}>No</Button>
-   *       </DialogActions>
-   *     </DialogContent>
-   *   )
-   * }
-   * const result = await dialogApi.showModal(CustomDialog).result();
-   * ```
+   * @deprecated Use {@link DialogApi.open} instead. The `open` method does not
+   * render any dialog chrome, giving the caller full control over the dialog
+   * presentation. This avoids focus trap conflicts across design libraries.
    *
    * @param elementOrComponent - The element or component to render in the dialog. If a component is provided, it will be provided with a `dialog` prop that contains the dialog handle.
-   * @public
    */
   showModal<TResult = void>(
     elementOrComponent:

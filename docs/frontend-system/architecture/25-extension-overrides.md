@@ -182,20 +182,18 @@ const myOverrideExtension = myExtension.override({
 Overriding the configuration schema works very similarly to overriding the declared inputs. You can define new configuration fields that will be merged with the existing ones, but you can not re-declare existing fields. The following example shows how to override an extension and add a new configuration field:
 
 ```tsx
+import { z } from 'zod';
+
 const exampleExtension = createExtension({
-  config: {
-    schema: {
-      foo: z => z.string(),
-    },
+  configSchema: {
+    foo: z.string(),
   },
   // ...
 });
 
 const overrideExtension = exampleExtension.override({
-  config: {
-    schema: {
-      bar: z => z.string(),
-    },
+  configSchema: {
+    bar: z.string(),
   },
   factory(originalFactory, { config }) {
     //
@@ -210,12 +208,12 @@ const overrideExtension = exampleExtension.override({
 In all examples so far we have called the `originalFactory` callback without any arguments. It is however possible to override parts of the factory context for the original factory using the first parameter of the original factory. This can be useful if you want to override the provided configuration or change the inputs in some way. Note that if you are implementing a `factory` for a blueprint, the override factory context will instead be the second parameter of the original factory function. The following is an example of how to override the configuration for the original factory:
 
 ```tsx
+import { z } from 'zod';
+
 const exampleExtension = createExtension({
   name: 'example',
-  config: {
-    schema: {
-      layout: z => z.enum(['grid', 'list']).optional(),
-    },
+  configSchema: {
+    layout: z.enum(['grid', 'list']).optional(),
   },
   output: [coreExtensionData.reactElement],
   factory: ({ config }) => [

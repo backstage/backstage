@@ -157,6 +157,28 @@ export const useTableOptionsPropDefs: Record<string, PropDef> = {
       </>
     ),
   },
+  searchDebounceMs: {
+    type: 'number',
+    description: (
+      <>
+        Trailing-edge debounce delay (ms) applied to the search value before it
+        reaches <Chip>searchFn</Chip>. Defaults to <Chip>0</Chip> (no debounce).
+        Does not affect the controlled <Chip>onSearchChange</Chip> callback.
+        Only used with <Chip>complete</Chip> mode.
+      </>
+    ),
+  },
+  filterDebounceMs: {
+    type: 'number',
+    description: (
+      <>
+        Trailing-edge debounce delay (ms) applied to the filter value before it
+        reaches <Chip>filterFn</Chip>. Defaults to <Chip>0</Chip> (no debounce).
+        Does not affect the controlled <Chip>onFilterChange</Chip> callback.
+        Only used with <Chip>complete</Chip> mode.
+      </>
+    ),
+  },
 };
 
 export const useTableReturnPropDefs: Record<string, PropDef> = {
@@ -166,7 +188,7 @@ export const useTableReturnPropDefs: Record<string, PropDef> = {
     description: (
       <>
         Props to spread onto the <Chip>Table</Chip> component. Includes data,
-        loading, error, pagination, and sort state.
+        isPending, error, pagination, and sort state.
       </>
     ),
   },
@@ -207,10 +229,15 @@ export const tablePropDefs: Record<string, PropDef> = {
     values: ['T[]'],
     description: 'Array of data items to display in the table.',
   },
+  isPending: {
+    type: 'boolean',
+    default: 'false',
+    description: 'Whether the table is in a pending state.',
+  },
   loading: {
     type: 'boolean',
     default: 'false',
-    description: 'Whether the table is in a loading state.',
+    description: 'Deprecated. Use `isPending` instead.',
   },
   isStale: {
     type: 'boolean',
@@ -466,16 +493,21 @@ export const tableRootPropDefs: Record<string, PropDef> = {
       </>
     ),
   },
-  loading: {
+  isPending: {
     type: 'boolean',
     default: 'false',
     description: (
       <>
-        Whether the table is in a loading state (e.g., initial data fetch). Adds{' '}
-        <Chip>aria-busy</Chip> attribute and <Chip>data-loading</Chip> data
+        Whether the table is in a pending state (e.g., initial data fetch). Adds{' '}
+        <Chip>aria-busy</Chip> attribute and <Chip>data-ispending</Chip> data
         attribute for styling.
       </>
     ),
+  },
+  loading: {
+    type: 'boolean',
+    default: 'false',
+    description: 'Deprecated. Use `isPending` instead.',
   },
 };
 
@@ -488,6 +520,15 @@ export const columnPropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: ['ReactNode'],
     description: 'Column header content.',
+  },
+};
+
+export const tableBodySkeletonPropDefs: Record<string, PropDef> = {
+  columns: {
+    type: 'enum',
+    values: ['{ id: string }[]'],
+    description:
+      'Array of column objects. Each item must have an `id` property. Compatible with `ColumnConfig` and custom column types.',
   },
 };
 

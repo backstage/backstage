@@ -108,6 +108,9 @@ describe('createZodV3FilterPredicateSchema', () => {
       { $not: { $all: [{ x: { $unknown: true } }] } },
       { $unknown: 'foo' },
       { 'metadata.tags': ['foo', 'bar'] },
+      { kind: 'API', $not: { 'spec.type': 'dataset' } },
+      { kind: 'API', $all: [{ 'spec.type': 'service' }] },
+      { kind: 'API', $any: [{ 'spec.type': 'service' }] },
     ];
 
     it.each(predicates)('should reject invalid predicate %j', predicate => {
@@ -207,6 +210,9 @@ describe('parseFilterPredicate', () => {
       { $unknown: 'foo' },
       { kind: { $hasPrefix: 1 } },
       { 'metadata.tags': ['foo', 'bar'] },
+      { kind: 'API', $not: { 'spec.type': 'dataset' } },
+      { kind: 'API', $all: [{ 'spec.type': 'service' }] },
+      { kind: 'API', $any: [{ 'spec.type': 'service' }] },
     ];
 
     it.each(predicates)(

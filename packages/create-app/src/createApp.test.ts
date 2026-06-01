@@ -69,7 +69,7 @@ describe('command entrypoint', () => {
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findOwnPaths(__dirname).resolve('templates/next-app'),
+      findOwnPaths(__dirname).resolve('templates/default-app'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toContain(
       path.join(tmpdir(), 'MyApp'),
@@ -85,7 +85,7 @@ describe('command entrypoint', () => {
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findOwnPaths(__dirname).resolve('templates/next-app'),
+      findOwnPaths(__dirname).resolve('templates/default-app'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
     expect(buildAppMock).toHaveBeenCalled();
@@ -98,7 +98,7 @@ describe('command entrypoint', () => {
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findOwnPaths(__dirname).resolve('templates/default-app'),
+      findOwnPaths(__dirname).resolve('templates/legacy-app'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toContain(
       path.join(tmpdir(), 'MyApp'),

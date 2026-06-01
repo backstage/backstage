@@ -1,9 +1,8 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (1)
 
-| Name                      | Location     | Severity |
-| :------------------------ | :----------- | :------- |
-| @backstage/catalog-client | plugins/mcp-actions-backend/package.json | error    |
-| zod                       | plugins/mcp-actions-backend/package.json | error    |
+| Name                      | Location          | Severity |
+| :------------------------ | :---------------- | :------- |
+| @backstage/catalog-client | package.json:40:6 | error    |
 

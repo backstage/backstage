@@ -16,9 +16,10 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { RouterProvider } from 'react-aria-components';
-import { useInRouterContext, useNavigate, useHref } from 'react-router-dom';
+import { useInRouterContext, useNavigate } from 'react-router-dom';
 import { createVersionedValueMap } from '@backstage/version-bridge';
 import { BUIContext } from '../analytics/useAnalytics';
+import { useResolvedHref } from '../hooks/useResolvedHref';
 import type { UseAnalyticsFn } from '../analytics/types';
 
 /** @public */
@@ -70,7 +71,7 @@ export function BUIProvider(props: BUIProviderProps) {
 function RoutedContent({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
+    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
       {children}
     </RouterProvider>
   );

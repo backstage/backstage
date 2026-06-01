@@ -58,14 +58,40 @@ export class Proxy {
     this.express.server = server;
   }
 
-  stop() {
+  async stop() {
     if (Object.keys(this.#openRequests).length > 0) {
       throw new Error('There are still open requests');
     }
-    this.server.stop();
+    if (!this.express.server) {
+      throw new Error(
+        'Proxy server was not initialized with an express server',
+      );
+    }
+    const results = await Promise.allSettled([
+      this.server.stop(),
 
-    // If this isn't expressly closed, it will cause a jest memory leak warning.
-    this.express.server?.close();
+      // If this isn't expressly closed, it will cause a jest memory leak warning.
+      new Promise((resolve, reject) => {
+        this.express.server?.close(err => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(undefined);
+          }
+        });
+      }),
+    ]);
+    if (results.some(result => result.status === 'rejected')) {
+      const errors = results
+        .filter(
+          (result): result is PromiseRejectedResult =>
+            result.status === 'rejected',
+        )
+        .map(result => result.reason);
+      throw new Error(
+        `Failed to stop proxy server: ${errors.map(e => e.message).join(', ')}`,
+      );
+    }
   }
 
   get url() {

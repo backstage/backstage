@@ -110,3 +110,49 @@ export const selectDisabledOptionsSnippet = `<Select
     { value: 'cursive', label: 'Cursive' },
   ]}
 />`;
+
+export const selectSectionsSnippet = `<Select
+  name="font"
+  label="Font Family"
+  options={[
+    {
+      title: 'Serif Fonts',
+      options: [
+        { value: 'times', label: 'Times New Roman' },
+        { value: 'georgia', label: 'Georgia' },
+        { value: 'garamond', label: 'Garamond' },
+      ],
+    },
+    {
+      title: 'Sans-Serif Fonts',
+      options: [
+        { value: 'arial', label: 'Arial' },
+        { value: 'helvetica', label: 'Helvetica' },
+        { value: 'verdana', label: 'Verdana' },
+      ],
+    },
+  ]}
+/>`;
+
+export const selectSearchableSectionsSnippet = `<Select
+  name="font"
+  label="Font Family"
+  searchable
+  searchPlaceholder="Search fonts..."
+  options={[
+    {
+      title: 'Serif Fonts',
+      options: [
+        { value: 'times', label: 'Times New Roman' },
+        { value: 'georgia', label: 'Georgia' },
+      ],
+    },
+    {
+      title: 'Sans-Serif Fonts',
+      options: [
+        { value: 'arial', label: 'Arial' },
+        { value: 'helvetica', label: 'Helvetica' },
+      ],
+    },
+  ]}
+/>`;

@@ -89,15 +89,28 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
     let retryTruncated = false;
 
     do {
+      // Sub-transaction allows a partial rollback if a truncated retry is needed
+      let subTx: Knex.Transaction;
+      try {
+        subTx = await this.tx!.transaction();
+      } catch (e) {
+        // If sub-transaction creation fails, rollback the outer transaction
+        // and re-throw the error so that the stream can be closed and
+        // destroyed properly.
+        this.tx!.rollback!(e);
+        throw e;
+      }
+
       // Attempt to complete and commit the transaction.
       try {
-        await this.store.completeInsert(this.tx!, this.type, retryTruncated);
-        this.tx!.commit();
+        await this.store.completeInsert(subTx, this.type, retryTruncated);
+
+        // Commit both transactions if successful
+        await subTx.commit();
+        await this.tx!.commit();
         retryTruncated = false;
       } catch (e) {
-        // Otherwise, rollback the transaction and re-throw the error so that the
-        // stream can be closed and destroyed properly.
-        this.tx!.rollback!(e);
+        await subTx.rollback(e); // Rollback the first completeInsert attempt
 
         if (
           e instanceof Error &&
@@ -108,6 +121,9 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
           // retry the operation with truncated text.
           retryTruncated = true;
         } else {
+          // Otherwise, rollback the outer transaction and re-throw the error so that the
+          // stream can be closed and destroyed properly.
+          this.tx!.rollback!(e);
           throw e;
         }
       }

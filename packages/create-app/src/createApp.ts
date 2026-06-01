@@ -67,8 +67,8 @@ export default async (opts: OptionValues): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
   const ownPaths = findOwnPaths(__dirname);
   const builtInTemplate = opts.legacy
-    ? ownPaths.resolve('templates/default-app')
-    : ownPaths.resolve('templates/next-app');
+    ? ownPaths.resolve('templates/legacy-app')
+    : ownPaths.resolve('templates/default-app');
 
   // Use `--template-path` argument as template when specified. Otherwise, use the default template.
   const templateDir = opts.templatePath

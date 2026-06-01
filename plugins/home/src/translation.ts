@@ -39,6 +39,10 @@ export const homeTranslationRef = createTranslationRef({
       noWidgets: "No widgets added. Start by clicking the 'Add widget' button.",
     },
     widgetSettingsOverlay: {
+      editSettingsTooltip: 'Edit settings',
+      /**
+       * @deprecated Use `editSettingsTooltip` instead. This was a typo in the original key.
+       */
       editSettingsTooptip: 'Edit settings',
       deleteWidgetTooltip: 'Delete widget',
       submitButtonTitle: 'Submit',

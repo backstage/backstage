@@ -34,14 +34,25 @@ import {
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
 import { durationToMilliseconds } from '@backstage/types';
-import { ChatPostMessageArguments, WebClient } from '@slack/web-api';
+import {
+  ChatPostMessageArguments,
+  ChatUpdateArguments,
+  WebClient,
+} from '@slack/web-api';
 import DataLoader from 'dataloader';
+import { Knex } from 'knex';
 import pThrottle from 'p-throttle';
 import { ANNOTATION_SLACK_BOT_NOTIFY } from './constants';
 import { BroadcastRoute } from './types';
 import { ExpiryMap, toChatPostMessageArgs } from './util';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { SlackBlockKitRenderer } from '../extensions';
+
+interface ScopeContext {
+  origin: string;
+  scope?: string;
+  isUpdate?: boolean;
+}
 
 export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly logger: LoggerService;
@@ -50,9 +61,12 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly slack: WebClient;
   private readonly sendNotifications: (
     opts: ChatPostMessageArguments[],
+    scopeContext?: ScopeContext,
   ) => Promise<void>;
   private readonly messagesSent: MetricsServiceCounter;
   private readonly messagesFailed: MetricsServiceCounter;
+  private readonly messagesUpdated: MetricsServiceCounter;
+  private db?: Knex;
   private readonly broadcastChannels?: string[];
   private readonly broadcastRoutes?: BroadcastRoute[];
   private readonly entityLoader: DataLoader<string, Entity | undefined>;
@@ -179,25 +193,42 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         unit: '{message}',
       },
     );
+    this.messagesUpdated = metrics.createCounter(
+      'notifications.processors.slack.update.count',
+      {
+        description:
+          'Number of existing Slack messages updated via scope matching',
+        unit: '{message}',
+      },
+    );
 
     const throttle = pThrottle({
       limit: this.concurrencyLimit,
       interval: this.throttleInterval,
     });
-    const throttled = throttle((opts: ChatPostMessageArguments) =>
-      this.sendNotification(opts),
+    const throttled = throttle(
+      (opts: ChatPostMessageArguments, ctx?: ScopeContext) =>
+        this.sendNotification(opts, ctx),
     );
-    this.sendNotifications = async (opts: ChatPostMessageArguments[]) => {
+    this.sendNotifications = async (
+      opts: ChatPostMessageArguments[],
+      scopeContext?: ScopeContext,
+    ) => {
       const results = await Promise.allSettled(
-        opts.map(message => throttled(message)),
+        opts.map(message => throttled(message, scopeContext)),
       );
 
-      let successCount = 0;
+      let sentCount = 0;
+      let updateCount = 0;
       let failureCount = 0;
 
       results.forEach((result, index) => {
         if (result.status === 'fulfilled') {
-          successCount++;
+          if (result.value === 'updated') {
+            updateCount++;
+          } else {
+            sentCount++;
+          }
         } else {
           this.logger.error(
             `Failed to send Slack channel notification to ${opts[index].channel}: ${result.reason.message}`,
@@ -206,9 +237,14 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         }
       });
 
-      this.messagesSent.add(successCount);
+      this.messagesSent.add(sentCount);
+      this.messagesUpdated.add(updateCount);
       this.messagesFailed.add(failureCount);
     };
+  }
+
+  setDatabase(db: Knex): void {
+    this.db = db;
   }
 
   getName(): string {
@@ -335,8 +371,11 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       this.logger.debug(`Sending notification: ${JSON.stringify(payload)}`);
     });
 
-    // Send notifications
-    await this.sendNotifications(outbound);
+    await this.sendNotifications(outbound, {
+      origin: notification.origin,
+      scope: notification.payload.scope,
+      isUpdate: !!notification.updated,
+    });
   }
 
   private async formatPayloadDescriptionForSlack(
@@ -432,11 +471,92 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     }
   }
 
-  async sendNotification(args: ChatPostMessageArguments): Promise<void> {
+  async sendNotification(
+    args: ChatPostMessageArguments,
+    scopeContext?: ScopeContext,
+  ): Promise<'sent' | 'updated'> {
+    const channel = args.channel as string;
+    const scope = scopeContext?.scope;
+
+    // If this is a scoped update, try to update the existing Slack message.
+    const origin = scopeContext?.origin;
+    if (scopeContext?.isUpdate && origin && scope && this.db) {
+      const storedTs = await this.getStoredTimestamp(origin, scope, channel);
+      if (storedTs) {
+        const updateArgs = {
+          channel,
+          ts: storedTs,
+          ...('text' in args ? { text: args.text } : {}),
+          ...('blocks' in args ? { blocks: args.blocks } : {}),
+          ...('attachments' in args ? { attachments: args.attachments } : {}),
+        } as ChatUpdateArguments;
+        const updateResponse = await this.slack.chat.update(updateArgs);
+
+        if (!updateResponse.ok) {
+          throw new Error(
+            `Failed to update notification: ${updateResponse.error}`,
+          );
+        }
+
+        return 'updated';
+      }
+    }
+
+    // Send a new message.
     const response = await this.slack.chat.postMessage(args);
 
     if (!response.ok) {
       throw new Error(`Failed to send notification: ${response.error}`);
+    }
+
+    // Persist the message timestamp for future scope-based updates.
+    if (origin && scope && response.ts && this.db) {
+      await this.saveTimestamp(origin, scope, channel, response.ts);
+    }
+
+    return 'sent';
+  }
+
+  private async getStoredTimestamp(
+    origin: string,
+    scope: string,
+    channel: string,
+  ): Promise<string | undefined> {
+    try {
+      const row = await this.db!('slack_message_timestamps')
+        .where({ origin, scope, channel })
+        .first();
+      return row?.ts;
+    } catch (error) {
+      this.logger.warn('Failed to look up stored Slack message timestamp', {
+        origin,
+        scope,
+        channel,
+        error,
+      });
+      return undefined;
+    }
+  }
+
+  private async saveTimestamp(
+    origin: string,
+    scope: string,
+    channel: string,
+    ts: string,
+  ): Promise<void> {
+    try {
+      const now = this.db!.fn.now();
+      await this.db!('slack_message_timestamps')
+        .insert({ origin, scope, channel, ts, created_at: now })
+        .onConflict(['origin', 'scope', 'channel'])
+        .merge({ ts, created_at: now });
+    } catch (error) {
+      this.logger.warn('Failed to persist Slack message timestamp', {
+        origin,
+        scope,
+        channel,
+        error,
+      });
     }
   }
 

@@ -26,7 +26,7 @@ import {
   DatabaseStore,
   PgSearchQuery,
 } from '../database';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { Config } from '@backstage/config';
 import { DatabaseService, LoggerService } from '@backstage/backend-plugin-api';
 

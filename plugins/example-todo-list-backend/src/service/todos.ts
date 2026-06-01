@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { NotFoundError } from '@backstage/errors';
 
 export type Todo = {

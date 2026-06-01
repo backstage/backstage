@@ -49,15 +49,6 @@ jest.mock('ctrlc-windows', () => ({
   ctrlc: jest.fn(),
 }));
 
-const mockToConfig = jest.fn();
-
-jest.mock('@backstage/config-loader', () => ({
-  ConfigSources: {
-    default: () => ({}),
-    toConfig: (...args: any[]) => mockToConfig(...args),
-  },
-}));
-
 const mockStartEmbeddedDb = jest.fn();
 
 jest.mock('./startEmbeddedDb', () => ({
@@ -84,11 +75,8 @@ describe('runBackend', () => {
     // Mock process.once to prevent actual signal handling
     jest.spyOn(process, 'once').mockReturnValue(process);
 
-    mockToConfig.mockResolvedValue({
-      close: jest.fn(),
-      getOptionalString: () => undefined,
-    });
     mockStartEmbeddedDb.mockReset();
+    mockStartEmbeddedDb.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -179,18 +167,16 @@ describe('runBackend', () => {
   });
 
   describe('embedded-postgres support', () => {
-    it('should start embedded DB and inject config when database client is embedded-postgres', async () => {
-      mockToConfig.mockResolvedValue({
-        close: jest.fn(),
-        getOptionalString: (key: string) =>
-          key === 'backend.database.client' ? 'embedded-postgres' : undefined,
-      });
+    it('should inject config override from startEmbeddedDb when it returns a result', async () => {
       mockStartEmbeddedDb.mockResolvedValue({
-        connection: {
-          host: 'localhost',
-          user: 'postgres',
-          password: 'password',
-          port: 5555,
+        configOverride: {
+          client: 'pg',
+          connection: {
+            host: 'localhost',
+            user: 'postgres',
+            password: 'password',
+            port: 5555,
+          },
         },
         close: jest.fn(),
       });
@@ -198,8 +184,10 @@ describe('runBackend', () => {
       runBackend({ entry: 'src/index' });
       await jest.advanceTimersByTimeAsync(100);
 
-      expect(mockStartEmbeddedDb).toHaveBeenCalled();
-      expect(mockSpawn).toHaveBeenCalled();
+      expect(mockStartEmbeddedDb).toHaveBeenCalledWith({
+        configPaths: undefined,
+        targetDir: undefined,
+      });
       const spawnEnv = mockSpawn.mock.calls[0][2]?.env as Record<
         string,
         string
@@ -216,18 +204,26 @@ describe('runBackend', () => {
       });
     });
 
-    it('should not start embedded DB for other database clients', async () => {
-      mockToConfig.mockResolvedValue({
-        close: jest.fn(),
-        getOptionalString: (key: string) =>
-          key === 'backend.database.client' ? 'better-sqlite3' : undefined,
+    it('should forward configPaths and targetDir to startEmbeddedDb', async () => {
+      runBackend({
+        entry: 'src/index',
+        targetDir: '/root/packages/backend',
+        configPaths: ['../../config/local.yaml'],
       });
+      await jest.advanceTimersByTimeAsync(100);
+
+      expect(mockStartEmbeddedDb).toHaveBeenCalledWith({
+        configPaths: ['../../config/local.yaml'],
+        targetDir: '/root/packages/backend',
+      });
+    });
+
+    it('should not inject config override when startEmbeddedDb returns undefined', async () => {
+      mockStartEmbeddedDb.mockResolvedValue(undefined);
 
       runBackend({ entry: 'src/index' });
       await jest.advanceTimersByTimeAsync(100);
 
-      expect(mockStartEmbeddedDb).not.toHaveBeenCalled();
-      expect(mockSpawn).toHaveBeenCalled();
       const spawnEnv = mockSpawn.mock.calls[0][2]?.env as Record<
         string,
         string

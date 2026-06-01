@@ -8,11 +8,11 @@ description: Configuring or overriding Swappable Components
 # Swappable components
 
 Swappable components are a feature of the frontend system that allow you to replace the implementations of components that are used in your Backstage app.
-These Swappable Components are defined using `createSwappableComponent` and then can be exported from a plugins `-react` package in order to be used in both other plugins, and to be rebound to a new implementation by the Backstage Integrator.
+These Swappable Components are defined using `createSwappableComponent` and then can be exported from a plugin's `-react` package in order to be used in both other plugins, and to be rebound to a new implementation by the Backstage Integrator.
 
 ## Creating a Swappable Component
 
-In order to create a Swappable Component, you need to use the `createSwappableComponent` function from the `@backstage/frontend-plugin-api` package. You can supply a default implementation for the component, as well as a way to separate both the props of the external component and in the implementation of the component.
+In order to create a Swappable Component, you need to use the `createSwappableComponent` function from the `@backstage/frontend-plugin-api` package. You can supply a default implementation for the component, as well as a way to separate the props of the external component from the props used by the implementation of the component.
 
 ```tsx title="in @internal/plugin-example-react"
 import { createSwappableComponent } from '@backstage/frontend-plugin-api';
@@ -20,9 +20,9 @@ import { createSwappableComponent } from '@backstage/frontend-plugin-api';
 export const ExampleSwappableComponent = createSwappableComponent({
   name: 'example',
 
-  // This is a loader for loading the default implementation of the component when there's no overriden
+  // This is a loader for loading the default implementation of the component when there's no overriding
   // implementation created with `SwappableComponentBlueprint`.
-  // It can be sync like below, but is can also be async like `loader: () => import('./DefaultImplementation').then(m => m.DefaultImplementation)`.
+  // It can be sync like below, but it can also be async like `loader: () => import('./DefaultImplementation').then(m => m.DefaultImplementation)`.
   loader: () => (props: { name: string }) =>
     <div>Your name is {props.name}</div>,
 
@@ -60,7 +60,7 @@ import appPlugin from '@backstage/plugin-app';
 
 const app = createApp({
   features: [
-    // Using a module to provide the extenion to the app
+    // Using a module to provide the extension to the app
     createFrontendModule({
       pluginId: 'app',
       extensions: [
@@ -74,7 +74,7 @@ const app = createApp({
         }),
       ],
     }),
-    // Core components that already ship with the app plugin can be overriden using getExtension()
+    // Core components that already ship with the app plugin can be overridden using getExtension()
     appPlugin.withOverrides({
       extensions: [
         appPlugin.getExtension('component:app/core-progress').override({
@@ -94,9 +94,9 @@ const app = createApp({
 
 Currently there are only three different built-in Swappable Components that you can replace the implementations of, and these live in `@backstage/frontend-plugin-api`. They are as follows:
 
-- `<Progress />
-- `<ErrorDisplay />
-- `<NotFoundErrorPage />
+- `<Progress />`
+- `<ErrorDisplay />`
+- `<NotFoundErrorPage />`
 
 You can see more about these components at their [definition](https://github.com/backstage/backstage/blob/master/packages/frontend-plugin-api/src/components/DefaultSwappableComponents.tsx), and their default implementations are shipped inside the [`app-plugin`](https://github.com/backstage/backstage/blob/master/plugins/app/src/extensions/components.tsx).
 

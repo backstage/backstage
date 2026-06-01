@@ -29,7 +29,6 @@ import styles from './Card.module.css';
  */
 export const CardDefinition = defineComponent<CardOwnProps>()({
   styles,
-  resolveHref: true,
   classNames: {
     root: 'bui-Card',
     trigger: 'bui-CardTrigger',
@@ -43,7 +42,9 @@ export const CardDefinition = defineComponent<CardOwnProps>()({
     target: {},
     rel: {},
     download: {},
+    style: {},
   },
+  utilityProps: ['grow', 'shrink', 'basis'],
 });
 
 /**

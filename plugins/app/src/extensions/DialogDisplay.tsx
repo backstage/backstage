@@ -22,8 +22,7 @@ import {
   dialogApiRef,
 } from '@backstage/frontend-plugin-api';
 import { createDeferred } from '@backstage/types';
-import { OnShowDialog } from '../apis/DefaultDialogApi';
-import Dialog from '@material-ui/core/Dialog';
+import { OnOpenDialog } from '../apis/DefaultDialogApi';
 
 let dialogId = 0;
 function getDialogId() {
@@ -33,20 +32,25 @@ function getDialogId() {
 
 type DialogState = DialogApiDialog<unknown> & {
   id: string;
-  modal: boolean;
 };
 
 /**
  * The other half of the default implementation of the {@link DialogApi}.
  *
- * This component is responsible for rendering the dialogs in the React tree and managing a stack of dialogs.
- * It expects the implementation of the {@link DialogApi} to be the `DefaultDialogApi`. If one is replaced the other must be too.
+ * This component is responsible for rendering the dialogs in the React tree
+ * and managing a stack of dialogs. It renders only the most recently opened
+ * dialog, without any dialog chrome — the caller is expected to provide their
+ * own dialog component (overlay, backdrop, surface, etc.).
+ *
+ * It expects the implementation of the {@link DialogApi} to be the
+ * `DefaultDialogApi`. If one is replaced the other must be too.
+ *
  * @internal
  */
 function DialogDisplay({
   dialogApi,
 }: {
-  dialogApi: DialogApi & { connect(onShow: OnShowDialog): void };
+  dialogApi: DialogApi & { connect(onOpen: OnOpenDialog): void };
 }) {
   const [dialogs, setDialogs] = useState<
     { dialog: DialogState; element: React.JSX.Element }[]
@@ -58,7 +62,6 @@ function DialogDisplay({
       const deferred = createDeferred<unknown>();
       const dialog: DialogState = {
         id,
-        modal: options.modal,
         close(result) {
           deferred.resolve(result);
           setDialogs(ds => ds.filter(d => d.dialog.id !== id));
@@ -85,19 +88,7 @@ function DialogDisplay({
   }, [dialogApi]);
 
   if (dialogs.length > 0) {
-    const lastDialog = dialogs[dialogs.length - 1];
-    return (
-      <Dialog
-        open
-        onClose={() => {
-          if (!lastDialog.dialog.modal) {
-            lastDialog.dialog.close();
-          }
-        }}
-      >
-        {lastDialog.element}
-      </Dialog>
-    );
+    return dialogs[dialogs.length - 1].element;
   }
 
   return null;
@@ -121,7 +112,7 @@ export const dialogDisplayAppRootElement =
 
 function isInternalDialogApi(
   dialogApi?: DialogApi,
-): dialogApi is DialogApi & { connect(onShow: OnShowDialog): void } {
+): dialogApi is DialogApi & { connect(onOpen: OnOpenDialog): void } {
   if (!dialogApi) {
     return false;
   }

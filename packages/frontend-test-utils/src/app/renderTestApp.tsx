@@ -25,6 +25,8 @@ import {
   ExtensionDefinition,
   FrontendFeature,
   RouteRef,
+  ExternalRouteRef,
+  createRouteRef,
   type ApiRef,
 } from '@backstage/frontend-plugin-api';
 import { render, type RenderResult } from '@testing-library/react';
@@ -37,6 +39,7 @@ import { getMockApiFactory } from '../apis/MockWithApiFactory';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
 import { TestApiPairs } from '../apis/TestApiProvider';
+import { OpaqueExternalRouteRef } from '@internal/frontend';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -70,7 +73,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
 
   /**
    * An object of paths to mount route refs on, with the key being the path and
-   * the value being the RouteRef that the path will be bound to. This allows
+   * the value being the route ref that the path will be bound to. This allows
    * the route refs to be used by `useRouteRef` in the rendered elements.
    *
    * @example
@@ -83,7 +86,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
    * })
    * ```
    */
-  mountedRoutes?: { [path: string]: RouteRef };
+  mountedRoutes?: { [path: string]: RouteRef | ExternalRouteRef };
 
   /**
    * API overrides to provide to the test app. Use `mockApis` helpers
@@ -121,8 +124,20 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
 ): RenderResult {
   const extensions = [...(options?.extensions ?? [])];
 
+  const externalBindings = new Map<ExternalRouteRef, RouteRef>();
+
   if (options?.mountedRoutes) {
-    for (const [path, routeRef] of Object.entries(options.mountedRoutes)) {
+    for (const [path, optionRef] of Object.entries(options.mountedRoutes)) {
+      let routeRef: RouteRef;
+
+      if (OpaqueExternalRouteRef.isType(optionRef)) {
+        // Create an actual route ref for the external route, then bind the external ref to it
+        routeRef = createRouteRef();
+        externalBindings.set(optionRef, routeRef);
+      } else {
+        routeRef = optionRef;
+      }
+
       extensions.push(
         createExtension({
           kind: 'test-route',
@@ -193,6 +208,14 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
         return createApiFactory(apiRef, implementation);
       }),
     },
+    bindRoutes:
+      externalBindings.size > 0
+        ? ({ bind }) => {
+            for (const [externalRef, targetRef] of externalBindings) {
+              bind({ ref: externalRef }, { ref: targetRef });
+            }
+          }
+        : undefined,
   } as CreateSpecializedAppInternalOptions).finalize();
 
   return render(

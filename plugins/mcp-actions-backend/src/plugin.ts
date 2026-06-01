@@ -26,6 +26,7 @@ import {
   actionsRegistryServiceRef,
   actionsServiceRef,
   metricsServiceRef,
+  tracingServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
 import { parseServerConfigs } from './config';
 
@@ -49,6 +50,7 @@ export const mcpPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         config: coreServices.rootConfig,
         metrics: metricsServiceRef,
+        tracing: tracingServiceRef,
       },
       async init({
         actions,
@@ -59,16 +61,22 @@ export const mcpPlugin = createBackendPlugin({
         discovery,
         config,
         metrics,
+        tracing,
       }) {
         const serverConfigs = parseServerConfigs(config);
         const namespacedToolNames = config.getOptionalBoolean(
           'mcpActions.namespacedToolNames',
         );
+        const captureToolPayloads =
+          config.getOptionalBoolean('mcpActions.tracing.capture.toolPayload') ??
+          false;
 
         const mcpService = await McpService.create({
           actions,
           metrics,
           namespacedToolNames,
+          tracingService: tracing,
+          captureToolPayloads,
         });
 
         const router = Router();
@@ -81,6 +89,7 @@ export const mcpPlugin = createBackendPlugin({
               httpAuth,
               logger,
               metrics,
+              tracing,
               serverConfig,
             });
 
@@ -97,6 +106,7 @@ export const mcpPlugin = createBackendPlugin({
           const sseRouter = createSseRouter({
             mcpService,
             httpAuth,
+            tracing,
             serverConfig,
           });
 
@@ -105,6 +115,7 @@ export const mcpPlugin = createBackendPlugin({
             httpAuth,
             logger,
             metrics,
+            tracing,
             serverConfig,
           });
 
@@ -140,19 +151,28 @@ export const mcpPlugin = createBackendPlugin({
           // Protected Resource Metadata (RFC 9728)
           // https://datatracker.ietf.org/doc/html/rfc9728
           // This allows MCP clients to discover the authorization server for this resource
-          rootRouter.use(
-            '/.well-known/oauth-protected-resource',
-            async (_, res) => {
-              const [authBaseUrl, mcpBaseUrl] = await Promise.all([
-                discovery.getExternalBaseUrl('auth'),
-                discovery.getExternalBaseUrl('mcp-actions'),
-              ]);
-              res.json({
-                resource: mcpBaseUrl,
-                authorization_servers: [authBaseUrl],
-              });
-            },
-          );
+          const serverSuffixes = serverConfigs?.size
+            ? [...serverConfigs.keys()].map(key => `/v1/${key}`)
+            : ['/v1'];
+
+          for (const suffix of serverSuffixes) {
+            const mcpBasePath = `/api/mcp-actions${suffix}`;
+
+            rootRouter.use(
+              `/.well-known/oauth-protected-resource${mcpBasePath}`,
+              async (_req, res) => {
+                const [authBaseUrl, mcpBaseUrl] = await Promise.all([
+                  discovery.getExternalBaseUrl('auth'),
+                  discovery.getExternalBaseUrl('mcp-actions'),
+                ]);
+
+                res.json({
+                  resource: `${mcpBaseUrl}${suffix}`,
+                  authorization_servers: [authBaseUrl],
+                });
+              },
+            );
+          }
         }
       },
     });

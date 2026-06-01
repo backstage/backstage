@@ -1,5 +1,29 @@
 # @backstage/cli-module-translations
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.2
+  - @backstage/cli-common@0.2.2
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.2-next.0
+  - @backstage/cli-node@0.3.2-next.0
+
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.1
+  - @backstage/cli-node@0.3.1
+
 ## 0.1.1-next.0
 
 ### Patch Changes

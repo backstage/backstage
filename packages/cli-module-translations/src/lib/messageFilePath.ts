@@ -54,16 +54,6 @@ export function createMessagePathParser(
   };
 }
 
-/** Converts a message pattern into a glob string for discovering files. */
-export function messagePatternToGlob(pattern: string): string {
-  return pattern.replace(/\{id\}/g, '*').replace(/\{lang\}/g, '*');
-}
-
-/** Returns whether the pattern produces paths with subdirectories. */
-export function patternHasSubdirectories(pattern: string): boolean {
-  return pattern.includes('/');
-}
-
 export function validatePattern(pattern: string) {
   if (!pattern.includes('{id}')) {
     throw new Error(

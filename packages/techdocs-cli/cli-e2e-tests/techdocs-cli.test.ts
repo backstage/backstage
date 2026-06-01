@@ -60,6 +60,7 @@ jest.setTimeout(timeout * 2);
 
 describe('end-to-end', () => {
   const cwd = path.resolve(__dirname, '../src/example-docs');
+  const legacyCwd = path.resolve(__dirname, '../src/legacy-docs');
   const entryPoint = path.resolve(__dirname, '../bin/techdocs-cli');
 
   afterEach(async () => {
@@ -102,6 +103,19 @@ describe('end-to-end', () => {
       timeout,
       env,
     });
+    expect(proc.stdout).toContain('Successfully generated docs');
+    expect(proc.exit).toEqual(0);
+  });
+
+  it('can generate with --legacyCopyReadmeMdToIndexMd option', async () => {
+    const proc = await executeCommand(
+      entryPoint,
+      ['generate', '--no-docker', '--legacyCopyReadmeMdToIndexMd'],
+      {
+        cwd: legacyCwd,
+        timeout: timeout,
+      },
+    );
     expect(proc.stdout).toContain('Successfully generated docs');
     expect(proc.exit).toEqual(0);
   });

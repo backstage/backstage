@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="135 47 200 200">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="0" dy="3" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Edges -->
+  <path d="M 230 80 C 250 80, 250 67.5, 270 67.5" fill="none" stroke="#888" stroke-width="2" />
+  <path d="M 190 105 L 190 160" fill="none" stroke="#888" stroke-width="2" />
+
+  <!-- 1. Template Node (Center) -->
+  <g filter="url(#shadow)">
+    <path d="M 150 61 A 6 6 0 0 1 156 55 L 224 55 A 6 6 0 0 1 230 61 L 230 71 L 150 71 Z" fill="#bd93f9" />
+    <path d="M 150 61 A 6 6 0 0 1 156 55 L 224 55 A 6 6 0 0 1 230 61 L 230 71 L 150 71 Z" fill="none" stroke="#bd93f9" stroke-width="2" />
+    <path d="M 150 71 L 230 71 L 230 99 A 6 6 0 0 1 224 105 L 156 105 A 6 6 0 0 1 150 99 Z" fill="#44475a" />
+    <rect x="150" y="55" width="80" height="50" rx="6" fill="none" stroke="#44475a" stroke-width="2" />
+    <rect x="170" y="60" width="40" height="6" rx="2" fill="#282a36" opacity="0.7" />
+    <rect x="158" y="78" width="20" height="3" rx="1.5" fill="#f8f8f2" opacity="0.5" />
+    <rect x="158" y="85" width="50" height="3" rx="1.5" fill="#f8f8f2" opacity="0.3" />
+    <rect x="158" y="92" width="40" height="3" rx="1.5" fill="#f8f8f2" opacity="0.3" />
+  </g>
+
+  <!-- 2. Step Node (Top Right) -->
+  <g filter="url(#shadow)">
+    <path d="M 270 61 A 6 6 0 0 1 276 55 L 324 55 A 6 6 0 0 1 330 61 L 330 67 L 270 67 Z" fill="#ffb86c" />
+    <path d="M 270 67 L 330 67 L 330 74 A 6 6 0 0 1 324 80 L 276 80 A 6 6 0 0 1 270 74 Z" fill="#44475a" />
+    <rect x="270" y="55" width="60" height="25" rx="6" fill="none" stroke="#ffb86c" stroke-width="2" />
+    <rect x="275" y="59" width="20" height="4" rx="2" fill="#282a36" opacity="0.6" />
+  </g>
+
+  <!-- 3. Parameters Group (Bottom) -->
+  <g>
+    <rect x="140" y="160" width="120" height="80" rx="8" fill="none" stroke="#50fa7b" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.8" />
+    <rect x="145" y="152" width="50" height="16" rx="4" fill="#50fa7b" />
+    <rect x="150" y="157" width="40" height="6" rx="2" fill="#282a36" opacity="0.7" />
+
+    <!-- 4. Property Node (Inside) -->
+    <g filter="url(#shadow)">
+      <rect x="160" y="180" width="80" height="40" rx="6" fill="none" stroke="#44475a" stroke-width="2" />
+      <path d="M 160 186 A 6 6 0 0 1 166 180 L 234 180 A 6 6 0 0 1 240 186 L 240 192 L 160 192 Z" fill="#f1fa8c" />
+      <path d="M 160 192 L 240 192 L 240 214 A 6 6 0 0 1 234 220 L 166 220 A 6 6 0 0 1 160 214 Z" fill="#44475a" />
+      <rect x="170" y="184" width="30" height="4" rx="2" fill="#282a36" opacity="0.8" />
+      <rect x="168" y="200" width="20" height="10" rx="5" fill="none" stroke="#f8f8f2" stroke-width="1" opacity="0.5" />
+      <rect x="172" y="203" width="12" height="4" rx="2" fill="#f8f8f2" opacity="0.5" />
+    </g>
+  </g>
+</svg>

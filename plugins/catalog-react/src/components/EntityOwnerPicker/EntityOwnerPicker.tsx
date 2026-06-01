@@ -33,11 +33,15 @@ import { EntityOwnerFilter } from '../../filters';
 import { useDebouncedEffect } from '@react-hookz/web';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupIcon from '@material-ui/icons/Group';
-import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
+import {
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
+} from '../../apis';
 import { useFetchEntities } from './useFetchEntities';
 import { withStyles } from '@material-ui/core/styles';
 import { useEntityPresentation } from '../../apis';
 import { catalogReactTranslationRef } from '../../translation';
+import { useApiHolder } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogAutocomplete } from '../CatalogAutocomplete';
 
@@ -124,6 +128,8 @@ function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
 export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   const classes = useStyles();
   const { mode = 'owners-only' } = props || {};
+  const apis = useApiHolder();
+  const entityPresentationApi = apis.get(entityPresentationApiRef);
   const {
     updateFilters,
     filters,
@@ -203,7 +209,11 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
                   defaultNamespace: 'default',
                 })
               : o;
-          return humanizeEntity(entity, humanizeEntityRef(entity));
+          return entityPresentationSnapshot(
+            entity,
+            undefined,
+            entityPresentationApi,
+          ).primaryTitle;
         }}
         onChange={(_: object, owners) => {
           setText('');

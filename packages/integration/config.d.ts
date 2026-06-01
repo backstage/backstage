@@ -115,7 +115,6 @@ export interface Config {
     bitbucketCloud?: Array<{
       /**
        * The username to use for authenticated requests.
-       * @visibility secret
        */
       username?: string;
       /**

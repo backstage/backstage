@@ -35,7 +35,7 @@ If you must preserve the default React import for compatibility reasons, you can
 import { default as React } from 'react';
 ```
 
-To streamline this process, consider using an automated codemod. Instructions are available in this [migration guide](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/jsx-migration-codemod.md).
+To streamline this process, consider using an [automated codemod](https://app.codemod.com/registry/jsx-new-transform).
 
 ### Updating Configuration Files
 

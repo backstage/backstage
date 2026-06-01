@@ -24,12 +24,27 @@ import styles from './Header.module.css';
  */
 export const HeaderDefinition = defineComponent<HeaderOwnProps>()({
   styles,
+  bg: 'consumer',
   classNames: {
-    root: 'bui-Header',
+    headerTop: 'bui-HeaderTop',
+    stickySentinel: 'bui-HeaderStickySentinel',
     content: 'bui-HeaderContent',
+    headerBottom: 'bui-HeaderBottom',
     breadcrumbs: 'bui-HeaderBreadcrumbs',
+    breadcrumbsSmall: 'bui-HeaderBreadcrumbsSmall',
+    breadcrumbLink: 'bui-HeaderBreadcrumbLink',
+    breadcrumbLinkSmall: 'bui-HeaderBreadcrumbLinkSmall',
+    breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator',
+    titleStack: 'bui-HeaderTitleStack',
+    title: 'bui-HeaderTitle',
+    titleSmall: 'bui-HeaderTitleSmall',
     tabsWrapper: 'bui-HeaderTabsWrapper',
     controls: 'bui-HeaderControls',
+    tags: 'bui-HeaderTags',
+    tag: 'bui-HeaderTag',
+    description: 'bui-HeaderDescription',
+    metaRow: 'bui-HeaderMetaRow',
+    metaItem: 'bui-HeaderMetaItem',
   },
   propDefs: {
     title: {},
@@ -37,7 +52,11 @@ export const HeaderDefinition = defineComponent<HeaderOwnProps>()({
     tabs: {},
     activeTabId: {},
     breadcrumbs: {},
+    description: {},
+    tags: {},
+    metadata: {},
     className: {},
+    sticky: {},
   },
 });
 

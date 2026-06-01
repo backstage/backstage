@@ -26,6 +26,7 @@ export {
 export { getJsonValueAtPath } from './getJsonValueAtPath';
 export {
   createZodV3FilterPredicateSchema,
+  createZodV4FilterPredicateSchema,
   parseFilterPredicate,
 } from './schema';
 export type {

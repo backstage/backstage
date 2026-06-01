@@ -16,7 +16,7 @@
 
 import { ReactElement, ChangeEvent, useRef } from 'react';
 import { capitalize } from 'lodash';
-import { v4 as uuid } from 'uuid';
+
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -181,7 +181,7 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     defaultValues,
     valuesDebounceMs,
   );
-  const allOptionValue = useRef(uuid());
+  const allOptionValue = useRef(globalThis.crypto.randomUUID());
   const allOption = {
     value: allOptionValue.current,
     label: t('searchFilter.allOptionTitle'),

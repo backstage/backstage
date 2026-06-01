@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 import { EntityNamePickerProps } from './schema';
-import TextField from '@material-ui/core/TextField';
+import MuiTextField from '@material-ui/core/TextField';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { TextField as BuiTextField } from '@backstage/ui';
 
 export { EntityNamePickerSchema } from './schema';
 
@@ -24,6 +26,7 @@ export { EntityNamePickerSchema } from './schema';
  * EntityName Picker
  */
 export const EntityNamePicker = (props: EntityNamePickerProps) => {
+  const theme = useScaffolderTheme();
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
     onChange,
@@ -34,13 +37,32 @@ export const EntityNamePicker = (props: EntityNamePickerProps) => {
     },
     rawErrors,
     formData,
+    uiSchema,
     uiSchema: { 'ui:autofocus': autoFocus },
     idSchema,
     placeholder,
   } = props;
 
+  if (theme === 'bui') {
+    return (
+      <BuiTextField
+        id={idSchema?.$id}
+        label={title}
+        description={uiSchema['ui:description'] ?? description}
+        secondaryLabel={required ? 'Required' : undefined}
+        placeholder={placeholder}
+        isRequired={required}
+        value={formData ?? ''}
+        onChange={onChange}
+        isInvalid={rawErrors?.length > 0 && !formData}
+        // eslint-disable-next-line jsx-a11y/no-autofocus
+        autoFocus={autoFocus}
+      />
+    );
+  }
+
   return (
-    <TextField
+    <MuiTextField
       id={idSchema?.$id}
       label={title}
       placeholder={placeholder}

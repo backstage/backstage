@@ -142,9 +142,7 @@ down the number of duplicate packages.
 
 ## Proxy
 
-On Node.js 22.21.0+, the Backstage CLI respects the standard `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` environment variables when `NODE_USE_ENV_PROXY=1` is set. See the [corporate proxy guide](../../tutorials/corporate-proxy.md) for full details.
-
-On older Node.js versions, the CLI falls back to [global-agent](https://www.npmjs.com/package/global-agent) and `undici` for proxy support, which require their own environment variables (prefixed with `GLOBAL_AGENT_`). This allows you to route the CLI’s network traffic through a proxy server, which can be useful in environments with restricted internet access.
+The Backstage CLI respects the standard `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` environment variables when `NODE_USE_ENV_PROXY=1` is set. See the [corporate proxy guide](../../tutorials/corporate-proxy.md) for full details.
 
 Additionally, `yarn` needs a proxy too (sometimes), when in environments with restricted internet access. It uses different settings than the other modules. If you decide to use the backstage yarn plugin [mentioned above](#managing-package-versions-with-the-backstage-yarn-plugin), you will need to set additional proxy values.
 If you will always need proxy settings in all environments and situations, you can add `httpProxy` and `httpsProxy` values to [the yarnrc.yml file](https://yarnpkg.com/configuration/yarnrc). If some environments need it (say a developer workstation) but other environments do not (perhaps a CI build server running on AWS), then you may not want to update the yarnrc.yml file but just set environment variables `YARN_HTTP_PROXY` and `YARN_HTTPS_PROXY` in the environments/situations where you need to proxy.
@@ -155,12 +153,9 @@ If you will always need proxy settings in all environments and situations, you c
 
 ```bash
 export HTTP_PROXY=http://proxy.company.com:8080
-export HTTPS_PROXY=https://secure-proxy.company.com:8080
+export HTTPS_PROXY=http://proxy.company.com:8080
 export NO_PROXY=localhost,internal.company.com
-export NODE_USE_ENV_PROXY=1                                   # Node.js 22.21.0+
-export GLOBAL_AGENT_HTTP_PROXY=${HTTP_PROXY}                  # Node.js < 22.21.0
-export GLOBAL_AGENT_HTTPS_PROXY=${HTTPS_PROXY}                # Node.js < 22.21.0
-export GLOBAL_AGENT_NO_PROXY=${NO_PROXY}                      # Node.js < 22.21.0
+export NODE_USE_ENV_PROXY=1
 export YARN_HTTP_PROXY=${HTTP_PROXY}                          # optional
 export YARN_HTTPS_PROXY=${HTTPS_PROXY}                        # optional
 ```
