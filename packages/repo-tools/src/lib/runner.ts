@@ -18,41 +18,21 @@ import { targetPaths } from '@backstage/cli-common';
 import { resolvePackagePaths } from './paths';
 import pLimit from 'p-limit';
 import { relative as relativePath } from 'node:path';
-import portFinder from 'portfinder';
 
 export async function runner(
   paths: string[],
-  command: (dir: string, options?: { port: number }) => Promise<void>,
-  options?: {
-    concurrencyLimit: number;
-    startingPort?: number;
-  },
+  command: (dir: string) => Promise<void>,
 ) {
   const packages = await resolvePackagePaths({ paths });
-  const limit = pLimit(options?.concurrencyLimit ?? 5);
-  let port =
-    options?.startingPort &&
-    (await portFinder.getPortPromise({
-      // Prevent collisions with optic which runs 8000->8999
-      port: options.startingPort,
-      stopPort: options.startingPort + 1_000,
-    }));
+  const limit = pLimit(5);
 
   const resultsList = await Promise.all(
     packages.map(pkg =>
       limit(async () => {
         let resultText = '';
         try {
-          if (port)
-            port =
-              options?.startingPort &&
-              (await portFinder.getPortPromise({
-                // Prevent collisions with optic which runs 8000->8999
-                port: port + 1,
-                stopPort: options.startingPort + 1_000,
-              }));
           console.log(`## Processing ${pkg}`);
-          await command(pkg, port ? { port } : undefined);
+          await command(pkg);
         } catch (err) {
           resultText = err.message;
         }

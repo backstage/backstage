@@ -17,6 +17,7 @@
 import { toError } from '@backstage/errors';
 import { Command } from 'commander';
 import { exitWithError } from '../lib/errors';
+import { DEFAULT_BASE_REF } from '../lib/openapi/constants';
 
 function registerPackageCommand(program: Command) {
   const command = program
@@ -32,15 +33,6 @@ function registerPackageCommand(program: Command) {
   const openApiCommand = schemaCommand
     .command('openapi [command]')
     .description('Tooling for OpenAPI schema');
-
-  openApiCommand
-    .command('init')
-    .description(
-      'Initialize any required files to use the OpenAPI tooling for this package.',
-    )
-    .action(
-      lazy(() => import('./package/schema/openapi/init'), 'singleCommand'),
-    );
 
   openApiCommand
     .command('generate')
@@ -121,12 +113,6 @@ function registerRepoCommand(program: Command) {
     .action(lazy(() => import('./repo/schema/openapi/lint'), 'bulkCommand'));
 
   openApiCommand
-    .command('test [paths...]')
-    .description('Test OpenAPI schemas against written tests')
-    .option('--update', 'Update the spec on failure.')
-    .action(lazy(() => import('./repo/schema/openapi/test'), 'bulkCommand'));
-
-  openApiCommand
     .command('fuzz')
     .description('Fuzz all packages')
     .option(
@@ -138,12 +124,12 @@ function registerRepoCommand(program: Command) {
   openApiCommand
     .command('diff')
     .description(
-      'Diff the repository against a specific ref, will run all package `diff` scripts.',
+      'Diff all OpenAPI specs in the repository against a specific ref.',
     )
     .option(
       '--since <ref>',
       'Diff the API against a specific ref',
-      'origin/master',
+      DEFAULT_BASE_REF,
     )
     .action(lazy(() => import('./repo/schema/openapi/diff'), 'command'));
 }

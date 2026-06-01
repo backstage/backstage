@@ -38,7 +38,6 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "diff": "backstage-repo-tools package schema openapi diff",
     "fuzz": "backstage-repo-tools package schema openapi fuzz --exclude-checks response_schema_conformance",
     "generate": "backstage-repo-tools package schema openapi generate --server --client-package packages/frontend-dynamic-feature-loader",
     "lint": "backstage-cli package lint",

@@ -1,0 +1,14 @@
+{{ if .GroupedChanges }}
+{{ range pathGroups .GroupedChanges }}
+### {{ .Group.Operation }} {{ .Group.Path }}
+{{ range .Changes }}- {{ if .IsBreaking }}:warning:{{ end }} {{ .Text }}
+{{ end }}
+{{ end }}
+{{ range sectionGroups .GroupedChanges }}
+### {{ capitalize .Group.Section }}
+{{ range .Changes }}- {{ if .IsBreaking }}:warning:{{ end }} {{ .Text }}
+{{ end }}
+{{ end }}
+{{ else }}
+No changes
+{{ end }}
