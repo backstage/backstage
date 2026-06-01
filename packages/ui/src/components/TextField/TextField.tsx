@@ -43,8 +43,17 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       floatingLabel,
     } = ownProps;
 
+    const getInputValue = (value: unknown) =>
+      value == null ? '' : String(value);
     const [isFocused, setIsFocused] = useState(false);
-    const [inputValue, setInputValue] = useState('');
+    // const [inputValue, setInputValue] = useState('');
+    const [inputValue, setInputValue] = useState(() =>
+      getInputValue(restProps.value ?? restProps.defaultValue),
+    );
+
+    useEffect(() => {
+      setInputValue(getInputValue(restProps.value ?? restProps.defaultValue));
+    }, [restProps.value, restProps.defaultValue]);
 
     useEffect(() => {
       if (!label && !restProps['aria-label'] && !restProps['aria-labelledby']) {

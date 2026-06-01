@@ -44,7 +44,7 @@ export type TextFieldOwnProps = {
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
 
   /**
-   * Enable floating label that animates on focus
+   * Enable a floating label that animates on focus and remains floated when the input has a non-empty value
    * @defaultValue false
    */
   floatingLabel?: boolean;

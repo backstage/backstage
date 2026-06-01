@@ -22,6 +22,11 @@ export const textFieldPropDefs: Record<string, PropDef> = {
     type: 'string',
     description: 'Visible label displayed above the input.',
   },
+  floatingLabel: {
+    type: 'boolean',
+    description:
+      'When enabled, the label floats above the input when it has a value or focus.',
+  },
   secondaryLabel: {
     type: 'string',
     description: (
