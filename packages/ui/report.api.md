@@ -8,7 +8,7 @@ import { CellProps as CellProps_2 } from 'react-aria-components';
 import type { CheckboxGroupProps as CheckboxGroupProps_2 } from 'react-aria-components';
 import type { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
-import type { ColumnSize as ReactStatelyColumnSize } from 'react-stately';
+import type { ColumnSize as ColumnSize_2 } from 'react-stately';
 import type { ColumnStaticSize } from 'react-stately';
 import type { ComboBoxProps } from 'react-aria-components';
 import type { ComponentProps } from 'react';
@@ -995,9 +995,6 @@ export interface ColumnProps
   extends ColumnOwnProps,
     Omit<ColumnProps_2, keyof ColumnOwnProps> {}
 
-// @public
-export type ColumnSize = ReactStatelyColumnSize;
-
 // @public (undocumented)
 export type Columns =
   | '1'
@@ -1013,6 +1010,9 @@ export type Columns =
   | '11'
   | '12'
   | 'auto';
+
+// @public
+export type ColumnSize = ColumnSize_2;
 
 // @public
 export const Combobox: ForwardRefExoticComponent<
