@@ -21724,16 +21724,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"GendocuPublicApis@npm:gendocu-public-apis@^1.0.0":
-  version: 1.0.3
-  resolution: "gendocu-public-apis@npm:1.0.3"
-  dependencies:
-    "@improbable-eng/grpc-web": "npm:^0.14.0"
-    google-protobuf: "npm:^3.15.8"
-  checksum: 10/261a5cc97b599a7dfb492ac048e6bfce3f3bf64627f2b80ef195d5b6cefdbd4668d2b2ccd10676f01eb4f7862a5d19da567dd6ade9fc39a15268e81862308f7c
-  languageName: node
-  linkType: hard
-
 "a-sync-waterfall@npm:^1.0.0":
   version: 1.0.1
   resolution: "a-sync-waterfall@npm:1.0.1"
