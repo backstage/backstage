@@ -28,6 +28,7 @@ export const TextFieldDefinition = defineComponent<TextFieldOwnProps>()({
     root: 'bui-TextField',
     inputWrapper: 'bui-InputWrapper',
     input: 'bui-Input',
+    inputFloating: 'bui-Input--floating',
     inputIcon: 'bui-InputIcon',
     inputAction: 'bui-InputAction',
   },

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect, useState, useCallback } from 'react';
+import { forwardRef, useEffect, useState, useCallback, useId } from 'react';
 import { Input, TextField as AriaTextField } from 'react-aria-components';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
@@ -43,6 +43,9 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       floatingLabel,
     } = ownProps;
 
+    const autoId = useId();
+    const inputId = restProps.id || autoId;
+
     const getInputValue = (value: unknown) =>
       value == null ? '' : String(value);
     const [isFocused, setIsFocused] = useState(false);
@@ -70,17 +73,17 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           restProps.onFocus(e);
         }
       },
-      [restProps],
+      [restProps.onFocus],
     );
 
     const handleBlur = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
-        setIsFocused(e.target.value !== '');
+        setIsFocused(false);
         if (restProps.onBlur) {
           restProps.onBlur(e);
         }
       },
-      [restProps],
+      [restProps.onBlur],
     );
 
     const handleChange = useCallback(
@@ -90,12 +93,15 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           restProps.onChange(value);
         }
       },
-      [restProps],
+      [restProps.onChange],
     );
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
       secondaryLabel || (restProps.isRequired ? 'Required' : null);
+
+    // Determine if the label should float based on focus or input value
+    const shouldFloat = isFocused || inputValue !== '';
 
     return (
       <AriaTextField
@@ -140,8 +146,14 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
             </div>
           )}
           <Input
-            className={classes.input}
+            className={`${classes.input}${
+              floatingLabel ? ` ${classes.inputFloating}` : ''
+            }`}
             {...(icon && { 'data-icon': true })}
+            {...(floatingLabel && {
+              'data-should-float': shouldFloat ? 'true' : 'false',
+            })}
+            id={inputId}
             placeholder={
               floatingLabel
                 ? isFocused && !inputValue
@@ -149,41 +161,29 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
                   : ''
                 : placeholder
             }
-            style={
-              floatingLabel
-                ? {
-                    paddingTop: isFocused || inputValue ? '2px' : '0px',
-                    border: 'none !important' as any,
-                    boxShadow: 'none !important' as any,
-                    backgroundColor: 'transparent !important' as any,
-                    width: '100%',
-                  }
-                : undefined
-            }
           />
           {floatingLabel && label && (
             <label
+              htmlFor={inputId}
               style={{
                 position: 'absolute',
                 left: icon ? '40px' : '12px',
-                top: isFocused || inputValue ? '-8px' : '50%',
-                transform:
-                  isFocused || inputValue
-                    ? 'translateY(0)'
-                    : 'translateY(-50%)',
-                fontSize: isFocused || inputValue ? '12px' : '14px',
+                top: shouldFloat ? '-8px' : '50%',
+                transform: shouldFloat ? 'translateY(0)' : 'translateY(-50%)',
+                fontSize: shouldFloat ? '12px' : '14px',
                 color: isFocused ? '#2563eb' : '#6b7280',
-                pointerEvents: 'none',
                 transition: 'all 0.2s ease',
                 backgroundColor: '#ffffff',
                 padding: '0 6px',
+                cursor: 'text',
+                zIndex: 1,
               }}
             >
               {label}
             </label>
           )}
         </div>
-        {!floatingLabel && <FieldError />}
+        <FieldError />
       </AriaTextField>
     );
   },

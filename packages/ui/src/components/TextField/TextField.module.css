@@ -121,4 +121,24 @@
       cursor: not-allowed;
     }
   }
+
+  .bui-Input--floating {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    padding-top: 0;
+    transition: padding-top 0.2s ease, box-shadow 0.2s ease-in-out;
+
+    &[data-should-float='true'] {
+      padding-top: 0.125rem;
+    }
+
+    &[data-focused] {
+      box-shadow: none;
+    }
+
+    &[data-invalid] {
+      box-shadow: none;
+    }
+  }
 }
