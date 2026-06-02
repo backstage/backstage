@@ -34,9 +34,11 @@ type DynamicEntityFilters = DefaultEntityFilters & {
 
 class FacetEntityFilter implements EntityFilter {
   readonly value: string;
+  readonly label: string;
 
   constructor(readonly path: string, readonly values: string[]) {
     this.value = values[0];
+    this.label = values[0];
   }
 
   getCatalogFilters(): Record<string, string | string[]> {
@@ -62,10 +64,8 @@ class FacetEntityFilter implements EntityFilter {
 }
 
 /** @internal */
-export function FacetFilterPicker(
-  props: CatalogFacetFilterDescriptor & { filterKey: string },
-) {
-  const { label, path, mode, defaultValue, filterKey } = props;
+export function FacetFilterPicker(props: CatalogFacetFilterDescriptor) {
+  const { label, filterKey, path, mode, defaultValue } = props;
   const catalogApi = useApi(catalogApiRef);
   const { updateFilters, queryParameters } =
     useEntityList<DynamicEntityFilters>();
@@ -105,7 +105,7 @@ export function FacetFilterPicker(
           .toLocaleLowerCase('en-US')
           .localeCompare(b.toLocaleLowerCase('en-US')),
       );
-  }, [path]);
+  }, [path, catalogApi]);
 
   useEffect(() => {
     updateFilters({
@@ -113,6 +113,9 @@ export function FacetFilterPicker(
         ? new FacetEntityFilter(path, selected)
         : undefined,
     });
+    return () => {
+      updateFilters({ [filterKey]: undefined });
+    };
   }, [selected, filterKey, path, updateFilters]);
 
   const options = availableValues.map(v => ({ label: v, value: v }));

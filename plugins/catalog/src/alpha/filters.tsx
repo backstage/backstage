@@ -25,6 +25,7 @@ const catalogKindCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   factory(originalFactory, { config }) {
     return originalFactory({
       label: 'Kind',
+      filterKey: 'kind',
       path: 'kind',
       mode: 'single',
       defaultValue: config.initialFilter,
@@ -36,6 +37,7 @@ const catalogTypeCatalogFilter = CatalogFilterBlueprint.make({
   name: 'type',
   params: {
     label: 'Type',
+    filterKey: 'type',
     path: 'spec.type',
     mode: 'single',
   },
@@ -45,6 +47,7 @@ const catalogTagCatalogFilter = CatalogFilterBlueprint.make({
   name: 'tag',
   params: {
     label: 'Tags',
+    filterKey: 'tags',
     path: 'metadata.tags',
     mode: 'multi',
   },
@@ -54,6 +57,7 @@ const catalogLifecycleCatalogFilter = CatalogFilterBlueprint.make({
   name: 'lifecycle',
   params: {
     label: 'Lifecycle',
+    filterKey: 'lifecycles',
     path: 'spec.lifecycle',
     mode: 'multi',
   },
@@ -63,6 +67,7 @@ const catalogNamespaceCatalogFilter = CatalogFilterBlueprint.make({
   name: 'namespace',
   params: {
     label: 'Namespace',
+    filterKey: 'namespace',
     path: 'metadata.namespace',
     mode: 'multi',
   },
@@ -89,6 +94,7 @@ const catalogProcessingStatusCatalogFilter = CatalogFilterBlueprint.make({
   name: 'processing-status',
   params: {
     label: 'Processing Status',
+    filterKey: 'processing-status',
     mode: 'multi',
     options: [
       { label: 'Is Orphan', value: 'orphan' },

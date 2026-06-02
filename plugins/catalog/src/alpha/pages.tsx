@@ -127,16 +127,14 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
               case 'options':
                 return (
                   <OptionsFilterPicker
-                    key={descriptor.label}
-                    filterKey={descriptor.label}
+                    key={descriptor.filterKey}
                     {...descriptor}
                   />
                 );
               case 'facet':
                 return (
                   <FacetFilterPicker
-                    key={descriptor.path}
-                    filterKey={descriptor.path}
+                    key={descriptor.filterKey}
                     {...descriptor}
                   />
                 );

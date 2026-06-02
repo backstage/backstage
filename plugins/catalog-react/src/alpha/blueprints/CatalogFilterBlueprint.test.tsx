@@ -37,6 +37,7 @@ describe('CatalogFilterBlueprint', () => {
     expect(descriptor).toEqual({
       type: 'facet',
       label: 'Test',
+      filterKey: 'metadata.test',
       path: 'metadata.test',
       mode: 'multi',
       defaultValue: ['a', 'b'],
@@ -61,6 +62,7 @@ describe('CatalogFilterBlueprint', () => {
     expect(descriptor).toEqual({
       type: 'facet',
       label: 'Kind',
+      filterKey: 'kind',
       path: 'kind',
       mode: 'single',
       defaultValue: undefined,
@@ -113,6 +115,7 @@ describe('CatalogFilterBlueprint', () => {
     expect(descriptor).toMatchObject({
       type: 'options',
       label: 'Status',
+      filterKey: 'Status',
       mode: 'multi',
       deps: {},
       options: [
@@ -156,6 +159,7 @@ describe('CatalogFilterBlueprint', () => {
     expect(descriptor).toEqual({
       type: 'facet',
       label: 'Kind',
+      filterKey: 'kind',
       path: 'kind',
       mode: 'single',
       defaultValue: 'component',

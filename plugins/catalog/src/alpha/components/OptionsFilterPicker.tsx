@@ -30,10 +30,8 @@ type DynamicEntityFilters = DefaultEntityFilters & {
 };
 
 /** @internal */
-export function OptionsFilterPicker(
-  props: CatalogOptionsFilterDescriptor & { filterKey: string },
-) {
-  const { label, mode, defaultValue, options, deps, toFilter, filterKey } =
+export function OptionsFilterPicker(props: CatalogOptionsFilterDescriptor) {
+  const { label, filterKey, mode, defaultValue, options, deps, toFilter } =
     props;
   const apiHolder = useApiHolder();
   const { updateFilters, queryParameters } =
@@ -76,15 +74,20 @@ export function OptionsFilterPicker(
 
     if (!selected.length) {
       updateFilters({ [filterKey]: undefined });
-      return undefined;
+      return () => {
+        cancelled = true;
+      };
     }
 
     const applyFilter = (filter: EntityFilter | undefined) => {
       if (cancelled) return;
-      if (filter && !filter.toQueryValue) {
-        filter.toQueryValue = () => selected;
-      }
-      updateFilters({ [filterKey]: filter });
+      const withQueryValue = filter
+        ? {
+            ...filter,
+            toQueryValue: filter.toQueryValue ?? (() => selected),
+          }
+        : undefined;
+      updateFilters({ [filterKey]: withQueryValue });
     };
 
     const result = toFilter(selected, resolvedDeps);
@@ -100,6 +103,7 @@ export function OptionsFilterPicker(
 
     return () => {
       cancelled = true;
+      updateFilters({ [filterKey]: undefined });
     };
   }, [selected, filterKey, toFilter, resolvedDeps, updateFilters]);
 

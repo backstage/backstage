@@ -31,6 +31,7 @@ import { EntityFilter } from '../../types';
 export interface CatalogFacetFilterDescriptor {
   type: 'facet';
   label: string;
+  filterKey: string;
   path: string;
   mode: 'single' | 'multi';
   defaultValue?: string | string[];
@@ -45,6 +46,7 @@ export interface CatalogFacetFilterDescriptor {
 export interface CatalogOptionsFilterDescriptor {
   type: 'options';
   label: string;
+  filterKey: string;
   mode: 'single' | 'multi';
   defaultValue?: string | string[];
   options: Array<{ label: string; value: string }>;
@@ -100,12 +102,14 @@ export const CatalogFilterBlueprint = createExtensionBlueprint({
     params:
       | {
           label: string;
+          filterKey?: string;
           path: string;
           mode: 'single' | 'multi';
           defaultValue?: string | string[];
         }
       | {
           label: string;
+          filterKey?: string;
           mode: 'single' | 'multi';
           defaultValue?: string | string[];
           options: Array<{ label: string; value: string }>;
@@ -134,6 +138,7 @@ export const CatalogFilterBlueprint = createExtensionBlueprint({
         catalogFilterDescriptorDataRef({
           type: 'options',
           label: params.label,
+          filterKey: params.filterKey ?? params.label,
           mode: params.mode,
           defaultValue: params.defaultValue,
           options: params.options,
@@ -146,6 +151,7 @@ export const CatalogFilterBlueprint = createExtensionBlueprint({
       catalogFilterDescriptorDataRef({
         type: 'facet',
         label: params.label,
+        filterKey: params.filterKey ?? params.path,
         path: params.path,
         mode: params.mode,
         defaultValue: params.defaultValue,
