@@ -232,13 +232,14 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
  * @public
  */
 export const Sidebar = (props: SidebarProps) => {
+  const { children, disableExpandOnHover, openDelayMs, closeDelayMs } = props;
   const sidebarConfig: SidebarConfig = makeSidebarConfig(
     props.sidebarOptions ?? {},
+    { closeDelayMs },
   );
   const submenuConfig: SubmenuConfig = makeSidebarSubmenuConfig(
     props.submenuOptions ?? {},
   );
-  const { children, disableExpandOnHover, openDelayMs, closeDelayMs } = props;
   const { isMobile } = useSidebarPinState();
 
   return isMobile ? (

@@ -69,9 +69,13 @@ export const sidebarConfig = {
 
 export const makeSidebarConfig = (
   customSidebarConfig: Partial<SidebarOptions>,
+  overrides?: { closeDelayMs?: number },
 ) => ({
   ...sidebarConfig,
   ...customSidebarConfig,
+  ...(overrides?.closeDelayMs !== undefined
+    ? { defaultCloseDelayMs: overrides.closeDelayMs }
+    : {}),
   iconContainerWidth: sidebarConfig.drawerWidthClosed,
   iconSize: sidebarConfig.drawerWidthClosed - sidebarConfig.iconPadding * 2,
   userBadgeDiameter:

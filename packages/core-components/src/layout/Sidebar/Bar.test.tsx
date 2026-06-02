@@ -19,7 +19,7 @@ import AcUnitIcon from '@material-ui/icons/AcUnit';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
-import { screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Sidebar } from './Bar';
 import { SidebarExpandButton, SidebarItem, SidebarSearchField } from './Items';
@@ -133,5 +133,72 @@ describe('Sidebar', () => {
         'https://backstage.io/',
       );
     });
+  });
+});
+
+async function renderSidebarWithCloseDelay(closeDelayMs: number) {
+  await renderInTestApp(
+    <SidebarPinStateProvider
+      value={{
+        isPinned: false,
+        isMobile: false,
+        toggleSidebarPinState: () => {},
+      }}
+    >
+      <Sidebar disableExpandOnHover closeDelayMs={closeDelayMs}>
+        <SidebarItem icon={MenuBookIcon} onClick={() => {}} text="Catalog">
+          <SidebarSubmenu title="Catalog">
+            <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
+          </SidebarSubmenu>
+        </SidebarItem>
+      </Sidebar>
+    </SidebarPinStateProvider>,
+  );
+}
+
+describe('Sidebar submenu close delay', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('keeps the submenu open until closeDelayMs has elapsed after the pointer leaves', async () => {
+    await renderSidebarWithCloseDelay(300);
+
+    fireEvent.mouseEnter(screen.getByTestId('item-with-submenu'));
+    expect(await screen.findByText('Tools')).toBeInTheDocument();
+
+    jest.useFakeTimers();
+    fireEvent.mouseLeave(screen.getByTestId('item-with-submenu'));
+
+    expect(screen.getByText('Tools')).toBeInTheDocument();
+
+    act(() => {
+      jest.advanceTimersByTime(299);
+    });
+    expect(screen.getByText('Tools')).toBeInTheDocument();
+
+    act(() => {
+      jest.advanceTimersByTime(1);
+    });
+    expect(screen.queryByText('Tools')).not.toBeInTheDocument();
+  });
+
+  it('cancels the scheduled close when the pointer returns before the delay', async () => {
+    await renderSidebarWithCloseDelay(300);
+
+    fireEvent.mouseEnter(screen.getByTestId('item-with-submenu'));
+    expect(await screen.findByText('Tools')).toBeInTheDocument();
+
+    jest.useFakeTimers();
+    fireEvent.mouseLeave(screen.getByTestId('item-with-submenu'));
+    act(() => {
+      jest.advanceTimersByTime(150);
+    });
+    fireEvent.mouseEnter(screen.getByTestId('item-with-submenu'));
+    act(() => {
+      jest.advanceTimersByTime(300);
+    });
+
+    expect(screen.getByText('Tools')).toBeInTheDocument();
   });
 });

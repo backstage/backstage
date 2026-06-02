@@ -45,7 +45,9 @@ import {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   MouseEvent,
   ChangeEvent,
@@ -524,11 +526,31 @@ const SidebarItemWithSubmenu = ({
     theme.breakpoints.down('sm'),
   );
 
+  // Debounced close so the submenu survives diagonal pointer travel from the
+  // parent item into it.
+  const closeTimerRef = useRef<number>();
+  const cancelScheduledClose = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = undefined;
+    }
+  };
+  useEffect(() => cancelScheduledClose, []);
+
   const handleMouseEnter = () => {
+    cancelScheduledClose();
     setIsHoveredOn(true);
   };
   const handleMouseLeave = () => {
-    setIsHoveredOn(false);
+    cancelScheduledClose();
+    if (sidebarConfig.defaultCloseDelayMs > 0) {
+      closeTimerRef.current = window.setTimeout(() => {
+        closeTimerRef.current = undefined;
+        setIsHoveredOn(false);
+      }, sidebarConfig.defaultCloseDelayMs);
+    } else {
+      setIsHoveredOn(false);
+    }
   };
 
   const arrowIcon = () => {
