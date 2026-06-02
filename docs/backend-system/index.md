@@ -1,7 +1,7 @@
 ---
 id: index
 title: The Backend System
-sidebar_label: Introduction
+sidebar_label: Backend System Introduction
 description: Introduction to Backstage's backend system and its documentation
 ---
 
