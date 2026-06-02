@@ -24,6 +24,7 @@ import {
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
 import {
   Box,
+  Cell,
   CellText,
   ColumnConfig,
   Flex,
@@ -110,10 +111,12 @@ export const ExternalDependenciesContent = () => {
         id: 'status',
         label: 'Status',
         cell: item => (
-          <Flex direction="column">
-            {getExternalDependencyStatus(item)}
-            {item.error && <Text>{item.error}</Text>}
-          </Flex>
+          <Cell>
+            <Flex direction="column">
+              {getExternalDependencyStatus(item)}
+              {item.error && <Text>{item.error}</Text>}
+            </Flex>
+          </Cell>
         ),
       },
     ],
@@ -173,7 +176,7 @@ export const ExternalDependenciesContent = () => {
   if (!externalDependencies || externalDependencies.length === 0) {
     return (
       <Box>
-        <Paper>
+        <Paper style={{ padding: '16px' }}>
           <Typography>No external dependencies found</Typography>
         </Paper>
       </Box>
