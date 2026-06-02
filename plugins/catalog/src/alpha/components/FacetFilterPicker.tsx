@@ -33,18 +33,23 @@ type DynamicEntityFilters = DefaultEntityFilters & {
 };
 
 class FacetEntityFilter implements EntityFilter {
-  constructor(readonly path: string, readonly values: string[]) {}
+  readonly value: string;
+
+  constructor(readonly path: string, readonly values: string[]) {
+    this.value = values[0];
+  }
 
   getCatalogFilters(): Record<string, string | string[]> {
     return { [this.path]: this.values };
   }
 
   filterEntity(entity: Entity): boolean {
-    const value = this.resolve(entity, this.path);
-    if (Array.isArray(value)) {
-      return this.values.some(v => value.includes(v));
+    const resolved = this.resolve(entity, this.path);
+    if (Array.isArray(resolved)) {
+      return this.values.every(v => resolved.includes(v));
     }
-    return this.values.includes(String(value));
+    if (resolved === null || resolved === undefined) return false;
+    return this.values.includes(String(resolved));
   }
 
   toQueryValue(): string | string[] {

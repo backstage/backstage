@@ -115,9 +115,6 @@ const catalogProcessingStatusCatalogFilter = CatalogFilterBlueprint.make({
           }
           return true;
         },
-        toQueryValue() {
-          return selected;
-        },
       };
     },
   },

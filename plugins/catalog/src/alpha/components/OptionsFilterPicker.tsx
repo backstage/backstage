@@ -21,8 +21,8 @@ import {
   useEntityList,
   type DefaultEntityFilters,
 } from '@backstage/plugin-catalog-react';
-import type { EntityFilter } from '@backstage/plugin-catalog-react';
 import type { CatalogOptionsFilterDescriptor } from '@backstage/plugin-catalog-react/alpha';
+import type { EntityFilter } from '@backstage/plugin-catalog-react';
 import { multiSelectProps } from './multiSelectProps';
 
 type DynamicEntityFilters = DefaultEntityFilters & {
@@ -79,15 +79,23 @@ export function OptionsFilterPicker(
       return undefined;
     }
 
+    const applyFilter = (filter: EntityFilter | undefined) => {
+      if (cancelled) return;
+      if (filter && !filter.toQueryValue) {
+        filter.toQueryValue = () => selected;
+      }
+      updateFilters({ [filterKey]: filter });
+    };
+
     const result = toFilter(selected, resolvedDeps);
     if (result instanceof Promise) {
-      result.then(filter => {
+      result.then(applyFilter, () => {
         if (!cancelled) {
-          updateFilters({ [filterKey]: filter });
+          updateFilters({ [filterKey]: undefined });
         }
       });
     } else {
-      updateFilters({ [filterKey]: result });
+      applyFilter(result);
     }
 
     return () => {

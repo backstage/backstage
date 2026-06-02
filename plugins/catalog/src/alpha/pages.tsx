@@ -35,6 +35,7 @@ import {
   EntityHeaderBlueprint,
   EntityContentGroupDefinitions,
 } from '@backstage/plugin-catalog-react/alpha';
+import { Fragment } from 'react';
 import CategoryIcon from '@material-ui/icons/Category';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
@@ -71,7 +72,8 @@ export const CatalogExportConfigBlueprint = createExtensionBlueprint({
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([
-      CatalogFilterBlueprint.dataRefs.filterDescriptor,
+      CatalogFilterBlueprint.dataRefs.filterDescriptor.optional(),
+      coreExtensionData.reactElement.optional(),
     ]),
     exportConfig: createExtensionInput([catalogExportConfigDataRef.optional()]),
   },
@@ -115,33 +117,45 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
           './components/OptionsFilterPicker'
         );
 
-        const descriptors = inputs.filters.map(filter =>
-          filter.get(CatalogFilterBlueprint.dataRefs.filterDescriptor),
-        );
-
-        const filterElements = descriptors.map(descriptor => {
-          switch (descriptor.type) {
-            case 'custom':
-              return descriptor.element;
-            case 'options':
-              return (
-                <OptionsFilterPicker
-                  key={descriptor.label}
-                  filterKey={descriptor.label}
-                  {...descriptor}
-                />
-              );
-            case 'facet':
-              return (
-                <FacetFilterPicker
-                  key={descriptor.path}
-                  filterKey={descriptor.path}
-                  {...descriptor}
-                />
-              );
-            default:
-              return null;
+        let keyCounter = 0;
+        const filterElements = inputs.filters.map(filter => {
+          const descriptor = filter.get(
+            CatalogFilterBlueprint.dataRefs.filterDescriptor,
+          );
+          if (descriptor) {
+            switch (descriptor.type) {
+              case 'options':
+                return (
+                  <OptionsFilterPicker
+                    key={descriptor.label}
+                    filterKey={descriptor.label}
+                    {...descriptor}
+                  />
+                );
+              case 'facet':
+                return (
+                  <FacetFilterPicker
+                    key={descriptor.path}
+                    filterKey={descriptor.path}
+                    {...descriptor}
+                  />
+                );
+              case 'custom':
+              default:
+                return (
+                  <Fragment key={`custom-${keyCounter++}`}>
+                    {descriptor.element}
+                  </Fragment>
+                );
+            }
           }
+          const element = filter.get(coreExtensionData.reactElement);
+          if (element) {
+            return (
+              <Fragment key={`legacy-${keyCounter++}`}>{element}</Fragment>
+            );
+          }
+          return null;
         });
 
         // Merge export customizers from all attached extensions
