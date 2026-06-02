@@ -1,7 +1,7 @@
 ---
 id: index
 title: Building Backend Plugins and Modules
-sidebar_label: Overview
+sidebar_label: Backend Plugins and Modules Overview
 description: Building backend plugins and modules using the backend system
 ---
 
