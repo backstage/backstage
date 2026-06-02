@@ -900,10 +900,7 @@ describe('Entity page', () => {
       );
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
         mountedRoutes: { '/catalog': convertLegacyRouteRef(rootRouteRef) },
       });
 
@@ -925,10 +922,7 @@ describe('Entity page', () => {
       );
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
         mountedRoutes: {
           '/catalog': convertLegacyRouteRef(rootRouteRef),
           '/catalog/:namespace/:kind/:name':
@@ -952,10 +946,7 @@ describe('Entity page', () => {
       }
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
         mountedRoutes: {
           '/catalog': convertLegacyRouteRef(rootRouteRef),
           '/catalog/:namespace/:kind/:name':
