@@ -1,0 +1,1 @@
+import{cf as o,cg as v,cj as c,ce as n,bu as f}from"./iframe-DogXi1kP.js";var e={},r;function l(){if(r)return e;r=1;var a=o(),t=v();Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0;var d=t(c()),u=a(n()),i=(0,u.default)(d.createElement("path",{d:"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"}),"Add");return e.default=i,e}var s=l();const q=f(s);export{q as A};

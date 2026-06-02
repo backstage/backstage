@@ -1,0 +1,1 @@
+import{c_ as e,ca as t,aa as n,ak as r}from"./iframe-DogXi1kP.js";var s={root:{marginBottom:12}},i=t.forwardRef(function(o,a){return t.createElement(n,r({component:"p",variant:"body1",color:"textSecondary",ref:a},o))});const x=e(s,{name:"MuiDialogContentText"})(i);export{x as D};

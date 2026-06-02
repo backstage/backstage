@@ -1,0 +1,3 @@
+import{bg as t,ca as n,cH as c,bR as p}from"./iframe-DogXi1kP.js";import{$ as l}from"./FieldError-CzpSx-Mx.js";const d={"bui-FieldError":"_bui-FieldError_yxy0m_20"},m=t()({styles:d,classNames:{root:"bui-FieldError"},propDefs:{className:{}}}),s=n.forwardRef((r,e)=>{const{ownProps:o,restProps:i}=c(m,r),{classes:a}=o;return p.jsx(l,{className:a.root,ref:e,...i})});s.displayName="FieldError";s.__docgenInfo={description:`Displays a validation error message associated with a form field.
+
+@public`,methods:[],displayName:"FieldError",props:{className:{required:!1,tsType:{name:"string"},description:""}},composes:["Omit"]};export{s as F};
