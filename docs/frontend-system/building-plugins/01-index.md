@@ -1,7 +1,7 @@
 ---
 id: index
 title: Building Frontend Plugins
-sidebar_label: Overview
+sidebar_label: Frontend Plugins Overview
 description: Building frontend plugins using the new frontend system
 ---
 
