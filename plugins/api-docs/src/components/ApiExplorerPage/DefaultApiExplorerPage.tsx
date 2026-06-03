@@ -237,4 +237,6 @@ export type NfsApiExplorerPageProps = ApiExplorerPageProps;
  * @deprecated Import {@link ApiExplorerPage} instead.
  * @alpha
  */
-export const NfsApiExplorerPage = ApiExplorerPage;
+export const NfsApiExplorerPage = (props: DefaultApiExplorerPageProps) => (
+  <ApiExplorerPage {...props} />
+);
