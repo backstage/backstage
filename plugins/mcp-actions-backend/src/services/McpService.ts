@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  AuthService,
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -23,6 +24,7 @@ import {
   CallToolRequestSchema,
   Tool,
   ToolSchema,
+  UrlElicitationRequiredError,
 } from '@modelcontextprotocol/sdk/types.js';
 import { JsonObject } from '@backstage/types';
 import {
@@ -35,10 +37,12 @@ import {
 import { version } from '@backstage/plugin-mcp-actions-backend/package.json';
 import { NotFoundError } from '@backstage/errors';
 import { performance } from 'node:perf_hooks';
+import { randomUUID } from 'node:crypto';
 
 import { handleErrors } from './handleErrors';
 import { bucketBoundaries, McpServerOperationAttributes } from '../metrics';
 import { FilterRule, McpServerConfig } from '../config';
+import { SecretsStore } from './SecretsStore';
 
 function safeStringify(value: unknown): string {
   try {
@@ -87,6 +91,9 @@ export class McpService {
   private readonly captureToolPayloads: boolean;
   private readonly operationDuration: MetricsServiceHistogram<McpServerOperationAttributes>;
   private readonly warnedSkippedActionIds = new Set<string>();
+  private readonly secretsStore?: SecretsStore;
+  private readonly auth?: AuthService;
+  private readonly elicitationBaseUrl?: string;
 
   constructor(
     actions: ActionsService,
@@ -95,12 +102,18 @@ export class McpService {
     logger: LoggerService | undefined,
     namespacedToolNames?: boolean,
     captureToolPayloads?: boolean,
+    secretsStore?: SecretsStore,
+    auth?: AuthService,
+    elicitationBaseUrl?: string,
   ) {
     this.actions = actions;
     this.logger = logger;
     this.namespacedToolNames = namespacedToolNames ?? true;
     this.tracingService = tracingService;
     this.captureToolPayloads = captureToolPayloads ?? false;
+    this.secretsStore = secretsStore;
+    this.auth = auth;
+    this.elicitationBaseUrl = elicitationBaseUrl;
     this.operationDuration =
       metrics.createHistogram<McpServerOperationAttributes>(
         'mcp.server.operation.duration',
@@ -119,6 +132,9 @@ export class McpService {
     logger,
     namespacedToolNames,
     captureToolPayloads,
+    secretsStore,
+    auth,
+    elicitationBaseUrl,
   }: {
     actions: ActionsService;
     metrics: MetricsService;
@@ -126,6 +142,9 @@ export class McpService {
     logger?: LoggerService;
     namespacedToolNames?: boolean;
     captureToolPayloads?: boolean;
+    secretsStore?: SecretsStore;
+    auth?: AuthService;
+    elicitationBaseUrl?: string;
   }) {
     return new McpService(
       actions,
@@ -134,6 +153,9 @@ export class McpService {
       logger,
       namespacedToolNames,
       captureToolPayloads,
+      secretsStore,
+      auth,
+      elicitationBaseUrl,
     );
   }
 
@@ -259,9 +281,48 @@ export class McpService {
               // is unavoidable.
               span.setAttribute('backstage.plugin.id', action.pluginId);
 
+              let secrets: JsonObject | undefined;
+              if (
+                action.schema.secrets &&
+                this.secretsStore &&
+                this.elicitationBaseUrl
+              ) {
+                const meta = params._meta as
+                  | Record<string, unknown>
+                  | undefined;
+                const elicitationId = meta?.elicitationId as string | undefined;
+
+                if (elicitationId) {
+                  secrets = await this.secretsStore.consume(elicitationId);
+                  if (!secrets) {
+                    throw new NotFoundError(
+                      `Elicitation "${elicitationId}" not found or already consumed`,
+                    );
+                  }
+                } else {
+                  const newElicitationId = randomUUID();
+                  const userEntityRef = this.resolveUserEntityRef(credentials);
+                  await this.secretsStore.createPending(
+                    newElicitationId,
+                    action.id,
+                    userEntityRef,
+                  );
+
+                  throw new UrlElicitationRequiredError([
+                    {
+                      mode: 'url',
+                      elicitationId: newElicitationId,
+                      url: `${this.elicitationBaseUrl}/mcp-actions/secrets/${newElicitationId}`,
+                      message: 'This action requires additional credentials.',
+                    },
+                  ]);
+                }
+              }
+
               const { output } = await this.actions.invoke({
                 id: action.id,
                 input: params.arguments as JsonObject,
+                secrets,
                 credentials,
               });
 
@@ -364,5 +425,17 @@ export class McpService {
     }
 
     return true;
+  }
+
+  private resolveUserEntityRef(credentials: BackstageCredentials): string {
+    if (this.auth) {
+      if (this.auth.isPrincipal(credentials, 'user')) {
+        return credentials.principal.userEntityRef;
+      }
+      if (this.auth.isPrincipal(credentials, 'service')) {
+        return `service:${credentials.principal.subject}`;
+      }
+    }
+    return 'unknown';
   }
 }
