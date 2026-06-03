@@ -64,6 +64,7 @@
     "@backstage/plugin-home-react": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-kubernetes-cluster": "workspace:^",
+    "@backstage/plugin-mcp-actions": "workspace:^",
     "@backstage/plugin-notifications": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",

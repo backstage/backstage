@@ -19,6 +19,7 @@ import { pagesPlugin } from './examples/pagesPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import homePlugin from '@backstage/plugin-home/alpha';
+import mcpActionsPlugin from '@backstage/plugin-mcp-actions/alpha';
 
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import {
@@ -143,6 +144,7 @@ const app = createApp({
     appModuleNav,
     appModuleScaffolder,
     customHomePageModule,
+    mcpActionsPlugin,
     ...collectedLegacyPlugins,
   ],
   advanced: {

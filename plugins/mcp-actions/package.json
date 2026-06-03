@@ -1,0 +1,69 @@
+{
+  "name": "@backstage/plugin-mcp-actions",
+  "version": "0.1.0",
+  "backstage": {
+    "role": "frontend-plugin",
+    "pluginId": "mcp-actions",
+    "pluginPackages": [
+      "@backstage/plugin-mcp-actions",
+      "@backstage/plugin-mcp-actions-backend"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/mcp-actions"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/theme": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@material-ui/core": "^4.9.13",
+    "@material-ui/icons": "^4.9.1",
+    "@types/json-schema": "^7.0.6",
+    "json-schema": "^0.4.0",
+    "react-use": "^17.2.4"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.30.2"
+  }
+}
