@@ -1,0 +1,10 @@
+[submodule "plugins/backstage-plugin-onboarding"]
+	path = plugins/backstage-plugin-onboarding
+	url = git@github.com:Estehsan/backstage-plugin-onboarding.git
+[submodule "plugins/community-plugins"]
+	path = plugins/community-plugins
+	url = git@github.com:Estehsan/community-plugins.git
+	branch = add-techdocs-editor-workspace
+[submodule "plugins/backstage-plugin-techdocs-editor"]
+	path = plugins/backstage-plugin-techdocs-editor
+	url = git@github.com:Estehsan/backstage-techdoc-editor.git

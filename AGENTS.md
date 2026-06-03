@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 Backstage is an open platform for building developer portals. This is a TypeScript monorepo using Yarn workspaces.
 
 ## Key Directories
@@ -47,6 +51,92 @@ When creating pull requests, use the template at `/.github/PULL_REQUEST_TEMPLATE
 Never update ESLint, Prettier, or TypeScript configuration files unless specifically requested.
 
 Never make changes to the release notes in `/docs/releases` unless explicitly asked. These document past releases and should not be updated based on newer changes.
+
+## Pre-Push Checklist (MANDATORY)
+
+**Run every step below and confirm it passes before any `git push` or PR creation. Do not skip steps. If any step fails, fix the issue first and re-run from the top.**
+
+For the **root Backstage monorepo**:
+
+```bash
+# 1. Sync dependencies
+yarn install
+
+# 2. Type check — zero errors required
+yarn tsc
+
+# 3. Prettier check on changed files — zero violations required
+yarn prettier --check <changed-file-paths>
+
+# 4. Lint — zero errors required
+yarn lint --fix
+
+# 5. Tests for affected paths — must pass
+CI=1 yarn test <affected-paths>
+
+# 6. API reports (if any public API changed)
+yarn build:api-reports
+
+# 7. Lockfile sanity — must succeed
+yarn install --immutable
+```
+
+For **submodule plugin repos** (`backstage-plugin-techdocs-editor`, `backstage-plugin-onboarding`):
+
+```bash
+# From the submodule root
+
+# 1. Immutable install — no YN0028 errors
+yarn install --immutable
+
+# 2. Type check
+yarn tsc
+
+# 3. Prettier check
+yarn prettier:check
+
+# 4. Build all packages
+yarn build:all
+
+# 5. Build API reports
+yarn build:api-reports:only
+
+# 6. Lint
+yarn lint
+
+# 7. Tests
+yarn test
+```
+
+> **Rule:** Never call `git push` or any PR-creation tool until all seven steps pass with zero errors.
+
+## Custom Onboarding Plugin
+
+`plugins/backstage-plugin-onboarding` is a **git submodule** pointing to `github.com/Estehsan/backstage-plugin-onboarding`. Its packages are included in the root workspace via the `plugins/backstage-plugin-onboarding/workspaces/onboarding/plugins/*` glob in `package.json`.
+
+Three packages under the `@estehsaan/` npm scope:
+
+- `@estehsaan/backstage-plugin-onboarding` — Frontend (new frontend system, `/alpha` exports)
+- `@estehsaan/backstage-plugin-onboarding-backend` — Backend (Express router + Knex DB + catalog processor)
+- `@estehsaan/backstage-plugin-onboarding-common` — Shared types and permissions
+
+**Integration in this repo:**
+
+- Backend: wired via `backend.add(import('@estehsaan/backstage-plugin-onboarding-backend'))` in `packages/backend/src/index.ts`
+- Frontend: import from `@estehsaan/backstage-plugin-onboarding/alpha` (currently commented out in `packages/app/src/App.tsx`)
+
+When working on the onboarding plugin, see `plugins/backstage-plugin-onboarding/CLAUDE.md` for plugin-specific architecture, routes, config schema, and testing patterns. To update the submodule to a newer commit, use `git submodule update --remote plugins/backstage-plugin-onboarding`.
+
+## Harness: Backstage Plugin Development
+
+**Goal:** Coordinate techdocs-editor and onboarding plugin development through an architect → parallel implementation → QA team pipeline.
+
+**Trigger:** Use the `backstage-plugin-dev` skill for any plugin development work — adding features, implementing endpoints, building components, adding providers. Simple code lookups or explanation questions can be answered directly without the skill.
+
+**Change log:**
+| Date | Change | Scope | Reason |
+|------|--------|-------|--------|
+| 2026-05-30 | Initial setup | All | Coordinate techdocs-editor + onboarding plugin development |
 
 ## Repository Structure
 
