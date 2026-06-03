@@ -73,7 +73,6 @@ export type WorkflowProps = {
 type MuiWorkflowLayoutProps = {
   title: string;
   description: string;
-  loading: boolean;
   sortedManifest: NonNullable<ReturnType<typeof useFilteredSchemaProperties>>;
   workflowOnCreate: WorkflowProps['onCreate'];
   props: Pick<
@@ -85,7 +84,6 @@ type MuiWorkflowLayoutProps = {
 const MuiWorkflowLayout = ({
   title,
   description,
-  loading,
   sortedManifest,
   workflowOnCreate,
   props,
@@ -94,27 +92,24 @@ const MuiWorkflowLayout = ({
 
   return (
     <Content>
-      {loading && <Progress />}
-      {sortedManifest && (
-        <InfoCard
-          title={title}
-          subheader={
-            <MarkdownContent
-              className={styles.markdown}
-              linkTarget="_blank"
-              content={description}
-            />
-          }
-          noPadding
-          titleTypographyProps={{ component: 'h2' }}
-        >
-          <Stepper
-            manifest={sortedManifest}
-            onCreate={workflowOnCreate}
-            {...props}
+      <InfoCard
+        title={title}
+        subheader={
+          <MarkdownContent
+            className={styles.markdown}
+            linkTarget="_blank"
+            content={description}
           />
-        </InfoCard>
-      )}
+        }
+        noPadding
+        titleTypographyProps={{ component: 'h2' }}
+      >
+        <Stepper
+          manifest={sortedManifest}
+          onCreate={workflowOnCreate}
+          {...props}
+        />
+      </InfoCard>
     </Content>
   );
 };
@@ -194,18 +189,22 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   }
 
   return (
-    <MuiWorkflowLayout
-      title={title ?? sortedManifest?.title ?? ''}
-      description={
-        description ??
-        sortedManifest?.description ??
-        t('workflow.noDescription')
-      }
-      loading={loading}
-      sortedManifest={sortedManifest!}
-      workflowOnCreate={workflowOnCreate}
-      props={props}
-    />
+    <>
+      {loading && <Progress />}
+      {sortedManifest && (
+        <MuiWorkflowLayout
+          title={title ?? sortedManifest.title}
+          description={
+            description ??
+            sortedManifest.description ??
+            t('workflow.noDescription')
+          }
+          sortedManifest={sortedManifest}
+          workflowOnCreate={workflowOnCreate}
+          props={props}
+        />
+      )}
+    </>
   );
 };
 
