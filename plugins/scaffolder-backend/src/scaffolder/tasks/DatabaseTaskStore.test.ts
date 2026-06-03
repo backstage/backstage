@@ -22,6 +22,7 @@ import { ConflictError } from '@backstage/errors';
 import {
   mockServices,
   createMockDirectory,
+  TestDatabases,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
@@ -588,3 +589,29 @@ describe('DatabaseTaskStore', () => {
     expect(fs.existsSync(`${workspaceDir.path}/app-config.yaml`)).toBeTruthy();
   });
 });
+
+// Regression coverage for the `totalTasks` count type. The rest of the suite
+// runs on better-sqlite3, where a `COUNT(*)` aggregate is returned as a number,
+// so the PostgreSQL behaviour (where knex returns it as a string) was never
+// exercised. These cases run against every supported database.
+jest.setTimeout(60_000);
+
+const databases = TestDatabases.create();
+
+describe.each(databases.eachSupportedId())(
+  'DatabaseTaskStore, %p',
+  databaseId => {
+    it('returns list() totalTasks as a number', async () => {
+      const knex = await databases.init(databaseId);
+      const store = await DatabaseTaskStore.create({ database: knex });
+
+      await store.createTask({ spec: {} as TaskSpec, createdBy: 'me' });
+      await store.createTask({ spec: {} as TaskSpec, createdBy: 'me' });
+
+      const { totalTasks } = await store.list({});
+
+      expect(typeof totalTasks).toBe('number');
+      expect(totalTasks).toBe(2);
+    });
+  },
+);
