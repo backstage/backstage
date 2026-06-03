@@ -230,17 +230,19 @@ export default createFrontendPlugin({
 
 import { apiDocsTranslationRef as _apiDocsTranslationRef } from './translation';
 
+import { DefaultApiExplorerPageProps } from './components/ApiExplorerPage/DefaultApiExplorerPage';
 /**
  * A component to display the API Explorer page for the New Frontend System.
  * @alpha
  */
 export { NfsApiExplorerPage as ApiExplorerPage } from './components/ApiExplorerPage/DefaultApiExplorerPage';
 
+
 /**
  * Props for {@link ApiExplorerPage}.
  * @alpha
  */
-export type { DefaultApiExplorerPageProps as ApiExplorerPageProps } from './components/ApiExplorerPage/DefaultApiExplorerPage';
+export type ApiExplorerPageProps = DefaultApiExplorerPageProps;
 
 /**
  * @alpha
