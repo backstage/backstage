@@ -72,7 +72,7 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
       loader: () =>
         import('./components/ApiExplorerPage/DefaultApiExplorerPage').then(
           m => (
-            <m.NfsApiExplorerPage
+            <m.ApiExplorerPage
               initiallySelectedFilter={config.initiallySelectedFilter}
             />
           ),
@@ -236,14 +236,5 @@ import { apiDocsTranslationRef as _apiDocsTranslationRef } from './translation';
  */
 export const apiDocsTranslationRef = _apiDocsTranslationRef;
 
-/**
- * Props for ApiExplorerPage.
- * @alpha
- */
-export type { NfsApiExplorerPageProps as ApiExplorerPageProps } from './components/ApiExplorerPage/DefaultApiExplorerPage';
-
-/**
- * A component to display the API Explorer page for the New Frontend System.
- * @alpha
- */
-export { NfsApiExplorerPage as ApiExplorerPage } from './components/ApiExplorerPage/DefaultApiExplorerPage';
+export type { ApiExplorerPageProps } from './components/ApiExplorerPage/DefaultApiExplorerPage';
+export { ApiExplorerPage } from './components/ApiExplorerPage/DefaultApiExplorerPage';

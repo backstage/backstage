@@ -68,24 +68,24 @@ export type DefaultApiExplorerPageProps = {
   pagination?: EntityListPagination;
 };
 
-type ApiExplorerPageContentProps = {
-  initiallySelectedFilter: UserListFilterKind;
+/**
+ * Props for {@link ApiExplorerPage}.
+ *
+ * @alpha
+ */
+export type ApiExplorerPageProps = {
+  initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   pagination?: EntityListPagination;
 };
 
-/**
- * NfsApiExplorerPageProps
- * @alpha
- */
-export type NfsApiExplorerPageProps = {
-  initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<CatalogTableRow>[];
-  actions?: TableProps<CatalogTableRow>['actions'];
-  ownerPickerMode?: EntityOwnerPickerProps['mode'];
-  pagination?: EntityListPagination;
+type ApiExplorerPageContentProps = Omit<
+  ApiExplorerPageProps,
+  'initiallySelectedFilter'
+> & {
+  initiallySelectedFilter: UserListFilterKind;
 };
 
 function ApiExplorerPageContent(props: ApiExplorerPageContentProps) {
@@ -174,10 +174,12 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
 };
 
 /**
- * NfsApiExplorerPage
+ * An API Explorer page component designed for the New Frontend System.
+ * Rendered with the new header design (HeaderPage).
+ *
  * @alpha
  */
-export const NfsApiExplorerPage = (props: NfsApiExplorerPageProps) => {
+export const ApiExplorerPage = (props: ApiExplorerPageProps) => {
   const {
     initiallySelectedFilter = 'all',
     columns,
