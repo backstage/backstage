@@ -236,31 +236,14 @@ import { apiDocsTranslationRef as _apiDocsTranslationRef } from './translation';
  */
 export const apiDocsTranslationRef = _apiDocsTranslationRef;
 
-import { TableColumn, TableProps } from '@backstage/core-components';
-import { CatalogTableRow } from '@backstage/plugin-catalog';
-import {
-  UserListFilterKind,
-  EntityOwnerPickerProps,
-  EntityListPagination,
-} from '@backstage/plugin-catalog-react';
-import { NfsApiExplorerPage } from './components/ApiExplorerPage/DefaultApiExplorerPage';
-
 /**
  * Props for ApiExplorerPage.
  * @alpha
  */
-export type ApiExplorerPageProps = {
-  initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<CatalogTableRow>[];
-  actions?: TableProps<CatalogTableRow>['actions'];
-  ownerPickerMode?: EntityOwnerPickerProps['mode'];
-  pagination?: EntityListPagination;
-};
+export type { NfsApiExplorerPageProps as ApiExplorerPageProps } from './components/ApiExplorerPage/DefaultApiExplorerPage';
 
 /**
  * A component to display the API Explorer page for the New Frontend System.
  * @alpha
  */
-export const ApiExplorerPage = (props: ApiExplorerPageProps) => {
-  return <NfsApiExplorerPage {...props} />;
-};
+export { NfsApiExplorerPage as ApiExplorerPage } from './components/ApiExplorerPage/DefaultApiExplorerPage';

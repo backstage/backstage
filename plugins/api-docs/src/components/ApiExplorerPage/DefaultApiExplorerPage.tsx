@@ -76,6 +76,18 @@ type ApiExplorerPageContentProps = {
   pagination?: EntityListPagination;
 };
 
+/**
+ * NfsApiExplorerPageProps
+ * @alpha
+ */
+export type NfsApiExplorerPageProps = {
+  initiallySelectedFilter?: UserListFilterKind;
+  columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  pagination?: EntityListPagination;
+};
+
 function ApiExplorerPageContent(props: ApiExplorerPageContentProps) {
   const {
     initiallySelectedFilter,
@@ -161,8 +173,11 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
   );
 };
 
-/** @alpha */
-export const NfsApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
+/**
+ * NfsApiExplorerPage
+ * @alpha
+ */
+export const NfsApiExplorerPage = (props: NfsApiExplorerPageProps) => {
   const {
     initiallySelectedFilter = 'all',
     columns,
