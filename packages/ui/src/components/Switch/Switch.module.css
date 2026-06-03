@@ -18,10 +18,11 @@
 
 @layer components {
   .bui-Switch {
-    --switch-indicator-bg: var(--bui-gray-4);
+    --switch-indicator-bg: var(--bui-gray-6);
+    --switch-thumb-bg: var(--bui-accent-fg);
 
     [data-theme-mode='dark'] & {
-      --switch-indicator-bg: var(--bui-gray-6);
+      --switch-indicator-bg: var(--bui-gray-5);
     }
 
     display: flex;
@@ -53,7 +54,7 @@
     }
 
     [data-theme-mode='dark'] &[data-disabled] {
-      --switch-thumb-bg: var(--bui-gray-5);
+      --switch-thumb-bg: var(--bui-gray-7);
     }
 
     &[data-selected] {
@@ -61,7 +62,7 @@
         background: var(--bui-accent-bg);
 
         &:before {
-          background: var(--bui-accent-fg);
+          background: var(--switch-thumb-bg);
           transform: translateX(100%);
         }
       }
@@ -103,7 +104,7 @@
       margin: 0.143rem;
       width: 0.857rem;
       height: 0.857rem;
-      background: var(--switch-thumb-bg, var(--bui-accent-fg));
+      background: var(--switch-thumb-bg);
       border-radius: 16px;
       transition: all 200ms;
     }

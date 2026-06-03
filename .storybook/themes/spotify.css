@@ -194,7 +194,7 @@
 
 [data-theme-mode='light'][data-theme-name='spotify'] {
   --bui-ring: rgba(0, 0, 0, 0.2);
-  --bui-accent-bg: #1ed760;
+  --bui-accent-bg: #159542;
   --bui-accent-bg-hover: #3be477;
   --bui-accent-bg-disabled: #0f6c30;
   --bui-accent-fg: var(--bui-black);
@@ -210,6 +210,10 @@
   --bui-border-danger: #f87a7a;
   --bui-border-warning: #e36d05;
   --bui-border-success: #53db83;
+
+  .bui-Switch:not([data-disabled]) {
+    --switch-thumb-bg: var(--bui-white);
+  }
 }
 
 [data-theme-mode='dark'][data-theme-name='spotify'] {
