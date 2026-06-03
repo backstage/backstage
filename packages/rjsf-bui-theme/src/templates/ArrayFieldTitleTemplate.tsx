@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
-import { ThemeProps } from '@rjsf/core';
-import { generateBuiTheme as generateBaseBuiTheme } from '@backstage/rjsf-bui-theme';
+import {
+  ArrayFieldTitleProps,
+  FormContextType,
+  RJSFSchema,
+  StrictRJSFSchema,
+  titleId,
+} from '@rjsf/utils';
+import { Text } from '@backstage/ui';
 
-import FieldTemplate from './templates/FieldTemplate';
-
-export function generateBuiTheme<
+export default function ArrayFieldTitleTemplate<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
->(): ThemeProps<T, S, F> {
-  const base = generateBaseBuiTheme<T, S, F>();
-  return {
-    ...base,
-    templates: {
-      ...base.templates,
-      FieldTemplate: FieldTemplate as any,
-    },
-  };
+>({ idSchema, title, required }: ArrayFieldTitleProps<T, S, F>) {
+  if (!title) {
+    return null;
+  }
+
+  const id = titleId<T>(idSchema);
+
+  return (
+    <Text id={id} as="h3" variant="title-medium" weight="bold">
+      {title}
+      {required && (
+        <Text as="span" color="danger">
+          {' '}
+          *
+        </Text>
+      )}
+    </Text>
+  );
 }

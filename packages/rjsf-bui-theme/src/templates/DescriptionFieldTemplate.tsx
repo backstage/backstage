@@ -13,23 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
-import { ThemeProps } from '@rjsf/core';
-import { generateBuiTheme as generateBaseBuiTheme } from '@backstage/rjsf-bui-theme';
+import { isValidElement } from 'react';
+import {
+  DescriptionFieldProps,
+  FormContextType,
+  RJSFSchema,
+  StrictRJSFSchema,
+} from '@rjsf/utils';
+import { MarkdownContent } from '@backstage/core-components';
 
-import FieldTemplate from './templates/FieldTemplate';
-
-export function generateBuiTheme<
+export default function DescriptionFieldTemplate<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
->(): ThemeProps<T, S, F> {
-  const base = generateBaseBuiTheme<T, S, F>();
-  return {
-    ...base,
-    templates: {
-      ...base.templates,
-      FieldTemplate: FieldTemplate as any,
-    },
-  };
+>({ id, description }: DescriptionFieldProps<T, S, F>) {
+  if (!description) {
+    return null;
+  }
+
+  return (
+    <div id={id}>
+      {isValidElement(description) ? (
+        description
+      ) : (
+        <MarkdownContent
+          content={description as string}
+          linkTarget="_blank"
+        />
+      )}
+    </div>
+  );
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
-import { ThemeProps } from '@rjsf/core';
-import { generateBuiTheme as generateBaseBuiTheme } from '@backstage/rjsf-bui-theme';
+import {
+  UnsupportedFieldProps,
+  FormContextType,
+  RJSFSchema,
+  StrictRJSFSchema,
+} from '@rjsf/utils';
+import { Box, Text } from '@backstage/ui';
 
-import FieldTemplate from './templates/FieldTemplate';
-
-export function generateBuiTheme<
+export default function UnsupportedFieldTemplate<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
->(): ThemeProps<T, S, F> {
-  const base = generateBaseBuiTheme<T, S, F>();
-  return {
-    ...base,
-    templates: {
-      ...base.templates,
-      FieldTemplate: FieldTemplate as any,
-    },
-  };
+>(props: UnsupportedFieldProps<T, S, F>) {
+  const { schema, reason } = props;
+  return (
+    <Box p="3" style={{ backgroundColor: 'var(--bui-bg-neutral-3)' }}>
+      <Text variant="body-small" color="danger">
+        Unsupported field schema
+        {schema && schema.type && ` for type: ${JSON.stringify(schema.type)}`}
+        {reason && `: ${reason}`}
+      </Text>
+    </Box>
+  );
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,17 @@
  */
 import { FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
 import { ThemeProps } from '@rjsf/core';
-import { generateBuiTheme as generateBaseBuiTheme } from '@backstage/rjsf-bui-theme';
 
-import FieldTemplate from './templates/FieldTemplate';
+import { generateBuiTemplates } from './templates';
+import { generateBuiWidgets } from './widgets';
 
 export function generateBuiTheme<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
 >(): ThemeProps<T, S, F> {
-  const base = generateBaseBuiTheme<T, S, F>();
   return {
-    ...base,
-    templates: {
-      ...base.templates,
-      FieldTemplate: FieldTemplate as any,
-    },
+    templates: generateBuiTemplates<T, S, F>(),
+    widgets: generateBuiWidgets<T, S, F>(),
   };
 }

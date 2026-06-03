@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useApi } from '@backstage/core-plugin-api';
 import {
@@ -23,17 +23,20 @@ import {
   Progress,
   InfoCard,
 } from '@backstage/core-components';
-import { TextField, Button, Typography, makeStyles } from '@material-ui/core';
+import { Typography, makeStyles } from '@material-ui/core';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import useAsync from 'react-use/esm/useAsync';
 import { mcpActionsApiRef } from '../../api/McpActionsClient';
-import { JSONSchema7 } from 'json-schema';
+import { withTheme } from '@rjsf/core';
+import { generateBuiTheme } from '@backstage/rjsf-bui-theme';
+import validator from '@rjsf/validator-ajv8';
+import type { UiSchema } from '@rjsf/utils';
+import type { JSONSchema7 } from 'json-schema';
+
+const BuiForm = withTheme(generateBuiTheme());
 
 const useStyles = makeStyles(theme => ({
-  field: {
-    marginBottom: theme.spacing(2),
-  },
   success: {
     display: 'flex',
     flexDirection: 'column',
@@ -55,25 +58,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function getSchemaFields(
-  schema: JSONSchema7,
-): Array<{ name: string; title: string; description: string }> {
+function buildUiSchema(schema: JSONSchema7): UiSchema {
+  const uiSchema: UiSchema = {};
   const properties = schema.properties ?? {};
-  return Object.entries(properties).map(([name, prop]) => {
-    const field = prop as JSONSchema7;
-    return {
-      name,
-      title: field.title || name,
-      description: field.description || '',
-    };
-  });
+  for (const name of Object.keys(properties)) {
+    uiSchema[name] = { 'ui:widget': 'password' };
+  }
+  return uiSchema;
 }
 
 export function SecretsFormPage() {
   const classes = useStyles();
   const { elicitationId } = useParams() as { elicitationId: string };
   const api = useApi(mcpActionsApiRef);
-  const [values, setValues] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
@@ -83,6 +80,11 @@ export function SecretsFormPage() {
     loading,
     error,
   } = useAsync(() => api.getElicitation(elicitationId), [elicitationId]);
+
+  const uiSchema = useMemo(
+    () => (elicitation ? buildUiSchema(elicitation.secretsSchema) : {}),
+    [elicitation],
+  );
 
   if (loading) {
     return (
@@ -129,14 +131,12 @@ export function SecretsFormPage() {
     );
   }
 
-  const fields = getSchemaFields(elicitation.secretsSchema);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async ({ formData }: { formData?: any }) => {
+    if (!formData) return;
     setSubmitError(undefined);
     setSubmitting(true);
     try {
-      await api.submitSecrets(elicitationId, elicitation.csrfToken, values);
+      await api.submitSecrets(elicitationId, elicitation.csrfToken, formData);
       setSubmitted(true);
     } catch (err) {
       setSubmitError(
@@ -155,39 +155,19 @@ export function SecretsFormPage() {
           title={elicitation.action.title}
           subheader={elicitation.action.description}
         >
-          <form onSubmit={handleSubmit}>
-            {fields.map(field => (
-              <TextField
-                key={field.name}
-                className={classes.field}
-                fullWidth
-                required
-                type="password"
-                label={field.title}
-                helperText={field.description}
-                value={values[field.name] || ''}
-                onChange={e =>
-                  setValues(prev => ({
-                    ...prev,
-                    [field.name]: e.target.value,
-                  }))
-                }
-              />
-            ))}
+          <BuiForm
+            schema={elicitation.secretsSchema}
+            uiSchema={uiSchema}
+            validator={validator}
+            onSubmit={handleSubmit}
+            disabled={submitting}
+          >
             {submitError && (
               <Typography color="error" paragraph>
                 {submitError}
               </Typography>
             )}
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={submitting}
-            >
-              {submitting ? 'Submitting...' : 'Submit'}
-            </Button>
-          </form>
+          </BuiForm>
         </InfoCard>
       </Content>
     </Page>

@@ -13,23 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
-import { ThemeProps } from '@rjsf/core';
-import { generateBuiTheme as generateBaseBuiTheme } from '@backstage/rjsf-bui-theme';
+import {
+  FormContextType,
+  TitleFieldProps,
+  RJSFSchema,
+  StrictRJSFSchema,
+} from '@rjsf/utils';
+import { Box, Text } from '@backstage/ui';
 
-import FieldTemplate from './templates/FieldTemplate';
-
-export function generateBuiTheme<
+export default function TitleFieldTemplate<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
->(): ThemeProps<T, S, F> {
-  const base = generateBaseBuiTheme<T, S, F>();
-  return {
-    ...base,
-    templates: {
-      ...base.templates,
-      FieldTemplate: FieldTemplate as any,
-    },
-  };
+>({ id, title, required }: TitleFieldProps<T, S, F>) {
+  return (
+    <Box mb="3">
+      <Text id={id} as="h3" variant="title-small" weight="bold">
+        {title}
+        {required && (
+          <Text as="span" color="danger">
+            {' '}
+            *
+          </Text>
+        )}
+      </Text>
+    </Box>
+  );
 }
