@@ -68,7 +68,7 @@ export const apiDocsTranslationRef: TranslationRef<
   }
 >;
 
-// @public (undocumented)
+// @alpha (undocumented)
 export const ApiExplorerPage: (props: ApiExplorerPageProps) => JSX_3.Element;
 
 // @public
