@@ -161,7 +161,7 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
   );
 };
 
-/** @public */
+/** @alpha */
 export const NfsApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
   const {
     initiallySelectedFilter = 'all',

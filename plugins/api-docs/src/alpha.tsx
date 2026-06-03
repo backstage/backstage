@@ -228,10 +228,10 @@ export default createFrontendPlugin({
   ],
 });
 
+import { apiDocsTranslationRef as _apiDocsTranslationRef } from './translation';
+
 export { NfsApiExplorerPage as ApiExplorerPage } from './components/ApiExplorerPage';
 export type { DefaultApiExplorerPageProps as ApiExplorerPageProps } from './components/ApiExplorerPage';
-
-import { apiDocsTranslationRef as _apiDocsTranslationRef } from './translation';
 
 /**
  * @alpha
