@@ -20,7 +20,6 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
-import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { JSXElementConstructor } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -69,7 +68,9 @@ export const apiDocsTranslationRef: TranslationRef<
 >;
 
 // @alpha
-export const ApiExplorerPage: (props: ApiExplorerPageProps) => JSX_3.Element;
+export const ApiExplorerPage: (
+  props: ApiExplorerPageProps,
+) => React.JSX.Element;
 
 // @alpha
 export type ApiExplorerPageProps = {
