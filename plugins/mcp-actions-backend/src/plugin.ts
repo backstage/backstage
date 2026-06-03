@@ -22,6 +22,8 @@ import Router from 'express-promise-router';
 import { McpService } from './services/McpService';
 import { createStreamableRouter } from './routers/createStreamableRouter';
 import { createSseRouter } from './routers/createSseRouter';
+import { createElicitationRouter } from './routers/createElicitationRouter';
+import { SecretsStore } from './services/SecretsStore';
 import {
   actionsRegistryServiceRef,
   actionsServiceRef,
@@ -51,9 +53,12 @@ export const mcpPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         metrics: metricsServiceRef,
         tracing: tracingServiceRef,
+        database: coreServices.database,
+        lifecycle: coreServices.lifecycle,
       },
       async init({
         actions,
+        auth,
         logger,
         httpRouter,
         httpAuth,
@@ -62,6 +67,8 @@ export const mcpPlugin = createBackendPlugin({
         config,
         metrics,
         tracing,
+        database,
+        lifecycle,
       }) {
         const serverConfigs = parseServerConfigs(config);
         const namespacedToolNames = config.getOptionalBoolean(
@@ -71,6 +78,24 @@ export const mcpPlugin = createBackendPlugin({
           config.getOptionalBoolean('mcpActions.tracing.capture.toolPayload') ??
           false;
 
+        const encryptionKey = config.getOptionalString(
+          'mcpActions.secrets.encryptionKey',
+        );
+
+        let secretsStore: SecretsStore | undefined;
+        if (encryptionKey) {
+          const dbClient = await database.getClient();
+          secretsStore = await SecretsStore.create({
+            db: dbClient,
+            encryptionKey,
+          });
+          lifecycle.addShutdownHook(() => secretsStore!.dispose());
+        }
+
+        const appBaseUrl = secretsStore
+          ? config.getString('app.baseUrl')
+          : undefined;
+
         const mcpService = await McpService.create({
           actions,
           metrics,
@@ -78,10 +103,24 @@ export const mcpPlugin = createBackendPlugin({
           namespacedToolNames,
           tracingService: tracing,
           captureToolPayloads,
+          secretsStore,
+          auth,
+          elicitationBaseUrl: appBaseUrl,
         });
 
         const router = Router();
         router.use(json());
+
+        if (secretsStore) {
+          router.use(
+            createElicitationRouter({
+              secretsStore,
+              actions,
+              httpAuth,
+              auth,
+            }),
+          );
+        }
 
         if (serverConfigs && serverConfigs.size > 0) {
           for (const [key, serverConfig] of serverConfigs) {
