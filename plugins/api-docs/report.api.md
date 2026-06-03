@@ -262,6 +262,11 @@ export interface HasApisCardProps {
 }
 
 // @public (undocumented)
+export const NfsApiExplorerPage: (
+  props: DefaultApiExplorerPageProps,
+) => JSX_2.Element;
+
+// @public (undocumented)
 export const OpenApiDefinitionWidget: (
   props: OpenApiDefinitionWidgetProps,
 ) => JSX_2.Element;

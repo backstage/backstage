@@ -15,5 +15,8 @@
  */
 
 export { ApiExplorerPage as ApiExplorerIndexPage } from './ApiExplorerPage';
-export { DefaultApiExplorerPage } from './DefaultApiExplorerPage';
+export {
+  DefaultApiExplorerPage,
+  NfsApiExplorerPage,
+} from './DefaultApiExplorerPage';
 export type { DefaultApiExplorerPageProps } from './DefaultApiExplorerPage';
