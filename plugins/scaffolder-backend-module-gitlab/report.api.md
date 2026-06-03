@@ -144,6 +144,20 @@ export const createGitlabProjectVariableAction: (options: {
 >;
 
 // @public
+export const createGitlabRepoExistsAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    token?: string | undefined;
+  },
+  {
+    [x: string]: any;
+  },
+  'v2'
+>;
+
+// @public
 export const createGitlabRepoPushAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
