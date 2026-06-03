@@ -68,10 +68,10 @@ export const apiDocsTranslationRef: TranslationRef<
   }
 >;
 
-// @alpha (undocumented)
+// @alpha
 export const ApiExplorerPage: (props: ApiExplorerPageProps) => JSX_3.Element;
 
-// @public
+// @alpha
 export type ApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
