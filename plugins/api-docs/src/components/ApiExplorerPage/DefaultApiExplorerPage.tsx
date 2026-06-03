@@ -179,7 +179,9 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
  *
  * @alpha
  */
-export const ApiExplorerPage = (props: ApiExplorerPageProps): React.JSX.Element => {
+export const ApiExplorerPage = (
+  props: ApiExplorerPageProps,
+): React.JSX.Element => {
   const {
     initiallySelectedFilter = 'all',
     columns,
@@ -237,6 +239,6 @@ export type NfsApiExplorerPageProps = ApiExplorerPageProps;
  * @deprecated Import {@link ApiExplorerPage} instead.
  * @alpha
  */
-export const NfsApiExplorerPage = (props: NfsApiExplorerPageProps): React.JSX.Element => (
-  <ApiExplorerPage {...props} />
-);
+export const NfsApiExplorerPage = (
+  props: NfsApiExplorerPageProps,
+): React.JSX.Element => <ApiExplorerPage {...props} />;
