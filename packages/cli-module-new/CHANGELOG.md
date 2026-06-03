@@ -1,5 +1,11 @@
 # @backstage/cli-module-new
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 4014819: Added a new `scaffolder-field-extension-module` template for scaffolding custom Scaffolder form field extensions via `backstage-cli new`.
+
 ## 0.1.3
 
 ### Patch Changes

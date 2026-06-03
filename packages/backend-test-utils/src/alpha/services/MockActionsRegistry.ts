@@ -75,7 +75,7 @@ export class MockActionsRegistry
     return new MockActionsRegistry(opts.logger);
   }
 
-  readonly actions: Map<string, ActionsRegistryActionOptions<any, any>> =
+  readonly actions: Map<string, ActionsRegistryActionOptions<any, any, any>> =
     new Map();
 
   async list(): Promise<{ actions: ActionsServiceAction[] }> {
@@ -99,6 +99,9 @@ export class MockActionsRegistry
           output: action.schema?.output
             ? zodToJsonSchema(action.schema.output(z))
             : zodToJsonSchema(z.object({})),
+          ...(action.schema?.secrets && {
+            secrets: zodToJsonSchema(action.schema.secrets(z)),
+          }),
         } as ActionsServiceAction['schema'],
       })),
     };
@@ -107,6 +110,7 @@ export class MockActionsRegistry
   async invoke(opts: {
     id: string;
     input?: JsonObject;
+    secrets?: JsonObject;
     credentials?: BackstageCredentials;
   }): Promise<{ output: JsonValue }> {
     const action = this.actions.get(opts.id);
@@ -128,8 +132,30 @@ export class MockActionsRegistry
       throw new InputError(`Invalid input to action "${opts.id}"`, input.error);
     }
 
+    if (action.schema?.secrets && !opts.secrets) {
+      throw new InputError(
+        `Action "${opts.id}" requires secrets but none were provided`,
+      );
+    }
+
+    if (!action.schema?.secrets && opts.secrets) {
+      throw new InputError(`Action "${opts.id}" does not accept secrets`);
+    }
+
+    const secrets = action.schema?.secrets
+      ? action.schema.secrets(z).safeParse(opts.secrets)
+      : ({ success: true, data: undefined } as const);
+
+    if (!secrets.success) {
+      throw new InputError(
+        `Invalid secrets for action "${opts.id}"`,
+        secrets.error,
+      );
+    }
+
     const result = await action.action({
       input: input.data,
+      secrets: secrets.data,
       credentials: opts.credentials ?? mockCredentials.none(),
       logger: this.logger,
     });
@@ -151,7 +177,14 @@ export class MockActionsRegistry
   register<
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
-  >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void {
+    TSecretsSchema extends AnyZodObject | undefined = undefined,
+  >(
+    options: ActionsRegistryActionOptions<
+      TInputSchema,
+      TOutputSchema,
+      TSecretsSchema
+    >,
+  ): void {
     // hardcode test: prefix similar to how the default actions registry does it
     // and other places around the testing ecosystem:
     // https://github.com/backstage/backstage/blob/a9219496d5c073aaa0b8caf32ece10455cf65e61/packages/backend-test-utils/src/next/services/mockServices.ts#L321

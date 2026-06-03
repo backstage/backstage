@@ -1,5 +1,13 @@
 # @backstage/core-components
 
+## 0.18.11-next.1
+
+### Patch Changes
+
+- dbe93a7: Fix autologout not working correctly when closing all tabs
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.7-next.0
+
 ## 0.18.11-next.0
 
 ### Patch Changes

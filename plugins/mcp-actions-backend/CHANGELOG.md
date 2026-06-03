@@ -1,5 +1,14 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.14-next.1
+
+### Patch Changes
+
+- ed1be73: Validate each action against the MCP tool schema when responding to `tools/list`, and skip any action that doesn't conform instead of failing the entire response. A single misbehaving action with a malformed input schema will now be logged as a warning and omitted from the tool list, letting the remaining actions continue to be served.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.1
+  - @backstage/backend-plugin-api@1.9.2-next.1
+
 ## 0.1.14-next.0
 
 ### Patch Changes

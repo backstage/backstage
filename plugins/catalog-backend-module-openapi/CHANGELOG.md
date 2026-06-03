@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.2.23-next.1
+
+### Patch Changes
+
+- cf4b34b: Fixed resolution of relative `$ref` paths in OpenAPI and AsyncAPI specs by using the original reference string and parent document URL from the ref parser, instead of computing paths relative to the process working directory. This fixes a regression where cross-directory refs like `./../../common/specs/common.yaml` and nested refs at depth > 1 would resolve incorrectly.
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.1
+  - @backstage/backend-plugin-api@1.9.2-next.1
+
 ## 0.2.23-next.0
 
 ### Patch Changes
