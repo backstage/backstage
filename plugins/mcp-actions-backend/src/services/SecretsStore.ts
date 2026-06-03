@@ -71,6 +71,7 @@ export class SecretsStore {
       user_entity_ref: userEntityRef,
       csrf_token: csrfToken,
       status: 'pending',
+      created_at: new Date().toISOString(),
     });
     return { csrfToken };
   }
@@ -146,9 +147,9 @@ export class SecretsStore {
   private startCleanup() {
     this.cleanupTimer = setInterval(async () => {
       try {
-        const cutoff = new Date(Date.now() - TTL_MS);
+        const cutoff = new Date(Date.now() - TTL_MS).toISOString();
         await this.db('mcp_elicitations')
-          .where('created_at', '<', cutoff.toISOString())
+          .where('created_at', '<', cutoff)
           .del();
       } catch {
         // next interval will retry

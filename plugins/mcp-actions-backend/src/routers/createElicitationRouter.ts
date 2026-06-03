@@ -87,16 +87,16 @@ export function createElicitationRouter(opts: {
       throw new NotAllowedError('User mismatch');
     }
 
-    const { csrfToken, secrets } = req.body;
+    const { csrfToken, secrets: secretsBody } = req.body;
     if (!csrfToken || csrfToken !== pending.csrfToken) {
       throw new InputError('Invalid CSRF token');
     }
 
-    if (!secrets || typeof secrets !== 'object') {
+    if (!secretsBody || typeof secretsBody !== 'object') {
       throw new InputError('Missing or invalid secrets');
     }
 
-    await secretsStore.complete(elicitationId, secrets);
+    await secretsStore.complete(elicitationId, secretsBody);
     res.json({ ok: true });
   });
 

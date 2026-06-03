@@ -118,6 +118,7 @@ export const mcpPlugin = createBackendPlugin({
               actions,
               httpAuth,
               auth,
+              logger,
             }),
           );
         }
