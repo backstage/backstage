@@ -1,0 +1,16 @@
+.wizardStep {
+  height: 100%;
+  grid-template-rows: 1fr auto;
+}
+
+.wizardStepFooter {
+  display: flex;
+  justify-content: center;
+  gap: var(--bui-space-2);
+  padding: var(--bui-space-3);
+  border-top: 1px solid var(--bui-bg-neutral-2);
+}
+
+.wizardStepCard {
+  padding: var(--bui-space-12) 0;
+}

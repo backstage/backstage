@@ -1,0 +1,61 @@
+@keyframes colorShiftElement {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  25%,
+  75% {
+    background-position: 50% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Intentional brand gradient colors — no BUI tokens for gradient animations */
+.animatedProgressBar {
+  height: 100%;
+  background: linear-gradient(90deg, #ef51fd 0%, #51effd 50%, #ef51fd 100%);
+  background-size: 200% 100%;
+  animation: colorShiftElement 3s ease-in-out infinite;
+  transition: width 0.3s ease-in-out;
+}
+
+.container {
+  width: 100%;
+  position: relative;
+  border-bottom: 1px solid var(--bui-border-1);
+  min-width: 0;
+}
+
+.outerFlex {
+  min-width: 0;
+}
+
+.stepsFlex {
+  flex: 1;
+  min-width: 0;
+}
+
+.stepItem {
+  min-width: 0;
+}
+
+.stepText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reviewText {
+  white-space: nowrap;
+}
+
+.progressTrack {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--bui-bg-neutral-3);
+}

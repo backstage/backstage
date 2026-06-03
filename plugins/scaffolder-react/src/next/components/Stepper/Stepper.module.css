@@ -1,0 +1,10 @@
+.stepper {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+}
+
+.stepperContent {
+  height: 100%;
+  padding-top: var(--bui-space-3);
+}

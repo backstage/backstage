@@ -1,0 +1,20 @@
+.reviewTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reviewTable tr:not(:last-child) {
+  border-bottom: 1px solid var(--bui-bg-neutral-2);
+}
+
+.reviewTable th {
+  text-align: left;
+  width: max-content;
+  padding-block: var(--bui-space-3);
+  white-space: nowrap;
+}
+
+.reviewTable td {
+  padding-left: var(--bui-space-4);
+  width: 100%;
+}

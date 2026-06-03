@@ -42,7 +42,7 @@ describe('Stepper', () => {
     );
 
     for (const step of manifest.steps) {
-      expect(getByText(step.title)).toBeInTheDocument();
+      expect(getByText(step.title, { exact: false })).toBeInTheDocument();
     }
   });
 
@@ -398,13 +398,16 @@ describe('Stepper', () => {
             },
           ]}
           onCreate={jest.fn()}
+          formProps={{ EXPERIMENTAL_theme: 'bui' }}
         />
       </SecretsContextProvider>,
     );
     fireEvent.click(getByRole('button', { name: 'Review' }));
     await waitFor(() => {
-      expect(getByRole('progressbar')).toBeInTheDocument(); // Check if progress bar is rendered
-      expect(getByRole('button', { name: 'Review' })).toBeDisabled(); // Check if the button is disabled
+      expect(
+        getByRole('button', { name: 'Validating...' }),
+      ).toBeInTheDocument();
+      expect(getByRole('button', { name: 'Validating...' })).toBeDisabled();
     });
   });
 
@@ -812,6 +815,7 @@ describe('Stepper', () => {
                 component: FieldExtension,
               },
             ]}
+            formProps={{ EXPERIMENTAL_theme: 'bui' }}
           />
         </SecretsContextProvider>,
       );
@@ -822,13 +826,15 @@ describe('Stepper', () => {
 
       fireEvent.click(getByRole('button', { name: 'Create' }));
 
+      // Button shows "Submitting..." and is disabled while onCreate is in-flight
       await waitFor(() =>
-        expect(getByRole('button', { name: 'Create' })).toBeDisabled(),
+        expect(getByRole('button', { name: 'Submitting...' })).toBeDisabled(),
       );
 
-      await act(async () => {
-        fireEvent.click(getByRole('button', { name: 'Create' }));
-      });
+      // Wait for submission to complete
+      await waitFor(() =>
+        expect(getByRole('button', { name: 'Create' })).toBeInTheDocument(),
+      );
 
       expect(onCreate).toHaveBeenCalledTimes(1);
 

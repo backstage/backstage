@@ -17,7 +17,7 @@
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { ScaffolderReactTemplateCategoryPickerClassKey } from './components/TemplateCategoryPicker/TemplateCategoryPicker';
-import { BackstageTemplateStepperClassKey } from './components/Stepper/Stepper';
+import { BackstageTemplateStepperClassKey } from './components/Stepper/MuiStepper';
 
 /** @alpha */
 export type ScaffolderReactComponentsNameToClassKey = {

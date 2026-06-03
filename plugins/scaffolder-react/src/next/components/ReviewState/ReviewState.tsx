@@ -13,11 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { StructuredMetadataTable } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
+import { scaffolderReactTranslationRef } from '../../../translation';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 import { isJsonObject, formatKey, findSchemaForKey } from './util';
+import styles from './ReviewState.module.css';
+
+function formatValue(value: JsonValue | undefined): string {
+  if (value === undefined || value === null) return '';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  if (typeof value === 'string' || typeof value === 'number')
+    return String(value);
+  if (Array.isArray(value)) {
+    return value
+      .map(v => formatValue(v))
+      .filter(v => v !== undefined && v !== null)
+      .join(', ');
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value);
+  }
+  return String(value);
+}
 
 /**
  * The props for the {@link ReviewState} component.
@@ -75,7 +94,6 @@ function processSchema(
     }
 
     if (backstageReviewOptions?.explode !== false && isJsonObject(value)) {
-      // Recurse nested objects
       return Object.entries(value).flatMap(([nestedKey, nestedValue]) =>
         processSchema(`${key}/${nestedKey}`, nestedValue, schema, formState),
       );
@@ -90,20 +108,29 @@ function processSchema(
  * @alpha
  */
 export const ReviewState = (props: ReviewStateProps) => {
-  const reviewData = Object.fromEntries(
-    Object.entries(props.formState)
-      .flatMap(([key, value]) => {
-        const schema = findSchemaForKey(key, props.schemas, props.formState);
-        return schema
-          ? processSchema(key, value, schema, props.formState)
-          : [[formatKey(key), value]];
-      })
-      .filter(prop => prop.length > 0),
-  );
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
+
+  const reviewData = Object.entries(props.formState).flatMap(([key, value]) => {
+    const schema = findSchemaForKey(key, props.schemas, props.formState);
+    return schema
+      ? processSchema(key, value, schema, props.formState)
+      : [[formatKey(key), value] as [string, JsonValue | undefined]];
+  });
+
+  if (reviewData.length === 0) {
+    return <p>{t('stepper.noFormDataToReview')}</p>;
+  }
+
   return (
-    <StructuredMetadataTable
-      metadata={reviewData}
-      options={{ titleFormat: key => key }}
-    />
+    <table className={styles.reviewTable} aria-label="Review of form data">
+      <tbody>
+        {reviewData.map(([key, value], index) => (
+          <tr key={index}>
+            <th>{key}</th>
+            <td>{formatValue(value)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };

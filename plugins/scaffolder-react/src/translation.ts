@@ -37,6 +37,9 @@ export const scaffolderReactTranslationRef = createTranslationRef({
       reviewButtonText: 'Review',
       stepIndexLabel: 'Step {{index, number}}',
       nextButtonText: 'Next',
+      validatingButtonText: 'Validating...',
+      submittingButtonText: 'Submitting...',
+      noFormDataToReview: 'No form data to review',
     },
     templateCategoryPicker: {
       title: 'Categories',

@@ -15,17 +15,17 @@
  */
 
 import { ReviewState } from './ReviewState';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 
 describe('ReviewState', () => {
-  it('should render the text as normal with no options', () => {
+  it('should render the text as normal with no options', async () => {
     const formState = {
       name: 'John Doe',
       test: 'bob',
     };
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={[]} />,
     );
 
@@ -33,7 +33,7 @@ describe('ReviewState', () => {
     expect(getByRole('row', { name: 'Test bob' })).toBeInTheDocument();
   });
 
-  it('should mask password ui:fields', () => {
+  it('should mask password ui:fields', async () => {
     const formState = {
       name: 'John Doe',
       test: 'bob',
@@ -57,7 +57,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
@@ -110,7 +110,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole, getAllByRole } = render(
+    const { queryByRole, getAllByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
     expect(getAllByRole('row').length).toEqual(1);
@@ -118,7 +118,7 @@ describe('ReviewState', () => {
     expect(queryByRole('row', { name: 'Foo ******' })).not.toBeInTheDocument();
   });
 
-  it('should allow for masking an option with a set text', () => {
+  it('should allow for masking an option with a set text', async () => {
     const formState = {
       name: 'John Doe',
       test: 'bob',
@@ -164,7 +164,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
@@ -212,7 +212,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole } = render(
+    const { queryByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
@@ -249,7 +249,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole } = render(
+    const { queryByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
@@ -290,7 +290,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole } = render(
+    const { queryByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
@@ -351,7 +351,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole } = render(
+    const { queryByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
@@ -419,7 +419,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole } = render(
+    const { queryByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
@@ -456,7 +456,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole } = render(
+    const { queryByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
@@ -498,7 +498,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole } = render(
+    const { queryByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
@@ -597,7 +597,7 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole } = render(
+    const { queryByRole } = await renderInTestApp(
       <ReviewState formState={formState} schemas={schemas} />,
     );
 

@@ -25,6 +25,7 @@ import { errorApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
+import { Box } from '@backstage/ui';
 import { makeStyles } from '@material-ui/core/styles';
 import { ComponentType, useCallback, useEffect } from 'react';
 
@@ -34,10 +35,10 @@ import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProper
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
+import { WizardTemplateHeader } from '../Stepper/WizardTemplateHeader';
 
 const useStyles = makeStyles({
   markdown: {
-    /** to make the styles for React Markdown not leak into the description */
     '& :first-child': {
       marginTop: 0,
     },
@@ -69,6 +70,55 @@ export type WorkflowProps = {
   | 'layouts'
 >;
 
+type MuiWorkflowLayoutProps = {
+  title: string;
+  description: string;
+  loading: boolean;
+  sortedManifest: NonNullable<ReturnType<typeof useFilteredSchemaProperties>>;
+  workflowOnCreate: WorkflowProps['onCreate'];
+  props: Pick<
+    StepperProps,
+    'extensions' | 'formProps' | 'components' | 'initialState' | 'layouts'
+  >;
+};
+
+const MuiWorkflowLayout = ({
+  title,
+  description,
+  loading,
+  sortedManifest,
+  workflowOnCreate,
+  props,
+}: MuiWorkflowLayoutProps) => {
+  const styles = useStyles();
+
+  return (
+    <Content>
+      {loading && <Progress />}
+      {sortedManifest && (
+        <InfoCard
+          title={title}
+          subheader={
+            <MarkdownContent
+              className={styles.markdown}
+              linkTarget="_blank"
+              content={description}
+            />
+          }
+          noPadding
+          titleTypographyProps={{ component: 'h2' }}
+        >
+          <Stepper
+            manifest={sortedManifest}
+            onCreate={workflowOnCreate}
+            {...props}
+          />
+        </InfoCard>
+      )}
+    </Content>
+  );
+};
+
 /**
  * @alpha
  */
@@ -78,7 +128,6 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     workflowProps;
 
   const analytics = useAnalytics();
-  const styles = useStyles();
   const templateRef = stringifyEntityRef({
     kind: 'Template',
     namespace: namespace,
@@ -117,34 +166,46 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     return props.onError(error);
   }
 
-  return (
-    <Content>
-      {loading && <Progress />}
-      {sortedManifest && (
-        <InfoCard
-          title={title ?? sortedManifest.title}
-          subheader={
-            <MarkdownContent
-              className={styles.markdown}
-              linkTarget="_blank"
-              content={
+  const theme = props.formProps?.EXPERIMENTAL_theme ?? 'mui';
+
+  if (theme === 'bui') {
+    return (
+      <Box style={{ height: '100%' }}>
+        {loading && <Progress />}
+        {sortedManifest && (
+          <>
+            <WizardTemplateHeader
+              title={title ?? sortedManifest.title}
+              description={
                 description ??
                 sortedManifest.description ??
                 t('workflow.noDescription')
               }
             />
-          }
-          noPadding
-          titleTypographyProps={{ component: 'h2' }}
-        >
-          <Stepper
-            manifest={sortedManifest}
-            onCreate={workflowOnCreate}
-            {...props}
-          />
-        </InfoCard>
-      )}
-    </Content>
+            <Stepper
+              manifest={sortedManifest}
+              onCreate={workflowOnCreate}
+              {...props}
+            />
+          </>
+        )}
+      </Box>
+    );
+  }
+
+  return (
+    <MuiWorkflowLayout
+      title={title ?? sortedManifest?.title ?? ''}
+      description={
+        description ??
+        sortedManifest?.description ??
+        t('workflow.noDescription')
+      }
+      loading={loading}
+      sortedManifest={sortedManifest!}
+      workflowOnCreate={workflowOnCreate}
+      props={props}
+    />
   );
 };
 
