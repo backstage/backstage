@@ -1,5 +1,4 @@
 ---
 '@backstage/plugin-api-docs': patch
 ---
-
-Exported the new frontend system variant of the API explorer page and its props from the `/alpha` entry point, enabling adopters to import and customize it.
+Exported `ApiExplorerPage` and `ApiExplorerPageProps` from the `@backstage/plugin-api-docs/alpha` entry point, allowing adopters to import and customize the New Frontend System version of the API explorer page.
