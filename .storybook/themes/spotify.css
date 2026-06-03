@@ -193,49 +193,47 @@
 }
 
 [data-theme-mode='light'][data-theme-name='spotify'] {
+  --bui-ring: rgba(0, 0, 0, 0.2);
+  --bui-accent-bg: #1ed760;
+  --bui-accent-bg-hover: #3be477;
+  --bui-accent-bg-disabled: #0f6c30;
+  --bui-accent-fg: var(--bui-black);
+  --bui-accent-fg-disabled: #62ab7c;
+
+  /* Deprecated tokens */
   --bui-bg-solid: #1ed760;
   --bui-bg-solid-hover: #3be477;
   --bui-bg-solid-pressed: #1abc54;
   --bui-bg-solid-disabled: #0f6c30;
-
-  --bui-fg-primary: var(--bui-black);
-  --bui-fg-secondary: #757575;
   --bui-fg-solid: var(--bui-black);
   --bui-fg-solid-disabled: #62ab7c;
-
-  --bui-border-2: #d9d9d9;
   --bui-border-danger: #f87a7a;
   --bui-border-warning: #e36d05;
   --bui-border-success: #53db83;
-
-  --bui-ring: rgba(0, 0, 0, 0.2);
 }
 
 [data-theme-mode='dark'][data-theme-name='spotify'] {
   --bui-bg-app: var(--bui-black);
+  --bui-ring: rgba(255, 255, 255, 0.2);
+  --bui-accent-bg: #1ed760;
+  --bui-accent-bg-hover: #3be477;
+  --bui-accent-bg-disabled: #0f6c30;
+  --bui-accent-fg: var(--bui-black);
+  --bui-accent-fg-disabled: #62ab7c;
 
+  /* Deprecated tokens */
   --bui-bg-solid: #1ed760;
   --bui-bg-solid-hover: #3be477;
   --bui-bg-solid-pressed: #1abc54;
   --bui-bg-solid-disabled: #0f6c30;
-
   --bui-bg-danger: #3b1219;
   --bui-bg-warning: #302008;
   --bui-bg-success: #132d21;
-
-  --bui-fg-primary: var(--bui-white);
-  --bui-fg-secondary: #9e9e9e;
-  --bui-fg-disabled: #575757;
   --bui-fg-solid: var(--bui-black);
   --bui-fg-solid-disabled: #072f15;
   --bui-fg-danger: #e22b2b;
-  --bui-fg-warning: #e36d05;
   --bui-fg-success: #1db954;
-
-  --bui-border-2: #373737;
   --bui-border-danger: #f87a7a;
   --bui-border-warning: #e36d05;
   --bui-border-success: #53db83;
-
-  --bui-ring: rgba(255, 255, 255, 0.2);
 }

@@ -1,0 +1,10 @@
+---
+title: Argo CD
+author: Red Hat
+authorUrl: https://redhat.com
+category: CI/CD
+description: Visualizes Argo CD application state and deployment lifecycle for catalog entities.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/argocd/plugins/argocd/README.md
+npmPackageName: '@backstage-community/plugin-argocd'
+addedDate: '2026-02-21'
+status: active

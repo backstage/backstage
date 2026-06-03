@@ -38,6 +38,15 @@ import { Entity } from '@backstage/catalog-model';
 
 jest.setTimeout(30_000);
 
+// The entity page extension uses React.lazy (via ExtensionBoundary.lazy) to
+// dynamically import EntityLayout and its large dependency tree. Pre-warming
+// this import ensures Jest's module cache is populated before the first test,
+// so the Suspense fallback resolves quickly instead of waiting for cold module
+// resolution under CI load.
+beforeAll(async () => {
+  await import('./components/EntityLayout');
+});
+
 describe('Entity page', () => {
   const entityMock: Entity = {
     metadata: {

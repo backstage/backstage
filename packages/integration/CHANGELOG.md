@@ -1,5 +1,12 @@
 # @backstage/integration
 
+## 2.0.3-next.1
+
+### Patch Changes
+
+- b75158b: Adapted Azure-related tests for the Azure SDK upgrade to ESM-style exports. The `AzureBlobStorageUrlReader` now accepts an optional `createContainerClient` dependency for testability without needing to mock the `@azure/storage-blob` module.
+- 241d359: Changed visibility of Bitbucket username as it is not a secret.
+
 ## 2.0.3-next.0
 
 ### Patch Changes

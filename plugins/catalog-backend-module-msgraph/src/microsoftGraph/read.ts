@@ -42,6 +42,47 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 
 const PAGE_SIZE = 999;
 
+// The default properties returned by the Microsoft Graph API for User
+// objects when no $select is specified. accountEnabled is NOT included
+// in this set — it requires an explicit $select.
+// https://learn.microsoft.com/en-us/graph/api/user-list#optional-query-parameters
+const DEFAULT_USER_SELECT = [
+  'businessPhones',
+  'displayName',
+  'givenName',
+  'id',
+  'jobTitle',
+  'mail',
+  'mobilePhone',
+  'officeLocation',
+  'preferredLanguage',
+  'surname',
+  'userPrincipalName',
+];
+
+// Fields that our code requires regardless of what the user or default
+// projection provides. These are always added to the $select list.
+const MINIMUM_USER_SELECT = ['id', 'accountEnabled'];
+
+function ensureMinimumSelect(select: string[] | undefined): string[] {
+  const base = select ?? DEFAULT_USER_SELECT;
+  const lower = new Set(base.map(s => s.toLocaleLowerCase('en-US')));
+  const missing = MINIMUM_USER_SELECT.filter(
+    f => !lower.has(f.toLocaleLowerCase('en-US')),
+  );
+  return missing.length > 0 ? [...base, ...missing] : base;
+}
+
+async function* filterDisabledUsers(
+  users: AsyncIterable<MicrosoftGraph.User>,
+): AsyncIterable<MicrosoftGraph.User> {
+  for await (const user of users) {
+    if (user.accountEnabled !== false) {
+      yield user;
+    }
+  }
+}
+
 export async function readMicrosoftGraphUsers(
   client: MicrosoftGraphClient,
   options: {
@@ -58,16 +99,18 @@ export async function readMicrosoftGraphUsers(
 ): Promise<{
   users: UserEntity[]; // With all relations empty
 }> {
-  const users = client.getUsers(
-    {
-      filter: options.userFilter,
-      expand: options.userExpand,
-      select: options.userSelect,
-      top: PAGE_SIZE,
-    },
-    options.queryMode,
-    options.userPath,
-    options.signal,
+  const users = filterDisabledUsers(
+    client.getUsers(
+      {
+        filter: options.userFilter,
+        expand: options.userExpand,
+        select: ensureMinimumSelect(options.userSelect),
+        top: PAGE_SIZE,
+      },
+      options.queryMode,
+      options.userPath,
+      options.signal,
+    ),
   );
 
   return {
@@ -86,7 +129,6 @@ export async function readMicrosoftGraphUsersInGroups(
   options: {
     queryMode?: 'basic' | 'advanced';
     userExpand?: string;
-    userFilter?: string;
     userSelect?: string[];
     loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
@@ -121,16 +163,17 @@ export async function readMicrosoftGraphUsersInGroups(
     userGroupMemberPromises.push(
       limiter(async () => {
         let groupMemberCount = 0;
-        for await (const user of client.getGroupUserMembers(
-          group.id!,
-          {
-            expand: options.userExpand,
-            filter: options.userFilter,
-            select: options.userSelect,
-            top: PAGE_SIZE,
-          },
-          options.queryMode,
-          options.signal,
+        for await (const user of filterDisabledUsers(
+          client.getGroupUserMembers(
+            group.id!,
+            {
+              expand: options.userExpand,
+              select: ensureMinimumSelect(options.userSelect),
+              top: PAGE_SIZE,
+            },
+            options.queryMode,
+            options.signal,
+          ),
         )) {
           userGroupMembers.set(user.id!, user);
           groupMemberCount++;
@@ -455,7 +498,6 @@ export async function readMicrosoftGraphOrg(
       {
         queryMode: options.queryMode,
         userExpand: options.userExpand,
-        userFilter: options.userFilter,
         userSelect: options.userSelect,
         userGroupMemberFilter: options.userGroupMemberFilter,
         userGroupMemberSearch: options.userGroupMemberSearch,

@@ -120,14 +120,14 @@ describe('AzureUrlReader', () => {
     it.each([
       {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
-        config: createConfig(),
+        config: createConfig('my-pat'),
         response: expect.objectContaining({
           url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
         }),
       },
       {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
-        config: createConfig(),
+        config: createConfig('my-pat'),
         response: expect.objectContaining({
           url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml',
         }),
@@ -138,15 +138,6 @@ describe('AzureUrlReader', () => {
         response: expect.objectContaining({
           headers: expect.objectContaining({
             authorization: 'Basic OjAxMjM0NTY3ODk=',
-          }),
-        }),
-      },
-      {
-        url: 'https://dev.azure.com/a/b/_git/repo-name?path=my-template.yaml',
-        config: createConfig(undefined),
-        response: expect.objectContaining({
-          headers: expect.objectContaining({
-            authorization: expect.stringMatching(/^Bearer /),
           }),
         }),
       },
@@ -166,12 +157,12 @@ describe('AzureUrlReader', () => {
     it.each([
       {
         url: 'https://api.com/a/b/blob/master/path/to/c.yaml',
-        config: createConfig(),
+        config: createConfig('my-pat'),
         error: 'Azure URL must point to a git repository',
       },
       {
         url: 'com/a/b/blob/master/path/to/c.yaml',
-        config: createConfig(),
+        config: createConfig('my-pat'),
         error: 'Invalid URL',
       },
       {

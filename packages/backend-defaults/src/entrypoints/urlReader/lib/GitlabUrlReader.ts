@@ -211,6 +211,10 @@ export class GitlabUrlReader implements UrlReaderService {
     )}/repository/archive?${archiveReqParams.toString()}`;
     const archiveGitLabResponse = await this.integration.fetch(reqUrl, {
       ...getGitLabRequestOptions(this.integration.config, token),
+      // The mode is set to 'same-origin' to overwrite the default 'cors' value.
+      // The repository/archive endpoint marks mode='cors' as a "hotlink" which will return 406 - Not Acceptable as a response
+      // More info on this issue can be found @ https://github.com/backstage/backstage/issues/34395
+      mode: 'same-origin',
       // TODO(freben): The signal cast is there because pre-3.x versions of
       // node-fetch have a very slightly deviating AbortSignal type signature.
       // The difference does not affect us in practice however. The cast can

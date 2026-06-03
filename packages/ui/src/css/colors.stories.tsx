@@ -14,192 +14,289 @@
  * limitations under the License.
  */
 import preview from '../../../../.storybook/preview';
-import { Box } from '../components/Box';
-import { Flex } from '../components/Flex';
-import { Text } from '../components/Text';
 
 const meta = preview.meta({
   title: 'Backstage UI/Colors',
   tags: ['!manifest'],
 });
 
-/**
- * A `<div>` styled with `background: var(--bui-bg-inherit)` should always
- * resolve to the same color as the surrounding bg provider — at every level
- * of the neutral chain and inside intent surfaces.
- */
-const Probe = ({ label }: { label: string }) => (
+type SwatchItem = { label: string; token: string };
+
+const Swatch = ({ label, token }: SwatchItem) => (
   <div
     style={{
-      backgroundColor: 'var(--bui-bg-inherit)',
-      padding: '0.5rem 0.75rem',
-      borderRadius: '0.25rem',
-      outline: '1px dashed var(--bui-fg-secondary)',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.75rem',
+      padding: '0.375rem 0',
     }}
   >
-    <Text>{label}</Text>
+    <div
+      style={{
+        width: 28,
+        height: 28,
+        borderRadius: 6,
+        backgroundColor: `var(${token})`,
+        border: '1px solid rgba(127 127 127 / 20%)',
+        flexShrink: 0,
+      }}
+    />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      <span
+        style={{
+          fontSize: '0.8125rem',
+          color: 'var(--bui-fg-primary)',
+          lineHeight: 1.3,
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: '0.6875rem',
+          color: 'var(--bui-fg-secondary)',
+          fontFamily: 'var(--bui-font-monospace)',
+          lineHeight: 1.3,
+        }}
+      >
+        {token}
+      </span>
+    </div>
   </div>
 );
 
-export const Default = meta.story({
-  render: () => (
-    <div style={{ backgroundColor: 'var(--bui-bg-app)' }}>
-      <Box p="4" style={{ backgroundColor: 'var(--bui-bg-neutral-1)' }}>
-        <Flex direction="row" gap="4" align="center">
-          <Text>Neutral 1</Text>
-          <Flex
-            px="2"
-            py="1"
-            style={{ backgroundColor: 'var(--bui-bg-neutral-1-hover)' }}
-          >
-            <Text>Hover</Text>
-          </Flex>
-          <Flex
-            px="2"
-            py="1"
-            style={{ backgroundColor: 'var(--bui-bg-neutral-1-pressed)' }}
-          >
-            <Text>Pressed</Text>
-          </Flex>
-          <Flex
-            px="2"
-            py="1"
-            style={{ backgroundColor: 'var(--bui-bg-neutral-1-disabled)' }}
-          >
-            <Text style={{ color: 'var(--bui-fg-disabled)' }}>Disabled</Text>
-          </Flex>
-        </Flex>
-        <Box
-          p="4"
-          mt="4"
-          style={{ backgroundColor: 'var(--bui-bg-neutral-2)' }}
-        >
-          <Flex direction="row" gap="4" align="center">
-            <Text>Neutral 2</Text>
-            <Flex
-              px="2"
-              py="1"
-              style={{ backgroundColor: 'var(--bui-bg-neutral-2-hover)' }}
-            >
-              <Text>Hover</Text>
-            </Flex>
-            <Flex
-              px="2"
-              py="1"
-              style={{ backgroundColor: 'var(--bui-bg-neutral-2-pressed)' }}
-            >
-              <Text>Pressed</Text>
-            </Flex>
-            <Flex
-              px="2"
-              py="1"
-              style={{ backgroundColor: 'var(--bui-bg-neutral-2-disabled)' }}
-            >
-              <Text style={{ color: 'var(--bui-fg-disabled)' }}>Disabled</Text>
-            </Flex>
-          </Flex>
-          <Box
-            p="4"
-            mt="4"
-            style={{ backgroundColor: 'var(--bui-bg-neutral-3)' }}
-          >
-            <Flex direction="row" gap="4" align="center">
-              <Text>Neutral 3</Text>
-              <Flex
-                px="2"
-                py="1"
-                style={{ backgroundColor: 'var(--bui-bg-neutral-3-hover)' }}
-              >
-                <Text>Hover</Text>
-              </Flex>
-              <Flex
-                px="2"
-                py="1"
-                style={{ backgroundColor: 'var(--bui-bg-neutral-3-pressed)' }}
-              >
-                <Text>Pressed</Text>
-              </Flex>
-              <Flex
-                px="2"
-                py="1"
-                style={{ backgroundColor: 'var(--bui-bg-neutral-3-disabled)' }}
-              >
-                <Text style={{ color: 'var(--bui-fg-disabled)' }}>
-                  Disabled
-                </Text>
-              </Flex>
-            </Flex>
-            <Box
-              p="4"
-              mt="4"
-              style={{ backgroundColor: 'var(--bui-bg-neutral-4)' }}
-            >
-              <Flex direction="row" gap="4" align="center">
-                <Text>Neutral 4</Text>
-                <Flex
-                  px="2"
-                  py="1"
-                  style={{ backgroundColor: 'var(--bui-bg-neutral-4-hover)' }}
-                >
-                  <Text>Hover</Text>
-                </Flex>
-                <Flex
-                  px="2"
-                  py="1"
-                  style={{ backgroundColor: 'var(--bui-bg-neutral-4-pressed)' }}
-                >
-                  <Text>Pressed</Text>
-                </Flex>
-                <Flex
-                  px="2"
-                  py="1"
-                  style={{
-                    backgroundColor: 'var(--bui-bg-neutral-4-disabled)',
-                  }}
-                >
-                  <Text style={{ color: 'var(--bui-fg-disabled)' }}>
-                    Disabled
-                  </Text>
-                </Flex>
-              </Flex>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
+const Section = ({
+  title,
+  tokens,
+}: {
+  title: string;
+  tokens: SwatchItem[];
+}) => (
+  <div style={{ display: 'flex', flexDirection: 'column', minWidth: 260 }}>
+    <div
+      style={{
+        fontSize: '0.75rem',
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '0.06em',
+        color: 'var(--bui-fg-secondary)',
+        padding: '0.5rem 0',
+        marginBottom: '0.25rem',
+        borderBottom: '1px solid var(--bui-border-1)',
+      }}
+    >
+      {title}
     </div>
-  ),
-});
+    {tokens.map(t => (
+      <Swatch key={t.token} {...t} />
+    ))}
+  </div>
+);
 
-export const BgInherit = meta.story({
+export const All = meta.story({
+  name: 'All Colors',
   render: () => (
-    <Flex direction="column" gap="4">
-      <Probe label="App level (no provider) — resolves to --bui-bg-app" />
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+        gap: '2.5rem 3rem',
+        padding: '2rem',
+      }}
+    >
+      <Section
+        title="Gray Scale"
+        tokens={[
+          { label: 'Gray 1', token: '--bui-gray-1' },
+          { label: 'Gray 2', token: '--bui-gray-2' },
+          { label: 'Gray 3', token: '--bui-gray-3' },
+          { label: 'Gray 4', token: '--bui-gray-4' },
+          { label: 'Gray 5', token: '--bui-gray-5' },
+          { label: 'Gray 6', token: '--bui-gray-6' },
+          { label: 'Gray 7', token: '--bui-gray-7' },
+          { label: 'Gray 8', token: '--bui-gray-8' },
+          { label: 'Gray 9', token: '--bui-gray-9' },
+          { label: 'Gray 10', token: '--bui-gray-10' },
+          { label: 'Gray 11', token: '--bui-gray-11' },
+        ]}
+      />
 
-      <Box bg="neutral" p="4">
-        <Flex direction="column" gap="3">
-          <Probe label="Inside neutral-1 — resolves to --bui-bg-neutral-1" />
-          <Box bg="neutral" p="4">
-            <Flex direction="column" gap="3">
-              <Probe label="Inside neutral-2 — resolves to --bui-bg-neutral-2" />
-              <Box bg="neutral" p="4">
-                <Probe label="Inside neutral-3 — resolves to --bui-bg-neutral-3" />
-              </Box>
-            </Flex>
-          </Box>
-        </Flex>
-      </Box>
+      <Section
+        title="Neutral Backgrounds"
+        tokens={[
+          { label: 'App', token: '--bui-bg-app' },
+          { label: 'Neutral 1', token: '--bui-bg-neutral-1' },
+          { label: 'Neutral 2', token: '--bui-bg-neutral-2' },
+          { label: 'Neutral 3', token: '--bui-bg-neutral-3' },
+          { label: 'Neutral 4', token: '--bui-bg-neutral-4' },
+        ]}
+      />
 
-      <Box bg="danger" p="4">
-        <Probe label="Inside danger — resolves to --bui-bg-danger" />
-      </Box>
+      <Section
+        title="Foreground"
+        tokens={[
+          { label: 'Primary', token: '--bui-fg-primary' },
+          { label: 'Secondary', token: '--bui-fg-secondary' },
+          { label: 'Disabled', token: '--bui-fg-disabled' },
+          { label: 'Positive', token: '--bui-fg-positive' },
+          { label: 'Negative', token: '--bui-fg-negative' },
+          { label: 'Warning', token: '--bui-fg-warning' },
+          { label: 'Announcement', token: '--bui-fg-announcement' },
+        ]}
+      />
 
-      <Box bg="warning" p="4">
-        <Probe label="Inside warning — resolves to --bui-bg-warning" />
-      </Box>
+      <Section
+        title="Border"
+        tokens={[
+          { label: 'Border 1', token: '--bui-border-1' },
+          { label: 'Border 2', token: '--bui-border-2' },
+        ]}
+      />
 
-      <Box bg="success" p="4">
-        <Probe label="Inside success — resolves to --bui-bg-success" />
-      </Box>
-    </Flex>
+      <Section
+        title="Accent"
+        tokens={[
+          { label: 'Bg', token: '--bui-accent-bg' },
+          { label: 'Bg - Hover', token: '--bui-accent-bg-hover' },
+          { label: 'Bg - Disabled', token: '--bui-accent-bg-disabled' },
+          { label: 'Fg', token: '--bui-accent-fg' },
+          { label: 'Fg - Disabled', token: '--bui-accent-fg-disabled' },
+        ]}
+      />
+
+      <Section
+        title="Announcement"
+        tokens={[
+          { label: 'Bg - Base', token: '--bui-announcement-bg' },
+          {
+            label: 'Bg - Base - Hover',
+            token: '--bui-announcement-bg-hover',
+          },
+          {
+            label: 'Bg - Base - Disabled',
+            token: '--bui-announcement-bg-disabled',
+          },
+          { label: 'Bg - Subdued', token: '--bui-announcement-bg-subdued' },
+          {
+            label: 'Bg - Subdued - Hover',
+            token: '--bui-announcement-bg-subdued-hover',
+          },
+          {
+            label: 'Bg - Subdued - Disabled',
+            token: '--bui-announcement-bg-subdued-disabled',
+          },
+          { label: 'Border', token: '--bui-announcement-border' },
+          { label: 'Fg - On Base', token: '--bui-announcement-fg' },
+          {
+            label: 'Fg - On Base - Disabled',
+            token: '--bui-announcement-fg-disabled',
+          },
+          {
+            label: 'Fg - On Subdued',
+            token: '--bui-announcement-fg-subdued',
+          },
+          {
+            label: 'Fg - On Subdued - Disabled',
+            token: '--bui-announcement-fg-subdued-disabled',
+          },
+        ]}
+      />
+
+      <Section
+        title="Warning"
+        tokens={[
+          { label: 'Bg - Base', token: '--bui-warning-bg' },
+          { label: 'Bg - Base - Hover', token: '--bui-warning-bg-hover' },
+          {
+            label: 'Bg - Base - Disabled',
+            token: '--bui-warning-bg-disabled',
+          },
+          { label: 'Bg - Subdued', token: '--bui-warning-bg-subdued' },
+          {
+            label: 'Bg - Subdued - Hover',
+            token: '--bui-warning-bg-subdued-hover',
+          },
+          {
+            label: 'Bg - Subdued - Disabled',
+            token: '--bui-warning-bg-subdued-disabled',
+          },
+          { label: 'Border', token: '--bui-warning-border' },
+          { label: 'Fg - On Base', token: '--bui-warning-fg' },
+          {
+            label: 'Fg - On Base - Disabled',
+            token: '--bui-warning-fg-disabled',
+          },
+          { label: 'Fg - On Subdued', token: '--bui-warning-fg-subdued' },
+          {
+            label: 'Fg - On Subdued - Disabled',
+            token: '--bui-warning-fg-subdued-disabled',
+          },
+        ]}
+      />
+
+      <Section
+        title="Negative"
+        tokens={[
+          { label: 'Bg - Base', token: '--bui-negative-bg' },
+          { label: 'Bg - Base - Hover', token: '--bui-negative-bg-hover' },
+          {
+            label: 'Bg - Base - Disabled',
+            token: '--bui-negative-bg-disabled',
+          },
+          { label: 'Bg - Subdued', token: '--bui-negative-bg-subdued' },
+          {
+            label: 'Bg - Subdued - Hover',
+            token: '--bui-negative-bg-subdued-hover',
+          },
+          {
+            label: 'Bg - Subdued - Disabled',
+            token: '--bui-negative-bg-subdued-disabled',
+          },
+          { label: 'Border', token: '--bui-negative-border' },
+          { label: 'Fg - On Base', token: '--bui-negative-fg' },
+          {
+            label: 'Fg - On Base - Disabled',
+            token: '--bui-negative-fg-disabled',
+          },
+          { label: 'Fg - On Subdued', token: '--bui-negative-fg-subdued' },
+          {
+            label: 'Fg - On Subdued - Disabled',
+            token: '--bui-negative-fg-subdued-disabled',
+          },
+        ]}
+      />
+
+      <Section
+        title="Positive"
+        tokens={[
+          { label: 'Bg - Base', token: '--bui-positive-bg' },
+          { label: 'Bg - Base - Hover', token: '--bui-positive-bg-hover' },
+          {
+            label: 'Bg - Base - Disabled',
+            token: '--bui-positive-bg-disabled',
+          },
+          { label: 'Bg - Subdued', token: '--bui-positive-bg-subdued' },
+          {
+            label: 'Bg - Subdued - Hover',
+            token: '--bui-positive-bg-subdued-hover',
+          },
+          {
+            label: 'Bg - Subdued - Disabled',
+            token: '--bui-positive-bg-subdued-disabled',
+          },
+          { label: 'Border', token: '--bui-positive-border' },
+          { label: 'Fg - On Base', token: '--bui-positive-fg' },
+          {
+            label: 'Fg - On Base - Disabled',
+            token: '--bui-positive-fg-disabled',
+          },
+          { label: 'Fg - On Subdued', token: '--bui-positive-fg-subdued' },
+          {
+            label: 'Fg - On Subdued - Disabled',
+            token: '--bui-positive-fg-subdued-disabled',
+          },
+        ]}
+      />
+    </div>
   ),
 });

@@ -15,8 +15,14 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 import { z } from 'zod/v3';
 
 // @alpha (undocumented)
-export type ActionsRegistryActionContext<TInputSchema extends AnyZodObject> = {
+export type ActionsRegistryActionContext<
+  TInputSchema extends AnyZodObject,
+  TSecretsSchema extends AnyZodObject | undefined = undefined,
+> = {
   input: z.infer<TInputSchema>;
+  secrets: TSecretsSchema extends AnyZodObject
+    ? z.infer<TSecretsSchema>
+    : undefined;
   logger: LoggerService;
   credentials: BackstageCredentials;
 };
@@ -36,6 +42,7 @@ export type ActionsRegistryActionExample<
 export type ActionsRegistryActionOptions<
   TInputSchema extends AnyZodObject,
   TOutputSchema extends AnyZodObject,
+  TSecretsSchema extends AnyZodObject | undefined = undefined,
 > = {
   name: string;
   title: string;
@@ -43,6 +50,9 @@ export type ActionsRegistryActionOptions<
   schema: {
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
+    secrets?: (
+      zod: typeof z,
+    ) => TSecretsSchema extends AnyZodObject ? TSecretsSchema : never;
   };
   examples?: Array<ActionsRegistryActionExample<TInputSchema, TOutputSchema>>;
   visibilityPermission?: BasicPermission;
@@ -51,7 +61,9 @@ export type ActionsRegistryActionOptions<
     idempotent?: boolean;
     readOnly?: boolean;
   };
-  action: (context: ActionsRegistryActionContext<TInputSchema>) => Promise<
+  action: (
+    context: ActionsRegistryActionContext<TInputSchema, TSecretsSchema>,
+  ) => Promise<
     z.infer<TOutputSchema> extends void
       ? void
       : {
@@ -66,8 +78,13 @@ export interface ActionsRegistryService {
   register<
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
+    TSecretsSchema extends AnyZodObject | undefined = undefined,
   >(
-    options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>,
+    options: ActionsRegistryActionOptions<
+      TInputSchema,
+      TOutputSchema,
+      TSecretsSchema
+    >,
   ): void;
 }
 
@@ -84,6 +101,7 @@ export interface ActionsService {
   invoke(opts: {
     id: string;
     input?: JsonObject;
+    secrets?: JsonObject;
     credentials: BackstageCredentials;
   }): Promise<{
     output: JsonValue;
@@ -104,6 +122,7 @@ export type ActionsServiceAction = {
   schema: {
     input: JSONSchema7;
     output: JSONSchema7;
+    secrets?: JSONSchema7;
   };
   examples?: Array<{
     title: string;
