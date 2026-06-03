@@ -31,6 +31,12 @@ export const TextFieldDefinition = defineComponent<TextFieldOwnProps>()({
     inputFloating: 'bui-Input--floating',
     inputIcon: 'bui-InputIcon',
     inputAction: 'bui-InputAction',
+    labelStyle: 'bui-Label',
+    labelFloating: 'bui-InputLabel--floating',
+    inputWrapperFloating: 'bui-InputWrapper--floating',
+    description: 'bui-Description',
+    error: 'bui-Error',
+    secondaryLabel: 'bui-SecondaryLabel',
   },
   bg: 'consumer',
   propDefs: {

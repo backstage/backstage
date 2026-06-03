@@ -128,7 +128,7 @@
     background-color: transparent;
     padding-top: 0;
     transition: padding-top 0.2s ease, box-shadow 0.2s ease-in-out;
-
+    outline: none;
     &[data-should-float='true'] {
       padding-top: 0.125rem;
     }
@@ -139,6 +139,42 @@
 
     &[data-invalid] {
       box-shadow: none;
+    }
+  }
+
+  .bui-InputWrapper--floating {
+    position: relative;
+    border-radius: var(--bui-radius-2);
+    display: flex;
+    align-items: center;
+  }
+
+  .bui-InputLabel--floating {
+    position: absolute;
+    left: var(--bui-space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: var(--bui-font-size-3);
+    color: var(--bui-fg-primary);
+    transition: all 0.2s ease;
+    background-color: var(--bui-bg-neutral-1);
+    padding: 0 var(--bui-space-2);
+    cursor: text;
+    z-index: 1;
+
+    &[data-should-float='true'] {
+      top: -0.5rem;
+      transform: translateY(0);
+      font-size: var(--bui-font-size-1);
+       color: var(--bui-fg-primary);
+    }
+
+    &[data-icon='true'] {
+      left: var(--bui-space-9);
+    }
+
+    &[data-focused='true'] {
+       color: var(--bui-fg-primary);
     }
   }
 }

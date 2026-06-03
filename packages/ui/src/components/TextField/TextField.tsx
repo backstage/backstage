@@ -49,7 +49,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     const getInputValue = (value: unknown) =>
       value == null ? '' : String(value);
     const [isFocused, setIsFocused] = useState(false);
-    // const [inputValue, setInputValue] = useState('');
     const [inputValue, setInputValue] = useState(() =>
       getInputValue(restProps.value ?? restProps.defaultValue),
     );
@@ -113,28 +112,22 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         onChange={floatingLabel ? handleChange : restProps.onChange}
         ref={ref}
       >
-        {!floatingLabel && (
-          <FieldLabel
-            label={label}
-            secondaryLabel={secondaryLabelText}
-            description={description}
-            descriptionSlot="description"
-          />
-        )}
+        <FieldLabel
+          label={floatingLabel ? null : label}
+          secondaryLabel={secondaryLabelText}
+          description={description}
+          descriptionSlot="description"
+        />
         <div
-          className={classes.inputWrapper}
+          className={`${classes.inputWrapper}${
+            floatingLabel ? ` ${classes.inputWrapperFloating}` : ''
+          }`}
           data-size={dataAttributes['data-size']}
-          style={
-            floatingLabel
-              ? {
-                  position: 'relative',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                }
-              : undefined
-          }
+          {...(floatingLabel && {
+            'data-focused': isFocused ? 'true' : 'false',
+          })}
+          {...(floatingLabel &&
+            restProps.isInvalid && { 'data-invalid': 'true' })}
         >
           {icon && (
             <div
@@ -147,7 +140,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           )}
           <Input
             className={`${classes.input}${
-              floatingLabel ? ` ${classes.inputFloating}` : ''
+              floatingLabel ? ` ${classes.input}` : ''
             }`}
             {...(icon && { 'data-icon': true })}
             {...(floatingLabel && {
@@ -165,19 +158,10 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           {floatingLabel && label && (
             <label
               htmlFor={inputId}
-              style={{
-                position: 'absolute',
-                left: icon ? '40px' : '12px',
-                top: shouldFloat ? '-8px' : '50%',
-                transform: shouldFloat ? 'translateY(0)' : 'translateY(-50%)',
-                fontSize: shouldFloat ? '12px' : '14px',
-                color: isFocused ? '#2563eb' : '#6b7280',
-                transition: 'all 0.2s ease',
-                backgroundColor: '#ffffff',
-                padding: '0 6px',
-                cursor: 'text',
-                zIndex: 1,
-              }}
+              className={classes.labelFloating}
+              data-should-float={shouldFloat ? 'true' : 'false'}
+              data-focused={isFocused ? 'true' : 'false'}
+              data-icon={icon ? 'true' : 'false'}
             >
               {label}
             </label>

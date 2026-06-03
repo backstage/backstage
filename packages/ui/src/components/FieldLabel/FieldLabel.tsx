@@ -38,7 +38,8 @@ export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
       descriptionSlot,
     } = ownProps;
 
-    if (!label) return null;
+    // Render nothing if there's no label, secondaryLabel, or description
+    if (!label && !secondaryLabel && !description) return null;
 
     return (
       <div className={classes.root} {...restProps} ref={ref}>
@@ -51,6 +52,9 @@ export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
               </span>
             )}
           </Label>
+        )}
+        {!label && secondaryLabel && (
+          <div className={classes.secondaryLabel}>{secondaryLabel}</div>
         )}
         {description && (
           <Text
