@@ -225,8 +225,12 @@ export async function createRouter(
 
       res.json(techdocsMetadata);
     } catch (err) {
-      logger.info(`Unable to get metadata for '${entityRef}'`, err as Error);
-      throw new NotFoundError(`Unable to get metadata for '${entityRef}'`, err);
+      const error = err instanceof Error ? err : new Error(String(err));
+      logger.info(`Unable to get metadata for '${entityRef}'`, error);
+      throw new NotFoundError(
+        `Unable to get metadata for '${entityRef}'`,
+        error,
+      );
     }
   });
 
@@ -254,8 +258,12 @@ export async function createRouter(
       const locationMetadata = getLocationForEntity(entity, scmIntegrations);
       res.json({ ...entity, locationMetadata });
     } catch (err) {
-      logger.info(`Unable to get metadata for '${entityRef}'`, err as Error);
-      throw new NotFoundError(`Unable to get metadata for '${entityRef}'`, err);
+      const error = err instanceof Error ? err : new Error(String(err));
+      logger.info(`Unable to get metadata for '${entityRef}'`, error);
+      throw new NotFoundError(
+        `Unable to get metadata for '${entityRef}'`,
+        error,
+      );
     }
   });
 
@@ -334,30 +342,36 @@ export async function createRouter(
   // Ensures that the related entity exists and the current user has permission to view it.
   // Note: The entityLoader.load() call checks catalog.entity.read permission under the hood.
   // This middleware adds TechDocs-specific permission checking via techdocs.entity.read.
-  router.use('/static/docs/:namespace/:kind/:name', async (req, _res, next) => {
-    const { kind, namespace, name } = req.params;
-    const entityName = { kind, namespace, name };
-    const entityRef = stringifyEntityRef(entityName);
+  // Only enabled when permission.enabled is true to avoid changing behavior for existing deployments.
+  if (config.getOptionalBoolean('permission.enabled')) {
+    router.use(
+      '/static/docs/:namespace/:kind/:name',
+      async (req, _res, next) => {
+        const { kind, namespace, name } = req.params;
+        const entityName = { kind, namespace, name };
+        const entityRef = stringifyEntityRef(entityName);
 
-    const credentials = await httpAuth.credentials(req, {
-      allowLimitedAccess: true,
-    });
+        const credentials = await httpAuth.credentials(req, {
+          allowLimitedAccess: true,
+        });
 
-    const entity = await entityLoader.load(credentials, entityName);
+        const entity = await entityLoader.load(credentials, entityName);
 
-    if (!entity) {
-      throw new NotFoundError(`Entity not found for ${entityRef}`);
-    }
+        if (!entity) {
+          throw new NotFoundError(`Entity not found for ${entityRef}`);
+        }
 
-    // Check TechDocs-specific read permission
-    await authorizeTechDocsReadPermission({
-      permissions,
-      credentials,
-      entityRef,
-    });
+        // Check TechDocs-specific read permission
+        await authorizeTechDocsReadPermission({
+          permissions,
+          credentials,
+          entityRef,
+        });
 
-    next();
-  });
+        next();
+      },
+    );
+  }
 
   // If a cache manager was provided, attach the cache middleware.
   if (cache) {

@@ -150,11 +150,7 @@ describe('createRouter', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
-    // Re-setup the default permissions mock after reset
-    defaultPermissionsMock.authorize.mockResolvedValue([
-      { result: AuthorizeResult.ALLOW },
-    ]);
+    jest.clearAllMocks();
   });
 
   beforeEach(async () => {
@@ -380,6 +376,9 @@ data: {"updated":true}
       const app = await createApp({
         ...outOfTheBoxOptions,
         permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
       });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
@@ -406,6 +405,9 @@ data: {"updated":true}
       const app = await createApp({
         ...outOfTheBoxOptions,
         permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
       });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
@@ -418,7 +420,12 @@ data: {"updated":true}
     });
 
     it('should return 404 when entity is not found', async () => {
-      const app = await createApp(outOfTheBoxOptions);
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
+      });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue(undefined);
 
