@@ -120,18 +120,18 @@ export interface Config {
            * Object with extra headers to be added to target requests.
            */
           headers?: {
-           /** @visibility secret */
-          Authorization?: string;
-          /** @visibility secret */
-          authorization?: string;
-          /** @visibility secret */
-          'X-Api-Key'?: string;
-          /** @visibility secret */
-          'x-api-key'?: string;
-          /** @visibility secret */
-          'PRIVATE-TOKEN'?: string;
-           [key: string]: string | undefined;
-           };
+            /** @visibility secret */
+            Authorization?: string;
+            /** @visibility secret */
+            authorization?: string;
+            /** @visibility secret */
+            'X-Api-Key'?: string;
+            /** @visibility secret */
+            'x-api-key'?: string;
+            /** @visibility secret */
+            'PRIVATE-TOKEN'?: string;
+            [key: string]: string | undefined;
+          };
           /**
            * Changes the origin of the host header to the target URL. Default: true.
            */
