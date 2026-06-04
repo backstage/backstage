@@ -16,7 +16,6 @@
 
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import * as uuid from 'uuid';
 import { applyDatabaseMigrations } from '../../migrations';
 import { DbRefreshStateRow } from '../../tables';
 import { updateUnprocessedEntity } from './updateUnprocessedEntity';
@@ -75,7 +74,7 @@ describe('updateUnprocessedEntity', () => {
       const originalTimestamp = '2021-04-01 13:37:00';
 
       await insertRefreshStateRow(knex, {
-        entity_id: uuid.v4(),
+        entity_id: 'id1',
         entity_ref: entityRef,
         unprocessed_entity: JSON.stringify(entityBefore),
         unprocessed_hash: 'old-hash',
@@ -130,7 +129,7 @@ describe('updateUnprocessedEntity', () => {
       const entityRef = stringifyEntityRef(entityBefore);
 
       await insertRefreshStateRow(knex, {
-        entity_id: uuid.v4(),
+        entity_id: 'id2',
         entity_ref: entityRef,
         unprocessed_entity: JSON.stringify(entityBefore),
         unprocessed_hash: 'old-hash',
@@ -179,7 +178,7 @@ describe('updateUnprocessedEntity', () => {
       const entityRef = stringifyEntityRef(entityBefore);
 
       await insertRefreshStateRow(knex, {
-        entity_id: uuid.v4(),
+        entity_id: 'id3',
         entity_ref: entityRef,
         unprocessed_entity: JSON.stringify(entityBefore),
         unprocessed_hash: 'old-hash',
@@ -227,7 +226,7 @@ describe('updateUnprocessedEntity', () => {
       const entityRef = stringifyEntityRef(entityBefore);
 
       await insertRefreshStateRow(knex, {
-        entity_id: uuid.v4(),
+        entity_id: 'id4',
         entity_ref: entityRef,
         unprocessed_entity: JSON.stringify(entityBefore),
         unprocessed_hash: 'old-hash',
@@ -276,7 +275,7 @@ describe('updateUnprocessedEntity', () => {
       const entityRef = stringifyEntityRef(entityBefore);
 
       await insertRefreshStateRow(knex, {
-        entity_id: uuid.v4(),
+        entity_id: 'id5',
         entity_ref: entityRef,
         unprocessed_entity: JSON.stringify(entityBefore),
         unprocessed_hash: 'old-hash',
