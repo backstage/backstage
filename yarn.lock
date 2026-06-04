@@ -6381,6 +6381,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-mcp@workspace:plugins/scaffolder-backend-module-mcp":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-mcp@workspace:plugins/scaffolder-backend-module-mcp"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
+    "@modelcontextprotocol/sdk": "npm:^1.25.2"
+    zod: "npm:^3.25.76 || ^4.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-notifications@workspace:^, @backstage/plugin-scaffolder-backend-module-notifications@workspace:plugins/scaffolder-backend-module-notifications":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-notifications@workspace:plugins/scaffolder-backend-module-notifications"
