@@ -1,7 +1,7 @@
 ---
 id: index
 title: Integrations
-sidebar_label: Overview
+sidebar_label: Integrations Overview
 description: Configuring Backstage to read or publish data with external providers using integrations
 ---
 
