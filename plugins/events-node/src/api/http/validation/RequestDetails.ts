@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+export interface ParsedQueryString {
+  [key: string]:
+    | (ParsedQueryString | string)[]
+    | ParsedQueryString
+    | string
+    | undefined;
+}
+
 /**
  * View on an incoming request that has to be validated.
  *
@@ -28,6 +36,10 @@ export interface RequestDetails {
    * Key-value pairs of header names and values. Header names are lower-cased.
    */
   headers: Record<string, string | string[] | undefined>;
+  /**
+   * Key-value pairs of query parameters.
+   */
+  query: ParsedQueryString;
   /**
    * Raw request details.
    */

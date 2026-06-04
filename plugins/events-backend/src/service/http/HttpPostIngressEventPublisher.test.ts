@@ -22,7 +22,11 @@ import request from 'supertest';
 import { HttpPostIngressEventPublisher } from './HttpPostIngressEventPublisher';
 import { mockServices } from '@backstage/backend-test-utils';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { HttpBodyParser } from '@backstage/plugin-events-node';
+import {
+  HttpBodyParser,
+  RequestRejectionDetails,
+} from '@backstage/plugin-events-node';
+import { HttpApplicationJsonBodyParser } from './body-parser/HttpApplicationJsonBodyParser';
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -443,6 +447,9 @@ describe('HttpPostIngressEventPublisher', () => {
     const publisher = HttpPostIngressEventPublisher.fromConfig({
       config,
       events,
+      bodyParsers: {
+        'text/plain': HttpApplicationJsonBodyParser, // when not JSON will return body as text
+      },
       ingresses: {
         testB: {
           validator: async (req, context) => {
@@ -482,6 +489,47 @@ describe('HttpPostIngressEventPublisher', () => {
             });
           },
         },
+        testQuery: {
+          validator: async (req, context) => {
+            if (req.query.validationToken === 'opaqueToken') {
+              return;
+            }
+
+            context.reject({
+              // status: 403,
+              // payload: {},
+            });
+          },
+        },
+        testValidationPayloadResponse: {
+          validator: async (req, context) => {
+            if (req.query.validationToken === 'validToken') {
+              // scenario of MS Graph validation request where the token needs to be sent back in the response body
+              context.reject({
+                status: 200,
+                payload: 'validToken',
+                contentType: 'text/plain',
+              });
+              return;
+            }
+
+            // otherwise reject the request with default error response
+            context.reject({
+              // status: 403,
+              // payload: {},
+            });
+          },
+        },
+        testUnsupportedRejectionContentType: {
+          validator: async (_, context) => {
+            context.reject({
+              status: 200,
+              payload: 'validToken',
+              contentType:
+                'invalidType' as unknown as RequestRejectionDetails['contentType'], // force an unsupported content type
+            });
+          },
+        },
       },
       logger,
     });
@@ -493,6 +541,7 @@ describe('HttpPostIngressEventPublisher', () => {
       .timeout(1000)
       .send(JSON.stringify({ test: 'data' }));
     expect(response1.status).toBe(202);
+    expect(response1.type).toEqual('application/json');
 
     const response2 = await request(app)
       .post('/http/testB')
@@ -500,6 +549,7 @@ describe('HttpPostIngressEventPublisher', () => {
       .timeout(1000)
       .send(JSON.stringify({ test: 'data' }));
     expect(response2.status).toBe(400);
+    expect(response2.type).toEqual('application/json');
     expect(response2.body).toEqual({ message: 'wrong signature' });
 
     const response3 = await request(app)
@@ -509,6 +559,7 @@ describe('HttpPostIngressEventPublisher', () => {
       .timeout(1000)
       .send(JSON.stringify({ test: 'data' }));
     expect(response3.status).toBe(400);
+    expect(response3.type).toEqual('application/json');
     expect(response3.body).toEqual({ message: 'wrong signature' });
 
     const response4 = await request(app)
@@ -518,6 +569,7 @@ describe('HttpPostIngressEventPublisher', () => {
       .timeout(1000)
       .send(JSON.stringify({ test: 'data' }));
     expect(response4.status).toBe(202);
+    expect(response4.type).toEqual('application/json');
 
     const response5 = await request(app)
       .post('/http/testC')
@@ -525,6 +577,7 @@ describe('HttpPostIngressEventPublisher', () => {
       .timeout(1000)
       .send(JSON.stringify({ test: 'data' }));
     expect(response5.status).toBe(404);
+    expect(response5.type).toEqual('application/json');
     expect(response5.body).toEqual({});
 
     const response6 = await request(app)
@@ -533,9 +586,52 @@ describe('HttpPostIngressEventPublisher', () => {
       .timeout(1000)
       .send(JSON.stringify({ test: 'data' }));
     expect(response6.status).toBe(403);
+    expect(response6.type).toEqual('application/json');
     expect(response6.body).toEqual({});
 
-    expect(events.published).toHaveLength(2);
+    const response7 = await request(app)
+      .post('/http/testQuery?validationToken=wrongToken')
+      .type('text/plain')
+      .timeout(1000)
+      .send();
+    expect(response7.status).toBe(403);
+    expect(response7.type).toEqual('application/json');
+    expect(response7.body).toEqual({});
+
+    const response8 = await request(app)
+      .post('/http/testQuery?validationToken=opaqueToken')
+      .type('text/plain')
+      .timeout(1000)
+      .send('Test payload');
+    expect(response8.status).toBe(202);
+    expect(response8.type).toEqual('application/json');
+
+    const response9 = await request(app)
+      .post('/http/testValidationPayloadResponse?validationToken=invalidToken')
+      .type('text/plain')
+      .timeout(1000)
+      .send('Test payload');
+    expect(response9.status).toBe(403);
+    expect(response9.type).toEqual('application/json');
+    expect(response9.body).toEqual({});
+
+    const response10 = await request(app)
+      .post('/http/testValidationPayloadResponse?validationToken=validToken')
+      .type('text/plain')
+      .timeout(1000)
+      .send('Test payload');
+    expect(response10.status).toBe(200);
+    expect(response10.type).toEqual('text/plain');
+    expect(response10.text).toEqual('validToken');
+
+    const response11 = await request(app)
+      .post('/http/testUnsupportedRejectionContentType')
+      .type('text/plain')
+      .timeout(1000)
+      .send('Test payload');
+    expect(response11.status).toBe(500);
+
+    expect(events.published).toHaveLength(3);
     expect(events.published[0].topic).toEqual('testA');
     expect(events.published[0].eventPayload).toEqual({ test: 'data' });
     expect(events.published[1].topic).toEqual('testB');
@@ -545,6 +641,8 @@ describe('HttpPostIngressEventPublisher', () => {
         'x-test-signature': 'testB-signature',
       }),
     );
+    expect(events.published[2].topic).toEqual('testQuery');
+    expect(events.published[2].eventPayload).toEqual('Test payload');
   });
 
   it('without configuration', async () => {

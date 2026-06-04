@@ -5461,6 +5461,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-events-backend-module-msgraph@workspace:plugins/events-backend-module-msgraph":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-events-backend-module-msgraph@workspace:plugins/events-backend-module-msgraph"
+  dependencies:
+    "@azure/identity": "npm:^4.0.0"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-events-backend-test-utils": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@microsoft/microsoft-graph-client": "npm:^3.0.0"
+    "@microsoft/microsoft-graph-types": "npm:^2.6.0"
+    "@types/luxon": "npm:^3.0.0"
+    knex: "npm:^3.0.0"
+    lodash: "npm:^4.17.21"
+    luxon: "npm:^3.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-events-backend-test-utils@workspace:^, @backstage/plugin-events-backend-test-utils@workspace:plugins/events-backend-test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-test-utils@workspace:plugins/events-backend-test-utils"
@@ -11113,6 +11138,25 @@ __metadata:
   version: 2.0.1
   resolution: "@microsoft/fetch-event-source@npm:2.0.1"
   checksum: 10/c147055fafe83801efb9834136ba4b7944406a0bba3517afcea6ceeb56714b5ef78c2e89544bd9c1426ad1d2f964a087e3a719169ae04855836a23fb53269f8d
+  languageName: node
+  linkType: hard
+
+"@microsoft/microsoft-graph-client@npm:^3.0.0":
+  version: 3.0.7
+  resolution: "@microsoft/microsoft-graph-client@npm:3.0.7"
+  dependencies:
+    "@babel/runtime": "npm:^7.12.5"
+    tslib: "npm:^2.2.0"
+  peerDependenciesMeta:
+    "@azure/identity":
+      optional: true
+    "@azure/msal-browser":
+      optional: true
+    buffer:
+      optional: true
+    stream-browserify:
+      optional: true
+  checksum: 10/4486c5071c71bffe564828966bce3748e3d6e890abf1cd1c8ea685cafca3bb30913d7731a18c9e9ae04c91c3d3eeed9505ecae7d225b626a0acc57842de4e76a
   languageName: node
   linkType: hard
 
