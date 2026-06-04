@@ -1,7 +1,7 @@
 ---
 id: overview
 title: Kubernetes
-sidebar_label: Overview
+sidebar_label: Kubernetes Overview
 description: Monitoring Kubernetes based services with the software catalog
 ---
 
