@@ -1,6 +1,6 @@
 ---
 id: overview
-title: Overview
+title: Permissions Overview
 description: A high level overview of the Backstage permission framework
 ---
 
