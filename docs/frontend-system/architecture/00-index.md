@@ -1,7 +1,7 @@
 ---
 id: index
 title: Frontend System Architecture
-sidebar_label: Overview
+sidebar_label: Frontend System Architecture
 description: The structure and architecture of the new Frontend System
 ---
 
