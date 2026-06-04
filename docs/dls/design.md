@@ -120,7 +120,7 @@ picked up by our team as something to be added to our design system.
 components. If you’d like to help build up our design system, you can also add
 components we’ve designed to the Storybook as well.
 
-**[Figma](https://www.figma.com/community/file/850673348101741100/backstage-design-system)** - we're excited to be using Figma
+**[Figma](https://backstage.io/docs/dls/figma)** - we're excited to be using Figma
 Community to share our design assets. You can duplicate our UI Kit and design
 your own plugin for Backstage.
 
