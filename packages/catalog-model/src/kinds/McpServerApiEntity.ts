@@ -37,6 +37,8 @@ export interface McpServerApiEntity extends Omit<ApiEntityV1alpha1, 'spec'> {
 }
 
 /**
+ * Deprecated alias for {@link ApiRemote}.
+ *
  * @alpha
  * @deprecated Use {@link ApiRemote} instead.
  */
