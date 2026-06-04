@@ -103,7 +103,7 @@ export const createGitlabRepoPushAction = (options: {
           z
             .string({
               description:
-                'The git commit hash of the commit, or omitted when there were no file changes to commit and `allowEmpty` was not set.',
+                'The git commit hash of the commit, or omitted when there were no file changes to commit and `allowEmpty` is not true (covers both the default of unset and an explicit `false`).',
             })
             .optional(),
       },
