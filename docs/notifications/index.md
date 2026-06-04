@@ -1,6 +1,7 @@
 ---
 id: index
 title: Getting Started
+sidebar_label: Notifications - Getting Started
 description: How to get started with the notifications and signals
 ---
 
