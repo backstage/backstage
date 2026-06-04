@@ -578,7 +578,7 @@ export const mcpServerApiEntityModel: CatalogModelLayer;
 // @alpha
 export const mcpServerApiEntityValidator: KindValidator;
 
-// @alpha @deprecated (undocumented)
+// @alpha @deprecated
 export type McpServerRemote = ApiRemote;
 
 // @alpha
