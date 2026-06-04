@@ -1,7 +1,7 @@
 ---
 id: index
 title: Customizing Your App's UI
-sidebar_label: Introduction
+sidebar_label: Customizing Your App's UI
 description: Learn how to customize the look and feel of your Backstage app, including theming and branding options.
 ---
 
