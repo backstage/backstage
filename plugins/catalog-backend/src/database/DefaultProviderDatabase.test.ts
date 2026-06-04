@@ -1014,7 +1014,7 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
-    it('should delete all references when taking over an entity from null location key, but preserve references for entities with strong ownership, %p', async () => {
+    it('should delete all references when taking over an entity from null location key, but preserve references for entities with strong ownership', async () => {
       const fakeLogger = mockServices.logger.mock();
       const { knex, db } = await createDatabase(fakeLogger);
 

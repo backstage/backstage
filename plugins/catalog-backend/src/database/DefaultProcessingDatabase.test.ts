@@ -465,7 +465,7 @@ describe.each(databases.eachSupportedId())(
         });
       });
 
-      it('preserves multi-ancestry when multiple null-key parents emit the same child entity, %p', async () => {
+      it('preserves multi-ancestry when multiple null-key parents emit the same child entity', async () => {
         const { knex, db } = await createDatabase();
 
         const locationAId = 'locationAId';
