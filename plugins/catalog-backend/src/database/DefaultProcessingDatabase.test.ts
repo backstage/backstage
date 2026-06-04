@@ -465,13 +465,11 @@ describe.each(databases.eachSupportedId())(
         });
       });
 
-      it.each(databases.eachSupportedId())(
-      'preserves multi-ancestry when multiple null-key parents emit the same child entity, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('preserves multi-ancestry when multiple null-key parents emit the same child entity, %p', async () => {
+        const { knex, db } = await createDatabase();
 
-        const locationAId = uuid.v4();
-        const locationBId = uuid.v4();
+        const locationAId = 'locationAId';
+        const locationBId = 'locationBId';
         const processedEntityA: Entity = {
           apiVersion: '1',
           kind: 'Location',
@@ -543,16 +541,13 @@ describe.each(databases.eachSupportedId())(
           'location:default/location-a',
           'location:default/location-b',
         ]);
-      },
-    );
+      });
 
-    it.each(databases.eachSupportedId())(
-      'steals references when a keyed location claims an entity previously owned with null key, %p',
-      async databaseId => {
-        const { knex, db } = await createDatabase(databaseId);
+      it('steals references when a keyed location claims an entity previously owned with null key, %p', async () => {
+        const { knex, db } = await createDatabase();
 
-        const nullKeyLocationId = uuid.v4();
-        const keyedLocationId = uuid.v4();
+        const nullKeyLocationId = 'nullKeyLocationId';
+        const keyedLocationId = 'keyedLocationId';
         const processedEntityNullKey: Entity = {
           apiVersion: '1',
           kind: 'Location',
@@ -620,10 +615,9 @@ describe.each(databases.eachSupportedId())(
         ).select();
         const ancestorRefs = refs.map(r => r.source_entity_ref).filter(Boolean);
         expect(ancestorRefs).toEqual(['location:default/keyed-location']);
-      },
-    );
+      });
 
-    it('stores the refresh keys for the entity where key length is 255 chars or less', async () => {
+      it('stores the refresh keys for the entity where key length is 255 chars or less', async () => {
         const mockLogger = {
           debug: jest.fn(),
           error: jest.fn(),
