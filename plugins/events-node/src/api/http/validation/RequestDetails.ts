@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+export interface ParsedQueryString {
+  [key: string]:
+    | (ParsedQueryString | string)[]
+    | ParsedQueryString
+    | string
+    | undefined;
+}
+
 /**
  * Key-value pairs of query parameters.
  *
