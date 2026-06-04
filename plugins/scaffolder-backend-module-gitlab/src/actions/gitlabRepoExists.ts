@@ -53,9 +53,9 @@ export const createGitlabRepoExistsAction = (options: {
       const { token, repoUrl } = ctx.input;
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
-      if (!owner) {
+      if (!owner || !repo) {
         throw new InputError(
-          `Invalid repoUrl, expected format 'gitlab.com?repo=project_name&owner=group_name'`,
+          `Invalid repoUrl: ${repoUrl}. Expected format 'gitlab.com?repo=project_name&owner=group_name'`,
         );
       }
 

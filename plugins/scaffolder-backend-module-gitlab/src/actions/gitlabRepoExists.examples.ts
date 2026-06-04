@@ -26,7 +26,7 @@ export const examples: TemplateExample[] = [
           name: 'Check repository exists',
           action: 'gitlab:repo:exists',
           input: {
-            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
           },
         },
       ],
@@ -42,7 +42,7 @@ export const examples: TemplateExample[] = [
           name: 'Check repository exists',
           action: 'gitlab:repo:exists',
           input: {
-            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
             token: '${{ secrets.GITLAB_TOKEN }}',
           },
         },
