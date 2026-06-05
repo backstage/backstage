@@ -45,13 +45,8 @@ paths:
           description: Success
     `;
 
-    const requestInterceptor = (req: any) => req;
-
     const { getByText } = await renderInTestApp(
-      <OpenApiDefinition
-        definition={definition}
-        requestInterceptor={requestInterceptor}
-      />,
+      <OpenApiDefinition definition={definition} />,
     );
 
     // swagger-ui loads the documentation asynchronously
@@ -100,13 +95,11 @@ paths:
           description: Success
     `;
 
-    const requestInterceptor = (req: any) => req;
     const supportedSubmitMethods = ['get', 'post', 'put', 'delete'] as const;
 
     const { findByRole, getByRole, getByLabelText } = await renderInTestApp(
       <OpenApiDefinition
         definition={definition}
-        requestInterceptor={requestInterceptor}
         supportedSubmitMethods={supportedSubmitMethods as any}
       />,
     );
