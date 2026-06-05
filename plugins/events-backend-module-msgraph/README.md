@@ -65,7 +65,7 @@ For delete events, the module resolves entity references from the catalog using 
 Unlike GitHub webhook events, MS Graph events cannot be configured in the portal. Client Apps have to create new
 subscriptions themselves, specifying the webhook URLs, verification secrets/tokens and all other
 params [through an endpoint](https://learn.microsoft.com/en-us/graph/change-notifications-delivery-webhooks?tabs=javascript#create-a-subscription).
-The new module `@backstage/plugin-catalog-backend-module-msgraph` looks up deleted entityRefs in the Catalog and
+The new module `@backstage/plugin-catalog-backend-module-msgraph` looks up deleted entity references in the Catalog and
 re-publishes events to more specific `upsert`/`delete` topics.
 
 ```mermaid
@@ -134,15 +134,15 @@ LocalTunnel can be used to receive webhook events in local environments.
 
 ```yaml
 events:
-modules:
-  msgraph:
-    notificationUrl: https://shaggy-mirrors-admire.loca.lt/api/events/http/msgraph # append the URL here
-    resources:
-      - groups
-      - users
-    clientId: <...>
-    clientSecret: <...>
-    tenantId: <...>
+  modules:
+    msgraph:
+      notificationUrl: https://shaggy-mirrors-admire.loca.lt/api/events/http/msgraph # append the URL here
+      resources:
+        - groups
+        - users
+      clientId: <...>
+      clientSecret: <...>
+      tenantId: <...>
 ```
 
-5. Run with DEBUG log level if you want to see all messages `LOG_LEVEL=DEBUG yarn start backend`
+4. Run with DEBUG log level if you want to see all messages `LOG_LEVEL=DEBUG yarn start backend`
