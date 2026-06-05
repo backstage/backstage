@@ -1,14 +1,14 @@
 export const comboboxUsageSnippet = `import { Combobox } from '@backstage/ui';
 
 <Combobox
-    name="font"
-    label="Font Family"
-    options={[
-      { value: 'sans', label: 'Sans-serif' },
-      { value: 'serif', label: 'Serif' },
-      { value: 'mono', label: 'Monospace' },
-      { value: 'cursive', label: 'Cursive' },
-    ]}
+  name="font"
+  label="Font Family"
+  options={[
+    { id: 'sans', label: 'Sans-serif' },
+    { id: 'serif', label: 'Serif' },
+    { id: 'mono', label: 'Monospace' },
+    { id: 'cursive', label: 'Cursive' },
+  ]}
 />`;
 
 export const comboboxDefaultSnippet = `<Combobox
@@ -16,10 +16,10 @@ export const comboboxDefaultSnippet = `<Combobox
   label="Font Family"
   placeholder="Pick a font"
   options={[
-    { value: 'sans', label: 'Sans-serif' },
-    { value: 'serif', label: 'Serif' },
-    { value: 'mono', label: 'Monospace' },
-    { value: 'cursive', label: 'Cursive' },
+    { id: 'sans', label: 'Sans-serif' },
+    { id: 'serif', label: 'Serif' },
+    { id: 'mono', label: 'Monospace' },
+    { id: 'cursive', label: 'Cursive' },
   ]}
 />`;
 
@@ -28,6 +28,15 @@ export const comboboxDescriptionSnippet = `<Combobox
   label="Font Family"
   description="Choose a font family for your document"
   options={[ ... ]}
+/>`;
+
+export const comboboxCustomSearchSnippet = `<Combobox
+  label="Owner"
+  options={ownerOptions}
+  search={{
+    filter: (option, query) =>
+      option.label.toLocaleLowerCase().startsWith(query.toLocaleLowerCase()),
+  }}
 />`;
 
 export const comboboxIconSnippet = `<Combobox
@@ -68,10 +77,10 @@ export const comboboxDisabledOptionsSnippet = `<Combobox
   placeholder="Pick a font"
   disabledKeys={['cursive', 'serif']}
   options={[
-    { value: 'sans', label: 'Sans-serif' },
-    { value: 'serif', label: 'Serif' },
-    { value: 'mono', label: 'Monospace' },
-    { value: 'cursive', label: 'Cursive' },
+    { id: 'sans', label: 'Sans-serif' },
+    { id: 'serif', label: 'Serif' },
+    { id: 'mono', label: 'Monospace' },
+    { id: 'cursive', label: 'Cursive' },
   ]}
 />`;
 
@@ -81,11 +90,11 @@ export const comboboxCustomValueSnippet = `<Combobox
   allowsCustomValue
   placeholder="Type any country"
   options={[
-    { value: 'us', label: 'United States' },
-    { value: 'ca', label: 'Canada' },
-    { value: 'uk', label: 'United Kingdom' },
-    { value: 'fr', label: 'France' },
-    { value: 'de', label: 'Germany' },
+    { id: 'us', label: 'United States' },
+    { id: 'ca', label: 'Canada' },
+    { id: 'uk', label: 'United Kingdom' },
+    { id: 'fr', label: 'France' },
+    { id: 'de', label: 'Germany' },
     // ... more options
   ]}
 />`;
@@ -97,18 +106,68 @@ export const comboboxSectionsSnippet = `<Combobox
     {
       title: 'Serif Fonts',
       options: [
-        { value: 'times', label: 'Times New Roman' },
-        { value: 'georgia', label: 'Georgia' },
-        { value: 'garamond', label: 'Garamond' },
+        { id: 'times', label: 'Times New Roman' },
+        { id: 'georgia', label: 'Georgia' },
+        { id: 'garamond', label: 'Garamond' },
       ],
     },
     {
       title: 'Sans-Serif Fonts',
       options: [
-        { value: 'arial', label: 'Arial' },
-        { value: 'helvetica', label: 'Helvetica' },
-        { value: 'verdana', label: 'Verdana' },
+        { id: 'arial', label: 'Arial' },
+        { id: 'helvetica', label: 'Helvetica' },
+        { id: 'verdana', label: 'Verdana' },
       ],
     },
   ]}
+/>`;
+
+export const comboboxCustomItemsSnippet = `import { Combobox, ComboboxItemProfile } from '@backstage/ui';
+
+<Combobox label="Owner" items={owners}>
+  {owner => (
+    <ComboboxItemProfile
+      name={owner.name}
+      src={owner.avatarUrl}
+    />
+  )}
+</Combobox>`;
+
+export const comboboxAsyncSnippet = `import { useState } from 'react';
+import { Combobox, ComboboxItemProfile, useAsyncList } from '@backstage/ui';
+
+type Owner = {
+  id: string;
+  textValue: string;
+  name: string;
+  avatarUrl?: string;
+};
+
+const owners = useAsyncList<Owner>({
+  async load({ signal, filterText, cursor }) {
+    return fetchOwners({ signal, query: filterText, cursor });
+  },
+});
+const [owner, setOwner] = useState<Owner | null>(null);
+
+<Combobox
+  label="Owner"
+  items={owners}
+  placeholder="Search or select an owner"
+  search={{ mode: 'server' }}
+  value={owner}
+  onChange={setOwner}
+>
+  {owner => <ComboboxItemProfile name={owner.name} src={owner.avatarUrl} />}
+</Combobox>`;
+
+export const comboboxManualLoadingSnippet = `<Combobox
+  label="Owner"
+  options={results}
+  search={{
+    mode: 'server',
+    inputValue: query,
+    onInputChange: setQuery,
+  }}
+  loading={{ state: isLoading ? 'filtering' : 'idle', onLoadMore }}
 />`;

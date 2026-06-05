@@ -15,15 +15,45 @@
  */
 
 import { Breakpoint } from '../..';
-import { ReactNode } from 'react';
-import type { SelectProps as AriaSelectProps } from 'react-aria-components';
+import type { ReactElement, ReactNode } from 'react';
+import type {
+  ListBoxItemProps,
+  ListBoxItemRenderProps,
+  SelectProps as AriaSelectProps,
+} from 'react-aria-components';
 import type { FieldLabelProps } from '../FieldLabel/types';
+import type {
+  AsyncListSource,
+  ClientSearch,
+  CollectionItem,
+  DerivedServerSearch,
+  IdentifiedOption,
+  LoadingConfig,
+  ManualServerSearch,
+  NormalizedOption,
+  Option,
+  OptionSection,
+  StaticCompositionSearch,
+} from '../../types/selectableCollection';
+import type { Key } from 'react-aria-components';
+
+export type { Option, OptionSection };
+
+type SelectSearchAppearance = {
+  placeholder?: string;
+};
 
 /** @public */
-export type Option = { value: string; label: string; disabled?: boolean };
+export type SelectSearch<T> =
+  | true
+  | ClientSearch<T, SelectSearchAppearance>
+  | (ManualServerSearch & SelectSearchAppearance);
 
 /** @public */
-export type OptionSection = { title: string; options: Option[] };
+export type SelectAsyncSearch<T> =
+  | true
+  | ClientSearch<T, SelectSearchAppearance>
+  | (DerivedServerSearch & SelectSearchAppearance);
 
 /** @public */
 export type SelectOwnProps = {
@@ -42,11 +72,37 @@ export type SelectOwnProps = {
    * The options of the select field. Pass flat options, option sections for
    * grouped display, or a mix of both in the same array.
    */
-  options?: Array<Option | OptionSection>;
+  options?:
+    | ReadonlyArray<Option | OptionSection>
+    | AsyncListSource<IdentifiedOption>;
+
+  /**
+   * Items to render using the child render function.
+   */
+  items?: Iterable<{ id: Key }> | AsyncListSource<{ id: Key }>;
+
+  /**
+   * Static item components or a render function for items.
+   */
+  children?:
+    | ReactElement
+    | ReactElement[]
+    | ((item: { id: Key }) => ReactElement);
+
+  /**
+   * Values that invalidate cached dynamic item rendering when changed.
+   */
+  dependencies?: ReadonlyArray<unknown>;
+
+  /**
+   * Configure optional search behavior in the dropdown.
+   */
+  search?: SelectSearch<{ id: Key }> | SelectAsyncSearch<{ id: Key }>;
 
   /**
    * Enable search/filter functionality in the dropdown
    * @defaultValue false
+   * @deprecated Use search instead.
    */
   searchable?: boolean;
 
@@ -54,8 +110,14 @@ export type SelectOwnProps = {
    * placeholder text for the search input
    * only used when searchable is true
    * @defaultvalue 'search...'
+   * @deprecated Use search.placeholder instead.
    */
   searchPlaceholder?: string;
+
+  /**
+   * Configure manual loading state for non-async collection sources.
+   */
+  loading?: LoadingConfig;
 
   label?: FieldLabelProps['label'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
@@ -64,16 +126,102 @@ export type SelectOwnProps = {
   className?: string;
 };
 
+type SelectNestedSearchProps<T> = {
+  search?: SelectSearch<T>;
+  searchable?: never;
+  searchPlaceholder?: never;
+};
+
+type SelectAsyncNestedSearchProps<T> = {
+  search?: SelectAsyncSearch<T>;
+  searchable?: never;
+  searchPlaceholder?: never;
+};
+
+type SelectDeprecatedSearchProps = {
+  search?: never;
+  /** @deprecated Use search instead. */
+  searchable?: boolean;
+  /** @deprecated Use search.placeholder instead. */
+  searchPlaceholder?: string;
+};
+
+type SelectPlainOptionsProps = {
+  options?: ReadonlyArray<Option | OptionSection>;
+  items?: never;
+  children?: never;
+  dependencies?: never;
+  loading?: LoadingConfig;
+} & (SelectNestedSearchProps<NormalizedOption> | SelectDeprecatedSearchProps);
+
+type SelectAsyncOptionsProps = {
+  options: AsyncListSource<IdentifiedOption>;
+  items?: never;
+  children?: never;
+  dependencies?: never;
+  loading?: never;
+} & SelectAsyncNestedSearchProps<NormalizedOption>;
+
+type SelectDynamicItemsProps<T extends { id: Key }> = {
+  options?: never;
+  items: Iterable<T>;
+  children: (item: T) => ReactElement;
+  dependencies?: ReadonlyArray<unknown>;
+  loading?: LoadingConfig;
+} & SelectNestedSearchProps<T>;
+
+type SelectAsyncItemsProps<T extends { id: Key }> = {
+  options?: never;
+  items: AsyncListSource<T>;
+  children: (item: T) => ReactElement;
+  dependencies?: ReadonlyArray<unknown>;
+  loading?: never;
+} & SelectAsyncNestedSearchProps<T>;
+
+type SelectStaticCompositionProps = {
+  options?: never;
+  items?: never;
+  children: ReactElement | ReactElement[];
+  dependencies?: never;
+  search?: StaticCompositionSearch<{ placeholder?: string }>;
+  searchable?: never;
+  searchPlaceholder?: never;
+  loading?: never;
+};
+
+type SelectCollectionProps<T extends { id: Key }> =
+  | SelectPlainOptionsProps
+  | SelectAsyncOptionsProps
+  | SelectDynamicItemsProps<T>
+  | SelectAsyncItemsProps<T>
+  | SelectStaticCompositionProps;
+
 /** @public */
-export interface SelectProps<T extends 'single' | 'multiple'>
-  extends SelectOwnProps,
-    Omit<AriaSelectProps<Option, T>, keyof SelectOwnProps> {
-  /**
-   * Selection mode, single or multiple
-   * @defaultvalue 'single'
-   */
-  selectionMode?: T;
-}
+export type SelectProps<
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+  T extends { id: Key } = NormalizedOption,
+> = Omit<
+  SelectOwnProps,
+  | 'options'
+  | 'items'
+  | 'children'
+  | 'dependencies'
+  | 'search'
+  | 'searchable'
+  | 'searchPlaceholder'
+  | 'loading'
+> &
+  SelectCollectionProps<T> &
+  Omit<
+    AriaSelectProps<T, M>,
+    keyof SelectOwnProps | 'children' | 'dependencies'
+  > & {
+    /**
+     * Selection mode, single or multiple
+     * @defaultvalue 'single'
+     */
+    selectionMode?: M;
+  };
 
 /** @internal */
 export interface SelectTriggerOwnProps {
@@ -81,19 +229,91 @@ export interface SelectTriggerOwnProps {
 }
 
 /** @internal */
-export interface SelectContentOwnProps {
-  searchable?: boolean;
-  searchPlaceholder?: string;
-  options?: SelectOwnProps['options'];
+export interface SelectContentOwnProps<
+  T extends CollectionItem = NormalizedOption,
+> {
+  search?:
+    | SelectSearch<T>
+    | SelectAsyncSearch<T>
+    | StaticCompositionSearch<{ placeholder?: string }>;
+  options?: ReadonlyArray<Option | OptionSection>;
+  items?: Iterable<T>;
+  children?: ReactElement | ReactElement[] | ((item: T) => ReactElement);
+  dependencies?: ReadonlyArray<unknown>;
+  loading?: LoadingConfig;
+  isStale?: boolean;
+  visibleIds?: Set<Key>;
+  retainedOptions?: ReadonlyArray<NormalizedOption>;
 }
 
 /** @internal */
-export interface SelectListBoxOwnProps {
-  options?: SelectOwnProps['options'];
+export interface SelectListBoxOwnProps<
+  T extends CollectionItem = NormalizedOption,
+> {
+  options?: ReadonlyArray<Option | OptionSection>;
+  items?: Iterable<T>;
+  children?: ReactElement | ReactElement[] | ((item: T) => ReactElement);
+  dependencies?: ReadonlyArray<unknown>;
+  loading?: LoadingConfig;
+  isStale?: boolean;
+  retainedOptions?: ReadonlyArray<NormalizedOption>;
 }
 
 /** @internal */
 export type SelectListBoxItemOwnProps = {};
+
+/** @public */
+export type SelectItemOwnProps = {
+  children: ReactNode | ((values: ListBoxItemRenderProps) => ReactNode);
+  /**
+   * Show the built-in selection indicator and standard item content layout.
+   */
+  showSelectionIndicator?: boolean;
+  className?: string;
+};
+
+/** @public */
+export type SelectItemProps<T extends object = object> = SelectItemOwnProps &
+  Omit<ListBoxItemProps<T>, keyof SelectItemOwnProps | 'textValue'> & {
+    textValue: string;
+  };
+
+/** @public */
+export type SelectItemTextOwnProps = {
+  title: string;
+  description?: string;
+  leadingIcon?: ReactNode;
+  className?: string;
+};
+
+/** @public */
+export type SelectItemTextProps<T extends object = object> =
+  SelectItemTextOwnProps &
+    Omit<
+      SelectItemProps<T>,
+      | keyof SelectItemTextOwnProps
+      | 'children'
+      | 'textValue'
+      | 'showSelectionIndicator'
+    >;
+
+/** @public */
+export type SelectItemProfileOwnProps = {
+  name: string;
+  src?: string;
+  className?: string;
+};
+
+/** @public */
+export type SelectItemProfileProps<T extends object = object> =
+  SelectItemProfileOwnProps &
+    Omit<
+      SelectItemProps<T>,
+      | keyof SelectItemProfileOwnProps
+      | 'children'
+      | 'textValue'
+      | 'showSelectionIndicator'
+    >;
 
 /** @internal */
 export type SelectSectionOwnProps = {};

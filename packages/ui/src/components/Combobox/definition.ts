@@ -18,6 +18,9 @@ import { defineComponent } from '../../hooks/useDefinition';
 import type {
   ComboboxOwnProps,
   ComboboxInputOwnProps,
+  ComboboxItemOwnProps,
+  ComboboxItemProfileOwnProps,
+  ComboboxItemTextOwnProps,
   ComboboxListBoxOwnProps,
   ComboboxListBoxItemOwnProps,
   ComboboxSectionOwnProps,
@@ -38,6 +41,11 @@ export const ComboboxDefinition = defineComponent<ComboboxOwnProps>()({
     icon: {},
     size: { dataAttribute: true, default: 'small' },
     options: {},
+    items: {},
+    children: {},
+    dependencies: {},
+    search: {},
+    loading: {},
     placeholder: {},
     label: {},
     secondaryLabel: {},
@@ -72,17 +80,27 @@ export const ComboboxInputDefinition = defineComponent<ComboboxInputOwnProps>()(
  * Component definition for ComboboxListBox
  * @public
  */
-export const ComboboxListBoxDefinition =
-  defineComponent<ComboboxListBoxOwnProps>()({
-    styles,
-    classNames: {
-      root: 'bui-ComboboxList',
-      noResults: 'bui-ComboboxNoResults',
-    },
-    propDefs: {
-      options: {},
-    },
-  });
+export const ComboboxListBoxDefinition = defineComponent<
+  ComboboxListBoxOwnProps<any>
+>()({
+  styles,
+  classNames: {
+    root: 'bui-ComboboxList',
+    noResults: 'bui-ComboboxNoResults',
+    loading: 'bui-ComboboxLoading',
+    loadingRow: 'bui-ComboboxLoadingRow',
+  },
+  propDefs: {
+    options: {},
+    items: {},
+    children: {},
+    dependencies: {},
+    search: {},
+    loading: {},
+    isStale: {},
+    getItemTextValue: {},
+  },
+});
 
 /**
  * Component definition for ComboboxListBoxItem
@@ -97,6 +115,66 @@ export const ComboboxListBoxItemDefinition =
       label: 'bui-ComboboxItemLabel',
     },
     propDefs: {},
+  });
+
+/**
+ * Component definition for ComboboxItem
+ * @internal
+ */
+export const ComboboxItemDefinition = defineComponent<ComboboxItemOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-ComboboxItem',
+    indicator: 'bui-ComboboxItemIndicator',
+    content: 'bui-ComboboxItemContent',
+  },
+  propDefs: {
+    children: {},
+    textValue: {},
+    showSelectionIndicator: {},
+    className: {},
+  },
+});
+
+/**
+ * Component definition for ComboboxItemText
+ * @internal
+ */
+export const ComboboxItemTextDefinition =
+  defineComponent<ComboboxItemTextOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-ComboboxItemText',
+      leadingIcon: 'bui-ComboboxItemTextLeadingIcon',
+      text: 'bui-ComboboxItemTextContent',
+      title: 'bui-ComboboxItemTitle',
+      description: 'bui-ComboboxItemDescription',
+    },
+    propDefs: {
+      title: {},
+      description: {},
+      leadingIcon: {},
+      className: {},
+    },
+  });
+
+/**
+ * Component definition for ComboboxItemProfile
+ * @internal
+ */
+export const ComboboxItemProfileDefinition =
+  defineComponent<ComboboxItemProfileOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-ComboboxItemProfile',
+      avatar: 'bui-ComboboxItemAvatar',
+      name: 'bui-ComboboxItemTitle',
+    },
+    propDefs: {
+      name: {},
+      src: {},
+      className: {},
+    },
   });
 
 /**

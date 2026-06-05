@@ -15,5 +15,6 @@
  */
 
 export * from './Select';
+export * from './SelectItem';
 export * from './types';
 export { SelectDefinition } from './definition';

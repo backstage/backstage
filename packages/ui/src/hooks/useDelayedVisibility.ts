@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-export * from './Combobox';
-export * from './ComboboxItem';
-export * from './types';
-export {
-  ComboboxDefinition,
-  ComboboxInputDefinition,
-  ComboboxListBoxDefinition,
-  ComboboxListBoxItemDefinition,
-  ComboboxSectionDefinition,
-} from './definition';
+import { useEffect, useState } from 'react';
+
+/** @internal */
+export function useDelayedVisibility(isVisible: boolean, delayMs: number) {
+  const [isDelayedVisible, setIsDelayedVisible] = useState(false);
+
+  useEffect(() => {
+    if (!isVisible) {
+      setIsDelayedVisible(false);
+      return undefined;
+    }
+
+    const timer = setTimeout(() => setIsDelayedVisible(true), delayMs);
+    return () => clearTimeout(timer);
+  }, [delayMs, isVisible]);
+
+  return isVisible && isDelayedVisible;
+}

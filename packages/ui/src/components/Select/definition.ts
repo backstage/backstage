@@ -21,6 +21,9 @@ import type {
   SelectContentOwnProps,
   SelectListBoxOwnProps,
   SelectListBoxItemOwnProps,
+  SelectItemOwnProps,
+  SelectItemProfileOwnProps,
+  SelectItemTextOwnProps,
   SelectSectionOwnProps,
 } from './types';
 import styles from './Select.module.css';
@@ -39,6 +42,11 @@ export const SelectDefinition = defineComponent<SelectOwnProps>()({
     icon: {},
     size: { dataAttribute: true, default: 'small' },
     options: {},
+    items: {},
+    children: {},
+    dependencies: {},
+    search: {},
+    loading: {},
     searchable: {},
     searchPlaceholder: {},
     label: {},
@@ -81,9 +89,15 @@ export const SelectContentDefinition = defineComponent<SelectContentOwnProps>()(
       searchClear: 'bui-SelectSearchClear',
     },
     propDefs: {
-      searchable: {},
-      searchPlaceholder: { default: 'Search...' },
+      search: {},
       options: {},
+      items: {},
+      children: {},
+      dependencies: {},
+      loading: {},
+      isStale: {},
+      visibleIds: {},
+      retainedOptions: {},
     },
   },
 );
@@ -98,26 +112,93 @@ export const SelectListBoxDefinition = defineComponent<SelectListBoxOwnProps>()(
     classNames: {
       root: 'bui-SelectList',
       noResults: 'bui-SelectNoResults',
+      loading: 'bui-SelectLoading',
+      loadingRow: 'bui-SelectLoadingRow',
     },
     propDefs: {
       options: {},
+      items: {},
+      children: {},
+      dependencies: {},
+      loading: {},
+      isStale: {},
+      retainedOptions: {},
     },
   },
 );
 
 /**
- * Component definition for SelectListBoxItem
+ * Component definition for the convenience option item
  * @internal
  */
 export const SelectListBoxItemDefinition =
   defineComponent<SelectListBoxItemOwnProps>()({
     styles,
     classNames: {
-      root: 'bui-SelectItem',
-      indicator: 'bui-SelectItemIndicator',
       label: 'bui-SelectItemLabel',
     },
     propDefs: {},
+  });
+
+/**
+ * Component definition for SelectItem
+ * @internal
+ */
+export const SelectItemDefinition = defineComponent<SelectItemOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-SelectItem',
+    indicator: 'bui-SelectItemIndicator',
+    content: 'bui-SelectItemContent',
+  },
+  propDefs: {
+    children: {},
+    showSelectionIndicator: {},
+    className: {},
+  },
+});
+
+/**
+ * Component definition for SelectItemText
+ * @internal
+ */
+export const SelectItemTextDefinition =
+  defineComponent<SelectItemTextOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-SelectItemText',
+      content: 'bui-SelectItemContent',
+      leadingIcon: 'bui-SelectItemLeadingIcon',
+      text: 'bui-SelectItemTextContent',
+      title: 'bui-SelectItemTitle',
+      description: 'bui-SelectItemDescription',
+    },
+    propDefs: {
+      title: {},
+      description: {},
+      leadingIcon: {},
+      className: {},
+    },
+  });
+
+/**
+ * Component definition for SelectItemProfile
+ * @internal
+ */
+export const SelectItemProfileDefinition =
+  defineComponent<SelectItemProfileOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-SelectItemProfile',
+      content: 'bui-SelectItemContent',
+      avatar: 'bui-SelectItemAvatar',
+      name: 'bui-SelectItemTitle',
+    },
+    propDefs: {
+      name: {},
+      src: {},
+      className: {},
+    },
   });
 
 /**

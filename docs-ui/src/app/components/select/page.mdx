@@ -19,6 +19,9 @@ import {
   selectPropDefs,
   optionPropDefs,
   optionSectionPropDefs,
+  selectItemPropDefs,
+  selectItemTextPropDefs,
+  selectItemProfilePropDefs,
 } from './props-definition';
 import {
   selectUsageSnippet,
@@ -29,11 +32,15 @@ import {
   selectResponsiveSnippet,
   selectIconSnippet,
   selectSearchableSnippet,
+  selectCustomSearchSnippet,
   selectMultipleSnippet,
   selectSearchableMultipleSnippet,
   selectDisabledOptionsSnippet,
   selectSectionsSnippet,
   selectSearchableSectionsSnippet,
+  selectCustomItemsSnippet,
+  selectAsyncSnippet,
+  selectManualLoadingSnippet,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -42,6 +49,7 @@ import { SelectDefinition } from '../../../utils/definitions';
 
 export const reactAriaUrls = {
   select: 'https://react-aria.adobe.com/Select',
+  listBoxItem: 'https://react-aria.adobe.com/ListBox#listboxitem',
 };
 
 <PageTitle
@@ -60,6 +68,49 @@ export const reactAriaUrls = {
 
 <CodeBlock code={selectUsageSnippet} />
 
+## Collections
+
+Select accepts one collection source at a time:
+
+- Pass an `options` array for standard text rows with optional descriptions,
+  icons, or sections.
+- Pass `items` with a child render function for domain objects or custom rows.
+- Compose item children directly for a short, fixed collection.
+- Pass a `useAsyncList` result to `options` or `items` for asynchronous data
+  and incremental loading.
+
+The prop types prevent mixing collection sources and incompatible search or
+loading configurations.
+
+Every option or item passed through `options` or `items` needs a stable `id`.
+Dynamic render functions receive the full source item, and React Aria supplies
+its identity to the rendered item component. Statically composed items may
+provide their own `id`.
+
+Use `SelectItemText` and `SelectItemProfile` for standard rich rows. Use the
+low-level `SelectItem` for fully custom content, and provide its `textValue`
+for search, accessibility, and the selected text shown in the trigger. The
+presets derive selected text from their title or name.
+
+Option sections are supported only in static `options` arrays.
+
+## Search and loading
+
+Search is opt-in. Pass `search` as a shorthand for the default client-side
+contains filter, or pass an object to configure it. Client `search.filter`
+receives the full option or item and the current query. Custom filters require
+an `options` or `items` source. Static composition supports the default
+text-value filter. To control the query, pass `search.inputValue` together with
+`search.onInputChange`. Use `search.defaultInputValue` to set an initial
+uncontrolled query.
+
+For server search, either pass a `useAsyncList` result with
+`search={{ mode: 'server' }}`, or manage the query yourself with controlled
+`search.inputValue` and `search.onInputChange`. Async sources provide loading
+state and incremental loading automatically, so they cannot be combined with
+manual `loading` or controlled server query props. Use `loading` only when data
+fetching is managed outside the component.
+
 ## API reference
 
 <PropsTable data={selectPropDefs} />
@@ -69,6 +120,8 @@ export const reactAriaUrls = {
 ### Option types
 
 The `options` prop accepts an array containing either of the following shapes.
+Use `id` for new code. The deprecated `value` identity remains supported for
+static arrays.
 
 #### `Option`
 
@@ -77,6 +130,30 @@ The `options` prop accepts an array containing either of the following shapes.
 #### `OptionSection`
 
 <PropsTable data={optionSectionPropDefs} />
+
+### SelectItem
+
+Low-level item wrapper for fully custom item content.
+
+<PropsTable data={selectItemPropDefs} />
+
+<ReactAriaLink component="ListBoxItem" href={reactAriaUrls.listBoxItem} />
+
+### SelectItemText
+
+Preset item with a title, optional description, and optional leading icon.
+
+<PropsTable data={selectItemTextPropDefs} />
+
+<ReactAriaLink component="ListBoxItem" href={reactAriaUrls.listBoxItem} />
+
+### SelectItemProfile
+
+Preset item with an avatar and profile name.
+
+<PropsTable data={selectItemProfilePropDefs} />
+
+<ReactAriaLink component="ListBoxItem" href={reactAriaUrls.listBoxItem} />
 
 ## Examples
 
@@ -127,7 +204,7 @@ The `options` prop accepts an array containing either of the following shapes.
 
 ### Searchable
 
-Enable filtering with the `searchable` prop.
+Pass `search` to use the default contains filter.
 
 <Snippet
   layout="side-by-side"
@@ -135,6 +212,8 @@ Enable filtering with the `searchable` prop.
   preview={<Searchable />}
   code={selectSearchableSnippet}
 />
+
+<CodeBlock code={selectCustomSearchSnippet} />
 
 ### Multiple selection
 
@@ -170,7 +249,7 @@ nested `options` array.
 
 ### Searchable with sections
 
-Sections are preserved when filtering with `searchable`.
+Sections are preserved when filtering with `search`.
 
 <Snippet
   layout="side-by-side"
@@ -178,6 +257,32 @@ Sections are preserved when filtering with `searchable`.
   preview={<SearchableWithSections />}
   code={selectSearchableSectionsSnippet}
 />
+
+### Custom items
+
+Use item presets or low-level items for fixed rich rows, or pass domain objects
+through `items` with a child render function. Pass `dependencies` when that
+render function also depends on values outside each item. Presets include the
+standard BUI selection indicator. Low-level items own their internal layout and
+selection treatment; set `showSelectionIndicator` to use the standard
+indicator and content layout.
+
+<CodeBlock code={selectCustomItemsSnippet} />
+
+### Server search and loading
+
+Import `useAsyncList` from `@backstage/ui` and pass its result directly to
+`options` or `items`. With server search, query state, loading state, and
+incremental loading are derived from the list. With client search, Select
+filters the currently loaded items on the client.
+
+<CodeBlock code={selectAsyncSnippet} />
+
+If data fetching is managed elsewhere, control the server query through
+`search` and pass `loading` with the current state and optional load-more
+callback.
+
+<CodeBlock code={selectManualLoadingSnippet} />
 
 ### Responsive
 
