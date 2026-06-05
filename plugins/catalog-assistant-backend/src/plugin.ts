@@ -22,7 +22,7 @@ import {
 import { CatalogClient } from '@backstage/catalog-client';
 import { generateText } from 'ai';
 import { CatalogContextRetriever } from './services/CatalogContextRetriever';
-import { QueryService } from './services/QueryService';
+import { GenerateTextFn, QueryService } from './services/QueryService';
 import { createRouter } from './router/createRouter';
 
 const DEFAULT_MODEL = 'claude-sonnet-4-6';
@@ -77,7 +77,11 @@ export const catalogAssistantPlugin = createBackendPlugin({
         const queryService = new QueryService(
           retriever,
           model,
-          generateText,
+          // GenerateTextFn is the narrow subset of the AI SDK's generateText
+          // shape that the plugin actually uses; the real generateText accepts
+          // many more options. The cast keeps the host-app wiring honest about
+          // which fields we read while allowing the real SDK function in.
+          generateText as unknown as GenerateTextFn,
           logger,
           maxOutputTokens,
         );
