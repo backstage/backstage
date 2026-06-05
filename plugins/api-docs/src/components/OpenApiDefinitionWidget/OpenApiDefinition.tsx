@@ -187,6 +187,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const scrollToDeepLink = () => {
+  const hash = window.location.hash;
+  if (!hash) return;
+  const fragment = decodeURIComponent(hash.substring(2)); // strip leading "#/"
+  const [tag, operationId] = fragment.split('/');
+  const elementId = operationId
+    ? `operations-${tag}-${operationId}`
+    : `operations-tag-${tag}`;
+  document
+    .getElementById(elementId)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
 export type OpenApiDefinitionProps = {
   definition: string;
 } & Omit<React.ComponentProps<typeof SwaggerUI>, 'spec'>;
@@ -213,6 +226,7 @@ export const OpenApiDefinition = ({
         url=""
         deepLinking
         oauth2RedirectUrl={`${window.location.protocol}//${window.location.host}/oauth2-redirect.html`}
+        onComplete={scrollToDeepLink}
         {...swaggerUiProps}
       />
     </div>

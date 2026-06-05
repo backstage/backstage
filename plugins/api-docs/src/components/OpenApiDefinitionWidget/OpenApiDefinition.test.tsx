@@ -37,6 +37,8 @@ servers:
 paths:
   /artists:
     get:
+      tags:
+        - artists
       summary: List all artists
       responses:
         "200":
@@ -54,6 +56,9 @@ paths:
 
     // swagger-ui loads the documentation asynchronously
     await waitFor(() => {
+      expect(
+        document.getElementById('operations-artists-get_artists'),
+      ).toBeInTheDocument();
       expect(getByText(/\/artists/i)).toBeInTheDocument();
       expect(getByText(/List all artists/i)).toBeInTheDocument();
     });
@@ -146,5 +151,39 @@ paths:
       <OpenApiDefinition definition="" />,
     );
     expect(getByText(/No API definition provided/i)).toBeInTheDocument();
+  });
+
+  it('scrolls to deepLink on page load', async () => {
+    const definition = `
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Artist API
+  license:
+    name: MIT
+servers:
+  - url: http://artist.spotify.net/v1
+paths:
+  /artists:
+    get:
+      summary: List all artists
+      responses:
+        "200":
+          description: Success
+    `;
+
+    window.location.hash = '#/artists/listArtists';
+
+    const scrollIntoViewMock = jest.fn();
+
+    jest.spyOn(document, 'getElementById').mockImplementation(() => {
+      return {
+        scrollIntoView: scrollIntoViewMock,
+      } as any;
+    });
+
+    await renderInTestApp(<OpenApiDefinition definition={definition} />);
+
+    expect(scrollIntoViewMock).toHaveBeenCalled();
   });
 });
