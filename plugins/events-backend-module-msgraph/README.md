@@ -65,7 +65,7 @@ For delete events, the module resolves entity references from the catalog using 
 Unlike GitHub webhook events, MS Graph events cannot be configured in the portal. Client Apps have to create new
 subscriptions themselves, specifying the webhook URLs, verification secrets/tokens and all other
 params [through an endpoint](https://learn.microsoft.com/en-us/graph/change-notifications-delivery-webhooks?tabs=javascript#create-a-subscription).
-The new module `@backstage/plugin-catalog-backend-module-msgraph` looks up deleted entity references in the Catalog and
+The new module `@backstage/plugin-events-backend-module-msgraph` looks up deleted entity references in the Catalog and
 re-publishes events to more specific `upsert`/`delete` topics.
 
 ```mermaid
@@ -137,7 +137,7 @@ events:
   modules:
     msgraph:
       notificationUrl: https://shaggy-mirrors-admire.loca.lt/api/events/http/msgraph # append the URL here
-      resources:
+      subscriptionResources:
         - groups
         - users
       clientId: <...>

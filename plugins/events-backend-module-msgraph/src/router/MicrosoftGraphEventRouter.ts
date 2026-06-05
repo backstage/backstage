@@ -31,11 +31,7 @@ import {
   type MicrosoftGraphDeleteEventPayload,
   type MicrosoftGraphUpsertEventPayload,
 } from '../types';
-import type {
-  EventParams,
-  EventRouter,
-  EventsService,
-} from '@backstage/plugin-events-node';
+import type { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { parseEvents } from './parseEvents';
 import type { Change } from './types';
 
