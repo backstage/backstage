@@ -87,10 +87,10 @@ describe('MicrosoftGraphSubscriptionsDatabaseClient', () => {
       describe('getById', () => {
         it('should return specific rows', async () => {
           const result1 = await target.getById('id1');
-          expect(result1.id).toEqual(exampleRow1.id);
+          expect(result1?.id).toEqual(exampleRow1.id);
 
           const result2 = await target.getById('id2');
-          expect(result2.id).toEqual(exampleRow2.id);
+          expect(result2?.id).toEqual(exampleRow2.id);
         });
       });
 

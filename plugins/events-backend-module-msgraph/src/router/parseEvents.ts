@@ -102,7 +102,7 @@ export function parseEvents({
   }
 
   const changes = valid.map(({ changeType, resource }) => {
-    const [resourceType, resourceId] = resource!.toLocaleLowerCase().split('/');
+    const [resourceType, resourceId] = resource!.toLowerCase().split('/');
     return {
       changeType: changeType!.toLowerCase(),
       resourceType,

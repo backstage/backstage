@@ -50,7 +50,7 @@ abstract class MicrosoftGraphSubscriptionsDatabaseClientBase
     return this.getQuery().select();
   }
 
-  async getById(id: string): Promise<DbSubscriptionsRow> {
+  async getById(id: string): Promise<DbSubscriptionsRow | undefined> {
     return this.getQuery().where({ id }).first();
   }
 

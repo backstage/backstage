@@ -38,7 +38,7 @@ export type PredicateFactory<P extends unknown[] = unknown[]> = (
  */
 export const changeTypeIs: PredicateFactory<[string]> =
   (changeType: string) => (change: Change) =>
-    change.changeType.toLowerCase() === changeType.toLocaleLowerCase();
+    change.changeType.toLowerCase() === changeType.toLowerCase();
 
 /**
  * Creates a predicate that matches changes of the given resource type.
@@ -48,7 +48,7 @@ export const changeTypeIs: PredicateFactory<[string]> =
  */
 export const resourceTypeIs: PredicateFactory<[string]> =
   (resourceType: string) => (change: Change) =>
-    change.resourceType.toLowerCase() === resourceType.toLocaleLowerCase();
+    change.resourceType.toLowerCase() === resourceType.toLowerCase();
 
 /**
  * Creates a predicate that matches if all given predicates match.

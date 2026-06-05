@@ -18,15 +18,10 @@ import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyDatabaseMigrations } from './migrations';
 
 describe('migrations', () => {
-  const databases = TestDatabases.create({
-    ids: [
-      'SQLITE_3',
-      // 'MYSQL_8', 'POSTGRES_13', 'POSTGRES_17'
-    ],
-  });
+  const databases = TestDatabases.create();
 
   it.each(databases.eachSupportedId())(
-    '20250411000000_last_run.js, %p',
+    '20251003113817_init.js, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
 
