@@ -260,7 +260,6 @@ export const searchPage = PageBlueprint.makeWithOverrides({
   },
 });
 
-
 /** @alpha */
 export const homePageSearchBar = HomePageWidgetBlueprint.make({
   params: {

@@ -188,9 +188,9 @@ export const homeTranslationRef: TranslationRef<
     readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
     readonly 'customHomepageButtons.edit': 'Edit';
-    readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepageButtons.restoreDefaults': 'Restore defaults';
     readonly 'customHomepageButtons.addWidget': 'Add widget';
+    readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepage.noWidgets': "No widgets added. Start by clicking the 'Add widget' button.";
     readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'widgetSettingsOverlay.editSettingsTooltip': 'Edit settings';
