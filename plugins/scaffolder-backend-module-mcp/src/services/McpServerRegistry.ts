@@ -37,16 +37,26 @@ export interface McpServerConfig {
 }
 
 /**
- * Factory injected during tests so jest can stub the MCP client.
- * @internal
+ * Minimal MCP-client surface the registry uses. Concrete factory is
+ * `defaultClientFactory` (which wires up `@modelcontextprotocol/sdk`);
+ * tests inject a stub.
+ *
+ * @public
  */
-export type ClientFactory = (server: McpServerConfig) => Promise<{
+export interface McpClient {
   callTool(params: {
     name: string;
     arguments?: Record<string, unknown>;
   }): Promise<unknown>;
   close(): Promise<void>;
-}>;
+}
+
+/**
+ * Factory injected during tests so jest can stub the MCP client.
+ *
+ * @public
+ */
+export type ClientFactory = (server: McpServerConfig) => Promise<McpClient>;
 
 /**
  * Read MCP server configs from `scaffolder.mcpServers`.
