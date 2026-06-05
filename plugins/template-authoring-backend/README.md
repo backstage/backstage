@@ -7,7 +7,7 @@ well-known scaffolder actions.
 
 Ask things like:
 
-> _"A Node.js microservice with Express, OTel tracing, and GitHub Actions CI"_
+> _"A Node.js microservice with Express, OpenTelemetry tracing, and GitHub Actions CI"_
 
 …and get back a runnable v1beta3 Template YAML with the right steps in the
 right order, declared parameters where the action inputs need user data,
@@ -16,9 +16,9 @@ generator used.
 
 ## Status
 
-First slice. Backend HTTP endpoint only, no UI. Uses Vercel AI SDK's
-`generateObject` with a zod schema so the LLM is forced to emit a valid
-Template structure — not just freeform YAML it claims is valid.
+First slice. Backend HTTP endpoint only, no UI. Uses the AI SDK
+`generateObject` helper with a zod schema so the LLM is forced to emit a
+valid Template structure — not just freeform YAML it claims is valid.
 
 ## Installation
 
@@ -93,7 +93,7 @@ flowchart LR
     HTTP["<b>POST /v1/generate</b><br/>{ description, referenceTemplates }"] --> RL["<b>ReferenceTemplateLoader</b><br/>fetch + validate<br/>(must be kind: Template)"]
     RL --> CAT[("Catalog API")]
     HTTP --> GS["<b>TemplateGenerationService</b><br/>system prompt + reference YAML<br/>+ well-known action catalog"]
-    GS --> AI["<b>Vercel AI SDK</b><br/>generateObject({schema, ...})<br/>Claude (or future BEP-0015 provider)"]
+    GS --> AI["<b>AI SDK</b><br/>generateObject({schema, ...})<br/>Claude (or future BEP-0015 provider)"]
     GS --> V["<b>TemplateValidator</b><br/>step-ref resolution,<br/>action id whitelist,<br/>ordering hints"]
     V --> R["JSON response<br/>{ yaml, template,<br/>citations, warnings }"]
 ```
@@ -154,7 +154,7 @@ Third plugin in the AI-on-Backstage series:
 3. **`template-authoring-backend`** — generate scaffolder Templates from
    natural language (this plugin).
 
-Each composes the same Vercel-AI-SDK shape, so all three swap behind the
+Each composes the same AI-SDK shape, so all three swap behind the
 [BEP-0015 AI Model Provider Service](https://github.com/backstage/backstage/pull/33906)
 when it lands with a contained refactor.
 
