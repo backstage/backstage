@@ -59,3 +59,90 @@ For delete events, the module resolves entity references from the catalog using 
 
 - `metadata.annotations.graph.microsoft.com/user-id` for users
 - `metadata.annotations.graph.microsoft.com/group-id` for groups
+
+## How it works
+
+Unlike GitHub webhook events, MS Graph events cannot be configured in the portal. Client Apps have to create new
+subscriptions themselves, specifying the webhook URLs, verification secrets/tokens and all other
+params [through an endpoint](https://learn.microsoft.com/en-us/graph/change-notifications-delivery-webhooks?tabs=javascript#create-a-subscription).
+The new module `@backstage/plugin-catalog-backend-module-msgraph` looks up deleted entityRefs in the Catalog and
+re-publishes events to more specific `upsert`/`delete` topics.
+
+```mermaid
+sequenceDiagram
+  participant eventsModuleMicrosoftGraphWebhook
+  participant EventsPlugin
+  participant WebhookRequestValidator
+  participant MicrosoftGraphEventRouter
+  participant CatalogService
+  participant MicrosoftGraphIncrementalEntityProvider
+  eventsModuleMicrosoftGraphWebhook ->> EventsPlugin: eventsExtensionPoint.addHttpPostIngress
+  EventsPlugin ->> WebhookRequestValidator: createWebhookRequestValidator
+  loop on schedule
+    Note over eventsModuleMicrosoftGraphWebhook: after lifecycle.addStartupHook
+    eventsModuleMicrosoftGraphWebhook ->> eventsModuleMicrosoftGraphWebhook: MicrosoftGraphSubscriptionManager.ensureActiveSubscriptions
+  end
+  EventsPlugin ->> WebhookRequestValidator: webhook event request
+  WebhookRequestValidator ->> WebhookRequestValidator: validate request
+  WebhookRequestValidator ->> EventsPlugin: request secret valid
+  EventsPlugin ->> MicrosoftGraphEventRouter: MS Graph change/delete events<br/>published via "msgraph" topic
+  MicrosoftGraphEventRouter ->> MicrosoftGraphEventRouter: validate payloads
+  MicrosoftGraphEventRouter ->> EventsPlugin: change/add events re-published via "msgraph/upsert" topic
+  MicrosoftGraphEventRouter ->> CatalogService: find deleted entities by MS Graph IDs
+  CatalogService ->> MicrosoftGraphEventRouter: deleted entityRefs
+  MicrosoftGraphEventRouter ->> EventsPlugin: delete events re-published via "msgraph/delete" topic
+  EventsPlugin ->> MicrosoftGraphIncrementalEntityProvider: "msgraph/upsert" and "msgraph/delete" topic events
+```
+
+All incoming event requests are validated on client secret.
+
+```mermaid
+sequenceDiagram
+  participant WebhookRequestValidator
+  participant MicrosoftGraphSubscriptionManager
+  participant MicrosoftGraphSubscriptionsDatabaseClient
+  participant MicrosoftGraphClient
+
+  loop on schedule
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionManager: ensureActiveSubscriptions
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: get current subscription IDs
+    MicrosoftGraphSubscriptionsDatabaseClient ->> MicrosoftGraphSubscriptionManager: subscription IDs
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: validateActiveSubscription
+    MicrosoftGraphClient ->> MicrosoftGraphSubscriptionManager: expired/invalid subscriptions
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphClient: createSubscription
+    MicrosoftGraphSubscriptionManager ->> MicrosoftGraphSubscriptionsDatabaseClient: insert subscription record with secret hash and salt
+  end
+
+  Note over WebhookRequestValidator: on new webhook event
+  WebhookRequestValidator ->> MicrosoftGraphSubscriptionsDatabaseClient: databaseClient.getById(subscriptionId)
+  MicrosoftGraphSubscriptionsDatabaseClient ->> WebhookRequestValidator: token_hash, token_salt
+  WebhookRequestValidator ->> WebhookRequestValidator: reject request if token_hash !== hashValidationToken(clientState, token_salt)
+```
+
+Upsert/Delete events can later be received by `MicrosoftGraphOrgEntityProvider` or
+`MicrosoftGraphIncrementalEntityProvider`. Group/User IDs from the Upsert events can be used to query MS Graph APIs for
+all data necessary to build Group/User entities. Delete events already contain `CompoundEntityRefs` at this point.
+Catalog entities can be deleted/added/updated via `connection.applyMutation({..., type: 'delta'})`.
+
+## How to test locally
+
+LocalTunnel can be used to receive webhook events in local environments.
+
+1. `brew install localtunnel`
+2. `lt --port 7007`
+3. Copy the URL printed and add it to your events config:
+
+```yaml
+events:
+modules:
+  msgraph:
+    notificationUrl: https://shaggy-mirrors-admire.loca.lt/api/events/http/msgraph # append the URL here
+    resources:
+      - groups
+      - users
+    clientId: <...>
+    clientSecret: <...>
+    tenantId: <...>
+```
+
+5. Run with DEBUG log level if you want to see all messages `LOG_LEVEL=DEBUG yarn start backend`
