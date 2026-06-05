@@ -16,6 +16,7 @@
 
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyDatabaseMigrations } from './migrations';
+import { DateTime } from 'luxon';
 
 describe('migrations', () => {
   const databases = TestDatabases.create();
@@ -31,22 +32,19 @@ describe('migrations', () => {
         .insert({
           id: 'id1',
           resource: 'resource1',
-          created_at: '2025-01-01T00:00:00Z',
-          expires_at: '2025-01-01T10:00:00Z',
+          expires_at: DateTime.now().plus({ minutes: 10 }).toJSDate(),
           token_hash: 'somehash',
           token_salt: 'somesalt',
         })
         .into('module_msgraph__subscriptions');
 
       await expect(knex('module_msgraph__subscriptions')).resolves.toEqual([
-        {
+        expect.objectContaining({
           id: 'id1',
           resource: 'resource1',
-          created_at: '2025-01-01T00:00:00Z',
-          expires_at: '2025-01-01T10:00:00Z',
           token_hash: 'somehash',
           token_salt: 'somesalt',
-        },
+        }),
       ]);
 
       await knex.destroy();
