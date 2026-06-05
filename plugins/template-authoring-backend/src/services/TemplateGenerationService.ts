@@ -56,7 +56,7 @@ export const TemplateSchema = z.object({
         z.object({
           title: z.string().optional(),
           required: z.array(z.string()).optional(),
-          properties: z.record(z.unknown()).optional(),
+          properties: z.record(z.string(), z.unknown()).optional(),
         }),
       )
       .optional(),
@@ -66,12 +66,12 @@ export const TemplateSchema = z.object({
           id: z.string(),
           name: z.string().optional(),
           action: z.enum(STEP_ACTION_IDS),
-          input: z.record(z.unknown()).optional(),
+          input: z.record(z.string(), z.unknown()).optional(),
           if: z.string().optional(),
         }),
       )
       .min(1, 'spec.steps must contain at least one step'),
-    output: z.record(z.unknown()).optional(),
+    output: z.record(z.string(), z.unknown()).optional(),
   }),
 });
 
