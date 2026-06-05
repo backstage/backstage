@@ -94,7 +94,7 @@ sequenceDiagram
   EventsPlugin ->> MicrosoftGraphIncrementalEntityProvider: "msgraph/upsert" and "msgraph/delete" topic events
 ```
 
-All incoming event requests are validated on client secret.
+All incoming event requests are validated on `clientState`.
 
 ```mermaid
 sequenceDiagram
