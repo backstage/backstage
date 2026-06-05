@@ -15,11 +15,21 @@
  */
 import type { CompoundEntityRef } from '@backstage/catalog-model';
 
+/**
+ * The payload of an upsert event for Microsoft Graph resources.
+ *
+ * @public
+ */
 export type MicrosoftGraphUpsertEventPayload = {
   resourceType: 'group' | 'user';
   resourceId: string;
 }[];
 
+/**
+ * The payload of a delete event for Microsoft Graph resources.
+ *
+ * @public
+ */
 export type MicrosoftGraphDeleteEventPayload = {
   entityRef: CompoundEntityRef;
 }[];
