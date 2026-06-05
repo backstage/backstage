@@ -65,7 +65,7 @@ export default createBackendModule({
           });
 
         events.addHttpPostBodyParser({
-          contentType: 'plain/text',
+          contentType: 'text/plain',
           parser: HttpTextPlainBodyParser,
         });
 

@@ -64,10 +64,7 @@ jest.mock('./service/MicrosoftGraphSubscriptionManager', () => ({
 const mockValidator = jest.fn();
 
 jest.mock('./service/createWebhookRequestValidator', () => ({
-  createWebhookRequestValidator: jest.fn(() => {
-    console.log('Mock createWebhookRequestValidator called');
-    return mockValidator;
-  }),
+  createWebhookRequestValidator: jest.fn(() => mockValidator),
 }));
 
 describe('eventsModuleMicrosoftGraphWebhook', () => {
@@ -178,7 +175,7 @@ describe('eventsModuleMicrosoftGraphWebhook', () => {
       expect(
         mockEventsExtensionPoint.addHttpPostBodyParser,
       ).toHaveBeenCalledWith({
-        contentType: 'plain/text',
+        contentType: 'text/plain',
         parser: HttpTextPlainBodyParser,
       });
 
