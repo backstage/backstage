@@ -51,12 +51,10 @@ const buildApp = (svc: Partial<QueryService>) => {
 
 describe('createRouter', () => {
   it('POST /v1/query returns the QueryService result', async () => {
-    const query = jest
-      .fn()
-      .mockResolvedValue({
-        answer: 'group:platform',
-        citations: ['component:default/a'],
-      });
+    const query = jest.fn().mockResolvedValue({
+      answer: 'group:platform',
+      citations: ['component:default/a'],
+    });
     const app = buildApp({ query });
 
     const res = await request(app)
