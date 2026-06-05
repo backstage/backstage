@@ -2,7 +2,11 @@
   "name": "@backstage/plugin-catalog-assistant-backend",
   "version": "0.1.0",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "catalog-assistant",
+    "pluginPackages": [
+      "@backstage/plugin-catalog-assistant-backend"
+    ]
   },
   "publishConfig": {
     "access": "public"
@@ -38,7 +42,6 @@
     "dist",
     "config.d.ts"
   ],
-  "configSchema": "config.d.ts",
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
@@ -64,5 +67,6 @@
     "@backstage/cli": "workspace:^",
     "@types/express": "*",
     "supertest": "^7.0.0"
-  }
+  },
+  "configSchema": "config.d.ts"
 }
