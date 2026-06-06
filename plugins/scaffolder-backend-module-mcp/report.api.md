@@ -9,6 +9,9 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
+export type ClientFactory = (server: McpServerConfig) => Promise<McpClient>;
+
+// @public
 export const createMcpCallAction: (options: {
   registry: McpServerRegistry;
 }) => TemplateAction<
@@ -24,11 +27,82 @@ export const createMcpCallAction: (options: {
 >;
 
 // @public
+export interface McpClient {
+  // (undocumented)
+  callTool(params: {
+    name: string;
+    arguments?: Record<string, unknown>;
+  }): Promise<unknown>;
+  // (undocumented)
+  close(): Promise<void>;
+}
+
+// @public
 const mcpModule: BackendFeature;
 export default mcpModule;
 
+// @public
+export interface McpServerConfig {
+  // (undocumented)
+  args: string[];
+  // (undocumented)
+  command: string;
+  // (undocumented)
+  cwd?: string;
+  // (undocumented)
+  env?: Record<string, string>;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  timeoutMs: number;
+}
+
+// Warning: (ae-missing-release-tag) "McpServerRegistry" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class McpServerRegistry {
+  constructor(
+    servers: McpServerConfig[],
+    logger: LoggerService,
+    clientFactory: ClientFactory,
+  );
+  callTool(
+    serverId: string,
+    toolName: string,
+    args: Record<string, unknown>,
+  ): Promise<unknown>;
+  close(): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    rootConfig: Config,
+    options: {
+      logger: LoggerService;
+      clientFactory?: ClientFactory;
+    },
+  ): McpServerRegistry;
+  // (undocumented)
+  has(serverId: string): boolean;
+  // (undocumented)
+  list(): string[];
+}
+
+// Warning: (ae-missing-release-tag) "readMcpServerConfigs" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function readMcpServerConfigs(rootConfig: Config): McpServerConfig[];
+
 // Warnings were encountered during analysis:
 //
-// src/actions/createMcpCallAction.d.ts:11:5 - (ae-forgotten-export) The symbol "McpServerRegistry" needs to be exported by the entry point index.d.ts
+// src/services/McpServerRegistry.d.ts:9:5 - (ae-undocumented) Missing documentation for "id".
+// src/services/McpServerRegistry.d.ts:10:5 - (ae-undocumented) Missing documentation for "command".
+// src/services/McpServerRegistry.d.ts:11:5 - (ae-undocumented) Missing documentation for "args".
+// src/services/McpServerRegistry.d.ts:12:5 - (ae-undocumented) Missing documentation for "env".
+// src/services/McpServerRegistry.d.ts:13:5 - (ae-undocumented) Missing documentation for "cwd".
+// src/services/McpServerRegistry.d.ts:14:5 - (ae-undocumented) Missing documentation for "timeoutMs".
+// src/services/McpServerRegistry.d.ts:24:5 - (ae-undocumented) Missing documentation for "callTool".
+// src/services/McpServerRegistry.d.ts:28:5 - (ae-undocumented) Missing documentation for "close".
+// src/services/McpServerRegistry.d.ts:48:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/services/McpServerRegistry.d.ts:55:5 - (ae-undocumented) Missing documentation for "has".
+// src/services/McpServerRegistry.d.ts:56:5 - (ae-undocumented) Missing documentation for "list".
 // C:/Users/raman/backstage-contrib/backstage/packages/types/src/deferred.ts:1:1 - (ae-wrong-input-file-type) Incorrect file type; API Extractor expects to analyze compiler outputs with the .d.ts file extension. Troubleshooting tips: https://api-extractor.com/link/dts-error
 ```

@@ -23,3 +23,12 @@
 
 export * from './actions';
 export { mcpModule as default } from './module';
+export {
+  McpServerRegistry,
+  readMcpServerConfigs,
+} from './services/McpServerRegistry';
+export type {
+  ClientFactory,
+  McpClient,
+  McpServerConfig,
+} from './services/McpServerRegistry';
