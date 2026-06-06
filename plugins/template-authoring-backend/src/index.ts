@@ -25,6 +25,9 @@
 export { templateAuthoringPlugin as default } from './plugin';
 export type { ReferenceTemplateLoader } from './services/ReferenceTemplateLoader';
 export type {
-  TemplateGenerationService,
+  GeneratedTemplate,
+  GenerateObjectFn,
+  GenerationOptions,
   GenerationResult,
+  TemplateGenerationService,
 } from './services/TemplateGenerationService';

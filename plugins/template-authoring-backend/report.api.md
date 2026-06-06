@@ -9,13 +9,40 @@ import { Entity } from '@backstage/catalog-model';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { z } from 'zod';
 
+// Warning: (ae-forgotten-export) The symbol "TemplateSchema" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type GeneratedTemplate = z.infer<typeof TemplateSchema>;
+
+// @public
+export type GenerateObjectFn<T> = (args: {
+  model: unknown;
+  schema: z.ZodSchema<T>;
+  system: string;
+  prompt: string;
+  maxOutputTokens?: number;
+}) => Promise<{
+  object: T;
+}>;
+
+// @public (undocumented)
+export interface GenerationOptions {
+  // (undocumented)
+  credentials?: {
+    token?: string;
+  };
+  // (undocumented)
+  description: string;
+  // (undocumented)
+  referenceRefs?: string[];
+}
+
 // @public (undocumented)
 export interface GenerationResult {
   citations: {
     referenceTemplates: string[];
     actionsUsed: string[];
   };
-  // Warning: (ae-forgotten-export) The symbol "GeneratedTemplate" needs to be exported by the entry point index.d.ts
   template: GeneratedTemplate;
   warnings: string[];
   yaml: string;
@@ -41,7 +68,6 @@ export default templateAuthoringPlugin;
 
 // @public
 export class TemplateGenerationService {
-  // Warning: (ae-forgotten-export) The symbol "GenerateObjectFn" needs to be exported by the entry point index.d.ts
   constructor(
     referenceLoader: ReferenceTemplateLoader,
     model: unknown,
@@ -49,8 +75,6 @@ export class TemplateGenerationService {
     logger: LoggerService,
     defaultOwner: string,
   );
-  // Warning: (ae-forgotten-export) The symbol "GenerationOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   generate(options: GenerationOptions): Promise<GenerationResult>;
 }
@@ -58,7 +82,12 @@ export class TemplateGenerationService {
 // Warnings were encountered during analysis:
 //
 // src/services/ReferenceTemplateLoader.d.ts:15:5 - (ae-undocumented) Missing documentation for "load".
+// src/services/TemplateGenerationService.d.ts:43:1 - (ae-undocumented) Missing documentation for "GeneratedTemplate".
 // src/services/TemplateGenerationService.d.ts:61:1 - (ae-undocumented) Missing documentation for "GenerationResult".
+// src/services/TemplateGenerationService.d.ts:77:1 - (ae-undocumented) Missing documentation for "GenerationOptions".
+// src/services/TemplateGenerationService.d.ts:78:5 - (ae-undocumented) Missing documentation for "description".
+// src/services/TemplateGenerationService.d.ts:79:5 - (ae-undocumented) Missing documentation for "referenceRefs".
+// src/services/TemplateGenerationService.d.ts:80:5 - (ae-undocumented) Missing documentation for "credentials".
 // src/services/TemplateGenerationService.d.ts:97:5 - (ae-undocumented) Missing documentation for "generate".
 // C:/Users/raman/backstage-contrib/backstage/packages/types/src/deferred.ts:1:1 - (ae-wrong-input-file-type) Incorrect file type; API Extractor expects to analyze compiler outputs with the .d.ts file extension. Troubleshooting tips: https://api-extractor.com/link/dts-error
 ```
