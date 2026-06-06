@@ -159,6 +159,8 @@ servers:
 paths:
   /artists:
     get:
+      tags:
+        - artists    
       summary: List all artists
       responses:
         "200":
@@ -169,14 +171,18 @@ paths:
 
     const scrollIntoViewMock = jest.fn();
 
-    jest.spyOn(document, 'getElementById').mockImplementation(() => {
-      return {
-        scrollIntoView: scrollIntoViewMock,
-      } as any;
+    jest.spyOn(document, 'getElementById').mockImplementation(id => {
+      if (id === 'operations-artists-listArtists') {
+        return {
+          scrollIntoView: scrollIntoViewMock,
+        } as any;
+      }
+      return null;
     });
 
     await renderInTestApp(<OpenApiDefinition definition={definition} />);
 
     expect(scrollIntoViewMock).toHaveBeenCalled();
+    window.location.hash = '';
   });
 });

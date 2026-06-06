@@ -189,15 +189,21 @@ const useStyles = makeStyles(theme => ({
 
 const scrollToDeepLink = () => {
   const hash = window.location.hash;
-  if (!hash) return;
-  const fragment = decodeURIComponent(hash.substring(2)); // strip leading "#/"
+  if (!hash || !hash.startsWith('#/')) return;
+
+  let fragment;
+  try {
+    fragment = decodeURIComponent(hash.substring(2)); // strip leading "#/"
+  } catch {
+    return;
+  }
   const [tag, operationId] = fragment.split('/');
   const elementId = operationId
     ? `operations-${tag}-${operationId}`
     : `operations-tag-${tag}`;
   document
     .getElementById(elementId)
-    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    ?.scrollIntoView({ behavior: 'auto', block: 'start' });
 };
 
 export type OpenApiDefinitionProps = {
