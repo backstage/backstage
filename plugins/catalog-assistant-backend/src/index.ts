@@ -23,5 +23,12 @@
  */
 
 export { catalogAssistantPlugin as default } from './plugin';
-export type { CatalogContextRetriever } from './services/CatalogContextRetriever';
-export type { QueryService, QueryResult } from './services/QueryService';
+export type {
+  CatalogContextRetriever,
+  ScoredEntity,
+} from './services/CatalogContextRetriever';
+export type {
+  GenerateTextFn,
+  QueryResult,
+  QueryService,
+} from './services/QueryService';
