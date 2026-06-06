@@ -15,8 +15,6 @@ export default catalogAssistantPlugin;
 // @public
 export class CatalogContextRetriever {
   constructor(catalog: Pick<CatalogApi, 'getEntities'>, limit: number);
-  // Warning: (ae-forgotten-export) The symbol "ScoredEntity" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   retrieve(
     question: string,
@@ -28,6 +26,16 @@ export class CatalogContextRetriever {
   ): Promise<ScoredEntity[]>;
 }
 
+// @public
+export type GenerateTextFn = (args: {
+  model: unknown;
+  system: string;
+  prompt: string;
+  maxOutputTokens?: number;
+}) => Promise<{
+  text: string;
+}>;
+
 // @public (undocumented)
 export interface QueryResult {
   // (undocumented)
@@ -38,7 +46,6 @@ export interface QueryResult {
 
 // @public
 export class QueryService {
-  // Warning: (ae-forgotten-export) The symbol "GenerateTextFn" needs to be exported by the entry point index.d.ts
   constructor(
     retriever: CatalogContextRetriever,
     model: unknown,
@@ -57,8 +64,21 @@ export class QueryService {
   ): Promise<QueryResult>;
 }
 
+// @public
+export interface ScoredEntity {
+  // (undocumented)
+  entity: Entity;
+  // (undocumented)
+  entityRef: string;
+  // (undocumented)
+  score: number;
+}
+
 // Warnings were encountered during analysis:
 //
+// src/services/CatalogContextRetriever.d.ts:8:5 - (ae-undocumented) Missing documentation for "entity".
+// src/services/CatalogContextRetriever.d.ts:9:5 - (ae-undocumented) Missing documentation for "entityRef".
+// src/services/CatalogContextRetriever.d.ts:10:5 - (ae-undocumented) Missing documentation for "score".
 // src/services/CatalogContextRetriever.d.ts:27:5 - (ae-undocumented) Missing documentation for "retrieve".
 // src/services/QueryService.d.ts:19:1 - (ae-undocumented) Missing documentation for "QueryResult".
 // src/services/QueryService.d.ts:20:5 - (ae-undocumented) Missing documentation for "answer".
