@@ -39,6 +39,7 @@ paths:
     get:
       tags:
         - artists
+      operationId: get_artists
       summary: List all artists
       responses:
         "200":
@@ -160,7 +161,8 @@ paths:
   /artists:
     get:
       tags:
-        - artists    
+        - artists
+      operationId: listArtists
       summary: List all artists
       responses:
         "200":
@@ -171,18 +173,23 @@ paths:
 
     const scrollIntoViewMock = jest.fn();
 
-    jest.spyOn(document, 'getElementById').mockImplementation(id => {
-      if (id === 'operations-artists-listArtists') {
-        return {
-          scrollIntoView: scrollIntoViewMock,
-        } as any;
-      }
-      return null;
-    });
+    const getElementByIdSpy = jest
+      .spyOn(document, 'getElementById')
+      .mockImplementation(id => {
+        if (id === 'operations-artists-listArtists') {
+          return {
+            scrollIntoView: scrollIntoViewMock,
+          } as any;
+        }
+        return null;
+      });
 
-    await renderInTestApp(<OpenApiDefinition definition={definition} />);
-
-    expect(scrollIntoViewMock).toHaveBeenCalled();
-    window.location.hash = '';
+    try {
+      await renderInTestApp(<OpenApiDefinition definition={definition} />);
+      expect(scrollIntoViewMock).toHaveBeenCalled();
+    } finally {
+      window.location.hash = '';
+      getElementByIdSpy.mockRestore();
+    }
   });
 });

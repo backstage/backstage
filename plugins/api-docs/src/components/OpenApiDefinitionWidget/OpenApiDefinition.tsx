@@ -198,6 +198,7 @@ const scrollToDeepLink = () => {
     return;
   }
   const [tag, operationId] = fragment.split('/');
+  if (!tag) return;
   const elementId = operationId
     ? `operations-${tag}-${operationId}`
     : `operations-tag-${tag}`;
