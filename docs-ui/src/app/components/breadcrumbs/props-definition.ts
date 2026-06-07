@@ -57,7 +57,8 @@ export const breadcrumbsPropDefs: Record<string, PropDef> = {
       'HTML element to render for the last (current) breadcrumb. Use this when the current breadcrumb doubles as the page heading, e.g. currentAs="h1".',
   },
   separator: {
-    type: 'string',
+    type: 'enum',
+    values: ['ReactNode'],
     description:
       'Custom separator element rendered between breadcrumb items. Defaults to a right-chevron icon at 1em.',
   },

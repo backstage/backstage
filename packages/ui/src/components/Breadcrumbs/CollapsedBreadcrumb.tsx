@@ -51,8 +51,9 @@ export function CollapsedBreadcrumb(
   const variant = variantOverride ?? defaults.variant;
   const color = colorOverride ?? defaults.color;
   const weight = weightOverride ?? defaults.weight;
+  const separatorColor = `var(--bui-fg-${defaults.color ?? 'primary'})`;
   const separator = defaults.separator ?? (
-    <RiArrowRightSLine color={`var(--bui-fg-${defaults.color})`} />
+    <RiArrowRightSLine color={separatorColor} />
   );
 
   return (

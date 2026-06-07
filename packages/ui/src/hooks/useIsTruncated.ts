@@ -19,8 +19,13 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 const DEBOUNCE_MS = 150;
 
-function observeResize(el: HTMLElement, callback: () => void): () => void {
-  let timerId: ReturnType<typeof setTimeout>;
+function observeResize(
+  el: HTMLElement,
+  callback: () => void,
+): (() => void) | undefined {
+  if (typeof ResizeObserver === 'undefined') return undefined; // ResizeObserver isn't available in all runtimes (e.g. older browsers, SSR, Jest/jsdom)
+
+  let timerId: ReturnType<typeof setTimeout> | undefined;
   const observer = new ResizeObserver(() => {
     clearTimeout(timerId);
     timerId = setTimeout(callback, DEBOUNCE_MS);
