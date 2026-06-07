@@ -23,7 +23,8 @@ import { BreadcrumbDefinition } from './definition';
 import { Tooltip, TooltipTrigger } from '../Tooltip';
 import { useBreadcrumbsStyle } from './BreadcrumbsContext';
 import type { BreadcrumbProps, BreadcrumbStyleProps } from './types';
-import { TextOwnProps, Text } from '../Text';
+import { Text } from '../Text';
+import type { TextOwnProps } from '../Text';
 import { Link } from '../Link';
 
 function BreadcrumbContent(
@@ -112,8 +113,9 @@ export const Breadcrumb = (props: BreadcrumbProps) => {
   const resolvedColor = color ?? defaults.color;
   const resolvedWeight = weight ?? defaults.weight;
   const resolvedHref = useResolvedHref(href);
+  const separatorColor = `var(--bui-fg-${defaults.color ?? 'primary'})`;
   const separator = defaults.separator ?? (
-    <RiArrowRightSLine color={`var(--bui-fg-${defaults.color})`} />
+    <RiArrowRightSLine color={separatorColor} />
   );
 
   return (
