@@ -3273,6 +3273,7 @@ __metadata:
     history: "npm:^5.3.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
+    react-helmet: "npm:^6.1.0"
     react-router-dom: "npm:^6.30.2"
     use-sync-external-store: "npm:^1.7.0"
     zod: "npm:^4.0.0"
@@ -39996,7 +39997,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-helmet@npm:6.1.0":
+"react-helmet@npm:6.1.0, react-helmet@npm:^6.1.0":
   version: 6.1.0
   resolution: "react-helmet@npm:6.1.0"
   dependencies:

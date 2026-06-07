@@ -42,6 +42,8 @@ import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActio
 
 import { optionalStringSchema } from '../schema/optionalStringSchema';
 import { appHistoryApiRef } from '../routing/AppHistoryApi';
+import { configApiRef } from '../apis';
+import { Helmet } from 'react-helmet';
 
 /**
  * One sub-page of a page, as the page itself sees it: a tab to show in the
@@ -163,6 +165,10 @@ function PluginPageShell(props: {
   const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
   const history = useApiHolder().get(appHistoryApiRef);
   const location = useAppHistoryLocation(history);
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
+  const titleTemplate = `${titles?.[0] ?? title} | %s | ${appTitle}`;
+  const defaultTitle = `${titles?.[0] ?? title} | ${appTitle}`;
   const mount =
     location &&
     routeResolutionApi
@@ -183,18 +189,21 @@ function PluginPageShell(props: {
     return <Progress />;
   }
   return (
-    <PageLayout
-      title={titles[0] ?? title}
-      icon={icon}
-      noHeader={noHeader}
-      tabs={tabs}
-      titleLink={titleLink}
-      headerActions={headerActions}
-    >
-      <ExtensionBoundary node={node}>
-        <PageContent subPages={translatedSubPages}>{children}</PageContent>
-      </ExtensionBoundary>
-    </PageLayout>
+    <>
+      <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
+      <PageLayout
+        title={titles[0] ?? title}
+        icon={icon}
+        noHeader={noHeader}
+        tabs={tabs}
+        titleLink={titleLink}
+        headerActions={headerActions}
+      >
+        <ExtensionBoundary node={node}>
+          <PageContent subPages={translatedSubPages}>{children}</PageContent>
+        </ExtensionBoundary>
+      </PageLayout>
+    </>
   );
 }
 

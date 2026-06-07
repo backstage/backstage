@@ -21,6 +21,7 @@ import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 import { ExtensionBoundary } from '../components';
 import { optionalStringSchema } from '../schema/optionalStringSchema';
+import { Helmet } from 'react-helmet';
 
 /**
  * Creates extensions that are sub-page React components attached to a parent page.
@@ -131,7 +132,10 @@ export const SubPageBlueprint = createExtensionBlueprint({
     }
 
     yield coreExtensionData.reactElement(
-      ExtensionBoundary.lazy(node, params.loader),
+      <>
+        <Helmet title={title} />
+        {ExtensionBoundary.lazy(node, params.loader)}
+      </>,
     );
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);
