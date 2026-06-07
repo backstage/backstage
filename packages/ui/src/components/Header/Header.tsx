@@ -23,8 +23,9 @@ import { HeaderDefinition } from './definition';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 import { Lexer } from 'marked';
 import { Link } from '../Link';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Container } from '../Container';
+import { Breadcrumb, Breadcrumbs } from '../Breadcrumbs';
 
 const getScrollParent = (element: HTMLElement | null): Element | null => {
   let parent = element?.parentElement;
@@ -199,51 +200,29 @@ export const Header = (props: HeaderProps) => {
         {...dataAttributes}
       >
         <div className={classes.titleStack}>
-          {isStuck ? (
-            <div className={classes.breadcrumbsSmall}>
-              {breadcrumbs &&
-                breadcrumbs.map(breadcrumb => (
-                  <Fragment key={breadcrumb.label}>
-                    <Link
-                      href={breadcrumb.href}
-                      color="secondary"
-                      className={classes.breadcrumbLinkSmall}
-                      standalone
-                    >
-                      {breadcrumb.label}
-                    </Link>
-                    <RiArrowRightSLine
-                      className={classes.breadcrumbSeparator}
-                      size={16}
-                      color="var(--bui-fg-secondary)"
-                    />
-                  </Fragment>
-                ))}
-              <h2 className={classes.titleSmall}>{title}</h2>
-            </div>
-          ) : (
-            <div className={classes.breadcrumbs}>
-              {breadcrumbs &&
-                breadcrumbs.map(breadcrumb => (
-                  <Fragment key={breadcrumb.label}>
-                    <Link
-                      href={breadcrumb.href}
-                      color="secondary"
-                      className={classes.breadcrumbLink}
-                      standalone
-                    >
-                      {breadcrumb.label}
-                    </Link>
-                    <RiArrowRightSLine
-                      className={classes.breadcrumbSeparator}
-                      size={16}
-                      color="var(--bui-fg-secondary)"
-                    />
-                  </Fragment>
-                ))}
-              <h2 className={classes.title}>{title}</h2>
-            </div>
-          )}
+          <Breadcrumbs
+            className={isStuck ? classes.breadcrumbsSmall : classes.breadcrumbs}
+            color="secondary"
+            weight="bold"
+            variant={isStuck ? 'body-large' : 'title-small'}
+            separator={
+              <RiArrowRightSLine
+                className={classes.breadcrumbSeparator}
+                size={16}
+                color="var(--bui-fg-secondary)"
+              />
+            }
+          >
+            {breadcrumbs &&
+              breadcrumbs.map(breadcrumb => (
+                <Breadcrumb key={breadcrumb.label} href={breadcrumb.href}>
+                  {breadcrumb.label}
+                </Breadcrumb>
+              ))}
+            <Breadcrumb as="h2" color="primary">
+              {title}
+            </Breadcrumb>
+          </Breadcrumbs>
         </div>
         <div className={classes.controls}>{customActions}</div>
       </Container>
