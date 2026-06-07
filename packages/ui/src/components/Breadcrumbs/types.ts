@@ -17,11 +17,23 @@
 import type { TextOwnProps } from '../Text/types';
 
 /**
+ * Shared style props available on both Breadcrumbs (as defaults) and
+ * individual Breadcrumb items (as overrides).
+ *
+ * @public
+ */
+export interface BreadcrumbStyleProps {
+  variant?: TextOwnProps['variant'];
+  color?: TextOwnProps['color'];
+  weight?: TextOwnProps['weight'];
+}
+
+/**
  * Own props for the {@link Breadcrumb} component.
  *
  * @public
  */
-export interface BreadcrumbOwnProps {
+export interface BreadcrumbOwnProps extends BreadcrumbStyleProps {
   as?: TextOwnProps['as'];
   href?: string;
   children: React.ReactNode;
@@ -39,9 +51,11 @@ export interface BreadcrumbProps extends BreadcrumbOwnProps {}
  *
  * @public
  */
-export interface BreadcrumbsOwnProps {
+export interface BreadcrumbsOwnProps extends BreadcrumbStyleProps {
   'aria-label'?: string;
   currentAs?: BreadcrumbOwnProps['as'];
+  separator?: React.ReactNode;
+  style?: React.CSSProperties;
   children: React.ReactNode;
   className?: string;
 }

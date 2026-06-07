@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-export { Breadcrumbs } from './Breadcrumbs';
-export { Breadcrumb } from './Breadcrumb';
-export { BreadcrumbsDefinition, BreadcrumbDefinition } from './definition';
-export type {
-  BreadcrumbOwnProps,
-  BreadcrumbProps,
-  BreadcrumbsOwnProps,
-  BreadcrumbsProps,
-  BreadcrumbStyleProps,
-} from './types';
+import { createContext, useContext } from 'react';
+import type { BreadcrumbStyleProps } from './types';
+
+interface BreadcrumbsContextValue extends BreadcrumbStyleProps {
+  separator?: React.ReactNode;
+}
+
+const BreadcrumbsContext = createContext<BreadcrumbsContextValue>({});
+
+export const BreadcrumbsStyleProvider = BreadcrumbsContext.Provider;
+
+export function useBreadcrumbsStyle(): BreadcrumbsContextValue {
+  return useContext(BreadcrumbsContext);
+}
