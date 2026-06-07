@@ -22,13 +22,20 @@ export const truncationSnippet = `<Breadcrumbs>
   </Breadcrumb>
 </Breadcrumbs>`;
 
-export const inheritsStyleSnippet = `<div style={{ fontSize: '24px', color: '#61afef' }}>
-  <Breadcrumbs>
-    <Breadcrumb href="/home">Home</Breadcrumb>
-    <Breadcrumb href="/home/settings">Settings</Breadcrumb>
-    <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
-  </Breadcrumbs>
-</div>`;
+export const variantAndColorSnippet = `<Breadcrumbs variant="title-x-small" color="info">
+  <Breadcrumb href="/home">Home</Breadcrumb>
+  <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+  <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+</Breadcrumbs>
+
+{/* Individual items can override */}
+<Breadcrumbs variant="body-large">
+  <Breadcrumb href="/home">Home</Breadcrumb>
+  <Breadcrumb href="/home/settings" color="danger">
+    Settings (danger)
+  </Breadcrumb>
+  <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+</Breadcrumbs>`;
 
 export const collapsedSnippet = `<Breadcrumbs>
   <Breadcrumb href="/home">Home</Breadcrumb>
@@ -38,16 +45,24 @@ export const collapsedSnippet = `<Breadcrumbs>
   <Breadcrumb href="/home/docs/guides/setup/intro">Introduction</Breadcrumb>
 </Breadcrumbs>`;
 
-export const customStylingSnippet = `<div style={{
-  '--bui-Breadcrumbs-color-current': 'var(--bui-fg-primary)',
-  '--bui-Breadcrumbs-font-weight-current': 'var(--bui-font-weight-regular)',
-}}>
-  <Breadcrumbs>
-    <Breadcrumb href="/home">Home</Breadcrumb>
-    <Breadcrumb href="/home/settings">Settings</Breadcrumb>
-    <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
-  </Breadcrumbs>
-</div>`;
+export const customStylingSnippet = `{/* Typography via props */}
+<Breadcrumbs variant="title-small" color="secondary">
+  <Breadcrumb href="/home">Home</Breadcrumb>
+  <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+  <Breadcrumb href="/home/settings/theme" color="primary" weight="regular">
+    Theme
+  </Breadcrumb>
+</Breadcrumbs>
+
+{/* Layout via CSS tokens on style */}
+<Breadcrumbs style={{ '--bui-Breadcrumbs-gap': 'var(--bui-space-10)' }}>
+  ...
+</Breadcrumbs>
+
+{/* Custom separator */}
+<Breadcrumbs separator={<RiMore2Line size="1em" />}>
+  ...
+</Breadcrumbs>`;
 
 export const mixedSegmentsSnippet = `<Breadcrumbs>
   <Breadcrumb href="/my-plugin">My Plugin</Breadcrumb>

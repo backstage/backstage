@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+import { RiArrowRightSLine, RiMore2Line } from '@remixicon/react';
 import {
   Breadcrumbs,
   Breadcrumb,
@@ -34,46 +36,27 @@ export const Truncation = () => {
   );
 };
 
-export const InheritsStyle = () => {
+export const VariantAndColor = () => {
   return (
     <MemoryRouter>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-        <div style={{ fontSize: '12px', color: '#e06c75' }}>
-          <Breadcrumbs>
-            <Breadcrumb href="/home">Home</Breadcrumb>
-            <Breadcrumb href="/home/settings">Settings</Breadcrumb>
-            <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
-          </Breadcrumbs>
-        </div>
-        <div style={{ fontSize: '12px', color: '#e06c75' }}>
-          <Breadcrumbs>
-            <Breadcrumb href="/home">Home</Breadcrumb>
-            <Breadcrumb href="/home/docs">Docs</Breadcrumb>
-            <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
-            <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
-            <Breadcrumb href="/home/docs/guides/setup/intro">
-              Introduction
-            </Breadcrumb>
-          </Breadcrumbs>
-        </div>
-        <div style={{ fontSize: '24px', color: '#61afef' }}>
-          <Breadcrumbs>
-            <Breadcrumb href="/home">Home</Breadcrumb>
-            <Breadcrumb href="/home/settings">Settings</Breadcrumb>
-            <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
-          </Breadcrumbs>
-        </div>
-        <div style={{ fontSize: '24px', color: '#61afef' }}>
-          <Breadcrumbs>
-            <Breadcrumb href="/home">Home</Breadcrumb>
-            <Breadcrumb href="/home/docs">Docs</Breadcrumb>
-            <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
-            <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
-            <Breadcrumb href="/home/docs/guides/setup/intro">
-              Introduction
-            </Breadcrumb>
-          </Breadcrumbs>
-        </div>
+        <Breadcrumbs variant="body-x-small" color="danger">
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
+        <Breadcrumbs variant="title-x-small" color="info">
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
+        <Breadcrumbs variant="body-large">
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings" color="danger">
+            Settings (danger)
+          </Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
       </div>
     </MemoryRouter>
   );
@@ -98,18 +81,39 @@ export const Collapsed = () => {
 export const CustomStyling = () => {
   return (
     <MemoryRouter>
-      <div
-        style={
-          {
-            fontSize: '18px',
-            color: '#c678dd',
-            '--bui-Breadcrumbs-color-current': 'var(--bui-fg-primary)',
-            '--bui-Breadcrumbs-font-weight-current':
-              'var(--bui-font-weight-regular)',
-          } as Record<string, string>
-        }
-      >
-        <Breadcrumbs>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <Breadcrumbs variant="title-small" color="secondary">
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb
+            href="/home/settings/theme"
+            color="primary"
+            weight="regular"
+          >
+            Theme
+          </Breadcrumb>
+        </Breadcrumbs>
+        <Breadcrumbs
+          style={
+            {
+              '--bui-Breadcrumbs-gap': 'var(--bui-space-10)',
+            } as React.CSSProperties
+          }
+        >
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
+        <Breadcrumbs
+          separator={
+            <RiArrowRightSLine size="1.4em" color="var(--bui-fg-danger)" />
+          }
+        >
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/settings">Settings</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+        </Breadcrumbs>
+        <Breadcrumbs separator={<RiMore2Line size="1em" />}>
           <Breadcrumb href="/home">Home</Breadcrumb>
           <Breadcrumb href="/home/settings">Settings</Breadcrumb>
           <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
