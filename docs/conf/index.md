@@ -32,7 +32,7 @@ environments. For example, `BACKSTAGE_ENV=e2e-test,production` loads:
 
 All non-local environment files are loaded before any local files, so local
 overrides always take priority. Within each group, environments are ordered
-left-to-right as specified. Each file is optional and only loaded if it exists.
+left-to-right as specified. The base `app-config.yaml` is required by default, while the other files are optional and only loaded if they exist.
 
 Other sets of files can by loaded by passing `--config <path>` flags.
 Read more about the configuration loading order in the
