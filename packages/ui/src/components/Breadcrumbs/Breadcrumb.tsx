@@ -113,11 +113,16 @@ export const Breadcrumb = (props: BreadcrumbProps) => {
   const resolvedWeight = weight ?? defaults.weight;
   const resolvedHref = useResolvedHref(href);
   const separator = defaults.separator ?? (
-    <RiArrowRightSLine size="1em" color={`var(--bui-fg-${defaults.color})`} />
+    <RiArrowRightSLine color={`var(--bui-fg-${defaults.color})`} />
   );
 
   return (
-    <RACBreadcrumb className={classes.root} {...dataAttributes} {...restProps}>
+    <RACBreadcrumb
+      className={classes.root}
+      data-variant={resolvedVariant}
+      {...dataAttributes}
+      {...restProps}
+    >
       {({ isCurrent }) => (
         <>
           <BreadcrumbContent

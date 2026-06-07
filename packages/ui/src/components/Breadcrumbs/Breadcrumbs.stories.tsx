@@ -164,14 +164,17 @@ export const VariantAndColor = meta.story({
       </div>
       <div>
         <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
-          Container sets body-large — one item overrides to danger
+          Container sets body-large — middle item overrides to danger & last
+          item overrides to bold
         </p>
         <Breadcrumbs variant="body-large">
           <Breadcrumb href="/home">Home</Breadcrumb>
           <Breadcrumb href="/home/settings" color="danger">
             Settings (danger)
           </Breadcrumb>
-          <Breadcrumb href="/home/settings/theme">Theme</Breadcrumb>
+          <Breadcrumb href="/home/settings/theme" weight={'bold'}>
+            Theme
+          </Breadcrumb>
         </Breadcrumbs>
       </div>
     </div>

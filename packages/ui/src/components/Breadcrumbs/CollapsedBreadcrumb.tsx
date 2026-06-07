@@ -52,11 +52,11 @@ export function CollapsedBreadcrumb(
   const color = colorOverride ?? defaults.color;
   const weight = weightOverride ?? defaults.weight;
   const separator = defaults.separator ?? (
-    <RiArrowRightSLine size="1em" color={`var(--bui-fg-${defaults.color})`} />
+    <RiArrowRightSLine color={`var(--bui-fg-${defaults.color})`} />
   );
 
   return (
-    <RACBreadcrumb className={ellipsisClassName}>
+    <RACBreadcrumb className={ellipsisClassName} data-variant={variant}>
       <MenuTrigger>
         {/* Plain button instead of ButtonIcon to avoid padding that shifts the breadcrumb baseline */}
         <RACButton className={triggerClassName} aria-label={buttonAriaLabel}>
