@@ -106,71 +106,29 @@
     flex: 1 1 auto;
     height: 1lh;
     min-width: 0;
-    font-size: var(--bui-font-size-6);
     line-height: 140%;
-    overflow: hidden;
   }
 
   .bui-HeaderBreadcrumbs,
   .bui-HeaderBreadcrumbsSmall {
+    --bui-Breadcrumbs-max-width: 240px;
+
     position: absolute;
     inset-inline: 0;
     top: 50%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: var(--bui-space-2);
     min-width: 0;
     transform: translateY(-50%);
   }
 
+  .bui-HeaderBreadcrumbs {
+    --bui-Breadcrumbs-gap: var(--bui-space-2);
+  }
+
   .bui-HeaderBreadcrumbsSmall {
-    gap: var(--bui-space-1);
-  }
-
-  .bui-HeaderBreadcrumbs .bui-HeaderBreadcrumbLink,
-  .bui-HeaderBreadcrumbsSmall .bui-HeaderBreadcrumbLinkSmall {
-    max-width: 240px;
-    overflow: hidden;
-    font-family: var(--bui-font-regular);
-    font-weight: var(--bui-font-weight-bold);
-    line-height: inherit;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .bui-HeaderBreadcrumbs .bui-HeaderBreadcrumbLink {
-    font-size: inherit;
-  }
-
-  .bui-HeaderBreadcrumbsSmall .bui-HeaderBreadcrumbLinkSmall {
-    font-size: var(--bui-font-size-4);
-  }
-
-  .bui-HeaderBreadcrumbSeparator {
-    flex-shrink: 0;
-  }
-
-  .bui-HeaderTitle,
-  .bui-HeaderTitleSmall {
-    margin: 0;
-    padding: 0;
-    flex: 1 1 auto;
-    min-width: 0;
-    font-family: var(--bui-font-regular);
-    font-weight: var(--bui-font-weight-bold);
-    line-height: inherit;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .bui-HeaderTitle {
-    font-size: inherit;
-  }
-
-  .bui-HeaderTitleSmall {
-    font-size: var(--bui-font-size-4);
+    --bui-Breadcrumbs-gap: var(--bui-space-1);
   }
 
   .bui-HeaderTags {
