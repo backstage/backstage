@@ -29,6 +29,8 @@ import { useApi } from '../apis/system';
 import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
 import { RouteResolutionApi } from '../apis/definitions/RouteResolutionApi';
+import { configApiRef } from '../apis';
+import { Helmet } from 'react-helmet';
 
 function resolveTitleLink(
   routeResolutionApi: RouteResolutionApi,
@@ -105,17 +107,25 @@ export const PageBlueprint = createExtensionBlueprint({
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+        const configApi = useApi(configApiRef);
+        const appTitle =
+          configApi.getOptionalString('app.title') || 'Backstage';
+        const titleTemplate = `${resolvedTitle} | %s | ${appTitle}`;
+        const defaultTitle = `${resolvedTitle} | ${appTitle}`;
 
         return (
-          <PageLayout
-            title={resolvedTitle}
-            icon={resolvedIcon}
-            noHeader={noHeader}
-            titleLink={titleLink}
-            headerActions={headerActions}
-          >
-            {ExtensionBoundary.lazy(node, loader)}
-          </PageLayout>
+          <>
+            <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
+            <PageLayout
+              title={resolvedTitle}
+              icon={resolvedIcon}
+              noHeader={noHeader}
+              titleLink={titleLink}
+              headerActions={headerActions}
+            >
+              {ExtensionBoundary.lazy(node, loader)}
+            </PageLayout>
+          </>
         );
       };
       yield coreExtensionData.reactElement(<PageContent />);
@@ -134,6 +144,11 @@ export const PageBlueprint = createExtensionBlueprint({
       });
 
       const PageContent = () => {
+        const configApi = useApi(configApiRef);
+        const appTitle =
+          configApi.getOptionalString('app.title') || 'Backstage';
+        const titleTemplate = `${resolvedTitle} | %s | ${appTitle}`;
+        const defaultTitle = `${resolvedTitle} | ${appTitle}`;
         const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
         const routeResolutionApi = useApi(routeResolutionApiRef);
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
@@ -142,46 +157,58 @@ export const PageBlueprint = createExtensionBlueprint({
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
         return (
-          <PageLayout
-            title={resolvedTitle}
-            icon={resolvedIcon}
-            tabs={tabs}
-            titleLink={titleLink}
-            headerActions={headerActions}
-          >
-            <Routes>
-              {firstPagePath && (
-                <Route
-                  index
-                  element={<Navigate to={firstPagePath} replace />}
-                />
-              )}
-              {inputs.pages.map((page, index) => {
-                const path = page.get(coreExtensionData.routePath);
-                const element = page.get(coreExtensionData.reactElement);
-                return (
-                  <Route key={index} path={`${path}/*`} element={element} />
-                );
-              })}
-            </Routes>
-          </PageLayout>
+          <>
+            <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
+            <PageLayout
+              title={resolvedTitle}
+              icon={resolvedIcon}
+              tabs={tabs}
+              titleLink={titleLink}
+              headerActions={headerActions}
+            >
+              <Routes>
+                {firstPagePath && (
+                  <Route
+                    index
+                    element={<Navigate to={firstPagePath} replace />}
+                  />
+                )}
+                {inputs.pages.map((page, index) => {
+                  const path = page.get(coreExtensionData.routePath);
+                  const element = page.get(coreExtensionData.reactElement);
+                  return (
+                    <Route key={index} path={`${path}/*`} element={element} />
+                  );
+                })}
+              </Routes>
+            </PageLayout>
+          </>
         );
       };
 
       yield coreExtensionData.reactElement(<PageContent />);
     } else {
       const PageContent = () => {
+        const configApi = useApi(configApiRef);
+        const appTitle =
+          configApi.getOptionalString('app.title') || 'Backstage';
+        const titleTemplate = `${resolvedTitle} | %s | ${appTitle}`;
+        const defaultTitle = `${resolvedTitle} | ${appTitle}`;
         const routeResolutionApi = useApi(routeResolutionApiRef);
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
         return (
-          <PageLayout
-            title={resolvedTitle}
-            icon={resolvedIcon}
-            titleLink={titleLink}
-            headerActions={headerActions}
-          />
+          <>
+            <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
+
+            <PageLayout
+              title={resolvedTitle}
+              icon={resolvedIcon}
+              titleLink={titleLink}
+              headerActions={headerActions}
+            />
+          </>
         );
       };
       yield coreExtensionData.reactElement(<PageContent />);
