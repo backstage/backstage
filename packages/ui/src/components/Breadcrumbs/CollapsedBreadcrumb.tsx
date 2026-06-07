@@ -20,32 +20,49 @@ import {
 } from 'react-aria-components';
 import { RiArrowRightSLine } from '@remixicon/react';
 import { MenuTrigger, Menu, MenuItem } from '../Menu';
+import { Text } from '../Text';
+import { useBreadcrumbsStyle } from './BreadcrumbsContext';
+import type { BreadcrumbStyleProps } from './types';
 
 /**
  * Renders a menu with an ellipse-button that contains the middle Breadcrumb items to be collapsed
  * @private
  */
-export function CollapsedBreadcrumb(props: {
-  items: Array<{ href?: string; label: React.ReactNode }>;
-  ellipsisClassName: string;
-  triggerClassName: string;
-  separatorClassName: string;
-  buttonAriaLabel?: string;
-}) {
+export function CollapsedBreadcrumb(
+  props: {
+    items: Array<{ href?: string; label: React.ReactNode }>;
+    ellipsisClassName: string;
+    triggerClassName: string;
+    separatorClassName: string;
+    buttonAriaLabel?: string;
+  } & BreadcrumbStyleProps,
+) {
   const {
     items,
     ellipsisClassName,
     triggerClassName,
     separatorClassName,
     buttonAriaLabel = 'Show more breadcrumbs',
+    variant: variantOverride,
+    color: colorOverride,
+    weight: weightOverride,
   } = props;
+  const defaults = useBreadcrumbsStyle();
+  const variant = variantOverride ?? defaults.variant;
+  const color = colorOverride ?? defaults.color;
+  const weight = weightOverride ?? defaults.weight;
+  const separator = defaults.separator ?? (
+    <RiArrowRightSLine color={`var(--bui-fg-${defaults.color})`} />
+  );
 
   return (
-    <RACBreadcrumb className={ellipsisClassName}>
+    <RACBreadcrumb className={ellipsisClassName} data-variant={variant}>
       <MenuTrigger>
         {/* Plain button instead of ButtonIcon to avoid padding that shifts the breadcrumb baseline */}
         <RACButton className={triggerClassName} aria-label={buttonAriaLabel}>
-          …
+          <Text as="span" variant={variant} color={color} weight={weight}>
+            …
+          </Text>
         </RACButton>
         <Menu>
           {items.map((item, i) => (
@@ -55,7 +72,9 @@ export function CollapsedBreadcrumb(props: {
           ))}
         </Menu>
       </MenuTrigger>
-      <RiArrowRightSLine className={separatorClassName} aria-hidden="true" />
+      <span aria-hidden="true" className={separatorClassName}>
+        {separator}
+      </span>
     </RACBreadcrumb>
   );
 }

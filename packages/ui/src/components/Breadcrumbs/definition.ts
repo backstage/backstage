@@ -33,6 +33,10 @@ export const BreadcrumbsDefinition = defineComponent<BreadcrumbsOwnProps>()({
   propDefs: {
     'aria-label': {},
     currentAs: {},
+    separator: {},
+    variant: {},
+    color: {},
+    weight: {},
     children: {},
     className: {},
   },
@@ -53,6 +57,9 @@ export const BreadcrumbDefinition = defineComponent<BreadcrumbOwnProps>()({
   propDefs: {
     as: { default: 'span' },
     href: {},
+    variant: {},
+    color: {},
+    weight: {},
     children: {},
   },
 });

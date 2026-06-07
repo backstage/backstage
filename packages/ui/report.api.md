@@ -503,12 +503,15 @@ export const BreadcrumbDefinition: {
       readonly default: 'span';
     };
     readonly href: {};
+    readonly variant: {};
+    readonly color: {};
+    readonly weight: {};
     readonly children: {};
   };
 };
 
 // @public
-export interface BreadcrumbOwnProps {
+export interface BreadcrumbOwnProps extends BreadcrumbStyleProps {
   // (undocumented)
   as?: TextOwnProps['as'];
   // (undocumented)
@@ -537,13 +540,17 @@ export const BreadcrumbsDefinition: {
   readonly propDefs: {
     readonly 'aria-label': {};
     readonly currentAs: {};
+    readonly separator: {};
+    readonly variant: {};
+    readonly color: {};
+    readonly weight: {};
     readonly children: {};
     readonly className: {};
   };
 };
 
 // @public
-export interface BreadcrumbsOwnProps {
+export interface BreadcrumbsOwnProps extends BreadcrumbStyleProps {
   // (undocumented)
   'aria-label'?: string;
   // (undocumented)
@@ -552,10 +559,24 @@ export interface BreadcrumbsOwnProps {
   className?: string;
   // (undocumented)
   currentAs?: BreadcrumbOwnProps['as'];
+  // (undocumented)
+  separator?: React.ReactNode;
+  // (undocumented)
+  style?: React.CSSProperties;
 }
 
 // @public
 export interface BreadcrumbsProps extends BreadcrumbsOwnProps {}
+
+// @public
+export interface BreadcrumbStyleProps {
+  // (undocumented)
+  color?: TextOwnProps['color'];
+  // (undocumented)
+  variant?: TextOwnProps['variant'];
+  // (undocumented)
+  weight?: TextOwnProps['weight'];
+}
 
 // @public (undocumented)
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';

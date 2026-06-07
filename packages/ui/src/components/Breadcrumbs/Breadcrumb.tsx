@@ -14,40 +14,42 @@
  * limitations under the License.
  */
 
-/**
- * Uses RAC Breadcrumb for accessibility (aria-current, keyboard nav, semantic nav/ol).
- * RAC expects its own primitives as children — substituting BUI Link or Text breaks the
- * ARIA wiring. Underline and typography styles are matched via CSS tokens instead.
- */
-
-import { Breadcrumb as RACBreadcrumb, Link } from 'react-aria-components';
+import { Breadcrumb as RACBreadcrumb } from 'react-aria-components';
 import { Focusable } from 'react-aria';
 import { RiArrowRightSLine } from '@remixicon/react';
 import { useDefinition, useIsTruncated } from '../../hooks';
 import { useResolvedHref } from '../../hooks/useResolvedHref';
 import { BreadcrumbDefinition } from './definition';
 import { Tooltip, TooltipTrigger } from '../Tooltip';
-import type { BreadcrumbProps } from './types';
-import { TextOwnProps } from '../Text';
+import { useBreadcrumbsStyle } from './BreadcrumbsContext';
+import type { BreadcrumbProps, BreadcrumbStyleProps } from './types';
+import { TextOwnProps, Text } from '../Text';
+import { Link } from '../Link';
 
-function BreadcrumbContent(props: {
-  as?: TextOwnProps['as'];
-  href?: string;
-  isCurrent: boolean;
-  labelClassName: string;
-  currentClassName: string;
-  children: React.ReactNode;
-}) {
+function BreadcrumbContent(
+  props: {
+    as?: TextOwnProps['as'];
+    href?: string;
+    isCurrent: boolean;
+    labelClassName: string;
+    currentClassName: string;
+    children: React.ReactNode;
+  } & BreadcrumbStyleProps,
+) {
   const {
-    as = 'span',
+    as,
     href,
     isCurrent,
+    variant,
+    color,
+    weight,
     labelClassName,
     currentClassName,
     children,
   } = props;
-  const Component = as as React.ElementType;
-  const { ref, truncated } = useIsTruncated();
+  const { ref, truncated } = useIsTruncated<
+    HTMLParagraphElement | HTMLAnchorElement
+  >();
   const className = `${labelClassName}${
     isCurrent ? ` ${currentClassName}` : ''
   }`;
@@ -55,7 +57,12 @@ function BreadcrumbContent(props: {
   const content =
     href && !isCurrent ? (
       <Link
+        truncate
+        standalone
         href={href}
+        variant={variant}
+        color={color}
+        weight={weight}
         className={className}
         ref={ref as React.Ref<HTMLAnchorElement>}
       >
@@ -63,9 +70,17 @@ function BreadcrumbContent(props: {
       </Link>
     ) : (
       <Focusable>
-        <Component className={className} ref={ref}>
+        <Text
+          truncate
+          as={as}
+          variant={variant}
+          color={color}
+          weight={weight}
+          className={className}
+          ref={ref as React.Ref<HTMLParagraphElement>}
+        >
           {children}
-        </Component>
+        </Text>
       </Focusable>
     );
 
@@ -91,27 +106,41 @@ export const Breadcrumb = (props: BreadcrumbProps) => {
     BreadcrumbDefinition,
     props,
   );
-  const { classes, as, href, children } = ownProps;
+  const { classes, as, href, variant, color, weight, children } = ownProps;
+  const defaults = useBreadcrumbsStyle();
+  const resolvedVariant = variant ?? defaults.variant;
+  const resolvedColor = color ?? defaults.color;
+  const resolvedWeight = weight ?? defaults.weight;
   const resolvedHref = useResolvedHref(href);
+  const separator = defaults.separator ?? (
+    <RiArrowRightSLine color={`var(--bui-fg-${defaults.color})`} />
+  );
 
   return (
-    <RACBreadcrumb className={classes.root} {...dataAttributes} {...restProps}>
+    <RACBreadcrumb
+      className={classes.root}
+      data-variant={resolvedVariant}
+      {...dataAttributes}
+      {...restProps}
+    >
       {({ isCurrent }) => (
         <>
           <BreadcrumbContent
             as={as}
             href={resolvedHref}
             isCurrent={isCurrent}
+            variant={resolvedVariant}
+            color={resolvedColor}
+            weight={resolvedWeight}
             labelClassName={classes.label}
             currentClassName={classes.current}
           >
             {children}
           </BreadcrumbContent>
           {!isCurrent && (
-            <RiArrowRightSLine
-              className={classes.separator}
-              aria-hidden="true"
-            />
+            <span aria-hidden="true" className={classes.separator}>
+              {separator}
+            </span>
           )}
         </>
       )}
