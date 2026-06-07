@@ -18,7 +18,7 @@ allowing for customization.
 Configuration is stored in YAML files where the defaults are `app-config.yaml`
 and `app-config.local.yaml` for local overrides. Additionally, it is possible
 to define environment-based configuration files with the `BACKSTAGE_ENV`
-environment variable, which will load `app-config.<BACKSTAGE_ENV>.yaml`.
+environment variable.
 
 `BACKSTAGE_ENV` accepts comma-separated values for stacking multiple
 environments. For example, `BACKSTAGE_ENV=e2e-test,production` loads:
