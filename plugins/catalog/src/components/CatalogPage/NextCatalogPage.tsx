@@ -73,6 +73,7 @@ interface EntityRow {
  */
 const DEFAULT_PAGE_SIZE_OPTIONS = [20, 50, 100];
 
+/** @alpha */
 export type NextCatalogPageProps = {
   filters: ReactNode;
   columns: Array<{
