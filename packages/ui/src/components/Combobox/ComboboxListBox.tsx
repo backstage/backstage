@@ -84,7 +84,6 @@ function ComboboxOptionItem({ option }: { option: NormalizedOption }) {
     leadingIcon: option.leadingIcon,
   });
   const { classes } = ownProps;
-  // Keep the original plain-option label class available for existing themes.
   const {
     ownProps: { classes: legacyOptionClasses },
   } = useDefinition(ComboboxListBoxItemDefinition, {});

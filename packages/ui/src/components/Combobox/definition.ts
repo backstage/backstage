@@ -27,10 +27,7 @@ import type {
 } from './types';
 import styles from './Combobox.module.css';
 
-/**
- * Component definition for Combobox
- * @public
- */
+/** @public */
 export const ComboboxDefinition = defineComponent<ComboboxOwnProps>()({
   styles,
   classNames: {
@@ -55,10 +52,7 @@ export const ComboboxDefinition = defineComponent<ComboboxOwnProps>()({
   },
 });
 
-/**
- * Component definition for ComboboxInput
- * @public
- */
+/** @public */
 export const ComboboxInputDefinition = defineComponent<ComboboxInputOwnProps>()(
   {
     styles,
@@ -76,10 +70,7 @@ export const ComboboxInputDefinition = defineComponent<ComboboxInputOwnProps>()(
   },
 );
 
-/**
- * Component definition for ComboboxListBox
- * @public
- */
+/** @public */
 export const ComboboxListBoxDefinition = defineComponent<
   ComboboxListBoxOwnProps<any>
 >()({
@@ -102,10 +93,7 @@ export const ComboboxListBoxDefinition = defineComponent<
   },
 });
 
-/**
- * Component definition for ComboboxListBoxItem
- * @public
- */
+/** @public */
 export const ComboboxListBoxItemDefinition =
   defineComponent<ComboboxListBoxItemOwnProps>()({
     styles,
@@ -117,10 +105,7 @@ export const ComboboxListBoxItemDefinition =
     propDefs: {},
   });
 
-/**
- * Component definition for ComboboxItem
- * @internal
- */
+/** @public */
 export const ComboboxItemDefinition = defineComponent<ComboboxItemOwnProps>()({
   styles,
   classNames: {
@@ -136,10 +121,7 @@ export const ComboboxItemDefinition = defineComponent<ComboboxItemOwnProps>()({
   },
 });
 
-/**
- * Component definition for ComboboxItemText
- * @internal
- */
+/** @public */
 export const ComboboxItemTextDefinition =
   defineComponent<ComboboxItemTextOwnProps>()({
     styles,
@@ -154,14 +136,12 @@ export const ComboboxItemTextDefinition =
       title: {},
       description: {},
       leadingIcon: {},
+      textValue: {},
       className: {},
     },
   });
 
-/**
- * Component definition for ComboboxItemProfile
- * @internal
- */
+/** @public */
 export const ComboboxItemProfileDefinition =
   defineComponent<ComboboxItemProfileOwnProps>()({
     styles,
@@ -173,14 +153,12 @@ export const ComboboxItemProfileDefinition =
     propDefs: {
       name: {},
       src: {},
+      textValue: {},
       className: {},
     },
   });
 
-/**
- * Component definition for ComboboxSection
- * @public
- */
+/** @public */
 export const ComboboxSectionDefinition =
   defineComponent<ComboboxSectionOwnProps>()({
     styles,

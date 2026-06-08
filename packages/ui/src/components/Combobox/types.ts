@@ -91,7 +91,8 @@ export type ComboboxAsyncSearch<T> =
       filter?: never;
     };
 
-type ComboboxStaticCompositionSearch =
+/** @public */
+export type ComboboxStaticSearch =
   | true
   | {
       mode?: 'client';
@@ -147,125 +148,15 @@ export type ComboboxOwnProps<T extends { id: Key } = NormalizedOption> =
   };
 
 /** @public */
-export type ComboboxStandardProps<T extends { id: Key } = NormalizedOption> =
-  ComboboxCommonProps<T> &
-    (
-      | ({
-          options?: ReadonlyArray<Option | OptionSection>;
-          items?: never;
-          children?: never;
-          dependencies?: never;
-          loading?: LoadingConfig;
-        } & (
-          | {
-              search?: ComboboxSearch<NormalizedOption>;
-              inputValue?: never;
-              defaultInputValue?: never;
-              onInputChange?: never;
-              defaultFilter?: never;
-            }
-          | {
-              search?: never;
-              /** @deprecated Use search.inputValue instead. */
-              inputValue?: string;
-              /** @deprecated Use search.defaultInputValue instead. */
-              defaultInputValue?: string;
-              /** @deprecated Use search.onInputChange instead. */
-              onInputChange?: (value: string) => void;
-              /** @deprecated Use search.filter instead. */
-              defaultFilter?: (
-                textValue: string,
-                inputValue: string,
-              ) => boolean;
-            }
-        ) &
-          ComboboxKeySelectionProps<NormalizedOption>)
-      | ({
-          options: AsyncListSource<IdentifiedOption>;
-          items?: never;
-          children?: never;
-          dependencies?: never;
-          loading?: never;
-          search?: Exclude<
-            ComboboxAsyncSearch<NormalizedOption>,
-            {
-              mode: 'server';
-            }
-          >;
-          inputValue?: never;
-          defaultInputValue?: never;
-          onInputChange?: never;
-          defaultFilter?: never;
-        } & ComboboxKeySelectionProps<NormalizedOption>)
-      | ({
-          options?: never;
-          items: Iterable<T>;
-          children: (item: T) => ReactElement;
-          dependencies?: ReadonlyArray<unknown>;
-          loading?: LoadingConfig;
-          search?: ComboboxSearch<T>;
-          inputValue?: never;
-          defaultInputValue?: never;
-          onInputChange?: never;
-          defaultFilter?: never;
-        } & ComboboxKeySelectionProps<T>)
-      | ({
-          options?: never;
-          items: AsyncListSource<T>;
-          children: (item: T) => ReactElement;
-          dependencies?: ReadonlyArray<unknown>;
-          loading?: never;
-          search?: Exclude<ComboboxAsyncSearch<T>, { mode: 'server' }>;
-          inputValue?: never;
-          defaultInputValue?: never;
-          onInputChange?: never;
-          defaultFilter?: never;
-        } & ComboboxKeySelectionProps<T>)
-      | ({
-          options?: never;
-          items?: never;
-          children: ReactElement | ReactElement[];
-          dependencies?: never;
-          loading?: never;
-          search?:
-            | true
-            | {
-                mode?: 'client';
-                inputValue?: never;
-                defaultInputValue?: string;
-                onInputChange?: (value: string) => void;
-                filter?: never;
-              }
-            | {
-                mode?: 'client';
-                inputValue: string;
-                defaultInputValue?: never;
-                onInputChange: (value: string) => void;
-                filter?: never;
-              };
-          inputValue?: never;
-          defaultInputValue?: never;
-          onInputChange?: never;
-          defaultFilter?: never;
-        } & ComboboxKeySelectionProps<NormalizedOption>)
-    );
-
-/** @public */
 export type ComboboxCommonProps<T extends { id: Key }> = ComboboxBaseOwnProps &
   Omit<
     AriaComboBoxProps<T>,
     | keyof ComboboxOwnProps<T>
-    | 'children'
-    | 'items'
     | 'defaultItems'
-    | 'search'
-    | 'loading'
-    | 'options'
     | 'inputValue'
     | 'defaultInputValue'
     | 'onInputChange'
     | 'defaultFilter'
-    | 'dependencies'
     | 'value'
     | 'defaultValue'
     | 'onChange'
@@ -294,6 +185,94 @@ export type ComboboxItemSelectionProps<T extends { id: Key }> = {
   defaultSelectedKey?: never;
   onSelectionChange?: never;
 };
+
+/** @public */
+export type ComboboxOptionsProps = ComboboxCommonProps<NormalizedOption> & {
+  options?: ReadonlyArray<Option | OptionSection>;
+  items?: never;
+  children?: never;
+  dependencies?: never;
+  loading?: LoadingConfig;
+} & (
+    | {
+        search?: ComboboxSearch<NormalizedOption>;
+        inputValue?: never;
+        defaultInputValue?: never;
+        onInputChange?: never;
+        defaultFilter?: never;
+      }
+    | {
+        search?: never;
+        /** @deprecated Use search.inputValue instead. */
+        inputValue?: string;
+        /** @deprecated Use search.defaultInputValue instead. */
+        defaultInputValue?: string;
+        /** @deprecated Use search.onInputChange instead. */
+        onInputChange?: (value: string) => void;
+        /** @deprecated Use search.filter instead. */
+        defaultFilter?: (textValue: string, inputValue: string) => boolean;
+      }
+  ) &
+  ComboboxKeySelectionProps<NormalizedOption>;
+
+/** @public */
+export type ComboboxAsyncOptionsProps =
+  ComboboxCommonProps<NormalizedOption> & {
+    options: AsyncListSource<IdentifiedOption>;
+    items?: never;
+    children?: never;
+    dependencies?: never;
+    loading?: never;
+    search?: Exclude<ComboboxAsyncSearch<NormalizedOption>, { mode: 'server' }>;
+    inputValue?: never;
+    defaultInputValue?: never;
+    onInputChange?: never;
+    defaultFilter?: never;
+  } & ComboboxKeySelectionProps<NormalizedOption>;
+
+/** @public */
+export type ComboboxItemsProps<T extends { id: Key }> =
+  ComboboxCommonProps<T> & {
+    options?: never;
+    items: Iterable<T>;
+    children: (item: T) => ReactElement;
+    dependencies?: ReadonlyArray<unknown>;
+    loading?: LoadingConfig;
+    search?: ComboboxSearch<T>;
+    inputValue?: never;
+    defaultInputValue?: never;
+    onInputChange?: never;
+    defaultFilter?: never;
+  } & ComboboxKeySelectionProps<T>;
+
+/** @public */
+export type ComboboxAsyncItemsProps<T extends { id: Key }> =
+  ComboboxCommonProps<T> & {
+    options?: never;
+    items: AsyncListSource<T>;
+    children: (item: T) => ReactElement;
+    dependencies?: ReadonlyArray<unknown>;
+    loading?: never;
+    search?: Exclude<ComboboxAsyncSearch<T>, { mode: 'server' }>;
+    inputValue?: never;
+    defaultInputValue?: never;
+    onInputChange?: never;
+    defaultFilter?: never;
+  } & ComboboxKeySelectionProps<T>;
+
+/** @public */
+export type ComboboxStaticProps = ComboboxCommonProps<NormalizedOption> & {
+  options?: never;
+  items?: never;
+  children: ReactElement | ReactElement[];
+  dependencies?: never;
+  loading?: never;
+  search?: ComboboxStaticSearch;
+  inputValue?: never;
+  defaultInputValue?: never;
+  onInputChange?: never;
+  defaultFilter?: never;
+} & ComboboxKeySelectionProps<NormalizedOption>;
 
 /** @public */
 export type ComboboxServerOptionsProps =
@@ -327,7 +306,11 @@ export type ComboboxServerItemsProps<T extends ComboboxServerItem> =
 
 /** @public */
 export type ComboboxProps<T extends { id: Key } = NormalizedOption> =
-  | ComboboxStandardProps<T>
+  | ComboboxOptionsProps
+  | ComboboxAsyncOptionsProps
+  | ComboboxItemsProps<T>
+  | ComboboxAsyncItemsProps<T>
+  | ComboboxStaticProps
   | ComboboxServerOptionsProps
   | (T extends ComboboxServerItem ? ComboboxServerItemsProps<T> : never);
 
@@ -343,10 +326,7 @@ export type ComboboxListBoxOwnProps<T extends CollectionItem> = {
   items?: Iterable<T>;
   children?: ReactElement | ReactElement[] | ((item: T) => ReactElement);
   dependencies?: ReadonlyArray<unknown>;
-  search?:
-    | ComboboxSearch<T>
-    | ComboboxAsyncSearch<T>
-    | ComboboxStaticCompositionSearch;
+  search?: ComboboxSearch<T> | ComboboxAsyncSearch<T> | ComboboxStaticSearch;
   loading?: LoadingConfig;
   isStale?: boolean;
   getItemTextValue?: (item: T) => string;
@@ -373,6 +353,7 @@ export type ComboboxItemTextOwnProps = {
   title: string;
   description?: string;
   leadingIcon?: ReactNode;
+  textValue?: string;
   className?: string;
 };
 
@@ -381,16 +362,14 @@ export type ComboboxItemTextProps<T extends object = object> =
   ComboboxItemTextOwnProps &
     Omit<
       ComboboxItemProps<T>,
-      | keyof ComboboxItemTextOwnProps
-      | 'children'
-      | 'textValue'
-      | 'showSelectionIndicator'
+      keyof ComboboxItemTextOwnProps | 'children' | 'showSelectionIndicator'
     >;
 
 /** @public */
 export type ComboboxItemProfileOwnProps = {
   name: string;
   src?: string;
+  textValue?: string;
   className?: string;
 };
 
@@ -399,10 +378,7 @@ export type ComboboxItemProfileProps<T extends object = object> =
   ComboboxItemProfileOwnProps &
     Omit<
       ComboboxItemProps<T>,
-      | keyof ComboboxItemProfileOwnProps
-      | 'children'
-      | 'textValue'
-      | 'showSelectionIndicator'
+      keyof ComboboxItemProfileOwnProps | 'children' | 'showSelectionIndicator'
     >;
 
 /** @internal */

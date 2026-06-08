@@ -17,4 +17,14 @@
 export * from './Select';
 export * from './SelectItem';
 export * from './types';
-export { SelectDefinition } from './definition';
+export {
+  SelectContentDefinition,
+  SelectDefinition,
+  SelectItemDefinition,
+  SelectItemProfileDefinition,
+  SelectItemTextDefinition,
+  SelectListBoxDefinition,
+  SelectListBoxItemDefinition,
+  SelectSectionDefinition,
+  SelectTriggerDefinition,
+} from './definition';

@@ -28,10 +28,7 @@ import type {
 } from './types';
 import styles from './Select.module.css';
 
-/**
- * Component definition for Select
- * @public
- */
+/** @public */
 export const SelectDefinition = defineComponent<SelectOwnProps>()({
   styles,
   classNames: {
@@ -57,10 +54,7 @@ export const SelectDefinition = defineComponent<SelectOwnProps>()({
   },
 });
 
-/**
- * Component definition for SelectTrigger
- * @internal
- */
+/** @public */
 export const SelectTriggerDefinition = defineComponent<SelectTriggerOwnProps>()(
   {
     styles,
@@ -76,10 +70,7 @@ export const SelectTriggerDefinition = defineComponent<SelectTriggerOwnProps>()(
   },
 );
 
-/**
- * Component definition for SelectContent
- * @internal
- */
+/** @public */
 export const SelectContentDefinition = defineComponent<SelectContentOwnProps>()(
   {
     styles,
@@ -102,10 +93,7 @@ export const SelectContentDefinition = defineComponent<SelectContentOwnProps>()(
   },
 );
 
-/**
- * Component definition for SelectListBox
- * @internal
- */
+/** @public */
 export const SelectListBoxDefinition = defineComponent<SelectListBoxOwnProps>()(
   {
     styles,
@@ -127,10 +115,7 @@ export const SelectListBoxDefinition = defineComponent<SelectListBoxOwnProps>()(
   },
 );
 
-/**
- * Component definition for the convenience option item
- * @internal
- */
+/** @public */
 export const SelectListBoxItemDefinition =
   defineComponent<SelectListBoxItemOwnProps>()({
     styles,
@@ -140,10 +125,7 @@ export const SelectListBoxItemDefinition =
     propDefs: {},
   });
 
-/**
- * Component definition for SelectItem
- * @internal
- */
+/** @public */
 export const SelectItemDefinition = defineComponent<SelectItemOwnProps>()({
   styles,
   classNames: {
@@ -158,10 +140,7 @@ export const SelectItemDefinition = defineComponent<SelectItemOwnProps>()({
   },
 });
 
-/**
- * Component definition for SelectItemText
- * @internal
- */
+/** @public */
 export const SelectItemTextDefinition =
   defineComponent<SelectItemTextOwnProps>()({
     styles,
@@ -181,10 +160,7 @@ export const SelectItemTextDefinition =
     },
   });
 
-/**
- * Component definition for SelectItemProfile
- * @internal
- */
+/** @public */
 export const SelectItemProfileDefinition =
   defineComponent<SelectItemProfileOwnProps>()({
     styles,
@@ -201,10 +177,7 @@ export const SelectItemProfileDefinition =
     },
   });
 
-/**
- * Component definition for SelectSection
- * @internal
- */
+/** @public */
 export const SelectSectionDefinition = defineComponent<SelectSectionOwnProps>()(
   {
     styles,

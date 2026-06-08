@@ -91,7 +91,8 @@ export type SelectAsyncSearch<T> =
       placeholder?: string;
     };
 
-type SelectStaticCompositionSearch =
+/** @public */
+export type SelectStaticSearch =
   | true
   | {
       mode?: 'client';
@@ -111,7 +112,7 @@ type SelectStaticCompositionSearch =
     };
 
 /** @public */
-export type SelectOwnProps = {
+export type SelectBaseOwnProps = {
   /**
    * An icon to render before the input
    */
@@ -123,57 +124,6 @@ export type SelectOwnProps = {
    */
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 
-  /**
-   * The options of the select field. Pass flat options, option sections for
-   * grouped display, or a mix of both in the same array.
-   */
-  options?:
-    | ReadonlyArray<Option | OptionSection>
-    | AsyncListSource<IdentifiedOption>;
-
-  /**
-   * Items to render using the child render function.
-   */
-  items?: Iterable<{ id: Key }> | AsyncListSource<{ id: Key }>;
-
-  /**
-   * Static item components or a render function for items.
-   */
-  children?:
-    | ReactElement
-    | ReactElement[]
-    | ((item: { id: Key }) => ReactElement);
-
-  /**
-   * Values that invalidate cached dynamic item rendering when changed.
-   */
-  dependencies?: ReadonlyArray<unknown>;
-
-  /**
-   * Configure optional search behavior in the dropdown.
-   */
-  search?: SelectSearch<{ id: Key }> | SelectAsyncSearch<{ id: Key }>;
-
-  /**
-   * Enable search/filter functionality in the dropdown
-   * @defaultValue false
-   * @deprecated Use search instead.
-   */
-  searchable?: boolean;
-
-  /**
-   * placeholder text for the search input
-   * only used when searchable is true
-   * @defaultvalue 'search...'
-   * @deprecated Use search.placeholder instead.
-   */
-  searchPlaceholder?: string;
-
-  /**
-   * Configure manual loading state for non-async collection sources.
-   */
-  loading?: LoadingConfig;
-
   label?: FieldLabelProps['label'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
   description?: FieldLabelProps['description'];
@@ -182,111 +132,127 @@ export type SelectOwnProps = {
 };
 
 /** @public */
-export type SelectCollectionProps<T extends { id: Key }> =
-  | ({
-      options?: ReadonlyArray<Option | OptionSection>;
-      items?: never;
-      children?: never;
-      dependencies?: never;
-      loading?: LoadingConfig;
-    } & (
-      | {
-          search?: SelectSearch<NormalizedOption>;
-          searchable?: never;
-          searchPlaceholder?: never;
-        }
-      | {
-          search?: never;
-          /** @deprecated Use search instead. */
-          searchable?: boolean;
-          /** @deprecated Use search.placeholder instead. */
-          searchPlaceholder?: string;
-        }
-    ))
-  | {
-      options: AsyncListSource<IdentifiedOption>;
-      items?: never;
-      children?: never;
-      dependencies?: never;
-      loading?: never;
-      search?: SelectAsyncSearch<NormalizedOption>;
-      searchable?: never;
-      searchPlaceholder?: never;
-    }
-  | {
-      options?: never;
-      items: Iterable<T>;
-      children: (item: T) => ReactElement;
-      dependencies?: ReadonlyArray<unknown>;
-      loading?: LoadingConfig;
-      search?: SelectSearch<T>;
-      searchable?: never;
-      searchPlaceholder?: never;
-    }
-  | {
-      options?: never;
-      items: AsyncListSource<T>;
-      children: (item: T) => ReactElement;
-      dependencies?: ReadonlyArray<unknown>;
-      loading?: never;
-      search?: SelectAsyncSearch<T>;
-      searchable?: never;
-      searchPlaceholder?: never;
-    }
-  | {
-      options?: never;
-      items?: never;
-      children: ReactElement | ReactElement[];
-      dependencies?: never;
-      search?:
-        | true
-        | {
-            mode?: 'client';
-            inputValue?: never;
-            defaultInputValue?: string;
-            onInputChange?: (value: string) => void;
-            filter?: never;
-            placeholder?: string;
-          }
-        | {
-            mode?: 'client';
-            inputValue: string;
-            defaultInputValue?: never;
-            onInputChange: (value: string) => void;
-            filter?: never;
-            placeholder?: string;
-          };
-      searchable?: never;
-      searchPlaceholder?: never;
-      loading?: never;
-    };
+export type SelectOwnProps = SelectBaseOwnProps & {
+  options?:
+    | ReadonlyArray<Option | OptionSection>
+    | AsyncListSource<IdentifiedOption>;
+  items?: Iterable<{ id: Key }> | AsyncListSource<{ id: Key }>;
+  children?:
+    | ReactElement
+    | ReactElement[]
+    | ((item: { id: Key }) => ReactElement);
+  dependencies?: ReadonlyArray<unknown>;
+  search?: SelectSearch<{ id: Key }> | SelectAsyncSearch<{ id: Key }>;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  loading?: LoadingConfig;
+};
 
 /** @public */
-export type SelectProps<
+export type SelectCommonProps<
+  T extends { id: Key },
   M extends 'single' | 'multiple' = 'single' | 'multiple',
-  T extends { id: Key } = NormalizedOption,
-> = Omit<
-  SelectOwnProps,
-  | 'options'
-  | 'items'
-  | 'children'
-  | 'dependencies'
-  | 'search'
-  | 'searchable'
-  | 'searchPlaceholder'
-  | 'loading'
-> &
-  SelectCollectionProps<T> &
-  Omit<
-    AriaSelectProps<T, M>,
-    keyof SelectOwnProps | 'children' | 'dependencies'
-  > & {
+> = SelectBaseOwnProps &
+  Omit<AriaSelectProps<T, M>, keyof SelectOwnProps | 'defaultItems'> & {
     /**
      * Selection mode, single or multiple
      * @defaultvalue 'single'
      */
     selectionMode?: M;
   };
+
+/** @public */
+export type SelectOptionsProps<
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectCommonProps<NormalizedOption, M> & {
+  options?: ReadonlyArray<Option | OptionSection>;
+  items?: never;
+  children?: never;
+  dependencies?: never;
+  loading?: LoadingConfig;
+} & (
+    | {
+        search?: SelectSearch<NormalizedOption>;
+        searchable?: never;
+        searchPlaceholder?: never;
+      }
+    | {
+        search?: never;
+        /** @deprecated Use search instead. */
+        searchable?: boolean;
+        /** @deprecated Use search.placeholder instead. */
+        searchPlaceholder?: string;
+      }
+  );
+
+/** @public */
+export type SelectAsyncOptionsProps<
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectCommonProps<NormalizedOption, M> & {
+  options: AsyncListSource<IdentifiedOption>;
+  items?: never;
+  children?: never;
+  dependencies?: never;
+  loading?: never;
+  search?: SelectAsyncSearch<NormalizedOption>;
+  searchable?: never;
+  searchPlaceholder?: never;
+};
+
+/** @public */
+export type SelectItemsProps<
+  T extends { id: Key },
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectCommonProps<T, M> & {
+  options?: never;
+  items: Iterable<T>;
+  children: (item: T) => ReactElement;
+  dependencies?: ReadonlyArray<unknown>;
+  loading?: LoadingConfig;
+  search?: SelectSearch<T>;
+  searchable?: never;
+  searchPlaceholder?: never;
+};
+
+/** @public */
+export type SelectAsyncItemsProps<
+  T extends { id: Key },
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectCommonProps<T, M> & {
+  options?: never;
+  items: AsyncListSource<T>;
+  children: (item: T) => ReactElement;
+  dependencies?: ReadonlyArray<unknown>;
+  loading?: never;
+  search?: SelectAsyncSearch<T>;
+  searchable?: never;
+  searchPlaceholder?: never;
+};
+
+/** @public */
+export type SelectStaticProps<
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectCommonProps<NormalizedOption, M> & {
+  options?: never;
+  items?: never;
+  children: ReactElement | ReactElement[];
+  dependencies?: never;
+  search?: SelectStaticSearch;
+  searchable?: never;
+  searchPlaceholder?: never;
+  loading?: never;
+};
+
+/** @public */
+export type SelectProps<
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+  T extends { id: Key } = NormalizedOption,
+> =
+  | SelectOptionsProps<M>
+  | SelectAsyncOptionsProps<M>
+  | SelectItemsProps<T, M>
+  | SelectAsyncItemsProps<T, M>
+  | SelectStaticProps<M>;
 
 /** @internal */
 export interface SelectTriggerOwnProps {
@@ -297,10 +263,7 @@ export interface SelectTriggerOwnProps {
 export interface SelectContentOwnProps<
   T extends CollectionItem = NormalizedOption,
 > {
-  search?:
-    | SelectSearch<T>
-    | SelectAsyncSearch<T>
-    | SelectStaticCompositionSearch;
+  search?: SelectSearch<T> | SelectAsyncSearch<T> | SelectStaticSearch;
   options?: ReadonlyArray<Option | OptionSection>;
   items?: Iterable<T>;
   children?: ReactElement | ReactElement[] | ((item: T) => ReactElement);

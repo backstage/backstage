@@ -16,7 +16,14 @@
 
 import { Select, SelectItem, SelectItemProfile, SelectItemText } from '.';
 import type { AsyncListSource } from '../../types/selectableCollection';
-import type { SelectProps } from './types';
+import type {
+  SelectAsyncItemsProps,
+  SelectAsyncOptionsProps,
+  SelectItemsProps,
+  SelectOptionsProps,
+  SelectProps,
+  SelectStaticProps,
+} from './types';
 
 const owners = [
   { id: 'ada', name: 'Ada Lovelace', avatarUrl: 'ada.png' },
@@ -44,6 +51,36 @@ const controlledServerSearch = {
 };
 
 describe('Select types', () => {
+  it('exports props for each collection mode', () => {
+    const optionsProps = { options } satisfies SelectOptionsProps;
+    const asyncOptionsProps = {
+      options: asyncOptions,
+    } satisfies SelectAsyncOptionsProps;
+    const itemsProps = {
+      items: owners,
+      children: (owner: (typeof owners)[number]) => (
+        <SelectItemProfile name={owner.name} />
+      ),
+    } satisfies SelectItemsProps<(typeof owners)[number], 'single'>;
+    const asyncItemsProps = {
+      items: asyncOwners,
+      children: (owner: (typeof owners)[number]) => (
+        <SelectItemProfile name={owner.name} />
+      ),
+    } satisfies SelectAsyncItemsProps<(typeof owners)[number], 'single'>;
+    const staticProps = {
+      children: <SelectItemText title="Draft" />,
+    } satisfies SelectStaticProps;
+
+    expect([
+      optionsProps,
+      asyncOptionsProps,
+      itemsProps,
+      asyncItemsProps,
+      staticProps,
+    ]).toHaveLength(5);
+  });
+
   it('preserves the selection mode generic in the first position', () => {
     const props = {} satisfies SelectProps<'single' | 'multiple'>;
 

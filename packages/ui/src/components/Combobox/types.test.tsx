@@ -24,6 +24,15 @@ import type {
   AsyncListSource,
   NormalizedOption,
 } from '../../types/selectableCollection';
+import type {
+  ComboboxAsyncItemsProps,
+  ComboboxAsyncOptionsProps,
+  ComboboxItemsProps,
+  ComboboxOptionsProps,
+  ComboboxServerItemsProps,
+  ComboboxServerOptionsProps,
+  ComboboxStaticProps,
+} from './types';
 
 const owners = [
   {
@@ -67,14 +76,118 @@ const invalidStaticFilter = {
   search: {
     filter: (item: { id: string }) => item.id === 'draft',
   },
+  children: <ComboboxItemText id="draft" title="Draft" />,
 };
 const invalidMixedSearchState = {
   options,
   inputValue: 'ada',
   search: { inputValue: 'ada', onInputChange() {} },
 };
+const invalidOptionsAndItems = {
+  options,
+  items: owners,
+  children: (owner: (typeof owners)[number]) => (
+    <ComboboxItemProfile name={owner.name} />
+  ),
+};
+const invalidOptionsAndChildren = {
+  options,
+  children: <ComboboxItemText id="draft" title="Draft" />,
+};
+const invalidAsyncServerItems = {
+  items: asyncOwners,
+  search: { mode: 'server' as const },
+  children: (owner: (typeof owners)[number]) => (
+    <ComboboxItemProfile name={owner.name} />
+  ),
+};
+const invalidServerItemSelection = {
+  items: asyncServerOwners,
+  search: { mode: 'server' as const },
+  value: 'ada',
+  children: (owner: (typeof serverOwners)[number]) => (
+    <ComboboxItemProfile name={owner.name} />
+  ),
+};
+const invalidServerOptionSelection = {
+  options: asyncOptions,
+  search: { mode: 'server' as const },
+  value: 'draft',
+};
+const invalidStaticLoading = {
+  loading: { state: 'loading' as const },
+  children: <ComboboxItemText id="draft" title="Draft" />,
+};
+const invalidItemsInputValue = {
+  items: owners,
+  inputValue: 'ada',
+  children: (owner: (typeof owners)[number]) => (
+    <ComboboxItemProfile name={owner.name} />
+  ),
+};
+const invalidItemsFilter = {
+  items: owners,
+  defaultFilter: () => true,
+  children: (owner: (typeof owners)[number]) => (
+    <ComboboxItemProfile name={owner.name} />
+  ),
+};
+const invalidAsyncItemsDefaultInput = {
+  items: asyncOwners,
+  defaultInputValue: 'ada',
+  children: (owner: (typeof owners)[number]) => (
+    <ComboboxItemProfile name={owner.name} />
+  ),
+};
+const invalidStaticInputChange = {
+  onInputChange() {},
+  children: <ComboboxItemText id="draft" title="Draft" />,
+};
 
 describe('Combobox types', () => {
+  it('exports props for each collection mode', () => {
+    const optionsProps = { options } satisfies ComboboxOptionsProps;
+    const asyncOptionsProps = {
+      options: asyncOptions,
+    } satisfies ComboboxAsyncOptionsProps;
+    const itemsProps = {
+      items: owners,
+      children: (owner: (typeof owners)[number]) => (
+        <ComboboxItemProfile name={owner.name} />
+      ),
+    } satisfies ComboboxItemsProps<(typeof owners)[number]>;
+    const asyncItemsProps = {
+      items: asyncOwners,
+      children: (owner: (typeof owners)[number]) => (
+        <ComboboxItemProfile name={owner.name} />
+      ),
+    } satisfies ComboboxAsyncItemsProps<(typeof owners)[number]>;
+    const staticProps = {
+      children: <ComboboxItemText title="Draft" />,
+    } satisfies ComboboxStaticProps;
+    const serverOptionsProps = {
+      options: asyncOptions,
+      search: { mode: 'server' as const },
+    } satisfies ComboboxServerOptionsProps;
+    const serverItemsProps = {
+      items: asyncServerOwners,
+      search: { mode: 'server' as const },
+      children: (owner: (typeof serverOwners)[number]) => (
+        <ComboboxItemProfile name={owner.name} />
+      ),
+    } satisfies ComboboxServerItemsProps<(typeof serverOwners)[number]>;
+
+    expect([
+      optionsProps,
+      asyncOptionsProps,
+      itemsProps,
+      asyncItemsProps,
+      staticProps,
+      serverOptionsProps,
+      serverItemsProps,
+    ]).toHaveLength(7);
+  });
+
   it('accepts valid collection branches', () => {
     <Combobox options={options} />;
     <Combobox options={[{ value: 'draft', label: 'Draft' }]} />;
@@ -170,19 +283,13 @@ describe('Combobox types', () => {
     <ComboboxItemText id="draft" title="Draft" showSelectionIndicator />;
 
     // @ts-expect-error options and items are mutually exclusive
-    <Combobox options={options} items={owners}>
-      {(owner: (typeof owners)[number]) => (
-        <ComboboxItemProfile name={owner.name} />
-      )}
-    </Combobox>;
+    <Combobox {...invalidOptionsAndItems} />;
 
     // @ts-expect-error dynamic items require a renderer
     <Combobox items={owners} />;
 
     // @ts-expect-error static composition cannot be mixed with options
-    <Combobox options={options}>
-      <ComboboxItemText id="draft" title="Draft" />
-    </Combobox>;
+    <Combobox {...invalidOptionsAndChildren} />;
 
     // @ts-expect-error options collections do not use renderer dependencies
     <Combobox options={options} dependencies={[]} />;
@@ -205,64 +312,40 @@ describe('Combobox types', () => {
     <Combobox {...invalidAsyncServerSearch} />;
 
     // @ts-expect-error direct async server items require canonical textValue
-    <Combobox items={asyncOwners} search={{ mode: 'server' }}>
-      {owner => <ComboboxItemProfile name={owner.name} />}
-    </Combobox>;
+    <Combobox {...invalidAsyncServerItems} />;
 
-    <Combobox
-      items={asyncServerOwners}
-      search={{ mode: 'server' }}
-      // @ts-expect-error direct async server selection uses the full item
-      value="ada"
-    >
-      {owner => <ComboboxItemProfile name={owner.name} />}
-    </Combobox>;
+    // @ts-expect-error direct async server selection uses the full item
+    <Combobox {...invalidServerItemSelection} />;
 
-    <Combobox
-      options={asyncOptions}
-      search={{ mode: 'server' }}
-      // @ts-expect-error direct async option selection uses the full option
-      value="draft"
-    />;
+    // @ts-expect-error direct async option selection uses the full option
+    <Combobox {...invalidServerOptionSelection} />;
 
     // @ts-expect-error direct async loading is derived from the source
     <Combobox options={asyncOptions} loading={{ state: 'loading' }} />;
 
     // @ts-expect-error static composition has no source object for a full-row filter
-    <Combobox {...invalidStaticFilter}>
-      <ComboboxItemText id="draft" title="Draft" />
-    </Combobox>;
+    <Combobox {...invalidStaticFilter} />;
 
     // @ts-expect-error nested search cannot be mixed with deprecated top-level state
     <Combobox {...invalidMixedSearchState} />;
 
     // @ts-expect-error static composition is client-only and has no loading source
-    <Combobox loading={{ state: 'loading' }}>
-      <ComboboxItemText id="draft" title="Draft" />
-    </Combobox>;
+    <Combobox {...invalidStaticLoading} />;
 
     // @ts-expect-error deprecated inputValue is only available with plain options
-    <Combobox items={owners} inputValue="ada">
-      {owner => <ComboboxItemProfile name={owner.name} />}
-    </Combobox>;
+    <Combobox {...invalidItemsInputValue} />;
 
     // @ts-expect-error deprecated defaultFilter is only available with plain options
-    <Combobox items={owners} defaultFilter={() => true}>
-      {owner => <ComboboxItemProfile name={owner.name} />}
-    </Combobox>;
+    <Combobox {...invalidItemsFilter} />;
 
     // @ts-expect-error deprecated defaultInputValue is only available with plain options
-    <Combobox items={asyncOwners} defaultInputValue="ada">
-      {owner => <ComboboxItemProfile name={owner.name} />}
-    </Combobox>;
+    <Combobox {...invalidAsyncItemsDefaultInput} />;
 
     // @ts-expect-error deprecated inputValue is not available with async options
     <Combobox options={asyncOptions} inputValue="ada" />;
 
     // @ts-expect-error deprecated onInputChange is only available with plain options
-    <Combobox onInputChange={() => {}}>
-      <ComboboxItemText id="draft" title="Draft" />
-    </Combobox>;
+    <Combobox {...invalidStaticInputChange} />;
 
     expect(true).toBe(true);
   });

@@ -1023,12 +1023,28 @@ export type Columns =
 
 // @public (undocumented)
 export const Combobox: {
+  (
+    props: ComboboxOptionsProps & React.RefAttributes<HTMLDivElement>,
+  ): React.ReactElement;
+  (
+    props: ComboboxAsyncOptionsProps & React.RefAttributes<HTMLDivElement>,
+  ): React.ReactElement;
   <
     T extends {
       id: Key;
-    } = NormalizedOption,
+    },
   >(
-    props: ComboboxStandardProps<T> & React.RefAttributes<HTMLDivElement>,
+    props: ComboboxItemsProps<T> & React.RefAttributes<HTMLDivElement>,
+  ): React.ReactElement;
+  <
+    T extends {
+      id: Key;
+    },
+  >(
+    props: ComboboxAsyncItemsProps<T> & React.RefAttributes<HTMLDivElement>,
+  ): React.ReactElement;
+  (
+    props: ComboboxStaticProps & React.RefAttributes<HTMLDivElement>,
   ): React.ReactElement;
   (
     props: ComboboxServerOptionsProps & React.RefAttributes<HTMLDivElement>,
@@ -1038,6 +1054,49 @@ export const Combobox: {
   ): React.ReactElement;
   displayName?: string;
 };
+
+// @public (undocumented)
+export type ComboboxAsyncItemsProps<
+  T extends {
+    id: Key;
+  },
+> = ComboboxCommonProps<T> & {
+  options?: never;
+  items: AsyncListSource<T>;
+  children: (item: T) => ReactElement;
+  dependencies?: ReadonlyArray<unknown>;
+  loading?: never;
+  search?: Exclude<
+    ComboboxAsyncSearch<T>,
+    {
+      mode: 'server';
+    }
+  >;
+  inputValue?: never;
+  defaultInputValue?: never;
+  onInputChange?: never;
+  defaultFilter?: never;
+} & ComboboxKeySelectionProps<T>;
+
+// @public (undocumented)
+export type ComboboxAsyncOptionsProps =
+  ComboboxCommonProps<NormalizedOption> & {
+    options: AsyncListSource<IdentifiedOption>;
+    items?: never;
+    children?: never;
+    dependencies?: never;
+    loading?: never;
+    search?: Exclude<
+      ComboboxAsyncSearch<NormalizedOption>,
+      {
+        mode: 'server';
+      }
+    >;
+    inputValue?: never;
+    defaultInputValue?: never;
+    onInputChange?: never;
+    defaultFilter?: never;
+  } & ComboboxKeySelectionProps<NormalizedOption>;
 
 // @public (undocumented)
 export type ComboboxAsyncSearch<T> =
@@ -1085,17 +1144,11 @@ export type ComboboxCommonProps<
   Omit<
     ComboBoxProps<T>,
     | keyof ComboboxOwnProps<T>
-    | 'children'
-    | 'items'
     | 'defaultItems'
-    | 'search'
-    | 'loading'
-    | 'options'
     | 'inputValue'
     | 'defaultInputValue'
     | 'onInputChange'
     | 'defaultFilter'
-    | 'dependencies'
     | 'value'
     | 'defaultValue'
     | 'onChange'
@@ -1104,7 +1157,7 @@ export type ComboboxCommonProps<
     | 'onSelectionChange'
   >;
 
-// @public
+// @public (undocumented)
 export const ComboboxDefinition: {
   readonly styles: {
     readonly [key: string]: string;
@@ -1134,7 +1187,7 @@ export const ComboboxDefinition: {
   };
 };
 
-// @public
+// @public (undocumented)
 export const ComboboxInputDefinition: {
   readonly styles: {
     readonly [key: string]: string;
@@ -1158,6 +1211,24 @@ export function ComboboxItem<T extends object = object>(
 ): JSX_2.Element;
 
 // @public (undocumented)
+export const ComboboxItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxItem';
+    readonly indicator: 'bui-ComboboxItemIndicator';
+    readonly content: 'bui-ComboboxItemContent';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly textValue: {};
+    readonly showSelectionIndicator: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
 export type ComboboxItemOwnProps = {
   children: ReactNode | ((values: ListBoxItemRenderProps) => ReactNode);
   textValue: string;
@@ -1171,9 +1242,28 @@ export function ComboboxItemProfile<T extends object = object>(
 ): JSX_2.Element;
 
 // @public (undocumented)
+export const ComboboxItemProfileDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxItemProfile';
+    readonly avatar: 'bui-ComboboxItemAvatar';
+    readonly name: 'bui-ComboboxItemTitle';
+  };
+  readonly propDefs: {
+    readonly name: {};
+    readonly src: {};
+    readonly textValue: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
 export type ComboboxItemProfileOwnProps = {
   name: string;
   src?: string;
+  textValue?: string;
   className?: string;
 };
 
@@ -1182,10 +1272,7 @@ export type ComboboxItemProfileProps<T extends object = object> =
   ComboboxItemProfileOwnProps &
     Omit<
       ComboboxItemProps<T>,
-      | keyof ComboboxItemProfileOwnProps
-      | 'children'
-      | 'textValue'
-      | 'showSelectionIndicator'
+      keyof ComboboxItemProfileOwnProps | 'children' | 'showSelectionIndicator'
     >;
 
 // @public (undocumented)
@@ -1206,16 +1293,56 @@ export type ComboboxItemSelectionProps<
   onSelectionChange?: never;
 };
 
+// @public (undocumented)
+export type ComboboxItemsProps<
+  T extends {
+    id: Key;
+  },
+> = ComboboxCommonProps<T> & {
+  options?: never;
+  items: Iterable<T>;
+  children: (item: T) => ReactElement;
+  dependencies?: ReadonlyArray<unknown>;
+  loading?: LoadingConfig;
+  search?: ComboboxSearch<T>;
+  inputValue?: never;
+  defaultInputValue?: never;
+  onInputChange?: never;
+  defaultFilter?: never;
+} & ComboboxKeySelectionProps<T>;
+
 // @public
 export function ComboboxItemText<T extends object = object>(
   props: ComboboxItemTextProps<T>,
 ): JSX_2.Element;
 
 // @public (undocumented)
+export const ComboboxItemTextDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxItemText';
+    readonly leadingIcon: 'bui-ComboboxItemTextLeadingIcon';
+    readonly text: 'bui-ComboboxItemTextContent';
+    readonly title: 'bui-ComboboxItemTitle';
+    readonly description: 'bui-ComboboxItemDescription';
+  };
+  readonly propDefs: {
+    readonly title: {};
+    readonly description: {};
+    readonly leadingIcon: {};
+    readonly textValue: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
 export type ComboboxItemTextOwnProps = {
   title: string;
   description?: string;
   leadingIcon?: ReactNode;
+  textValue?: string;
   className?: string;
 };
 
@@ -1224,10 +1351,7 @@ export type ComboboxItemTextProps<T extends object = object> =
   ComboboxItemTextOwnProps &
     Omit<
       ComboboxItemProps<T>,
-      | keyof ComboboxItemTextOwnProps
-      | 'children'
-      | 'textValue'
-      | 'showSelectionIndicator'
+      keyof ComboboxItemTextOwnProps | 'children' | 'showSelectionIndicator'
     >;
 
 // @public (undocumented)
@@ -1245,7 +1369,7 @@ export type ComboboxKeySelectionProps<
   | 'onSelectionChange'
 >;
 
-// @public
+// @public (undocumented)
 export const ComboboxListBoxDefinition: {
   readonly styles: {
     readonly [key: string]: string;
@@ -1268,7 +1392,7 @@ export const ComboboxListBoxDefinition: {
   };
 };
 
-// @public
+// @public (undocumented)
 export const ComboboxListBoxItemDefinition: {
   readonly styles: {
     readonly [key: string]: string;
@@ -1280,6 +1404,31 @@ export const ComboboxListBoxItemDefinition: {
   };
   readonly propDefs: {};
 };
+
+// @public (undocumented)
+export type ComboboxOptionsProps = ComboboxCommonProps<NormalizedOption> & {
+  options?: ReadonlyArray<Option_2 | OptionSection>;
+  items?: never;
+  children?: never;
+  dependencies?: never;
+  loading?: LoadingConfig;
+} & (
+    | {
+        search?: ComboboxSearch<NormalizedOption>;
+        inputValue?: never;
+        defaultInputValue?: never;
+        onInputChange?: never;
+        defaultFilter?: never;
+      }
+    | {
+        search?: never;
+        inputValue?: string;
+        defaultInputValue?: string;
+        onInputChange?: (value: string) => void;
+        defaultFilter?: (textValue: string, inputValue: string) => boolean;
+      }
+  ) &
+  ComboboxKeySelectionProps<NormalizedOption>;
 
 // @public (undocumented)
 export type ComboboxOwnProps<
@@ -1303,7 +1452,11 @@ export type ComboboxProps<
     id: Key;
   } = NormalizedOption,
 > =
-  | ComboboxStandardProps<T>
+  | ComboboxOptionsProps
+  | ComboboxAsyncOptionsProps
+  | ComboboxItemsProps<T>
+  | ComboboxAsyncItemsProps<T>
+  | ComboboxStaticProps
   | ComboboxServerOptionsProps
   | (T extends ComboboxServerItem ? ComboboxServerItemsProps<T> : never);
 
@@ -1332,7 +1485,7 @@ export type ComboboxSearch<T> =
       filter?: never;
     };
 
-// @public
+// @public (undocumented)
 export const ComboboxSectionDefinition: {
   readonly styles: {
     readonly [key: string]: string;
@@ -1391,109 +1544,36 @@ export type ComboboxServerOptionsProps =
   } & ComboboxItemSelectionProps<IdentifiedOption>;
 
 // @public (undocumented)
-export type ComboboxStandardProps<
-  T extends {
-    id: Key;
-  } = NormalizedOption,
-> = ComboboxCommonProps<T> &
-  (
-    | ({
-        options?: ReadonlyArray<Option_2 | OptionSection>;
-        items?: never;
-        children?: never;
-        dependencies?: never;
-        loading?: LoadingConfig;
-      } & (
-        | {
-            search?: ComboboxSearch<NormalizedOption>;
-            inputValue?: never;
-            defaultInputValue?: never;
-            onInputChange?: never;
-            defaultFilter?: never;
-          }
-        | {
-            search?: never;
-            inputValue?: string;
-            defaultInputValue?: string;
-            onInputChange?: (value: string) => void;
-            defaultFilter?: (textValue: string, inputValue: string) => boolean;
-          }
-      ) &
-        ComboboxKeySelectionProps<NormalizedOption>)
-    | ({
-        options: AsyncListSource<IdentifiedOption>;
-        items?: never;
-        children?: never;
-        dependencies?: never;
-        loading?: never;
-        search?: Exclude<
-          ComboboxAsyncSearch<NormalizedOption>,
-          {
-            mode: 'server';
-          }
-        >;
-        inputValue?: never;
-        defaultInputValue?: never;
-        onInputChange?: never;
-        defaultFilter?: never;
-      } & ComboboxKeySelectionProps<NormalizedOption>)
-    | ({
-        options?: never;
-        items: Iterable<T>;
-        children: (item: T) => ReactElement;
-        dependencies?: ReadonlyArray<unknown>;
-        loading?: LoadingConfig;
-        search?: ComboboxSearch<T>;
-        inputValue?: never;
-        defaultInputValue?: never;
-        onInputChange?: never;
-        defaultFilter?: never;
-      } & ComboboxKeySelectionProps<T>)
-    | ({
-        options?: never;
-        items: AsyncListSource<T>;
-        children: (item: T) => ReactElement;
-        dependencies?: ReadonlyArray<unknown>;
-        loading?: never;
-        search?: Exclude<
-          ComboboxAsyncSearch<T>,
-          {
-            mode: 'server';
-          }
-        >;
-        inputValue?: never;
-        defaultInputValue?: never;
-        onInputChange?: never;
-        defaultFilter?: never;
-      } & ComboboxKeySelectionProps<T>)
-    | ({
-        options?: never;
-        items?: never;
-        children: ReactElement | ReactElement[];
-        dependencies?: never;
-        loading?: never;
-        search?:
-          | true
-          | {
-              mode?: 'client';
-              inputValue?: never;
-              defaultInputValue?: string;
-              onInputChange?: (value: string) => void;
-              filter?: never;
-            }
-          | {
-              mode?: 'client';
-              inputValue: string;
-              defaultInputValue?: never;
-              onInputChange: (value: string) => void;
-              filter?: never;
-            };
-        inputValue?: never;
-        defaultInputValue?: never;
-        onInputChange?: never;
-        defaultFilter?: never;
-      } & ComboboxKeySelectionProps<NormalizedOption>)
-  );
+export type ComboboxStaticProps = ComboboxCommonProps<NormalizedOption> & {
+  options?: never;
+  items?: never;
+  children: ReactElement | ReactElement[];
+  dependencies?: never;
+  loading?: never;
+  search?: ComboboxStaticSearch;
+  inputValue?: never;
+  defaultInputValue?: never;
+  onInputChange?: never;
+  defaultFilter?: never;
+} & ComboboxKeySelectionProps<NormalizedOption>;
+
+// @public (undocumented)
+export type ComboboxStaticSearch =
+  | true
+  | {
+      mode?: 'client';
+      inputValue?: never;
+      defaultInputValue?: string;
+      onInputChange?: (value: string) => void;
+      filter?: never;
+    }
+  | {
+      mode?: 'client';
+      inputValue: string;
+      defaultInputValue?: never;
+      onInputChange: (value: string) => void;
+      filter?: never;
+    };
 
 // @public (undocumented)
 export interface CompletePaginationOptions extends PaginationOptions {
@@ -3290,6 +3370,37 @@ export const Select: {
 };
 
 // @public (undocumented)
+export type SelectAsyncItemsProps<
+  T extends {
+    id: Key;
+  },
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectCommonProps<T, M> & {
+  options?: never;
+  items: AsyncListSource<T>;
+  children: (item: T) => ReactElement;
+  dependencies?: ReadonlyArray<unknown>;
+  loading?: never;
+  search?: SelectAsyncSearch<T>;
+  searchable?: never;
+  searchPlaceholder?: never;
+};
+
+// @public (undocumented)
+export type SelectAsyncOptionsProps<
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectCommonProps<NormalizedOption, M> & {
+  options: AsyncListSource<IdentifiedOption>;
+  items?: never;
+  children?: never;
+  dependencies?: never;
+  loading?: never;
+  search?: SelectAsyncSearch<NormalizedOption>;
+  searchable?: never;
+  searchPlaceholder?: never;
+};
+
+// @public (undocumented)
 export type SelectAsyncSearch<T> =
   | true
   | {
@@ -3318,88 +3429,51 @@ export type SelectAsyncSearch<T> =
     };
 
 // @public (undocumented)
-export type SelectCollectionProps<
+export type SelectBaseOwnProps = {
+  icon?: ReactNode;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: boolean;
+  className?: string;
+};
+
+// @public (undocumented)
+export type SelectCommonProps<
   T extends {
     id: Key;
   },
-> =
-  | ({
-      options?: ReadonlyArray<Option_2 | OptionSection>;
-      items?: never;
-      children?: never;
-      dependencies?: never;
-      loading?: LoadingConfig;
-    } & (
-      | {
-          search?: SelectSearch<NormalizedOption>;
-          searchable?: never;
-          searchPlaceholder?: never;
-        }
-      | {
-          search?: never;
-          searchable?: boolean;
-          searchPlaceholder?: string;
-        }
-    ))
-  | {
-      options: AsyncListSource<IdentifiedOption>;
-      items?: never;
-      children?: never;
-      dependencies?: never;
-      loading?: never;
-      search?: SelectAsyncSearch<NormalizedOption>;
-      searchable?: never;
-      searchPlaceholder?: never;
-    }
-  | {
-      options?: never;
-      items: Iterable<T>;
-      children: (item: T) => ReactElement;
-      dependencies?: ReadonlyArray<unknown>;
-      loading?: LoadingConfig;
-      search?: SelectSearch<T>;
-      searchable?: never;
-      searchPlaceholder?: never;
-    }
-  | {
-      options?: never;
-      items: AsyncListSource<T>;
-      children: (item: T) => ReactElement;
-      dependencies?: ReadonlyArray<unknown>;
-      loading?: never;
-      search?: SelectAsyncSearch<T>;
-      searchable?: never;
-      searchPlaceholder?: never;
-    }
-  | {
-      options?: never;
-      items?: never;
-      children: ReactElement | ReactElement[];
-      dependencies?: never;
-      search?:
-        | true
-        | {
-            mode?: 'client';
-            inputValue?: never;
-            defaultInputValue?: string;
-            onInputChange?: (value: string) => void;
-            filter?: never;
-            placeholder?: string;
-          }
-        | {
-            mode?: 'client';
-            inputValue: string;
-            defaultInputValue?: never;
-            onInputChange: (value: string) => void;
-            filter?: never;
-            placeholder?: string;
-          };
-      searchable?: never;
-      searchPlaceholder?: never;
-      loading?: never;
-    };
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectBaseOwnProps &
+  Omit<SelectProps_2<T, M>, keyof SelectOwnProps | 'defaultItems'> & {
+    selectionMode?: M;
+  };
 
-// @public
+// @public (undocumented)
+export const SelectContentDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SelectSearchWrapper';
+    readonly search: 'bui-SelectSearch';
+    readonly searchClear: 'bui-SelectSearchClear';
+  };
+  readonly propDefs: {
+    readonly search: {};
+    readonly options: {};
+    readonly items: {};
+    readonly children: {};
+    readonly dependencies: {};
+    readonly loading: {};
+    readonly isStale: {};
+    readonly visibleIds: {};
+    readonly retainedOptions: {};
+  };
+};
+
+// @public (undocumented)
 export const SelectDefinition: {
   readonly styles: {
     readonly [key: string]: string;
@@ -3436,6 +3510,23 @@ export function SelectItem<T extends object = object>(
 ): JSX_2.Element;
 
 // @public (undocumented)
+export const SelectItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SelectItem';
+    readonly indicator: 'bui-SelectItemIndicator';
+    readonly content: 'bui-SelectItemContent';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly showSelectionIndicator: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
 export type SelectItemOwnProps = {
   children: ReactNode | ((values: ListBoxItemRenderProps) => ReactNode);
   showSelectionIndicator?: boolean;
@@ -3446,6 +3537,24 @@ export type SelectItemOwnProps = {
 export function SelectItemProfile<T extends object = object>(
   props: SelectItemProfileProps<T>,
 ): JSX_2.Element;
+
+// @public (undocumented)
+export const SelectItemProfileDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SelectItemProfile';
+    readonly content: 'bui-SelectItemContent';
+    readonly avatar: 'bui-SelectItemAvatar';
+    readonly name: 'bui-SelectItemTitle';
+  };
+  readonly propDefs: {
+    readonly name: {};
+    readonly src: {};
+    readonly className: {};
+  };
+};
 
 // @public (undocumented)
 export type SelectItemProfileOwnProps = {
@@ -3471,10 +3580,48 @@ export type SelectItemProps<T extends object = object> = SelectItemOwnProps &
     textValue: string;
   };
 
+// @public (undocumented)
+export type SelectItemsProps<
+  T extends {
+    id: Key;
+  },
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectCommonProps<T, M> & {
+  options?: never;
+  items: Iterable<T>;
+  children: (item: T) => ReactElement;
+  dependencies?: ReadonlyArray<unknown>;
+  loading?: LoadingConfig;
+  search?: SelectSearch<T>;
+  searchable?: never;
+  searchPlaceholder?: never;
+};
+
 // @public
 export function SelectItemText<T extends object = object>(
   props: SelectItemTextProps<T>,
 ): JSX_2.Element;
+
+// @public (undocumented)
+export const SelectItemTextDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SelectItemText';
+    readonly content: 'bui-SelectItemContent';
+    readonly leadingIcon: 'bui-SelectItemLeadingIcon';
+    readonly text: 'bui-SelectItemTextContent';
+    readonly title: 'bui-SelectItemTitle';
+    readonly description: 'bui-SelectItemDescription';
+  };
+  readonly propDefs: {
+    readonly title: {};
+    readonly description: {};
+    readonly leadingIcon: {};
+    readonly className: {};
+  };
+};
 
 // @public (undocumented)
 export type SelectItemTextOwnProps = {
@@ -3496,9 +3643,62 @@ export type SelectItemTextProps<T extends object = object> =
     >;
 
 // @public (undocumented)
-export type SelectOwnProps = {
-  icon?: ReactNode;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+export const SelectListBoxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SelectList';
+    readonly noResults: 'bui-SelectNoResults';
+    readonly loading: 'bui-SelectLoading';
+    readonly loadingRow: 'bui-SelectLoadingRow';
+  };
+  readonly propDefs: {
+    readonly options: {};
+    readonly items: {};
+    readonly children: {};
+    readonly dependencies: {};
+    readonly loading: {};
+    readonly isStale: {};
+    readonly retainedOptions: {};
+  };
+};
+
+// @public (undocumented)
+export const SelectListBoxItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly label: 'bui-SelectItemLabel';
+  };
+  readonly propDefs: {};
+};
+
+// @public (undocumented)
+export type SelectOptionsProps<
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectCommonProps<NormalizedOption, M> & {
+  options?: ReadonlyArray<Option_2 | OptionSection>;
+  items?: never;
+  children?: never;
+  dependencies?: never;
+  loading?: LoadingConfig;
+} & (
+    | {
+        search?: SelectSearch<NormalizedOption>;
+        searchable?: never;
+        searchPlaceholder?: never;
+      }
+    | {
+        search?: never;
+        searchable?: boolean;
+        searchPlaceholder?: string;
+      }
+  );
+
+// @public (undocumented)
+export type SelectOwnProps = SelectBaseOwnProps & {
   options?:
     | ReadonlyArray<Option_2 | OptionSection>
     | AsyncListSource<IdentifiedOption>;
@@ -3524,11 +3724,6 @@ export type SelectOwnProps = {
   searchable?: boolean;
   searchPlaceholder?: string;
   loading?: LoadingConfig;
-  label?: FieldLabelProps['label'];
-  secondaryLabel?: FieldLabelProps['secondaryLabel'];
-  description?: FieldLabelProps['description'];
-  isRequired?: boolean;
-  className?: string;
 };
 
 // @public (undocumented)
@@ -3537,24 +3732,12 @@ export type SelectProps<
   T extends {
     id: Key;
   } = NormalizedOption,
-> = Omit<
-  SelectOwnProps,
-  | 'options'
-  | 'items'
-  | 'children'
-  | 'dependencies'
-  | 'search'
-  | 'searchable'
-  | 'searchPlaceholder'
-  | 'loading'
-> &
-  SelectCollectionProps<T> &
-  Omit<
-    SelectProps_2<T, M>,
-    keyof SelectOwnProps | 'children' | 'dependencies'
-  > & {
-    selectionMode?: M;
-  };
+> =
+  | SelectOptionsProps<M>
+  | SelectAsyncOptionsProps<M>
+  | SelectItemsProps<T, M>
+  | SelectAsyncItemsProps<T, M>
+  | SelectStaticProps<M>;
 
 // @public (undocumented)
 export type SelectSearch<T> =
@@ -3583,6 +3766,68 @@ export type SelectSearch<T> =
       filter?: never;
       placeholder?: string;
     };
+
+// @public (undocumented)
+export const SelectSectionDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SelectSection';
+    readonly header: 'bui-SelectSectionHeader';
+  };
+  readonly propDefs: {};
+};
+
+// @public (undocumented)
+export type SelectStaticProps<
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+> = SelectCommonProps<NormalizedOption, M> & {
+  options?: never;
+  items?: never;
+  children: ReactElement | ReactElement[];
+  dependencies?: never;
+  search?: SelectStaticSearch;
+  searchable?: never;
+  searchPlaceholder?: never;
+  loading?: never;
+};
+
+// @public (undocumented)
+export type SelectStaticSearch =
+  | true
+  | {
+      mode?: 'client';
+      inputValue?: never;
+      defaultInputValue?: string;
+      onInputChange?: (value: string) => void;
+      filter?: never;
+      placeholder?: string;
+    }
+  | {
+      mode?: 'client';
+      inputValue: string;
+      defaultInputValue?: never;
+      onInputChange: (value: string) => void;
+      filter?: never;
+      placeholder?: string;
+    };
+
+// @public (undocumented)
+export const SelectTriggerDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SelectTrigger';
+    readonly chevron: 'bui-SelectTriggerChevron';
+    readonly value: 'bui-SelectValue';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly icon: {};
+  };
+};
 
 // @public
 export const Skeleton: (props: SkeletonProps) => JSX_2.Element;

@@ -2,7 +2,9 @@
 '@backstage/ui': minor
 ---
 
-**BREAKING**: Added async collections, rich item rendering, and nested search configuration to `Select`. The public `SelectProps` interface is now a union type, and Select popover list content is no longer a direct child of `.bui-SelectPopover`.
+`Select` now supports async collections, incremental loading, client and server search, and rich or custom item rendering. Loading placeholders expose `.bui-SelectLoading` and `.bui-SelectLoadingRow`, and stale retained results expose `data-stale` on `.bui-SelectList`.
+
+**BREAKING**: The public `SelectProps` interface is now a union type, and Select popover list content is no longer a direct child of `.bui-SelectPopover`.
 
 **Migration:**
 
@@ -31,9 +33,5 @@ Replace `searchable` and `searchPlaceholder` with nested `search` configuration:
 - <Select searchable searchPlaceholder="Search owners" />
 + <Select search={{ placeholder: 'Search owners' }} />
 ```
-
-Pass a BUI-exported `useAsyncList` result directly to `options`, or use `items` with `SelectItem`, `SelectItemText`, and `SelectItemProfile` for custom rendering. Dynamic item renderers support React Aria Collection `dependencies`, low-level `SelectItem` content owns its internal layout and can opt into the standard selection indicator with `showSelectionIndicator`, and manual loading state is available through `loading`. The `.bui-SelectItem` root only applies the standard indicator grid when the built-in indicator is enabled.
-
-Loading placeholders expose the new `.bui-SelectLoading` and `.bui-SelectLoadingRow` classes. Retained results expose `data-stale` on `.bui-SelectList` while a server request is in progress.
 
 **Affected components:** Select

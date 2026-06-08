@@ -18,12 +18,16 @@ import { forwardRef, useEffect } from 'react';
 import { ComboBox as AriaComboBox } from 'react-aria-components';
 import { useFilter } from 'react-aria';
 import type {
+  ComboboxAsyncItemsProps,
+  ComboboxAsyncOptionsProps,
+  ComboboxItemsProps,
   ComboboxListBoxOwnProps,
+  ComboboxOptionsProps,
   ComboboxProps,
   ComboboxServerItem,
   ComboboxServerItemsProps,
   ComboboxServerOptionsProps,
-  ComboboxStandardProps,
+  ComboboxStaticProps,
 } from './types';
 import type { Key } from 'react-aria-components';
 import type {
@@ -256,8 +260,20 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
 
 /** @public */
 export const Combobox = forwardRef(ComboboxImpl) as unknown as {
-  <T extends { id: Key } = NormalizedOption>(
-    props: ComboboxStandardProps<T> & React.RefAttributes<HTMLDivElement>,
+  (
+    props: ComboboxOptionsProps & React.RefAttributes<HTMLDivElement>,
+  ): React.ReactElement;
+  (
+    props: ComboboxAsyncOptionsProps & React.RefAttributes<HTMLDivElement>,
+  ): React.ReactElement;
+  <T extends { id: Key }>(
+    props: ComboboxItemsProps<T> & React.RefAttributes<HTMLDivElement>,
+  ): React.ReactElement;
+  <T extends { id: Key }>(
+    props: ComboboxAsyncItemsProps<T> & React.RefAttributes<HTMLDivElement>,
+  ): React.ReactElement;
+  (
+    props: ComboboxStaticProps & React.RefAttributes<HTMLDivElement>,
   ): React.ReactElement;
   (
     props: ComboboxServerOptionsProps & React.RefAttributes<HTMLDivElement>,

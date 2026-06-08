@@ -76,14 +76,11 @@ export function ComboboxItemText<T extends object = object>(
     ComboboxItemTextDefinition,
     props,
   );
-  const { classes, title, description, leadingIcon } = ownProps;
-  const { textValue, ...itemProps } = restProps as typeof restProps & {
-    textValue?: string;
-  };
+  const { classes, title, description, leadingIcon, textValue } = ownProps;
 
   return (
     <ComboboxItem
-      {...itemProps}
+      {...restProps}
       className={classes.root}
       textValue={textValue ?? title}
       showSelectionIndicator
@@ -115,14 +112,11 @@ export function ComboboxItemProfile<T extends object = object>(
     ComboboxItemProfileDefinition,
     props,
   );
-  const { classes, name, src } = ownProps;
-  const { textValue, ...itemProps } = restProps as typeof restProps & {
-    textValue?: string;
-  };
+  const { classes, name, src, textValue } = ownProps;
 
   return (
     <ComboboxItem
-      {...itemProps}
+      {...restProps}
       className={classes.root}
       textValue={textValue ?? name}
       showSelectionIndicator
