@@ -349,11 +349,10 @@ export const costColumn = CatalogColumnBlueprint.make({
     cell: entity => (
       <CellText
         title={entity.metadata.annotations?.['cost.io/monthly'] ?? '—'}
-      />
     ),
     orderField: 'metadata.annotations.cost.io/monthly',
     searchFields: ['metadata.annotations.cost.io/monthly'],
-    filter: 'kind:component',
+    filter: { kind: 'component' },
   },
 });
 ```
