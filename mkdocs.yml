@@ -20,7 +20,7 @@ nav:
       - Authentication in Backstage: 'auth/index.md'
       - Security & Threat Model: 'overview/threat-model.md'
       - Release & Versioning Policy: 'overview/versioning-policy.md'
-      - Logo assets: 'overview/logos.md/index.md'
+      - Logo assets: 'overview/logos.md'
   - Getting Started:
       - Creating your Backstage App: 'getting-started/index.md'
       - Using Backstage:
@@ -37,7 +37,7 @@ nav:
       - Configuring a Software Template: 'features/software-templates/configuration.md'
       - Creating a Software Template: 'features/software-templates/adding-templates.md'
       - Checking health of services with Kubernetes: 'features/kubernetes/index.md'
-      - Backstate CLI: 'tooling/cli/overview/index.md'
+      - Backstate CLI: 'tooling/cli/01-overview.md'
       - Support and community: 'overview/support.md'
   - Administration:
       - Configuring Backstage:
