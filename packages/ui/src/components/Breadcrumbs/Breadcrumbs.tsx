@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Children, cloneElement, isValidElement } from 'react';
+import { Children, cloneElement, isValidElement, useEffect } from 'react';
 import { Breadcrumbs as RACBreadcrumbs } from 'react-aria-components';
 import { useDefinition } from '../../hooks';
 import { BreadcrumbsDefinition } from './definition';
@@ -55,21 +55,26 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
 
   const contextValue = { variant, color, weight, separator };
 
-  const childArray = Children.toArray(children)
-    .filter(isValidElement)
-    .filter(child => {
-      if (child.type !== Breadcrumb) {
-        console.warn(
-          'Breadcrumbs: only Breadcrumb children are supported. Found:',
-          child.type,
-        );
-        return false;
-      }
-      return true;
-    }) as React.ReactElement<BreadcrumbProps>[];
-  const initialNumChildren = childArray.length;
+  const childArray = Children.toArray(children);
 
-  const currentPage = childArray.pop();
+  const filteredChildren = childArray
+    .filter(isValidElement)
+    .filter(
+      child => child.type === Breadcrumb,
+    ) as React.ReactElement<BreadcrumbProps>[];
+
+  const invalidCount = childArray.length - filteredChildren.length;
+  useEffect(() => {
+    if (invalidCount > 0) {
+      console.warn(
+        `Breadcrumbs: only Breadcrumb children are supported. Found ${invalidCount} non-Breadcrumb children`,
+      );
+    }
+  }, [invalidCount]);
+
+  const initialNumChildren = filteredChildren.length;
+
+  const currentPage = filteredChildren.pop();
   if (!currentPage) return null;
 
   const currentPageWithAs =
@@ -80,11 +85,11 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
   let renderedChildren: React.ReactNode;
 
   if (initialNumChildren >= COLLAPSE_THRESHOLD) {
-    const root = childArray.splice(0, ROOT_ITEMS);
-    const leading = childArray.splice(-LEADING_ITEMS);
-    // childArray is now just the collapsed items
+    const root = filteredChildren.splice(0, ROOT_ITEMS);
+    const leading = filteredChildren.splice(-LEADING_ITEMS);
+    // filteredChildren is now just the collapsed items
 
-    const menuItems = childArray.map(child => ({
+    const menuItems = filteredChildren.map(child => ({
       href: child.props.href,
       label: child.props.children,
     }));
@@ -102,7 +107,7 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
       currentPageWithAs,
     ];
   } else {
-    renderedChildren = [...childArray, currentPageWithAs];
+    renderedChildren = [...filteredChildren, currentPageWithAs];
   }
 
   return (
