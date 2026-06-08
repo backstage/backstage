@@ -27,10 +27,14 @@ import useDebounce from 'react-use/lib/useDebounce';
 
 /**
  * Search input for the v2 catalog page. Dispatches an `EntityTextFilter`
- * scoped to the union of `searchFields` declared by the visible columns,
- * so server-side full-text search only inspects the fields those columns
- * care about. Falls back to `EntityTextFilter`'s default field set when
- * no `searchFields` are declared.
+ * scoped to the union of `searchFields` declared by the columns (including
+ * hidden columns, which still contribute to search), so server-side full-text
+ * search only inspects the fields those columns care about. Falls back to
+ * `EntityTextFilter`'s default field set when no `searchFields` are declared.
+ *
+ * Mirrors `EntitySearchBar`'s URL query-parameter sync and debounce
+ * behavior so the search term round-trips through `?text=...`.
+ */
  *
  * Mirrors `EntitySearchBar`'s URL query-parameter sync and debounce
  * behavior so the search term round-trips through `?text=...`.
