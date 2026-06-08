@@ -43,7 +43,7 @@ const ownerColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="owner" />,
     orderField: 'spec.owner',
     searchFields: ['spec.owner'],
-    filter: 'not:kind:group,location,user',
+    filter: { $not: { kind: { $in: ['group', 'location', 'user'] } } },
     cell: entity => {
       const owner = (entity.spec as { owner?: unknown } | undefined)?.owner;
       return <CellText title={typeof owner === 'string' ? owner : ''} />;
@@ -59,7 +59,7 @@ const typeColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="type" />,
     orderField: 'spec.type',
     searchFields: ['spec.type'],
-    filter: 'not:kind:domain,user',
+    filter: { $not: { kind: { $in: ['domain', 'user'] } } },
     cell: entity => {
       const type = (entity.spec as { type?: unknown } | undefined)?.type;
       return <CellText title={typeof type === 'string' ? type : ''} />;
@@ -75,7 +75,11 @@ const lifecycleColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="lifecycle" />,
     orderField: 'spec.lifecycle',
     searchFields: ['spec.lifecycle'],
-    filter: 'not:kind:group,location,system,template,user',
+    filter: {
+      $not: {
+        kind: { $in: ['group', 'location', 'system', 'template', 'user'] },
+      },
+    },
     cell: entity => {
       const lifecycle = (entity.spec as { lifecycle?: unknown } | undefined)
         ?.lifecycle;
@@ -94,7 +98,7 @@ const descriptionColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="description" />,
     orderField: 'metadata.description',
     searchFields: ['metadata.description'],
-    filter: 'not:kind:location',
+    filter: { $not: { kind: 'location' } },
     cell: entity => <CellText title={entity.metadata.description ?? ''} />,
   },
 });
@@ -106,7 +110,7 @@ const tagsColumn = CatalogColumnBlueprint.make({
     label: 'Tags',
     header: () => <EntityTableColumnTitle translationKey="tags" />,
     searchFields: ['metadata.tags'],
-    filter: entity => entity.kind !== 'Location',
+    filter: { $not: { kind: 'location' } },
     cell: entity => (
       <CellText title={(entity.metadata.tags ?? []).join(', ')} />
     ),
@@ -121,7 +125,13 @@ const systemColumn = CatalogColumnBlueprint.make({
     header: () => <EntityTableColumnTitle translationKey="system" />,
     orderField: 'relations.partOf',
     searchFields: ['relations.partOf'],
-    filter: 'not:kind:domain,group,location,system,template,user',
+    filter: {
+      $not: {
+        kind: {
+          $in: ['domain', 'group', 'location', 'system', 'template', 'user'],
+        },
+      },
+    },
     cell: entity => {
       const partOf = entity.relations?.filter(r => r.type === 'partOf') ?? [];
       const systems = partOf
@@ -139,7 +149,7 @@ const targetsColumn = CatalogColumnBlueprint.make({
     label: 'Targets',
     header: () => <EntityTableColumnTitle translationKey="targets" />,
     searchFields: ['spec.targets', 'spec.target'],
-    filter: 'kind:location',
+    filter: { kind: 'location' },
     width: '2fr',
     cell: entity => {
       const spec = entity.spec as
