@@ -66,14 +66,13 @@ interface EntityRow {
   entity: Entity;
 }
 
+const DEFAULT_PAGE_SIZE_OPTIONS = [20, 50, 100];
+
 /**
  * Props for {@link NextCatalogPage}.
  *
  * @alpha
  */
-const DEFAULT_PAGE_SIZE_OPTIONS = [20, 50, 100];
-
-/** @alpha */
 export type NextCatalogPageProps = {
   filters: ReactNode;
   columns: Array<{
