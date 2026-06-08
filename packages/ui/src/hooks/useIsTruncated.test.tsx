@@ -40,6 +40,7 @@ function setElementDimensions(
 }
 
 let resizeCallback: ResizeObserverCallback;
+const originalResizeObserver = global.ResizeObserver;
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -56,6 +57,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.useRealTimers();
+  global.ResizeObserver = originalResizeObserver;
 });
 
 describe('useIsTruncated', () => {

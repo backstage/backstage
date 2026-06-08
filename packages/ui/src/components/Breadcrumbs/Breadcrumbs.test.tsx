@@ -22,6 +22,7 @@ import { Breadcrumbs } from './Breadcrumbs';
 import { Breadcrumb } from './Breadcrumb';
 
 const originalWarn = console.warn.bind(console);
+const originalResizeObserver = global.ResizeObserver;
 
 beforeAll(() => {
   global.ResizeObserver = jest.fn(() => ({
@@ -34,6 +35,11 @@ beforeAll(() => {
     if (typeof msg === 'string' && msg.includes('<Focusable>')) return;
     originalWarn(msg, ...args);
   });
+});
+
+afterAll(() => {
+  global.ResizeObserver = originalResizeObserver;
+  jest.restoreAllMocks();
 });
 
 function Wrapper({ children }: PropsWithChildren) {
