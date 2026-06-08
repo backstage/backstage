@@ -109,6 +109,20 @@ export const CollapsingBehaviour = meta.story({
           </Breadcrumb>
         </Breadcrumbs>
       </div>
+      <div>
+        <p style={{ margin: '0 0 4px', opacity: 0.6 }}>
+          5 segments, title-small — collapsing at a larger variant
+        </p>
+        <Breadcrumbs variant="title-small">
+          <Breadcrumb href="/home">Home</Breadcrumb>
+          <Breadcrumb href="/home/docs">Docs</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides">Guides</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup">Setup</Breadcrumb>
+          <Breadcrumb href="/home/docs/guides/setup/intro">
+            Introduction
+          </Breadcrumb>
+        </Breadcrumbs>
+      </div>
     </div>
   ),
 });
