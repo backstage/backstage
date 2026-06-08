@@ -24,36 +24,91 @@ import type {
 import type { FieldLabelProps } from '../FieldLabel/types';
 import type {
   AsyncListSource,
-  ClientSearch,
   CollectionItem,
-  DerivedServerSearch,
   IdentifiedOption,
   LoadingConfig,
-  ManualServerSearch,
   NormalizedOption,
   Option,
   OptionSection,
-  StaticCompositionSearch,
 } from '../../types/selectableCollection';
 import type { Key } from 'react-aria-components';
 
 export type { Option, OptionSection };
 
-type SelectSearchAppearance = {
-  placeholder?: string;
-};
-
 /** @public */
 export type SelectSearch<T> =
   | true
-  | ClientSearch<T, SelectSearchAppearance>
-  | (ManualServerSearch & SelectSearchAppearance);
+  | {
+      mode?: 'client';
+      inputValue?: never;
+      defaultInputValue?: string;
+      onInputChange?: (value: string) => void;
+      filter?: (item: T, query: string) => boolean;
+      placeholder?: string;
+    }
+  | {
+      mode?: 'client';
+      inputValue: string;
+      defaultInputValue?: never;
+      onInputChange: (value: string) => void;
+      filter?: (item: T, query: string) => boolean;
+      placeholder?: string;
+    }
+  | {
+      mode: 'server';
+      inputValue: string;
+      defaultInputValue?: never;
+      onInputChange: (value: string) => void;
+      filter?: never;
+      placeholder?: string;
+    };
 
 /** @public */
 export type SelectAsyncSearch<T> =
   | true
-  | ClientSearch<T, SelectSearchAppearance>
-  | (DerivedServerSearch & SelectSearchAppearance);
+  | {
+      mode?: 'client';
+      inputValue?: never;
+      defaultInputValue?: string;
+      onInputChange?: (value: string) => void;
+      filter?: (item: T, query: string) => boolean;
+      placeholder?: string;
+    }
+  | {
+      mode?: 'client';
+      inputValue: string;
+      defaultInputValue?: never;
+      onInputChange: (value: string) => void;
+      filter?: (item: T, query: string) => boolean;
+      placeholder?: string;
+    }
+  | {
+      mode: 'server';
+      inputValue?: never;
+      defaultInputValue?: never;
+      onInputChange?: never;
+      filter?: never;
+      placeholder?: string;
+    };
+
+type SelectStaticCompositionSearch =
+  | true
+  | {
+      mode?: 'client';
+      inputValue?: never;
+      defaultInputValue?: string;
+      onInputChange?: (value: string) => void;
+      filter?: never;
+      placeholder?: string;
+    }
+  | {
+      mode?: 'client';
+      inputValue: string;
+      defaultInputValue?: never;
+      onInputChange: (value: string) => void;
+      filter?: never;
+      placeholder?: string;
+    };
 
 /** @public */
 export type SelectOwnProps = {
@@ -126,75 +181,85 @@ export type SelectOwnProps = {
   className?: string;
 };
 
-type SelectNestedSearchProps<T> = {
-  search?: SelectSearch<T>;
-  searchable?: never;
-  searchPlaceholder?: never;
-};
-
-type SelectAsyncNestedSearchProps<T> = {
-  search?: SelectAsyncSearch<T>;
-  searchable?: never;
-  searchPlaceholder?: never;
-};
-
-type SelectDeprecatedSearchProps = {
-  search?: never;
-  /** @deprecated Use search instead. */
-  searchable?: boolean;
-  /** @deprecated Use search.placeholder instead. */
-  searchPlaceholder?: string;
-};
-
-type SelectPlainOptionsProps = {
-  options?: ReadonlyArray<Option | OptionSection>;
-  items?: never;
-  children?: never;
-  dependencies?: never;
-  loading?: LoadingConfig;
-} & (SelectNestedSearchProps<NormalizedOption> | SelectDeprecatedSearchProps);
-
-type SelectAsyncOptionsProps = {
-  options: AsyncListSource<IdentifiedOption>;
-  items?: never;
-  children?: never;
-  dependencies?: never;
-  loading?: never;
-} & SelectAsyncNestedSearchProps<NormalizedOption>;
-
-type SelectDynamicItemsProps<T extends { id: Key }> = {
-  options?: never;
-  items: Iterable<T>;
-  children: (item: T) => ReactElement;
-  dependencies?: ReadonlyArray<unknown>;
-  loading?: LoadingConfig;
-} & SelectNestedSearchProps<T>;
-
-type SelectAsyncItemsProps<T extends { id: Key }> = {
-  options?: never;
-  items: AsyncListSource<T>;
-  children: (item: T) => ReactElement;
-  dependencies?: ReadonlyArray<unknown>;
-  loading?: never;
-} & SelectAsyncNestedSearchProps<T>;
-
-type SelectStaticCompositionProps = {
-  options?: never;
-  items?: never;
-  children: ReactElement | ReactElement[];
-  dependencies?: never;
-  search?: StaticCompositionSearch<{ placeholder?: string }>;
-  searchable?: never;
-  searchPlaceholder?: never;
-  loading?: never;
-};
-
-type SelectCollectionProps<T extends { id: Key }> =
-  | SelectPlainOptionsProps
-  | SelectAsyncOptionsProps
-  | SelectDynamicItemsProps<T>
-  | SelectAsyncItemsProps<T>
-  | SelectStaticCompositionProps;
+/** @public */
+export type SelectCollectionProps<T extends { id: Key }> =
+  | ({
+      options?: ReadonlyArray<Option | OptionSection>;
+      items?: never;
+      children?: never;
+      dependencies?: never;
+      loading?: LoadingConfig;
+    } & (
+      | {
+          search?: SelectSearch<NormalizedOption>;
+          searchable?: never;
+          searchPlaceholder?: never;
+        }
+      | {
+          search?: never;
+          /** @deprecated Use search instead. */
+          searchable?: boolean;
+          /** @deprecated Use search.placeholder instead. */
+          searchPlaceholder?: string;
+        }
+    ))
+  | {
+      options: AsyncListSource<IdentifiedOption>;
+      items?: never;
+      children?: never;
+      dependencies?: never;
+      loading?: never;
+      search?: SelectAsyncSearch<NormalizedOption>;
+      searchable?: never;
+      searchPlaceholder?: never;
+    }
+  | {
+      options?: never;
+      items: Iterable<T>;
+      children: (item: T) => ReactElement;
+      dependencies?: ReadonlyArray<unknown>;
+      loading?: LoadingConfig;
+      search?: SelectSearch<T>;
+      searchable?: never;
+      searchPlaceholder?: never;
+    }
+  | {
+      options?: never;
+      items: AsyncListSource<T>;
+      children: (item: T) => ReactElement;
+      dependencies?: ReadonlyArray<unknown>;
+      loading?: never;
+      search?: SelectAsyncSearch<T>;
+      searchable?: never;
+      searchPlaceholder?: never;
+    }
+  | {
+      options?: never;
+      items?: never;
+      children: ReactElement | ReactElement[];
+      dependencies?: never;
+      search?:
+        | true
+        | {
+            mode?: 'client';
+            inputValue?: never;
+            defaultInputValue?: string;
+            onInputChange?: (value: string) => void;
+            filter?: never;
+            placeholder?: string;
+          }
+        | {
+            mode?: 'client';
+            inputValue: string;
+            defaultInputValue?: never;
+            onInputChange: (value: string) => void;
+            filter?: never;
+            placeholder?: string;
+          };
+      searchable?: never;
+      searchPlaceholder?: never;
+      loading?: never;
+    };
 
 /** @public */
 export type SelectProps<
@@ -235,7 +300,7 @@ export interface SelectContentOwnProps<
   search?:
     | SelectSearch<T>
     | SelectAsyncSearch<T>
-    | StaticCompositionSearch<{ placeholder?: string }>;
+    | SelectStaticCompositionSearch;
   options?: ReadonlyArray<Option | OptionSection>;
   items?: Iterable<T>;
   children?: ReactElement | ReactElement[] | ((item: T) => ReactElement);

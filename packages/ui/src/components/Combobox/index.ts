@@ -16,7 +16,28 @@
 
 export * from './Combobox';
 export * from './ComboboxItem';
-export * from './types';
+export type {
+  ComboboxAsyncSearch,
+  ComboboxBaseOwnProps,
+  ComboboxCommonProps,
+  ComboboxItemOwnProps,
+  ComboboxItemProfileOwnProps,
+  ComboboxItemProfileProps,
+  ComboboxItemProps,
+  ComboboxItemSelectionProps,
+  ComboboxItemTextOwnProps,
+  ComboboxItemTextProps,
+  ComboboxKeySelectionProps,
+  ComboboxOwnProps,
+  ComboboxProps,
+  ComboboxSearch,
+  ComboboxServerItem,
+  ComboboxServerItemsProps,
+  ComboboxServerOptionsProps,
+  ComboboxStandardProps,
+  Option,
+  OptionSection,
+} from './types';
 export {
   ComboboxDefinition,
   ComboboxInputDefinition,

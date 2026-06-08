@@ -18,12 +18,12 @@ import { forwardRef, useEffect } from 'react';
 import { ComboBox as AriaComboBox } from 'react-aria-components';
 import { useFilter } from 'react-aria';
 import type {
-  ComboboxDirectAsyncItemsProps,
-  ComboboxDirectAsyncOptionsProps,
   ComboboxListBoxOwnProps,
-  ComboboxNonDirectAsyncProps,
   ComboboxProps,
   ComboboxServerItem,
+  ComboboxServerItemsProps,
+  ComboboxServerOptionsProps,
+  ComboboxStandardProps,
 } from './types';
 import type { Key } from 'react-aria-components';
 import type {
@@ -257,15 +257,13 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
 /** @public */
 export const Combobox = forwardRef(ComboboxImpl) as unknown as {
   <T extends { id: Key } = NormalizedOption>(
-    props: ComboboxNonDirectAsyncProps<T> & React.RefAttributes<HTMLDivElement>,
+    props: ComboboxStandardProps<T> & React.RefAttributes<HTMLDivElement>,
   ): React.ReactElement;
   (
-    props: ComboboxDirectAsyncOptionsProps &
-      React.RefAttributes<HTMLDivElement>,
+    props: ComboboxServerOptionsProps & React.RefAttributes<HTMLDivElement>,
   ): React.ReactElement;
   <T extends ComboboxServerItem>(
-    props: ComboboxDirectAsyncItemsProps<T> &
-      React.RefAttributes<HTMLDivElement>,
+    props: ComboboxServerItemsProps<T> & React.RefAttributes<HTMLDivElement>,
   ): React.ReactElement;
   displayName?: string;
 };
