@@ -956,6 +956,7 @@ describe('Entity page', () => {
 
       for (const label of [
         'Name',
+        'System',
         'Owner',
         'Type',
         'Lifecycle',
