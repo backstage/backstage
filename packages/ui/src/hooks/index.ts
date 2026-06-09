@@ -16,3 +16,9 @@
 
 export * from './useDefinition';
 export { useIsTruncated } from './useIsTruncated';
+export {
+  useBreadcrumbs,
+  BreadcrumbRegistration,
+  BreadcrumbsRegistryProvider,
+} from './useBreadcrumbs';
+export type { BreadcrumbEntry } from './useBreadcrumbs';

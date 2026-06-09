@@ -78,6 +78,12 @@ export { useBreakpoint } from './hooks/useBreakpoint';
 export { useBgProvider, useBgConsumer, BgProvider } from './hooks/useBg';
 export type { BgContextValue, BgProviderProps } from './hooks/useBg';
 export { useIsTruncated } from './hooks/useIsTruncated';
+export {
+  useBreadcrumbs,
+  BreadcrumbRegistration,
+  BreadcrumbsRegistryProvider,
+} from './hooks/useBreadcrumbs';
+export type { BreadcrumbEntry } from './hooks/useBreadcrumbs';
 
 // Provider
 export { BUIProvider } from './provider';

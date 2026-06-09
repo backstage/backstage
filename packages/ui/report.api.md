@@ -511,6 +511,14 @@ export const BreadcrumbDefinition: {
 };
 
 // @public
+export interface BreadcrumbEntry {
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
 export interface BreadcrumbOwnProps extends BreadcrumbStyleProps {
   // (undocumented)
   as?: TextOwnProps['as'];
@@ -522,6 +530,12 @@ export interface BreadcrumbOwnProps extends BreadcrumbStyleProps {
 
 // @public
 export interface BreadcrumbProps extends BreadcrumbOwnProps {}
+
+// @public
+export function BreadcrumbRegistration(props: {
+  entry: BreadcrumbEntry;
+  children: ReactNode;
+}): JSX_2.Element;
 
 // @public
 export const Breadcrumbs: (props: BreadcrumbsProps) => JSX_2.Element | null;
@@ -567,6 +581,11 @@ export interface BreadcrumbsOwnProps extends BreadcrumbStyleProps {
 
 // @public
 export interface BreadcrumbsProps extends BreadcrumbsOwnProps {}
+
+// @public (undocumented)
+export function BreadcrumbsRegistryProvider(props: {
+  children: ReactNode;
+}): JSX_2.Element;
 
 // @public
 export interface BreadcrumbStyleProps {
@@ -3756,6 +3775,9 @@ export function useBgConsumer(): BgContextValue;
 
 // @public
 export function useBgProvider(bg?: Responsive<ProviderBg>): BgContextValue;
+
+// @public
+export function useBreadcrumbs(): BreadcrumbEntry[];
 
 // @public (undocumented)
 export const useBreakpoint: () => {

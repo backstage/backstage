@@ -191,4 +191,9 @@ export const hooks: Page[] = [
     slug: 'use-is-truncated',
     status: 'new',
   },
+  {
+    title: 'useBreadcrumbs',
+    slug: 'use-breadcrumbs',
+    status: 'new',
+  },
 ];

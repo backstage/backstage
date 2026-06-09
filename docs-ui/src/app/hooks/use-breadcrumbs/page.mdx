@@ -1,0 +1,61 @@
+import { PageTitle } from '@/components/PageTitle';
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { breadcrumbEntryDefs } from './props-definition';
+import {
+  breadcrumbRegistrationSnippet,
+  useBreadcrumbsConsumerSnippet,
+  nestedExampleSnippet,
+  subPageRoutesSnippet,
+  stateBasedSnippet,
+} from './snippets';
+
+<PageTitle
+  title="useBreadcrumbs"
+  description="A shared-store system for building breadcrumb trails across page components."
+/>
+
+## Overview
+
+The breadcrumb system has two parts:
+
+- **`BreadcrumbRegistration`** — a component that registers a breadcrumb entry in a shared store on mount and removes it on unmount. Nesting depth determines order.
+- **`useBreadcrumbs()`** — a hook that returns the current breadcrumb trail as an array of entries, sorted by depth. Call this anywhere you render breadcrumbs (e.g. PluginHeader).
+
+Entries are visible to any `useBreadcrumbs()` consumer in the tree, not just descendants of the registration. This means a header component that is a sibling of the registered route content can still read the full trail.
+
+In the new frontend system, `BreadcrumbRegistration` is called automatically by the swapped `PageLayout` and `SubPageWrapper`, so plugin authors get breadcrumbs for plugin pages and sub-pages for free. For plugin-internal routes, wrap route content with `BreadcrumbRegistration` manually.
+
+## Registering a breadcrumb
+
+Wrap your page content with `BreadcrumbRegistration`. The entry is registered in the shared store and available to any `useBreadcrumbs()` consumer.
+
+<Snippet code={breadcrumbRegistrationSnippet} />
+
+## Consuming breadcrumbs
+
+Call `useBreadcrumbs()` to get the trail and render it with the `Breadcrumbs` component.
+
+<Snippet code={useBreadcrumbsConsumerSnippet} />
+
+## Nested pages
+
+Nesting `BreadcrumbRegistration` components builds the trail in depth order — parent entries come first. Each nesting level increments an internal depth counter used for sorting.
+
+<Snippet code={nestedExampleSnippet} />
+
+## Plugin sub-page routes
+
+Plugin root pages and sub-page tabs are registered automatically by the framework. For routes **inside** a sub-page component, wrap each route's element with `BreadcrumbRegistration`. This is the only manual step plugin maintainers need.
+
+<Snippet code={subPageRoutesSnippet} />
+
+## State-driven views (no routes)
+
+`BreadcrumbRegistration` isn't limited to routes — it works with any state-driven view like tabs, selection panels, or list/detail layouts. The breadcrumb updates reactively when the `label` prop changes.
+
+<Snippet code={stateBasedSnippet} />
+
+## BreadcrumbEntry
+
+<PropsTable data={breadcrumbEntryDefs} isHook />
