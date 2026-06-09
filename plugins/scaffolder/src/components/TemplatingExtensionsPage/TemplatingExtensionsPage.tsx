@@ -56,6 +56,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BreadcrumbRegistration } from '@backstage/ui';
 import useAsync from 'react-use/esm/useAsync';
 import {
   Extension,
@@ -222,8 +223,10 @@ export const TemplatingExtensionsPageContent = ({
     </Link>
   );
 
+  const activeTabLabel = extensionKinds[tab].label;
+
   return (
-    <>
+    <BreadcrumbRegistration entry={{ label: activeTabLabel, href: `#${tab}` }}>
       <Autocomplete
         renderInput={params => (
           <TextField
@@ -292,7 +295,7 @@ export const TemplatingExtensionsPageContent = ({
           {...{ baseLink, t, classes, selectedItem }}
         />
       )}
-    </>
+    </BreadcrumbRegistration>
   );
 };
 

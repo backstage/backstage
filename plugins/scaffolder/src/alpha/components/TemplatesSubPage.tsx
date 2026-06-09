@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import {
   Content,
   ContentHeader,
@@ -41,6 +41,7 @@ import { createGroupsWithOther } from '../lib/createGroupsWithOther';
 import {
   FieldExtensionOptions,
   FormProps,
+  type LayoutOptions,
   SecretsContextProvider,
   TemplateGroupFilter,
   useCustomFieldExtensions,
@@ -60,6 +61,7 @@ import {
 import { scaffolderTranslationRef } from '../../translation';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
+import { BreadcrumbRegistration } from '@backstage/ui';
 import {
   TECHDOCS_ANNOTATION,
   TECHDOCS_EXTERNAL_ANNOTATION,
@@ -169,6 +171,27 @@ function TemplateListContent({
   );
 }
 
+function TemplateWizardWithBreadcrumb(props: {
+  customFieldExtensions: FieldExtensionOptions[];
+  layouts: LayoutOptions[];
+  formProps?: FormProps;
+}) {
+  const { templateName } = useParams<{ templateName: string }>();
+  return (
+    <BreadcrumbRegistration
+      entry={{ label: templateName ?? 'Template', href: '.' }}
+    >
+      <SecretsContextProvider>
+        <TemplateWizardPageContent
+          customFieldExtensions={props.customFieldExtensions}
+          layouts={props.layouts}
+          formProps={props.formProps}
+        />
+      </SecretsContextProvider>
+    </BreadcrumbRegistration>
+  );
+}
+
 /**
  * Sub-page for the templates tab. Renders the template list at the index route
  * and the template wizard at the parameterized route.
@@ -201,13 +224,11 @@ export function TemplatesSubPage(props: {
       <Route
         path=":namespace/:templateName"
         element={
-          <SecretsContextProvider>
-            <TemplateWizardPageContent
-              customFieldExtensions={fieldExtensions}
-              layouts={customLayouts}
-              formProps={props.formProps}
-            />
-          </SecretsContextProvider>
+          <TemplateWizardWithBreadcrumb
+            customFieldExtensions={fieldExtensions}
+            layouts={customLayouts}
+            formProps={props.formProps}
+          />
         }
       />
     </Routes>

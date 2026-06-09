@@ -18,6 +18,7 @@ import { useAsync, useMountEffect } from '@react-hookz/web';
 import { useCallback, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Content } from '@backstage/core-components';
+import { BreadcrumbRegistration } from '@backstage/ui';
 import { useApi } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core/styles';
 import { RequirePermission } from '@backstage/plugin-permission-react';
@@ -167,15 +168,33 @@ export function EditorSubPage() {
           <Route index element={<EditorIntroContent />} />
           <Route
             path="template"
-            element={<EditorContent fieldExtensions={fieldExtensions} />}
+            element={
+              <BreadcrumbRegistration
+                entry={{ label: 'Template Editor', href: 'template' }}
+              >
+                <EditorContent fieldExtensions={fieldExtensions} />
+              </BreadcrumbRegistration>
+            }
           />
           <Route
             path="template-form"
-            element={<FormPreviewContent fieldExtensions={fieldExtensions} />}
+            element={
+              <BreadcrumbRegistration
+                entry={{ label: 'Template Form', href: 'template-form' }}
+              >
+                <FormPreviewContent fieldExtensions={fieldExtensions} />
+              </BreadcrumbRegistration>
+            }
           />
           <Route
             path="custom-fields"
-            element={<CustomFieldsContent fieldExtensions={fieldExtensions} />}
+            element={
+              <BreadcrumbRegistration
+                entry={{ label: 'Custom Fields', href: 'custom-fields' }}
+              >
+                <CustomFieldsContent fieldExtensions={fieldExtensions} />
+              </BreadcrumbRegistration>
+            }
           />
         </Routes>
       </SecretsContextProvider>
