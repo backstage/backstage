@@ -25,6 +25,7 @@ import {
   createExtensionInput,
 } from '../wiring';
 import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
+import { useSubPageWrapper } from '../components/SubPageWrapperContext';
 import { useApi } from '../apis/system';
 import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
@@ -84,6 +85,10 @@ export const PageBlueprint = createExtensionBlueprint({
        * Hide the default plugin page header, making the page fill up all available space.
        */
       noHeader?: boolean;
+      /**
+       * Disable breadcrumb registration for this page.
+       */
+      noBreadcrumbs?: boolean;
     },
     { config, node, inputs },
   ) {
@@ -91,6 +96,7 @@ export const PageBlueprint = createExtensionBlueprint({
     const icon = params.icon;
     const pluginId = node.spec.plugin.pluginId;
     const noHeader = params.noHeader ?? false;
+    const noBreadcrumbs = params.noBreadcrumbs ?? false;
     const resolvedTitle =
       title ?? node.spec.plugin.title ?? node.spec.plugin.pluginId;
     const resolvedIcon = icon ?? node.spec.plugin.icon;
@@ -111,6 +117,7 @@ export const PageBlueprint = createExtensionBlueprint({
             title={resolvedTitle}
             icon={resolvedIcon}
             noHeader={noHeader}
+            noBreadcrumbs={noBreadcrumbs}
             titleLink={titleLink}
             headerActions={headerActions}
           >
@@ -141,10 +148,13 @@ export const PageBlueprint = createExtensionBlueprint({
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
+        const SubPageWrapper = useSubPageWrapper();
+
         return (
           <PageLayout
             title={resolvedTitle}
             icon={resolvedIcon}
+            noBreadcrumbs={noBreadcrumbs}
             tabs={tabs}
             titleLink={titleLink}
             headerActions={headerActions}
@@ -158,9 +168,17 @@ export const PageBlueprint = createExtensionBlueprint({
               )}
               {inputs.pages.map((page, index) => {
                 const path = page.get(coreExtensionData.routePath);
+                const tabTitle = page.get(coreExtensionData.title);
                 const element = page.get(coreExtensionData.reactElement);
+                const wrapped = SubPageWrapper ? (
+                  <SubPageWrapper label={tabTitle || path} href={path}>
+                    {element}
+                  </SubPageWrapper>
+                ) : (
+                  element
+                );
                 return (
-                  <Route key={index} path={`${path}/*`} element={element} />
+                  <Route key={index} path={`${path}/*`} element={wrapped} />
                 );
               })}
             </Routes>
@@ -179,6 +197,7 @@ export const PageBlueprint = createExtensionBlueprint({
           <PageLayout
             title={resolvedTitle}
             icon={resolvedIcon}
+            noBreadcrumbs={noBreadcrumbs}
             titleLink={titleLink}
             headerActions={headerActions}
           />

@@ -31,3 +31,7 @@ export {
   type PageLayoutTab,
   type PageTab,
 } from './PageLayout';
+export {
+  SubPageWrapperContext,
+  type SubPageWrapperProps,
+} from './SubPageWrapperContext';

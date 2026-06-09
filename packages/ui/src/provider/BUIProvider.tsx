@@ -20,6 +20,7 @@ import { useInRouterContext, useNavigate } from 'react-router-dom';
 import { createVersionedValueMap } from '@backstage/version-bridge';
 import { BUIContext } from '../analytics/useAnalytics';
 import { useResolvedHref } from '../hooks/useResolvedHref';
+import { BreadcrumbsRegistryProvider } from '../hooks/useBreadcrumbs';
 import type { UseAnalyticsFn } from '../analytics/types';
 
 /** @public */
@@ -58,7 +59,9 @@ export function BUIProvider(props: BUIProviderProps) {
   );
 
   const content = (
-    <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
+    <BUIContext.Provider value={value}>
+      <BreadcrumbsRegistryProvider>{children}</BreadcrumbsRegistryProvider>
+    </BUIContext.Provider>
   );
 
   if (useInRouterContext()) {

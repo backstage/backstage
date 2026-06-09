@@ -32,13 +32,15 @@ import {
   routeResolutionApiRef,
   pluginWrapperApiRef,
   useAnalytics,
+  SubPageWrapperContext,
 } from '@backstage/frontend-plugin-api';
 import {
   AppRootWrapperBlueprint,
   RouterBlueprint,
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
-import { BUIProvider } from '@backstage/ui';
+import { BUIProvider, BreadcrumbRegistration } from '@backstage/ui';
+import type { SubPageWrapperProps } from '@backstage/frontend-plugin-api';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -206,6 +208,14 @@ export interface AppRouterProps {
   extraElements?: Array<JSX.Element>;
 }
 
+function BreadcrumbRegistrationWrapper(props: SubPageWrapperProps) {
+  return (
+    <BreadcrumbRegistration entry={{ label: props.label, href: props.href }}>
+      {props.children}
+    </BreadcrumbRegistration>
+  );
+}
+
 function DefaultRouter(props: PropsWithChildren<{}>) {
   const configApi = useApi(configApiRef);
   const basePath = getBasePath(configApi);
@@ -283,9 +293,11 @@ export function AppRouter(props: AppRouterProps) {
     return (
       <RouterComponent>
         <BUIProvider useAnalytics={useAnalytics}>
-          {...extraElements}
-          <RouteTracker routeObjects={routeObjects} />
-          {children}
+          <SubPageWrapperContext.Provider value={BreadcrumbRegistrationWrapper}>
+            {...extraElements}
+            <RouteTracker routeObjects={routeObjects} />
+            {children}
+          </SubPageWrapperContext.Provider>
         </BUIProvider>
       </RouterComponent>
     );
@@ -294,14 +306,16 @@ export function AppRouter(props: AppRouterProps) {
   return (
     <RouterComponent>
       <BUIProvider useAnalytics={useAnalytics}>
-        {...extraElements}
-        <RouteTracker routeObjects={routeObjects} />
-        <SignInPageWrapper
-          component={SignInPageComponent}
-          appIdentityProxy={appIdentityProxy}
-        >
-          {children}
-        </SignInPageWrapper>
+        <SubPageWrapperContext.Provider value={BreadcrumbRegistrationWrapper}>
+          {...extraElements}
+          <RouteTracker routeObjects={routeObjects} />
+          <SignInPageWrapper
+            component={SignInPageComponent}
+            appIdentityProxy={appIdentityProxy}
+          >
+            {children}
+          </SignInPageWrapper>
+        </SubPageWrapperContext.Provider>
       </BUIProvider>
     </RouterComponent>
   );

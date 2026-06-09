@@ -43,6 +43,7 @@ export interface PageLayoutProps {
   title?: string;
   icon?: IconElement;
   noHeader?: boolean;
+  noBreadcrumbs?: boolean;
   titleLink?: string;
   headerActions?: Array<JSX.Element | null>;
   tabs?: PageLayoutTab[];

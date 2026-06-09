@@ -26,7 +26,11 @@ import {
   ErrorPanel,
   Progress as ProgressComponent,
 } from '@backstage/core-components';
-import { PluginHeader } from '@backstage/ui';
+import {
+  PluginHeader,
+  BreadcrumbRegistration,
+  useBreadcrumbs,
+} from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';
 import { useResolvedPath } from 'react-router-dom';
@@ -79,6 +83,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
           title,
           icon,
           noHeader,
+          noBreadcrumbs,
           titleLink,
           headerActions,
           tabs,
@@ -98,21 +103,34 @@ export const PageLayout = SwappableComponentBlueprint.make({
           [tabs, parentPath],
         );
 
-        if (noHeader) {
-          return <>{children}</>;
-        }
+        const breadcrumbs = useBreadcrumbs();
 
-        return (
+        const content = noHeader ? (
+          <>{children}</>
+        ) : (
           <>
             <PluginHeader
               title={title}
               icon={icon}
               titleLink={titleLink}
+              breadcrumbs={noBreadcrumbs ? undefined : breadcrumbs}
               tabs={resolvedTabs}
               customActions={headerActions}
             />
             {children}
           </>
+        );
+
+        if (noBreadcrumbs) {
+          return content;
+        }
+
+        return (
+          <BreadcrumbRegistration
+            entry={{ label: title ?? '', href: titleLink }}
+          >
+            {content}
+          </BreadcrumbRegistration>
         );
       },
     }),

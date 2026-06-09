@@ -21,6 +21,26 @@ Page extensions provide content for a particular route in the app. By default pa
 
 To enable sub-pages on a page, you can either omit the `loader` param to use the built-in default implementation that renders sub-pages as tabs, or provide a custom `loader` that explicitly handles the sub-page inputs.
 
+Set `noHeader: true` to hide the default plugin page header, or `noBreadcrumbs: true` to disable automatic breadcrumb registration for the page. When breadcrumbs are enabled (the default), the page title is registered as a breadcrumb entry and sub-page titles are registered automatically via `SubPageBlueprint`.
+
+If a sub-page has internal `<Route>` elements, wrap each route's content with `BreadcrumbRegistration` so it appears in the breadcrumb trail:
+
+```tsx
+import { BreadcrumbRegistration } from '@backstage/ui';
+
+<Routes>
+  <Route index element={<MyListPage />} />
+  <Route
+    path=":id"
+    element={
+      <BreadcrumbRegistration entry={{ label: id, href: id }}>
+        <MyDetailPage />
+      </BreadcrumbRegistration>
+    }
+  />
+</Routes>;
+```
+
 ### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.SubPageBlueprint.html)
 
 Sub-page extensions create tabbed content within a parent page. They are attached to a page extension's `pages` input and rendered as tabs in the page header. Each sub-page has a `path` (relative to the parent page), a `title` for the tab, and an optional `icon`. Content is lazy-loaded via a `loader` function.
