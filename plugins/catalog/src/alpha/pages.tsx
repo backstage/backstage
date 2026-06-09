@@ -139,12 +139,13 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
                   />
                 );
               case 'custom':
-              default:
                 return (
                   <Fragment key={`custom-${keyCounter++}`}>
                     {descriptor.element}
                   </Fragment>
                 );
+              default:
+                return null;
             }
           }
           const element = filter.get(coreExtensionData.reactElement);

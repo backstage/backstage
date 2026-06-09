@@ -15,30 +15,27 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/ui';
 import useAsync from 'react-use/esm/useAsync';
 import { Entity } from '@backstage/catalog-model';
-import {
-  catalogApiRef,
-  useEntityList,
-  type DefaultEntityFilters,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, useEntityList } from '@backstage/plugin-catalog-react';
 import type { CatalogFacetFilterDescriptor } from '@backstage/plugin-catalog-react/alpha';
 import type { EntityFilter } from '@backstage/plugin-catalog-react';
 import { multiSelectProps } from './multiSelectProps';
+import type { DynamicEntityFilters } from './types';
 
-type DynamicEntityFilters = DefaultEntityFilters & {
-  [key: string]: EntityFilter | undefined;
-};
+function titleCase(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 class FacetEntityFilter implements EntityFilter {
   readonly value: string;
   readonly label: string;
 
   constructor(readonly path: string, readonly values: string[]) {
-    this.value = values[0];
-    this.label = values[0];
+    this.value = values[0] ?? '';
+    this.label = titleCase(values[0] ?? '');
   }
 
   getCatalogFilters(): Record<string, string | string[]> {
@@ -67,6 +64,7 @@ class FacetEntityFilter implements EntityFilter {
 export function FacetFilterPicker(props: CatalogFacetFilterDescriptor) {
   const { label, filterKey, path, mode, defaultValue } = props;
   const catalogApi = useApi(catalogApiRef);
+  const alertApi = useApi(alertApiRef);
   const { updateFilters, queryParameters } =
     useEntityList<DynamicEntityFilters>();
 
@@ -94,7 +92,7 @@ export function FacetFilterPicker(props: CatalogFacetFilterDescriptor) {
     }
   }, [queryParam]);
 
-  const { value: availableValues = [] } = useAsync(async () => {
+  const { value: availableValues = [], error } = useAsync(async () => {
     const { facets } = await catalogApi.getEntityFacets({
       facets: [path],
     });
@@ -108,15 +106,28 @@ export function FacetFilterPicker(props: CatalogFacetFilterDescriptor) {
   }, [path, catalogApi]);
 
   useEffect(() => {
+    if (error) {
+      alertApi.post({
+        message: `Failed to load filter values for ${label}.`,
+        severity: 'error',
+      });
+    }
+  }, [error, alertApi, label]);
+
+  useEffect(() => {
     updateFilters({
       [filterKey]: selected.length
         ? new FacetEntityFilter(path, selected)
         : undefined,
     });
+  }, [selected, filterKey, path, updateFilters]);
+
+  useEffect(() => {
     return () => {
       updateFilters({ [filterKey]: undefined });
     };
-  }, [selected, filterKey, path, updateFilters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const options = availableValues.map(v => ({ label: v, value: v }));
 
@@ -139,7 +150,7 @@ export function FacetFilterPicker(props: CatalogFacetFilterDescriptor) {
       selectionMode="multiple"
       searchable
       options={options}
-      {...multiSelectProps(selected, setSelected)}
+      {...multiSelectProps(selected, setSelected, availableValues)}
     />
   );
 }

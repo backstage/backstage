@@ -17,17 +17,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/ui';
-import {
-  useEntityList,
-  type DefaultEntityFilters,
-} from '@backstage/plugin-catalog-react';
+import { useEntityList } from '@backstage/plugin-catalog-react';
 import type { CatalogOptionsFilterDescriptor } from '@backstage/plugin-catalog-react/alpha';
 import type { EntityFilter } from '@backstage/plugin-catalog-react';
 import { multiSelectProps } from './multiSelectProps';
-
-type DynamicEntityFilters = DefaultEntityFilters & {
-  [key: string]: EntityFilter | undefined;
-};
+import type { DynamicEntityFilters } from './types';
 
 /** @internal */
 export function OptionsFilterPicker(props: CatalogOptionsFilterDescriptor) {
@@ -37,13 +31,19 @@ export function OptionsFilterPicker(props: CatalogOptionsFilterDescriptor) {
   const { updateFilters, queryParameters } =
     useEntityList<DynamicEntityFilters>();
 
-  const resolvedDeps = useMemo(
-    () =>
-      Object.fromEntries(
-        Object.entries(deps).map(([key, ref]) => [key, apiHolder.get(ref)]),
-      ),
-    [deps, apiHolder],
-  );
+  const resolvedDeps = useMemo(() => {
+    const resolved: Record<string, unknown> = {};
+    for (const [key, ref] of Object.entries(deps)) {
+      const api = apiHolder.get(ref);
+      if (!api) {
+        throw new Error(
+          `Missing API dependency '${key}' for filter '${filterKey}'`,
+        );
+      }
+      resolved[key] = api;
+    }
+    return resolved;
+  }, [deps, apiHolder, filterKey]);
 
   const queryParam = useMemo(
     () =>
@@ -103,9 +103,15 @@ export function OptionsFilterPicker(props: CatalogOptionsFilterDescriptor) {
 
     return () => {
       cancelled = true;
-      updateFilters({ [filterKey]: undefined });
     };
   }, [selected, filterKey, toFilter, resolvedDeps, updateFilters]);
+
+  useEffect(() => {
+    return () => {
+      updateFilters({ [filterKey]: undefined });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const selectOptions = options.map(o => ({ label: o.label, value: o.value }));
 
@@ -126,7 +132,11 @@ export function OptionsFilterPicker(props: CatalogOptionsFilterDescriptor) {
       label={label}
       selectionMode="multiple"
       options={selectOptions}
-      {...multiSelectProps(selected, setSelected)}
+      {...multiSelectProps(
+        selected,
+        setSelected,
+        options.map(o => o.value),
+      )}
     />
   );
 }

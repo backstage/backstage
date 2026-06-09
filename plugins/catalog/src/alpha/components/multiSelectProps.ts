@@ -22,11 +22,14 @@
 export function multiSelectProps(
   selected: string[],
   setSelected: (values: string[]) => void,
+  allOptions?: string[],
 ): Record<string, unknown> {
   return {
     selectedKeys: new Set(selected),
     onSelectionChange: (keys: Set<string> | 'all') => {
-      if (keys !== 'all') {
+      if (keys === 'all') {
+        setSelected(allOptions ?? []);
+      } else {
         setSelected([...keys].map(String));
       }
     },
