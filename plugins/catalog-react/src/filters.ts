@@ -150,8 +150,8 @@ export class EntityTextFilter implements EntityFilter {
     };
   }
 
-  toQueryValue(): string | string[] {
-    return this.fields ? [this.value, ...this.fields] : this.value;
+  toQueryValue(): string {
+    return this.value;
   }
 
   private toUpperArray(

@@ -170,12 +170,12 @@ describe('EntityTextFilter', () => {
     expect(filter.toQueryValue()).toBe('hello');
   });
 
-  it('serializes to [term, ...fields] when override fields are set', () => {
+  it('serializes only the term even when override fields are set', () => {
     const filter = new EntityTextFilter(['cost', 'metadata.tags']);
-    expect(filter.toQueryValue()).toEqual(['cost', 'metadata.tags']);
+    expect(filter.toQueryValue()).toBe('cost');
   });
 
-  it('round-trips through toQueryValue / constructor', () => {
+  it('round-trips the search term through toQueryValue / constructor', () => {
     const original = new EntityTextFilter([
       'cost',
       'metadata.tags',
@@ -183,7 +183,7 @@ describe('EntityTextFilter', () => {
     ]);
     const restored = new EntityTextFilter(original.toQueryValue());
     expect(restored.value).toBe(original.value);
-    expect(restored.fields).toEqual(original.fields);
+    expect(restored.fields).toBeUndefined();
   });
 });
 

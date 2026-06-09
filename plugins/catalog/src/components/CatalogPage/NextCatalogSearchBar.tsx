@@ -22,8 +22,9 @@ import {
   useEntityList,
 } from '@backstage/plugin-catalog-react';
 import { Box, SearchField } from '@backstage/ui';
-import { useEffect, useMemo, useState } from 'react';
-import useDebounce from 'react-use/lib/useDebounce';
+import { useMemo, useState } from 'react';
+import useMount from 'react-use/lib/useMount';
+import useUpdateEffect from 'react-use/lib/useUpdateEffect';
 
 /**
  * Search input for the v2 catalog page. Dispatches an `EntityTextFilter`
@@ -49,34 +50,35 @@ export function NextCatalogSearchBar(props: { searchFields: string[] }) {
 
   const [search, setSearch] = useState(queryParamTextFilter ?? '');
 
-  useDebounce(
-    () => {
-      if (search) {
-        const filter = new EntityTextFilter(
-          props.searchFields.length ? [search, ...props.searchFields] : search,
-        );
-        // remove filterEntity from the filter to prevent it from being used for client-side filtering in the table;
-        // this filter is meant to be used for server-side filtering only, and the table should render all entities returned by the backend without further client-side filtering
-        (filter as EntityFilter).filterEntity = undefined;
+  function dispatchTextFilter(term: string) {
+    const filter = new EntityTextFilter(
+      props.searchFields.length ? [term, ...props.searchFields] : term,
+    );
+    (filter as EntityFilter).filterEntity = undefined;
+    updateFilters({ text: filter });
+  }
 
-        updateFilters({
-          text: filter,
-        });
-      } else {
-        updateFilters({
-          text: undefined,
-        });
-      }
-    },
-    250,
-    [search, props.searchFields, updateFilters],
-  );
-
-  useEffect(() => {
+  // On mount, dispatch immediately with column-derived fields so the first
+  // fetch uses the correct searchFields (the provider reconstructs
+  // EntityTextFilter from the URL with no fields, falling back to defaults).
+  useMount(() => {
     if (queryParamTextFilter) {
-      setSearch(queryParamTextFilter);
+      dispatchTextFilter(queryParamTextFilter);
     }
-  }, [queryParamTextFilter]);
+  });
+
+  // Debounced dispatch for subsequent typing — skips mount to avoid
+  // a duplicate dispatch when useMount already handled the URL term.
+  useUpdateEffect(() => {
+    const handle = setTimeout(() => {
+      if (search) {
+        dispatchTextFilter(search);
+      } else {
+        updateFilters({ text: undefined });
+      }
+    }, 250);
+    return () => clearTimeout(handle);
+  }, [search, props.searchFields, updateFilters]);
 
   return (
     <Box>
