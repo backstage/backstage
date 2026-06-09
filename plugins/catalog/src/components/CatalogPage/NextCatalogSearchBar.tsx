@@ -35,10 +35,6 @@ import useDebounce from 'react-use/lib/useDebounce';
  * Mirrors `EntitySearchBar`'s URL query-parameter sync and debounce
  * behavior so the search term round-trips through `?text=...`.
  */
- *
- * Mirrors `EntitySearchBar`'s URL query-parameter sync and debounce
- * behavior so the search term round-trips through `?text=...`.
- */
 export function NextCatalogSearchBar(props: { searchFields: string[] }) {
   const {
     updateFilters,

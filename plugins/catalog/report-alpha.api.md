@@ -1482,9 +1482,7 @@ export default _default;
 // @alpha
 export function NextCatalogPage(props: NextCatalogPageProps): JSX_3.Element;
 
-// Warning: (ae-missing-release-tag) "NextCatalogPageProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @alpha
 export type NextCatalogPageProps = {
   filters: ReactNode;
   columns: Array<{
