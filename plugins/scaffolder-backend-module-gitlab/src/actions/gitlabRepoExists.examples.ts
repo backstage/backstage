@@ -18,7 +18,7 @@ import yaml from 'yaml';
 
 export const examples: TemplateExample[] = [
   {
-    description: 'Validate that a GitLab repository exists',
+    description: 'Check whether a GitLab repository exists',
     example: yaml.stringify({
       steps: [
         {
@@ -34,7 +34,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Validate that a GitLab repository exists using a custom token for authorization',
+      'Check whether a GitLab repository exists using a custom token for authorization',
     example: yaml.stringify({
       steps: [
         {
@@ -44,6 +44,31 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
             token: '${{ secrets.GITLAB_TOKEN }}',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Use the `exists` output to conditionally run a later step only when the repository does not already exist',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'repoExists',
+          name: 'Check repository exists',
+          action: 'gitlab:repo:exists',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+          },
+        },
+        {
+          id: 'publish',
+          name: 'Publish repository',
+          if: '${{ not steps.repoExists.output.exists }}',
+          action: 'publish:gitlab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
           },
         },
       ],

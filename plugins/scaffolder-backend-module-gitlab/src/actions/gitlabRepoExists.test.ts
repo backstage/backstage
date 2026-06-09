@@ -62,25 +62,24 @@ describe('gitlab:repo:exists', () => {
   const action = createGitlabRepoExistsAction({ integrations });
   const mockContext = createMockActionContext();
 
-  it('should not throw when the repository exists', async () => {
+  it('should output exists true when the repository exists', async () => {
     mockGitlabClient.Projects.show.mockResolvedValue({
       id: 1,
       path_with_namespace: 'owner/repo',
     });
 
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: {
-          repoUrl: 'gitlab.com?repo=repo&owner=owner',
-        },
-      }),
-    ).resolves.toBeUndefined();
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+      },
+    });
 
     expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith('owner/repo');
+    expect(mockContext.output).toHaveBeenCalledWith('exists', true);
   });
 
-  it('should throw when the repository does not exist', async () => {
+  it('should output exists false when the repository does not exist', async () => {
     mockGitlabClient.Projects.show.mockRejectedValue({
       cause: { response: { status: 404 } },
     });
@@ -92,9 +91,9 @@ describe('gitlab:repo:exists', () => {
           repoUrl: 'gitlab.com?repo=repo&owner=owner',
         },
       }),
-    ).rejects.toThrow(
-      'GitLab repository owner/repo does not exist on gitlab.com',
-    );
+    ).resolves.toBeUndefined();
+
+    expect(mockContext.output).toHaveBeenCalledWith('exists', false);
   });
 
   it('should rethrow non-404 errors', async () => {

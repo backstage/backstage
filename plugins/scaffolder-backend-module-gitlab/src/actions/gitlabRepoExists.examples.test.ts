@@ -72,6 +72,7 @@ describe('gitlab:repo:exists examples', () => {
     expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith(
       'group_name/project_name',
     );
+    expect(mockContext.output).toHaveBeenCalledWith('exists', true);
   });
 
   it(`Should ${examples[1].description}`, async () => {
@@ -88,5 +89,22 @@ describe('gitlab:repo:exists examples', () => {
     expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith(
       'group_name/project_name',
     );
+    expect(mockContext.output).toHaveBeenCalledWith('exists', true);
+  });
+
+  it(`Should ${examples[2].description}`, async () => {
+    mockGitlabClient.Projects.show.mockRejectedValue({
+      cause: { response: { status: 404 } },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: yaml.parse(examples[2].example).steps[0].input,
+    });
+
+    expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith(
+      'group_name/project_name',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('exists', false);
   });
 });

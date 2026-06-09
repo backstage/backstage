@@ -32,7 +32,7 @@ export const createGitlabRepoExistsAction = (options: {
 
   return createTemplateAction({
     id: 'gitlab:repo:exists',
-    description: 'Validates that a GitLab repository exists',
+    description: 'Checks whether a GitLab repository exists',
     supportsDryRun: false,
     examples,
     schema: {
@@ -54,7 +54,7 @@ export const createGitlabRepoExistsAction = (options: {
             description: 'Whether the GitLab repository exists',
           }),
       },
-    },  
+    },
     async handler(ctx) {
       const { token, repoUrl } = ctx.input;
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -76,7 +76,6 @@ export const createGitlabRepoExistsAction = (options: {
           ctx.output('exists', false);
           return;
         }
-
         throw error;
       }
     },

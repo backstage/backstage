@@ -152,7 +152,7 @@ export const createGitlabRepoExistsAction: (options: {
     token?: string | undefined;
   },
   {
-    [x: string]: any;
+    exists: boolean;
   },
   'v2'
 >;
