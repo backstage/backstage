@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '../..';
+import type { Breakpoint } from '../..';
 import type { ReactElement, ReactNode } from 'react';
 import type {
   ListBoxItemProps,
