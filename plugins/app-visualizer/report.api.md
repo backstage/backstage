@@ -92,6 +92,7 @@ const visualizerPlugin: OverridableFrontendPlugin<
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;
         noHeader?: boolean;
+        noBreadcrumbs?: boolean;
       };
     }>;
     'plugin-header-action:app-visualizer': OverridableExtensionDefinition<{

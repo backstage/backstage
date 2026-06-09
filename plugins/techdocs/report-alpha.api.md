@@ -332,6 +332,7 @@ const _default: OverridableFrontendPlugin<
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
         noHeader?: boolean;
+        noBreadcrumbs?: boolean;
       };
     }>;
     'page:techdocs/reader': OverridableExtensionDefinition<{
@@ -424,6 +425,7 @@ const _default: OverridableFrontendPlugin<
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
         noHeader?: boolean;
+        noBreadcrumbs?: boolean;
       };
     }>;
     'plugin-header-action:techdocs': OverridableExtensionDefinition<{

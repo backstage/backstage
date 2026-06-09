@@ -2651,6 +2651,7 @@ export const PluginHeaderDefinition: {
     readonly icon: {};
     readonly title: {};
     readonly titleLink: {};
+    readonly breadcrumbs: {};
     readonly customActions: {};
     readonly tabs: {};
     readonly onTabSelectionChange: {};
@@ -2660,6 +2661,8 @@ export const PluginHeaderDefinition: {
 
 // @public
 export interface PluginHeaderOwnProps {
+  // (undocumented)
+  breadcrumbs?: BreadcrumbEntry[];
   // (undocumented)
   className?: string;
   // (undocumented)

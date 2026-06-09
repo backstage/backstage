@@ -8,6 +8,7 @@ import { ApiRef as ApiRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import type { Config } from '@backstage/config';
 import { ConfigurableExtensionDataRef as ConfigurableExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
+import { Context } from 'react';
 import { Expand } from '@backstage/types';
 import { ExpandRecursive } from '@backstage/types';
 import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-plugin-api';
@@ -2163,6 +2164,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
     loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;
     noHeader?: boolean;
+    noBreadcrumbs?: boolean;
   };
   output:
     | ExtensionDataRef_2<string, 'core.routing.path', {}>
@@ -2245,6 +2247,8 @@ export interface PageLayoutProps {
   headerActions?: Array<JSX.Element | null>;
   // (undocumented)
   icon?: IconElement;
+  // (undocumented)
+  noBreadcrumbs?: boolean;
   // (undocumented)
   noHeader?: boolean;
   // (undocumented)
@@ -2529,6 +2533,21 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
   };
   dataRefs: never;
 }>;
+
+// @public
+export const SubPageWrapperContext: Context<
+  ComponentType<SubPageWrapperProps> | undefined
+>;
+
+// @public
+export interface SubPageWrapperProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  href: string;
+  // (undocumented)
+  label: string;
+}
 
 // @public
 export interface SubRouteRef<

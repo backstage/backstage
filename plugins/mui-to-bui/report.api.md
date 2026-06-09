@@ -108,6 +108,7 @@ const _default: OverridableFrontendPlugin<
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
         noHeader?: boolean;
+        noBreadcrumbs?: boolean;
       };
     }>;
   }
