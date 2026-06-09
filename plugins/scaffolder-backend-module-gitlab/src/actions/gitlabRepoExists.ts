@@ -48,7 +48,13 @@ export const createGitlabRepoExistsAction = (options: {
             })
             .optional(),
       },
-    },
+      output: {
+        exists: z =>
+          z.boolean({
+            description: 'Whether the GitLab repository exists',
+          }),
+      },
+    },  
     async handler(ctx) {
       const { token, repoUrl } = ctx.input;
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
