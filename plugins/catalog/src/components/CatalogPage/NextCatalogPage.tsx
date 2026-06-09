@@ -110,13 +110,13 @@ function buildColumnConfig(
             id={header.id}
             isRowHeader={index === firstVisibleIndex}
             allowsSorting={Boolean(header.orderField)}
-            width={header.width}
+            defaultWidth={header.width}
           >
             {header.header!()}
           </Column>
         )
       : undefined,
-    width: header.width,
+    defaultWidth: header.width,
     isSortable: Boolean(header.orderField),
     isRowHeader: index === firstVisibleIndex,
     isHidden,
