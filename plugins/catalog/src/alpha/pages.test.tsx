@@ -936,7 +936,7 @@ describe('Entity page', () => {
       ).toBeInTheDocument();
     });
 
-    it('renders the six default columns when v2 is enabled', async () => {
+    it('renders the default columns when v2 is enabled', async () => {
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogPage),
         { config: { version: 'v2' } },
