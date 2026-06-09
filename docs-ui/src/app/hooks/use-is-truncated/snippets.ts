@@ -8,7 +8,7 @@ function TruncatedLabel({ text }: { text: string }) {
     <TooltipTrigger isDisabled={!truncated}>
       <span
         ref={ref}
-        style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150 }}
+        style={{ display: 'block' overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150 }}
       >
         {text}
       </span>

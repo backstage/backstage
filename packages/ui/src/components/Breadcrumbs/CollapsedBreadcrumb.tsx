@@ -25,7 +25,7 @@ import { useBreadcrumbsStyle } from './BreadcrumbsContext';
 import type { BreadcrumbStyleProps } from './types';
 
 /**
- * Renders a menu with an ellipse-button that contains the middle Breadcrumb items to be collapsed
+ * Renders a menu with an ellipse button that contains the middle Breadcrumb items to be collapsed
  * @private
  */
 export function CollapsedBreadcrumb(

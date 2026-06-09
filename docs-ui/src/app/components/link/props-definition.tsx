@@ -2,6 +2,8 @@ import {
   childrenPropDefs,
   classNamePropDefs,
   stylePropDefs,
+  typographyVariantValues,
+  typographyWeightValues,
   type PropDef,
 } from '@/utils/propDefs';
 import { Chip } from '@/components/Chip';
@@ -28,16 +30,7 @@ export const linkPropDefs: Record<string, PropDef> = {
   },
   variant: {
     type: 'enum',
-    values: [
-      'title-large',
-      'title-medium',
-      'title-small',
-      'title-x-small',
-      'body-large',
-      'body-medium',
-      'body-small',
-      'body-x-small',
-    ],
+    values: typographyVariantValues,
     default: 'body-medium',
     responsive: true,
     description:
@@ -45,7 +38,7 @@ export const linkPropDefs: Record<string, PropDef> = {
   },
   weight: {
     type: 'enum',
-    values: ['regular', 'bold'],
+    values: typographyWeightValues,
     default: 'regular',
     responsive: true,
     description: (

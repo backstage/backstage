@@ -41,7 +41,7 @@ function observeResize(
  * Tracks whether a text element is overflowing its container via CSS truncation.
  * Useful for conditionally showing a tooltip only when text is truncated.
  *
- * Checks on mount and whenever the element resizes (via ResizeObserver, debounced).
+ * Checks on every render and whenever the element resizes (via ResizeObserver, debounced).
  *
  * @example
  * ```tsx
@@ -61,12 +61,19 @@ export function useIsTruncated<T extends HTMLElement = HTMLElement>() {
   const ref = useRef<T>(null);
   const [truncated, setTruncated] = useState(false);
 
+  // Re-check after each render in case the content changes without a resize event.
+  useIsomorphicLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setTruncated(el.scrollWidth > el.clientWidth);
+  });
+
+  // Also keep it up-to-date when the element resizes.
   useIsomorphicLayoutEffect(() => {
     const el = ref.current;
     if (!el) return undefined;
 
     const check = () => setTruncated(el.scrollWidth > el.clientWidth);
-    check();
 
     return observeResize(el, check);
   }, []);
