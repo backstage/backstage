@@ -71,12 +71,12 @@ export const CatalogColumnBlueprint = createExtensionBlueprint({
     },
     { config, node },
   ) {
-    const { cell, filter, hidden: paramHidden, ...header } = params;
+    const { cell, filter, hidden: paramHidden, ...headerOptions } = params;
     const isHidden = config.hidden || paramHidden;
     yield catalogColumnHeaderDataRef(
       Object.fromEntries(
         Object.entries({
-          ...header,
+          ...headerOptions,
           ...(isHidden ? { hidden: true } : {}),
         }).filter(([, v]) => v !== undefined),
       ) as typeof header,
