@@ -122,7 +122,8 @@ describe('useIsTruncated', () => {
 
     act(() => jest.advanceTimersByTime(150));
     expect(hookResult.truncated).toBe(true);
-    expect(checkCount).toBe(1);
+    // 1 from the debounced resize callback + 1 from the every-render layout effect
+    expect(checkCount).toBe(2);
   });
 
   it('should reset truncated to false when overflow is resolved after resize', () => {
@@ -145,6 +146,16 @@ describe('useIsTruncated', () => {
       jest.advanceTimersByTime(150);
     });
     expect(hookResult.truncated).toBe(false);
+  });
+
+  it('should re-check truncation on rerender when content changes', () => {
+    const { rerender } = render(<TestHarness />);
+    expect(hookResult.truncated).toBe(false);
+
+    setElementDimensions(hookResult.ref.current!, 200, 100);
+
+    rerender(<TestHarness />);
+    expect(hookResult.truncated).toBe(true);
   });
 
   it('should disconnect the observer on unmount', () => {
