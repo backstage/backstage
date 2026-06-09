@@ -83,7 +83,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
   },
   configSchema: {
     version: z.enum(['v1', 'v2']).default('v1'),
-    pageSizeOptions: z.array(z.number().int().positive()).min(1).default([50]),
+    pageSizeOptions: z.array(z.number().int().positive()).min(1).optional(),
     pagination: z
       .union([
         z.boolean(),
