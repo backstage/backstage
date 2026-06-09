@@ -21,6 +21,7 @@ import type {
   NormalizedOption,
 } from '../../types/selectableCollection';
 import type { Key } from 'react-aria-components';
+import type { ChangeValueType } from 'react-stately/useSelectState';
 import type { SelectContentOwnProps, SelectProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SelectDefinition } from './definition';
@@ -165,9 +166,9 @@ function SelectImpl<
     ? collection.canonicalItems
     : undefined;
   const contentSearch = resolveContentSearch(resolvedSearch, collection);
-  const handleChange = (value: Key | Key[] | null) => {
+  const handleChange = (value: ChangeValueType<M>) => {
     trackedSelection.onSelectionChange(toSelection(value));
-    restProps.onChange?.(value as never);
+    restProps.onChange?.(value);
   };
 
   return (
