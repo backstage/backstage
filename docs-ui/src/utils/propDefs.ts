@@ -334,3 +334,33 @@ export const renderPropDefs: Record<string, PropDef> = {
     responsive: false,
   },
 };
+
+export const typographyWeightValues: string[] = ['regular', 'bold'];
+
+export const typographyVariantValues: string[] = [
+  'title-large',
+  'title-medium',
+  'title-small',
+  'title-x-small',
+  'body-large',
+  'body-medium',
+  'body-small',
+  'body-x-small',
+];
+
+export const typographyAsValues: string[] = [
+  'span',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'p',
+  'div',
+  'label',
+  'strong',
+  'em',
+  'small',
+  'legend',
+];

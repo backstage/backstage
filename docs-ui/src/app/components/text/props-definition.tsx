@@ -2,6 +2,9 @@ import {
   childrenPropDefs,
   classNamePropDefs,
   stylePropDefs,
+  typographyAsValues,
+  typographyVariantValues,
+  typographyWeightValues,
   type PropDef,
 } from '@/utils/propDefs';
 import { Chip } from '@/components/Chip';
@@ -9,16 +12,7 @@ import { Chip } from '@/components/Chip';
 export const textPropDefs: Record<string, PropDef> = {
   variant: {
     type: 'enum',
-    values: [
-      'title-large',
-      'title-medium',
-      'title-small',
-      'title-x-small',
-      'body-large',
-      'body-medium',
-      'body-small',
-      'body-x-small',
-    ],
+    values: typographyVariantValues,
     default: 'body-medium',
     responsive: true,
     description:
@@ -26,7 +20,7 @@ export const textPropDefs: Record<string, PropDef> = {
   },
   weight: {
     type: 'enum',
-    values: ['regular', 'bold'],
+    values: typographyWeightValues,
     default: 'regular',
     responsive: true,
     description: (
@@ -45,22 +39,7 @@ export const textPropDefs: Record<string, PropDef> = {
   },
   as: {
     type: 'enum',
-    values: [
-      'h1',
-      'h2',
-      'h3',
-      'h4',
-      'h5',
-      'h6',
-      'p',
-      'span',
-      'label',
-      'div',
-      'strong',
-      'em',
-      'small',
-      'legend',
-    ],
+    values: typographyAsValues,
     default: 'span',
     description:
       'HTML element to render. Use heading tags for semantic structure.',
