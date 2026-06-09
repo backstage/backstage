@@ -69,15 +69,14 @@ export const createGitlabRepoExistsAction = (options: {
       const repoID = `${owner}/${repo}`;
 
       try {
-        // Use the Gitbeaker Projects.show() API call to check if the repository exists.
         await api.Projects.show(repoID);
+        ctx.output('exists', true);
       } catch (error: any) {
-        // A 404 means the repository does not exist. For any other error, rethrow it and fail the action.
         if (error.cause?.response?.status === 404) {
-          throw new InputError(
-            `GitLab repository ${repoID} does not exist on ${host}`,
-          );
+          ctx.output('exists', false);
+          return;
         }
+
         throw error;
       }
     },
