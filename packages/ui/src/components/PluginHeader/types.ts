@@ -16,6 +16,7 @@
 
 import { TabsProps } from 'react-aria-components';
 import { TabMatchStrategy } from '../Tabs';
+import type { BreadcrumbEntry } from '../../hooks/useBreadcrumbs';
 
 /**
  * Own props for the {@link PluginHeader} component.
@@ -26,6 +27,7 @@ export interface PluginHeaderOwnProps {
   icon?: React.ReactNode;
   title?: string;
   titleLink?: string;
+  breadcrumbs?: BreadcrumbEntry[];
   customActions?: React.ReactNode;
   tabs?: HeaderTab[];
   onTabSelectionChange?: TabsProps['onSelectionChange'];

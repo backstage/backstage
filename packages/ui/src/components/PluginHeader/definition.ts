@@ -37,6 +37,7 @@ export const PluginHeaderDefinition = defineComponent<PluginHeaderOwnProps>()({
     icon: {},
     title: {},
     titleLink: {},
+    breadcrumbs: {},
     customActions: {},
     tabs: {},
     onTabSelectionChange: {},

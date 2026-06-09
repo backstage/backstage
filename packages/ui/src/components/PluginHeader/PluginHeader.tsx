@@ -22,9 +22,8 @@ import { type NavigateOptions } from 'react-router-dom';
 import { Children, useMemo, useRef } from 'react';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
 import { Box } from '../Box';
-import { Link } from '../Link';
 import { RiShapesLine } from '@remixicon/react';
-import { Text } from '../Text';
+import { Breadcrumb, Breadcrumbs } from '../Breadcrumbs';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -47,6 +46,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
     icon,
     title,
     titleLink,
+    breadcrumbs,
     customActions,
     onTabSelectionChange,
   } = ownProps;
@@ -122,6 +122,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
   }, []);
 
   const titleText = title || 'Your plugin';
+  const hasBreadcrumbs = breadcrumbs && breadcrumbs.length > 0;
 
   return (
     <div ref={rootRef} className={classes.root}>
@@ -131,15 +132,17 @@ export const PluginHeader = (props: PluginHeaderProps) => {
             {icon || <RiShapesLine />}
           </Box>
           <h1 className={classes.toolbarName}>
-            {titleLink ? (
-              <Link href={titleLink} standalone variant="body-medium">
-                {titleText}
-              </Link>
-            ) : (
-              <Text as="span" variant="body-medium">
-                {titleText}
-              </Text>
-            )}
+            <Breadcrumbs variant="body-medium">
+              {hasBreadcrumbs ? (
+                breadcrumbs.map(entry => (
+                  <Breadcrumb key={entry.label} href={entry.href}>
+                    {entry.label}
+                  </Breadcrumb>
+                ))
+              ) : (
+                <Breadcrumb href={titleLink}>{titleText}</Breadcrumb>
+              )}
+            </Breadcrumbs>
           </h1>
         </div>
         <div className={classes.toolbarControls}>{actionChildren}</div>
