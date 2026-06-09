@@ -97,6 +97,23 @@ describe('Select', () => {
     expect(screen.getByRole('button')).toHaveTextContent('Draft');
   });
 
+  it('supports the deprecated onSelectionChange alias', () => {
+    const onSelectionChange = jest.fn();
+
+    render(
+      <Select
+        aria-label="Status"
+        options={options}
+        onSelectionChange={onSelectionChange}
+      />,
+    );
+
+    openSelect();
+    fireEvent.click(screen.getByRole('option', { name: 'Draft' }));
+
+    expect(onSelectionChange).toHaveBeenCalledWith('draft');
+  });
+
   it('supports multiple selection', () => {
     const onChange = jest.fn();
 
