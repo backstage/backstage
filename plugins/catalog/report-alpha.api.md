@@ -1101,7 +1101,7 @@ const _default: OverridableFrontendPlugin<
     'page:catalog': OverridableExtensionDefinition<{
       config: {
         version: 'v1' | 'v2';
-        pageSizeOptions: number[];
+        pageSizeOptions: number[] | undefined;
         pagination:
           | boolean
           | {
