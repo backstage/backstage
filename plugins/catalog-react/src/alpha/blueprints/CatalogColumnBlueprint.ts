@@ -79,7 +79,7 @@ export const CatalogColumnBlueprint = createExtensionBlueprint({
           ...headerOptions,
           ...(isHidden ? { hidden: true } : {}),
         }).filter(([, v]) => v !== undefined),
-      ) as typeof header,
+      ) as typeof headerOptions,
     );
     yield catalogColumnCellDataRef(cell);
     yield* resolveEntityFilterData(filter, config, node);
