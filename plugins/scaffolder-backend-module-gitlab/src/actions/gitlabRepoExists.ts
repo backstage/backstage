@@ -66,10 +66,10 @@ export const createGitlabRepoExistsAction = (options: {
       }
 
       const api = getClient({ host, integrations, token });
-      const repoID = `${owner}/${repo}`;
+      const repoId = `${owner}/${repo}`;
 
       try {
-        await api.Projects.show(repoID);
+        await api.Projects.show(repoId);
         ctx.output('exists', true);
       } catch (error: any) {
         if (error.cause?.response?.status === 404) {
