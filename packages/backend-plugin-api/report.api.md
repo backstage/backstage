@@ -25,6 +25,7 @@ import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import { Readable } from 'node:stream';
 import type { Request as Request_2 } from 'express';
 import type { Response as Response_2 } from 'express';
+import { z } from 'zod/v4';
 
 // @public
 export interface AuditorService {
@@ -239,6 +240,7 @@ export namespace coreServices {
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root', 'singleton'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
+  const keyValueStore: ServiceRef<KeyValueStoreService, 'plugin', 'singleton'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
   const rootInstanceMetadata: ServiceRef<
     RootInstanceMetadataService,
@@ -438,6 +440,29 @@ export { isChildPath };
 
 // @public
 export function isDatabaseConflictError(e: unknown): boolean;
+
+// @public
+export interface KeyValueStoreNamespace<TInput, TOutput> {
+  delete(key: string): Promise<void>;
+  get(key: string): Promise<TOutput | undefined>;
+  list(): Promise<KeyValueStoreNamespaceEntry<TOutput>[]>;
+  listKeys(): Promise<string[]>;
+  set(key: string, value: TInput): Promise<void>;
+}
+
+// @public
+export type KeyValueStoreNamespaceEntry<TOutput> = {
+  key: string;
+  value: TOutput;
+};
+
+// @public
+export interface KeyValueStoreService {
+  withSchema<TSchema extends z.ZodType>(options: {
+    namespace: string;
+    schema: TSchema;
+  }): KeyValueStoreNamespace<z.input<TSchema>, z.output<TSchema>>;
+}
 
 // @public
 export interface LifecycleService {

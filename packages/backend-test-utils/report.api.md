@@ -25,6 +25,7 @@ import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import Keyv from 'keyv';
+import { KeyValueStoreService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -263,6 +264,19 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<HttpRouterService> | undefined,
       ) => ServiceMock<HttpRouterService>;
+  }
+  // (undocumented)
+  export namespace keyValueStore {
+    const // (undocumented)
+      factory: () => ServiceFactory<
+        KeyValueStoreService,
+        'plugin',
+        'singleton'
+      >;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<KeyValueStoreService> | undefined,
+      ) => ServiceMock<KeyValueStoreService>;
   }
   // (undocumented)
   export namespace lifecycle {

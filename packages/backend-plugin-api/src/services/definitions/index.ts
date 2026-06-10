@@ -34,6 +34,11 @@ export type {
   CacheServiceSetOptions,
 } from './CacheService';
 export type { DatabaseService } from './DatabaseService';
+export type {
+  KeyValueStoreService,
+  KeyValueStoreNamespace,
+  KeyValueStoreNamespaceEntry,
+} from './KeyValueStoreService';
 export type { DiscoveryService } from './DiscoveryService';
 export type { HttpAuthService } from './HttpAuthService';
 export type {
