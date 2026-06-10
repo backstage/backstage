@@ -39,13 +39,8 @@ export const TechDocsStateIndicator = () => {
   let StateAlert: JSX.Element | null = null;
   const classes = useStyles();
 
-  const {
-    state,
-    contentReload,
-    contentErrorMessage,
-    syncErrorMessage,
-    buildLog,
-  } = useTechDocsReader();
+  const { state, contentReload, syncErrorMessage, buildLog } =
+    useTechDocsReader();
 
   if (state === 'INITIAL_BUILD') {
     StateAlert = (
@@ -123,7 +118,7 @@ export const TechDocsStateIndicator = () => {
             {syncErrorMessage}
           </Alert>
         )}
-        <TechDocsNotFound errorMessage={contentErrorMessage} />
+        <TechDocsNotFound />
       </>
     );
   }
