@@ -525,6 +525,7 @@ export default {
               {
                 label: 'Architecture',
                 description: 'Architecture of the backend system.',
+                differentiator: 'backend-system/',
               },
               [
                 'backend-system/architecture/index',
