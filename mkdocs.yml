@@ -259,6 +259,5 @@ nav:
   - Contribute:
       - Contributions: 'contribute/index.md'
       - Project Structure: 'contribute/project-structure.md'
-      - Project Roadmap: 'overview/roadmap.md'
   - References:
       - Glossary: 'references/glossary.md'
