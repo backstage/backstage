@@ -45,6 +45,7 @@ export type TableRootOwnProps = {
   isPending?: boolean;
   /** @deprecated Use `isPending` instead. */
   loading?: boolean;
+  virtualized?: boolean;
 };
 
 /** @public */

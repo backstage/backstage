@@ -205,6 +205,7 @@ export function Table<T extends TableItem>({
             disabledKeys={disabledRows}
             stale={isStale}
             isPending={isInitialLoading}
+            virtualized={!!virtualized}
             aria-describedby={liveRegionId}
           >
             <TableHeader columns={visibleColumns}>

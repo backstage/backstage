@@ -54,6 +54,7 @@ export const TableDefinition = defineComponent<TableRootOwnProps>()({
     stale: { dataAttribute: true },
     isPending: { dataAttribute: true },
     loading: { dataAttribute: true },
+    virtualized: { dataAttribute: true },
   },
 });
 
