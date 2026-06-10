@@ -35,7 +35,6 @@ import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProc
 import { EntityProcessingRequest } from '../processing/types';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { ConfigReader } from '@backstage/config';
-import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
@@ -113,17 +112,11 @@ describe.each(databases.eachSupportedId())(
         }
       }
 
-      const stitcher = DefaultStitcher.fromConfig(new ConfigReader({}), {
-        knex,
-        logger: defaultLogger,
-        metrics: metricsServiceMock.mock(),
-      });
       const engine = new DefaultCatalogProcessingEngine({
         config: new ConfigReader({}),
         logger: defaultLogger,
         processingDatabase: db,
         knex: knex,
-        stitcher: stitcher,
         scheduler: mockServices.scheduler(),
         orchestrator: {
           async process(request: EntityProcessingRequest) {

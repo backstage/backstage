@@ -1197,7 +1197,7 @@ describe('OidcService', () => {
               redirectUri: 'http://unauthorized.com/callback',
               responseType: 'code',
             }),
-          ).rejects.toThrow('Redirect URI not registered');
+          ).rejects.toThrow('not registered in client metadata');
         });
 
         it('should throw error when redirect_uri does not match allowedRedirectUriPatterns', async () => {
@@ -1284,7 +1284,7 @@ describe('OidcService', () => {
               responseType: 'code',
               ...pkceParams,
             }),
-          ).rejects.toThrow('Redirect URI not registered');
+          ).rejects.toThrow('not registered in client metadata');
         });
 
         it('should accept IPv6 loopback redirect_uri with a different port per RFC 8252', async () => {
@@ -1389,7 +1389,7 @@ describe('OidcService', () => {
               responseType: 'code',
               ...pkceParams,
             }),
-          ).rejects.toThrow('Redirect URI not registered');
+          ).rejects.toThrow('not registered in client metadata');
         });
 
         it('should reject redirect_uri not exactly matching CIMD metadata', async () => {
@@ -1413,7 +1413,7 @@ describe('OidcService', () => {
               responseType: 'code',
               ...pkceParams,
             }),
-          ).rejects.toThrow('Redirect URI not registered');
+          ).rejects.toThrow('not registered in client metadata');
         });
 
         it('should require PKCE for CIMD clients', async () => {

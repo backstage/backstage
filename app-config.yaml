@@ -69,6 +69,10 @@ app:
           enableBackstageUi: true
 
     # Pages
+    - page:catalog:
+        config:
+          exportSettings:
+            enabled: true
     - page:catalog/entity:
         config:
           showNavItemIcons: true

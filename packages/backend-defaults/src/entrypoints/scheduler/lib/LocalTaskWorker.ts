@@ -77,11 +77,14 @@ export class LocalTaskWorker {
           attemptNum = 0;
           break;
         } catch (e) {
+          if (options.signal.aborted) {
+            break;
+          }
           attemptNum += 1;
           this.logger.warn(
             `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
           );
-          await sleep(Duration.fromObject({ seconds: 1 }));
+          await sleep(Duration.fromObject({ seconds: 1 }), options.signal);
         }
       }
     })();

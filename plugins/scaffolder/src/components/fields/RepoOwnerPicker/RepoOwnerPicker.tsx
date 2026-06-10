@@ -27,6 +27,8 @@ import { RepoOwnerPickerProps } from './schema';
 import { RepoOwnerPickerState } from './types';
 import { DefaultRepoOwnerPicker } from './DefaultRepoOwnerPicker';
 import { GitHubRepoOwnerPicker } from './GitHubRepoOwnerPicker';
+import { GitLabRepoOwnerPicker } from './GitLabRepoOwnerPicker';
+
 /**
  * The underlying component that is rendered in the form for the `RepoOwnerPicker`
  * field extension.
@@ -105,6 +107,22 @@ export const RepoOwnerPicker = (props: RepoOwnerPickerProps) => {
     case 'github':
       return (
         <GitHubRepoOwnerPicker
+          onChange={updateLocalState}
+          state={state}
+          rawErrors={rawErrors}
+          accessToken={
+            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
+          }
+          isDisabled={uiSchema?.['ui:disabled'] ?? false}
+          required={required}
+          schema={schema}
+          excludedOwners={excludedOwners}
+        />
+      );
+    case 'gitlab':
+      return (
+        <GitLabRepoOwnerPicker
           onChange={updateLocalState}
           state={state}
           rawErrors={rawErrors}

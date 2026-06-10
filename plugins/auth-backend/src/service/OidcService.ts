@@ -41,7 +41,7 @@ function validateRedirectUri(
   const normalized = `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
 
   if (!allowedPatterns.some(pattern => matcher.isMatch(normalized, pattern))) {
-    throw new InputError('Invalid redirect_uri');
+    throw new InputError(`Invalid redirect_uri '${normalized}'`);
   }
 }
 
@@ -221,7 +221,11 @@ export class OidcService {
 
     const allowedRedirectUriPatterns = this.config.getOptionalStringArray(
       'auth.experimentalDynamicClientRegistration.allowedRedirectUriPatterns',
-    ) ?? ['cursor://*', ...LOOPBACK_REDIRECT_PATTERNS];
+    ) ?? [
+      'cursor://*',
+      'https://www.cursor.com/*',
+      ...LOOPBACK_REDIRECT_PATTERNS,
+    ];
 
     for (const redirectUri of opts.redirectUris ?? []) {
       validateRedirectUri(redirectUri, allowedRedirectUriPatterns);
@@ -357,7 +361,7 @@ export class OidcService {
         matcher.isMatch(opts.clientId, pattern),
       )
     ) {
-      throw new InputError('Invalid client_id');
+      throw new InputError(`Invalid client_id '${opts.clientId}'`);
     }
 
     const cimdClient = await fetchCimdMetadata({
@@ -369,7 +373,9 @@ export class OidcService {
       validateRedirectUri(opts.redirectUri, cimd.allowedRedirectUriPatterns);
 
       if (!matchesRedirectUri(opts.redirectUri, cimdClient.redirectUris)) {
-        throw new InputError('Redirect URI not registered');
+        throw new InputError(
+          `Invalid redirect_uri '${opts.redirectUri}', not registered in client metadata`,
+        );
       }
     }
 
@@ -390,7 +396,7 @@ export class OidcService {
     }
 
     if (opts.redirectUri && !client.redirectUris.includes(opts.redirectUri)) {
-      throw new InputError('Invalid redirect_uri');
+      throw new InputError(`Invalid redirect_uri '${opts.redirectUri}'`);
     }
 
     return {

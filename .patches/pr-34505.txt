@@ -1,0 +1,1 @@
+Fix empty userSelect causing all users to be dropped in msgraph module

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search",
-  "version": "1.7.4-next.0",
+  "version": "1.7.5-next.1",
   "description": "The Backstage plugin that provides your backstage app with search",
   "backstage": {
     "role": "frontend-plugin",
@@ -70,7 +70,7 @@
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "qs": "^6.9.4",
+    "qs": "^6.15.2",
     "react-use": "^17.2.4",
     "zod": "^4.0.0"
   },

@@ -437,6 +437,7 @@ Once you've submitted a Pull Request (PR) the various bots will come out and do 
 - checking for missing changesets or confirming them
 - checking for commits for their DCO (Developer Certificate of Origin)
 - kick off the various CI builds
+- trigger GitHub Copilot review
 
 Once these steps are completed, it's just a matter of being patient. Reviews are coordinated by maintainers and reviewers based on project area ownership. Prioritization is driven by a number of different factors, but some important ones are size (smaller get higher priority) and alignment with current roadmap priorities. Timely responses to review comments also help keep the pull request moving faster. You may also have someone from the reviewers group review your pull request and request changes. Approval from a member of the reviewers group will greatly increase the priority of your pull request.
 
@@ -444,11 +445,21 @@ Once these steps are completed, it's just a matter of being patient. Reviews are
 
 Here are a few things that can help as you go through the review process:
 
-- You'll want to make sure all the automated checks are passing as generally the PR won't get a review if something like the CI build is failing
+- You'll want to make sure all the automated checks are passing, as generally the PR won't get a review if something like the CI build is failing. If you are having issues, then please ping an assigned reviewer asking for help.
+- GitHub Copilot will automatically review your PR. This gives you immediate feedback on your proposed changes. Please address the comments as that will speed up the process. Please make sure to comment on them either as addressed or why they should be ignored, don't simply resolve them.
 - PRs get automatically assigned so you don't need to ping people, they will be notified and have a process of their own for this
 - If you are waiting for a review or mid-review and your PR goes stale one of the easiest ways to clear the stale bot is by simply rebasing your PR
 - There are times where you might run into conflict with the `yarn.lock` during a rebase, to help with that make sure your `master` branch is up to date and then in your branch run `git checkout master yarn.lock` and then run `yarn install`, this will get you a conflict free `yarn.lock` file you can commit
 - If Vale finds issues with your documentation but it's a code reference you can fix it by putting backticks (`) around it. Now if it is a special word or maybe a name there are two ways you can fix that by adding it to the list of accepted words in the [accept.txt file](https://github.com/backstage/backstage/blob/master/.github/vale/config/vocabularies/Backstage/accept.txt) and them committing that change
+- During the periods before, during, and after BackstageCon/KubeCon - roughly every year around late March or early April for Europe and November for North America - the various reviewers will be at reduced capacity. We post a notice banner message about this across the `@backstage` organization on GitHub as a reminder. If you submit a PR during this period, expect delays.
+
+### Stale PRs
+
+If you find your PR went stale without a review:
+
+1. Make sure you followed up on the [Review Tips](#review-tips), specifically the first two items, given the rate of new PRs the reviewers won't look at them unless those items have been covered.
+2. When your PR gets labeled as stale this is an acceptable point to ping the reviewers on the PR itself asking for a review.
+3. In the hopefully rare case that your PR closes due to stale then this is when it is reasonable to reach out on Discord or attend a related [Special Interest Group (SIG)](https://github.com/backstage/community/tree/main/sigs) meeting asking for review.
 
 ### Merging to Master
 

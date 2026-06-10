@@ -15,9 +15,9 @@
  */
 
 import { TestDatabases } from '@backstage/backend-test-utils';
-import { IncrementalIngestionDatabaseManager } from './IncrementalIngestionDatabaseManager';
-import { randomUUID as uuid } from 'node:crypto';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
+import { randomUUID as uuid } from 'node:crypto';
+import { IncrementalIngestionDatabaseManager } from './IncrementalIngestionDatabaseManager';
 
 const migrationsDir = `${__dirname}/../../migrations`;
 
@@ -239,6 +239,29 @@ describe.each(databases.eachSupportedId())(
       const remaining = await knex('ingestion_mark_entities').select('ref');
       expect(remaining).toHaveLength(1);
       expect(remaining[0].ref).toBe('component:default/y');
+    });
+
+    it('updateIngestionRecordById with long last_error value', async () => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      const manager = new IncrementalIngestionDatabaseManager({ client: knex });
+      const { ingestionId } = (await manager.createProviderIngestionRecord(
+        'testLastErrorProvider',
+      ))!;
+      const expectedLastError = 'a'.repeat(256);
+
+      await manager.updateIngestionRecordById({
+        ingestionId,
+        update: {
+          last_error: expectedLastError,
+        },
+      });
+      const { last_error } = (await manager.getCurrentIngestionRecord(
+        'testLastErrorProvider',
+      ))!;
+
+      expect(last_error).toEqual(expectedLastError);
     });
   },
 );

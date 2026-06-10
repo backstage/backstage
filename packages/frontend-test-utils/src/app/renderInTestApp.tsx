@@ -15,7 +15,7 @@
  */
 
 import { Fragment } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { prepareSpecializedApp } from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
@@ -80,6 +80,24 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   features?: FrontendFeature[];
 
   /**
+   * The route path pattern that the test element is rendered at. When set,
+   * the element is wrapped in a `<Route>` with this path, enabling
+   * `useParams()` to extract parameters from the URL.
+   *
+   * Should be used together with `initialRouteEntries` to set a concrete
+   * URL that matches the pattern.
+   *
+   * @example
+   * ```ts
+   * renderInTestApp(<EntityPage />, {
+   *   mountPath: '/catalog/:namespace/:kind/:name',
+   *   initialRouteEntries: ['/catalog/default/component/my-entity'],
+   * })
+   * ```
+   */
+  mountPath?: string;
+
+  /**
    * Initial route entries to use for the router.
    */
   initialRouteEntries?: string[];
@@ -125,12 +143,28 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
   options?: TestAppOptions<TApiPairs>,
 ): RenderResult {
+  const mountPath = options?.mountPath;
+
   const extensions: Array<ExtensionDefinition> = [
     createExtension({
       attachTo: { id: 'app/root', input: 'children' },
       output: [coreExtensionData.reactElement],
       factory: () => {
-        return [coreExtensionData.reactElement(element)];
+        let content: JSX.Element = element;
+
+        if (mountPath) {
+          const routePath =
+            mountPath === '/' || mountPath.endsWith('/*')
+              ? mountPath
+              : `${mountPath.replace(/\/$/, '')}/*`;
+          content = (
+            <Routes>
+              <Route path={routePath} element={content} />
+            </Routes>
+          );
+        }
+
+        return [coreExtensionData.reactElement(content)];
       },
     }),
   ];

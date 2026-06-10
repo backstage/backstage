@@ -199,6 +199,18 @@ export const spec = {
           },
         },
       },
+      totalItems: {
+        name: 'totalItems',
+        in: 'query',
+        description:
+          "Controls whether the response's `totalItems` field is computed. Computing\nthe total may be expensive for large catalogs; pass `exclude` if the\ncaller does not need it (e.g. cursor-paginated UIs that only display the\ncount cosmetically). Defaults to `include`. New values may be added in\nthe future, such as an approximate mode.\n",
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+          enum: ['include', 'exclude'],
+        },
+      },
     },
     requestBodies: {},
     responses: {
@@ -1225,6 +1237,9 @@ export const spec = {
             $ref: '#/components/parameters/filter',
           },
           {
+            $ref: '#/components/parameters/totalItems',
+          },
+          {
             name: 'fullTextFilterTerm',
             in: 'query',
             description: 'Text search term.',
@@ -1331,6 +1346,12 @@ export const spec = {
                     items: {
                       type: 'string',
                     },
+                  },
+                  totalItems: {
+                    type: 'string',
+                    enum: ['include', 'exclude'],
+                    description:
+                      "Controls whether the response's `totalItems` field is\ncomputed. Pass `exclude` to skip the count when the caller\ndoesn't need it. Defaults to `include`.\n",
                   },
                   query: {
                     $ref: '#/components/schemas/JsonObject',

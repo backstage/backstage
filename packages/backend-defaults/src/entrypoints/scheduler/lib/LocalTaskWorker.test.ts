@@ -140,6 +140,31 @@ describe('LocalTaskWorker', () => {
     controller.abort();
   });
 
+  it('stops retrying when the abort signal is triggered', async () => {
+    const fn = jest.fn().mockRejectedValue(new Error('always fails'));
+    const controller = new AbortController();
+
+    const worker = new LocalTaskWorker('a', fn, logger);
+    worker.start(
+      {
+        version: 2,
+        cadence: 'PT0.1S',
+        timeoutAfterDuration: 'PT1S',
+      },
+      { signal: controller.signal },
+    );
+
+    await waitFor(() => {
+      expect(fn).toHaveBeenCalled();
+    });
+
+    const callsBeforeAbort = fn.mock.calls.length;
+    controller.abort();
+
+    await new Promise(r => setTimeout(r, 500));
+    expect(fn.mock.calls.length).toBe(callsBeforeAbort);
+  });
+
   it('cannot cancel a task that is not running', async () => {
     const fn = jest.fn();
     const controller = new AbortController();

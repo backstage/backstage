@@ -13,8 +13,8 @@ The Actions Service is a core service that provides a standardized interface for
 
 The Actions Service implements the `ActionsService` interface, which provides two primary methods:
 
-- **`list()`:** Retrieves all available actions with their complete metadata
-- **`invoke()`:** Executes a specific action by ID with provided input data
+- **`list()`:** Retrieves all available actions with their complete metadata, including any declared secrets schema
+- **`invoke()`:** Executes a specific action by ID with provided input data and optional secrets
 
 The service works in conjunction with the [Actions Registry Service](./actions-registry.md), where actions are registered by plugins and then made available for discovery and execution through this service.
 
@@ -119,11 +119,13 @@ export async function executeAction(
   actionId: string,
   input: JsonObject,
   credentials: BackstageCredentials,
+  secrets?: JsonObject,
 ) {
   try {
     const { output } = await actionsService.invoke({
       id: actionId,
       input,
+      secrets,
       credentials,
     });
 
@@ -155,6 +157,29 @@ async function fetchUserInfo(
   return output;
 }
 ```
+
+## Invoking Actions with Secrets
+
+Some actions declare a `secrets` schema for external credentials they need from the end user. You can discover which actions require secrets by inspecting the `schema.secrets` field in the action metadata returned by `list()`. When invoking an action that requires secrets, pass them alongside the input:
+
+```typescript
+const { actions } = await actionsService.list({ credentials });
+const action = actions.find(a => a.id === 'my-plugin:create-issue');
+
+if (action?.schema.secrets) {
+  // This action needs secrets — collect them from the user first
+  const { output } = await actionsService.invoke({
+    id: action.id,
+    input: { repo: 'backstage/backstage', title: 'My issue' },
+    secrets: { githubToken: collectedToken },
+    credentials,
+  });
+}
+```
+
+If you provide secrets to an action that does not declare a secrets schema, the invocation is rejected with an `InputError`. Similarly, omitting required secrets results in an `InputError`.
+
+For more details on how to declare secrets in an action, see the [Actions Registry Secrets](./actions-registry.md#secrets) documentation.
 
 ## Best Practices
 

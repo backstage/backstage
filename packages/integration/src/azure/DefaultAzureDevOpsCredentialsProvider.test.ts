@@ -147,7 +147,7 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
       expect(fromTokenCredential).toHaveBeenCalledTimes(1);
 
       expect(fromTokenCredential).toHaveBeenCalledWith(
-        new DefaultAzureCredential(),
+        expect.any(MockedDefaultAzureCredential),
       );
     });
 
@@ -170,7 +170,7 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
       expect(fromTokenCredential).toHaveBeenCalledTimes(2);
 
       expect(fromTokenCredential).toHaveBeenCalledWith(
-        new DefaultAzureCredential(),
+        expect.any(MockedDefaultAzureCredential),
       );
     });
 

@@ -29,8 +29,19 @@ import {
 } from './GithubMultiOrgEntityProvider';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
+import {
+  createRestClient,
+  isGitHubEnterprise,
+  isSuspended,
+} from '../lib/github';
 
 jest.mock('@octokit/graphql');
+jest.mock('../lib/github', () => ({
+  ...jest.requireActual('../lib/github'),
+  createRestClient: jest.fn(),
+  isGitHubEnterprise: jest.fn(),
+  isSuspended: jest.fn(),
+}));
 
 const getAllInstallationsMock = jest.fn();
 jest.mock('@backstage/integration', () => ({
@@ -2468,6 +2479,147 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           ],
           removed: [],
+        });
+      });
+    });
+
+    describe('suspended user handling', () => {
+      let suspendedEvents: EventsService;
+      let suspendedConnection: EntityProviderConnection;
+
+      beforeEach(async () => {
+        const logger = mockServices.logger.mock();
+        suspendedEvents = DefaultEventsService.create({ logger });
+
+        suspendedConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+
+        const config = new ConfigReader({
+          integrations: {
+            github: [{ host: 'github.com' }],
+          },
+        });
+
+        const mockGetCredentials = jest.fn().mockReturnValue({
+          headers: { token: 'blah' },
+          type: 'app',
+        });
+
+        (createRestClient as jest.Mock).mockReturnValue({});
+        (isGitHubEnterprise as jest.Mock).mockResolvedValue(true);
+        (isSuspended as jest.Mock).mockResolvedValue(true);
+
+        const entityProvider = GithubMultiOrgEntityProvider.fromConfig(config, {
+          events: suspendedEvents,
+          id: 'my-id',
+          githubCredentialsProvider: { getCredentials: mockGetCredentials },
+          githubUrl: 'https://github.com',
+          logger,
+          orgs: ['orgA', 'orgB'],
+          excludeSuspendedUsers: true,
+          experimental_checkForSuspendedUsersWithRest: true,
+          cache: mockServices.cache.mock(),
+        });
+
+        await entityProvider.connect(suspendedConnection);
+      });
+
+      it('should skip adding a suspended user on member_added event', async () => {
+        await suspendedEvents.publish({
+          topic: 'github.organization',
+          eventPayload: {
+            action: 'member_added',
+            organization: { login: 'orgA' },
+            membership: {
+              user: {
+                name: 'a',
+                node_id: 'f',
+                avatar_url: 'https://example.com/avatar',
+                email: 'a@test.com',
+                login: 'a',
+              },
+            },
+          },
+        });
+
+        expect(suspendedConnection.applyMutation).not.toHaveBeenCalled();
+        expect(isSuspended).toHaveBeenCalledWith('a', expect.anything(), {
+          org: 'orgA',
+        });
+      });
+
+      it('should exclude suspended user on membership event', async () => {
+        const mockClient = jest.fn();
+
+        mockClient.mockResolvedValueOnce({
+          organization: {
+            team: {
+              slug: 'team',
+              combinedSlug: 'orgA/team',
+              name: 'Team',
+              description: 'The team',
+              avatarUrl: 'http://example.com/team.jpeg',
+              parentTeam: null,
+              members: {
+                pageInfo: { hasNextPage: false },
+                nodes: [{ login: 'a' }],
+              },
+            },
+          },
+        });
+
+        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+        await suspendedEvents.publish({
+          topic: 'github.membership',
+          eventPayload: {
+            action: 'added',
+            team: {
+              name: 'Team',
+              slug: 'team',
+              description: 'The team',
+              html_url: 'https://github.com/orgs/orgA/teams/team',
+              parent: null,
+            },
+            member: {
+              login: 'a',
+              avatar_url: 'https://example.com/avatar',
+              email: 'a@test.com',
+              name: 'a',
+              node_id: 'f',
+            },
+            organization: { login: 'orgA' },
+          },
+        });
+
+        await new Promise(process.nextTick);
+
+        expect(suspendedConnection.applyMutation).toHaveBeenCalledTimes(1);
+        expect(suspendedConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: [
+            {
+              locationKey: 'github-multi-org-provider:my-id',
+              entity: expect.objectContaining({
+                kind: 'Group',
+                metadata: expect.objectContaining({ name: 'team' }),
+              }),
+            },
+          ],
+          removed: [
+            {
+              locationKey: 'github-multi-org-provider:my-id',
+              entity: expect.objectContaining({
+                kind: 'User',
+                metadata: expect.objectContaining({ name: 'a' }),
+              }),
+            },
+          ],
+        });
+        expect(isSuspended).toHaveBeenCalledWith('a', expect.anything(), {
+          org: 'orgA',
         });
       });
     });

@@ -25,6 +25,7 @@ import {
   createServiceFactory,
   ExtensionPointFactoryContext,
 } from '@backstage/backend-plugin-api';
+import type { ConnectionRegistration } from '@backstage/backend-plugin-api/alpha';
 import {
   ExtensionPointFactoryMiddleware,
   ServiceOrExtensionPoint,
@@ -48,6 +49,11 @@ import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-p
 import { BackendStartupResult } from './types';
 import { BackendStartupError } from './BackendStartupError';
 import { createAllowBootFailurePredicate } from './createAllowBootFailurePredicate';
+import {
+  connectionsServiceRef,
+  type ConnectionsService,
+} from '@backstage/connections';
+import { withDeclaredConnections } from './withDeclaredConnections';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -104,6 +110,45 @@ const instanceRegistry = new (class InstanceRegistry {
     }
   };
 })();
+
+function callerKey(pluginId: string, moduleId?: string): string {
+  return moduleId ? `${pluginId}\0${moduleId}` : pluginId;
+}
+
+function collectCallerConnectionRegistrations(
+  registrations: ReturnType<InternalBackendRegistrations['getRegistrations']>,
+): Map<string, ConnectionRegistration[]> {
+  const byCaller = new Map<string, ConnectionRegistration[]>();
+
+  for (const registration of registrations) {
+    const declared =
+      'connections' in registration && Array.isArray(registration.connections)
+        ? registration.connections
+        : [];
+    if (declared.length === 0) continue;
+
+    const key =
+      'moduleId' in registration
+        ? callerKey(registration.pluginId, registration.moduleId)
+        : callerKey(registration.pluginId);
+
+    const target =
+      byCaller.get(key) ??
+      (() => {
+        const list: ConnectionRegistration[] = [];
+        byCaller.set(key, list);
+        return list;
+      })();
+
+    for (const decl of declared) {
+      if (!target.some(c => c.type === decl.type)) {
+        target.push({ ...decl });
+      }
+    }
+  }
+
+  return byCaller;
+}
 
 function createRootInstanceMetadataServiceFactory(
   rawRegistrations: InternalBackendRegistrations[],
@@ -171,6 +216,29 @@ export class BackendInitializer {
   #registeredFeatures = new Array<Promise<BackendFeature>>();
   #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
   #extensionPointFactoryMiddleware: ExtensionPointFactoryMiddleware[];
+  #callerConnectionRegistrations = new Map<string, ConnectionRegistration[]>();
+
+  #getConnectionRegistrations(
+    pluginId: string,
+    moduleId?: string,
+  ): ConnectionRegistration[] {
+    if (moduleId) {
+      return (
+        this.#callerConnectionRegistrations.get(
+          callerKey(pluginId, moduleId),
+        ) ?? []
+      );
+    }
+    // Aggregate registrations from the plugin
+    const result: ConnectionRegistration[] = [];
+    for (const [key, registrations] of this.#callerConnectionRegistrations) {
+      if (key === pluginId) {
+        result.push(...registrations);
+      }
+    }
+    return result;
+  }
+
   #unhandledRejectionHandler?: (reason: Error) => void;
   #uncaughtExceptionHandler?: (error: Error) => void;
 
@@ -223,7 +291,21 @@ export class BackendInitializer {
           pluginId,
         );
         if (impl) {
-          result.set(name, impl);
+          if (ref.id === connectionsServiceRef.id) {
+            const registrations = this.#getConnectionRegistrations(
+              pluginId,
+              moduleId,
+            );
+            result.set(
+              name,
+              withDeclaredConnections(
+                impl as ConnectionsService,
+                registrations,
+              ),
+            );
+          } else {
+            result.set(name, impl);
+          }
         } else {
           missingRefs.add(ref);
         }
@@ -332,6 +414,9 @@ export class BackendInitializer {
     const allRegistrations = this.#registrations.flatMap(f =>
       f.getRegistrations(),
     );
+
+    this.#callerConnectionRegistrations =
+      collectCallerConnectionRegistrations(allRegistrations);
 
     const allPluginIds = [
       ...new Set(

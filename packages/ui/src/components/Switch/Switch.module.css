@@ -18,6 +18,12 @@
 
 @layer components {
   .bui-Switch {
+    --switch-indicator-bg: var(--bui-gray-4);
+
+    [data-theme-mode='dark'] & {
+      --switch-indicator-bg: var(--bui-gray-6);
+    }
+
     display: flex;
     /* This is needed so the HiddenInput is positioned correctly */
     position: relative;
@@ -28,23 +34,45 @@
     cursor: pointer;
 
     &[data-disabled] {
+      --switch-thumb-bg: var(--bui-gray-3);
+
+      &[data-on-bg='neutral-1'] {
+        --switch-thumb-bg: var(--bui-gray-2);
+      }
+
+      &[data-on-bg='neutral-2'] {
+        --switch-thumb-bg: var(--bui-gray-3);
+      }
+
+      &[data-on-bg='neutral-3'] {
+        --switch-thumb-bg: var(--bui-gray-2);
+      }
+
       cursor: not-allowed;
       color: var(--bui-fg-disabled);
     }
 
-    &[data-pressed] .bui-SwitchIndicator {
-      &:before {
-        background: var(--bui-fg-solid);
-      }
+    [data-theme-mode='dark'] &[data-disabled] {
+      --switch-thumb-bg: var(--bui-gray-5);
     }
 
     &[data-selected] {
       .bui-SwitchIndicator {
-        background: var(--bui-bg-solid);
+        background: var(--bui-accent-bg);
 
         &:before {
-          background: var(--bui-fg-solid);
+          background: var(--bui-accent-fg);
           transform: translateX(100%);
+        }
+      }
+
+      &[data-disabled] {
+        .bui-SwitchIndicator {
+          background: var(--bui-accent-bg-disabled);
+
+          &:before {
+            background: var(--bui-accent-fg-disabled);
+          }
         }
       }
 
@@ -65,7 +93,7 @@
     width: 2rem;
     height: 1.143rem;
     border: 2px;
-    background: var(--bui-bg-neutral-3);
+    background: var(--switch-indicator-bg);
     border-radius: 1.143rem;
     transition: all 200ms;
 
@@ -75,7 +103,7 @@
       margin: 0.143rem;
       width: 0.857rem;
       height: 0.857rem;
-      background: var(--bui-fg-solid);
+      background: var(--switch-thumb-bg, var(--bui-accent-fg));
       border-radius: 16px;
       transition: all 200ms;
     }

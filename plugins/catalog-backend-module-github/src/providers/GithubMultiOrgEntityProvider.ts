@@ -38,6 +38,7 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
+import { Octokit } from '@octokit/core';
 import { graphql } from '@octokit/graphql';
 import {
   InstallationCreatedEvent,
@@ -51,7 +52,7 @@ import {
   TeamEditedEvent,
   TeamEvent,
 } from '@octokit/webhooks-types';
-import { merge } from 'lodash';
+import { memoize, merge } from 'lodash';
 import { randomUUID } from 'node:crypto';
 
 import {
@@ -74,14 +75,18 @@ import {
   ANNOTATION_GITHUB_USER_LOGIN,
 } from '../lib/annotation';
 import {
+  createRestClient,
   getOrganizationsFromUser,
   getOrganizationTeam,
   getOrganizationTeamsForUser,
   getOrganizationTeamsFromUsers,
+  isGitHubEnterprise,
+  isSuspended,
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
 import {
+  CacheService,
   LoggerService,
   SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
@@ -182,6 +187,21 @@ export interface GithubMultiOrgEntityProviderOptions {
    * Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
    */
   excludeSuspendedUsers?: boolean;
+
+  /**
+   * Optional cache service used for conditional HTTP request caching when
+   * checking suspended users via the REST API.
+   */
+  cache?: CacheService;
+
+  /**
+   * When set to true alongside `excludeSuspendedUsers`, use the GitHub REST API
+   * to check for suspended users instead of the GraphQL `suspendedAt` field.
+   * REST responses are cached using conditional HTTP requests to minimize rate
+   * limit usage.
+   * @defaultValue false
+   */
+  experimental_checkForSuspendedUsersWithRest?: boolean;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -230,6 +250,9 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
       pageSizes: options.pageSizes,
       excludeSuspendedUsers: options.excludeSuspendedUsers,
+      cache: options.cache,
+      experimental_checkForSuspendedUsersWithRest:
+        options.experimental_checkForSuspendedUsersWithRest,
     });
 
     provider.schedule(options.schedule);
@@ -251,6 +274,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       alwaysUseDefaultNamespace?: boolean;
       pageSizes?: Partial<GithubPageSizes>;
       excludeSuspendedUsers?: boolean;
+      cache?: CacheService;
+      experimental_checkForSuspendedUsersWithRest?: boolean;
     },
   ) {}
 
@@ -264,6 +289,45 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       ...DEFAULT_PAGE_SIZES,
       ...this.options.pageSizes,
     };
+  }
+
+  private get useRestSuspendedCheck(): boolean {
+    return (
+      !!this.options.excludeSuspendedUsers &&
+      !!this.options.experimental_checkForSuspendedUsersWithRest
+    );
+  }
+
+  private readonly restClients = new Map<string, Octokit>();
+
+  private getRestClient(org: string): Octokit {
+    let client = this.restClients.get(org);
+    if (!client) {
+      client = createRestClient({
+        baseUrl: this.options.gitHubConfig.apiBaseUrl,
+        orgUrl: `${this.options.githubUrl}/${org}`,
+        credentialsProvider: this.options.githubCredentialsProvider,
+        logger: this.options.logger,
+        cache: this.options.cache,
+      });
+      this.restClients.set(org, client);
+    }
+    return client;
+  }
+
+  private isGitHubEnterprise = memoize((org: string) =>
+    isGitHubEnterprise(this.getRestClient(org)),
+  );
+
+  private async shouldExclude(login: string, org: string): Promise<boolean> {
+    if (!this.useRestSuspendedCheck) {
+      return false;
+    }
+    const restClient = this.getRestClient(org);
+    return (
+      (await this.isGitHubEnterprise(org)) &&
+      (await isSuspended(login, restClient, { org }))
+    );
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
@@ -317,6 +381,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         this.options.userTransformer,
         pageSizes,
         this.options.excludeSuspendedUsers,
+        this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
       );
 
       const { teams } = await getOrganizationTeams(
@@ -487,6 +552,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       this.options.userTransformer,
       pageSizes,
       this.options.excludeSuspendedUsers,
+      this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
     );
 
     const { teams } = await getOrganizationTeams(
@@ -556,6 +622,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       node_id,
     } = event.membership.user;
     const org = event.organization.login;
+
+    if (
+      event.action === 'member_added' &&
+      (await this.shouldExclude(login, org))
+    ) {
+      return;
+    }
+
     const { headers } =
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
@@ -729,6 +803,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       this.options.userTransformer,
       pageSizes,
       this.options.excludeSuspendedUsers,
+      this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
     );
 
     const usersFromChangedGroup = isGroupEntity(team)
@@ -858,43 +933,49 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       },
     );
 
-    const mutationEntities = [team];
+    const addedEntities: Entity[] = [team];
+    const removedEntities: Entity[] = [];
 
     if (user && isUserEntity(user)) {
-      const { orgs } = await getOrganizationsFromUser(client, login);
-      const userApplicableOrgs = orgs.filter(o => applicableOrgs.includes(o));
-      for (const userOrg of userApplicableOrgs) {
-        const { headers: orgHeaders } =
-          await this.options.githubCredentialsProvider.getCredentials({
-            url: `${this.options.githubUrl}/${userOrg}`,
+      if (await this.shouldExclude(login, org)) {
+        removedEntities.push(user);
+      } else {
+        const { orgs } = await getOrganizationsFromUser(client, login);
+        const userApplicableOrgs = orgs.filter(o => applicableOrgs.includes(o));
+        for (const userOrg of userApplicableOrgs) {
+          const { headers: orgHeaders } =
+            await this.options.githubCredentialsProvider.getCredentials({
+              url: `${this.options.githubUrl}/${userOrg}`,
+            });
+          const orgClient = graphql.defaults({
+            baseUrl: this.options.gitHubConfig.apiBaseUrl,
+            headers: orgHeaders,
           });
-        const orgClient = graphql.defaults({
-          baseUrl: this.options.gitHubConfig.apiBaseUrl,
-          headers: orgHeaders,
-        });
 
-        const { teams } = await getOrganizationTeamsForUser(
-          orgClient,
-          userOrg,
-          login,
-          this.defaultMultiOrgTeamTransformer.bind(this),
-          pageSizes,
-        );
+          const { teams } = await getOrganizationTeamsForUser(
+            orgClient,
+            userOrg,
+            login,
+            this.defaultMultiOrgTeamTransformer.bind(this),
+            pageSizes,
+          );
 
-        if (areGroupEntities(teams)) {
-          assignGroupsToUser(user, teams);
+          if (areGroupEntities(teams)) {
+            assignGroupsToUser(user, teams);
+          }
         }
-      }
 
-      mutationEntities.push(user);
+        addedEntities.push(user);
+      }
     }
 
-    const { added, removed } =
-      this.createAddEntitiesOperation(mutationEntities);
+    const materializedAdd = this.createAddEntitiesOperation(addedEntities);
+    const materializedRemove =
+      this.createRemoveEntitiesOperation(removedEntities);
     await this.connection.applyMutation({
       type: 'delta',
-      removed,
-      added,
+      removed: [...materializedAdd.removed, ...materializedRemove.removed],
+      added: [...materializedAdd.added, ...materializedRemove.added],
     });
   }
 

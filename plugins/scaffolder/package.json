@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder",
-  "version": "1.37.0-next.2",
+  "version": "1.38.0-next.1",
   "description": "The Backstage plugin that helps you create new things",
   "backstage": {
     "role": "frontend-plugin",
@@ -98,7 +98,7 @@
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
-    "qs": "^6.9.4",
+    "qs": "^6.15.2",
     "react-aria-components": "^1.14.0",
     "react-resizable": "^3.0.5",
     "react-resizable-panels": "^3.0.4",

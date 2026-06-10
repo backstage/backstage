@@ -18,11 +18,18 @@ Phoen = "Phoen"       # GitHub username K-Phoen in plugin metadata
 Hashi = "Hashi"       # prefix of HashiCorp company name
 ba = "ba"             # Swedish word in comment in buildDocs.ts
 mosquitto = "mosquitto"  # correct spelling of the Eclipse Mosquitto MQTT broker
-Additiona = "Additiona" # deprecated field name getAdditionaRemoteInfo kept for backward compat
 ALLO = "ALLO"           # prefix of ALLOWs in AuthorizedSearchEngine.ts comment
 VALIDAT = "VALIDAT"     # prefix of VALIDATEs in catalog-backend migration comment
 styl = "styl"           # Stylus stylesheet file extension in jest.js regex pattern
 Entitie = "Entitie"             # camelCase fragment of starredEntitie$ (RxJS observable naming convention in StarredEntitiesApi)
+
+# Deprecated names kept for backward compatibility.
+# Remove each entry when the corresponding deprecated symbol is removed.
+Additiona = "Additiona"         # deprecated field name `getAdditionaRemoteInfo` (use `getAdditionalRemoteInfo`)
+Intergation = "Intergation"     # deprecated alias `AzureBlobStorageIntergation` (use `AzureBlobStorageIntegration`) in @backstage/integration
+Tooptip = "Tooptip"             # deprecated translation key `editSettingsTooptip` (use `editSettingsTooltip`) in @backstage/plugin-home
+heder = "heder"                 # deprecated `TableFiltersClassKey` literal `'heder'` (use `'header'`) in @backstage/core-components
+Colums = "Colums"               # deprecated `RelatedEntitiesCard.domainEntityColums` (use `domainEntityColumns`) in @backstage/plugin-catalog
 
 [files]
 extend-exclude = [

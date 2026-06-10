@@ -23,8 +23,14 @@ import {
 /**
  * @alpha
  */
-export type ActionsRegistryActionContext<TInputSchema extends AnyZodObject> = {
+export type ActionsRegistryActionContext<
+  TInputSchema extends AnyZodObject,
+  TSecretsSchema extends AnyZodObject | undefined = undefined,
+> = {
   input: z.infer<TInputSchema>;
+  secrets: TSecretsSchema extends AnyZodObject
+    ? z.infer<TSecretsSchema>
+    : undefined;
   logger: LoggerService;
   credentials: BackstageCredentials;
 };
@@ -50,6 +56,7 @@ export type ActionsRegistryActionExample<
 export type ActionsRegistryActionOptions<
   TInputSchema extends AnyZodObject,
   TOutputSchema extends AnyZodObject,
+  TSecretsSchema extends AnyZodObject | undefined = undefined,
 > = {
   name: string;
   title: string;
@@ -57,6 +64,9 @@ export type ActionsRegistryActionOptions<
   schema: {
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
+    secrets?: (
+      zod: typeof z,
+    ) => TSecretsSchema extends AnyZodObject ? TSecretsSchema : never;
   };
   examples?: Array<ActionsRegistryActionExample<TInputSchema, TOutputSchema>>;
   visibilityPermission?: BasicPermission;
@@ -66,7 +76,7 @@ export type ActionsRegistryActionOptions<
     readOnly?: boolean;
   };
   action: (
-    context: ActionsRegistryActionContext<TInputSchema>,
+    context: ActionsRegistryActionContext<TInputSchema, TSecretsSchema>,
   ) => Promise<
     z.infer<TOutputSchema> extends void
       ? void
@@ -81,7 +91,12 @@ export interface ActionsRegistryService {
   register<
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
+    TSecretsSchema extends AnyZodObject | undefined = undefined,
   >(
-    options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>,
+    options: ActionsRegistryActionOptions<
+      TInputSchema,
+      TOutputSchema,
+      TSecretsSchema
+    >,
   ): void;
 }

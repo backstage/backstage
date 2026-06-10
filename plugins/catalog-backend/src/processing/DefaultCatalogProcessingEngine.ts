@@ -27,7 +27,7 @@ import { trace } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import { CatalogProcessingOrchestrator, EntityProcessingResult } from './types';
-import { Stitcher, stitchingStrategyFromConfig } from '../stitching/types';
+import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { startTaskPipeline } from './TaskPipeline';
 import { Config } from '@backstage/config';
 import {
@@ -65,7 +65,6 @@ export class DefaultCatalogProcessingEngine {
   private readonly knex: Knex;
   private readonly processingDatabase: ProcessingDatabase;
   private readonly orchestrator: CatalogProcessingOrchestrator;
-  private readonly stitcher: Stitcher;
   private readonly createHash: () => Hash;
   private readonly pollingIntervalMs: number;
   private readonly orphanCleanupIntervalMs: number;
@@ -85,7 +84,6 @@ export class DefaultCatalogProcessingEngine {
     knex: Knex;
     processingDatabase: ProcessingDatabase;
     orchestrator: CatalogProcessingOrchestrator;
-    stitcher: Stitcher;
     createHash: () => Hash;
     pollingIntervalMs?: number;
     orphanCleanupIntervalMs?: number;
@@ -103,7 +101,6 @@ export class DefaultCatalogProcessingEngine {
     this.knex = options.knex;
     this.processingDatabase = options.processingDatabase;
     this.orchestrator = options.orchestrator;
-    this.stitcher = options.stitcher;
     this.createHash = options.createHash;
     this.pollingIntervalMs = options.pollingIntervalMs ?? 1_000;
     this.orphanCleanupIntervalMs = options.orphanCleanupIntervalMs ?? 30_000;
@@ -283,7 +280,8 @@ export class DefaultCatalogProcessingEngine {
                 });
               });
 
-              await this.stitcher.stitch({
+              await markForStitching({
+                knex: this.knex,
                 entityRefs: [stringifyEntityRef(unprocessedEntity)],
               });
 
@@ -338,7 +336,8 @@ export class DefaultCatalogProcessingEngine {
               }
             });
 
-            await this.stitcher.stitch({
+            await markForStitching({
+              knex: this.knex,
               entityRefs: setOfThingsToStitch,
             });
 
@@ -358,15 +357,10 @@ export class DefaultCatalogProcessingEngine {
       return () => {};
     }
 
-    const stitchingStrategy = stitchingStrategyFromConfig(this.config, {
-      logger: this.logger,
-    });
-
     const runOnce = async () => {
       try {
         const n = await deleteOrphanedEntities({
           knex: this.knex,
-          strategy: stitchingStrategy,
         });
         if (n > 0) {
           this.logger.info(`Deleted ${n} orphaned entities`);

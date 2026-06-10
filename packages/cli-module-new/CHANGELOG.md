@@ -1,5 +1,21 @@
 # @backstage/cli-module-new
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 4014819: Added a new `scaffolder-field-extension-module` template for scaffolding custom Scaffolder form field extensions via `backstage-cli new`.
+
+## 0.1.3
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/cli-node@0.3.2
+  - @backstage/cli-common@0.2.2
+
 ## 0.1.3-next.1
 
 ### Patch Changes

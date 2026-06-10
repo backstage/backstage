@@ -17,19 +17,12 @@
 import { Config } from '@backstage/config';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
-import splitToChunks from 'lodash/chunk';
 import { DateTime } from 'luxon';
 import { getDeferredStitchableEntities } from '../database/operations/stitcher/getDeferredStitchableEntities';
-import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { performStitching } from '../database/operations/stitcher/performStitching';
-import { DbRefreshStateRow } from '../database/tables';
 import { startTaskPipeline } from '../processing/TaskPipeline';
 import { progressTracker } from './progressTracker';
-import {
-  Stitcher,
-  StitchingStrategy,
-  stitchingStrategyFromConfig,
-} from './types';
+import { StitchingStrategy, stitchingStrategyFromConfig } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
@@ -44,7 +37,7 @@ type StitchProgressTracker = ReturnType<typeof progressTracker>;
  * ingestion process, and stitching them together into the final entity JSON
  * shape.
  */
-export class DefaultStitcher implements Stitcher {
+export class DefaultStitcher {
   private readonly knex: Knex;
   private readonly logger: LoggerService;
   private readonly strategy: StitchingStrategy;
@@ -85,80 +78,38 @@ export class DefaultStitcher implements Stitcher {
     );
   }
 
-  async stitch(options: {
-    entityRefs?: Iterable<string>;
-    entityIds?: Iterable<string>;
-  }) {
-    const { entityRefs, entityIds } = options;
-
-    if (this.strategy.mode === 'deferred') {
-      await markForStitching({
-        knex: this.knex,
-        strategy: this.strategy,
-        entityRefs,
-        entityIds,
-      });
-      return;
-    }
-
-    if (entityRefs) {
-      for (const entityRef of entityRefs) {
-        await this.#stitchOne({ entityRef });
-      }
-    }
-
-    if (entityIds) {
-      const chunks = splitToChunks(
-        Array.isArray(entityIds) ? entityIds : [...entityIds],
-        100,
-      );
-      for (const chunk of chunks) {
-        const rows = await this.knex<DbRefreshStateRow>('refresh_state')
-          .select('entity_ref')
-          .whereIn('entity_id', chunk);
-        for (const row of rows) {
-          await this.#stitchOne({ entityRef: row.entity_ref });
-        }
-      }
-    }
-  }
-
   async start() {
-    if (this.strategy.mode === 'deferred') {
-      if (this.stopFunc) {
-        throw new Error('Processing engine is already started');
-      }
-
-      const { pollingInterval, stitchTimeout } = this.strategy;
-
-      const stopPipeline = startTaskPipeline<DeferredStitchItem>({
-        lowWatermark: 2,
-        highWatermark: 5,
-        pollingIntervalMs: durationToMilliseconds(pollingInterval),
-        loadTasks: async count => {
-          return await this.#getStitchableEntities(count, stitchTimeout);
-        },
-        processTask: async item => {
-          return await this.#stitchOne({
-            entityRef: item.entityRef,
-            stitchTicket: item.stitchTicket,
-            stitchRequestedAt: item.stitchRequestedAt,
-          });
-        },
-      });
-
-      this.stopFunc = () => {
-        stopPipeline();
-      };
+    if (this.stopFunc) {
+      throw new Error('Stitcher is already started');
     }
+
+    const { pollingInterval, stitchTimeout } = this.strategy;
+
+    const stopPipeline = startTaskPipeline<DeferredStitchItem>({
+      lowWatermark: 2,
+      highWatermark: 5,
+      pollingIntervalMs: durationToMilliseconds(pollingInterval),
+      loadTasks: async count => {
+        return await this.#getStitchableEntities(count, stitchTimeout);
+      },
+      processTask: async item => {
+        return await this.#stitchOne({
+          entityRef: item.entityRef,
+          stitchTicket: item.stitchTicket,
+          stitchRequestedAt: item.stitchRequestedAt,
+        });
+      },
+    });
+
+    this.stopFunc = () => {
+      stopPipeline();
+    };
   }
 
   async stop() {
-    if (this.strategy.mode === 'deferred') {
-      if (this.stopFunc) {
-        this.stopFunc();
-        this.stopFunc = undefined;
-      }
+    if (this.stopFunc) {
+      this.stopFunc();
+      this.stopFunc = undefined;
     }
   }
 
@@ -177,7 +128,7 @@ export class DefaultStitcher implements Stitcher {
 
   async #stitchOne(options: {
     entityRef: string;
-    stitchTicket?: string;
+    stitchTicket: string;
     stitchRequestedAt?: DateTime;
   }) {
     const track = this.tracker.stitchStart({
@@ -189,7 +140,6 @@ export class DefaultStitcher implements Stitcher {
       const result = await performStitching({
         knex: this.knex,
         logger: this.logger,
-        strategy: this.strategy,
         entityRef: options.entityRef,
         stitchTicket: options.stitchTicket,
       });

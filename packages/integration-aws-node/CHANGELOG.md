@@ -1,5 +1,26 @@
 # @backstage/integration-aws-node
 
+## 0.2.0
+
+### Minor Changes
+
+- 8df06ec: Added `webIdentityTokenFile` to `AwsIntegrationAccountConfig` and
+  `AwsIntegrationDefaultAccountConfig`. When set along with a `roleName`,
+  `DefaultAwsCredentialsManager` retrieves credentials by calling
+  `AssumeRoleWithWebIdentity` (via `fromTokenFile`) using the file's
+  contents as the web identity token. The file is re-read on each
+  credential refresh.
+
+  The validator rejects combining `webIdentityTokenFile` with
+  `accessKeyId`/`secretAccessKey`, `profile`, or `externalId`, and
+  rejects setting it without a `roleName`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/config@1.3.8
+
 ## 0.2.0-next.1
 
 ### Minor Changes

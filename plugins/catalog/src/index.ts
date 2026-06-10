@@ -100,4 +100,5 @@ export type {
 } from './components/HasSystemsCard';
 export type { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 export type { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';
+export * from './components/CatalogExportButton';
 export { catalogTranslationRef } from './alpha/translation';

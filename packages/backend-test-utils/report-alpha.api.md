@@ -65,13 +65,14 @@ export class MockActionsRegistry
   implements ActionsRegistryService, ActionsService
 {
   // (undocumented)
-  readonly actions: Map<string, ActionsRegistryActionOptions<any, any>>;
+  readonly actions: Map<string, ActionsRegistryActionOptions<any, any, any>>;
   // (undocumented)
   static create(opts: { logger: LoggerService }): MockActionsRegistry;
   // (undocumented)
   invoke(opts: {
     id: string;
     input?: JsonObject;
+    secrets?: JsonObject;
     credentials?: BackstageCredentials;
   }): Promise<{
     output: JsonValue;
@@ -84,7 +85,14 @@ export class MockActionsRegistry
   register<
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
-  >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void;
+    TSecretsSchema extends AnyZodObject | undefined = undefined,
+  >(
+    options: ActionsRegistryActionOptions<
+      TInputSchema,
+      TOutputSchema,
+      TSecretsSchema
+    >,
+  ): void;
 }
 
 // @alpha

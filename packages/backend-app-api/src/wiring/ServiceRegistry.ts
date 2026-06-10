@@ -52,7 +52,9 @@ function createPluginMetadataServiceFactory(pluginId: string) {
   return createServiceFactory({
     service: coreServices.pluginMetadata,
     deps: {},
-    factory: async () => ({ getId: () => pluginId }),
+    factory: async () => ({
+      getId: () => pluginId,
+    }),
   });
 }
 

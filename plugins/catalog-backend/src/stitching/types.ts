@@ -19,51 +19,19 @@ import { Config, readDurationFromConfig } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
 
 /**
- * Performs the act of stitching - to take all of the various outputs from the
- * ingestion process, and stitching them together into the final entity JSON
- * shape.
+ * Configuration for the stitching process, controlling polling and timeout
+ * behavior for the deferred stitching worker.
  */
-export interface Stitcher {
-  stitch(options: {
-    entityRefs?: Iterable<string>;
-    entityIds?: Iterable<string>;
-  }): Promise<void>;
-}
-
-/**
- * The strategies supported by the stitching process, in terms of when to
- * perform stitching.
- *
- * @remarks
- *
- * In immediate mode, stitching happens "in-band" (blocking) immediately when
- * each processing task finishes. When set to `'deferred'`, stitching is instead
- * deferred to happen on a separate asynchronous worker queue just like
- * processing.
- *
- * Deferred stitching should make performance smoother when ingesting large
- * amounts of entities, and reduce p99 processing times and repeated
- * over-stitching of hot spot entities when fan-out/fan-in in terms of relations
- * is very large. It does however also come with some performance cost due to
- * the queuing with how much wall-clock time some types of task take.
- *
- * Note: Immediate mode is deprecated and will be removed in a future release.
- */
-export type StitchingStrategy =
-  | {
-      mode: 'immediate';
-    }
-  | {
-      mode: 'deferred';
-      pollingInterval: HumanDuration;
-      stitchTimeout: HumanDuration;
-    };
+export type StitchingStrategy = {
+  pollingInterval: HumanDuration;
+  stitchTimeout: HumanDuration;
+};
 
 let immediateDeprecationLogged = false;
 
 export function stitchingStrategyFromConfig(
   config: Config,
-  options: { logger: LoggerService },
+  options?: { logger?: LoggerService },
 ): StitchingStrategy {
   const strategyMode = config.getOptionalString(
     'catalog.stitchingStrategy.mode',
@@ -72,32 +40,28 @@ export function stitchingStrategyFromConfig(
   if (strategyMode === 'immediate') {
     if (!immediateDeprecationLogged) {
       immediateDeprecationLogged = true;
-      options.logger.warn(
-        'DEPRECATED: Immediate mode stitching has been deprecated, and will be removed in the next Backstage release.',
+      options?.logger?.warn(
+        "The 'immediate' stitching strategy mode has been removed and is no longer supported. Falling back to deferred stitching. Please remove the 'catalog.stitchingStrategy.mode' configuration key.",
       );
     }
-    return {
-      mode: 'immediate',
-    };
-  } else if (strategyMode === undefined || strategyMode === 'deferred') {
-    const pollingIntervalKey = 'catalog.stitchingStrategy.pollingInterval';
-    const stitchTimeoutKey = 'catalog.stitchingStrategy.stitchTimeout';
-
-    const pollingInterval = config.has(pollingIntervalKey)
-      ? readDurationFromConfig(config, { key: pollingIntervalKey })
-      : { seconds: 1 };
-    const stitchTimeout = config.has(stitchTimeoutKey)
-      ? readDurationFromConfig(config, { key: stitchTimeoutKey })
-      : { seconds: 60 };
-
-    return {
-      mode: 'deferred',
-      pollingInterval: pollingInterval,
-      stitchTimeout: stitchTimeout,
-    };
+  } else if (strategyMode !== undefined && strategyMode !== 'deferred') {
+    options?.logger?.warn(
+      `Unknown stitching strategy mode '${strategyMode}', falling back to deferred stitching. Please remove or correct the 'catalog.stitchingStrategy.mode' configuration key.`,
+    );
   }
 
-  throw new Error(
-    `Invalid stitching strategy mode '${strategyMode}', expected one of 'immediate' or 'deferred'`,
-  );
+  const pollingIntervalKey = 'catalog.stitchingStrategy.pollingInterval';
+  const stitchTimeoutKey = 'catalog.stitchingStrategy.stitchTimeout';
+
+  const pollingInterval = config.has(pollingIntervalKey)
+    ? readDurationFromConfig(config, { key: pollingIntervalKey })
+    : { seconds: 1 };
+  const stitchTimeout = config.has(stitchTimeoutKey)
+    ? readDurationFromConfig(config, { key: stitchTimeoutKey })
+    : { seconds: 60 };
+
+  return {
+    pollingInterval: pollingInterval,
+    stitchTimeout: stitchTimeout,
+  };
 }

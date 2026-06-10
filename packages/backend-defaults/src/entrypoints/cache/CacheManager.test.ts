@@ -18,6 +18,7 @@ import { mockServices, TestCaches } from '@backstage/backend-test-utils';
 import KeyvRedis, { createCluster } from '@keyv/redis';
 import KeyvValkey from '@keyv/valkey';
 import KeyvMemcache from '@keyv/memcache';
+import { Cluster as ValkeyCluster } from 'iovalkey';
 import { CacheManager } from './CacheManager';
 
 // This test is in a separate file because the main test file uses other mocking
@@ -41,7 +42,13 @@ jest.mock('@keyv/valkey', () => {
     ...Actual,
     __esModule: true,
     default: jest.fn((...args: any[]) => new DefaultConstructor(...args)),
-    createCluster: jest.fn(),
+  };
+});
+jest.mock('iovalkey', () => {
+  const Actual = jest.requireActual('iovalkey');
+  return {
+    ...Actual,
+    Cluster: jest.fn(),
   };
 });
 jest.mock('@keyv/memcache', () => {
@@ -207,6 +214,8 @@ it('rejects invalid defaultTtl', () => {
 });
 
 describe('CacheManager store options', () => {
+  afterEach(jest.clearAllMocks);
+
   it('uses default options when no store-specific config exists', () => {
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
@@ -303,6 +312,9 @@ describe('CacheManager store options', () => {
   });
 
   it('accepts client config for clustered mode', () => {
+    const clusterInstance = { fake: 'cluster' };
+    (createCluster as jest.Mock).mockReturnValue(clusterInstance);
+
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
         data: {
@@ -325,8 +337,109 @@ describe('CacheManager store options', () => {
     );
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith(expect.anything(), {
+    expect(KeyvRedis).toHaveBeenCalledWith(clusterInstance, {
       keyPrefixSeparator: '!',
+    });
+  });
+
+  it('uses iovalkey Cluster for valkey cluster mode', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'valkey',
+              connection: 'redis://localhost:6379',
+              valkey: {
+                cluster: {
+                  rootNodes: [
+                    { host: 'localhost', port: 6379 },
+                    { host: 'localhost', port: 6380 },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(ValkeyCluster).toHaveBeenCalledWith(
+      [
+        { host: 'localhost', port: 6379 },
+        { host: 'localhost', port: 6380 },
+      ],
+      {
+        redisOptions: undefined,
+        scaleReads: undefined,
+        maxRedirections: undefined,
+        lazyConnect: undefined,
+      },
+    );
+    expect(KeyvValkey).toHaveBeenCalledWith(expect.any(Object), {
+      keyPrefix: undefined,
+    });
+  });
+
+  it('passes valkey cluster options from config', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'valkey',
+              connection: 'redis://localhost:6379',
+              valkey: {
+                client: { keyPrefix: 'my-app:' },
+                cluster: {
+                  rootNodes: [{ host: 'localhost', port: 6379 }],
+                  useReplicas: true,
+                  maxCommandRedirections: 5,
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(ValkeyCluster).toHaveBeenCalledWith(
+      [{ host: 'localhost', port: 6379 }],
+      {
+        redisOptions: undefined,
+        scaleReads: 'slave',
+        maxRedirections: 5,
+        lazyConnect: undefined,
+      },
+    );
+    expect(KeyvValkey).toHaveBeenCalledWith(expect.any(Object), {
+      keyPrefix: 'my-app:',
+    });
+  });
+
+  it('defaults to non-clustered valkey when cluster config is missing root nodes', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'valkey',
+              connection: 'redis://localhost:6379',
+              valkey: {
+                cluster: {},
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(ValkeyCluster).not.toHaveBeenCalled();
+    expect(KeyvValkey).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefix: undefined,
     });
   });
 

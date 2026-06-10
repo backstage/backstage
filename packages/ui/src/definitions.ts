@@ -62,6 +62,7 @@ export {
   ListRowDefinition,
 } from './components/List/definition';
 export { MenuDefinition } from './components/Menu/definition';
+export { NumberFieldDefinition } from './components/NumberField/definition';
 export { PasswordFieldDefinition } from './components/PasswordField/definition';
 export { PopoverDefinition } from './components/Popover/definition';
 export { RadioGroupDefinition } from './components/RadioGroup/definition';

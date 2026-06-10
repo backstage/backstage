@@ -16,7 +16,6 @@
 
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
-import { StitchingStrategy } from '../../../stitching/types';
 import { applyDatabaseMigrations } from '../../migrations';
 import {
   DbFinalEntitiesRow,
@@ -39,17 +38,14 @@ describe.each(databases.eachSupportedId())(
       return knex;
     }
 
-    async function run(
-      knex: Knex,
-      strategy: StitchingStrategy,
-    ): Promise<number> {
+    async function run(knex: Knex): Promise<number> {
       let result: number;
       await knex.transaction(
         async tx => {
           // We can't return here, as knex swallows the return type in case the
           // transaction is rolled back:
           // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
-          result = await deleteOrphanedEntities({ knex: tx, strategy });
+          result = await deleteOrphanedEntities({ knex: tx });
         },
         {
           // If we explicitly trigger a rollback, don't fail.
@@ -133,7 +129,7 @@ describe.each(databases.eachSupportedId())(
         });
     }
 
-    it('works for some mixed paths in immediate mode', async () => {
+    it('works for some mixed paths', async () => {
       /*
           In this graph, edges represent refresh state references, not entity relations:
 
@@ -189,95 +185,7 @@ describe.each(databases.eachSupportedId())(
       await insertRelation(knex, 'E2', 'E3');
       await insertRelation(knex, 'E10', 'E6');
       await insertRelation(knex, 'E7', 'E6');
-      await expect(run(knex, { mode: 'immediate' })).resolves.toEqual(5);
-      await expect(refreshState(knex)).resolves.toEqual([
-        { entity_ref: 'E1', result_hash: 'original' },
-        { entity_ref: 'E2', result_hash: 'force-stitching' },
-        { entity_ref: 'E7', result_hash: 'force-stitching' },
-        { entity_ref: 'E8', result_hash: 'original' },
-        { entity_ref: 'E9', result_hash: 'original' },
-      ]);
-      await expect(stitchQueue(knex)).resolves.toEqual([]);
-      await expect(finalEntities(knex)).resolves.toEqual([
-        { entity_ref: 'E1', hash: 'original', next_stitch_at: null },
-        {
-          entity_ref: 'E2',
-          hash: 'force-stitching',
-          next_stitch_at: null,
-        },
-        {
-          entity_ref: 'E7',
-          hash: 'force-stitching',
-          next_stitch_at: null,
-        },
-        { entity_ref: 'E8', hash: 'original', next_stitch_at: null },
-        { entity_ref: 'E9', hash: 'original', next_stitch_at: null },
-      ]);
-    });
-
-    it('works for some mixed paths in deferred mode', async () => {
-      /*
-          In this graph, edges represent refresh state references, not entity relations:
-
-          P1 - E1 -- E2
-                    /
-                  E3
-                 /
-               E4
-                 \
-                  E5
-                 /
-               E6
-                 \
-                  E7
-                 /
-          P2 - E8
-
-          P3 - E9
-
-               E10
-
-          Result: E3, E4, E5, E6, and E10 deleted; others remain
-                  Entities that had relations pointing at orphans are marked for reprocessing
-       */
-      const knex = await createDatabase();
-      await insertEntity(
-        knex,
-        'E1',
-        'E2',
-        'E3',
-        'E4',
-        'E5',
-        'E6',
-        'E7',
-        'E8',
-        'E9',
-        'E10',
-      );
-      await insertReference(
-        knex,
-        { source_key: 'P1', target_entity_ref: 'E1' },
-        { source_entity_ref: 'E1', target_entity_ref: 'E2' },
-        { source_entity_ref: 'E3', target_entity_ref: 'E2' },
-        { source_entity_ref: 'E4', target_entity_ref: 'E3' },
-        { source_entity_ref: 'E4', target_entity_ref: 'E5' },
-        { source_entity_ref: 'E6', target_entity_ref: 'E5' },
-        { source_entity_ref: 'E6', target_entity_ref: 'E7' },
-        { source_key: 'P2', target_entity_ref: 'E8' },
-        { source_entity_ref: 'E8', target_entity_ref: 'E7' },
-        { source_key: 'P3', target_entity_ref: 'E9' },
-      );
-      await insertRelation(knex, 'E1', 'E2');
-      await insertRelation(knex, 'E2', 'E3');
-      await insertRelation(knex, 'E10', 'E6');
-      await insertRelation(knex, 'E7', 'E6');
-      await expect(
-        run(knex, {
-          mode: 'deferred',
-          pollingInterval: { seconds: 1 },
-          stitchTimeout: { seconds: 1 },
-        }),
-      ).resolves.toEqual(5);
+      await expect(run(knex)).resolves.toEqual(5);
       await expect(refreshState(knex)).resolves.toEqual([
         { entity_ref: 'E1', result_hash: 'original' },
         { entity_ref: 'E2', result_hash: 'original' },

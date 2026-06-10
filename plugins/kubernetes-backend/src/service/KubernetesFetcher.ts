@@ -15,11 +15,11 @@
  */
 
 import type { Cluster, CoreV1Api, Metrics } from '@kubernetes/client-node';
-import lodash, { Dictionary } from 'lodash';
 import {
   FetchResponseWrapper,
   KubernetesFetcher,
   ObjectFetchParams,
+  ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
@@ -51,14 +51,16 @@ const isError = (fr: FetchResult): fr is KubernetesFetchError =>
 function fetchResultsToResponseWrapper(
   results: FetchResult[],
 ): FetchResponseWrapper {
-  const groupBy: Dictionary<FetchResult[]> = lodash.groupBy(results, value => {
-    return isError(value) ? 'errors' : 'responses';
-  });
-
-  return {
-    errors: groupBy.errors ?? [],
-    responses: groupBy.responses ?? [],
-  } as FetchResponseWrapper; // TODO would be nice to get rid of this 'as'
+  const errors: KubernetesFetchError[] = [];
+  const responses: FetchResponse[] = [];
+  for (const result of results) {
+    if (isError(result)) {
+      errors.push(result);
+    } else {
+      responses.push(result);
+    }
+  }
+  return { errors, responses };
 }
 
 const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
@@ -78,6 +80,10 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
 
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   private readonly logger: LoggerService;
+  private readonly agentCache = new Map<string, https.Agent>();
+  private inClusterCache:
+    | { url: URL; agent: https.Agent | undefined }
+    | undefined;
 
   constructor({ logger }: KubernetesClientBasedFetcherOptions) {
     this.logger = logger;
@@ -92,9 +98,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         this.fetchResource(
           params.clusterDetails,
           params.credential,
-          group,
-          apiVersion,
-          plural,
+          { group, apiVersion, plural },
           params.namespace,
           params.labelSelector,
         ).then(
@@ -119,50 +123,59 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper> {
-    const { topPods } = await import('@kubernetes/client-node');
-
-    const fetchResults = Array.from(namespaces).map(async ns => {
-      const [podMetrics, podList] = await Promise.all([
-        this.fetchResource(
-          clusterDetails,
-          credential,
-          'metrics.k8s.io',
-          'v1beta1',
-          'pods',
-          ns,
-          labelSelector,
-        ),
-        this.fetchResource(
-          clusterDetails,
-          credential,
-          '',
-          'v1',
-          'pods',
-          ns,
-          labelSelector,
-        ),
-      ]);
-      if (podMetrics.ok && podList.ok) {
-        return topPods(
-          {
-            listPodForAllNamespaces: () => podList.json(),
-          } as unknown as CoreV1Api,
-          {
-            getPodMetrics: () => podMetrics.json(),
-          } as unknown as Metrics,
-        ).then(
-          (resources): PodStatusFetchResponse => ({
-            type: 'podstatus',
-            resources,
-          }),
-        );
-      } else if (podMetrics.ok) {
-        return this.handleUnsuccessfulResponse(clusterDetails.name, podList);
-      }
-      return this.handleUnsuccessfulResponse(clusterDetails.name, podMetrics);
-    });
+    const fetchResults = Array.from(namespaces).map(ns =>
+      this.fetchPodMetricsForNamespace(
+        clusterDetails,
+        credential,
+        ns,
+        labelSelector,
+      ),
+    );
 
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
+  }
+
+  private async fetchPodMetricsForNamespace(
+    clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
+    namespace: string,
+    labelSelector?: string,
+  ): Promise<FetchResult> {
+    const [podMetrics, podList] = await Promise.all([
+      this.fetchResource(
+        clusterDetails,
+        credential,
+        { group: 'metrics.k8s.io', apiVersion: 'v1beta1', plural: 'pods' },
+        namespace,
+        labelSelector,
+      ),
+      this.fetchResource(
+        clusterDetails,
+        credential,
+        { group: '', apiVersion: 'v1', plural: 'pods' },
+        namespace,
+        labelSelector,
+      ),
+    ]);
+    if (podMetrics.ok && podList.ok) {
+      const { topPods } = await import('@kubernetes/client-node');
+      return topPods(
+        {
+          listPodForAllNamespaces: () => podList.json(),
+        } as unknown as CoreV1Api,
+        {
+          getPodMetrics: () => podMetrics.json(),
+        } as unknown as Metrics,
+      ).then(
+        (resources): PodStatusFetchResponse => ({
+          type: 'podstatus',
+          resources,
+        }),
+      );
+    } else if (podMetrics.ok) {
+      return this.handleUnsuccessfulResponse(clusterDetails.name, podList);
+    }
+    return this.handleUnsuccessfulResponse(clusterDetails.name, podMetrics);
   }
 
   private async handleUnsuccessfulResponse(
@@ -182,23 +195,36 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     };
   }
 
-  private async fetchResource(
-    clusterDetails: ClusterDetails,
-    credential: KubernetesCredential,
+  private buildResourcePath(
     group: string,
     apiVersion: string,
     plural: string,
     namespace?: string,
-    labelSelector?: string,
-  ): Promise<Response> {
+  ): string {
     const encode = (s: string) => encodeURIComponent(s);
-    let resourcePath = group
+    let path = group
       ? `/apis/${encode(group)}/${encode(apiVersion)}`
       : `/api/${encode(apiVersion)}`;
     if (namespace) {
-      resourcePath += `/namespaces/${encode(namespace)}`;
+      path += `/namespaces/${encode(namespace)}`;
     }
-    resourcePath += `/${encode(plural)}`;
+    path += `/${encode(plural)}`;
+    return path;
+  }
+
+  private async fetchResource(
+    clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
+    resource: Pick<ObjectToFetch, 'group' | 'apiVersion' | 'plural'>,
+    namespace?: string,
+    labelSelector?: string,
+  ): Promise<Response> {
+    const resourcePath = this.buildResourcePath(
+      resource.group,
+      resource.apiVersion,
+      resource.plural,
+      namespace,
+    );
 
     let url: URL;
     let requestInit: RequestInit;
@@ -224,7 +250,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     }
 
     if (labelSelector) {
-      url.search = `labelSelector=${encode(labelSelector)}`;
+      url.search = `labelSelector=${encodeURIComponent(labelSelector)}`;
     }
 
     return fetch(url, requestInit);
@@ -250,37 +276,34 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     );
   }
 
+  private buildRequestHeaders(
+    credential: KubernetesCredential,
+  ): Record<string, string> {
+    return {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(credential.type === 'bearer token' && {
+        Authorization: `Bearer ${credential.token}`,
+      }),
+    };
+  }
+
   private async fetchArgs(
     clusterDetails: ClusterDetails,
     credential: KubernetesCredential,
   ): Promise<[URL, fetch.RequestInit]> {
     const { bufferFromFileOrString } = await import('@kubernetes/client-node');
-
     const requestInit: RequestInit = {
       method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        ...(credential.type === 'bearer token' && {
-          Authorization: `Bearer ${credential.token}`,
-        }),
-      },
+      headers: this.buildRequestHeaders(credential),
     };
 
     const url: URL = new URL(clusterDetails.url);
     if (url.protocol === 'https:') {
-      requestInit.agent = new https.Agent({
-        ca:
-          bufferFromFileOrString(
-            clusterDetails.caFile,
-            clusterDetails.caData,
-          ) ?? undefined,
-        rejectUnauthorized: !clusterDetails.skipTLSVerify,
-        ...(credential.type === 'x509 client certificate' && {
-          cert: credential.cert,
-          key: credential.key,
-        }),
-      });
+      const ca =
+        bufferFromFileOrString(clusterDetails.caFile, clusterDetails.caData) ??
+        undefined;
+      requestInit.agent = this.getOrCreateAgent(clusterDetails, credential, ca);
     }
     return [url, requestInit];
   }
@@ -288,31 +311,65 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   private async fetchArgsInCluster(
     credential: KubernetesCredential,
   ): Promise<[URL, fetch.RequestInit]> {
-    const { KubeConfig } = await import('@kubernetes/client-node');
+    if (!this.inClusterCache) {
+      const { KubeConfig } = await import('@kubernetes/client-node');
+      const kc = new KubeConfig();
+      kc.loadFromCluster();
+      const cluster = kc.getCurrentCluster() as Cluster;
+      const url = new URL(cluster.server);
+      const agent =
+        url.protocol === 'https:'
+          ? new https.Agent({
+              ca: fs.readFileSync(cluster.caFile as string),
+              keepAlive: true,
+            })
+          : undefined;
+      this.inClusterCache = { url, agent };
+    }
 
+    const { url, agent } = this.inClusterCache;
     const requestInit: RequestInit = {
       method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        ...(credential.type === 'bearer token' && {
-          Authorization: `Bearer ${credential.token}`,
-        }),
-      },
+      headers: this.buildRequestHeaders(credential),
+      ...(agent && { agent }),
     };
+    return [new URL(url.toString()), requestInit];
+  }
 
-    const kc = new KubeConfig();
-    kc.loadFromCluster();
-    // loadFromCluster is guaranteed to populate the cluster/user/context
-    const cluster = kc.getCurrentCluster() as Cluster;
+  private buildAgentCacheKey(
+    clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
+  ): string {
+    const certPart =
+      credential.type === 'x509 client certificate'
+        ? `${credential.cert}|${credential.key}`
+        : '';
+    return `${clusterDetails.url}|${clusterDetails.skipTLSVerify ?? false}|${
+      clusterDetails.caData ?? ''
+    }|${clusterDetails.caFile ?? ''}|${certPart}`;
+  }
 
-    const url = new URL(cluster.server);
-    if (url.protocol === 'https:') {
-      requestInit.agent = new https.Agent({
-        ca: fs.readFileSync(cluster.caFile as string),
+  private getOrCreateAgent(
+    clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
+    ca: Buffer | string | undefined,
+  ): https.Agent {
+    const key = this.buildAgentCacheKey(clusterDetails, credential);
+
+    let agent = this.agentCache.get(key);
+    if (!agent) {
+      agent = new https.Agent({
+        ca,
+        rejectUnauthorized: !clusterDetails.skipTLSVerify,
+        keepAlive: true,
+        ...(credential.type === 'x509 client certificate' && {
+          cert: credential.cert,
+          key: credential.key,
+        }),
       });
+      this.agentCache.set(key, agent);
     }
-    return [url, requestInit];
+    return agent;
   }
 
   private transformResources(

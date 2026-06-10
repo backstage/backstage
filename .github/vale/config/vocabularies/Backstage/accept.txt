@@ -391,6 +391,7 @@ readonly
 rebase
 rebasing
 Recharts
+recurse
 redactions
 Redash
 redis
@@ -488,6 +489,7 @@ subpath
 subpaths
 subroute
 subroutes
+subquery
 substring
 subtree
 superfences
@@ -539,6 +541,7 @@ TTLs
 Turbopack
 TSDoc
 typeahead
+typoed
 ui
 unassign
 unbreak

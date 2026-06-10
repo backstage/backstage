@@ -223,6 +223,20 @@ Scope: The auditor core service, along with auditor usage in the main repository
 | ------------ | ------------ | ----------------------------------------------- | -------------- |
 | Paul Schultz | Red Hat      | [schultzp2020](https://github.com/schultzp2020) | `schultzp2020` |
 
+### Codemods
+
+Team: @backstage/codemods-maintainers
+
+Scope: The official Backstage codemods and migration tooling in the [codemods repository](https://github.com/backstage/codemods)
+
+| Name                   | Organization | GitHub                                                | Discord        |
+| ---------------------- | ------------ | ----------------------------------------------------- | -------------- |
+| Paul Schultz           | Red Hat      | [schultzp2020](https://github.com/schultzp2020)       | `schultzp2020` |
+| Hope Hadfield          | Red Hat      | [hopehadfield](https://github.com/hopehadfield)       | `hh0p3`        |
+| Alex Bit               | Codemod      | [alexbit-codemod](https://github.com/alexbit-codemod) | `alex__bit`    |
+| Mo Mohebifar           | Codemod      | [mohebifar](https://github.com/mohebifar)             | `mohebifar`    |
+| Juan Pablo Garcia Ripa | SAS          | [Sarabadu](https://github.com/Sarabadu)               | `sarabadu`     |
+
 ### Events
 
 Team: @backstage/events-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Aevents-maintainers)

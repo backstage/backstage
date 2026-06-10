@@ -1353,4 +1353,126 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     await knex.destroy();
   });
+
+  it('20260519000000_search_extended_statistics.js', async () => {
+    const knex = await databases.init(databaseId);
+    const client = knex.client.config.client;
+    const isPg = typeof client === 'string' && client.includes('pg');
+
+    await migrateUntilBefore(
+      knex,
+      '20260519000000_search_extended_statistics.js',
+    );
+
+    await knex('refresh_state').insert({
+      entity_id: 'e1',
+      entity_ref: 'k:ns/n1',
+      unprocessed_entity: '{}',
+      errors: '[]',
+      next_update_at: knex.fn.now(),
+      last_discovery_at: knex.fn.now(),
+    });
+    await knex('final_entities').insert({
+      entity_id: 'e1',
+      entity_ref: 'k:ns/n1',
+      hash: 'h1',
+      final_entity: '{}',
+    });
+    await knex('search').insert([
+      {
+        entity_id: 'e1',
+        key: 'kind',
+        value: 'component',
+        original_value: 'Component',
+      },
+      {
+        entity_id: 'e1',
+        key: 'metadata.name',
+        value: 'my-svc',
+        original_value: 'my-svc',
+      },
+    ]);
+
+    // statsExist returns false on non-PG engines (no extended stats support)
+    async function statsExist(): Promise<boolean> {
+      if (!isPg) return false;
+      const r = await knex.raw(
+        `SELECT 1 FROM pg_statistic_ext WHERE stxname = 'search_key_value_stats'`,
+      );
+      return r.rows.length > 0;
+    }
+
+    expect(await statsExist()).toBe(false);
+
+    await migrateUpOnce(knex);
+    expect(await statsExist()).toBe(isPg);
+
+    await migrateDownOnce(knex);
+    expect(await statsExist()).toBe(false);
+
+    await knex.destroy();
+  });
+
+  it('20260608000000_search_autovacuum_and_ndistinct.js', async () => {
+    const knex = await databases.init(databaseId);
+    const client = knex.client.config.client;
+    const isPg = typeof client === 'string' && client.includes('pg');
+
+    await migrateUntilBefore(
+      knex,
+      '20260608000000_search_autovacuum_and_ndistinct.js',
+    );
+
+    const tunedTables = [
+      'search',
+      'final_entities',
+      'relations',
+      'refresh_state_references',
+    ];
+
+    async function hasAutovacuumOptions(table: string): Promise<boolean> {
+      if (!isPg) return false;
+      const r = await knex.raw(
+        `SELECT reloptions FROM pg_class WHERE oid = ?::regclass`,
+        [table],
+      );
+      const opts: string[] | null = r.rows[0]?.reloptions;
+      return (
+        !!opts &&
+        opts.includes('autovacuum_vacuum_scale_factor=0.01') &&
+        opts.includes('autovacuum_analyze_scale_factor=0.01')
+      );
+    }
+
+    async function hasNdistinctOverride(): Promise<boolean> {
+      if (!isPg) return false;
+      const r = await knex.raw(
+        `SELECT attoptions FROM pg_attribute
+         WHERE attrelid = 'search'::regclass AND attname = 'entity_id'`,
+      );
+      const opts: string[] | null = r.rows[0]?.attoptions;
+      return !!opts && opts.includes('n_distinct=-1');
+    }
+
+    for (const table of tunedTables) {
+      expect(await hasAutovacuumOptions(table)).toBe(false);
+    }
+    expect(await hasNdistinctOverride()).toBe(false);
+
+    await migrateUpOnce(knex);
+
+    for (const table of tunedTables) {
+      expect(await hasAutovacuumOptions(table)).toBe(isPg);
+    }
+    expect(await hasNdistinctOverride()).toBe(isPg);
+
+    await migrateDownOnce(knex);
+
+    for (const table of tunedTables) {
+      expect(await hasAutovacuumOptions(table)).toBe(false);
+    }
+    expect(await hasNdistinctOverride()).toBe(false);
+
+    await knex.destroy();
+  });
 });

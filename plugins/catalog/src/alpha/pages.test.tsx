@@ -28,7 +28,6 @@ import {
 } from '@backstage/plugin-catalog-react/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
-  catalogApiRef,
   entityRouteRef,
   MockStarredEntitiesApi,
   starredEntitiesApiRef,
@@ -39,8 +38,17 @@ import { Entity } from '@backstage/catalog-model';
 
 jest.setTimeout(30_000);
 
+// The entity page extension uses React.lazy (via ExtensionBoundary.lazy) to
+// dynamically import EntityLayout and its large dependency tree. Pre-warming
+// this import ensures Jest's module cache is populated before the first test,
+// so the Suspense fallback resolves quickly instead of waiting for cold module
+// resolution under CI load.
+beforeAll(async () => {
+  await import('./components/EntityLayout');
+});
+
 describe('Entity page', () => {
-  const entityMock = {
+  const entityMock: Entity = {
     metadata: {
       namespace: 'default',
       annotations: {
@@ -108,9 +116,9 @@ describe('Entity page', () => {
     ],
   };
 
-  const mockCatalogApi = catalogApiMock.mock({
-    getEntityByRef: async () => entityMock,
-  });
+  const entityPath = '/catalog/default/component/artist-lookup';
+
+  const mockCatalogApi = catalogApiMock({ entities: [entityMock] });
 
   const mockStarredEntitiesApi = new MockStarredEntitiesApi();
 
@@ -152,10 +160,9 @@ describe('Entity page', () => {
         .add(apidocsEntityContent);
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -175,11 +182,11 @@ describe('Entity page', () => {
 
       await expect(
         screen.findByRole('button', { name: /TechDocs/ }),
-      ).resolves.toHaveAttribute('href', '/techdocs');
+      ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
       await expect(
         screen.findByRole('button', { name: /ApiDocs/ }),
-      ).resolves.toHaveAttribute('href', '/apidocs');
+      ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
     it('Should rename a default group', async () => {
@@ -199,10 +206,9 @@ describe('Entity page', () => {
         .add(apidocsEntityContent);
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -220,11 +226,11 @@ describe('Entity page', () => {
 
       await expect(
         screen.findByRole('button', { name: /TechDocs/ }),
-      ).resolves.toHaveAttribute('href', '/techdocs');
+      ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
       await expect(
         screen.findByRole('button', { name: /ApiDocs/ }),
-      ).resolves.toHaveAttribute('href', '/apidocs');
+      ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
     it('Should disassociate a content with a default group', async () => {
@@ -239,10 +245,9 @@ describe('Entity page', () => {
         });
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -292,10 +297,9 @@ describe('Entity page', () => {
         });
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -313,11 +317,11 @@ describe('Entity page', () => {
 
       await expect(
         screen.findByRole('button', { name: /TechDocs/ }),
-      ).resolves.toHaveAttribute('href', '/techdocs');
+      ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
       await expect(
         screen.findByRole('button', { name: /ApiDocs/ }),
-      ).resolves.toHaveAttribute('href', '/apidocs');
+      ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
     it('Should render a single-content groups as a normal tab', async () => {
@@ -333,10 +337,9 @@ describe('Entity page', () => {
         });
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -367,10 +370,9 @@ describe('Entity page', () => {
         .add(overviewEntityContent);
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -413,10 +415,9 @@ describe('Entity page', () => {
         .add(apidocsEntityContent);
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -434,11 +435,11 @@ describe('Entity page', () => {
 
       await expect(
         screen.findByRole('button', { name: /TechDocs/ }),
-      ).resolves.toHaveAttribute('href', '/techdocs');
+      ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
       await expect(
         screen.findByRole('button', { name: /ApiDocs/ }),
-      ).resolves.toHaveAttribute('href', '/apidocs');
+      ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
     it('Should sort content by title by default', async () => {
@@ -449,10 +450,9 @@ describe('Entity page', () => {
         .add(apidocsEntityContent);
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -490,10 +490,9 @@ describe('Entity page', () => {
         .add(apidocsEntityContent);
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -539,10 +538,9 @@ describe('Entity page', () => {
         .add(apidocsEntityContent);
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -588,10 +586,9 @@ describe('Entity page', () => {
         });
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -625,10 +622,9 @@ describe('Entity page', () => {
       );
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -664,10 +660,9 @@ describe('Entity page', () => {
       ).add(customEntityHeader);
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -723,10 +718,9 @@ describe('Entity page', () => {
       ).add(menuItem);
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -778,10 +772,9 @@ describe('Entity page', () => {
       ).add(menuItem);
 
       await renderInTestApp(tester.reactElement(), {
-        apis: [
-          [catalogApiRef, mockCatalogApi],
-          [starredEntitiesApiRef, mockStarredEntitiesApi],
-        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
         config: {
           app: {
             title: 'Custom app',
@@ -801,14 +794,14 @@ describe('Entity page', () => {
         screen.findByText(/artist-lookup/),
       ).resolves.toBeInTheDocument();
 
-      await userEvent.click(screen.getByTestId('menu-button'));
+      await userEvent.click(await screen.findByTestId('menu-button'));
 
       await expect(
         screen.findByText('Test Title'),
       ).resolves.toBeInTheDocument();
 
       await expect(screen.findByText('Test Icon')).resolves.toBeInTheDocument();
-      const listItem = screen.getByText('Test Title').closest('li');
+      const listItem = (await screen.findByText('Test Title')).closest('li');
       expect(listItem).toHaveAttribute('aria-disabled', disabled.toString());
       if (!disabled) {
         await userEvent.click(screen.getByText('Test Title'));
@@ -870,6 +863,8 @@ describe('Entity page', () => {
           .add(filteredMenuItem);
 
         await renderInTestApp(tester.reactElement(), {
+          mountPath: '/catalog/:namespace/:kind/:name',
+          initialRouteEntries: [entityPath],
           config: {
             app: {
               title: 'Custom app',
@@ -882,7 +877,7 @@ describe('Entity page', () => {
               convertLegacyRouteRef(entityRouteRef),
           },
           apis: [
-            [catalogApiRef, mockCatalogApi],
+            mockCatalogApi,
             [starredEntitiesApiRef, mockStarredEntitiesApi],
           ],
         });

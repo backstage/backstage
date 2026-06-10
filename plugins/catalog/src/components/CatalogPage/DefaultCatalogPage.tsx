@@ -41,29 +41,32 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { CatalogExportButton } from '../CatalogExportButton/CatalogExportButton';
+import type { CatalogExportSettings } from '../CatalogExportButton';
+import Box from '@material-ui/core/Box';
 
 /** @internal */
 export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
+  exportSettings?: CatalogExportSettings;
 };
 
 function CatalogPageContent(props: BaseCatalogPageProps) {
-  const { filters, content = <CatalogTable />, pagination } = props;
+  const { filters, content = <CatalogTable /> } = props;
 
   return (
-    <EntityListProvider pagination={pagination}>
-      <CatalogFilterLayout>
-        <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
-        <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
-      </CatalogFilterLayout>
-    </EntityListProvider>
+    <CatalogFilterLayout>
+      <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
+      <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
+    </CatalogFilterLayout>
   );
 }
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
+  const { pagination, exportSettings } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -79,21 +82,29 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
           to={createComponentLink && createComponentLink()}
         />
       )}
+      {exportSettings?.enabled && (
+        <Box ml={2}>
+          <CatalogExportButton settings={exportSettings} />
+        </Box>
+      )}
       <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
     </>
   );
 
   return (
-    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
-      <Content>
-        <ContentHeader title="">{headerActions}</ContentHeader>
-        <CatalogPageContent {...props} />
-      </Content>
-    </PageWithHeader>
+    <EntityListProvider pagination={pagination}>
+      <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
+        <Content>
+          <ContentHeader title="">{headerActions}</ContentHeader>
+          <CatalogPageContent {...props} />
+        </Content>
+      </PageWithHeader>
+    </EntityListProvider>
   );
 }
 
 function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
+  const { pagination, exportSettings } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -103,7 +114,7 @@ function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
   });
 
   return (
-    <>
+    <EntityListProvider pagination={pagination}>
       <HeaderPage
         title={t('indexPage.title', { orgName })}
         customActions={
@@ -114,6 +125,11 @@ function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
                 to={createComponentLink && createComponentLink()}
               />
             )}
+            {exportSettings?.enabled && (
+              <Box ml={2}>
+                <CatalogExportButton settings={exportSettings} />
+              </Box>
+            )}
             <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
           </>
         }
@@ -121,7 +137,7 @@ function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
       <Content>
         <CatalogPageContent {...props} />
       </Content>
-    </>
+    </EntityListProvider>
   );
 }
 
@@ -141,6 +157,7 @@ export interface DefaultCatalogPageProps {
   filters?: ReactNode;
   initiallySelectedNamespaces?: string[];
   pagination?: EntityListPagination;
+  exportSettings?: CatalogExportSettings;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -155,6 +172,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     ownerPickerMode,
     filters,
     initiallySelectedNamespaces,
+    exportSettings,
   } = props;
 
   return (
@@ -178,6 +196,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         />
       }
       pagination={pagination}
+      exportSettings={exportSettings}
     />
   );
 }
@@ -195,6 +214,7 @@ export function NfsDefaultCatalogPage(props: DefaultCatalogPageProps) {
     ownerPickerMode,
     filters,
     initiallySelectedNamespaces,
+    exportSettings,
   } = props;
 
   return (
@@ -218,6 +238,7 @@ export function NfsDefaultCatalogPage(props: DefaultCatalogPageProps) {
         />
       }
       pagination={pagination}
+      exportSettings={exportSettings}
     />
   );
 }

@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-unprocessed-entities-common
 
+## 0.0.16
+
+### Patch Changes
+
+- fa06df6: Added `unprocessedEntitiesReadPermission` for authorizing read access to unprocessed entity endpoints.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/plugin-permission-common@0.9.9
+
 ## 0.0.16-next.1
 
 ### Patch Changes
