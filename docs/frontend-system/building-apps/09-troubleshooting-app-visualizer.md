@@ -1,8 +1,8 @@
 ---
 id: troubleshooting-app-visualizer.md
 title: Install Troubleshooting app-Visualizer Plugin
-sidebar_label: Troubleshooting Visualizer
-description: How to install the app visualizer plugin in the frontend system
+sidebar_label: Troubleshooting Plugin Visualizer
+description: How to install the plugin visualizer in the frontend system
 ---
 
 ## Overview
