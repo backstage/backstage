@@ -36,7 +36,7 @@ Staying in hybrid mode for too long is not recommended. Support for the legacy v
 
 :::tip
 
-We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting. See [troubleshooting app visualizer](./09-troubleshooting-app-visualizer.md). Chapter [Troubleshooting](#troubleshooting) gives details how to use it in the migration case.
+We'd recommend that you install the `app-visualizer` plugin to help with troubleshooting. See [troubleshooting app visualizer](./09-troubleshooting-app-visualizer.md). Chapter [Troubleshooting](#troubleshooting) gives details on how to use it during migration.
 
 :::
 
