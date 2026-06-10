@@ -3128,6 +3128,9 @@ export const TableDefinition: {
     readonly loading: {
       readonly dataAttribute: true;
     };
+    readonly virtualized: {
+      readonly dataAttribute: true;
+    };
   };
 };
 
@@ -3255,6 +3258,7 @@ export type TableRootOwnProps = {
   stale?: boolean;
   isPending?: boolean;
   loading?: boolean;
+  virtualized?: boolean;
 };
 
 // @public (undocumented)
