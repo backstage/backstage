@@ -68,6 +68,37 @@ export const Invalid = Default.extend({
   },
 });
 
+export const WithLabel = meta.story({
+  args: {
+    label: 'Email notifications',
+    children: 'Send me product updates',
+  },
+});
+
+export const WithSecondaryLabel = meta.story({
+  args: {
+    label: 'Email notifications',
+    secondaryLabel: 'Optional',
+    children: 'Send me product updates',
+  },
+});
+
+export const WithDescription = meta.story({
+  args: {
+    label: 'Email notifications',
+    description: 'We will only email you about important account activity.',
+    children: 'Send me product updates',
+  },
+});
+
+export const Required = meta.story({
+  args: {
+    label: 'Terms and conditions',
+    isRequired: true,
+    children: 'I accept the terms and conditions',
+  },
+});
+
 export const AllVariants = meta.story({
   ...Default.input,
   render: () => (

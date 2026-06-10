@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 import type { CheckboxProps as RACheckboxProps } from 'react-aria-components';
+import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
 export type CheckboxOwnProps = {
+  /**
+   * The inline label rendered next to the checkbox.
+   */
   children?: React.ReactNode;
   className?: string;
+
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
 };
 
 /** @public */

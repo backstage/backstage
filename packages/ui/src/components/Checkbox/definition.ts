@@ -25,11 +25,15 @@ import styles from './Checkbox.module.css';
 export const CheckboxDefinition = defineComponent<CheckboxOwnProps>()({
   styles,
   classNames: {
-    root: 'bui-Checkbox',
+    root: 'bui-CheckboxField',
+    checkbox: 'bui-Checkbox',
     indicator: 'bui-CheckboxIndicator',
   },
   propDefs: {
     children: {},
     className: {},
+    label: {},
+    description: {},
+    secondaryLabel: {},
   },
 });

@@ -8,8 +8,20 @@ export const checkboxPropDefs: Record<string, PropDef> = {
   children: {
     type: 'enum',
     values: ['ReactNode'],
-    required: true,
-    description: 'Label displayed next to the checkbox.',
+    description: 'Inline label displayed next to the checkbox.',
+  },
+  label: {
+    type: 'string',
+    description: 'Visible label displayed above the checkbox.',
+  },
+  secondaryLabel: {
+    type: 'string',
+    description:
+      'Secondary text shown next to the label. If not provided and isRequired is true, displays "Required".',
+  },
+  description: {
+    type: 'string',
+    description: 'Help text displayed below the label.',
   },
   isSelected: {
     type: 'boolean',

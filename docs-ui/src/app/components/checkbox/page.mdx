@@ -6,8 +6,9 @@ import {
   checkboxUsageSnippet,
   defaultSnippet,
   allVariantsSnippet,
+  withLabelSnippet,
 } from './snippets';
-import { Default, AllVariants } from './components';
+import { Default, AllVariants, WithLabel } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { CheckboxDefinition } from '../../../utils/definitions';
@@ -36,6 +37,20 @@ export const reactAriaUrls = {
 <ReactAriaLink component="Checkbox" href={reactAriaUrls.checkbox} />
 
 ## Examples
+
+### With label
+
+Use the `label`, `secondaryLabel`, and `description` props to render a field
+label above the checkbox, consistent with other form components like
+`TextField`.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithLabel />}
+  code={withLabelSnippet}
+/>
 
 ### All variants
 

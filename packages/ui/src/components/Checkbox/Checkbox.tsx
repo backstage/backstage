@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useId } from 'react';
 import { Checkbox as RACheckbox } from 'react-aria-components';
 import type { CheckboxProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { CheckboxDefinition } from './definition';
+import { FieldLabel } from '../FieldLabel';
 import { RiCheckLine, RiSubtractLine } from '@remixicon/react';
 
 /**
@@ -32,38 +33,57 @@ export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
       CheckboxDefinition,
       props,
     );
-    const { classes, children } = ownProps;
+    const { classes, children, label, secondaryLabel, description } = ownProps;
     const ariaLabel = restProps['aria-label'];
     const ariaLabelledBy = restProps['aria-labelledby'];
 
+    const generatedLabelId = useId();
+    const generatedDescriptionId = useId();
+    const labelId = label ? generatedLabelId : undefined;
+    const descriptionId = description ? generatedDescriptionId : undefined;
+
     useEffect(() => {
-      if (!children && !ariaLabel && !ariaLabelledBy) {
+      if (!label && !children && !ariaLabel && !ariaLabelledBy) {
         console.warn(
           'Checkbox requires either a visible label, aria-label, or aria-labelledby for accessibility',
         );
       }
-    }, [children, ariaLabel, ariaLabelledBy]);
+    }, [label, children, ariaLabel, ariaLabelledBy]);
+
+    // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
+    const secondaryLabelText =
+      secondaryLabel || (restProps.isRequired ? 'Required' : null);
 
     return (
-      <RACheckbox
-        ref={ref}
-        className={classes.root}
-        {...dataAttributes}
-        {...restProps}
-      >
-        {({ isIndeterminate }) => (
-          <>
-            <div className={classes.indicator} aria-hidden="true">
-              {isIndeterminate ? (
-                <RiSubtractLine size={12} />
-              ) : (
-                <RiCheckLine size={12} />
-              )}
-            </div>
-            {children != null && <div>{children}</div>}
-          </>
-        )}
-      </RACheckbox>
+      <div className={classes.root} {...dataAttributes}>
+        <FieldLabel
+          id={labelId}
+          label={label}
+          secondaryLabel={secondaryLabelText}
+          description={description}
+          descriptionId={descriptionId}
+        />
+        <RACheckbox
+          ref={ref}
+          className={classes.checkbox}
+          {...restProps}
+          aria-labelledby={labelId ?? ariaLabelledBy}
+          aria-describedby={descriptionId ?? restProps['aria-describedby']}
+        >
+          {({ isIndeterminate }) => (
+            <>
+              <div className={classes.indicator} aria-hidden="true">
+                {isIndeterminate ? (
+                  <RiSubtractLine size={12} />
+                ) : (
+                  <RiCheckLine size={12} />
+                )}
+              </div>
+              {children != null && <div>{children}</div>}
+            </>
+          )}
+        </RACheckbox>
+      </div>
     );
   },
 );

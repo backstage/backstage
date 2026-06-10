@@ -19,3 +19,15 @@ export const AllVariants = () => {
     </Flex>
   );
 };
+
+export const WithLabel = () => {
+  return (
+    <Checkbox
+      label="Email notifications"
+      secondaryLabel="Optional"
+      description="We will only email you about important account activity."
+    >
+      Send me product updates
+    </Checkbox>
+  );
+};

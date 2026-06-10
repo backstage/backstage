@@ -895,12 +895,16 @@ export const CheckboxDefinition: {
     readonly [key: string]: string;
   };
   readonly classNames: {
-    readonly root: 'bui-Checkbox';
+    readonly root: 'bui-CheckboxField';
+    readonly checkbox: 'bui-Checkbox';
     readonly indicator: 'bui-CheckboxIndicator';
   };
   readonly propDefs: {
     readonly children: {};
     readonly className: {};
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
   };
 };
 
@@ -949,6 +953,9 @@ export interface CheckboxGroupProps
 export type CheckboxOwnProps = {
   children?: React.ReactNode;
   className?: string;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
 };
 
 // @public (undocumented)
