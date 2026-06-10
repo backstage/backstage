@@ -372,15 +372,15 @@ export default createFrontendModule({
 
 Column parameters:
 
-| Parameter      | Description                                                                                                                                                                                                   |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`           | Stable column key (required).                                                                                                                                                                                 |
-| `label`        | Column header text, also used as the accessible name (required).                                                                                                                                              |
-| `cell`         | Render function `(entity) => ReactElement` returning a `<CellText>` or `<CellProfile>` element (required).                                                                                                    |
-| `orderField`   | Catalog field path used for server-side sorting. When set, the column header is clickable.                                                                                                                    |
-| `searchFields` | Catalog field paths included in `fullTextFilter` when the user types in the search box.                                                                                                                       |
+| Parameter      | Description                                                                                                                                                                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`           | Stable column key (required).                                                                                                                                                                                                                                            |
+| `label`        | Column header text, also used as the accessible name (required).                                                                                                                                                                                                         |
+| `cell`         | Render function `(entity) => ReactElement` returning a `<CellText>` or `<CellProfile>` element (required).                                                                                                                                                               |
+| `orderField`   | Catalog field path used for server-side sorting. When set, the column header is clickable.                                                                                                                                                                               |
+| `searchFields` | Catalog field paths included in `fullTextFilter` when the user types in the search box.                                                                                                                                                                                  |
 | `filter`       | Per-entity visibility predicate. In code, accepts a function, a filter predicate object, or a filter expression string. In app-config, use a filter predicate object (string expressions are deprecated). When no displayed entity matches, the entire column is hidden. |
-| `width`        | Column width — a number (pixels), percentage (`'30%'`), or fraction (`'1fr'`).                                                                                                                                |
+| `width`        | Column width — a number (pixels), percentage (`'30%'`), or fraction (`'1fr'`).                                                                                                                                                                                           |
 
 ### Configuring default columns
 
