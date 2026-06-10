@@ -145,6 +145,13 @@ export const actionsServiceRef: ServiceRef<
 >;
 
 // @alpha
+export interface ConnectionRegistration {
+  description?: string;
+  required?: boolean;
+  type: string;
+}
+
+// @alpha
 export interface MetricAdvice {
   explicitBucketBoundaries?: number[];
 }

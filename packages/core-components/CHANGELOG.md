@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.18.11-next.2
+
+### Patch Changes
+
+- c161e1c: Lazy-load `react-syntax-highlighter` and `@dagrejs/dagre` so they are no longer pulled in eagerly through the barrel export. This reduces the upfront module cost of importing from `@backstage/core-components` by roughly 10 MB. The public API is unchanged.
+
 ## 0.18.11-next.1
 
 ### Patch Changes

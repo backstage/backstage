@@ -68,3 +68,5 @@ export {
   rootSystemMetadataServiceRef,
   tracingServiceRef,
 } from './refs';
+
+export type { ConnectionRegistration } from '../wiring/types';

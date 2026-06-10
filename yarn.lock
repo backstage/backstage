@@ -2127,7 +2127,9 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/connections": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -2955,6 +2957,19 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     ms: "npm:^2.1.3"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/connections@workspace:^, @backstage/connections@workspace:packages/connections":
+  version: 0.0.0-use.local
+  resolution: "@backstage/connections@workspace:packages/connections"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
+    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5173,6 +5188,38 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-connections-example-backend-module-gitlab@workspace:plugins/connections-example-backend-module-gitlab":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-connections-example-backend-module-gitlab@workspace:plugins/connections-example-backend-module-gitlab"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/connections": "workspace:^"
+    "@backstage/errors": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-connections-example-backend@workspace:plugins/connections-example-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-connections-example-backend@workspace:plugins/connections-example-backend"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/connections": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/express": "npm:^4.17.6"
+    express: "npm:^4.22.0"
+    express-promise-router: "npm:^4.1.0"
+    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 

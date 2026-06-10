@@ -1412,4 +1412,67 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     await knex.destroy();
   });
+
+  it('20260608000000_search_autovacuum_and_ndistinct.js', async () => {
+    const knex = await databases.init(databaseId);
+    const client = knex.client.config.client;
+    const isPg = typeof client === 'string' && client.includes('pg');
+
+    await migrateUntilBefore(
+      knex,
+      '20260608000000_search_autovacuum_and_ndistinct.js',
+    );
+
+    const tunedTables = [
+      'search',
+      'final_entities',
+      'relations',
+      'refresh_state_references',
+    ];
+
+    async function hasAutovacuumOptions(table: string): Promise<boolean> {
+      if (!isPg) return false;
+      const r = await knex.raw(
+        `SELECT reloptions FROM pg_class WHERE oid = ?::regclass`,
+        [table],
+      );
+      const opts: string[] | null = r.rows[0]?.reloptions;
+      return (
+        !!opts &&
+        opts.includes('autovacuum_vacuum_scale_factor=0.01') &&
+        opts.includes('autovacuum_analyze_scale_factor=0.01')
+      );
+    }
+
+    async function hasNdistinctOverride(): Promise<boolean> {
+      if (!isPg) return false;
+      const r = await knex.raw(
+        `SELECT attoptions FROM pg_attribute
+         WHERE attrelid = 'search'::regclass AND attname = 'entity_id'`,
+      );
+      const opts: string[] | null = r.rows[0]?.attoptions;
+      return !!opts && opts.includes('n_distinct=-1');
+    }
+
+    for (const table of tunedTables) {
+      expect(await hasAutovacuumOptions(table)).toBe(false);
+    }
+    expect(await hasNdistinctOverride()).toBe(false);
+
+    await migrateUpOnce(knex);
+
+    for (const table of tunedTables) {
+      expect(await hasAutovacuumOptions(table)).toBe(isPg);
+    }
+    expect(await hasNdistinctOverride()).toBe(isPg);
+
+    await migrateDownOnce(knex);
+
+    for (const table of tunedTables) {
+      expect(await hasAutovacuumOptions(table)).toBe(false);
+    }
+    expect(await hasNdistinctOverride()).toBe(false);
+
+    await knex.destroy();
+  });
 });

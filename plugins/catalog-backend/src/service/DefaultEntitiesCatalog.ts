@@ -338,15 +338,30 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   async entitiesBatch(
     request: EntitiesBatchRequest,
   ): Promise<EntitiesBatchResponse> {
-    const lookup = new Map<string, string>();
+    if (request.entityRefs.length === 0) {
+      return { items: processRawEntitiesResult([], request.fields) };
+    }
 
-    for (const chunk of lodashChunk(request.entityRefs, 200)) {
-      let query = this.database<DbFinalEntitiesRow>('final_entities')
-        .select({
-          entityRef: 'final_entities.entity_ref',
-          entity: 'final_entities.final_entity',
-        })
-        .whereIn('final_entities.entity_ref', chunk);
+    const lookup = new Map<string, string>();
+    const isPg = this.database.client.config.client === 'pg';
+
+    const chunks = isPg
+      ? [request.entityRefs]
+      : lodashChunk(request.entityRefs, 200);
+
+    for (const chunk of chunks) {
+      let query = this.database<DbFinalEntitiesRow>('final_entities').select({
+        entityRef: 'final_entities.entity_ref',
+        entity: 'final_entities.final_entity',
+      });
+
+      if (isPg) {
+        query = query.whereRaw('final_entities.entity_ref = ANY(?::text[])', [
+          chunk,
+        ]);
+      } else {
+        query = query.whereIn('final_entities.entity_ref', chunk);
+      }
 
       if (request?.filter || request?.query) {
         query = applyEntityFilterToQuery({

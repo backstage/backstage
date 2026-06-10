@@ -364,6 +364,31 @@ describe('read microsoft graph', () => {
         undefined,
       );
     });
+
+    it('should use default fields when userSelect is an empty array', async () => {
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(undefined);
+
+      await readMicrosoftGraphUsers(client, {
+        userSelect: [],
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          select: expect.arrayContaining([
+            'displayName',
+            'mail',
+            'userPrincipalName',
+            'accountEnabled',
+          ]),
+          top: 999,
+        },
+        undefined,
+        undefined,
+        undefined,
+      );
+    });
   });
 
   describe('readMicrosoftGraphUsersInGroups', () => {
@@ -494,6 +519,33 @@ describe('read microsoft graph', () => {
       expect(client.getGroupUserMembers).toHaveBeenCalledWith(
         'groupid',
         { select: expect.arrayContaining(['accountEnabled']), top: 999 },
+        undefined,
+        undefined,
+      );
+    });
+
+    it('should use default fields when userSelect is an empty array', async () => {
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupUserMembers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(undefined);
+
+      await readMicrosoftGraphUsersInGroups(client, {
+        userGroupMemberFilter: 'securityEnabled eq true',
+        userSelect: [],
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(client.getGroupUserMembers).toHaveBeenCalledWith(
+        'groupid',
+        {
+          select: expect.arrayContaining([
+            'displayName',
+            'mail',
+            'userPrincipalName',
+            'accountEnabled',
+          ]),
+          top: 999,
+        },
         undefined,
         undefined,
       );
