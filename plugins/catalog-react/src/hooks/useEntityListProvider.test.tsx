@@ -521,6 +521,8 @@ describe('<EntityListProvider pagination />', () => {
             'metadata.name',
             'metadata.title',
             'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
           ],
         },
       });
@@ -917,6 +919,8 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
             'metadata.name',
             'metadata.title',
             'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
           ],
         },
       });

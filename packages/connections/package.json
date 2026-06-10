@@ -47,6 +47,7 @@
     "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^"
   }
 }
