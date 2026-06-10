@@ -41,14 +41,14 @@ nav:
       - Support and community: 'overview/support.md'
   - Administration:
       - Configuring Backstage:
-          - Setup Authentication: 'getting-started/config/authentication.md'
+          - Set Up Authentication: 'getting-started/config/authentication.md'
           - Database: 'getting-started/config/database.md'
-          - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
+          - Configuring App with Plugins: 'getting-started/configure-app-with-plugins.md'
           - Install Notification System: 'notifications/index.md'
-          - Setup permissions: 'permissions/overview.md'
-          - Customize the look-and-feel of your App: 'conf/user-interface/index.md'
+          - Set Up Permissions: 'permissions/overview.md'
+          - Customize the Look-and-Feel of your App: 'conf/user-interface/index.md'
           - Customize your Homepage: 'getting-started/homepage.md'
-          - Integrate with external providers: 'integrations/index.md'
+          - Integrate with External Providers: 'integrations/index.md'
       - Deployment:
           - Deploying Backstage: 'deployment/index.md'
           - Scaling: 'deployment/scaling.md'
