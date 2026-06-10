@@ -1,0 +1,11 @@
+---
+title: Catalog Assistant
+author: Naga15
+authorUrl: https://github.com/Naga15
+category: Catalog
+description: Natural-language Q&A over the Software Catalog. Returns grounded answers with entity-ref citations, backed by an LLM.
+documentation: https://github.com/Naga15/platformlog-plugins/tree/master/packages/catalog-assistant-backend
+iconUrl: https://theplatformlog.dev/favicon.svg
+npmPackageName: '@theplatformlog/catalog-assistant-backend'
+addedDate: '2026-06-10'
+status: active

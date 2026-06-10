@@ -1,0 +1,11 @@
+---
+title: Scaffolder MCP Client
+author: Naga15
+authorUrl: https://github.com/Naga15
+category: Scaffolder
+description: Adds an `mcp:call` scaffolder action so templates can invoke any tool on any configured Model Context Protocol (MCP) server.
+documentation: https://github.com/Naga15/platformlog-plugins/tree/master/packages/scaffolder-backend-module-mcp
+iconUrl: https://theplatformlog.dev/favicon.svg
+npmPackageName: '@theplatformlog/scaffolder-backend-module-mcp'
+addedDate: '2026-06-10'
+status: active

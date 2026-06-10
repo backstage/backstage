@@ -1,0 +1,11 @@
+---
+title: Template Authoring
+author: Naga15
+authorUrl: https://github.com/Naga15
+category: Scaffolder
+description: Generates scaffolder Template entities from a natural-language description, schema-constrained so the LLM cannot emit an invalid Template.
+documentation: https://github.com/Naga15/platformlog-plugins/tree/master/packages/template-authoring-backend
+iconUrl: https://theplatformlog.dev/favicon.svg
+npmPackageName: '@theplatformlog/template-authoring-backend'
+addedDate: '2026-06-10'
+status: active
