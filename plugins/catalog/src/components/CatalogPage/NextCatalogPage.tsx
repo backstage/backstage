@@ -84,44 +84,59 @@ export type NextCatalogPageProps = {
   pageSizeOptions?: number[];
 };
 
-function buildColumnConfig(
-  columns: NextCatalogPageProps['columns'],
-  entities: Entity[],
-): ColumnConfig<EntityRow>[] {
-  const resolved = columns.map(
-    ({ header, cell, filterFunction, filterExpression }) => {
-      const filter = buildFilterFn(filterFunction, filterExpression);
-      const hasFilter = Boolean(filterFunction || filterExpression);
-      const hiddenByFilter =
-        hasFilter && entities.length > 0 && !entities.some(e => filter(e));
-      const isHidden = header.hidden || hiddenByFilter;
-      return { header, cell, filter, isHidden };
-    },
+/**
+ * The next-generation catalog page that renders entity columns supplied via
+ * props.
+ *
+ * @alpha
+ */
+export function NextCatalogPage(props: NextCatalogPageProps) {
+  const {
+    filters,
+    columns,
+    pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
+  } = props;
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const createComponentLink = useRouteRef(createComponentRouteRef);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
+
+  return (
+    <>
+      <Header
+        title={t('indexPage.title', { orgName })}
+        customActions={
+          <>
+            {allowed && (
+              <CreateButton
+                title={t('indexPage.createButtonTitle')}
+                to={createComponentLink && createComponentLink()}
+              />
+            )}
+            <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
+          </>
+        }
+      />
+      <Content>
+        <EntityListProvider
+          pagination={{ mode: 'offset', limit: pageSizeOptions[0] }}
+        >
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
+              <NextCatalogTable
+                columns={columns}
+                pageSizeOptions={pageSizeOptions}
+              />
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
+        </EntityListProvider>
+      </Content>
+    </>
   );
-
-  const firstVisibleIndex = resolved.findIndex(c => !c.isHidden);
-
-  return resolved.map(({ header, cell, filter, isHidden }, index) => ({
-    id: header.id,
-    label: header.label,
-    header: header.header
-      ? () => (
-          <Column
-            id={header.id}
-            isRowHeader={index === firstVisibleIndex}
-            allowsSorting={Boolean(header.orderField)}
-            defaultWidth={header.width}
-          >
-            {header.header!()}
-          </Column>
-        )
-      : undefined,
-    defaultWidth: header.width,
-    isSortable: Boolean(header.orderField),
-    isRowHeader: index === firstVisibleIndex,
-    isHidden,
-    cell: row => (filter(row.entity) ? cell(row.entity) : <Cell />),
-  }));
 }
 
 function NextCatalogTable(props: {
@@ -222,61 +237,6 @@ function NextCatalogTable(props: {
   );
 }
 
-/**
- * The next-generation catalog page that renders entity columns supplied via
- * props.
- *
- * @alpha
- */
-export function NextCatalogPage(props: NextCatalogPageProps) {
-  const {
-    filters,
-    columns,
-    pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
-  } = props;
-  const orgName =
-    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
-  const { t } = useTranslationRef(catalogTranslationRef);
-  const createComponentLink = useRouteRef(createComponentRouteRef);
-  const { allowed } = usePermission({
-    permission: catalogEntityCreatePermission,
-  });
-
-  return (
-    <>
-      <Header
-        title={t('indexPage.title', { orgName })}
-        customActions={
-          <>
-            {allowed && (
-              <CreateButton
-                title={t('indexPage.createButtonTitle')}
-                to={createComponentLink && createComponentLink()}
-              />
-            )}
-            <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
-          </>
-        }
-      />
-      <Content>
-        <EntityListProvider
-          pagination={{ mode: 'offset', limit: pageSizeOptions[0] }}
-        >
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <NextCatalogTable
-                columns={columns}
-                pageSizeOptions={pageSizeOptions}
-              />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </EntityListProvider>
-      </Content>
-    </>
-  );
-}
-
 function TableTitle() {
   const { t } = useTranslationRef(catalogTranslationRef);
   const { filters, totalItems, loading } = useEntityList();
@@ -301,4 +261,44 @@ function TableTitle() {
       <Text variant="title-small">{loading ? '' : titleText}</Text>
     </Box>
   );
+}
+
+function buildColumnConfig(
+  columns: NextCatalogPageProps['columns'],
+  entities: Entity[],
+): ColumnConfig<EntityRow>[] {
+  const resolved = columns.map(
+    ({ header, cell, filterFunction, filterExpression }) => {
+      const filter = buildFilterFn(filterFunction, filterExpression);
+      const hasFilter = Boolean(filterFunction || filterExpression);
+      const hiddenByFilter =
+        hasFilter && entities.length > 0 && !entities.some(e => filter(e));
+      const isHidden = header.hidden || hiddenByFilter;
+      return { header, cell, filter, isHidden };
+    },
+  );
+
+  const firstVisibleIndex = resolved.findIndex(c => !c.isHidden);
+
+  return resolved.map(({ header, cell, filter, isHidden }, index) => ({
+    id: header.id,
+    label: header.label,
+    header: header.header
+      ? () => (
+          <Column
+            id={header.id}
+            isRowHeader={index === firstVisibleIndex}
+            allowsSorting={Boolean(header.orderField)}
+            defaultWidth={header.width}
+          >
+            {header.header!()}
+          </Column>
+        )
+      : undefined,
+    defaultWidth: header.width,
+    isSortable: Boolean(header.orderField),
+    isRowHeader: index === firstVisibleIndex,
+    isHidden,
+    cell: row => (filter(row.entity) ? cell(row.entity) : <Cell />),
+  }));
 }
