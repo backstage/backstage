@@ -188,8 +188,14 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
     maxHeight,
     style,
     placeholder,
+    inputValue,
+    defaultInputValue,
+    onInputChange,
   } = ownProps;
   const { contains } = useFilter({ sensitivity: 'base' });
+  // Read from the raw props since `ownProps` does not preserve `null`, which
+  // disables client-side filtering for server-filtered items.
+  const filter = props.filter === undefined ? contains : props.filter;
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const menuContent = (
@@ -205,7 +211,12 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
     <RAPopover className={classes.root} placement={placement}>
       <BgReset>
         <Box bg="neutral" className={classes.inner}>
-          <RAAutocomplete filter={contains}>
+          <RAAutocomplete
+            filter={filter ?? undefined}
+            inputValue={inputValue}
+            defaultInputValue={defaultInputValue}
+            onInputChange={onInputChange}
+          >
             <RASearchField
               className={classes.searchField}
               aria-label={placeholder || 'Search'}
@@ -254,8 +265,14 @@ export const MenuAutocompleteListbox = (
     maxHeight,
     style,
     placeholder,
+    inputValue,
+    defaultInputValue,
+    onInputChange,
   } = ownProps;
   const { contains } = useFilter({ sensitivity: 'base' });
+  // Read from the raw props since `ownProps` does not preserve `null`, which
+  // disables client-side filtering for server-filtered items.
+  const filter = props.filter === undefined ? contains : props.filter;
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const listBoxContent = (
@@ -272,7 +289,12 @@ export const MenuAutocompleteListbox = (
     <RAPopover className={classes.root} placement={placement}>
       <BgReset>
         <Box bg="neutral" className={classes.inner}>
-          <RAAutocomplete filter={contains}>
+          <RAAutocomplete
+            filter={filter ?? undefined}
+            inputValue={inputValue}
+            defaultInputValue={defaultInputValue}
+            onInputChange={onInputChange}
+          >
             <RASearchField
               className={classes.searchField}
               aria-label={placeholder || 'Search'}

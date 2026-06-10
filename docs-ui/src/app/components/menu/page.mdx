@@ -11,6 +11,7 @@ import {
   PreviewAutocompleteMenu,
   PreviewAutocompleteListbox,
   PreviewAutocompleteListboxMultiple,
+  PreviewServerSideFiltering,
 } from './components';
 import {
   menuTriggerPropDefs,
@@ -35,6 +36,7 @@ import {
   autocomplete,
   autocompleteListbox,
   autocompleteListboxMultiple,
+  serverSideFiltering,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -202,6 +204,19 @@ The `href` prop works with both internal and external links.
   open
   preview={<PreviewAutocompleteMenu />}
   code={autocomplete}
+/>
+
+### Server-side filtering
+
+By default, autocomplete menus filter items client-side as the user types.
+Pass `filter={null}` to disable the built-in filtering and use `onInputChange`
+to fetch matching items from a server instead.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<PreviewServerSideFiltering />}
+  code={serverSideFiltering}
 />
 
 ### With list box

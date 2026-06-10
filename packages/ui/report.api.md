@@ -2183,10 +2183,10 @@ export const MenuAutocompleteListbox: (
 ) => JSX_2.Element;
 
 // @public (undocumented)
-export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps & {
-  placeholder?: string;
-  selectionMode?: ListBoxProps<object>['selectionMode'];
-};
+export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps &
+  MenuAutocompleteSearchOwnProps & {
+    selectionMode?: ListBoxProps<object>['selectionMode'];
+  };
 
 // @public (undocumented)
 export interface MenuAutocompleteListBoxProps<T>
@@ -2194,14 +2194,22 @@ export interface MenuAutocompleteListBoxProps<T>
     Omit<ListBoxProps<T>, keyof MenuAutocompleteListBoxOwnProps> {}
 
 // @public (undocumented)
-export type MenuAutocompleteOwnProps = MenuPopoverOwnProps & {
-  placeholder?: string;
-};
+export type MenuAutocompleteOwnProps = MenuPopoverOwnProps &
+  MenuAutocompleteSearchOwnProps;
 
 // @public (undocumented)
 export interface MenuAutocompleteProps<T>
   extends MenuAutocompleteOwnProps,
     Omit<MenuProps_2<T>, keyof MenuAutocompleteOwnProps> {}
+
+// @public
+export type MenuAutocompleteSearchOwnProps = {
+  placeholder?: string;
+  filter?: ((textValue: string, inputValue: string) => boolean) | null;
+  inputValue?: string;
+  defaultInputValue?: string;
+  onInputChange?: (value: string) => void;
+};
 
 // @public
 export const MenuDefinition: {

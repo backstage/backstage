@@ -198,3 +198,39 @@ export const Submenu = meta.story({
     </MenuTrigger>
   ),
 });
+
+export const ServerSideFiltering = meta.story({
+  args: {
+    ...Default.input.args,
+  },
+  render: () => {
+    const [items, setItems] = useState(options);
+
+    // Simulates fetching items that match the search from a server.
+    const handleInputChange = (value: string) => {
+      const search = value.toLocaleLowerCase('en-US');
+      setItems(
+        options.filter(option =>
+          option.label.toLocaleLowerCase('en-US').includes(search),
+        ),
+      );
+    };
+
+    return (
+      <MenuTrigger isOpen>
+        <Button aria-label="Menu">Menu</Button>
+        <MenuAutocomplete
+          filter={null}
+          onInputChange={handleInputChange}
+          placeholder="Search fruits..."
+        >
+          {items.map(option => (
+            <MenuItem key={option.value} id={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </MenuAutocomplete>
+      </MenuTrigger>
+    );
+  },
+});

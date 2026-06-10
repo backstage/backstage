@@ -106,6 +106,28 @@ export const autocompleteListbox = `<MenuTrigger>
   </MenuAutocompleteListbox>
 </MenuTrigger>`;
 
+export const serverSideFiltering = `const [items, setItems] = useState<Fruit[]>([]);
+
+// Fetch items that match the search from a server.
+const handleInputChange = (value: string) => {
+  fetchFruits(value).then(setItems);
+};
+
+<MenuTrigger>
+  <Button variant="secondary">Search</Button>
+  <MenuAutocomplete
+    filter={null}
+    onInputChange={handleInputChange}
+    placeholder="Search fruits..."
+  >
+    {items.map(item => (
+      <MenuItem key={item.id} id={item.id}>
+        {item.name}
+      </MenuItem>
+    ))}
+  </MenuAutocomplete>
+</MenuTrigger>`;
+
 export const autocompleteListboxMultiple = `<MenuTrigger>
   <Button variant="secondary">Multi-select</Button>
   <MenuAutocompleteListbox

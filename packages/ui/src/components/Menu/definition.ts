@@ -52,6 +52,15 @@ const menuPopoverPropDefs = {
   className: {},
 } as const;
 
+// Shared propDefs for autocomplete menu variants
+const menuAutocompleteSearchPropDefs = {
+  placeholder: {},
+  filter: {},
+  inputValue: {},
+  defaultInputValue: {},
+  onInputChange: {},
+} as const;
+
 /**
  * Component definition for Menu
  * @public
@@ -79,7 +88,7 @@ export const MenuAutocompleteDefinition =
     classNames: menuAutocompleteClassNames,
     propDefs: {
       ...menuPopoverPropDefs,
-      placeholder: {},
+      ...menuAutocompleteSearchPropDefs,
     },
   });
 
@@ -90,7 +99,7 @@ export const MenuAutocompleteListboxDefinition =
     classNames: menuAutocompleteClassNames,
     propDefs: {
       ...menuPopoverPropDefs,
-      placeholder: {},
+      ...menuAutocompleteSearchPropDefs,
       selectionMode: { default: 'single' },
     },
   });

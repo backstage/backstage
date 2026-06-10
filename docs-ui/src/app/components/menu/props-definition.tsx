@@ -151,6 +151,30 @@ export const menuAutocompletePropDefs: Record<string, PropDef> = {
     type: 'string',
     description: 'Placeholder text for the search input.',
   },
+  filter: {
+    type: 'enum',
+    values: ['(textValue: string, inputValue: string) => boolean', 'null'],
+    description: (
+      <>
+        Filter function used to match items against the search input. Defaults
+        to a case-insensitive substring match. Pass <Chip>null</Chip> to disable
+        client-side filtering, e.g. when items are filtered server-side.
+      </>
+    ),
+  },
+  inputValue: {
+    type: 'string',
+    description: 'Controlled value of the search input.',
+  },
+  defaultInputValue: {
+    type: 'string',
+    description: 'Default value of the search input (uncontrolled).',
+  },
+  onInputChange: {
+    type: 'enum',
+    values: ['(value: string) => void'],
+    description: 'Handler called when the search input value changes.',
+  },
   placement: {
     type: 'enum',
     values: [
@@ -220,6 +244,30 @@ export const menuAutocompleteListboxPropDefs: Record<string, PropDef> = {
   placeholder: {
     type: 'string',
     description: 'Placeholder text for the search input.',
+  },
+  filter: {
+    type: 'enum',
+    values: ['(textValue: string, inputValue: string) => boolean', 'null'],
+    description: (
+      <>
+        Filter function used to match items against the search input. Defaults
+        to a case-insensitive substring match. Pass <Chip>null</Chip> to disable
+        client-side filtering, e.g. when items are filtered server-side.
+      </>
+    ),
+  },
+  inputValue: {
+    type: 'string',
+    description: 'Controlled value of the search input.',
+  },
+  defaultInputValue: {
+    type: 'string',
+    description: 'Default value of the search input (uncontrolled).',
+  },
+  onInputChange: {
+    type: 'enum',
+    values: ['(value: string) => void'],
+    description: 'Handler called when the search input value changes.',
   },
   placement: {
     type: 'enum',

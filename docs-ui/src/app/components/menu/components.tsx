@@ -13,6 +13,7 @@ import {
 } from '../../../../../packages/ui/src/components/Menu/Menu';
 import { Button } from '../../../../../packages/ui/src/components/Button/Button';
 import { MemoryRouter } from 'react-router-dom';
+import { useState } from 'react';
 import {
   RiChat1Line,
   RiFileLine,
@@ -151,6 +152,37 @@ export const PreviewAutocompleteListbox = () => (
     </MenuTrigger>
   </MemoryRouter>
 );
+
+const serverOptions = ['Apple', 'Banana', 'Blueberry', 'Cherry', 'Grape'];
+
+export const PreviewServerSideFiltering = () => {
+  const [items, setItems] = useState(serverOptions);
+
+  // Simulates fetching items that match the search from a server.
+  const handleInputChange = (value: string) => {
+    const search = value.toLowerCase();
+    setItems(serverOptions.filter(item => item.toLowerCase().includes(search)));
+  };
+
+  return (
+    <MemoryRouter>
+      <MenuTrigger>
+        <Button variant="secondary">Search</Button>
+        <MenuAutocomplete
+          filter={null}
+          onInputChange={handleInputChange}
+          placeholder="Search fruits..."
+        >
+          {items.map(item => (
+            <MenuItem key={item} id={item}>
+              {item}
+            </MenuItem>
+          ))}
+        </MenuAutocomplete>
+      </MenuTrigger>
+    </MemoryRouter>
+  );
+};
 
 export const PreviewAutocompleteListboxMultiple = () => (
   <MemoryRouter>

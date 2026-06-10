@@ -184,6 +184,50 @@ export const Submenu = meta.story({
   },
 });
 
+export const ServerSideFiltering = meta.story({
+  args: {
+    ...Default.input.args,
+  },
+  render: () => {
+    const [selected, setSelected] = useState<Selection>(
+      new Set([options[2].value]),
+    );
+    const [items, setItems] = useState(options);
+
+    // Simulates fetching items that match the search from a server.
+    const handleInputChange = (value: string) => {
+      const search = value.toLocaleLowerCase('en-US');
+      setItems(
+        options.filter(option =>
+          option.label.toLocaleLowerCase('en-US').includes(search),
+        ),
+      );
+    };
+
+    return (
+      <Flex direction="column" gap="2" align="start">
+        <Text>Selected: {Array.from(selected).join(', ')}</Text>
+        <MenuTrigger isOpen>
+          <Button aria-label="Menu">Menu</Button>
+          <MenuAutocompleteListbox
+            filter={null}
+            onInputChange={handleInputChange}
+            selectedKeys={selected}
+            onSelectionChange={setSelected}
+            placeholder="Search fruits..."
+          >
+            {items.map(option => (
+              <MenuListBoxItem key={option.value} id={option.value}>
+                {option.label}
+              </MenuListBoxItem>
+            ))}
+          </MenuAutocompleteListbox>
+        </MenuTrigger>
+      </Flex>
+    );
+  },
+});
+
 export const Virtualized = meta.story({
   args: {
     ...Default.input.args,

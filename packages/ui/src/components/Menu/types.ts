@@ -64,10 +64,31 @@ export interface MenuListBoxProps<T>
   extends MenuListBoxOwnProps,
     Omit<RAListBoxProps<T>, keyof MenuListBoxOwnProps> {}
 
-/** @public */
-export type MenuAutocompleteOwnProps = MenuPopoverOwnProps & {
+/**
+ * Common own props shared by all autocomplete menu variants.
+ *
+ * @public
+ */
+export type MenuAutocompleteSearchOwnProps = {
   placeholder?: string;
+  /**
+   * Filter function used to match items against the search input value.
+   * Defaults to a case-insensitive substring match of each item's text value.
+   * Pass `null` to disable client-side filtering, e.g. when the items are
+   * already filtered server-side.
+   */
+  filter?: ((textValue: string, inputValue: string) => boolean) | null;
+  /** The value of the search input (controlled). */
+  inputValue?: string;
+  /** The default value of the search input (uncontrolled). */
+  defaultInputValue?: string;
+  /** Handler that is called when the search input value changes. */
+  onInputChange?: (value: string) => void;
 };
+
+/** @public */
+export type MenuAutocompleteOwnProps = MenuPopoverOwnProps &
+  MenuAutocompleteSearchOwnProps;
 
 /** @public */
 export interface MenuAutocompleteProps<T>
@@ -75,10 +96,10 @@ export interface MenuAutocompleteProps<T>
     Omit<RAMenuProps<T>, keyof MenuAutocompleteOwnProps> {}
 
 /** @public */
-export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps & {
-  placeholder?: string;
-  selectionMode?: RAListBoxProps<object>['selectionMode'];
-};
+export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps &
+  MenuAutocompleteSearchOwnProps & {
+    selectionMode?: RAListBoxProps<object>['selectionMode'];
+  };
 
 /** @public */
 export interface MenuAutocompleteListBoxProps<T>

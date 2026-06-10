@@ -37,6 +37,7 @@ export type {
   MenuListBoxOwnProps,
   MenuAutocompleteProps,
   MenuAutocompleteOwnProps,
+  MenuAutocompleteSearchOwnProps,
   MenuAutocompleteListBoxProps,
   MenuAutocompleteListBoxOwnProps,
   MenuItemProps,
