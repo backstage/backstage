@@ -448,6 +448,7 @@ export default {
           'integrations/google-cloud-storage/locations',
         ]),
         sidebarElementWithIndex({ label: 'LDAP' }, ['integrations/ldap/org']),
+        sidebarElementWithIndex({ label: 'Okta' }, ['integrations/okta/org']),
       ],
     ),
     sidebarElementWithIndex(
@@ -498,7 +499,6 @@ export default {
           ['plugins/add-to-directory'],
         ),
         'plugins/observability',
-        sidebarElementWithIndex({ label: 'Okta' }, ['integrations/okta/org']),
       ],
     ),
     sidebarElementWithIndex(
