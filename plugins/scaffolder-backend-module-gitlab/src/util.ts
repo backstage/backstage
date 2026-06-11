@@ -163,7 +163,7 @@ export async function checkEpicScope(
     const project = await client.Projects.show(projectId);
     if (!project) {
       throw new InputError(
-        `Project with id ${projectId} not found. Check your GitLab instance.`,
+        `Project ${projectId} not found. Check your GitLab instance.`,
       );
     }
     const topParentGroup = await getTopLevelParentGroup(

@@ -218,10 +218,14 @@ export const createGitlabIssueAction = (options: {
           );
         }
 
+        // `projectRef` can be a full project path (e.g. `group/sub-group/project`)
+        // which contains slashes, so encode it before using it in checkpoint keys.
+        const projectRefKey = encodeURIComponent(String(projectRef));
+
         let isEpicScoped = false;
 
         isEpicScoped = await ctx.checkpoint({
-          key: `is.epic.scoped.${projectRef}.${title}`,
+          key: `is.epic.scoped.${projectRefKey}.${title}`,
           fn: async () => {
             if (epicId) {
               isEpicScoped = await checkEpicScope(api, projectRef, epicId);
@@ -262,7 +266,7 @@ export const createGitlabIssueAction = (options: {
         };
 
         const response = await ctx.checkpoint({
-          key: `issue.${projectRef}.${title}`,
+          key: `issue.${projectRefKey}.${title}`,
           fn: async () => {
             const issue = (await api.Issues.create(
               projectRef,
