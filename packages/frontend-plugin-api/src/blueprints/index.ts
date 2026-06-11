@@ -20,6 +20,13 @@ export {
 } from './AnalyticsImplementationBlueprint';
 export { ApiBlueprint } from './ApiBlueprint';
 export { AppRootElementBlueprint } from './AppRootElementBlueprint';
+export {
+  ExtensionPredicateContextProviderBlueprint,
+  type ExtensionPredicateContextProviderAsyncParams,
+  type ExtensionPredicateContextProviderLoader,
+  type ExtensionPredicateContextProviderResolver,
+  type ExtensionPredicateContextProviderSyncParams,
+} from './ExtensionPredicateContextProviderBlueprint';
 export { PageBlueprint } from './PageBlueprint';
 export { SubPageBlueprint } from './SubPageBlueprint';
 export { PluginHeaderActionBlueprint } from './PluginHeaderActionBlueprint';

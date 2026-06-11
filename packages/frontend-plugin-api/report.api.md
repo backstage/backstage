@@ -1597,6 +1597,66 @@ export interface ExtensionInput<
   }>;
 }
 
+// @public (undocumented)
+export type ExtensionPredicateContextProviderAsyncParams = {
+  loader: ExtensionPredicateContextProviderLoader;
+  resolver?: never;
+};
+
+// @public
+export const ExtensionPredicateContextProviderBlueprint: ExtensionBlueprint_2<{
+  kind: 'extension-predicate-context-provider';
+  params:
+    | ExtensionPredicateContextProviderSyncParams
+    | ExtensionPredicateContextProviderAsyncParams;
+  output:
+    | ExtensionDataRef_2<
+        ExtensionPredicateContextProviderResolver,
+        'core.extension-predicate-context-provider.resolver',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef_2<
+        ExtensionPredicateContextProviderLoader,
+        'core.extension-predicate-context-provider.loader',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    resolver: ConfigurableExtensionDataRef_2<
+      ExtensionPredicateContextProviderResolver,
+      'core.extension-predicate-context-provider.resolver',
+      {}
+    >;
+    loader: ConfigurableExtensionDataRef_2<
+      ExtensionPredicateContextProviderLoader,
+      'core.extension-predicate-context-provider.loader',
+      {}
+    >;
+  };
+}>;
+
+// @public (undocumented)
+export type ExtensionPredicateContextProviderLoader = (options: {
+  apis: ApiHolder;
+}) => Promise<string[]>;
+
+// @public (undocumented)
+export type ExtensionPredicateContextProviderResolver = (options: {
+  apis: ApiHolder;
+}) => string[];
+
+// @public (undocumented)
+export type ExtensionPredicateContextProviderSyncParams = {
+  resolver: ExtensionPredicateContextProviderResolver;
+  loader?: never;
+};
+
 // @public
 export interface ExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
