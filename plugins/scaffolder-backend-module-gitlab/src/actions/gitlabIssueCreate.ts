@@ -54,10 +54,16 @@ export const createGitlabIssueAction = (options: {
             .optional(),
         projectId: z =>
           z
-            .union([z.number(), z.string()], {
-              description:
-                'Project Id or full project path (e.g. `group/sub-group/project`). If omitted, the project is derived from `repoUrl`.',
-            })
+            .union(
+              [
+                z.number(),
+                z.string().trim().min(1, 'Project path must not be empty'),
+              ],
+              {
+                description:
+                  'Project Id or full project path (e.g. `group/sub-group/project`). If omitted, the project is derived from `repoUrl`.',
+              },
+            )
             .optional(),
         title: z =>
           z.string({
@@ -199,8 +205,18 @@ export const createGitlabIssueAction = (options: {
         );
         const api = getClient({ host, integrations, token });
 
-        const projectRef: number | string =
-          projectId ?? (project ? project : `${owner}/${repo}`);
+        let projectRef: number | string;
+        if (projectId !== undefined) {
+          projectRef = projectId;
+        } else if (project) {
+          projectRef = project;
+        } else if (owner && repo) {
+          projectRef = `${owner}/${repo}`;
+        } else {
+          throw new InputError(
+            `Unable to determine the GitLab project. Provide \`projectId\` (numeric id or full project path), or a \`repoUrl\` that includes either \`project=<full_path>\` or both \`owner\` and \`repo\`.`,
+          );
+        }
 
         let isEpicScoped = false;
 

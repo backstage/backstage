@@ -15,6 +15,7 @@
  */
 
 import { ScmIntegrations } from '@backstage/integration';
+import { InputError } from '@backstage/errors';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { IssueType } from '../commonGitlabConfig';
 import { createGitlabIssueAction } from './gitlabIssueCreate';
@@ -259,5 +260,44 @@ describe('gitlab:issues:create', () => {
       'Computer banks to rule the world',
       expect.any(Object),
     );
+  });
+
+  it('should derive the project from a repoUrl that provides a full project path', async () => {
+    const mockContext = createMockActionContext({
+      input: {
+        repoUrl: 'gitlab.com?project=group%2Fsub-group%2Fproject',
+        title: 'Computer banks to rule the world',
+      },
+      workspacePath: 'seen2much',
+    });
+
+    mockGitlabClient.Issues.create.mockResolvedValue({
+      id: 42,
+      iid: 1,
+      web_url: 'https://gitlab.com/hangar18-/issues/42',
+    });
+
+    await action.handler({ ...mockContext });
+
+    expect(mockGitlabClient.Issues.create).toHaveBeenCalledWith(
+      'group/sub-group/project',
+      'Computer banks to rule the world',
+      expect.any(Object),
+    );
+  });
+
+  it('should throw an InputError when the project cannot be determined', async () => {
+    const mockContext = createMockActionContext({
+      input: {
+        repoUrl: 'gitlab.com?repo=repo',
+        title: 'Computer banks to rule the world',
+      },
+      workspacePath: 'seen2much',
+    });
+
+    await expect(action.handler({ ...mockContext })).rejects.toThrow(
+      InputError,
+    );
+    expect(mockGitlabClient.Issues.create).not.toHaveBeenCalled();
   });
 });
