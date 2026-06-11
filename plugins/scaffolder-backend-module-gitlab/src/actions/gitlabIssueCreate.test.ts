@@ -211,4 +211,53 @@ describe('gitlab:issues:create', () => {
       'https://gitlab.com/hangar18-/issues/42',
     );
   });
+
+  it('should derive the project from repoUrl when projectId is not provided', async () => {
+    const mockContext = createMockActionContext({
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Computer banks to rule the world',
+      },
+      workspacePath: 'seen2much',
+    });
+
+    mockGitlabClient.Issues.create.mockResolvedValue({
+      id: 42,
+      iid: 1,
+      web_url: 'https://gitlab.com/hangar18-/issues/42',
+    });
+
+    await action.handler({ ...mockContext });
+
+    expect(mockGitlabClient.Issues.create).toHaveBeenCalledWith(
+      'owner/repo',
+      'Computer banks to rule the world',
+      expect.any(Object),
+    );
+  });
+
+  it('should accept a project path string as projectId', async () => {
+    const mockContext = createMockActionContext({
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        projectId: 'group/sub-group/project',
+        title: 'Computer banks to rule the world',
+      },
+      workspacePath: 'seen2much',
+    });
+
+    mockGitlabClient.Issues.create.mockResolvedValue({
+      id: 42,
+      iid: 1,
+      web_url: 'https://gitlab.com/hangar18-/issues/42',
+    });
+
+    await action.handler({ ...mockContext });
+
+    expect(mockGitlabClient.Issues.create).toHaveBeenCalledWith(
+      'group/sub-group/project',
+      'Computer banks to rule the world',
+      expect.any(Object),
+    );
+  });
 });

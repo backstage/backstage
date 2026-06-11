@@ -16,10 +16,13 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import { IssueType } from '../commonGitlabConfig';
 import { examples } from './gitlabIssueCreate.examples';
-import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
+import { checkEpicScope, convertDate, getClient } from '../util';
 import { CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
 import { getErrorMessage } from './helpers';
 
@@ -50,9 +53,12 @@ export const createGitlabIssueAction = (options: {
             })
             .optional(),
         projectId: z =>
-          z.number({
-            description: 'Project Id',
-          }),
+          z
+            .union([z.number(), z.string()], {
+              description:
+                'Project Id or full project path (e.g. `group/sub-group/project`). If omitted, the project is derived from `repoUrl`.',
+            })
+            .optional(),
         title: z =>
           z.string({
             description: 'Title of the issue',
@@ -187,16 +193,22 @@ export const createGitlabIssueAction = (options: {
           token,
         } = ctx.input;
 
-        const { host } = parseRepoUrl(repoUrl, integrations);
+        const { host, owner, repo, project } = parseRepoUrl(
+          repoUrl,
+          integrations,
+        );
         const api = getClient({ host, integrations, token });
+
+        const projectRef: number | string =
+          projectId ?? (project ? project : `${owner}/${repo}`);
 
         let isEpicScoped = false;
 
         isEpicScoped = await ctx.checkpoint({
-          key: `is.epic.scoped.${projectId}.${title}`,
+          key: `is.epic.scoped.${projectRef}.${title}`,
           fn: async () => {
             if (epicId) {
-              isEpicScoped = await checkEpicScope(api, projectId, epicId);
+              isEpicScoped = await checkEpicScope(api, projectRef, epicId);
 
               if (isEpicScoped) {
                 ctx.logger.info('Epic is within Project Scope');
@@ -234,10 +246,10 @@ export const createGitlabIssueAction = (options: {
         };
 
         const response = await ctx.checkpoint({
-          key: `issue.${projectId}.${title}`,
+          key: `issue.${projectRef}.${title}`,
           fn: async () => {
             const issue = (await api.Issues.create(
-              projectId,
+              projectRef,
               title,
               issueOptions,
             )) as IssueSchema;

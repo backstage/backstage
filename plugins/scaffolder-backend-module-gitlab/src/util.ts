@@ -155,7 +155,7 @@ export async function getTopLevelParentGroup(
 
 export async function checkEpicScope(
   client: InstanceType<typeof Gitlab>,
-  projectId: number,
+  projectId: number | string,
   epicId: number,
 ) {
   try {
