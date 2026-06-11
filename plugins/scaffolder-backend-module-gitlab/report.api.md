@@ -58,9 +58,9 @@ export const createGitlabIssueAction: (options: {
 }) => TemplateAction<
   {
     repoUrl: string;
-    projectId: number;
     title: string;
     token?: string | undefined;
+    projectId?: string | number | undefined;
     assignees?: number[] | undefined;
     confidential?: boolean | undefined;
     description?: string | undefined;
