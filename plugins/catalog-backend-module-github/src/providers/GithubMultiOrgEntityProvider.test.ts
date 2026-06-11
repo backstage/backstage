@@ -16,6 +16,7 @@
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import { NotFoundError } from '@backstage/errors';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import {
@@ -366,6 +367,38 @@ describe('GithubMultiOrgEntityProvider', () => {
         ]),
         type: 'full',
       });
+    });
+
+    it('should log a debug hint when the GitHub App installation is missing for an org', async () => {
+      const error = new NotFoundError(
+        'No app installation found for orgA in app 123',
+      );
+      mockGetCredentials.mockRejectedValueOnce(error);
+
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      await expect(entityProvider.read()).rejects.toThrow(error);
+      expect(logger.debug).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'GitHub App installation was not found for org "orgA"',
+        ),
+      );
+      expect(logger.debug).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'https://backstage.io/docs/integrations/github/github-apps/#troubleshooting',
+        ),
+      );
     });
 
     it('should read every accessible org', async () => {
