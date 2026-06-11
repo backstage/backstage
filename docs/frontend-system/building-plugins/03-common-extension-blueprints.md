@@ -29,6 +29,51 @@ Sub-page extensions create tabbed content within a parent page. They are attache
 
 Plugin header action extensions provide plugin-scoped actions that appear in the page header. They are automatically scoped to the plugin that provides them and will appear in the header of all pages belonging to that plugin. Actions are lazy-loaded via a `loader` function that returns a React element.
 
+### ExtensionPredicateContextProvider
+
+Extension predicate context provider extensions supply custom values for the [`if` predicate](../architecture/20-extensions.md) system, enabling you to gate extension visibility on arbitrary data — including values loaded asynchronously from backend plugins.
+
+Each provider is namespaced by its extension ID (e.g. `my-plugin/subscriptions`), and predicates reference the namespace directly.
+
+A **sync** provider resolves immediately with no impact on app startup time. This is useful for values derived from configuration or other synchronous sources:
+
+```ts
+ExtensionPredicateContextProviderBlueprint.make({
+  name: 'subscriptions',
+  params: {
+    resolver: ({ apis }) => {
+      const config = apis.get(configApiRef)!;
+      return config.getOptionalStringArray('myPlugin.subscriptions') ?? [];
+    },
+  },
+});
+
+// Gate a page on a config-driven tier
+PageBlueprint.make({
+  params: { path: '/my-page', loader: () => import('./MyPage') },
+  if: { 'my-plugin/subscriptions': { $contains: 'premium' } },
+});
+```
+
+An **async** provider defers app finalization until it resolves, and is suited for values that require network calls:
+
+```ts
+ExtensionPredicateContextProviderBlueprint.make({
+  name: 'entitlements',
+  params: {
+    loader: async ({ apis }) => {
+      const discoveryApi = apis.get(discoveryApiRef)!;
+      const fetchApi = apis.get(fetchApiRef)!;
+      const url = `${await discoveryApi.getBaseUrl('my-plugin')}/entitlements`;
+      const resp = await fetchApi.fetch(url);
+      return resp.json(); // e.g. ['catalog:write', 'templates:read']
+    },
+  },
+});
+```
+
+Async providers only defer finalization when a predicate actually references their namespace — unused providers are skipped. Provider failures are isolated: the app still boots, and predicates referencing a failed provider evaluate as non-matching.
+
 ## Extension blueprints in `@backstage/frontend-plugin-api/alpha`
 
 ### Plugin Wrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.packages-frontend-plugin-api_src_alpha.PluginWrapperBlueprint.html)

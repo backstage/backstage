@@ -76,6 +76,8 @@ const guardedCard = CardBlueprint.make({
 
 Conditions are evaluated when the app tree is prepared, not continuously while the app is running. If the underlying feature flags or permissions change, the app needs to be prepared again in order for the extension tree to change, which in practice typically means reloading the app.
 
+Beyond the built-in `featureFlags` and `permissions` keys, you can supply custom predicate context values — including values loaded asynchronously — using the [`ExtensionPredicateContextProviderBlueprint`](../building-plugins/03-common-extension-blueprints.md#extensionpredicatecontextprovider).
+
 If a plugin or module also provides an `if` predicate, it is combined with the extension-level predicate using logical `AND`. See the [plugin `if` option](./15-plugins.md#if-option) and [frontend modules](./25-extension-overrides.md#creating-a-frontend-module) sections for more details.
 
 ### Configuration & configuration schema
