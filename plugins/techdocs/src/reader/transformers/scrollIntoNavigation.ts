@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
+import { isEmbeddedEntityCatalogDocs } from '../embeddedEntityDocs';
 import type { Transformer } from './transformer';
 
 export const scrollIntoNavigation = (): Transformer => {
   return dom => {
+    if (isEmbeddedEntityCatalogDocs()) {
+      return dom;
+    }
+
     setTimeout(() => {
       const activeNavItems = dom?.querySelectorAll(`li.md-nav__item--active`);
       if (activeNavItems.length !== 0) {

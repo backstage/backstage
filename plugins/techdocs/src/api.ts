@@ -63,6 +63,7 @@ export interface TechDocsStorageApi {
   syncEntityDocs(
     entityId: CompoundEntityRef,
     logHandler?: (line: string) => void,
+    options?: { signal?: AbortSignal },
   ): Promise<SyncResult>;
   getBaseUrl(
     oldBaseUrl: string,

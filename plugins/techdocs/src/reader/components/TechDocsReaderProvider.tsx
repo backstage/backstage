@@ -18,6 +18,7 @@ import { ComponentType, createContext, useContext, ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 
+import { normalizeEntityDocsPath } from '../embeddedEntityDocs';
 import { useReaderState, ReaderState } from './useReaderState';
 
 const TechDocsReaderContext = createContext<ReaderState>({} as ReaderState);
@@ -46,7 +47,8 @@ export type TechDocsReaderProviderProps = {
 export const TechDocsReaderProvider = (props: TechDocsReaderProviderProps) => {
   const { children } = props;
 
-  const { '*': path = '' } = useParams();
+  const { '*': rawPath = '' } = useParams();
+  const path = normalizeEntityDocsPath(rawPath);
   const { entityRef } = useTechDocsReaderPage();
   const { kind, namespace, name } = entityRef;
   const value = useReaderState(kind, namespace, name, path);

@@ -39,11 +39,8 @@ jest.mock('../reader/components/TechDocsReaderProvider', () => ({
   ...jest.requireActual('../reader/components/TechDocsReaderProvider'),
   useTechDocsReader: (...args: any[]) => useTechDocsReader(...args),
 }));
-const useShadowDomStylesLoading = jest.fn().mockReturnValue(false);
 jest.mock('@backstage/plugin-techdocs-react', () => ({
   ...jest.requireActual('@backstage/plugin-techdocs-react'),
-  useShadowDomStylesLoading: (...args: any[]) =>
-    useShadowDomStylesLoading(...args),
   useShadowRootElements: jest.fn(),
 }));
 
@@ -164,12 +161,11 @@ describe('useTechDocsReaderContentData', () => {
     });
   });
 
-  it('should show progress when styles are loading', async () => {
+  it('should not show progress when only shadow styles are loading', async () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
-    useTechDocsReader.mockReturnValue({ state: 'cached' });
-    useShadowDomStylesLoading.mockReturnValue(true);
+    useTechDocsReader.mockReturnValue({ state: 'CONTENT_FRESH' });
 
     await renderInTestApp(
       <Wrapper>
@@ -178,7 +174,7 @@ describe('useTechDocsReaderContentData', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('showProgress')).toHaveTextContent('true');
+      expect(screen.getByTestId('showProgress')).toHaveTextContent('false');
     });
   });
 });

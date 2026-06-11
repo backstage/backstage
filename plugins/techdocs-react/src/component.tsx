@@ -14,57 +14,25 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, useState, useEffect, useCallback } from 'react';
+import {
+  PropsWithChildren,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
 
 import { create } from 'jss';
 import StylesProvider from '@material-ui/styles/StylesProvider';
 import jssPreset from '@material-ui/styles/jssPreset';
 
-/**
- * Name for the event dispatched when ShadowRoot styles are loaded.
- * @public
- */
-export const SHADOW_DOM_STYLE_LOAD_EVENT = 'TECH_DOCS_SHADOW_DOM_STYLE_LOAD';
+import {
+  notifyShadowDomStylesLoaded,
+  prepareStylesheetsForShadowMount,
+  SHADOW_DOM_STYLE_LOAD_EVENT,
+} from './shadowDomStyles';
 
-/**
- * Dispatch style load event after all styles are loaded.
- * @param element - the ShadowRoot tree.
- */
-const useShadowDomStylesEvents = (element: Element | null) => {
-  useEffect(() => {
-    if (!element) {
-      return () => {};
-    }
-
-    const styles = element.querySelectorAll<HTMLElement>(
-      'head > link[rel="stylesheet"]',
-    );
-
-    let count = styles?.length ?? 0;
-    const event = new CustomEvent(SHADOW_DOM_STYLE_LOAD_EVENT);
-
-    if (!count) {
-      element.dispatchEvent(event);
-      return () => {};
-    }
-
-    const handleLoad = () => {
-      if (--count === 0) {
-        element.dispatchEvent(event);
-      }
-    };
-
-    styles?.forEach(style => {
-      style.addEventListener('load', handleLoad);
-    });
-
-    return () => {
-      styles?.forEach(style => {
-        style.removeEventListener('load', handleLoad);
-      });
-    };
-  }, [element]);
-};
+export { SHADOW_DOM_STYLE_LOAD_EVENT };
 
 /**
  * Returns the style's loading state.
@@ -119,7 +87,15 @@ export const useShadowDomStylesLoading = (element: Element | null) => {
 
     style.setProperty('opacity', '0');
 
+    let done = false;
     const handleLoad = () => {
+      if (done) {
+        return;
+      }
+      if (!(element.getRootNode() instanceof ShadowRoot)) {
+        return;
+      }
+      done = true;
       setLoading(false);
       style.setProperty('opacity', '1');
     };
@@ -201,6 +177,8 @@ export type TechDocsShadowDomProps = PropsWithChildren<{
 export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
   const { element, onAppend, children } = props;
 
+  const mountGenerationRef = useRef(0);
+
   const [jss, setJss] = useState(
     create({
       ...jssPreset(),
@@ -208,11 +186,42 @@ export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
     }),
   );
 
-  useShadowDomStylesEvents(element);
+  const scheduleStyleMount = useCallback(
+    (shadowHost: HTMLDivElement, mountGeneration: number, attempt = 0) => {
+      if (!element || !shadowHost) {
+        return;
+      }
+      if (mountGeneration !== mountGenerationRef.current) {
+        return;
+      }
+
+      const prepared = prepareStylesheetsForShadowMount(element as HTMLElement);
+
+      if (prepared.links.length === 0 && attempt < 8) {
+        requestAnimationFrame(() => {
+          scheduleStyleMount(shadowHost, mountGeneration, attempt + 1);
+        });
+        return;
+      }
+
+      if (prepared.links.length === 0) {
+        return;
+      }
+
+      notifyShadowDomStylesLoaded(
+        element as HTMLElement,
+        prepared.links,
+        prepared.didRenew,
+      );
+    },
+    [element],
+  );
 
   const ref = useCallback(
     (shadowHost: HTMLDivElement) => {
       if (!element || !shadowHost) return;
+
+      const mountGeneration = ++mountGenerationRef.current;
 
       setJss(
         create({
@@ -232,8 +241,12 @@ export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
       if (typeof onAppend === 'function') {
         onAppend(shadowRoot);
       }
+
+      queueMicrotask(() => {
+        scheduleStyleMount(shadowHost, mountGeneration, 0);
+      });
     },
-    [element, onAppend],
+    [element, onAppend, scheduleStyleMount],
   );
 
   return (

@@ -207,6 +207,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   async syncEntityDocs(
     entityId: CompoundEntityRef,
     logHandler: (line: string) => void = () => {},
+    options?: { signal?: AbortSignal },
   ): Promise<SyncResult> {
     const { kind, namespace, name } = entityId;
 
@@ -215,6 +216,34 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 
     return new Promise((resolve, reject) => {
       const ctrl = new AbortController();
+      let settled = false;
+
+      const settle = (fn: () => void) => {
+        if (!settled) {
+          settled = true;
+          fn();
+        }
+      };
+
+      const externalSignal = options?.signal;
+      const onExternalAbort = () => {
+        ctrl.abort();
+        settle(() => reject(new DOMException('Aborted', 'AbortError')));
+      };
+
+      if (externalSignal?.aborted) {
+        reject(new DOMException('Aborted', 'AbortError'));
+        return;
+      }
+
+      externalSignal?.addEventListener('abort', onExternalAbort, {
+        once: true,
+      });
+
+      const cleanup = () => {
+        externalSignal?.removeEventListener('abort', onExternalAbort);
+      };
+
       fetchEventSource(url, {
         fetch: this.fetchApi.fetch,
         signal: ctrl.signal,
@@ -228,16 +257,24 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
             if (e.data) {
               ({ updated } = JSON.parse(e.data));
             }
-            resolve(updated ? 'updated' : 'cached');
+            cleanup();
+            settle(() => resolve(updated ? 'updated' : 'cached'));
           } else if (e.event === 'error') {
-            reject(new Error(e.data));
+            cleanup();
+            settle(() => reject(new Error(e.data)));
           }
         },
         onerror(err) {
           ctrl.abort();
-          reject(err);
+          cleanup();
+          settle(() => reject(err));
           throw err; // rethrow to stop the operation
         },
+      }).catch(err => {
+        cleanup();
+        if (!settled) {
+          settle(() => reject(err));
+        }
       });
     });
   }

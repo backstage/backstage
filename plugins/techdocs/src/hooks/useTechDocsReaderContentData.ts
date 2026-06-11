@@ -17,13 +17,13 @@
 import { useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  useShadowDomStylesLoading,
   useShadowRootElements,
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 import { useApp } from '@backstage/core-plugin-api';
 import { useTechDocsReaderDom } from '../reader/components/TechDocsReaderPageContent/dom';
 import { useTechDocsReader } from '../reader/components/TechDocsReaderProvider';
+import { isEmbeddedEntityCatalogDocs } from '../reader/embeddedEntityDocs';
 
 /**
  * Shared hook for TechDocs reader content data.
@@ -46,13 +46,15 @@ export function useTechDocsReaderContentData(options: {
   const location = useLocation();
   const path = location.pathname;
   const hash = location.hash;
-  const isStyleLoading = useShadowDomStylesLoading(dom);
   const [hashElement] = useShadowRootElements([`[id="${hash.slice(1)}"]`]);
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
+  const isEmbeddedEntityDocs = isEmbeddedEntityCatalogDocs(path);
 
   useEffect(() => {
-    if (isStyleLoading) return;
+    if (isEmbeddedEntityDocs) {
+      return;
+    }
 
     if (hash) {
       if (hashElement) {
@@ -65,7 +67,7 @@ export function useTechDocsReaderContentData(options: {
     } else {
       document?.querySelector('header')?.scrollIntoView();
     }
-  }, [path, hash, hashElement, isStyleLoading]);
+  }, [path, hash, hashElement, isEmbeddedEntityDocs]);
 
   const handleAppend = useCallback(
     (newShadowRoot: ShadowRoot) => {
@@ -79,7 +81,7 @@ export function useTechDocsReaderContentData(options: {
 
   const isNotFound = entityMetadataLoading === false && !entityMetadata;
   const isDomReady = !!dom;
-  const showProgress = state === 'CHECKING' || isStyleLoading;
+  const showProgress = state === 'CHECKING';
 
   return {
     entityRef,

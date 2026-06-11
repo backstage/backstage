@@ -15,8 +15,7 @@
  */
 
 import { useApi } from '@backstage/core-plugin-api';
-import { useMemo, useReducer, useRef } from 'react';
-import useAsync from 'react-use/esm/useAsync';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { techdocsStorageApiRef } from '@backstage/plugin-techdocs-react';
 
@@ -282,56 +281,80 @@ export function useReaderState(
   });
   contentRef.current = { content: state.content, reload: contentReload };
 
-  // try to derive the state. the function will fire events and we don't care for the return values
-  useAsync(async () => {
+  useEffect(() => {
+    const abortController = new AbortController();
+    let cancelled = false;
+
     dispatch({ type: 'sync', state: 'CHECKING' });
 
-    // should only switch to BUILDING if the request takes more than 1 seconds
     const buildingTimeout = setTimeout(() => {
-      dispatch({ type: 'sync', state: 'BUILDING' });
+      if (!cancelled) {
+        dispatch({ type: 'sync', state: 'BUILDING' });
+      }
     }, 1000);
 
-    try {
-      const result = await techdocsStorageApi.syncEntityDocs(
+    techdocsStorageApi
+      .syncEntityDocs(
         {
           kind,
           namespace,
           name,
         },
         log => {
-          dispatch({ type: 'buildLog', log });
-        },
-      );
-
-      switch (result) {
-        case 'updated':
-          // if there was no content prior to building, retry the loading
-          if (!contentRef.current.content) {
-            contentRef.current.reload();
-            dispatch({ type: 'sync', state: 'BUILD_READY_RELOAD' });
-          } else {
-            dispatch({ type: 'sync', state: 'BUILD_READY' });
+          if (!cancelled) {
+            dispatch({ type: 'buildLog', log });
           }
-          break;
-        case 'cached':
-          dispatch({ type: 'sync', state: 'UP_TO_DATE' });
-          break;
+        },
+        { signal: abortController.signal },
+      )
+      .then(result => {
+        if (cancelled) {
+          return;
+        }
 
-        default:
-          dispatch({
-            type: 'sync',
-            state: 'ERROR',
-            syncError: new Error('Unexpected return state'),
-          });
-          break;
-      }
-    } catch (e) {
-      dispatch({ type: 'sync', state: 'ERROR', syncError: e });
-    } finally {
-      // Cancel the timer that sets the state "BUILDING"
+        switch (result) {
+          case 'updated':
+            if (!contentRef.current.content) {
+              contentRef.current.reload();
+              dispatch({ type: 'sync', state: 'BUILD_READY_RELOAD' });
+            } else {
+              dispatch({ type: 'sync', state: 'BUILD_READY' });
+            }
+            break;
+          case 'cached':
+            dispatch({ type: 'sync', state: 'UP_TO_DATE' });
+            break;
+          default:
+            dispatch({
+              type: 'sync',
+              state: 'ERROR',
+              syncError: new Error('Unexpected return state'),
+            });
+            break;
+        }
+      })
+      .catch(error => {
+        if (cancelled) {
+          return;
+        }
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          if (contentRef.current.content) {
+            dispatch({ type: 'sync', state: 'UP_TO_DATE' });
+          }
+          return;
+        }
+        dispatch({ type: 'sync', state: 'ERROR', syncError: error as Error });
+      })
+      .finally(() => {
+        clearTimeout(buildingTimeout);
+      });
+
+    return () => {
+      cancelled = true;
+      abortController.abort();
       clearTimeout(buildingTimeout);
-    }
-  }, [kind, name, namespace, techdocsStorageApi, dispatch, contentRef]);
+    };
+  }, [kind, name, namespace, techdocsStorageApi]);
 
   const displayState = useMemo(
     () =>

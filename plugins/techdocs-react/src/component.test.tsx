@@ -66,22 +66,18 @@ describe('TechDocsShadowDom', () => {
 
   it('Should dispatch an event after all styles are loaded', async () => {
     const dom = createDom(
-      '<head><link rel="stylesheet" src="styles.css"/></head><body><h1>Title</h1></body>',
+      '<head><link rel="stylesheet" href="styles.css"/></head><body><h1>Title</h1></body>',
     );
-    let listener: EventListenerOrEventListenerObject = () => {};
-    dom.querySelector('link')!.addEventListener = (
-      _type: string,
-      _listener: EventListenerOrEventListenerObject,
-    ) => {
-      listener = _listener;
-    };
     const handleStylesLoad = jest.fn();
     dom.addEventListener(SHADOW_DOM_STYLE_LOAD_EVENT, handleStylesLoad);
 
     render(<TechDocsShadowDom element={dom}>Children</TechDocsShadowDom>);
 
-    listener({} as Event);
+    const link = dom.querySelector('link')!;
+    link.dispatchEvent(new Event('load'));
 
-    expect(handleStylesLoad).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(handleStylesLoad).toHaveBeenCalledTimes(1);
+    });
   });
 });

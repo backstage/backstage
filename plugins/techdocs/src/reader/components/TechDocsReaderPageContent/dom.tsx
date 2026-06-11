@@ -34,6 +34,10 @@ import {
   useShadowDomStylesLoading,
 } from '@backstage/plugin-techdocs-react';
 
+import {
+  isEmbeddedEntityCatalogDocs,
+  normalizeEntityDocsPath,
+} from '../../embeddedEntityDocs';
 import { useTechDocsReader } from '../TechDocsReaderProvider';
 
 import {
@@ -52,6 +56,9 @@ import {
   useStylesTransformer,
   handleMetaRedirects,
   addNavLinkKeyboardToggle,
+  preserveStylesheetHrefs,
+  resolvePreservedStylesheetHrefs,
+  STYLESHEET_HREFS_DATASET,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -188,8 +195,14 @@ export const useTechDocsReaderDom = (
   const preRender = useCallback(
     (rawContent: string, contentPath: string) =>
       transformer(rawContent, [
+        preserveStylesheetHrefs(),
         sanitizerTransformer,
         addBaseUrl({
+          techdocsStorageApi,
+          entityId: entityRef,
+          path: contentPath,
+        }),
+        resolvePreservedStylesheetHrefs({
           techdocsStorageApi,
           entityId: entityRef,
           path: contentPath,
@@ -316,19 +329,46 @@ export const useTechDocsReaderDom = (
 
       // Skip this update if the location's path has changed but the state
       // contains a page that isn't loaded yet.
-      if (currPath !== path) {
+      const normalizedCurrPath = normalizeEntityDocsPath(currPath);
+      const normalizedContentPath = normalizeEntityDocsPath(path);
+      if (normalizedCurrPath !== normalizedContentPath) {
         return;
       }
 
-      // Scroll to top after render
-      window.scroll({ top: 0 });
+      if (!isEmbeddedEntityCatalogDocs()) {
+        window.scroll({ top: 0 });
+      }
 
       // Post-render
       const postTransformedDomElement = await postRender(
         preTransformedDomElement,
       );
 
-      setDom(postTransformedDomElement as HTMLElement);
+      const domElement = postTransformedDomElement as HTMLElement;
+      const liveStylesheetHrefs = Array.from(
+        domElement.querySelectorAll<HTMLLinkElement>(
+          'head link[rel="stylesheet"]',
+        ),
+      )
+        .map(link => link.href)
+        .filter(Boolean);
+      const storedRaw = domElement.dataset[STYLESHEET_HREFS_DATASET];
+      let storedHrefs: string[] = [];
+      if (storedRaw) {
+        try {
+          const parsed = JSON.parse(storedRaw);
+          storedHrefs = Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+        } catch {
+          storedHrefs = [];
+        }
+      }
+      const stylesheetHrefs =
+        liveStylesheetHrefs.length > 0 ? liveStylesheetHrefs : storedHrefs;
+      if (stylesheetHrefs.length > 0) {
+        domElement.dataset[STYLESHEET_HREFS_DATASET] =
+          JSON.stringify(stylesheetHrefs);
+      }
+      setDom(domElement);
     });
 
     // cancel this execution

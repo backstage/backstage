@@ -16,7 +16,7 @@
 
 import { isElement } from '../utils';
 
-const MKDOCS_CSS = /main\.[A-Fa-f0-9]{8}\.min\.css$/;
+const MKDOCS_CSS = /stylesheets\/(main|palette)\.[A-Fa-f0-9]+\.min\.css/;
 const GOOGLE_FONTS = /^https:\/\/fonts\.googleapis\.com/;
 const GSTATIC_FONTS = /^https:\/\/fonts\.gstatic\.com/;
 

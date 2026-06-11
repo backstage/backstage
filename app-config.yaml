@@ -198,6 +198,8 @@ backend:
     allow:
       - host: example.com
       - host: '*.mozilla.org'
+      - host: 'git.autodesk.com'
+      - host: 'github.com'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
   actions:
     pluginSources:
@@ -223,8 +225,6 @@ techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
     runIn: 'local'
-    # runIn: 'docker'
-    # pullImage: false # image already cached; corporate Docker RAM blocks unauthenticated pulls (HTTP 407)
     # dockerImage: my-org/techdocs # use a custom docker image
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
@@ -297,6 +297,7 @@ catalog:
         - System
         - Domain
         - Location
+        - User
   providers:
     azureBlob:
       accountName: ${ACCOUNT_NAME}

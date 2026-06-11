@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { isEmbeddedEntityCatalogDocs } from '../embeddedEntityDocs';
 import { Transformer } from './transformer';
 import { normalizeUrl } from './rewriteDocLinks';
 import { renderReactElement } from './renderReactElement';
@@ -45,6 +46,10 @@ export const handleMetaRedirects = (
   };
 
   return dom => {
+    if (isEmbeddedEntityCatalogDocs()) {
+      return dom;
+    }
+
     for (const elem of Array.from(dom.querySelectorAll('meta'))) {
       if (elem.getAttribute('http-equiv') === 'refresh') {
         const metaContentParameters = elem
