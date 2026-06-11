@@ -27,6 +27,32 @@ import { CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
 import { getErrorMessage } from './helpers';
 
 /**
+ * Resolves the GitLab project reference (numeric id or full path) used by the
+ * GitLab client, preferring an explicit `projectId` and otherwise deriving it
+ * from the parsed `repoUrl`.
+ */
+function resolveProjectRef(options: {
+  projectId?: string | number;
+  project?: string;
+  owner?: string;
+  repo?: string;
+}): string | number {
+  const { projectId, project, owner, repo } = options;
+  if (projectId !== undefined) {
+    return projectId;
+  }
+  if (project) {
+    return project;
+  }
+  if (owner && repo) {
+    return `${owner}/${repo}`;
+  }
+  throw new InputError(
+    `Unable to determine the GitLab project. Provide \`projectId\` (numeric id or full project path), or a \`repoUrl\` that includes either a URL-encoded \`project=<full_path>\` (e.g. \`project=group%2Fsub-group%2Fproject\`) or both \`owner\` and \`repo\`.`,
+  );
+}
+
+/**
  * Creates a `gitlab:issues:create` Scaffolder action.
  *
  * @param options - Templating configuration.
@@ -54,15 +80,12 @@ export const createGitlabIssueAction = (options: {
             .optional(),
         projectId: z =>
           z
-            .union(
-              [
-                z.number(),
-                z.string().trim().min(1, 'Project path must not be empty'),
-              ],
-              {
-                description:
-                  'Project Id or full project path (e.g. `group/sub-group/project`). If omitted, the project is derived from `repoUrl`.',
-              },
+            .union([
+              z.number(),
+              z.string().trim().min(1, 'Project path must not be empty'),
+            ])
+            .describe(
+              'Project Id or full project path (e.g. `group/sub-group/project`). If omitted, the project is derived from `repoUrl`.',
             )
             .optional(),
         title: z =>
@@ -205,18 +228,12 @@ export const createGitlabIssueAction = (options: {
         );
         const api = getClient({ host, integrations, token });
 
-        let projectRef: number | string;
-        if (projectId !== undefined) {
-          projectRef = projectId;
-        } else if (project) {
-          projectRef = project;
-        } else if (owner && repo) {
-          projectRef = `${owner}/${repo}`;
-        } else {
-          throw new InputError(
-            `Unable to determine the GitLab project. Provide \`projectId\` (numeric id or full project path), or a \`repoUrl\` that includes either \`project=<full_path>\` or both \`owner\` and \`repo\`.`,
-          );
-        }
+        const projectRef = resolveProjectRef({
+          projectId,
+          project,
+          owner,
+          repo,
+        });
 
         // `projectRef` can be a full project path (e.g. `group/sub-group/project`)
         // which contains slashes, so encode it before using it in checkpoint keys.
