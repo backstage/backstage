@@ -24,6 +24,7 @@ import { z } from 'zod/v4';
 export type KeyValueStoreNamespaceEntry<TOutput> = {
   key: string;
   value: TOutput;
+  etag: string;
 };
 
 /**
@@ -33,6 +34,10 @@ export type KeyValueStoreNamespaceEntry<TOutput> = {
  * On read, schema defaults and transforms are applied, enabling seamless
  * migration of stored data shapes over time.
  *
+ * Each stored value has an etag derived from its content hash. Pass the etag
+ * to {@link KeyValueStoreNamespace.set} to perform a compare-and-swap write
+ * that rejects if the value has changed since it was read.
+ *
  * @public
  */
 export interface KeyValueStoreNamespace<TInput, TOutput> {
@@ -41,25 +46,30 @@ export interface KeyValueStoreNamespace<TInput, TOutput> {
    * the key does not exist. The stored value is parsed through the namespace's
    * schema, applying any defaults or transforms.
    */
-  get(key: string): Promise<TOutput | undefined>;
+  get(key: string): Promise<{ value: TOutput; etag: string } | undefined>;
 
   /**
    * Writes the given value associated with the given key. The value is parsed
    * through the namespace's schema before storage. If the key already exists
    * its value is overwritten.
+   *
+   * When `options.etag` is provided, the write is conditional: it only
+   * succeeds if the currently stored value's etag matches. If it does not,
+   * a `ConflictError` is thrown. Omit the etag for an unconditional write.
+   *
+   * @returns The etag of the newly written value.
    */
-  set(key: string, value: TInput): Promise<void>;
+  set(
+    key: string,
+    value: TInput,
+    options?: { etag?: string },
+  ): Promise<{ etag: string }>;
 
   /**
    * Removes the given key and its value. It is not an error to delete a key
    * that does not exist.
    */
   delete(key: string): Promise<void>;
-
-  /**
-   * Returns all keys present in this namespace.
-   */
-  listKeys(): Promise<string[]>;
 
   /**
    * Returns all entries in this namespace as key-value pairs. Each value is

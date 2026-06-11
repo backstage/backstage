@@ -444,16 +444,30 @@ export function isDatabaseConflictError(e: unknown): boolean;
 // @public
 export interface KeyValueStoreNamespace<TInput, TOutput> {
   delete(key: string): Promise<void>;
-  get(key: string): Promise<TOutput | undefined>;
+  get(key: string): Promise<
+    | {
+        value: TOutput;
+        etag: string;
+      }
+    | undefined
+  >;
   list(): Promise<KeyValueStoreNamespaceEntry<TOutput>[]>;
-  listKeys(): Promise<string[]>;
-  set(key: string, value: TInput): Promise<void>;
+  set(
+    key: string,
+    value: TInput,
+    options?: {
+      etag?: string;
+    },
+  ): Promise<{
+    etag: string;
+  }>;
 }
 
 // @public
 export type KeyValueStoreNamespaceEntry<TOutput> = {
   key: string;
   value: TOutput;
+  etag: string;
 };
 
 // @public
