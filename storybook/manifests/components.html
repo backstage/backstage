@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">53 components ok</span><span class="filter-pill ok" aria-disabled="true">522 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">53 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/53 infos</a><span class="filter-pill ok" aria-disabled="true">530 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.5s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -4267,7 +4267,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
 <article
   class="card 
   no-error 
-  no-info 
+  has-info 
   no-story-error
   no-doc-error"
   role="listitem"
@@ -4276,72 +4276,38 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Combobox</h2>
       <div class="badges">
-        <label for="c-13-backstage-ui-combobox-props" class="badge ok as-toggle">9 prop types</label>
         
-        <label for="c-13-backstage-ui-combobox-stories" class="badge ok as-toggle">18 stories</label>
+        <label for="c-13-backstage-ui-combobox-info" class="badge info as-toggle">1 info</label>
+        <label for="c-13-backstage-ui-combobox-stories" class="badge ok as-toggle">22 stories</label>
         
         
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Combobox/Combobox.stories.tsx">backstage-ui-combobox · ./packages/ui/src/components/Combobox/Combobox.stories.tsx</div>
     
-    <div class="hint">A text input combined with a dropdown list of options. The user can type to filter suggestions, navigate with the keyboard, and pick a value. With `allowsCustomValue` the typed text can be committed even if no option matches.</div>
+    
     <div class="kv"><span class="chip">public:  </span></div>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  
+  <input id="c-13-backstage-ui-combobox-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-13-backstage-ui-combobox-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-13-backstage-ui-combobox-props" class="tg tg-props" type="checkbox" hidden />
+  
 
   <div class="panels">
     
     
-    
-        <div class="panel panel-props">
-          <div class="note ok">
-            <div class="row">
-              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">9 prop types</span>
-            </div>
-            <pre><code>Component: packages/ui/src/components/Combobox/Combobox.tsx::Combobox</code></pre>
-            <pre><code>Props:</code></pre>
-            <pre><code>className?: string
-
-description?: FieldLabelProps[&#39;description&#39;]
-
-/**
- * An icon to render before the input
- */
-icon?: ReactNode
-
-isRequired?: boolean
-
-label?: FieldLabelProps[&#39;label&#39;]
-
-/**
- * The options of the combobox field. Pass flat options, option sections for
- * grouped display, or a mix of both in the same array.
- */
-options?: Array&lt;Option | OptionSection&gt;
-
-/**
- * Placeholder text for the input.
- */
-placeholder?: string
-
-secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]
-
-/**
- * The size of the combobox field
- * @defaultValue &#39;small&#39;
- */
-size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#39;small&#39; | &#39;medium&#39;&gt;&gt;</code></pre>
-          </div>
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
         </div>
+    
     
         <div class="panel panel-stories">
           
@@ -4351,9 +4317,17 @@ size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#3
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Box, Combobox, Flex, Text } from "@backstage/ui";
+                <pre><code>import {
+    Box,
+    Combobox,
+    ComboboxItem,
+    ComboboxItemProfile,
+    ComboboxItemText,
+    Flex,
+    Text,
+} from "@backstage/ui";
 import { Form } from "react-aria-components";
-import { RiCloudLine } from "@remixicon/react";</code></pre>
+import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               </div>
           
           
@@ -4408,6 +4382,51 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     placeholder=&quot;Type any country&quot;
     allowsCustomValue
     name=&quot;country&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Item Types</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ItemTypes = () =&gt; (
+  &lt;Flex align=&quot;start&quot; gap=&quot;6&quot;&gt;
+    &lt;ComboboxItemTypesColumn size=&quot;small&quot; /&gt;
+    &lt;ComboboxItemTypesColumn size=&quot;medium&quot; /&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Profiles</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithProfiles = () =&gt; (
+  &lt;Combobox label=&quot;Owner&quot; placeholder=&quot;Select an owner&quot; items={owners}&gt;
+    {owner =&gt; &lt;ComboboxItemProfile name={owner.name} src={owner.src} /&gt;}
+  &lt;/Combobox&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Server Backed Options</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ServerBackedOptions = () =&gt; &lt;ServerBackedCombobox /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Server Backed Custom Items</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ServerBackedCustomItems = () =&gt; &lt;ServerBackedCustomCombobox /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -4518,17 +4537,17 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     label=&quot;Document Template&quot;
     options={[
       {
-        value: &#39;annual-report-2024&#39;,
+        id: &#39;annual-report-2024&#39;,
         label:
           &#39;Annual Financial Report and Strategic Planning Document for Fiscal Year 2024 with Comprehensive Analysis of Market Trends, Competitive Landscape, Financial Performance Metrics, Revenue Projections, Cost Optimization Strategies, Risk Assessment, and Long-term Growth Initiatives Across All Business Units and Geographical Regions&#39;,
       },
       {
-        value: &#39;product-roadmap&#39;,
+        id: &#39;product-roadmap&#39;,
         label:
           &#39;Comprehensive Product Development Roadmap and Feature Implementation Timeline Including Detailed Technical Specifications, Resource Allocation Plans, Cross-functional Team Dependencies, Milestone Tracking, Quality Assurance Procedures, User Acceptance Testing Protocols, and Post-launch Support Strategy for All Product Lines and Service Offerings&#39;,
       },
       {
-        value: &#39;user-guide&#39;,
+        id: &#39;user-guide&#39;,
         label:
           &#39;Detailed User Guide and Technical Documentation for Advanced System Features Covering Installation Procedures, Configuration Settings, Security Protocols, Troubleshooting Guidelines, Best Practices, Common Use Cases, Performance Optimization Tips, Integration Methods, API Documentation, and Frequently Asked Questions with Step-by-Step Solutions&#39;,
       },
@@ -5866,7 +5885,7 @@ import { Fragment } from "react";</code></pre>
           style={{
             background:
               item.lifecycle === &#39;experimental&#39;
-                ? &#39;var(--bui-bg-warning)&#39;
+                ? &#39;var(--bui-warning-bg-subdued)&#39;
                 : undefined,
             borderLeft:
               item.lifecycle === &#39;experimental&#39;
@@ -12994,7 +13013,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
 <article
   class="card 
   no-error 
-  no-info 
+  has-info 
   no-story-error
   no-doc-error"
   role="listitem"
@@ -13003,86 +13022,38 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-38-backstage-ui-select-props" class="badge ok as-toggle">11 prop types</label>
         
-        <label for="c-38-backstage-ui-select-stories" class="badge ok as-toggle">24 stories</label>
+        <label for="c-38-backstage-ui-select-info" class="badge info as-toggle">1 info</label>
+        <label for="c-38-backstage-ui-select-stories" class="badge ok as-toggle">28 stories</label>
         
         
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Select/Select.stories.tsx">backstage-ui-select · ./packages/ui/src/components/Select/Select.stories.tsx</div>
     
-    <div class="hint">A dropdown picker for selecting one or multiple options from a list, with optional search filtering and inline error display.</div>
+    
     <div class="kv"><span class="chip">public:  </span></div>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  
+  <input id="c-38-backstage-ui-select-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-38-backstage-ui-select-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-38-backstage-ui-select-props" class="tg tg-props" type="checkbox" hidden />
+  
 
   <div class="panels">
     
     
-    
-        <div class="panel panel-props">
-          <div class="note ok">
-            <div class="row">
-              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">11 prop types</span>
-            </div>
-            <pre><code>Component: packages/ui/src/components/Select/Select.tsx::Select</code></pre>
-            <pre><code>Props:</code></pre>
-            <pre><code>className?: string
-
-description?: FieldLabelProps[&#39;description&#39;]
-
-/**
- * An icon to render before the input
- */
-icon?: ReactNode
-
-isRequired?: boolean
-
-label?: FieldLabelProps[&#39;label&#39;]
-
-/**
- * The options of the select field. Pass flat options, option sections for
- * grouped display, or a mix of both in the same array.
- */
-options?: Array&lt;Option | OptionSection&gt;
-
-/**
- * Enable search/filter functionality in the dropdown
- * @defaultValue false
- */
-searchable?: boolean
-
-/**
- * placeholder text for the search input
- * only used when searchable is true
- * @defaultvalue &#39;search...&#39;
- */
-searchPlaceholder?: string
-
-secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]
-
-/**
- * Selection mode, single or multiple
- * @defaultvalue &#39;single&#39;
- */
-selectionMode?: T
-
-/**
- * The size of the select field
- * @defaultValue &#39;small&#39;
- */
-size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#39;small&#39; | &#39;medium&#39;&gt;&gt;</code></pre>
-          </div>
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
         </div>
+    
     
         <div class="panel panel-stories">
           
@@ -13092,9 +13063,9 @@ size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#3
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Box, Flex, Select, Text } from "@backstage/ui";
+                <pre><code>import { Box, Flex, Select, SelectItem, SelectItemProfile, SelectItemText, Text } from "@backstage/ui";
 import { Form } from "react-aria-components";
-import { RiCloudLine } from "@remixicon/react";</code></pre>
+import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
               </div>
           
           
@@ -13117,9 +13088,49 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
               <pre><code>const Searchable = () =&gt; &lt;Select
     style={{ width: 300 }}
     label=&quot;Country&quot;
-    searchable
-    searchPlaceholder=&quot;Search countries...&quot;
+    search={{ placeholder: &#39;Search countries...&#39; }}
     options={countries} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Item Types</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ItemTypes = () =&gt; (
+  &lt;Flex align=&quot;start&quot; gap=&quot;6&quot;&gt;
+    &lt;SelectItemTypesColumn size=&quot;small&quot; /&gt;
+    &lt;SelectItemTypesColumn size=&quot;medium&quot; /&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Client Search Shorthand</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ClientSearchShorthand = () =&gt; &lt;Select style={{ width: 300 }} label=&quot;Country&quot; search options={countries} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Server Backed Options</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ServerBackedOptions = () =&gt; &lt;ServerBackedSelect /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Server Backed Custom Items</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ServerBackedCustomItems = () =&gt; &lt;ServerBackedCustomSelect /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -13133,10 +13144,10 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     label=&quot;Select multiple options&quot;
     selectionMode=&quot;multiple&quot;
     options={[
-      { value: &#39;option1&#39;, label: &#39;Option 1&#39; },
-      { value: &#39;option2&#39;, label: &#39;Option 2&#39; },
-      { value: &#39;option3&#39;, label: &#39;Option 3&#39; },
-      { value: &#39;option4&#39;, label: &#39;Option 4&#39; },
+      { id: &#39;option1&#39;, label: &#39;Option 1&#39; },
+      { id: &#39;option2&#39;, label: &#39;Option 2&#39; },
+      { id: &#39;option3&#39;, label: &#39;Option 3&#39; },
+      { id: &#39;option4&#39;, label: &#39;Option 4&#39; },
     ]} /&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -13149,9 +13160,8 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
               <pre><code>const SearchableMultiple = () =&gt; &lt;Select
     style={{ width: 300 }}
     label=&quot;Skills&quot;
-    searchable
+    search={{ placeholder: &#39;Filter skills...&#39; }}
     selectionMode=&quot;multiple&quot;
-    searchPlaceholder=&quot;Filter skills...&quot;
     options={skills} /&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -13177,8 +13187,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
               <pre><code>const SearchableWithSections = () =&gt; &lt;Select
     style={{ width: 300 }}
     label=&quot;Font Family&quot;
-    searchable
-    searchPlaceholder=&quot;Search fonts...&quot;
+    search={{ placeholder: &#39;Search fonts...&#39; }}
     options={sectionedOptions}
     name=&quot;font&quot; /&gt;;</code></pre>
             </div>
@@ -13289,7 +13298,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
               </div>
               
               
-              <pre><code>const WithValue = () =&gt; &lt;Select style={{ width: 300 }} selectedKey=&quot;mono&quot; defaultSelectedKey=&quot;serif&quot; /&gt;;</code></pre>
+              <pre><code>const WithValue = () =&gt; &lt;Select style={{ width: 300 }} value=&quot;mono&quot; /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -13300,7 +13309,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
               
               <pre><code>const WithDefaultValue = () =&gt; &lt;Select
     style={{ width: 300 }}
-    defaultSelectedKey=&quot;serif&quot;
+    defaultValue=&quot;serif&quot;
     options={fontOptions}
     name=&quot;font&quot; /&gt;;</code></pre>
             </div>
@@ -13340,34 +13349,34 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     label=&quot;Document Template&quot;
     options={[
       {
-        value: &#39;annual-report-2024&#39;,
+        id: &#39;annual-report-2024&#39;,
         label:
           &#39;Annual Financial Report and Strategic Planning Document for Fiscal Year 2024 with Comprehensive Analysis of Market Trends, Competitive Landscape, Financial Performance Metrics, Revenue Projections, Cost Optimization Strategies, Risk Assessment, and Long-term Growth Initiatives Across All Business Units and Geographical Regions&#39;,
       },
       {
-        value: &#39;product-roadmap&#39;,
+        id: &#39;product-roadmap&#39;,
         label:
           &#39;Comprehensive Product Development Roadmap and Feature Implementation Timeline Including Detailed Technical Specifications, Resource Allocation Plans, Cross-functional Team Dependencies, Milestone Tracking, Quality Assurance Procedures, User Acceptance Testing Protocols, and Post-launch Support Strategy for All Product Lines and Service Offerings&#39;,
       },
       {
-        value: &#39;user-guide&#39;,
+        id: &#39;user-guide&#39;,
         label:
           &#39;Detailed User Guide and Technical Documentation for Advanced System Features Covering Installation Procedures, Configuration Settings, Security Protocols, Troubleshooting Guidelines, Best Practices, Common Use Cases, Performance Optimization Tips, Integration Methods, API Documentation, and Frequently Asked Questions with Step-by-Step Solutions&#39;,
       },
       {
-        value: &#39;marketing-plan&#39;,
+        id: &#39;marketing-plan&#39;,
         label:
           &#39;Integrated Marketing Strategy and Campaign Planning Document for Q3 2024 Encompassing Target Audience Analysis, Channel Selection Criteria, Budget Allocation Framework, Creative Development Process, Content Calendar, Social Media Strategy, Email Marketing Campaigns, SEO Optimization, Paid Advertising Plans, and ROI Measurement Methodology&#39;,
       },
       {
-        value: &#39;research-paper&#39;,
+        id: &#39;research-paper&#39;,
         label:
           &#39;Scientific Research Paper on Advanced Machine Learning Techniques and Applications Including Literature Review, Methodology Description, Experimental Setup, Data Collection Procedures, Analysis Techniques, Results Interpretation, Comparative Studies, Limitations Discussion, Future Research Directions, and Practical Implementation Guidelines&#39;,
       },
     ]}
     placeholder=&quot;Select a document template&quot;
     name=&quot;template&quot;
-    defaultSelectedKey=&quot;annual-report-2024&quot; /&gt;;</code></pre>
+    defaultValue=&quot;annual-report-2024&quot; /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -16384,7 +16393,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
                     height: 8,
                     borderRadius: &#39;50%&#39;,
                     backgroundColor: isSelected
-                      ? &#39;var(--bui-fg-success)&#39;
+                      ? &#39;var(--bui-fg-positive)&#39;
                       : &#39;var(--bui-fg-secondary)&#39;,
                   }}
                 /&gt;
@@ -16401,7 +16410,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
                     height: 8,
                     borderRadius: &#39;50%&#39;,
                     backgroundColor: isSelected
-                      ? &#39;var(--bui-fg-danger)&#39;
+                      ? &#39;var(--bui-fg-negative)&#39;
                       : &#39;var(--bui-fg-secondary)&#39;,
                   }}
                 /&gt;
