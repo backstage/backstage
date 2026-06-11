@@ -16,7 +16,7 @@ export class DefaultKeyValueStoreService implements KeyValueStoreService {
   static create(options: {
     database: DatabaseService;
     events?: EventsService;
-    pluginId?: string;
+    pluginId: string;
   }): KeyValueStoreService;
   // (undocumented)
   withSchema<TSchema extends z.ZodType>(options: {

@@ -27,6 +27,7 @@
     "./discovery": "./src/entrypoints/discovery/index.ts",
     "./httpAuth": "./src/entrypoints/httpAuth/index.ts",
     "./httpRouter": "./src/entrypoints/httpRouter/index.ts",
+    "./keyValueStore": "./src/entrypoints/keyValueStore/index.ts",
     "./lifecycle": "./src/entrypoints/lifecycle/index.ts",
     "./logger": "./src/entrypoints/logger/index.ts",
     "./permissionsRegistry": "./src/entrypoints/permissionsRegistry/index.ts",
@@ -36,7 +37,6 @@
     "./rootHttpRouter": "./src/entrypoints/rootHttpRouter/index.ts",
     "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
     "./rootLogger": "./src/entrypoints/rootLogger/index.ts",
-    "./keyValueStore": "./src/entrypoints/keyValueStore/index.ts",
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
@@ -68,6 +68,9 @@
       "httpRouter": [
         "src/entrypoints/httpRouter/index.ts"
       ],
+      "keyValueStore": [
+        "src/entrypoints/keyValueStore/index.ts"
+      ],
       "lifecycle": [
         "src/entrypoints/lifecycle/index.ts"
       ],
@@ -94,9 +97,6 @@
       ],
       "rootLogger": [
         "src/entrypoints/rootLogger/index.ts"
-      ],
-      "keyValueStore": [
-        "src/entrypoints/keyValueStore/index.ts"
       ],
       "scheduler": [
         "src/entrypoints/scheduler/index.ts"
