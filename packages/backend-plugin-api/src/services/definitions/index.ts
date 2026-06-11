@@ -35,6 +35,7 @@ export type {
 } from './CacheService';
 export type { DatabaseService } from './DatabaseService';
 export type {
+  KeyValueStoreChangeEvent,
   KeyValueStoreService,
   KeyValueStoreNamespace,
   KeyValueStoreNamespaceEntry,

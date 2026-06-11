@@ -28,6 +28,22 @@ export type KeyValueStoreNamespaceEntry<TOutput> = {
 };
 
 /**
+ * Event emitted when a key-value store entry changes.
+ *
+ * @public
+ */
+export type KeyValueStoreChangeEvent = {
+  /** The namespace within the key-value store. */
+  namespace: string;
+  /** The key that changed. */
+  key: string;
+  /** The type of change. */
+  action: 'set' | 'delete';
+  /** The etag of the new value. Present for `set`, absent for `delete`. */
+  etag?: string;
+};
+
+/**
  * A schema-validated, typed namespace within a key-value store.
  *
  * Values are parsed through the namespace's Zod schema on both read and write.
@@ -76,6 +92,21 @@ export interface KeyValueStoreNamespace<TInput, TOutput> {
    * parsed through the namespace's schema.
    */
   list(): Promise<KeyValueStoreNamespaceEntry<TOutput>[]>;
+
+  /**
+   * Subscribes to change events for this namespace. The handler is called
+   * whenever a key in this namespace is set or deleted, including changes
+   * made by other instances of the backend.
+   *
+   * @param subscriber - Subscriber with an ID and event handler
+   * @returns An object with an `unsubscribe` function to stop receiving events
+   */
+  subscribe(subscriber: {
+    /** Subscriber ID. Subscribers sharing an ID have events distributed between them. */
+    id: string;
+    /** Called for each change event in this namespace. */
+    onEvent: (event: KeyValueStoreChangeEvent) => Promise<void>;
+  }): Promise<{ unsubscribe: () => void }>;
 }
 
 /**

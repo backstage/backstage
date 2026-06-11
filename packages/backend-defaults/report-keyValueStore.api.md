@@ -4,6 +4,7 @@
 
 ```ts
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { EventsService } from '@backstage/plugin-events-node';
 import { KeyValueStoreNamespace } from '@backstage/backend-plugin-api';
 import { KeyValueStoreService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
@@ -12,7 +13,11 @@ import { z } from 'zod/v4';
 // @public
 export class DefaultKeyValueStoreService implements KeyValueStoreService {
   // (undocumented)
-  static create(options: { database: DatabaseService }): KeyValueStoreService;
+  static create(options: {
+    database: DatabaseService;
+    events?: EventsService;
+    pluginId?: string;
+  }): KeyValueStoreService;
   // (undocumented)
   withSchema<TSchema extends z.ZodType>(options: {
     namespace: string;

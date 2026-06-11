@@ -18,6 +18,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { DefaultKeyValueStoreService } from './DefaultKeyValueStoreService';
 
 /**
@@ -33,8 +34,14 @@ export const keyValueStoreServiceFactory = createServiceFactory({
   service: coreServices.keyValueStore,
   deps: {
     database: coreServices.database,
+    events: eventsServiceRef,
+    pluginMetadata: coreServices.pluginMetadata,
   },
-  async factory({ database }) {
-    return DefaultKeyValueStoreService.create({ database });
+  async factory({ database, events, pluginMetadata }) {
+    return DefaultKeyValueStoreService.create({
+      database,
+      events,
+      pluginId: pluginMetadata.getId(),
+    });
   },
 });

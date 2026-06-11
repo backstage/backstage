@@ -20,6 +20,7 @@ import {
   KeyValueStoreService,
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
+import { EventsService } from '@backstage/plugin-events-node';
 import { z } from 'zod/v4';
 import { Knex } from 'knex';
 import { once } from 'lodash';
@@ -46,7 +47,11 @@ async function migrateKeyValueStore(knex: Knex): Promise<void> {
  * @public
  */
 export class DefaultKeyValueStoreService implements KeyValueStoreService {
-  static create(options: { database: DatabaseService }): KeyValueStoreService {
+  static create(options: {
+    database: DatabaseService;
+    events?: EventsService;
+    pluginId?: string;
+  }): KeyValueStoreService {
     const getClient = once(async () => {
       const knex = await options.database.getClient();
       if (!options.database.migrations?.skip) {
@@ -54,10 +59,18 @@ export class DefaultKeyValueStoreService implements KeyValueStoreService {
       }
       return knex;
     });
-    return new DefaultKeyValueStoreService(getClient);
+    return new DefaultKeyValueStoreService(
+      getClient,
+      options.events,
+      options.pluginId ?? 'unknown',
+    );
   }
 
-  private constructor(private readonly getClient: () => Promise<Knex>) {}
+  private constructor(
+    private readonly getClient: () => Promise<Knex>,
+    private readonly events: EventsService | undefined,
+    private readonly pluginId: string,
+  ) {}
 
   withSchema<TSchema extends z.ZodType>(options: {
     namespace: string;
@@ -72,6 +85,8 @@ export class DefaultKeyValueStoreService implements KeyValueStoreService {
       this.getClient,
       options.namespace,
       options.schema,
+      this.events,
+      this.pluginId,
     );
   }
 }

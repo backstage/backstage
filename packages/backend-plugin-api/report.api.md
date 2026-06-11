@@ -442,6 +442,14 @@ export { isChildPath };
 export function isDatabaseConflictError(e: unknown): boolean;
 
 // @public
+export type KeyValueStoreChangeEvent = {
+  namespace: string;
+  key: string;
+  action: 'set' | 'delete';
+  etag?: string;
+};
+
+// @public
 export interface KeyValueStoreNamespace<TInput, TOutput> {
   delete(key: string): Promise<void>;
   get(key: string): Promise<
@@ -460,6 +468,12 @@ export interface KeyValueStoreNamespace<TInput, TOutput> {
     },
   ): Promise<{
     etag: string;
+  }>;
+  subscribe(subscriber: {
+    id: string;
+    onEvent: (event: KeyValueStoreChangeEvent) => Promise<void>;
+  }): Promise<{
+    unsubscribe: () => void;
   }>;
 }
 

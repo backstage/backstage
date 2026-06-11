@@ -367,6 +367,7 @@ export namespace mockServices {
         set: jest.fn(),
         delete: jest.fn(),
         list: jest.fn(),
+        subscribe: jest.fn(),
       }),
     }));
   }
