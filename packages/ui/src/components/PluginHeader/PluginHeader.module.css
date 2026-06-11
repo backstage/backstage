@@ -113,4 +113,51 @@
   .bui-PluginHeaderTabsWrapper {
     border-bottom: var(--bui-plugin-header-tabs-border-bottom);
   }
+
+  .bui-PluginHeaderBreadcrumbs ol {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--bui-space-3);
+  }
+
+  .bui-PluginHeaderBreadcrumbs li {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-3);
+    min-width: 0;
+  }
+
+  .bui-PluginHeaderBreadcrumbs li a,
+  .bui-PluginHeaderBreadcrumbs li > span {
+    max-width: 165px;
+    white-space: nowrap;
+  }
+  /* .bui-PluginHeaderBreadcrumbs li:not([data-current]) a,
+  .bui-PluginHeaderBreadcrumbs li:not([data-current]) > span {
+    max-width: 165px;
+  }
+
+  .bui-PluginHeaderBreadcrumbs li a,
+  .bui-PluginHeaderBreadcrumbs li > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } */
+
+  .bui-PluginHeaderBreadcrumbsSeparator {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--bui-fg-muted);
+  }
+
+  .bui-PluginHeaderBreadcrumbs li button {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
 }

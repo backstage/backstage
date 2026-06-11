@@ -25,6 +25,7 @@ import { Box } from '../Box';
 import { Link } from '../Link';
 import { RiShapesLine } from '@remixicon/react';
 import { Text } from '../Text';
+import { PluginHeaderBreadcrumbs } from './PluginHeaderBreadcrumbs';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -47,10 +48,12 @@ export const PluginHeader = (props: PluginHeaderProps) => {
     icon,
     title,
     titleLink,
+    breadcrumbs,
     customActions,
     onTabSelectionChange,
   } = ownProps;
 
+  const hasBreadcrumbs = breadcrumbs && breadcrumbs.length > 0;
   const hasTabs = tabs && tabs.length > 0;
   const rootRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | undefined>(undefined);
@@ -131,7 +134,12 @@ export const PluginHeader = (props: PluginHeaderProps) => {
             {icon || <RiShapesLine />}
           </Box>
           <h1 className={classes.toolbarName}>
-            {titleLink ? (
+            {hasBreadcrumbs ? (
+              <PluginHeaderBreadcrumbs
+                entries={breadcrumbs}
+                classes={classes}
+              />
+            ) : titleLink ? (
               <Link href={titleLink} standalone variant="body-medium">
                 {titleText}
               </Link>

@@ -5,6 +5,8 @@ import {
   WithAllOptionsAndTabs,
   WithAllOptions,
   WithHeader,
+  WithBreadcrumbs,
+  WithBreadcrumbsAndTabs,
 } from './components';
 import { headerPropDefs } from './props-definition';
 import {
@@ -13,6 +15,8 @@ import {
   defaultSnippet,
   withTabs,
   withHeader,
+  withBreadcrumbs,
+  withBreadcrumbsAndTabs,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -45,6 +49,22 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 Tabs use React Router and highlight automatically based on the current route.
 
 <Snippet preview={<WithAllOptionsAndTabs />} code={withTabs} open />
+
+### Plugin header with breadcrumbs
+
+Use breadcrumbs for hierarchical navigation within the header.
+
+<Snippet preview={<WithBreadcrumbs />} code={withBreadcrumbs} open />
+
+### Plugin header with breadcrumbs and tabs
+
+Breadcrumbs and tabs can be combined for multi-level navigation.
+
+<Snippet
+  preview={<WithBreadcrumbsAndTabs />}
+  code={withBreadcrumbsAndTabs}
+  open
+/>
 
 ### Plugin header with Header
 

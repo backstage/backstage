@@ -17,7 +17,7 @@
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { PluginHeader } from './PluginHeader';
-import type { HeaderTab } from './types';
+import type { BreadcrumbEntry, HeaderTab } from './types';
 import {
   Container,
   Text,
@@ -277,6 +277,81 @@ export const WithTabsMatchingStrategies = meta.story({
         </Container>
       </BUIProvider>
     </MemoryRouter>
+  ),
+});
+
+const breadcrumbs: BreadcrumbEntry[] = [
+  { label: 'Home', href: '/' },
+  { label: 'Docs', href: '/docs' },
+  { label: 'Getting Started', href: '/docs/getting-started' },
+];
+
+const breadcrumbsWithLongLabels: BreadcrumbEntry[] = [
+  { label: 'Home', href: '/' },
+  {
+    label: 'Documentation and Developer Resources Portal',
+    href: '/docs',
+  },
+  {
+    label:
+      'Getting Started with the Backstage Integration Framework for Enterprise Applications',
+    href: '/docs/getting-started',
+  },
+];
+
+const manyBreadcrumbs: BreadcrumbEntry[] = [
+  { label: 'Home', href: '/' },
+  { label: 'Docs', href: '/docs' },
+  { label: 'Guides', href: '/docs/guides' },
+  { label: 'Setup', href: '/docs/guides/setup' },
+  { label: 'Introduction', href: '/docs/guides/setup/intro' },
+];
+
+export const WithBreadcrumbs = meta.story({
+  args: {
+    breadcrumbs,
+  },
+  decorators: [withRouter],
+});
+
+export const WithBreadcrumbsLongLabels = meta.story({
+  args: {
+    breadcrumbs: breadcrumbsWithLongLabels,
+  },
+  decorators: [withRouter],
+});
+
+export const WithBreadcrumbsAndTabs = meta.story({
+  args: {
+    breadcrumbs,
+    tabs,
+  },
+  decorators: [withRouter],
+});
+
+export const WithBreadcrumbsCollapsed = meta.story({
+  args: {
+    breadcrumbs: manyBreadcrumbs,
+  },
+  decorators: [withRouter],
+});
+
+export const WithBreadcrumbsAndCustomActions = meta.story({
+  args: {
+    breadcrumbs,
+  },
+  decorators: [withRouter],
+  render: args => (
+    <PluginHeader
+      {...args}
+      customActions={
+        <>
+          <ButtonIcon variant="secondary" icon={<RiCloudy2Line />} />
+          <ButtonIcon variant="secondary" icon={<RiEmotionHappyLine />} />
+          <ButtonIcon variant="secondary" icon={<RiHeartLine />} />
+        </>
+      }
+    />
   ),
 });
 

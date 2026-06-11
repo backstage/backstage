@@ -43,6 +43,34 @@ export const withTabs = `<PluginHeader
   ]}
 />`;
 
+export const withBreadcrumbs = `<PluginHeader
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Docs', href: '/docs' },
+    { label: 'Getting Started', href: '/docs/getting-started' },
+  ]}
+  customActions={
+    <>
+      <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+      <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+      <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+    </>
+  }
+/>`;
+
+export const withBreadcrumbsAndTabs = `<PluginHeader
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Docs', href: '/docs' },
+    { label: 'Getting Started', href: '/docs/getting-started' },
+  ]}
+  tabs={[
+    { id: 'overview', label: 'Overview', href: '/overview' },
+    { id: 'checks', label: 'Checks', href: '/checks' },
+    { id: 'tracks', label: 'Tracks', href: '/tracks' },
+  ]}
+/>`;
+
 export const withHeader = `<PluginHeader
   title="My plugin"
   titleLink="/"

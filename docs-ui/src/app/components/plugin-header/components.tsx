@@ -10,6 +10,7 @@ import {
   RiEmotionHappyLine,
   RiCloudy2Line,
 } from '@remixicon/react';
+import type { BreadcrumbEntry } from '../../../../../packages/ui/src/components/PluginHeader/types';
 
 const tabs = [
   { id: 'overview', label: 'Overview', href: '/overview' },
@@ -68,5 +69,42 @@ export const WithHeader = () => (
         customActions={<Button>Custom action</Button>}
       />
     </>
+  </MemoryRouter>
+);
+
+const breadcrumbs: BreadcrumbEntry[] = [
+  { label: 'Home', href: '/' },
+  { label: 'Docs', href: '/docs' },
+  { label: 'Getting Started', href: '/docs/getting-started' },
+];
+
+export const WithBreadcrumbs = () => (
+  <MemoryRouter>
+    <PluginHeader
+      breadcrumbs={breadcrumbs}
+      customActions={
+        <>
+          <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+          <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+          <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+        </>
+      }
+    />
+  </MemoryRouter>
+);
+
+export const WithBreadcrumbsAndTabs = () => (
+  <MemoryRouter>
+    <PluginHeader
+      breadcrumbs={breadcrumbs}
+      tabs={tabs}
+      customActions={
+        <>
+          <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+          <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+          <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+        </>
+      }
+    />
   </MemoryRouter>
 );

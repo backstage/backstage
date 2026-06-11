@@ -20,4 +20,5 @@ export type {
   PluginHeaderOwnProps,
   PluginHeaderProps,
   HeaderTab,
+  BreadcrumbEntry,
 } from './types';

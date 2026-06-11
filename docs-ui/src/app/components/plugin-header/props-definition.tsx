@@ -15,6 +15,26 @@ export const headerPropDefs: Record<string, PropDef> = {
     type: 'string',
     description: 'URL the title links to when clicked.',
   },
+  breadcrumbs: {
+    type: 'complex',
+    description:
+      'Breadcrumb entries for hierarchical navigation. When provided, replaces the title text.',
+    complexType: {
+      name: 'BreadcrumbEntry[]',
+      properties: {
+        label: {
+          type: 'string',
+          required: true,
+          description: 'Display text for the breadcrumb.',
+        },
+        href: {
+          type: 'string',
+          required: true,
+          description: 'URL to navigate to when breadcrumb is clicked.',
+        },
+      },
+    },
+  },
   customActions: {
     type: 'enum',
     values: ['ReactNode'],
