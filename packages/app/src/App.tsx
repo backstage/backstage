@@ -54,6 +54,9 @@ import { appModuleScaffolder } from './modules/appModuleScaffolder';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import InfoIcon from '@material-ui/icons/Info';
 
+const techdocsTabSwitchRepro =
+  process.env.BACKSTAGE_TECHDOCS_TAB_REPRO === 'true';
+
 /**
  * TechDocs does support the new frontend system so this conversion is not
  * strictly necessary, but it's left here to provide a demo of the utilities for
@@ -109,6 +112,19 @@ const customHomePageModule = createFrontendModule({
 });
 
 // customize catalog example
+const catalogEntityPageOverride = techdocsTabSwitchRepro
+  ? catalogPlugin.getExtension('page:catalog/entity').override({
+      params: {
+        loader: async () => {
+          const { EntityTabSwitchReproPage } = await import(
+            './examples/entityTabSwitchReproPage'
+          );
+          return <EntityTabSwitchReproPage />;
+        },
+      },
+    })
+  : undefined;
+
 const customizedCatalog = catalogPlugin.withOverrides({
   extensions: [
     catalogPlugin.getExtension('entity-content:catalog/overview').override({
@@ -116,6 +132,7 @@ const customizedCatalog = catalogPlugin.withOverrides({
         icon: <InfoIcon />,
       },
     }),
+    ...(catalogEntityPageOverride ? [catalogEntityPageOverride] : []),
   ],
 });
 

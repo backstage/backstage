@@ -24,3 +24,18 @@ spec:
   type: service
   lifecycle: experimental
   owner: user:guest
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sample-docs-linked-entity
+  title: Sample Docs Linked Entity
+  description: >-
+    Linked TechDocs entity for reproducing entity-tab switch issues
+    (backstage.io/techdocs-entity → documented-component).
+  annotations:
+    backstage.io/techdocs-entity: component:default/documented-component
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:guest

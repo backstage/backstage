@@ -55,6 +55,8 @@
     "start:docker": "docker compose -f docker-compose.deps.yml up --wait && BACKSTAGE_ENV=docker yarn start",
     "start:legacy": "yarn start example-app-legacy example-backend",
     "start:microsite": "cd microsite/ && yarn start",
+    "start:techdocs-repro": "yarn start:legacy",
+    "start:techdocs-repro:example-app": "cross-env BACKSTAGE_TECHDOCS_TAB_REPRO=true yarn start example-app example-backend",
     "start-backend": "echo \"Use 'yarn start example-backend' instead\"",
     "storybook": "storybook dev -p 6006",
     "sync-issue-templates": "node ./.github/ISSUE_TEMPLATE/sync.js",
@@ -99,10 +101,10 @@
     "rejectFrontendNetworkRequests": true
   },
   "resolutions": {
-    "@remixicon/react": ">=4.6.0 <4.9.0",
     "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
+    "@remixicon/react": ">=4.6.0 <4.9.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.1.0#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.1.0-6533d0f5a1.patch",
