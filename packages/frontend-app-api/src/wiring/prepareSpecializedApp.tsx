@@ -86,6 +86,7 @@ import {
   createBootstrapApp,
   prepareFinalizedTree,
 } from './treeLifecycle';
+import { collectPredicateContextProviderEntries } from './predicateContextProviders';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -328,7 +329,13 @@ export function prepareSpecializedApp(
     tree,
     collector,
   });
-  const predicateReferences = collectPredicateReferences(tree.nodes.values());
+  const { predicateReferences, referencedNamespaces } =
+    collectPredicateReferences(tree.nodes.values());
+  const predicateContextProviders = collectPredicateContextProviderEntries({
+    providerNodes:
+      tree.root.edges.attachments.get('predicateContextProviders') ?? [],
+    collector,
+  });
   const appApiRegistry = new FrontendApiRegistry();
   const internalStaticFactories =
     internalOptions?.__internal?.apiFactoryOverrides ?? [];
@@ -372,6 +379,8 @@ export function prepareSpecializedApp(
   const predicateContextLoader = createPredicateContextLoader({
     apis: phase.apis,
     predicateReferences,
+    referencedNamespaces,
+    providerEntries: predicateContextProviders,
   });
   let signInRuntime: SignInRuntime | undefined;
   let finalized: FinalizedSpecializedApp | undefined;

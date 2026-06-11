@@ -155,6 +155,16 @@ export type AppErrorTypes = {
       error: Error;
     };
   };
+  PREDICATE_CONTEXT_PROVIDER_INVALID: {
+    context: {
+      node: AppNode;
+    };
+  };
+  PREDICATE_CONTEXT_PROVIDER_HAS_PREDICATE: {
+    context: {
+      node: AppNode;
+    };
+  };
   ROUTE_DUPLICATE: {
     context: {
       routeId: string;

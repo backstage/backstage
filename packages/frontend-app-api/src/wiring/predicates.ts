@@ -29,6 +29,7 @@ import { ForwardedError } from '@backstage/errors';
 export type ExtensionPredicateContext = {
   featureFlags: string[];
   permissions: string[];
+  [namespace: string]: string[];
 };
 
 export const EMPTY_PREDICATE_CONTEXT: ExtensionPredicateContext = {
@@ -50,7 +51,34 @@ export const localPermissionApiRef = createApiRef<MinimalPermissionApi>({
 export function createPredicateContextLoader(options: {
   apis: ApiHolder;
   predicateReferences: ExtensionPredicateContext;
+  referencedNamespaces?: Set<string>;
+  providerEntries?: Array<
+    { namespace: string } & (
+      | {
+          type: 'sync';
+          resolver: (resolverOptions: { apis: ApiHolder }) => string[];
+        }
+      | {
+          type: 'async';
+          loader: (loaderOptions: { apis: ApiHolder }) => Promise<string[]>;
+        }
+    )
+  >;
 }) {
+  const referenced = options.providerEntries?.filter(entry =>
+    options.referencedNamespaces?.has(entry.namespace),
+  );
+  const referencedSync =
+    referenced?.filter(
+      (e): e is Extract<(typeof referenced)[number], { type: 'sync' }> =>
+        e.type === 'sync',
+    ) ?? [];
+  const referencedAsync =
+    referenced?.filter(
+      (e): e is Extract<(typeof referenced)[number], { type: 'async' }> =>
+        e.type === 'async',
+    ) ?? [];
+
   function getActiveFeatureFlags() {
     const featureFlagsApi = options.apis.get(featureFlagsApiRef);
     if (!featureFlagsApi) {
@@ -62,7 +90,27 @@ export function createPredicateContextLoader(options: {
     );
   }
 
+  function resolveSyncProviders(): Record<string, string[]> {
+    const results: Record<string, string[]> = {};
+    for (const entry of referencedSync) {
+      try {
+        results[entry.namespace] = entry.resolver({ apis: options.apis });
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(
+          'Failed to resolve extension predicate context provider:',
+          error,
+        );
+      }
+    }
+    return results;
+  }
+
   function getImmediate(): ExtensionPredicateContext | undefined {
+    if (referencedAsync.length > 0) {
+      return undefined;
+    }
+
     if (options.predicateReferences.permissions.length > 0) {
       const permissionApi = options.apis.get(localPermissionApiRef);
       if (permissionApi) {
@@ -73,6 +121,7 @@ export function createPredicateContextLoader(options: {
     return {
       featureFlags: getActiveFeatureFlags(),
       permissions: [],
+      ...resolveSyncProviders(),
     };
   }
 
@@ -105,9 +154,32 @@ export function createPredicateContextLoader(options: {
       }
     }
 
+    const asyncResults: Record<string, string[]> = {};
+    if (referencedAsync.length > 0) {
+      const results = await Promise.allSettled(
+        referencedAsync.map(async entry => {
+          const values = await entry.loader({ apis: options.apis });
+          return { namespace: entry.namespace, values };
+        }),
+      );
+      for (const result of results) {
+        if (result.status === 'fulfilled') {
+          asyncResults[result.value.namespace] = result.value.values;
+        } else {
+          // eslint-disable-next-line no-console
+          console.error(
+            'Failed to load extension predicate context provider:',
+            result.reason,
+          );
+        }
+      }
+    }
+
     return {
       featureFlags: getActiveFeatureFlags(),
       permissions: allowedPermissions,
+      ...resolveSyncProviders(),
+      ...asyncResults,
     };
   }
 
@@ -119,9 +191,15 @@ export function createPredicateContextLoader(options: {
 
 export function collectPredicateReferences(
   nodes: Iterable<{ spec: { if?: FilterPredicate } }>,
-): ExtensionPredicateContext {
+): {
+  predicateReferences: ExtensionPredicateContext;
+  referencedNamespaces: Set<string>;
+} {
   const featureFlags = new Set<string>();
   const permissions = new Set<string>();
+  const referencedNamespaces = new Set<string>();
+
+  const wellKnownKeys = new Set(['featureFlags', 'permissions']);
 
   for (const node of nodes) {
     if (node.spec.if === undefined) {
@@ -134,11 +212,19 @@ export function collectPredicateReferences(
     for (const name of extractPermissionNames(node.spec.if)) {
       permissions.add(name);
     }
+    for (const key of extractPredicateExpressionKeys(node.spec.if)) {
+      if (!wellKnownKeys.has(key)) {
+        referencedNamespaces.add(key);
+      }
+    }
   }
 
   return {
-    featureFlags: Array.from(featureFlags),
-    permissions: Array.from(permissions),
+    predicateReferences: {
+      featureFlags: Array.from(featureFlags),
+      permissions: Array.from(permissions),
+    },
+    referencedNamespaces,
   };
 }
 
@@ -190,4 +276,25 @@ function extractPredicateKeyNames(
     }
   }
   return [];
+}
+
+function extractPredicateExpressionKeys(predicate: FilterPredicate): string[] {
+  if (typeof predicate !== 'object' || predicate === null) {
+    return [];
+  }
+  const obj = predicate as Record<string, unknown>;
+  if (Array.isArray(obj.$all)) {
+    return (obj.$all as FilterPredicate[]).flatMap(
+      extractPredicateExpressionKeys,
+    );
+  }
+  if (Array.isArray(obj.$any)) {
+    return (obj.$any as FilterPredicate[]).flatMap(
+      extractPredicateExpressionKeys,
+    );
+  }
+  if (obj.$not !== undefined) {
+    return extractPredicateExpressionKeys(obj.$not as FilterPredicate);
+  }
+  return Object.keys(obj).filter(k => !k.startsWith('$'));
 }

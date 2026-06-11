@@ -1786,5 +1786,131 @@ describe('createSpecializedApp', () => {
         'prepareSpecializedApp requires waiting for the bootstrap app to be ready before calling finalize()',
       );
     });
+
+    it('should include async predicate context provider values in predicate evaluation', async () => {
+      const { ExtensionPredicateContextProviderBlueprint } = await import(
+        '@backstage/frontend-plugin-api'
+      );
+
+      const preparedApp = prepareSpecializedApp({
+        config: new ConfigReader({
+          backend: { baseUrl: 'http://localhost:7007' },
+        }),
+        features: [
+          appPlugin.withOverrides({
+            extensions: [
+              appPlugin
+                .getExtension('sign-in-page:app')
+                .override({ disabled: true }),
+            ],
+          }),
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              ExtensionPredicateContextProviderBlueprint.make({
+                name: 'features',
+                params: {
+                  loader: async () => ['show-page'],
+                },
+              }),
+              createExtension({
+                name: 'gated-element',
+                attachTo: { id: 'app/root', input: 'elements' },
+                if: { 'test/features': { $contains: 'show-page' } },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(
+                    <div>Provider Gated Element</div>,
+                  ),
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+
+      const finalizedApp = await waitForFinalizedApp(preparedApp);
+      render(
+        finalizedApp.tree.root.instance!.getData(
+          coreExtensionData.reactElement,
+        ),
+      );
+
+      await expect(
+        screen.findByText('Provider Gated Element'),
+      ).resolves.toBeInTheDocument();
+    });
+
+    it('should fail closed when a predicate context provider throws', async () => {
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      const { ExtensionPredicateContextProviderBlueprint } = await import(
+        '@backstage/frontend-plugin-api'
+      );
+
+      const preparedApp = prepareSpecializedApp({
+        config: new ConfigReader({
+          backend: { baseUrl: 'http://localhost:7007' },
+        }),
+        features: [
+          appPlugin.withOverrides({
+            extensions: [
+              appPlugin
+                .getExtension('sign-in-page:app')
+                .override({ disabled: true }),
+            ],
+          }),
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              ExtensionPredicateContextProviderBlueprint.make({
+                name: 'features',
+                params: {
+                  loader: async () => {
+                    throw new Error('backend unreachable');
+                  },
+                },
+              }),
+              createExtension({
+                name: 'gated-element',
+                attachTo: { id: 'app/root', input: 'elements' },
+                if: { 'test/features': { $contains: 'show-page' } },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Should Not Appear</div>),
+                ],
+              }),
+              createExtension({
+                name: 'always-element',
+                attachTo: { id: 'app/root', input: 'elements' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Always Visible</div>),
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+
+      const finalizedApp = await waitForFinalizedApp(preparedApp);
+      render(
+        finalizedApp.tree.root.instance!.getData(
+          coreExtensionData.reactElement,
+        ),
+      );
+
+      await expect(
+        screen.findByText('Always Visible'),
+      ).resolves.toBeInTheDocument();
+      expect(screen.queryByText('Should Not Appear')).not.toBeInTheDocument();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to load extension predicate context provider:',
+        expect.any(Error),
+      );
+
+      consoleSpy.mockRestore();
+    });
   });
 });

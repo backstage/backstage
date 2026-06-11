@@ -100,6 +100,13 @@ export type AppErrorTypes = {
   FEATURE_FLAG_INVALID: {
     context: { pluginId: string; flagName: string; error: Error };
   };
+  // predicateContextProviders
+  PREDICATE_CONTEXT_PROVIDER_INVALID: {
+    context: { node: AppNode };
+  };
+  PREDICATE_CONTEXT_PROVIDER_HAS_PREDICATE: {
+    context: { node: AppNode };
+  };
   // routing
   ROUTE_DUPLICATE: {
     context: { routeId: string };

@@ -16,6 +16,7 @@
 
 import {
   ApiBlueprint,
+  ExtensionPredicateContextProviderBlueprint,
   coreExtensionData,
   createExtension,
   createExtensionInput,
@@ -30,6 +31,10 @@ export const Root = createExtension({
     apis: createExtensionInput([ApiBlueprint.dataRefs.factory], {
       replaces: [{ id: 'app', input: 'apis' }],
     }),
+    predicateContextProviders: createExtensionInput([
+      ExtensionPredicateContextProviderBlueprint.dataRefs.resolver.optional(),
+      ExtensionPredicateContextProviderBlueprint.dataRefs.loader.optional(),
+    ]),
   },
   output: [coreExtensionData.reactElement],
   factory: ({ inputs }) => inputs.app,
