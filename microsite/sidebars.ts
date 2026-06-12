@@ -591,6 +591,7 @@ export default {
                 'frontend-system/building-apps/plugin-conversion',
                 'frontend-system/building-apps/module-federation',
                 'frontend-system/building-apps/migrating',
+                'frontend-system/building-apps/troubleshooting-app-visualizer',
               ],
             ),
             sidebarElementWithIndex(
