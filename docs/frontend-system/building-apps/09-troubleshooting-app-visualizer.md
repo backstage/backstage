@@ -13,7 +13,7 @@ This section describes how to install the `app-visualizer` plugin in the fronten
 
 The `app-visualizer` plugin can help with troubleshooting. It provides a visual overview of your app's extension tree, making it easy to verify that plugins are installed correctly, see how extensions are wired together, and identify issues during migration.
 
-It can only be installed starting with release 1.49.0
+It can only be installed starting with release 1.49.0.
 
 #### Installation
 
