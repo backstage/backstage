@@ -19,7 +19,7 @@ Commands:
 ### `backstage-cli-module-info info`
 
 ```
-Usage: @backstage/cli-module-info info
+Usage: @backstage/cli-module-info info [flags...]
 
 Options:
   --format <string>

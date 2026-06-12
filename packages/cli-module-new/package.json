@@ -38,7 +38,7 @@
     "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
     "chalk": "^4.0.0",
-    "cleye": "^2.3.0",
+    "cleye": "^2.6.0",
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.3",
     "inquirer": "^8.2.0",

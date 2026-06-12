@@ -37,7 +37,7 @@
     "@backstage/cli-node": "workspace:^",
     "@octokit/request": "^8.0.0",
     "chalk": "^4.0.0",
-    "cleye": "^2.3.0",
+    "cleye": "^2.6.0",
     "express": "^4.22.0",
     "fs-extra": "^11.2.0",
     "inquirer": "^8.2.0",

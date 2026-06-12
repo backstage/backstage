@@ -34,7 +34,7 @@ Commands:
 ### `backstage-cli-module-actions actions execute`
 
 ```
-Usage: @backstage/cli-module-actions actions execute
+Usage: @backstage/cli-module-actions actions execute [flags...] <action-id>
 
 Options:
   --instance <string>
@@ -44,7 +44,7 @@ Options:
 ### `backstage-cli-module-actions actions list`
 
 ```
-Usage: @backstage/cli-module-actions actions list
+Usage: @backstage/cli-module-actions actions list [flags...]
 
 Options:
   --instance <string>
@@ -69,7 +69,7 @@ Commands:
 ### `backstage-cli-module-actions actions sources add`
 
 ```
-Usage: @backstage/cli-module-actions actions sources add
+Usage: @backstage/cli-module-actions actions sources add [flags...] <plugin-ids...>
 
 Options:
   -h, --help
@@ -78,7 +78,7 @@ Options:
 ### `backstage-cli-module-actions actions sources list`
 
 ```
-Usage: @backstage/cli-module-actions actions sources list
+Usage: @backstage/cli-module-actions actions sources list [flags...]
 
 Options:
   -h, --help
@@ -87,7 +87,7 @@ Options:
 ### `backstage-cli-module-actions actions sources remove`
 
 ```
-Usage: @backstage/cli-module-actions actions sources remove
+Usage: @backstage/cli-module-actions actions sources remove [flags...] <plugin-ids...>
 
 Options:
   -h, --help

@@ -16,11 +16,14 @@
 
 import preview from '../../../../../.storybook/preview';
 import { Select } from './Select';
+import { SelectItem, SelectItemProfile, SelectItemText } from './SelectItem';
 import { Flex } from '../Flex';
 import { Box } from '../Box';
 import { Text } from '../Text';
 import { Form } from 'react-aria-components';
-import { RiCloudLine } from '@remixicon/react';
+import { RiCheckLine, RiCloudLine } from '@remixicon/react';
+import { useAsyncList } from '@backstage/ui';
+import type { ReactNode } from 'react';
 
 const meta = preview.meta({
   title: 'Backstage UI/Select',
@@ -31,39 +34,39 @@ const meta = preview.meta({
 });
 
 const fontOptions = [
-  { value: 'sans', label: 'Sans-serif' },
-  { value: 'serif', label: 'Serif' },
-  { value: 'mono', label: 'Monospace' },
-  { value: 'cursive', label: 'Cursive' },
+  { id: 'sans', label: 'Sans-serif' },
+  { id: 'serif', label: 'Serif' },
+  { id: 'mono', label: 'Monospace' },
+  { id: 'cursive', label: 'Cursive' },
 ];
 
 const countries = [
-  { value: 'us', label: 'United States' },
-  { value: 'ca', label: 'Canada' },
-  { value: 'mx', label: 'Mexico' },
-  { value: 'uk', label: 'United Kingdom' },
-  { value: 'fr', label: 'France' },
-  { value: 'de', label: 'Germany' },
-  { value: 'it', label: 'Italy' },
-  { value: 'es', label: 'Spain' },
-  { value: 'jp', label: 'Japan' },
-  { value: 'cn', label: 'China' },
-  { value: 'in', label: 'India' },
-  { value: 'br', label: 'Brazil' },
-  { value: 'au', label: 'Australia' },
+  { id: 'us', label: 'United States' },
+  { id: 'ca', label: 'Canada' },
+  { id: 'mx', label: 'Mexico' },
+  { id: 'uk', label: 'United Kingdom' },
+  { id: 'fr', label: 'France' },
+  { id: 'de', label: 'Germany' },
+  { id: 'it', label: 'Italy' },
+  { id: 'es', label: 'Spain' },
+  { id: 'jp', label: 'Japan' },
+  { id: 'cn', label: 'China' },
+  { id: 'in', label: 'India' },
+  { id: 'br', label: 'Brazil' },
+  { id: 'au', label: 'Australia' },
 ];
 
 const skills = [
-  { value: 'react', label: 'React' },
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'python', label: 'Python' },
-  { value: 'java', label: 'Java' },
-  { value: 'csharp', label: 'C#' },
-  { value: 'go', label: 'Go' },
-  { value: 'rust', label: 'Rust' },
-  { value: 'kotlin', label: 'Kotlin' },
-  { value: 'swift', label: 'Swift' },
+  { id: 'react', label: 'React' },
+  { id: 'typescript', label: 'TypeScript' },
+  { id: 'javascript', label: 'JavaScript' },
+  { id: 'python', label: 'Python' },
+  { id: 'java', label: 'Java' },
+  { id: 'csharp', label: 'C#' },
+  { id: 'go', label: 'Go' },
+  { id: 'rust', label: 'Rust' },
+  { id: 'kotlin', label: 'Kotlin' },
+  { id: 'swift', label: 'Swift' },
 ];
 
 export const Default = meta.story({
@@ -76,10 +79,283 @@ export const Default = meta.story({
 export const Searchable = meta.story({
   args: {
     label: 'Country',
-    searchable: true,
-    searchPlaceholder: 'Search countries...',
+    search: { placeholder: 'Search countries...' },
     options: countries,
   },
+});
+
+function SelectItemTypesColumn({ size }: { size: 'small' | 'medium' }) {
+  return (
+    <Flex direction="column" gap="4" style={{ width: 280 }}>
+      <Text as="div" weight="bold">
+        {size === 'small' ? 'Small' : 'Medium'}
+      </Text>
+      <Select
+        size={size}
+        label="Title items"
+        placeholder="Select a status"
+        style={{ width: '100%' }}
+      >
+        <SelectItemText id="active" title="Active" />
+        <SelectItemText id="inactive" title="Inactive" />
+      </Select>
+      <Select
+        size={size}
+        label="Icon and title items"
+        placeholder="Select a deployment target"
+        style={{ width: '100%' }}
+      >
+        <SelectItemText
+          id="cloud"
+          title="Cloud"
+          leadingIcon={<RiCloudLine />}
+        />
+        <SelectItemText
+          id="private-cloud"
+          title="Private cloud"
+          leadingIcon={<RiCloudLine />}
+        />
+      </Select>
+      <Select
+        size={size}
+        label="Title and description items"
+        placeholder="Select a release channel"
+        style={{ width: '100%' }}
+      >
+        <SelectItemText
+          id="stable"
+          title="Stable"
+          description="Recommended for production workloads"
+        />
+        <SelectItemText
+          id="beta"
+          title="Beta"
+          description="Preview upcoming features"
+        />
+      </Select>
+      <Select
+        size={size}
+        label="Icon, title, and description items"
+        placeholder="Select a deployment target"
+        style={{ width: '100%' }}
+      >
+        <SelectItemText
+          id="production-cloud"
+          title="Production cloud"
+          description="Runs production workloads"
+          leadingIcon={<RiCloudLine />}
+        />
+        <SelectItemText
+          id="staging-cloud"
+          title="Staging cloud"
+          description="Runs pre-production workloads"
+          leadingIcon={<RiCloudLine />}
+        />
+      </Select>
+      <Select
+        size={size}
+        label="Profile items"
+        placeholder="Select an owner"
+        style={{ width: '100%' }}
+      >
+        <SelectItemProfile
+          id="ada"
+          name="Ada Lovelace"
+          src="https://avatars.githubusercontent.com/u/1540635?v=4"
+        />
+        <SelectItemProfile id="grace" name="Grace Hopper" />
+      </Select>
+      <Select
+        size={size}
+        label="Custom items"
+        placeholder="Select a custom item"
+        style={{ width: '100%' }}
+      >
+        <SelectItem id="nightly" textValue="Nightly builds">
+          {({ isSelected }) => (
+            <Flex align="center" justify="between" gap="2">
+              <Box style={{ flex: 1 }}>
+                <Text as="div" weight="bold">
+                  Nightly builds
+                </Text>
+                <Text as="div" variant="body-small" color="secondary">
+                  Updated every night
+                </Text>
+              </Box>
+              {isSelected && <RiCheckLine aria-label="Selected" />}
+            </Flex>
+          )}
+        </SelectItem>
+        <SelectItem id="canary" textValue="Canary builds">
+          {({ isSelected }) => (
+            <Flex align="center" justify="between" gap="2">
+              <Box style={{ flex: 1 }}>
+                <Text as="div" weight="bold">
+                  Canary builds
+                </Text>
+                <Text as="div" variant="body-small" color="secondary">
+                  Updated after every merge
+                </Text>
+              </Box>
+              {isSelected && <RiCheckLine aria-label="Selected" />}
+            </Flex>
+          )}
+        </SelectItem>
+      </Select>
+    </Flex>
+  );
+}
+
+export const ItemTypes = meta.story({
+  render: () => (
+    <Flex align="start" gap="6">
+      <SelectItemTypesColumn size="small" />
+      <SelectItemTypesColumn size="medium" />
+    </Flex>
+  ),
+});
+
+export const ClientSearchShorthand = meta.story({
+  args: {
+    label: 'Country',
+    search: true,
+    options: countries,
+  },
+});
+
+type ServerOwner = {
+  id: string;
+  name: string;
+  role: string;
+};
+
+const serverOwners: ServerOwner[] = [
+  { id: 'ada', name: 'Ada Lovelace', role: 'Software Engineer' },
+  { id: 'grace', name: 'Grace Hopper', role: 'Computer Scientist' },
+  { id: 'margaret', name: 'Margaret Hamilton', role: 'Software Engineer' },
+  { id: 'katherine', name: 'Katherine Johnson', role: 'Mathematician' },
+  { id: 'annie', name: 'Annie Easley', role: 'Computer Scientist' },
+  { id: 'mary', name: 'Mary Jackson', role: 'Aerospace Engineer' },
+  { id: 'dorothy', name: 'Dorothy Vaughan', role: 'Mathematician' },
+  { id: 'radia', name: 'Radia Perlman', role: 'Network Engineer' },
+  { id: 'barbara', name: 'Barbara Liskov', role: 'Computer Scientist' },
+  { id: 'frances', name: 'Frances Allen', role: 'Computer Scientist' },
+  { id: 'evelyn', name: 'Evelyn Boyd Granville', role: 'Mathematician' },
+  {
+    id: 'mary-keller',
+    name: 'Mary Kenneth Keller',
+    role: 'Computer Scientist',
+  },
+  { id: 'hedy', name: 'Hedy Lamarr', role: 'Inventor' },
+  { id: 'joan', name: 'Joan Clarke', role: 'Cryptanalyst' },
+  { id: 'mary-ross', name: 'Mary Golda Ross', role: 'Aerospace Engineer' },
+  { id: 'ellen', name: 'Ellen Ochoa', role: 'Aerospace Engineer' },
+  { id: 'rebecca', name: 'Rebecca Lee Crumpler', role: 'Physician' },
+  { id: 'chiyome', name: 'Chiyome Fukino', role: 'Physician' },
+  { id: 'susan', name: 'Susan Kare', role: 'Designer' },
+  { id: 'mary-coombs', name: 'Mary Coombs', role: 'Programmer' },
+];
+
+const serverOptions = serverOwners.map(owner => ({
+  id: owner.id,
+  label: owner.name,
+}));
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const serverDelay = 1_500;
+const serverPageSize = 5;
+
+function ConstrainedSelectList({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <style>{`.bui-SelectList { max-height: 9rem; }`}</style>
+      {children}
+    </>
+  );
+}
+
+function ServerBackedSelect() {
+  const list = useAsyncList({
+    async load({ cursor, filterText }) {
+      await wait(serverDelay);
+
+      const query = filterText.toLocaleLowerCase();
+      const filteredOptions = serverOptions.filter(option =>
+        option.label.toLocaleLowerCase().includes(query),
+      );
+      const startIndex = cursor ? Number(cursor) : 0;
+      const endIndex = startIndex + serverPageSize;
+
+      return {
+        items: filteredOptions.slice(startIndex, endIndex),
+        cursor:
+          endIndex < filteredOptions.length ? String(endIndex) : undefined,
+      };
+    },
+  });
+
+  return (
+    <ConstrainedSelectList>
+      <Select
+        label="Owner"
+        placeholder="Select an owner"
+        options={list}
+        search={{ mode: 'server', placeholder: 'Search owners...' }}
+        style={{ width: 300 }}
+      />
+    </ConstrainedSelectList>
+  );
+}
+
+export const ServerBackedOptions = meta.story({
+  render: () => <ServerBackedSelect />,
+});
+
+function ServerBackedCustomSelect() {
+  const list = useAsyncList<ServerOwner>({
+    async load({ cursor, filterText }) {
+      await wait(serverDelay);
+
+      const query = filterText.toLocaleLowerCase();
+      const filteredOwners = serverOwners.filter(owner =>
+        `${owner.name} ${owner.role}`.toLocaleLowerCase().includes(query),
+      );
+      const startIndex = cursor ? Number(cursor) : 0;
+      const endIndex = startIndex + serverPageSize;
+
+      return {
+        items: filteredOwners.slice(startIndex, endIndex),
+        cursor: endIndex < filteredOwners.length ? String(endIndex) : undefined,
+      };
+    },
+  });
+
+  return (
+    <ConstrainedSelectList>
+      <Select
+        label="Owner"
+        placeholder="Select an owner"
+        items={list}
+        search={{ mode: 'server', placeholder: 'Search names and roles...' }}
+        style={{ width: 300 }}
+      >
+        {owner => (
+          <SelectItem textValue={owner.name}>
+            <Text as="div" weight="bold">
+              {owner.name}
+            </Text>
+            <Text as="div" variant="body-small" color="secondary">
+              {owner.role}
+            </Text>
+          </SelectItem>
+        )}
+      </Select>
+    </ConstrainedSelectList>
+  );
+}
+
+export const ServerBackedCustomItems = meta.story({
+  render: () => <ServerBackedCustomSelect />,
 });
 
 export const MultipleSelection = meta.story({
@@ -87,10 +363,10 @@ export const MultipleSelection = meta.story({
     label: 'Select multiple options',
     selectionMode: 'multiple',
     options: [
-      { value: 'option1', label: 'Option 1' },
-      { value: 'option2', label: 'Option 2' },
-      { value: 'option3', label: 'Option 3' },
-      { value: 'option4', label: 'Option 4' },
+      { id: 'option1', label: 'Option 1' },
+      { id: 'option2', label: 'Option 2' },
+      { id: 'option3', label: 'Option 3' },
+      { id: 'option4', label: 'Option 4' },
     ],
   },
 });
@@ -98,9 +374,8 @@ export const MultipleSelection = meta.story({
 export const SearchableMultiple = meta.story({
   args: {
     label: 'Skills',
-    searchable: true,
+    search: { placeholder: 'Filter skills...' },
     selectionMode: 'multiple',
-    searchPlaceholder: 'Filter skills...',
     options: skills,
   },
 });
@@ -109,25 +384,25 @@ const sectionedOptions = [
   {
     title: 'Serif Fonts',
     options: [
-      { value: 'times', label: 'Times New Roman' },
-      { value: 'georgia', label: 'Georgia' },
-      { value: 'garamond', label: 'Garamond' },
+      { id: 'times', label: 'Times New Roman' },
+      { id: 'georgia', label: 'Georgia' },
+      { id: 'garamond', label: 'Garamond' },
     ],
   },
   {
     title: 'Sans-Serif Fonts',
     options: [
-      { value: 'arial', label: 'Arial' },
-      { value: 'helvetica', label: 'Helvetica' },
-      { value: 'verdana', label: 'Verdana' },
+      { id: 'arial', label: 'Arial' },
+      { id: 'helvetica', label: 'Helvetica' },
+      { id: 'verdana', label: 'Verdana' },
     ],
   },
   {
     title: 'Monospace Fonts',
     options: [
-      { value: 'courier', label: 'Courier New' },
-      { value: 'consolas', label: 'Consolas' },
-      { value: 'fira', label: 'Fira Code' },
+      { id: 'courier', label: 'Courier New' },
+      { id: 'consolas', label: 'Consolas' },
+      { id: 'fira', label: 'Fira Code' },
     ],
   },
 ];
@@ -143,8 +418,7 @@ export const WithSections = meta.story({
 export const SearchableWithSections = meta.story({
   args: {
     label: 'Font Family',
-    searchable: true,
-    searchPlaceholder: 'Search fonts...',
+    search: { placeholder: 'Search fonts...' },
     options: sectionedOptions,
     name: 'font',
   },
@@ -232,15 +506,14 @@ export const NoOptions = meta.story({
 export const WithValue = meta.story({
   args: {
     ...Preview.input.args,
-    selectedKey: 'mono',
-    defaultSelectedKey: 'serif',
+    value: 'mono',
   },
 });
 
 export const WithDefaultValue = meta.story({
   args: {
     ...Preview.input.args,
-    defaultSelectedKey: 'serif',
+    defaultValue: 'serif',
     options: fontOptions,
     name: 'font',
   },
@@ -363,7 +636,7 @@ const generateOptions = (count = 100) => {
     .values();
 
   return Array.from(uniqueRandomNames).map(label => ({
-    value: label.toLocaleLowerCase('en-US').replaceAll(' ', '-'),
+    id: label.toLocaleLowerCase('en-US').replaceAll(' ', '-'),
     label,
   }));
 };
@@ -393,27 +666,27 @@ export const WithLongNames = meta.story({
     label: 'Document Template',
     options: [
       {
-        value: 'annual-report-2024',
+        id: 'annual-report-2024',
         label:
           'Annual Financial Report and Strategic Planning Document for Fiscal Year 2024 with Comprehensive Analysis of Market Trends, Competitive Landscape, Financial Performance Metrics, Revenue Projections, Cost Optimization Strategies, Risk Assessment, and Long-term Growth Initiatives Across All Business Units and Geographical Regions',
       },
       {
-        value: 'product-roadmap',
+        id: 'product-roadmap',
         label:
           'Comprehensive Product Development Roadmap and Feature Implementation Timeline Including Detailed Technical Specifications, Resource Allocation Plans, Cross-functional Team Dependencies, Milestone Tracking, Quality Assurance Procedures, User Acceptance Testing Protocols, and Post-launch Support Strategy for All Product Lines and Service Offerings',
       },
       {
-        value: 'user-guide',
+        id: 'user-guide',
         label:
           'Detailed User Guide and Technical Documentation for Advanced System Features Covering Installation Procedures, Configuration Settings, Security Protocols, Troubleshooting Guidelines, Best Practices, Common Use Cases, Performance Optimization Tips, Integration Methods, API Documentation, and Frequently Asked Questions with Step-by-Step Solutions',
       },
       {
-        value: 'marketing-plan',
+        id: 'marketing-plan',
         label:
           'Integrated Marketing Strategy and Campaign Planning Document for Q3 2024 Encompassing Target Audience Analysis, Channel Selection Criteria, Budget Allocation Framework, Creative Development Process, Content Calendar, Social Media Strategy, Email Marketing Campaigns, SEO Optimization, Paid Advertising Plans, and ROI Measurement Methodology',
       },
       {
-        value: 'research-paper',
+        id: 'research-paper',
         label:
           'Scientific Research Paper on Advanced Machine Learning Techniques and Applications Including Literature Review, Methodology Description, Experimental Setup, Data Collection Procedures, Analysis Techniques, Results Interpretation, Comparative Studies, Limitations Discussion, Future Research Directions, and Practical Implementation Guidelines',
       },
@@ -421,7 +694,7 @@ export const WithLongNames = meta.story({
     placeholder: 'Select a document template',
     name: 'template',
     style: { maxWidth: 400 },
-    defaultSelectedKey: 'annual-report-2024',
+    defaultValue: 'annual-report-2024',
   },
 });
 

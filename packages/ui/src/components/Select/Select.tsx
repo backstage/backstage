@@ -15,26 +15,89 @@
  */
 
 import { forwardRef, useEffect } from 'react';
-import { Select as AriaSelect, Popover } from 'react-aria-components';
-import { SelectProps } from './types';
+import { Select as AriaSelect } from 'react-aria-components';
+import type {
+  CollectionItem,
+  NormalizedOption,
+} from '../../types/selectableCollection';
+import type { Key } from 'react-aria-components';
+import type { ChangeValueType } from 'react-stately/useSelectState';
+import type { SelectContentOwnProps, SelectProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SelectDefinition } from './definition';
-import { PopoverDefinition } from '../Popover/definition';
-import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
+import { Popover } from '../Popover';
 import { SelectTrigger } from './SelectTrigger';
 import { SelectContent } from './SelectContent';
+import {
+  useCollectionAdapter,
+  type CollectionAdapterResult,
+} from '../../hooks/useCollectionAdapter';
+import { useTrackedSelectionKeys } from '../../hooks/useTrackedSelectionKeys';
+import {
+  getItemKeys,
+  resolveCollectionSource,
+  toSelection,
+} from '../../utils/selectableCollection';
+
+function resolveSelectSearch<T extends CollectionItem>({
+  search,
+  searchable,
+  searchPlaceholder,
+}: {
+  search?: SelectContentOwnProps<T>['search'];
+  searchable?: boolean;
+  searchPlaceholder?: string;
+}): SelectContentOwnProps<T>['search'] {
+  if (search !== undefined) {
+    return search;
+  }
+
+  if (searchable) {
+    return { placeholder: searchPlaceholder };
+  }
+
+  return undefined;
+}
+
+function resolveContentSearch<T extends CollectionItem>(
+  search: SelectContentOwnProps<T>['search'],
+  collection: CollectionAdapterResult<T>,
+): SelectContentOwnProps<T>['search'] {
+  if (typeof search !== 'object') {
+    return search;
+  }
+
+  return {
+    ...search,
+    inputValue: collection.inputValue,
+    defaultInputValue: collection.defaultInputValue,
+    onInputChange: collection.onInputChange,
+  } as SelectContentOwnProps<T>['search'];
+}
+
+function getRetainedOptions<T extends CollectionItem>(
+  flatOptions: NormalizedOption[] | undefined,
+  canonicalItems: T[],
+) {
+  if (!flatOptions) {
+    return undefined;
+  }
+
+  const sourceIds = getItemKeys(flatOptions);
+  return canonicalItems.filter(item => !sourceIds.has(item.id));
+}
 
 /**
  * A dropdown picker for selecting one or multiple options from a list, with optional search filtering and inline error display.
  *
  * @public
  */
-export const Select = forwardRef<
-  HTMLDivElement,
-  SelectProps<'single' | 'multiple'>
->((props, ref) => {
+function SelectImpl<
+  M extends 'single' | 'multiple' = 'single' | 'multiple',
+  T extends CollectionItem = NormalizedOption,
+>(props: SelectProps<M, T>, ref: React.ForwardedRef<HTMLDivElement>) {
   const { ownProps, restProps, dataAttributes } = useDefinition(
     SelectDefinition,
     {
@@ -42,7 +105,6 @@ export const Select = forwardRef<
       ...props,
     },
   );
-  const { ownProps: popoverOwnProps } = useDefinition(PopoverDefinition, {});
 
   const {
     classes,
@@ -52,6 +114,11 @@ export const Select = forwardRef<
     icon,
     searchable,
     searchPlaceholder,
+    search,
+    loading,
+    items,
+    children,
+    dependencies,
     isRequired,
     secondaryLabel,
   } = ownProps;
@@ -68,6 +135,41 @@ export const Select = forwardRef<
   }, [label, ariaLabel, ariaLabelledBy]);
 
   const secondaryLabelText = secondaryLabel || (isRequired ? 'Required' : null);
+  const resolvedSearch = resolveSelectSearch<T>({
+    search: search as SelectContentOwnProps<T>['search'],
+    searchable,
+    searchPlaceholder,
+  });
+  const collectionSource = resolveCollectionSource<T>({ options, items });
+  const controlledValue =
+    restProps.value !== undefined ? restProps.value : restProps.selectedKey;
+  const defaultValue =
+    restProps.defaultValue !== undefined
+      ? restProps.defaultValue
+      : restProps.defaultSelectedKey;
+  const trackedSelection = useTrackedSelectionKeys({
+    selectedKeys:
+      controlledValue === undefined ? undefined : toSelection(controlledValue),
+    defaultSelectedKeys: toSelection(defaultValue),
+  });
+  const collection = useCollectionAdapter({
+    items: collectionSource.source,
+    selectedKeys: trackedSelection.selectedKeys,
+    search: resolvedSearch,
+    loading,
+  });
+  const retainedOptions = getRetainedOptions(
+    collectionSource.flatOptions,
+    collection.canonicalItems,
+  );
+  const renderedItems = collectionSource.rendersItems
+    ? collection.canonicalItems
+    : undefined;
+  const contentSearch = resolveContentSearch(resolvedSearch, collection);
+  const handleChange = (value: ChangeValueType<M>) => {
+    trackedSelection.onSelectionChange(toSelection(value));
+    restProps.onChange?.(value);
+  };
 
   return (
     <AriaSelect
@@ -75,6 +177,8 @@ export const Select = forwardRef<
       {...dataAttributes}
       ref={ref}
       {...restProps}
+      onChange={handleChange}
+      allowsEmptyCollection
     >
       <FieldLabel
         label={label}
@@ -84,18 +188,35 @@ export const Select = forwardRef<
       />
       <SelectTrigger icon={icon} />
       <FieldError />
-      <Popover
-        className={clsx(popoverOwnProps.classes.root, classes.popover)}
-        {...dataAttributes}
-      >
+      <Popover className={classes.popover} hideArrow {...dataAttributes}>
         <SelectContent
-          searchable={searchable}
-          searchPlaceholder={searchPlaceholder}
-          options={options}
-        />
+          search={contentSearch}
+          options={collectionSource.options}
+          items={renderedItems}
+          dependencies={dependencies}
+          loading={collection.loading}
+          isStale={collection.isStale}
+          visibleIds={collection.visibleIds}
+          retainedOptions={
+            retainedOptions as unknown as ReadonlyArray<NormalizedOption>
+          }
+        >
+          {children}
+        </SelectContent>
       </Popover>
     </AriaSelect>
   );
-});
+}
+
+/** @public */
+export const Select = forwardRef(SelectImpl) as {
+  <
+    M extends 'single' | 'multiple' = 'single' | 'multiple',
+    T extends { id: Key } = NormalizedOption,
+  >(
+    props: SelectProps<M, T> & React.RefAttributes<HTMLDivElement>,
+  ): React.ReactElement | null;
+  displayName?: string;
+};
 
 Select.displayName = 'Select';

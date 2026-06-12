@@ -33,7 +33,7 @@ Commands:
 ### `backstage-cli-module-maintenance repo fix`
 
 ```
-Usage: @backstage/cli-module-maintenance repo fix
+Usage: @backstage/cli-module-maintenance repo fix [flags...]
 
 Options:
   --check
@@ -44,7 +44,7 @@ Options:
 ### `backstage-cli-module-maintenance repo list-deprecations`
 
 ```
-Usage: @backstage/cli-module-maintenance repo list-deprecations
+Usage: @backstage/cli-module-maintenance repo list-deprecations [flags...]
 
 Options:
   --json

@@ -37,7 +37,7 @@ Commands:
 ### `backstage-cli-module-auth auth list`
 
 ```
-Usage: @backstage/cli-module-auth auth list
+Usage: @backstage/cli-module-auth auth list [flags...]
 
 Options:
   -h, --help
@@ -46,7 +46,7 @@ Options:
 ### `backstage-cli-module-auth auth login`
 
 ```
-Usage: @backstage/cli-module-auth auth login
+Usage: @backstage/cli-module-auth auth login [flags...]
 
 Options:
   --backend-url <string>
@@ -58,7 +58,7 @@ Options:
 ### `backstage-cli-module-auth auth logout`
 
 ```
-Usage: @backstage/cli-module-auth auth logout
+Usage: @backstage/cli-module-auth auth logout [flags...]
 
 Options:
   --instance <string>
@@ -68,7 +68,7 @@ Options:
 ### `backstage-cli-module-auth auth print-token`
 
 ```
-Usage: @backstage/cli-module-auth auth print-token
+Usage: @backstage/cli-module-auth auth print-token [flags...]
 
 Options:
   --instance <string>
@@ -78,7 +78,7 @@ Options:
 ### `backstage-cli-module-auth auth select`
 
 ```
-Usage: @backstage/cli-module-auth auth select
+Usage: @backstage/cli-module-auth auth select [flags...]
 
 Options:
   --instance <string>
@@ -88,7 +88,7 @@ Options:
 ### `backstage-cli-module-auth auth show`
 
 ```
-Usage: @backstage/cli-module-auth auth show
+Usage: @backstage/cli-module-auth auth show [flags...]
 
 Options:
   --instance <string>

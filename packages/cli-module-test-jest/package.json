@@ -38,7 +38,7 @@
     "@backstage/cli-node": "workspace:^",
     "@swc/core": "^1.15.6",
     "@swc/jest": "^0.2.39",
-    "cleye": "^2.3.0",
+    "cleye": "^2.6.0",
     "cross-fetch": "^4.0.0",
     "fs-extra": "^11.2.0",
     "glob": "^13.0.0",

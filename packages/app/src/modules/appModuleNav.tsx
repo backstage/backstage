@@ -15,7 +15,6 @@
  */
 
 import {
-  Link,
   Sidebar,
   sidebarConfig,
   SidebarDivider,
@@ -25,6 +24,7 @@ import {
   SidebarSpace,
   useSidebarOpenState,
 } from '@backstage/core-components';
+import { Link } from 'react-router-dom';
 import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
@@ -46,6 +46,7 @@ const useSidebarLogoStyles = makeStyles({
   link: {
     width: sidebarConfig.drawerWidthClosed,
     marginLeft: 24,
+    textDecoration: 'none',
   },
 });
 
@@ -55,7 +56,7 @@ const SidebarLogo = () => {
 
   return (
     <div className={classes.root}>
-      <Link to="/" underline="none" className={classes.link} aria-label="Home">
+      <Link to="/" className={classes.link} aria-label="Home">
         {isOpen ? (
           <svg
             style={{

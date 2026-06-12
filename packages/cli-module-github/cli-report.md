@@ -19,7 +19,7 @@ Commands:
 ### `backstage-cli-module-github create-github-app`
 
 ```
-Usage: @backstage/cli-module-github create-github-app <github-org>
+Usage: @backstage/cli-module-github create-github-app [flags...] <github-org>
 
 Options:
   -h, --help

@@ -146,7 +146,7 @@ export default async ({ args, info }: CliCommandContext) => {
   // args so they can be forwarded to Jest.
   const { flags: opts } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         since: {

@@ -16,15 +16,22 @@
 
 import { forwardRef } from 'react';
 import { Combobox } from '@backstage/ui';
-import type { ComboboxProps } from '@backstage/ui';
+import type { ComboboxProps, Option, OptionSection } from '@backstage/ui';
 
-export interface AutocompleteProps extends ComboboxProps {
+export type AutocompleteProps = Extract<
+  ComboboxProps,
+  {
+    options?: ReadonlyArray<Option | OptionSection>;
+    items?: never;
+    children?: never;
+  }
+> & {
   /**
    * Whether the autocomplete is currently loading options.
    * When true, displays a loading indicator in the dropdown.
    */
   isLoading?: boolean;
-}
+};
 
 /**
  * Thin wrapper around the BUI `Combobox` that adds an `isLoading` indicator and
