@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useContext, useMemo } from 'react';
 import { Switch as AriaSwitch } from 'react-aria-components';
 import type { SwitchProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SwitchDefinition } from './definition';
+import { SwitchGroupStateContext } from '../SwitchGroup/context';
 
 /**
  * A toggle control for switching between on and off states, with an optional visible label.
@@ -33,12 +34,32 @@ export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
     );
     const { classes, label } = ownProps;
 
+    const groupState = useContext(SwitchGroupStateContext);
+
+    const switchProps = useMemo(() => {
+      if (!groupState || !restProps.value) {
+        return restProps;
+      }
+
+      const value = restProps.value;
+      return {
+        ...restProps,
+        isSelected: groupState.isSelected(value),
+        onChange(isSelected: boolean) {
+          groupState.toggleValue(value);
+          restProps.onChange?.(isSelected);
+        },
+        isDisabled: restProps.isDisabled || groupState.isDisabled,
+        isReadOnly: restProps.isReadOnly || groupState.isReadOnly,
+      };
+    }, [groupState, restProps]);
+
     return (
       <AriaSwitch
         className={classes.root}
         ref={ref}
         {...dataAttributes}
-        {...restProps}
+        {...switchProps}
       >
         <div className={classes.indicator} />
         {label}

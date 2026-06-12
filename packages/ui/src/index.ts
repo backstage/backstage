@@ -65,6 +65,7 @@ export * from './components/List';
 export * from './components/Select';
 export * from './components/Skeleton';
 export * from './components/Switch';
+export * from './components/SwitchGroup';
 export * from './components/ToggleButton';
 export * from './components/ToggleButtonGroup';
 export * from './components/VisuallyHidden';

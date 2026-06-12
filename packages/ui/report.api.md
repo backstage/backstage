@@ -3981,6 +3981,47 @@ export const SwitchDefinition: {
   };
 };
 
+// @public
+export const SwitchGroup: ForwardRefExoticComponent<
+  SwitchGroupProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const SwitchGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SwitchGroup';
+    readonly content: 'bui-SwitchGroupContent';
+  };
+  readonly propDefs: {
+    readonly className: {};
+    readonly children: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
+    readonly orientation: {};
+  };
+};
+
+// @public
+export type SwitchGroupOwnProps = {
+  className?: string;
+  children?: ReactNode;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: CheckboxGroupProps_2['isRequired'];
+  orientation?: 'horizontal' | 'vertical';
+};
+
+// @public
+export interface SwitchGroupProps
+  extends Omit<CheckboxGroupProps_2, keyof SwitchGroupOwnProps>,
+    SwitchGroupOwnProps {}
+
 // @public (undocumented)
 export type SwitchOwnProps = {
   label?: string;
