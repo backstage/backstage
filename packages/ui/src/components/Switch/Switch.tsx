@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useContext, useMemo } from 'react';
+import { forwardRef, useContext } from 'react';
 import { Switch as AriaSwitch } from 'react-aria-components';
 import type { SwitchProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
@@ -36,13 +36,10 @@ export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
 
     const groupState = useContext(SwitchGroupStateContext);
 
-    const switchProps = useMemo(() => {
-      if (!groupState || !restProps.value) {
-        return restProps;
-      }
-
+    let switchProps = restProps;
+    if (groupState && restProps.value != null) {
       const value = restProps.value;
-      return {
+      switchProps = {
         ...restProps,
         isSelected: groupState.isSelected(value),
         onChange(isSelected: boolean) {
@@ -52,7 +49,7 @@ export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
         isDisabled: restProps.isDisabled || groupState.isDisabled,
         isReadOnly: restProps.isReadOnly || groupState.isReadOnly,
       };
-    }, [groupState, restProps]);
+    }
 
     return (
       <AriaSwitch
