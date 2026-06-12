@@ -17,6 +17,9 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/cli-common"
   },
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
