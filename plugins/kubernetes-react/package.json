@@ -21,6 +21,10 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/kubernetes-react"
   },
+  "homepage": "https://github.com/backstage/backstage/tree/master/plugins/kubernetes-react#readme",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "license": "Apache-2.0",
   "sideEffects": false,
   "exports": {

@@ -20,6 +20,9 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/config"
   },
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "license": "Apache-2.0",
   "sideEffects": false,
   "main": "src/index.ts",

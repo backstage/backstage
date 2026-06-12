@@ -17,6 +17,9 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/backend-plugin-api"
   },
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
