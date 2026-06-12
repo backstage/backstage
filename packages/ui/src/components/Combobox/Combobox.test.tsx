@@ -378,6 +378,30 @@ describe('Combobox', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('supports client search with plain options', () => {
+    renderCombobox(
+      <Combobox
+        aria-label="Status"
+        options={[
+          { id: 'draft', label: 'Draft' },
+          { id: 'published', label: 'Published' },
+        ]}
+        search
+      />,
+    );
+
+    const input = screen.getByRole('combobox');
+    openCombobox();
+    fireEvent.change(input, {
+      target: { value: 'aft' },
+    });
+
+    expect(screen.getByRole('option', { name: 'Draft' })).toBeVisible();
+    expect(
+      screen.queryByRole('option', { name: 'Published' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('applies a nested custom client filter to full domain rows', () => {
     const filter = jest.fn((owner: Owner, query: string) =>
       owner.email.includes(query),

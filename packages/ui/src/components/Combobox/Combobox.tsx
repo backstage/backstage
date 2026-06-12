@@ -178,6 +178,11 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
   const renderedItems = collectionSource.rendersItems
     ? collection.canonicalItems
     : undefined;
+  const rootItems =
+    renderedItems ??
+    (collectionSource.options !== undefined && search !== undefined
+      ? collection.canonicalItems
+      : undefined);
   const searchProps = typeof search === 'object' ? search : undefined;
   const isDirectAsyncServer =
     searchProps?.mode === 'server' &&
@@ -226,7 +231,7 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
     <AriaComboBox<T>
       className={classes.root}
       defaultFilter={defaultFilter}
-      items={renderedItems}
+      items={rootItems}
       {...dataAttributes}
       ref={ref}
       {...ariaProps}

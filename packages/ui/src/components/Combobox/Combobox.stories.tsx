@@ -96,6 +96,16 @@ export const Default = meta.story({
   },
 });
 
+export const WithClientSearch = meta.story({
+  args: {
+    label: 'Country',
+    options: countries,
+    placeholder: 'Search countries',
+    search: true,
+    name: 'country',
+  },
+});
+
 export const WithIcon = meta.story({
   args: {
     ...Default.input.args,
