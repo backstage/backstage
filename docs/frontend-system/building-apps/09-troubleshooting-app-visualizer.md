@@ -1,6 +1,6 @@
 ---
-id: troubleshooting-app-visualizer
-title: Install Troubleshooting app-visualizer Plugin
+id: troubleshooting-visualizer
+title: Install Troubleshooting Visualizer Plugin
 sidebar_label: Troubleshooting Plugin Visualizer
 description: How to install the plugin visualizer in the frontend system
 ---
@@ -9,9 +9,11 @@ description: How to install the plugin visualizer in the frontend system
 
 This section describes how to install the `app-visualizer` plugin in the frontend system. It also describes which views are available.
 
-### App Visualizer Plugin
+### Visualizer Plugin
 
-The `app-visualizer` plugin can help your troubleshooting. It provides a visual overview of your app's extension tree, making it easy to verify that plugins are installed correctly, see how extensions are wired together, and identify issues during migration.
+The `app-visualizer` plugin can help with troubleshooting. It provides a visual overview of your app's extension tree, making it easy to verify that plugins are installed correctly, see how extensions are wired together, and identify issues during migration.
+
+It can only be installed starting with release 1.49.0
 
 #### Installation
 
@@ -25,7 +27,7 @@ When integrated into your app, the plugin provides the `/visualizer` route. Depe
 
 #### Available Views
 
-The app visualizer provides three views, each accessible via tabs at the top of the page:
+The `app-visualizer` provides three views, each accessible via tabs at the top of the page:
 
 - **Tree** — Displays the full extension tree as an interactive hierarchy. Each node represents an extension, showing its ID, the plugin it belongs to, and whether it is enabled or disabled. This is the most useful view during migration, as it lets you verify which plugins are being automatically detected and which legacy extensions have been converted. Expand nodes to see child extensions and their configuration.
 
