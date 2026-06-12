@@ -12,7 +12,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/backend-openapi-utils"
+    "directory": "packages/backend-openapi-utils",
+    "bugs": "https://github.com/backstage/backstage/issues"
   },
   "license": "Apache-2.0",
   "exports": {
