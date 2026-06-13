@@ -1,6 +1,9 @@
 {
   "name": "@backstage/backend-plugin-api",
   "version": "1.9.2-next.1",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "description": "Core API used by Backstage backend plugins",
   "backstage": {
     "role": "node-library"
