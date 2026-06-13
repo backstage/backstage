@@ -1,6 +1,9 @@
 {
   "name": "root",
   "version": "1.52.0-next.2",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "backstage": {
     "cli": {
       "new": {
