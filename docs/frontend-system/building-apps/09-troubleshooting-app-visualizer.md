@@ -1,6 +1,6 @@
 ---
 id: troubleshooting-visualizer
-title: Install Troubleshooting Visualizer Plugin
+title: Install Troubleshooting Plugin Visualizer
 sidebar_label: Troubleshooting Plugin Visualizer
 description: How to install the plugin visualizer in the frontend system for troubleshooting
 ---
