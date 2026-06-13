@@ -36,7 +36,7 @@ Staying in hybrid mode for too long is not recommended. Support for the legacy v
 
 :::tip
 
-We'd recommend that you install the `app-visualizer` plugin to help with troubleshooting. See [troubleshooting app visualizer](./troubleshooting-visualizer). Chapter [Troubleshooting](#troubleshooting) gives details on how to use it during migration.
+We'd recommend that you install the `app-visualizer` plugin to help with troubleshooting. See [troubleshooting app-visualizer](./09-troubleshooting-app-visualizer). Chapter [Troubleshooting](#troubleshooting) gives details on how to use it during migration.
 
 :::
 
@@ -922,7 +922,7 @@ The `yarn new` command now defaults to the new frontend system templates for fro
 
 We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting.
 
-For installation instructions, please read [troubleshooting app visualizer](./troubleshooting-visualizer).
+For installation instructions, please read [troubleshooting app visualizer](./09-troubleshooting-app-visualizer).
 
 #### Using the Visualizer During Migration
 
