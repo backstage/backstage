@@ -1,6 +1,9 @@
 {
   "name": "@backstage/cli-common",
   "version": "0.2.2",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "description": "Common functionality used by cli, backend, and create-app",
   "backstage": {
     "role": "node-library"
