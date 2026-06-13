@@ -1,6 +1,9 @@
 {
   "name": "@backstage/backend-openapi-utils",
   "version": "0.6.10-next.0",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "description": "OpenAPI typescript support.",
   "backstage": {
     "role": "node-library"
