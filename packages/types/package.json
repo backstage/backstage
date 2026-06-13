@@ -1,6 +1,9 @@
 {
   "name": "@backstage/types",
   "version": "1.2.2",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "description": "Common TypeScript types used within Backstage",
   "backstage": {
     "role": "common-library"
