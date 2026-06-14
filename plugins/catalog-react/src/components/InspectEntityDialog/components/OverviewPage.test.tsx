@@ -15,7 +15,7 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { entityRouteRef } from '../../../routes';
 import { OverviewPage } from './OverviewPage';
 
@@ -124,17 +124,27 @@ describe('OverviewPage', () => {
       mountedRoutes,
     });
 
-    const terms = screen.getAllByRole('term').map(el => el.textContent);
-    expect(terms).toContain('my-custom-annotation');
-    expect(terms).toContain('bigint-annotation');
-    expect(terms).toContain('numeric-label');
-
-    // Non-string values must still surface to the user, not silently disappear.
-    const definitions = screen
+    // Scope assertions to the specific Annotations/Labels lists so unrelated
+    // sections with matching text can't produce false positives.
+    const annotations = within(screen.getByLabelText('Annotations'));
+    const annotationTerms = annotations
+      .getAllByRole('term')
+      .map(el => el.textContent);
+    const annotationValues = annotations
       .getAllByRole('definition')
       .map(el => el.textContent);
-    expect(definitions).toContain('null');
-    expect(definitions).toContain('42');
-    expect(definitions).toContain(String(bigintValue));
+    expect(annotationTerms).toContain('my-custom-annotation');
+    expect(annotationTerms).toContain('bigint-annotation');
+    // Non-string values must still surface to the user, not silently disappear.
+    expect(annotationValues).toContain('null');
+    expect(annotationValues).toContain(String(bigintValue));
+
+    const labels = within(screen.getByLabelText('Labels'));
+    const labelTerms = labels.getAllByRole('term').map(el => el.textContent);
+    const labelValues = labels
+      .getAllByRole('definition')
+      .map(el => el.textContent);
+    expect(labelTerms).toContain('numeric-label');
+    expect(labelValues).toContain('42');
   });
 });
