@@ -360,56 +360,77 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       ? this.options.orgs
       : await this.getAllOrgs(this.options.gitHubConfig);
 
+    let orgsSucceeded = 0;
+    let lastOrgError: unknown;
+
     for (const org of orgsToProcess) {
-      const { headers, type: tokenType } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${org}`,
+      try {
+        const { headers, type: tokenType } =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${org}`,
+          });
+        const client = graphql.defaults({
+          baseUrl: this.options.gitHubConfig.apiBaseUrl,
+          headers,
         });
-      const client = graphql.defaults({
-        baseUrl: this.options.gitHubConfig.apiBaseUrl,
-        headers,
-      });
 
-      logger.info(`Reading GitHub users and teams for org: ${org}`);
+        logger.info(`Reading GitHub users and teams for org: ${org}`);
 
-      const pageSizes = this.getPageSizes();
+        const pageSizes = this.getPageSizes();
 
-      const { users } = await getOrganizationUsers(
-        client,
-        org,
-        tokenType,
-        this.options.userTransformer,
-        pageSizes,
-        this.options.excludeSuspendedUsers,
-        this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
-      );
+        const { users } = await getOrganizationUsers(
+          client,
+          org,
+          tokenType,
+          this.options.userTransformer,
+          pageSizes,
+          this.options.excludeSuspendedUsers,
+          this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
+        );
 
-      const { teams } = await getOrganizationTeams(
-        client,
-        org,
-        this.defaultMultiOrgTeamTransformer.bind(this),
-        pageSizes,
-      );
+        const { teams } = await getOrganizationTeams(
+          client,
+          org,
+          this.defaultMultiOrgTeamTransformer.bind(this),
+          pageSizes,
+        );
 
-      // Grab current users from `allUsersMap` if they already exist in our
-      // pending users so we can append to their group membership relations
-      const pendingUsers = users.map(u => {
-        const userRef = stringifyEntityRef(u);
-        if (!allUsersMap.has(userRef)) {
-          allUsersMap.set(userRef, u);
+        // Grab current users from `allUsersMap` if they already exist in our
+        // pending users so we can append to their group membership relations
+        const pendingUsers = users.map(u => {
+          const userRef = stringifyEntityRef(u);
+          if (!allUsersMap.has(userRef)) {
+            allUsersMap.set(userRef, u);
+          }
+
+          return allUsersMap.get(userRef);
+        });
+
+        if (areGroupEntities(teams)) {
+          buildOrgHierarchy(teams);
+          if (areUserEntities(pendingUsers)) {
+            assignGroupsToUsers(pendingUsers, teams);
+          }
         }
 
-        return allUsersMap.get(userRef);
-      });
-
-      if (areGroupEntities(teams)) {
-        buildOrgHierarchy(teams);
-        if (areUserEntities(pendingUsers)) {
-          assignGroupsToUsers(pendingUsers, teams);
-        }
+        allTeams.push(...teams);
+        orgsSucceeded++;
+      } catch (e: unknown) {
+        lastOrgError = e;
+        const message = e instanceof Error ? e.message : String(e);
+        logger.warn(
+          `Failed to read GitHub users and teams for org: ${org}. ` +
+            `This can happen when the GitHub App is not installed for this organization. ` +
+            `Ensure the GitHub App is installed and has access to the org. ` +
+            `See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting`,
+          { org, error: message },
+        );
+        continue;
       }
+    }
 
-      allTeams.push(...teams);
+    if (orgsSucceeded === 0 && lastOrgError) {
+      throw lastOrgError;
     }
 
     const allUsers = Array.from(allUsersMap.values());
