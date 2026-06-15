@@ -239,23 +239,24 @@ export const createGitlabIssueAction = (options: {
         // which contains slashes, so encode it before using it in checkpoint keys.
         const projectRefKey = encodeURIComponent(String(projectRef));
 
-        let isEpicScoped = false;
-
-        isEpicScoped = await ctx.checkpoint({
+        const isEpicScoped = await ctx.checkpoint({
           key: `is.epic.scoped.${projectRefKey}.${title}`,
           fn: async () => {
-            if (epicId) {
-              isEpicScoped = await checkEpicScope(api, projectRef, epicId);
-
-              if (isEpicScoped) {
-                ctx.logger.info('Epic is within Project Scope');
-              } else {
-                ctx.logger.warn(
-                  'Chosen epic is not within the Project Scope. The issue will be created without an associated epic.',
-                );
-              }
+            if (!epicId) {
+              return false;
             }
-            return isEpicScoped;
+
+            const scoped = await checkEpicScope(api, projectRef, epicId);
+
+            if (scoped) {
+              ctx.logger.info('Epic is within Project Scope');
+            } else {
+              ctx.logger.warn(
+                'Chosen epic is not within the Project Scope. The issue will be created without an associated epic.',
+              );
+            }
+
+            return scoped;
           },
         });
 
