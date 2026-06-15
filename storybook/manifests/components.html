@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">53 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/53 infos</a><span class="filter-pill ok" aria-disabled="true">531 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">53 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/53 infos</a><span class="filter-pill ok" aria-disabled="true">532 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.4s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -4278,7 +4278,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
       <div class="badges">
         
         <label for="c-13-backstage-ui-combobox-info" class="badge info as-toggle">1 info</label>
-        <label for="c-13-backstage-ui-combobox-stories" class="badge ok as-toggle">22 stories</label>
+        <label for="c-13-backstage-ui-combobox-stories" class="badge ok as-toggle">23 stories</label>
         
         
       </div>
@@ -4344,6 +4344,21 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
     options={fontOptions}
     placeholder=&quot;Pick a font&quot;
     name=&quot;font&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Client Search</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithClientSearch = () =&gt; &lt;Combobox
+    style={{ width: 300 }}
+    label=&quot;Country&quot;
+    options={countries}
+    placeholder=&quot;Search countries&quot;
+    search
+    name=&quot;country&quot; /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
