@@ -262,6 +262,31 @@ describe('gitlab:issues:create', () => {
     );
   });
 
+  it('should normalize a digit-only projectId string to a number', async () => {
+    const mockContext = createMockActionContext({
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        projectId: '123',
+        title: 'Computer banks to rule the world',
+      },
+      workspacePath: 'seen2much',
+    });
+
+    mockGitlabClient.Issues.create.mockResolvedValue({
+      id: 42,
+      iid: 1,
+      web_url: 'https://gitlab.com/hangar18-/issues/42',
+    });
+
+    await action.handler({ ...mockContext });
+
+    expect(mockGitlabClient.Issues.create).toHaveBeenCalledWith(
+      123,
+      'Computer banks to rule the world',
+      expect.any(Object),
+    );
+  });
+
   it('should derive the project from a repoUrl that provides a full project path', async () => {
     const mockContext = createMockActionContext({
       input: {

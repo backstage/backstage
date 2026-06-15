@@ -31,6 +31,9 @@ import { getErrorMessage } from './helpers';
  * Resolves the GitLab project reference (numeric id or full path) used by the
  * GitLab client, preferring an explicit `projectId` and otherwise deriving it
  * from the parsed `repoUrl`.
+ *
+ * A digit-only `projectId` string (e.g. `"123"`) is normalized to a number so
+ * that numeric ids and full project paths are handled unambiguously.
  */
 function resolveProjectRef(options: {
   projectId?: string | number;
@@ -40,7 +43,9 @@ function resolveProjectRef(options: {
 }): string | number {
   const { projectId, project, owner, repo } = options;
   if (projectId !== undefined) {
-    return projectId;
+    return typeof projectId === 'string' && /^\d+$/.test(projectId)
+      ? Number(projectId)
+      : projectId;
   }
   if (project) {
     return project;
@@ -56,16 +61,18 @@ function resolveProjectRef(options: {
 
 /**
  * Builds a safe, bounded checkpoint key. `projectRef` may be a full project
- * path and `title` is free-form (slashes, newlines, arbitrary length), so both
- * are folded into a stable short hash to avoid collisions and oversized keys.
+ * path and `title` is free-form (slashes, newlines, arbitrary length), so the
+ * host, `projectRef` and `title` are folded into a stable short hash to avoid
+ * collisions (including across GitLab instances) and oversized keys.
  */
 function issueCheckpointKey(
   prefix: string,
+  host: string,
   projectRef: string | number,
   title: string,
 ): string {
   const digest = createHash('sha256')
-    .update(`${projectRef}\u0000${title}`)
+    .update(`${host}\u0000${projectRef}\u0000${title}`)
     .digest('hex');
   return `${prefix}.${digest}`;
 }
@@ -103,7 +110,9 @@ export const createGitlabIssueAction = (options: {
               z.string().trim().min(1, 'Project path must not be empty'),
             ])
             .describe(
-              'Project Id or full project path (e.g. `group/sub-group/project`). If omitted, the project is derived from `repoUrl`.',
+              'Project Id or full project path (e.g. `group/sub-group/project`). ' +
+                'A digit-only string is treated as a numeric id. ' +
+                'If omitted, the project is derived from `repoUrl`.',
             )
             .optional(),
         title: z =>
@@ -256,7 +265,7 @@ export const createGitlabIssueAction = (options: {
         // `projectRef` may be a full project path and `title` is free-form, so
         // derive a safe, bounded checkpoint key via a stable hash of both.
         const isEpicScoped = await ctx.checkpoint({
-          key: issueCheckpointKey('is.epic.scoped', projectRef, title),
+          key: issueCheckpointKey('is.epic.scoped', host, projectRef, title),
           fn: async () => {
             if (!epicId) {
               return false;
@@ -300,7 +309,7 @@ export const createGitlabIssueAction = (options: {
         };
 
         const response = await ctx.checkpoint({
-          key: issueCheckpointKey('issue', projectRef, title),
+          key: issueCheckpointKey('issue', host, projectRef, title),
           fn: async () => {
             const issue = (await api.Issues.create(
               projectRef,
