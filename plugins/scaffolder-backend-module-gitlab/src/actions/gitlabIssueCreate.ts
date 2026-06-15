@@ -16,6 +16,7 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { createHash } from 'node:crypto';
 import {
   createTemplateAction,
   parseRepoUrl,
@@ -48,8 +49,25 @@ function resolveProjectRef(options: {
     return `${owner}/${repo}`;
   }
   throw new InputError(
-    `Unable to determine the GitLab project. Provide \`projectId\` (numeric id or full project path), or a \`repoUrl\` that includes either a URL-encoded \`project=<full_path>\` (e.g. \`project=group%2Fsub-group%2Fproject\`) or both \`owner\` and \`repo\`.`,
+    'Unable to determine the GitLab project. Provide `projectId` (numeric id or full project path), ' +
+      'or a `repoUrl` with `owner` and `repo`, or a URL-encoded `project` (e.g. `project=group%2Fsub-group%2Fproject`).',
   );
+}
+
+/**
+ * Builds a safe, bounded checkpoint key. `projectRef` may be a full project
+ * path and `title` is free-form (slashes, newlines, arbitrary length), so both
+ * are folded into a stable short hash to avoid collisions and oversized keys.
+ */
+function issueCheckpointKey(
+  prefix: string,
+  projectRef: string | number,
+  title: string,
+): string {
+  const digest = createHash('sha256')
+    .update(`${projectRef}\u0000${title}`)
+    .digest('hex');
+  return `${prefix}.${digest}`;
 }
 
 /**
@@ -235,12 +253,10 @@ export const createGitlabIssueAction = (options: {
           repo,
         });
 
-        // `projectRef` can be a full project path (e.g. `group/sub-group/project`)
-        // which contains slashes, so encode it before using it in checkpoint keys.
-        const projectRefKey = encodeURIComponent(String(projectRef));
-
+        // `projectRef` may be a full project path and `title` is free-form, so
+        // derive a safe, bounded checkpoint key via a stable hash of both.
         const isEpicScoped = await ctx.checkpoint({
-          key: `is.epic.scoped.${projectRefKey}.${title}`,
+          key: issueCheckpointKey('is.epic.scoped', projectRef, title),
           fn: async () => {
             if (!epicId) {
               return false;
@@ -284,7 +300,7 @@ export const createGitlabIssueAction = (options: {
         };
 
         const response = await ctx.checkpoint({
-          key: `issue.${projectRefKey}.${title}`,
+          key: issueCheckpointKey('issue', projectRef, title),
           fn: async () => {
             const issue = (await api.Issues.create(
               projectRef,
