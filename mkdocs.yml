@@ -15,9 +15,6 @@ nav:
       - What is Backstage?: 'overview/what-is-backstage.md'
       - Technical overview: 'overview/technical-overview.md'
       - Architecture overview: 'overview/architecture-overview.md'
-      - Project Roadmap: 'overview/roadmap.md'
-      - Vision: 'overview/vision.md'
-      - The Spotify Story: 'overview/background.md'
       - Strategies for adopting: 'overview/adopting.md'
       - Release & Versioning Policy: 'overview/versioning-policy.md'
       - Backstage Threat Model: 'overview/threat-model.md'
@@ -25,17 +22,6 @@ nav:
       - Logo assets: 'overview/logos.md'
   - Getting Started:
       - Creating your Backstage App: 'getting-started/index.md'
-      - Configuring Backstage:
-          - Database: 'getting-started/config/database.md'
-          - Authentication: 'getting-started/config/authentication.md'
-          - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
-          - Customize the look-and-feel of your App: 'conf/user-interface/index.md'
-          - Customizing your Homepage: 'getting-started/homepage.md'
-      - Deployment:
-          - Deploying Backstage: 'deployment/index.md'
-          - Scaling: 'deployment/scaling.md'
-          - Docker: 'deployment/docker.md'
-          - Kubernetes: 'deployment/k8s.md'
       - Using Backstage:
           - Logging in: 'getting-started/logging-in.md'
           - Viewing the Catalog: 'getting-started/viewing-catalog.md'
@@ -47,6 +33,26 @@ nav:
               - Create a component: 'getting-started/create-a-component.md'
               - Update a component: 'getting-started/update-a-component.md'
               - Unregister/delete a component: 'getting-started/unregister-delete-component.md'
+      - Configuring a Software Template: 'features/software-templates/configuration.md'
+      - Creating a Software Template: 'features/software-templates/adding-templates.md'
+      - Checking health of services with Kubernetes: 'features/kubernetes/index.md'
+      - Backstage CLI: 'tooling/cli/01-overview.md'
+      - Support and community: 'overview/support.md'
+- Administration:
+      - Configuring Backstage:
+          - Set Up Authentication: 'getting-started/config/authentication.md'
+          - Database: 'getting-started/config/database.md'
+          - Configuring App with Plugins: 'getting-started/configure-app-with-plugins.md'
+          - Install Notification System: 'notifications/index.md'
+          - Set Up Permissions: 'permissions/overview.md'
+          - Customize the Look-and-Feel of your App: 'conf/user-interface/index.md'
+          - Customize your Homepage: 'getting-started/homepage.md'
+          - Integrate with External Providers: 'integrations/index.md'
+      - Deployment:
+          - Deploying Backstage: 'deployment/index.md'
+          - Scaling: 'deployment/scaling.md'
+          - Docker: 'deployment/docker.md'
+          - Kubernetes: 'deployment/k8s.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
   - Core Features:
       - Software Catalog:
