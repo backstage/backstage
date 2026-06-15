@@ -159,7 +159,7 @@ Commands:
 ### `backstage-cli-module-test-jest repo test`
 
 ```
-Usage: @backstage/cli-module-test-jest repo test
+Usage: @backstage/cli-module-test-jest repo test [flags...]
 
 Options:
   --jest-help

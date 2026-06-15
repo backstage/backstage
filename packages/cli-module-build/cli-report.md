@@ -21,7 +21,7 @@ Commands:
 ### `backstage-cli-module-build build-workspace`
 
 ```
-Usage: @backstage/cli-module-build build-workspace <workspace-dir> [packages...]
+Usage: @backstage/cli-module-build build-workspace [flags...] <workspace-dir> [packages...]
 
 Options:
   --always-pack
@@ -48,7 +48,7 @@ Commands:
 ### `backstage-cli-module-build package build`
 
 ```
-Usage: @backstage/cli-module-build package build
+Usage: @backstage/cli-module-build package build [flags...]
 
 Options:
   --config <string>
@@ -63,7 +63,7 @@ Options:
 ### `backstage-cli-module-build package clean`
 
 ```
-Usage: @backstage/cli-module-build package clean
+Usage: @backstage/cli-module-build package clean [flags...]
 
 Options:
   -h, --help
@@ -72,7 +72,7 @@ Options:
 ### `backstage-cli-module-build package postpack`
 
 ```
-Usage: @backstage/cli-module-build package postpack
+Usage: @backstage/cli-module-build package postpack [flags...]
 
 Options:
   -h, --help
@@ -81,7 +81,7 @@ Options:
 ### `backstage-cli-module-build package prepack`
 
 ```
-Usage: @backstage/cli-module-build package prepack
+Usage: @backstage/cli-module-build package prepack [flags...]
 
 Options:
   -h, --help
@@ -90,7 +90,7 @@ Options:
 ### `backstage-cli-module-build package start`
 
 ```
-Usage: @backstage/cli-module-build package start
+Usage: @backstage/cli-module-build package start [flags...]
 
 Options:
   --check
@@ -122,7 +122,7 @@ Commands:
 ### `backstage-cli-module-build repo build`
 
 ```
-Usage: @backstage/cli-module-build repo build
+Usage: @backstage/cli-module-build repo build [flags...]
 
 Options:
   --all
@@ -134,7 +134,7 @@ Options:
 ### `backstage-cli-module-build repo clean`
 
 ```
-Usage: @backstage/cli-module-build repo clean
+Usage: @backstage/cli-module-build repo clean [flags...]
 
 Options:
   -h, --help
@@ -143,7 +143,7 @@ Options:
 ### `backstage-cli-module-build repo start`
 
 ```
-Usage: @backstage/cli-module-build repo start [packages...]
+Usage: @backstage/cli-module-build repo start [flags...] [packages...]
 
 Options:
   --config <string>

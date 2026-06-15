@@ -33,7 +33,7 @@ Commands:
 ### `backstage-cli-module-lint package lint`
 
 ```
-Usage: @backstage/cli-module-lint package lint [directories...]
+Usage: @backstage/cli-module-lint package lint [flags...] [directories...]
 
 Options:
   --fix
@@ -59,7 +59,7 @@ Commands:
 ### `backstage-cli-module-lint repo lint`
 
 ```
-Usage: @backstage/cli-module-lint repo lint
+Usage: @backstage/cli-module-lint repo lint [flags...]
 
 Options:
   --fix

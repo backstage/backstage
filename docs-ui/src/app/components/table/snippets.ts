@@ -320,6 +320,79 @@ function ItemsTable() {
 }`;
 
 // =============================================================================
+// Column Widths with `fr`
+// =============================================================================
+
+export const tableColumnWidthsWithFrSnippet = `const columns: ColumnConfig<Item>[] = [
+  {
+    id: 'name',
+    label: 'Name (3fr)',
+    isRowHeader: true,
+    width: '3fr',
+    cell: item => (
+      <CellText title={item.name} description={item.description} />
+    ),
+  },
+  {
+    id: 'owner',
+    label: 'Owner (2fr)',
+    width: '2fr',
+    cell: item => <CellText title={item.owner.name} />,
+  },
+  {
+    id: 'type',
+    label: 'Type (1fr)',
+    width: '1fr',
+    cell: item => <CellText title={item.type} />,
+  },
+  {
+    id: 'lifecycle',
+    label: 'Lifecycle (1fr)',
+    width: '1fr',
+    cell: item => <CellText title={item.lifecycle} />,
+  },
+];`;
+
+// =============================================================================
+// Column Widths with Constraints
+// =============================================================================
+
+export const tableColumnWidthsWithConstraintsSnippet = `const columns: ColumnConfig<Item>[] = [
+  {
+    id: 'name',
+    label: 'Name (3fr, min 200px)',
+    isRowHeader: true,
+    defaultWidth: '3fr',
+    minWidth: 200,
+    cell: item => <CellText title={item.name} description={item.description} />,
+  },
+  {
+    id: 'owner',
+    label: 'Owner (2fr, min 120px, max 300px)',
+    defaultWidth: '2fr',
+    minWidth: 120,
+    maxWidth: 300,
+    cell: item => <CellText title={item.owner.name} />,
+  },
+  {
+    id: 'type',
+    label: 'Type (1fr, min 80px, max 150px)',
+    defaultWidth: '1fr',
+    minWidth: 80,
+    maxWidth: 150,
+    cell: item => <CellText title={item.type} />,
+  },
+  {
+    id: 'lifecycle',
+    label: 'Lifecycle (1fr, min 80px, max 150px)',
+    defaultWidth: '1fr',
+    minWidth: 80,
+    maxWidth: 150,
+    cell: item => <CellText title={item.lifecycle} />,
+  },
+];`;
+
+// =============================================================================
 // Custom Tables
 // =============================================================================
 

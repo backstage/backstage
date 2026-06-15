@@ -472,6 +472,7 @@ export type EntityListContextProps<
   setLimit: (limit: number) => void;
   setOffset?: (offset: number) => void;
   paginationMode: PaginationMode;
+  refresh?: () => void;
 };
 
 // @public (undocumented)

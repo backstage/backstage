@@ -37,7 +37,7 @@ Commands:
 ### `backstage-cli-module-config config docs`
 
 ```
-Usage: @backstage/cli-module-config config docs
+Usage: @backstage/cli-module-config config docs [flags...]
 
 Options:
   --package <string>
@@ -47,7 +47,7 @@ Options:
 ### `backstage-cli-module-config config schema`
 
 ```
-Usage: @backstage/cli-module-config config schema
+Usage: @backstage/cli-module-config config schema [flags...]
 
 Options:
   --format <string>
@@ -59,7 +59,7 @@ Options:
 ### `backstage-cli-module-config config:check`
 
 ```
-Usage: @backstage/cli-module-config config:check
+Usage: @backstage/cli-module-config config:check [flags...]
 
 Options:
   --config <string>
@@ -74,7 +74,7 @@ Options:
 ### `backstage-cli-module-config config:docs`
 
 ```
-Usage: @backstage/cli-module-config config:docs
+Usage: @backstage/cli-module-config config:docs [flags...]
 
 Options:
   --package <string>
@@ -84,7 +84,7 @@ Options:
 ### `backstage-cli-module-config config:print`
 
 ```
-Usage: @backstage/cli-module-config config:print
+Usage: @backstage/cli-module-config config:print [flags...]
 
 Options:
   --config <string>
@@ -99,7 +99,7 @@ Options:
 ### `backstage-cli-module-config config:schema`
 
 ```
-Usage: @backstage/cli-module-config config:schema
+Usage: @backstage/cli-module-config config:schema [flags...]
 
 Options:
   --format <string>

@@ -37,6 +37,10 @@
 
   .bui-SelectPopover {
     min-width: var(--trigger-width);
+
+    :global(.bui-PopoverContent) {
+      padding: 0;
+    }
   }
 
   .bui-SelectTrigger {
@@ -141,6 +145,11 @@
     min-height: 0;
     padding-block: var(--bui-space-1);
     padding-inline: var(--bui-space-1);
+    transition: opacity 0.2s ease-in-out;
+
+    &[data-stale] {
+      opacity: 0.6;
+    }
 
     &[data-focus-visible] {
       /* Remove default focus-visible outline because React Aria
@@ -154,10 +163,7 @@
   .bui-SelectItem {
     box-sizing: border-box;
     position: relative;
-    display: grid;
-    grid-template-areas: 'icon text';
-    grid-template-columns: 1rem 1fr;
-    align-items: center;
+    display: block;
     min-height: var(--select-item-height);
     padding-block: var(--bui-space-1);
     padding-left: var(--bui-space-3);
@@ -166,9 +172,16 @@
     cursor: pointer;
     user-select: none;
     font-size: var(--bui-font-size-3);
-    gap: var(--bui-space-2);
     outline: none;
     border-radius: var(--bui-radius-2);
+
+    &:has(> .bui-SelectItemIndicator) {
+      display: grid;
+      grid-template-areas: 'icon text';
+      grid-template-columns: 1rem 1fr;
+      align-items: center;
+      gap: var(--bui-space-2);
+    }
 
     &[data-focused] {
       background-color: var(--bui-bg-neutral-2);
@@ -196,6 +209,50 @@
   .bui-SelectItemLabel {
     flex: 1;
     grid-area: text;
+  }
+
+  .bui-SelectItemContent {
+    grid-area: text;
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-2);
+    min-width: 0;
+  }
+
+  .bui-SelectItemLeadingIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+
+    & > svg {
+      width: 1em;
+      height: 1em;
+    }
+  }
+
+  .bui-SelectItemAvatar {
+    flex-shrink: 0;
+  }
+
+  .bui-SelectItemTextContent {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .bui-SelectItemTitle,
+  .bui-SelectItemDescription {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .bui-SelectItemDescription {
+    font-size: var(--bui-font-size-2);
+    color: var(--bui-fg-secondary);
   }
 
   .bui-SelectSearchWrapper {
@@ -284,5 +341,21 @@
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-regular);
+  }
+
+  .bui-SelectLoading {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .bui-SelectLoadingRow {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    min-height: var(--select-item-height);
+    padding-block: var(--bui-space-1);
+    padding-left: calc(var(--bui-space-3) + 1rem + var(--bui-space-2));
+    padding-right: var(--bui-space-4);
   }
 }

@@ -33,7 +33,7 @@ Commands:
 ### `backstage-cli-module-translations translations export`
 
 ```
-Usage: @backstage/cli-module-translations translations export
+Usage: @backstage/cli-module-translations translations export [flags...]
 
 Options:
   --output <string>
@@ -44,7 +44,7 @@ Options:
 ### `backstage-cli-module-translations translations import`
 
 ```
-Usage: @backstage/cli-module-translations translations import
+Usage: @backstage/cli-module-translations translations import [flags...]
 
 Options:
   --input <string>

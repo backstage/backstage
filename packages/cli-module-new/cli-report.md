@@ -19,7 +19,7 @@ Commands:
 ### `backstage-cli-module-new new`
 
 ```
-Usage: @backstage/cli-module-new new
+Usage: @backstage/cli-module-new new [flags...]
 
 Options:
   --base-version <string>

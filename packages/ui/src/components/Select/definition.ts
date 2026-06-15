@@ -21,14 +21,14 @@ import type {
   SelectContentOwnProps,
   SelectListBoxOwnProps,
   SelectListBoxItemOwnProps,
+  SelectItemOwnProps,
+  SelectItemProfileOwnProps,
+  SelectItemTextOwnProps,
   SelectSectionOwnProps,
 } from './types';
 import styles from './Select.module.css';
 
-/**
- * Component definition for Select
- * @public
- */
+/** @public */
 export const SelectDefinition = defineComponent<SelectOwnProps>()({
   styles,
   classNames: {
@@ -39,6 +39,11 @@ export const SelectDefinition = defineComponent<SelectOwnProps>()({
     icon: {},
     size: { dataAttribute: true, default: 'small' },
     options: {},
+    items: {},
+    children: {},
+    dependencies: {},
+    search: {},
+    loading: {},
     searchable: {},
     searchPlaceholder: {},
     label: {},
@@ -49,10 +54,7 @@ export const SelectDefinition = defineComponent<SelectOwnProps>()({
   },
 });
 
-/**
- * Component definition for SelectTrigger
- * @internal
- */
+/** @public */
 export const SelectTriggerDefinition = defineComponent<SelectTriggerOwnProps>()(
   {
     styles,
@@ -68,10 +70,7 @@ export const SelectTriggerDefinition = defineComponent<SelectTriggerOwnProps>()(
   },
 );
 
-/**
- * Component definition for SelectContent
- * @internal
- */
+/** @public */
 export const SelectContentDefinition = defineComponent<SelectContentOwnProps>()(
   {
     styles,
@@ -81,49 +80,104 @@ export const SelectContentDefinition = defineComponent<SelectContentOwnProps>()(
       searchClear: 'bui-SelectSearchClear',
     },
     propDefs: {
-      searchable: {},
-      searchPlaceholder: { default: 'Search...' },
+      search: {},
       options: {},
+      items: {},
+      children: {},
+      dependencies: {},
+      loading: {},
+      isStale: {},
+      visibleIds: {},
+      retainedOptions: {},
     },
   },
 );
 
-/**
- * Component definition for SelectListBox
- * @internal
- */
+/** @public */
 export const SelectListBoxDefinition = defineComponent<SelectListBoxOwnProps>()(
   {
     styles,
     classNames: {
       root: 'bui-SelectList',
       noResults: 'bui-SelectNoResults',
+      loading: 'bui-SelectLoading',
+      loadingRow: 'bui-SelectLoadingRow',
     },
     propDefs: {
       options: {},
+      items: {},
+      children: {},
+      dependencies: {},
+      loading: {},
+      isStale: {},
+      retainedOptions: {},
     },
   },
 );
 
-/**
- * Component definition for SelectListBoxItem
- * @internal
- */
+/** @public */
 export const SelectListBoxItemDefinition =
   defineComponent<SelectListBoxItemOwnProps>()({
     styles,
     classNames: {
-      root: 'bui-SelectItem',
-      indicator: 'bui-SelectItemIndicator',
       label: 'bui-SelectItemLabel',
     },
     propDefs: {},
   });
 
-/**
- * Component definition for SelectSection
- * @internal
- */
+/** @public */
+export const SelectItemDefinition = defineComponent<SelectItemOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-SelectItem',
+    indicator: 'bui-SelectItemIndicator',
+    content: 'bui-SelectItemContent',
+  },
+  propDefs: {
+    children: {},
+    showSelectionIndicator: {},
+    className: {},
+  },
+});
+
+/** @public */
+export const SelectItemTextDefinition =
+  defineComponent<SelectItemTextOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-SelectItemText',
+      content: 'bui-SelectItemContent',
+      leadingIcon: 'bui-SelectItemLeadingIcon',
+      text: 'bui-SelectItemTextContent',
+      title: 'bui-SelectItemTitle',
+      description: 'bui-SelectItemDescription',
+    },
+    propDefs: {
+      title: {},
+      description: {},
+      leadingIcon: {},
+      className: {},
+    },
+  });
+
+/** @public */
+export const SelectItemProfileDefinition =
+  defineComponent<SelectItemProfileOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-SelectItemProfile',
+      content: 'bui-SelectItemContent',
+      avatar: 'bui-SelectItemAvatar',
+      name: 'bui-SelectItemTitle',
+    },
+    propDefs: {
+      name: {},
+      src: {},
+      className: {},
+    },
+  });
+
+/** @public */
 export const SelectSectionDefinition = defineComponent<SelectSectionOwnProps>()(
   {
     styles,

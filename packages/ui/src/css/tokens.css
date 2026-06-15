@@ -216,10 +216,10 @@
 
     /* Neutral background colors */
     --bui-bg-app: #333333;
-    --bui-bg-neutral-1: #1a1a1a;
-    --bui-bg-neutral-2: #282828;
-    --bui-bg-neutral-3: #393939;
-    --bui-bg-neutral-4: #474747;
+    --bui-bg-neutral-1: #424141;
+    --bui-bg-neutral-2: #504f4f;
+    --bui-bg-neutral-3: #5c5c5c;
+    --bui-bg-neutral-4: #676767;
 
     /* Foreground colors */
     --bui-fg-primary: var(--bui-white);
