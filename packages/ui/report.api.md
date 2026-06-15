@@ -3456,7 +3456,9 @@ export const SelectContentDefinition: {
     readonly [key: string]: string;
   };
   readonly classNames: {
-    readonly root: 'bui-SelectSearchWrapper';
+    readonly root: 'bui-SelectContent';
+    readonly searchWrapper: 'bui-SelectSearchWrapper';
+    readonly results: 'bui-SelectResults';
     readonly search: 'bui-SelectSearch';
     readonly searchClear: 'bui-SelectSearchClear';
   };

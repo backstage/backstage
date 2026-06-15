@@ -40,6 +40,9 @@
 
     :global(.bui-PopoverContent) {
       padding: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+      overflow: hidden;
     }
   }
 
@@ -141,8 +144,6 @@
   }
 
   .bui-SelectList {
-    overflow: auto;
-    min-height: 0;
     padding-block: var(--bui-space-1);
     padding-inline: var(--bui-space-1);
     transition: opacity 0.2s ease-in-out;
@@ -262,6 +263,18 @@
     align-items: center;
     padding-inline: var(--bui-space-3) 0;
     border-bottom: 1px solid var(--bui-border-2);
+  }
+
+  .bui-SelectContent {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .bui-SelectResults {
+    grid-row: 2;
+    min-height: 0;
+    overflow: auto;
   }
 
   .bui-SelectSearch {
