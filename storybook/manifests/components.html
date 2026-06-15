@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">53 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/53 infos</a><span class="filter-pill ok" aria-disabled="true">532 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">53 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/53 infos</a><span class="filter-pill ok" aria-disabled="true">533 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.4s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -14125,7 +14125,7 @@ totalCount?: number</code></pre>
       <div class="badges">
         <label for="c-43-backstage-ui-tabs-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-43-backstage-ui-tabs-stories" class="badge ok as-toggle">14 stories</label>
+        <label for="c-43-backstage-ui-tabs-stories" class="badge ok as-toggle">15 stories</label>
         
         
       </div>
@@ -14690,6 +14690,34 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
   &lt;/MemoryRouter&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Dynamic Tab Width</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const DynamicTabWidth = () =&gt; (
+  &lt;Tabs&gt;
+    &lt;TabList&gt;
+      &lt;Tab id=&quot;tab1&quot;&gt;First&lt;/Tab&gt;
+      &lt;Tab id=&quot;tab2&quot;&gt;
+        &lt;CyclingTab /&gt;
+      &lt;/Tab&gt;
+      &lt;Tab id=&quot;tab3&quot;&gt;Last&lt;/Tab&gt;
+    &lt;/TabList&gt;
+    &lt;TabPanel id=&quot;tab1&quot;&gt;
+      &lt;Text&gt;First tab content&lt;/Text&gt;
+    &lt;/TabPanel&gt;
+    &lt;TabPanel id=&quot;tab2&quot;&gt;
+      &lt;Text&gt;Middle tab content — its title cycles every second&lt;/Text&gt;
+    &lt;/TabPanel&gt;
+    &lt;TabPanel id=&quot;tab3&quot;&gt;
+      &lt;Text&gt;Last tab content&lt;/Text&gt;
+    &lt;/TabPanel&gt;
+  &lt;/Tabs&gt;
 );</code></pre>
             </div>
             <div class="note ok">
