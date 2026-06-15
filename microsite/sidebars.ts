@@ -340,6 +340,7 @@ export default {
             'features/software-templates/adding-templates',
             'features/software-templates/writing-templates',
             'features/software-templates/input-examples',
+            'features/software-templates/ui-options-examples',
             'features/software-templates/builtin-actions',
             'features/software-templates/writing-custom-actions',
             'features/software-templates/writing-tests-for-actions',
@@ -349,6 +350,7 @@ export default {
             'features/software-templates/dry-run-testing',
             'features/software-templates/experimental',
             'features/software-templates/templating-extensions',
+            'features/software-templates/audit-events',
             {
               type: 'category',
               label: 'API',
