@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { PropsWithChildren } from 'react';
 import { MarkdownContent } from './MarkdownContent';
 
 export default {
@@ -144,4 +145,36 @@ export const MarkdownContentGithubFlavoredCommonMark = () => (
 
 export const MarkdownContentGithubFlavoredWithHTML = () => (
   <MarkdownContent content={markdownGithubFlavoredWithHTML} dialect="gfm" />
+);
+
+const markdownWithBlockquote =
+  '# Components Override\n\n' +
+  'The `components` prop allows overriding how markdown elements render.\n\n' +
+  '> This blockquote is rendered as a styled callout using a custom component.\n\n' +
+  'Regular text with **bold**, *italic*, and `inline code` remains unaffected.\n';
+
+export const MarkdownContentWithComponentsOverride = () => (
+  <MarkdownContent
+    content={markdownWithBlockquote}
+    components={{
+      blockquote({ children }: PropsWithChildren) {
+        return (
+          <div
+            style={{
+              borderLeft: '4px solid #1976d2',
+              background: '#e3f2fd',
+              padding: '12px 16px',
+              borderRadius: '4px',
+              margin: '16px 0',
+            }}
+          >
+            <span style={{ marginRight: '8px' }} aria-hidden="true">
+              💡
+            </span>
+            {children}
+          </div>
+        );
+      },
+    }}
+  />
 );

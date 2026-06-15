@@ -211,4 +211,21 @@ describe('<MarkdownContent />', () => {
     expect(container.querySelector('script')).toBeNull();
     expect(container.querySelector('style')).toBeNull();
   });
+
+  it('render MarkdownContent component with custom components override', async () => {
+    await renderInTestApp(
+      <MarkdownContent
+        content={'```typescript\nconst x = 1;\n```'}
+        components={{
+          code: ({ children }) => (
+            <div data-testid="custom-code">{children}</div>
+          ),
+        }}
+      />,
+    );
+
+    const customElement = await screen.findByTestId('custom-code');
+    expect(customElement).toBeInTheDocument();
+    expect(customElement).toHaveTextContent('const x = 1;');
+  });
 });

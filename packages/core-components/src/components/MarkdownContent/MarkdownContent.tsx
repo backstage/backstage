@@ -17,7 +17,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import ReactMarkdown, { Options } from 'react-markdown';
 import gfm from 'remark-gfm';
-import { Children, createElement } from 'react';
+import { Children, createElement, useMemo } from 'react';
 import { CodeSnippet } from '../CodeSnippet';
 import { HeadingProps } from 'react-markdown/lib/ast-to-react';
 import rehypeRaw from 'rehype-raw';
@@ -75,6 +75,7 @@ type Props = {
   transformLinkUri?: (href: string) => string;
   transformImageUri?: (href: string) => string;
   className?: string;
+  components?: Options['components'];
 };
 
 const flatten = (text: string, child: any): string => {
@@ -92,7 +93,7 @@ const headingRenderer = ({ level, children }: HeadingProps) => {
   return createElement(`h${level}`, { id: slug }, children);
 };
 
-const components: Options['components'] = {
+const defaultComponents: Options['components'] = {
   code: ({ inline, className, children, ...props }) => {
     const text = String(children).replace(/\n+$/, '');
     const match = /language-(\w+)/.exec(className || '');
@@ -164,15 +165,20 @@ export function MarkdownContent(props: Props) {
     transformLinkUri,
     transformImageUri,
     className,
+    components: componentOverrides,
   } = props;
   const classes = useStyles();
+  const mergedComponents = useMemo(
+    () => ({ ...defaultComponents, ...componentOverrides }),
+    [componentOverrides],
+  );
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
       rehypePlugins={dialect === 'gfm' ? gfmRehypePlugins : []}
       className={`${classes.markdown} ${className ?? ''}`.trim()}
       children={content}
-      components={components}
+      components={mergedComponents}
       linkTarget={linkTarget}
       transformLinkUri={transformLinkUri}
       transformImageUri={transformImageUri}
