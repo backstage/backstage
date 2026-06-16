@@ -1144,22 +1144,20 @@ describe('Catalog Backend Integration', () => {
     // Expect to find A and B' in the catalog. The provider's test→B ref
     // is preserved — the processing path no longer deletes other sources'
     // references, which is correct for multi-parent scenarios.
-    await expect(harness.getRefreshStateReferences()).resolves.toEqual(
-      expect.arrayContaining([
-        {
-          sourceKey: 'test',
-          targetEntityRef: 'component:default/a',
-        },
-        {
-          sourceKey: 'test',
-          targetEntityRef: 'component:default/b',
-        },
-        {
-          sourceEntityRef: 'component:default/a',
-          targetEntityRef: 'component:default/b',
-        },
-      ]),
-    );
+    await expect(harness.getRefreshStateReferences()).resolves.toEqual([
+      {
+        sourceKey: 'test',
+        targetEntityRef: 'component:default/a',
+      },
+      {
+        sourceKey: 'test',
+        targetEntityRef: 'component:default/b',
+      },
+      {
+        sourceEntityRef: 'component:default/a',
+        targetEntityRef: 'component:default/b',
+      },
+    ]);
     await expect(harness.getRefreshState()).resolves.toEqual({
       'component:default/a': expect.objectContaining({
         locationKey: null,
