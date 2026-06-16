@@ -72,6 +72,7 @@
     flex: 0 0 auto;
     display: grid;
     place-content: center;
+    pointer-events: none;
     height: var(--text-field-item-height);
 
     & svg {
