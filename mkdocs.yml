@@ -38,7 +38,7 @@ nav:
       - Checking health of services with Kubernetes: 'features/kubernetes/index.md'
       - Backstage CLI: 'tooling/cli/01-overview.md'
       - Support and community: 'overview/support.md'
-- Administration:
+  - Administration:
       - Configuring Backstage:
           - Set Up Authentication: 'getting-started/config/authentication.md'
           - Database: 'getting-started/config/database.md'
