@@ -15,18 +15,10 @@
  */
 
 import { forwardRef, useEffect } from 'react';
-import { useCheckboxGroupState } from 'react-stately';
-import { useCheckboxGroup } from 'react-aria';
-import {
-  Provider,
-  LabelContext,
-  TextContext,
-  FieldErrorContext,
-} from 'react-aria-components';
+import { CheckboxGroup as RACheckboxGroup } from 'react-aria-components';
 import type { SwitchGroupProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SwitchGroupDefinition } from './definition';
-import { SwitchGroupStateContext } from './context';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 
@@ -60,62 +52,26 @@ export const SwitchGroup = forwardRef<HTMLDivElement, SwitchGroupProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    const state = useCheckboxGroupState({
-      ...restProps,
-      isRequired,
-    });
-
-    const {
-      groupProps,
-      labelProps,
-      descriptionProps,
-      errorMessageProps,
-      ...validation
-    } = useCheckboxGroup(
-      {
-        ...restProps,
-        label,
-        isRequired,
-      },
-      state,
-    );
-
     const secondaryLabelText =
       secondaryLabel || (isRequired ? 'Required' : null);
 
     return (
-      <div
+      <RACheckboxGroup
         ref={ref}
         className={classes.root}
-        {...groupProps}
+        isRequired={isRequired}
         {...dataAttributes}
+        {...restProps}
       >
-        <Provider
-          values={[
-            [SwitchGroupStateContext, state],
-            [LabelContext, { ...labelProps, elementType: 'span' }],
-            [
-              TextContext,
-              {
-                slots: {
-                  description: descriptionProps,
-                  errorMessage: errorMessageProps,
-                },
-              },
-            ],
-            [FieldErrorContext, validation],
-          ]}
-        >
-          <FieldLabel
-            label={label}
-            secondaryLabel={secondaryLabelText}
-            description={description}
-            descriptionSlot="description"
-          />
-          <div className={classes.content}>{children}</div>
-          <FieldError />
-        </Provider>
-      </div>
+        <FieldLabel
+          label={label}
+          secondaryLabel={secondaryLabelText}
+          description={description}
+          descriptionSlot="description"
+        />
+        <div className={classes.content}>{children}</div>
+        <FieldError />
+      </RACheckboxGroup>
     );
   },
 );

@@ -15,11 +15,13 @@
  */
 
 import { forwardRef, useContext } from 'react';
-import { Switch as AriaSwitch } from 'react-aria-components';
+import {
+  Switch as AriaSwitch,
+  CheckboxGroupStateContext,
+} from 'react-aria-components';
 import type { SwitchProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SwitchDefinition } from './definition';
-import { SwitchGroupStateContext } from '../SwitchGroup/context';
 
 /**
  * A toggle control for switching between on and off states, with an optional visible label.
@@ -34,7 +36,7 @@ export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
     );
     const { classes, label } = ownProps;
 
-    const groupState = useContext(SwitchGroupStateContext);
+    const groupState = useContext(CheckboxGroupStateContext);
 
     let switchProps = restProps;
     if (groupState && restProps.value != null) {
