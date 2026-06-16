@@ -150,9 +150,20 @@ async function verifyUrl(basePath, absUrl, docPages) {
     ) &&
     basePath.match(/^(?:docs|microsite)\//)
   ) {
-    // Exception for linking to the changelogs, since we encourage those to be browsed in GitHub
+    // Exception for linking to the changelogs, since we encourage those to be browsed in GitHub.
+    // When linked from the matching release notes file, allow the link even if the changelog
+    // doesn't exist yet — it is generated during the release process after the notes are merged.
     if (absUrl.match(/docs\/releases\/.+-changelog\.md$/)) {
       if (docPages.has(url.slice(0, -'.md'.length))) {
+        return undefined;
+      }
+      const changelogBase = url.match(/\/(v[^/]+)-changelog\.md$/);
+      const sourceVersion = basePath.match(/docs\/releases\/(v[^-]+)\.md$/);
+      if (
+        changelogBase &&
+        sourceVersion &&
+        changelogBase[1] === sourceVersion[1]
+      ) {
         return undefined;
       }
       return { url: absUrl, basePath, problem: 'missing' };

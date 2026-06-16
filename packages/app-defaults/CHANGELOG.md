@@ -1,5 +1,20 @@
 # @backstage/app-defaults
 
+## 1.7.9
+
+### Patch Changes
+
+- 74ed625: Provide toastApi for old frontend system
+
+  Fixes 'No implementation available for apiRef{core.toast}' on old frontend system.
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-app-api@1.20.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-permission-react@0.5.2
+
 ## 1.7.9-next.1
 
 ### Patch Changes

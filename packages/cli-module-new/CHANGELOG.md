@@ -1,5 +1,15 @@
 # @backstage/cli-module-new
 
+## 0.1.4
+
+### Patch Changes
+
+- 4014819: Added a new `scaffolder-field-extension-module` template for scaffolding custom Scaffolder form field extensions via `backstage-cli new`.
+- 696c78c: The `--help` output for commands now shows a generated usage line that lists the available flags and any positional arguments the command accepts.
+- 2e6ffe6: Updated the standalone CLI executable to use the new CLI module runner.
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+
 ## 0.1.4-next.0
 
 ### Patch Changes

@@ -190,6 +190,8 @@ export class DefaultConnectionsService {
       seen.add(key);
     }
 
+    this.#assignDefaultTitles();
+
     this.logger.info(
       `Loaded ${this.connections.length} connection${
         this.connections.length === 1 ? '' : 's'
@@ -241,6 +243,23 @@ export class DefaultConnectionsService {
     return getConnectionType(connection.type).schema.parse(
       connection,
     ) as RootConnection;
+  }
+
+  #assignDefaultTitles(): void {
+    const typeCounts = new Map<string, number>();
+    for (const c of this.connections) {
+      const type = c.type as ConnectionTypeKey;
+      typeCounts.set(type, (typeCounts.get(type) ?? 0) + 1);
+    }
+    for (const c of this.connections) {
+      if (!c.title) {
+        const type = c.type as ConnectionTypeKey;
+        const displayName = getConnectionType(type).title;
+        const host = (c as unknown as { host: string }).host;
+        (c as { title?: string }).title =
+          typeCounts.get(type)! > 1 ? `${displayName} (${host})` : displayName;
+      }
+    }
   }
 
   #getConnectionsForPlugin(pluginId: string): Connection[] {

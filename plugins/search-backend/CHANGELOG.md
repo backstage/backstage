@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend
 
+## 2.1.3
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-permission-node@0.11.1
+  - @backstage/plugin-search-backend-node@1.4.5
+
 ## 2.1.3-next.0
 
 ### Patch Changes

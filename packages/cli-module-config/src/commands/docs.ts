@@ -17,7 +17,7 @@
 import { cli } from 'cleye';
 import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
-import { JSONSchema7 as JSONSchema } from 'json-schema';
+import type { JSONSchema7 as JSONSchema } from 'json-schema';
 import openBrowser from 'react-dev-utils/openBrowser';
 import chalk from 'chalk';
 import { loadCliConfig } from '../lib/config';

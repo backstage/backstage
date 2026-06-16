@@ -79,20 +79,22 @@ export function SelectContent<T extends CollectionItem = NormalizedOption>(
   } = ownProps;
 
   const listBox = (
-    <SelectListBox
-      options={options}
-      items={items}
-      dependencies={dependencies}
-      loading={loading}
-      isStale={isStale}
-      retainedOptions={retainedOptions}
-    >
-      {children}
-    </SelectListBox>
+    <div className={classes.results}>
+      <SelectListBox
+        options={options}
+        items={items}
+        dependencies={dependencies}
+        loading={loading}
+        isStale={isStale}
+        retainedOptions={retainedOptions}
+      >
+        {children}
+      </SelectListBox>
+    </div>
   );
 
   if (!search) {
-    return listBox;
+    return <div className={classes.root}>{listBox}</div>;
   }
 
   const searchProps = typeof search === 'object' ? search : undefined;
@@ -110,13 +112,19 @@ export function SelectContent<T extends CollectionItem = NormalizedOption>(
       onInputChange={searchProps?.onInputChange}
       filter={filter}
     >
-      <SearchField autoFocus className={classes.root} aria-label={placeholder}>
-        <Input placeholder={placeholder} className={classes.search} />
-        <Button className={classes.searchClear}>
-          <RiCloseCircleLine />
-        </Button>
-      </SearchField>
-      {listBox}
+      <div className={classes.root}>
+        <SearchField
+          autoFocus
+          className={classes.searchWrapper}
+          aria-label={placeholder}
+        >
+          <Input placeholder={placeholder} className={classes.search} />
+          <Button className={classes.searchClear}>
+            <RiCloseCircleLine />
+          </Button>
+        </SearchField>
+        {listBox}
+      </div>
     </Autocomplete>
   );
 }

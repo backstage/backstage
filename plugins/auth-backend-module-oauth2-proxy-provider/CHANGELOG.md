@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend-module-oauth2-proxy-provider
 
+## 0.3.0
+
+### Minor Changes
+
+- 9822a2a: Added forwardedPreferredUsernameMatchingUserEntityName sign-in resolver
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-auth-node@0.7.2
+
 ## 0.2.21-next.0
 
 ### Patch Changes

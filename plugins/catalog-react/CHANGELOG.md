@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-react
 
+## 3.1.0
+
+### Minor Changes
+
+- b6d6551: Added optional `getOptionLabel` and `renderOption` props to `EntityAutocompletePicker`, allowing consumers to customize how option labels and option rendering are displayed in the autocomplete dropdown.
+- 5dd532d: Added a `refresh` function to the `useEntityList` hook.
+- 4212b78: Allow full text searching of Location target URLs in catalog tables
+
+### Patch Changes
+
+- d8757b1: The entity list provider now fetches the entity list and the total count as two separate parallel requests when using cursor or offset pagination. The list query skips the expensive count computation (using `totalItems: 'exclude'`), so the table populates immediately. The count arrives asynchronously and updates the title. A new `totalItemsLoading` field is exposed on `EntityListContextProps` so consumers can distinguish a stale count from a fresh one.
+
+  The catalog table now keeps stale rows visible during filter changes and page navigation instead of replacing the entire table body with a spinner. The full-table spinner is only shown on the very first load when no data exists yet. The entity count in the title is dimmed while the count is refreshing, and a small spinner appears next to the title while rows are loading.
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- 7c20545: Fixed redundant API calls during entity list initialization. Filter components that register their initial state in quick succession (e.g. `EntityKindPicker`, `UserListPicker`, `EntityTagPicker`) no longer trigger multiple identical fetches. Frontend-only filter changes such as toggling the user list are now applied synchronously without a network round-trip.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-compat-api@0.5.12
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/integration-react@1.2.19
+  - @backstage/plugin-permission-react@0.5.2
+
 ## 3.0.1-next.1
 
 ### Patch Changes

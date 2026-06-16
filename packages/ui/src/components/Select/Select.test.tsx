@@ -236,10 +236,17 @@ describe('Select', () => {
     openSelect();
 
     const popover = document.querySelector('.bui-SelectPopover');
+    const listbox = screen.getByRole('listbox');
+    const content = listbox.closest<HTMLElement>('.bui-SelectContent');
+    const results = listbox.closest<HTMLElement>('.bui-SelectResults');
+
     expect(popover).toHaveClass('bui-Popover');
     expect(popover?.querySelector('.bui-PopoverContent')).toHaveClass(
       'bui-Box',
     );
+    expect(content).toBeTruthy();
+    expect(content).toContainElement(results);
+    expect(results).toContainElement(listbox);
   });
 
   it('renders dynamic profile items without repeating their ids', () => {
@@ -473,6 +480,24 @@ describe('Select', () => {
 
     expect(screen.queryByRole('option', { name: 'Draft' })).toBeNull();
     expect(screen.getByRole('option', { name: 'Published' })).toBeVisible();
+  });
+
+  it('renders search outside the shared results scroller', () => {
+    render(<Select aria-label="Status" options={options} search />);
+
+    openSelect();
+
+    const searchbox = screen.getByRole('searchbox');
+    const listbox = screen.getByRole('listbox');
+    const content = searchbox.closest<HTMLElement>('.bui-SelectContent');
+    const results = listbox.closest<HTMLElement>('.bui-SelectResults');
+
+    expect(searchbox.closest('.bui-SelectSearchWrapper')).toBeTruthy();
+    expect(content).toBeTruthy();
+    expect(content).toContainElement(results);
+    expect(results).toContainElement(listbox);
+    expect(results).not.toContainElement(searchbox);
+    expect(content?.closest('.bui-SelectPopover')).toBeTruthy();
   });
 
   it('retains refreshed selected metadata outside manual server results', () => {

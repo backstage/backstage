@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog
 
+## 2.0.6
+
+### Patch Changes
+
+- 7172386: Updated the new frontend system Catalog index page to use the current Backstage UI page header and content container.
+- d8757b1: The entity list provider now fetches the entity list and the total count as two separate parallel requests when using cursor or offset pagination. The list query skips the expensive count computation (using `totalItems: 'exclude'`), so the table populates immediately. The count arrives asynchronously and updates the title. A new `totalItemsLoading` field is exposed on `EntityListContextProps` so consumers can distinguish a stale count from a fresh one.
+
+  The catalog table now keeps stale rows visible during filter changes and page navigation instead of replacing the entire table body with a spinner. The full-table spinner is only shown on the very first load when no data exists yet. The entity count in the title is dimmed while the count is refreshing, and a small spinner appears next to the title while rows are loading.
+
+- 82cf16f: Added `CatalogExportButton`, which adds CSV and JSON export support to the `CatalogIndexPage`.
+- d7c1dcf: Fixed a missing React key warning for context menu items on the entity page.
+- a07e6a3: Added the correctly-spelled `RelatedEntitiesCard.domainEntityColumns` static property and deprecated the previous typoed `RelatedEntitiesCard.domainEntityColums` property. Existing references to the old property continue to work; switch to `domainEntityColumns` to avoid future removal.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/plugin-search-react@1.11.5
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/plugin-scaffolder-common@2.2.1
+  - @backstage/core-compat-api@0.5.12
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/integration-react@1.2.19
+  - @backstage/plugin-permission-react@0.5.2
+  - @backstage/plugin-techdocs-react@1.3.12
+
 ## 2.0.6-next.1
 
 ### Patch Changes

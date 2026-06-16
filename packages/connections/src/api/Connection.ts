@@ -38,6 +38,7 @@ export type Connection<
   TAuthMethod extends string = string,
 > = {
   type: LookupConnectionType<T>['type'];
+  title: string;
   auth: string extends TAuthMethod
     ? AuthValue<T>[]
     : Extract<AuthValue<T>, { method: TAuthMethod }>;
@@ -53,7 +54,8 @@ export type AnyConnection = {
 // top-level `match` and per-auth `match` rules used for plugin scoping.
 export type RootConnection<
   T extends ConnectionType | ConnectionTypeKey = ConnectionType,
-> = Omit<Connection<T>, 'auth'> & {
+> = Omit<Connection<T>, 'auth' | 'title'> & {
+  title?: string;
   match?: ConnectionMatch;
   auth: (AuthValue<T> & { match?: ConnectionMatch })[];
 };

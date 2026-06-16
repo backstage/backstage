@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const HarnessConnectionType = createConnectionType({
   type: 'harness',
+  title: 'Harness',
   configSchema: z.object({
     host: z.string(),
   }),

@@ -187,6 +187,17 @@ describe.each(eventBusDatabases.eachSupportedId())(
         .expect(204); // 204, since there are no subscribers
     });
 
+    it('should accept large published event payloads', async () => {
+      backend = await startTestBackend({
+        features: [eventsPlugin, await mockKnexFactory()],
+      });
+      const helper = new ReqHelper(backend);
+
+      await helper
+        .publish('test', { content: 'a'.repeat(1024 * 1024) })
+        .expect(204); // 204, since there are no subscribers
+    });
+
     it('should be possible to subscribe as a service and receive an event', async () => {
       backend = await startTestBackend({
         features: [eventsPlugin, await mockKnexFactory()],

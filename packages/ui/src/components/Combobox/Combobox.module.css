@@ -173,8 +173,6 @@
   }
 
   .bui-ComboboxList {
-    overflow: auto;
-    min-height: 0;
     padding-block: var(--bui-space-1);
     padding-inline: var(--bui-space-1);
     transition: opacity 0.2s ease-in-out;

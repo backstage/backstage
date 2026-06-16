@@ -27,7 +27,8 @@ import { Text } from '../Text';
 import { Form } from 'react-aria-components';
 import { RiCheckLine, RiCloudLine } from '@remixicon/react';
 import { useAsyncList } from '@backstage/ui';
-import type { ReactNode } from 'react';
+import { useState } from 'react';
+import { expect, screen, waitFor } from 'storybook/test';
 
 const meta = preview.meta({
   title: 'Backstage UI/Combobox',
@@ -320,30 +321,56 @@ const serverOptions = serverOwners.map(owner => ({
   label: owner.name,
 }));
 
+const paginatedServerOptions = Array.from({ length: 200 }, (_, index) => ({
+  id: `owner-${index + 1}`,
+  label: `Owner ${String(index + 1).padStart(3, '0')}`,
+}));
+
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const serverDelay = 1_500;
 const serverPageSize = 5;
+const paginationServerDelay = 100;
+const paginationServerPageSize = 10;
 
-function ConstrainedComboboxList({ children }: { children: ReactNode }) {
-  return (
-    <>
-      <style>{`.bui-ComboboxList { max-height: 9rem; }`}</style>
-      {children}
-    </>
-  );
+function readCount(element: HTMLElement) {
+  return Number(element.textContent);
+}
+
+async function waitForRequestCountToStabilize(element: HTMLElement) {
+  let previousCount = readCount(element);
+  let stableChecks = 0;
+
+  for (let index = 0; index < 20; index++) {
+    await wait(250);
+    const currentCount = readCount(element);
+
+    if (currentCount === previousCount) {
+      stableChecks += 1;
+      if (stableChecks === 3) {
+        return currentCount;
+      }
+    } else {
+      previousCount = currentCount;
+      stableChecks = 0;
+    }
+  }
+
+  throw new Error('Request count did not stabilize');
 }
 
 function ServerBackedCombobox() {
+  const [requestCount, setRequestCount] = useState(0);
   const list = useAsyncList({
     async load({ cursor, filterText }) {
-      await wait(serverDelay);
+      setRequestCount(count => count + 1);
+      await wait(paginationServerDelay);
 
       const query = filterText.toLocaleLowerCase();
-      const filteredOptions = serverOptions.filter(option =>
+      const filteredOptions = paginatedServerOptions.filter(option =>
         option.label.toLocaleLowerCase().includes(query),
       );
       const startIndex = cursor ? Number(cursor) : 0;
-      const endIndex = startIndex + serverPageSize;
+      const endIndex = startIndex + paginationServerPageSize;
 
       return {
         items: filteredOptions.slice(startIndex, endIndex),
@@ -354,20 +381,90 @@ function ServerBackedCombobox() {
   });
 
   return (
-    <ConstrainedComboboxList>
-      <Combobox
-        label="Owner"
-        placeholder="Search owners"
-        options={list}
-        search={{ mode: 'server' }}
-        style={{ width: 300 }}
-      />
-    </ConstrainedComboboxList>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+      }}
+    >
+      <div>
+        <div>
+          Requests:{' '}
+          <output aria-label="Combobox request count">{requestCount}</output>
+        </div>
+        <div>
+          Results:{' '}
+          <output aria-label="Combobox result count">
+            {list.items.length}
+          </output>
+        </div>
+        <Combobox
+          label="Owner"
+          placeholder="Search owners"
+          options={list}
+          search={{ mode: 'server' }}
+          style={{ width: 300 }}
+        />
+      </div>
+    </div>
   );
 }
 
 export const ServerBackedOptions = meta.story({
   render: () => <ServerBackedCombobox />,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  play: async ({ canvas, userEvent }) => {
+    const requestCount = canvas.getByLabelText('Combobox request count');
+    const resultCount = canvas.getByLabelText('Combobox result count');
+
+    await waitFor(() =>
+      expect(readCount(resultCount)).toBe(paginationServerPageSize),
+    );
+    await userEvent.click(canvas.getByRole('button'));
+
+    const listbox = await screen.findByRole('listbox');
+    const scrollElement = listbox.closest('.bui-PopoverContent');
+
+    expect(scrollElement).toBeTruthy();
+    expect(window.getComputedStyle(listbox).maxHeight).toBe('none');
+
+    await waitFor(
+      () =>
+        expect(scrollElement!.scrollHeight).toBeGreaterThan(
+          scrollElement!.clientHeight,
+        ),
+      { timeout: 5_000 },
+    );
+
+    const stabilizedRequestCount = await waitForRequestCountToStabilize(
+      requestCount,
+    );
+
+    expect(stabilizedRequestCount).toBeLessThan(
+      paginatedServerOptions.length / paginationServerPageSize,
+    );
+    expect(readCount(resultCount)).toBeLessThan(paginatedServerOptions.length);
+
+    listbox.focus();
+    await userEvent.keyboard('{End}');
+    const bottomScrollTop =
+      scrollElement!.scrollHeight - scrollElement!.clientHeight;
+    scrollElement!.scrollTop = bottomScrollTop;
+    await waitFor(() =>
+      expect(scrollElement!.scrollTop).toBeGreaterThanOrEqual(
+        bottomScrollTop - 1,
+      ),
+    );
+
+    await waitFor(
+      () =>
+        expect(readCount(requestCount)).toBeGreaterThan(stabilizedRequestCount),
+      { timeout: 5_000 },
+    );
+  },
 });
 
 function ServerBackedCustomCombobox() {
@@ -390,26 +487,24 @@ function ServerBackedCustomCombobox() {
   });
 
   return (
-    <ConstrainedComboboxList>
-      <Combobox
-        label="Owner"
-        placeholder="Search names and roles"
-        items={list}
-        search={{ mode: 'server' }}
-        style={{ width: 300 }}
-      >
-        {owner => (
-          <ComboboxItem textValue={owner.textValue}>
-            <Text as="div" weight="bold">
-              {owner.name}
-            </Text>
-            <Text as="div" variant="body-small" color="secondary">
-              {owner.role}
-            </Text>
-          </ComboboxItem>
-        )}
-      </Combobox>
-    </ConstrainedComboboxList>
+    <Combobox
+      label="Owner"
+      placeholder="Search names and roles"
+      items={list}
+      search={{ mode: 'server' }}
+      style={{ width: 300 }}
+    >
+      {owner => (
+        <ComboboxItem textValue={owner.textValue}>
+          <Text as="div" weight="bold">
+            {owner.name}
+          </Text>
+          <Text as="div" variant="body-small" color="secondary">
+            {owner.role}
+          </Text>
+        </ComboboxItem>
+      )}
+    </Combobox>
   );
 }
 

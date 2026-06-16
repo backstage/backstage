@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const AzureConnectionType = createConnectionType({
   type: 'azure',
+  title: 'Azure DevOps',
   configSchema: z.object({
     host: z.string(),
   }),

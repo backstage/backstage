@@ -1,5 +1,15 @@
 # @backstage/catalog-client
 
+## 1.16.0
+
+### Minor Changes
+
+- 8f20cc2: `CatalogApi.queryEntities` now accepts a `totalItems` option (`'include'` or `'exclude'`, default `'include'`) on initial requests. Pass `'exclude'` to skip the `totalItems` count when the caller doesn't need it.
+
+### Patch Changes
+
+- 378784e: Moved dependencies that are re-exported in the public API from `devDependencies` to `dependencies`. These were incorrectly demoted in #33936 because the source code only uses type imports, but the types still appear in the published API surface and need to be resolvable by consumers at build time.
+
 ## 1.16.0-next.1
 
 ### Patch Changes
