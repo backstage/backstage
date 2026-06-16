@@ -72,10 +72,7 @@
     flex: 0 0 auto;
     display: grid;
     place-content: center;
-    pointer-events: none;
-    min-width: var(--text-field-item-height);
     height: var(--text-field-item-height);
-    padding-inline: var(--bui-space-2);
 
     & svg {
       width: calc(var(--text-field-item-height) / 2);
@@ -83,11 +80,19 @@
     }
   }
 
+  .bui-InputIconStart {
+    padding-inline-start: var(--bui-space-3);
+  }
+
+  .bui-InputIconEnd {
+    padding-inline-end: var(--bui-space-3);
+  }
+
   .bui-Input {
     flex: 1;
     display: flex;
     align-items: center;
-    padding: 0;
+    padding: 0 var(--bui-space-3);
     border: none;
     background-color: transparent;
     font-size: var(--bui-font-size-3);
@@ -106,26 +111,6 @@
 
     &::placeholder {
       color: var(--bui-fg-secondary);
-    }
-
-    &:first-child {
-      .bui-TextField[data-size='small'] & {
-        padding-left: var(--bui-space-3);
-      }
-
-      .bui-TextField[data-size='medium'] & {
-        padding-left: var(--bui-space-4);
-      }
-    }
-
-    &:last-child {
-      .bui-TextField[data-size='small'] & {
-        padding-right: var(--bui-space-3);
-      }
-
-      .bui-TextField[data-size='medium'] & {
-        padding-right: var(--bui-space-4);
-      }
     }
   }
 }
