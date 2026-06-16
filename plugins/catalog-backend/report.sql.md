@@ -97,8 +97,8 @@
 ### Indices
 
 - `refresh_state_references_pkey` (`id`) unique primary
-- `refresh_state_references_source_entity_ref_idx` (`source_entity_ref`)
-- `refresh_state_references_source_key_idx` (`source_key`)
+- `refresh_state_references_source_entity_target_uniq` (`source_entity_ref`, `target_entity_ref`) unique
+- `refresh_state_references_source_key_target_uniq` (`source_key`, `target_entity_ref`) unique
 - `refresh_state_references_target_entity_ref_idx` (`target_entity_ref`)
 
 ## Table `relations`

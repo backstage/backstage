@@ -713,16 +713,12 @@ describe.each(databases.eachSupportedId())(
         );
       });
 
-      it('should gracefully handle accidental duplicate refresh state references when deletion happens during a full sync', async () => {
+      it('should remove all entities when doing a full sync with empty items', async () => {
         const fakeLogger = mockServices.logger.mock();
         const { knex, db } = await createDatabase(fakeLogger);
 
         await createLocations(knex, ['component:default/a']);
 
-        await insertRefRow(knex, {
-          source_key: 'a',
-          target_entity_ref: 'component:default/a',
-        });
         await insertRefRow(knex, {
           source_key: 'a',
           target_entity_ref: 'component:default/a',
