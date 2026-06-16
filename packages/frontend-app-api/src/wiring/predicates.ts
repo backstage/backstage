@@ -45,20 +45,22 @@ type MinimalPermissionApi = {
 
 function parsePermissionName(permissionName: string) {
   const parts = permissionName.split('#');
-  if (parts.length > 2) {
+  const [name, action, ...rest] = parts;
+
+  if (rest.length > 0 || !name || (parts.length === 2 && !action)) {
     throw new Error(
-      `Invalid permission name: ${permissionName}. Permission names must be in the format "permissionName" or "permissionName#action".`,
+      `Invalid permission name: ${permissionName}. Permission names must be in the format "permissionName" or "permissionName#action" (both parts must be non-empty).`,
     );
   }
-  if (parts.length === 1) {
-    return {
-      name: parts[0],
-    };
+
+  if (action === undefined) {
+    return { name };
   }
+
   return {
-    name: parts[0],
+    name,
     attributes: {
-      action: parts[1],
+      action,
     },
   };
 }
