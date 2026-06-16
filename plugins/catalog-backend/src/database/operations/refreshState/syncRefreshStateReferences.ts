@@ -51,11 +51,12 @@ export async function syncRefreshStateReferences(
 ): Promise<void> {
   const client = knex.client.config.client;
   const col = sourceColumn(source);
+  const uniqueTargets = [...new Set(targetEntityRefs)];
 
   if (client === 'pg') {
-    await syncPostgres(knex, col, targetEntityRefs);
+    await syncPostgres(knex, col, uniqueTargets);
   } else {
-    await syncSimple(knex, col, targetEntityRefs);
+    await syncSimple(knex, col, uniqueTargets);
   }
 }
 
