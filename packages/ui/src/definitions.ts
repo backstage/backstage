@@ -85,6 +85,7 @@ export {
 export { SkeletonDefinition } from './components/Skeleton/definition';
 export { SliderDefinition } from './components/Slider/definition';
 export { SwitchDefinition } from './components/Switch/definition';
+export { SwitchGroupDefinition } from './components/SwitchGroup/definition';
 export { ToggleButtonDefinition } from './components/ToggleButton/definition';
 export { ToggleButtonGroupDefinition } from './components/ToggleButtonGroup/definition';
 export { TableDefinition } from './components/Table/definition';

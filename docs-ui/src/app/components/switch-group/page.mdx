@@ -1,0 +1,110 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { switchGroupPropDefs } from './props-definition';
+import {
+  switchGroupUsageSnippet,
+  defaultSnippet,
+  horizontalSnippet,
+  disabledSnippet,
+  disabledSingleSnippet,
+  validationSnippet,
+  readOnlySnippet,
+} from './snippets';
+import {
+  Default,
+  Horizontal,
+  Disabled,
+  DisabledSingle,
+  Validation,
+  ReadOnly,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+import { SwitchGroupDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  checkboxGroup: 'https://react-aria.adobe.com/CheckboxGroup',
+};
+
+<PageTitle
+  title="SwitchGroup"
+  description="A group of switches for toggling multiple options on or off."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={switchGroupUsageSnippet} />
+
+## API reference
+
+### SwitchGroup
+
+<PropsTable data={switchGroupPropDefs} />
+
+<ReactAriaLink component="CheckboxGroup" href={reactAriaUrls.checkboxGroup} />
+
+## Examples
+
+### Horizontal
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  layout="side-by-side"
+  preview={<Horizontal />}
+  code={horizontalSnippet}
+/>
+
+### Disabled
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  layout="side-by-side"
+  preview={<Disabled />}
+  code={disabledSnippet}
+/>
+
+### Disabled single switch
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  layout="side-by-side"
+  preview={<DisabledSingle />}
+  code={disabledSingleSnippet}
+/>
+
+### Validation
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  layout="side-by-side"
+  preview={<Validation />}
+  code={validationSnippet}
+/>
+
+### Read only
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  layout="side-by-side"
+  preview={<ReadOnly />}
+  code={readOnlySnippet}
+/>
+
+<Theming definition={SwitchGroupDefinition} />
+
+<ChangelogComponent component="switch-group" />

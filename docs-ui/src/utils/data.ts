@@ -139,6 +139,11 @@ export const components: Page[] = [
     slug: 'switch',
   },
   {
+    title: 'SwitchGroup',
+    slug: 'switch-group',
+    status: 'new',
+  },
+  {
     title: 'Table',
     slug: 'table',
   },
