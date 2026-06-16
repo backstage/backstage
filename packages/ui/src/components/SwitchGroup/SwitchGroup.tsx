@@ -36,14 +36,16 @@ import { FieldError } from '../FieldError';
  */
 export const SwitchGroup = forwardRef<HTMLDivElement, SwitchGroupProps>(
   (props, ref) => {
-    const { ownProps, restProps } = useDefinition(SwitchGroupDefinition, props);
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      SwitchGroupDefinition,
+      props,
+    );
     const {
       classes,
       label,
       secondaryLabel,
       description,
       isRequired,
-      orientation,
       children,
     } = ownProps;
 
@@ -86,7 +88,7 @@ export const SwitchGroup = forwardRef<HTMLDivElement, SwitchGroupProps>(
         ref={ref}
         className={classes.root}
         {...groupProps}
-        data-orientation={orientation}
+        {...dataAttributes}
       >
         <Provider
           values={[

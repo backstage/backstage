@@ -35,6 +35,6 @@ export const SwitchGroupDefinition = defineComponent<SwitchGroupOwnProps>()({
     secondaryLabel: {},
     description: {},
     isRequired: {},
-    orientation: {},
+    orientation: { dataAttribute: true },
   },
 });
