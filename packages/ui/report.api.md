@@ -4002,7 +4002,9 @@ export const SwitchGroupDefinition: {
     readonly secondaryLabel: {};
     readonly description: {};
     readonly isRequired: {};
-    readonly orientation: {};
+    readonly orientation: {
+      readonly dataAttribute: true;
+    };
   };
 };
 
