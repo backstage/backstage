@@ -1,6 +1,7 @@
 ---
 id: overview
-title: Overview
+title: Backstage CLI Overview
+sidebar_label: Backstage CLI Overview
 description: Overview of the Backstage CLI
 ---
 
