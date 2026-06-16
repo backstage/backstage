@@ -24,6 +24,7 @@ import { deleteWithEagerPruningOfChildren } from './operations/provider/deleteWi
 import { refreshByRefreshKeys } from './operations/provider/refreshByRefreshKeys';
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
+import { syncRefreshStateReferences } from './operations/refreshState/syncRefreshStateReferences';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
 import {
@@ -94,6 +95,10 @@ export class DefaultProviderDatabase implements ProviderDatabase {
       );
     }
 
+    // Track entity refs that this provider successfully claimed, so we can
+    // sync refs in one pass at the end.
+    const claimedRefs = new Array<string>();
+
     if (toAdd.length) {
       // The reason for this chunking, rather than just massively batch
       // inserting the entire payload, is that we fall back to the individual
@@ -120,13 +125,8 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             })),
             BATCH_SIZE,
           );
-          await tx.batchInsert(
-            'refresh_state_references',
-            chunk.map(item => ({
-              source_key: options.sourceKey,
-              target_entity_ref: stringifyEntityRef(item.deferred.entity),
-            })),
-            BATCH_SIZE,
+          claimedRefs.push(
+            ...chunk.map(item => stringifyEntityRef(item.deferred.entity)),
           );
         } catch (error) {
           if (!isDatabaseConflictError(error)) {
@@ -165,22 +165,8 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             });
           }
           if (ok) {
-            await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-              .where('target_entity_ref', entityRef)
-              .delete();
-
-            await tx<DbRefreshStateReferencesRow>(
-              'refresh_state_references',
-            ).insert({
-              source_key: options.sourceKey,
-              target_entity_ref: entityRef,
-            });
+            claimedRefs.push(entityRef);
           } else {
-            await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-              .where('target_entity_ref', entityRef)
-              .andWhere({ source_key: options.sourceKey })
-              .delete();
-
             const conflictingKey = await checkLocationKeyConflict({
               tx,
               entityRef,
@@ -199,6 +185,12 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         }
       }
     }
+
+    await syncRefreshStateReferences(
+      tx,
+      { sourceKey: options.sourceKey },
+      claimedRefs,
+    );
   }
 
   async listReferenceSourceKeys(txOpaque: Transaction): Promise<string[]> {
