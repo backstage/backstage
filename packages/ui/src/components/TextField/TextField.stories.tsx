@@ -29,7 +29,10 @@ const meta = preview.meta({
     isRequired: {
       control: 'boolean',
     },
-    icon: {
+    iconStart: {
+      control: 'object',
+    },
+    iconEnd: {
       control: 'object',
     },
   },
@@ -51,8 +54,8 @@ export const Sizes = meta.story({
   },
   render: args => (
     <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
-      <TextField {...args} size="small" icon={<RiSparklingLine />} />
-      <TextField {...args} size="medium" icon={<RiSparklingLine />} />
+      <TextField {...args} size="small" iconStart={<RiSparklingLine />} />
+      <TextField {...args} size="medium" iconStart={<RiSparklingLine />} />
     </Flex>
   ),
 });
@@ -92,7 +95,7 @@ export const Disabled = meta.story({
   },
 });
 
-export const WithIcon = meta.story({
+export const WithIconStart = meta.story({
   args: {
     ...Default.input.args,
   },
@@ -101,12 +104,50 @@ export const WithIcon = meta.story({
       {...args}
       placeholder="Enter a URL"
       size="small"
-      icon={<RiEyeLine />}
+      iconStart={<RiEyeLine />}
     />
   ),
 });
 
-export const DisabledWithIcon = WithIcon.extend({
+export const WithIconEnd = meta.story({
+  args: {
+    ...Default.input.args,
+  },
+  render: args => (
+    <TextField
+      {...args}
+      placeholder="0.00"
+      size="small"
+      iconEnd={<Text color="secondary">%</Text>}
+    />
+  ),
+});
+
+export const WithIconStartAndEnd = meta.story({
+  args: {
+    ...Default.input.args,
+  },
+  render: args => (
+    <Flex direction="column" gap="4" style={{ maxWidth: '300px' }}>
+      <TextField
+        {...args}
+        placeholder="0.00"
+        size="small"
+        iconStart={<Text color="secondary">$</Text>}
+        iconEnd={<Text color="secondary">USD</Text>}
+      />
+      <TextField
+        {...args}
+        placeholder="0.00"
+        size="medium"
+        iconStart={<Text color="secondary">$</Text>}
+        iconEnd={<Text color="secondary">USD</Text>}
+      />
+    </Flex>
+  ),
+});
+
+export const DisabledWithIconStart = WithIconStart.extend({
   args: {
     isDisabled: true,
   },

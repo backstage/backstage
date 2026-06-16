@@ -13,13 +13,13 @@ export const sizesSnippet = `<Flex direction="column" gap="4">
     size="small"
     name="url"
     placeholder="Enter a URL"
-    icon={<RiSparklingLine />}
+    iconStart={<RiSparklingLine />}
   />
   <TextField
     size="medium"
     name="url"
     placeholder="Enter a URL"
-    icon={<RiSparklingLine />}
+    iconStart={<RiSparklingLine />}
   />
 </Flex>`;
 

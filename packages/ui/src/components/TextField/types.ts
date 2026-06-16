@@ -30,7 +30,18 @@ export type TextFieldOwnProps = {
   className?: string;
 
   /**
+   * An element to render before the input, such as an icon or text
+   */
+  iconStart?: ReactNode;
+
+  /**
+   * An element to render after the input, such as a currency symbol or icon
+   */
+  iconEnd?: ReactNode;
+
+  /**
    * An icon to render before the input
+   * @deprecated Use `iconStart` instead
    */
   icon?: ReactNode;
 

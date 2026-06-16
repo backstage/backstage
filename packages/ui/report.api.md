@@ -3337,8 +3337,8 @@ export const TextFieldDefinition: {
     readonly root: 'bui-TextField';
     readonly inputWrapper: 'bui-InputWrapper';
     readonly input: 'bui-Input';
-    readonly inputIcon: 'bui-InputIcon';
-    readonly inputAction: 'bui-InputAction';
+    readonly inputIconStart: 'bui-InputIconStart';
+    readonly inputIconEnd: 'bui-InputIconEnd';
   };
   readonly bg: 'consumer';
   readonly propDefs: {
@@ -3347,6 +3347,8 @@ export const TextFieldDefinition: {
       readonly default: 'small';
     };
     readonly className: {};
+    readonly iconStart: {};
+    readonly iconEnd: {};
     readonly icon: {};
     readonly placeholder: {};
     readonly label: {};
@@ -3359,6 +3361,8 @@ export const TextFieldDefinition: {
 export type TextFieldOwnProps = {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   className?: string;
+  iconStart?: ReactNode;
+  iconEnd?: ReactNode;
   icon?: ReactNode;
   placeholder?: string;
   label?: FieldLabelProps['label'];

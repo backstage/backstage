@@ -23,7 +23,7 @@ import { useDefinition } from '../../hooks/useDefinition';
 import { TextFieldDefinition } from './definition';
 
 /**
- * A single-line text input with an integrated label, optional icon, and inline error display.
+ * A single-line text input with an integrated label, optional start and end elements, and inline error display.
  *
  * @public
  */
@@ -33,8 +33,18 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       TextFieldDefinition,
       props,
     );
-    const { classes, label, icon, secondaryLabel, placeholder, description } =
-      ownProps;
+    const {
+      classes,
+      label,
+      iconStart: iconStartProp,
+      iconEnd,
+      icon,
+      secondaryLabel,
+      placeholder,
+      description,
+    } = ownProps;
+
+    const iconStart = iconStartProp ?? icon;
 
     useEffect(() => {
       if (!label && !restProps['aria-label'] && !restProps['aria-labelledby']) {
@@ -61,24 +71,18 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           description={description}
           descriptionSlot="description"
         />
-        <div
-          className={classes.inputWrapper}
-          data-size={dataAttributes['data-size']}
-        >
-          {icon && (
-            <div
-              className={classes.inputIcon}
-              data-size={dataAttributes['data-size']}
-              aria-hidden="true"
-            >
-              {icon}
+        <div className={classes.inputWrapper}>
+          {iconStart && (
+            <div className={classes.inputIconStart} aria-hidden="true">
+              {iconStart}
             </div>
           )}
-          <Input
-            className={classes.input}
-            {...(icon && { 'data-icon': true })}
-            placeholder={placeholder}
-          />
+          <Input className={classes.input} placeholder={placeholder} />
+          {iconEnd && (
+            <div className={classes.inputIconEnd} aria-hidden="true">
+              {iconEnd}
+            </div>
+          )}
         </div>
         <FieldError />
       </AriaTextField>

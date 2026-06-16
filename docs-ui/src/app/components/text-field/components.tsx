@@ -26,13 +26,13 @@ export const Sizes = () => {
         name="url"
         placeholder="Enter a URL"
         size="small"
-        icon={<RiSparklingLine />}
+        iconStart={<RiSparklingLine />}
       />
       <TextField
         name="url"
         placeholder="Enter a URL"
         size="medium"
-        icon={<RiSparklingLine />}
+        iconStart={<RiSparklingLine />}
       />
     </Flex>
   );
