@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const AwsS3ConnectionType = createConnectionType({
   type: 'aws-s3',
+  title: 'AWS S3',
   configSchema: z.object({
     host: z.string(),
     endpoint: z.string().optional(),

@@ -214,6 +214,14 @@
 
 [data-theme-mode='dark'][data-theme-name='spotify'] {
   --bui-bg-app: var(--bui-black);
+  --bui-bg-neutral-1: #121212;
+  --bui-bg-neutral-2: #2a2a2a;
+  --bui-bg-neutral-3: #3a3a3a;
+  --bui-bg-neutral-4: #484848;
+
+  --bui-border-1: var(--bui-gray-8);
+  --bui-border-2: var(--bui-gray-6);
+
   --bui-ring: rgba(255, 255, 255, 0.2);
   --bui-accent-bg: #1ed760;
   --bui-accent-bg-hover: #3be477;

@@ -30,6 +30,7 @@ export type Connection<
   TAuthMethod extends string = string,
 > = {
   type: LookupConnectionType<T>['type'];
+  title: string;
   auth: string extends TAuthMethod
     ? AuthValue<T>[]
     : Extract<
@@ -96,6 +97,7 @@ export type ConnectionType<
   TAuthMethods extends readonly ConnectionAuthMethod[] = readonly ConnectionAuthMethod[],
 > = {
   type: TType;
+  title: string;
   configSchema: TConfigSchema;
   authMethods: TAuthMethods;
   schema: z.ZodType;

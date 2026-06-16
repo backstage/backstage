@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend-module-atlassian-provider
 
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-auth-node@0.7.2
+
 ## 0.4.16-next.0
 
 ### Patch Changes

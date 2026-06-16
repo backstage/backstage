@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.18.11
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- a07e6a3: Added the correctly-spelled `'header'` literal to the `TableFiltersClassKey` union type and deprecated the previous typoed `'heder'` literal. The generated CSS class with the old key is preserved for backwards compatibility; switch to `'header'` to avoid future removal.
+- c161e1c: Lazy-load `react-syntax-highlighter` and `@dagrejs/dagre` so they are no longer pulled in eagerly through the barrel export. This reduces the upfront module cost of importing from `@backstage/core-components` by roughly 10 MB. The public API is unchanged.
+- dbe93a7: Fix autologout not working correctly when closing all tabs
+- 8add9b9: Fixed the proxy-based sign-in page failing to read the session token when the proxy issues a token whose payload is encoded using the URL-safe base64 alphabet. Such tokens are now decoded correctly so sign-in no longer breaks.
+- f35372d: Fixed text clipping in SidebarSubmenuItem by correcting line-height from 1 to 1.5
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.7
+
 ## 0.18.11-next.2
 
 ### Patch Changes

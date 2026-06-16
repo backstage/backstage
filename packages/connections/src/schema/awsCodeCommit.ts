@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const AwsCodeCommitConnectionType = createConnectionType({
   type: 'aws-codecommit',
+  title: 'AWS CodeCommit',
   configSchema: z.object({
     host: z.string(),
     region: z.string(),

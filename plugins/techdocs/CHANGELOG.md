@@ -1,5 +1,32 @@
 # @backstage/plugin-techdocs
 
+## 1.17.7
+
+### Patch Changes
+
+- 460c597: Added missing i18n support for TechDocs plugin components including:
+
+  - Search components (placeholder text, no results message)
+  - Table components (column headers, pagination, toolbar, actions, empty states)
+  - Home page components (support button, page wrapper title/subtitle)
+  - Reader components (build logs, not found errors, state indicators, settings)
+  - Error messages and navigation labels
+
+  Also exported `techdocsTranslationRef` from the alpha entrypoint for external use.
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/plugin-search-react@1.11.5
+  - @backstage/integration@2.0.3
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/integration-react@1.2.19
+  - @backstage/plugin-auth-react@0.1.28
+  - @backstage/plugin-techdocs-react@1.3.12
+
 ## 1.17.7-next.1
 
 ### Patch Changes

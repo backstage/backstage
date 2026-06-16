@@ -1,5 +1,11 @@
 # @backstage/config-loader
 
+## 1.10.12
+
+### Patch Changes
+
+- 02c4e8a: Removed unused `json-schema` runtime dependency. The package was only used for TypeScript types from `@types/json-schema`; affected imports have been converted to `import type` to allow safe removal.
+
 ## 1.10.11
 
 ### Patch Changes

@@ -417,6 +417,25 @@ describe('<EntityListProvider />', () => {
     });
   });
 
+  it('re-fetches when refresh is called', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      result.current.refresh?.();
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(2);
+    });
+  });
+
   it('uses the last applied filter even if an earlier request finishes later', async () => {
     const { result } = renderHook(() => useEntityList(), {
       wrapper: createWrapper({ pagination }),
@@ -521,6 +540,8 @@ describe('<EntityListProvider pagination />', () => {
             'metadata.name',
             'metadata.title',
             'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
           ],
         },
       });
@@ -729,6 +750,44 @@ describe('<EntityListProvider pagination />', () => {
     expect(countCallsAfter).toBe(countCallsBefore);
   });
 
+  it('re-fetches list and count when refresh is called', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({ limit: 0 }),
+      );
+    });
+
+    const listCallsBefore = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.totalItems === 'exclude').length;
+    const countCallsBefore = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.limit === 0).length;
+
+    act(() => {
+      result.current.refresh?.();
+    });
+
+    await waitFor(() => {
+      const listCallsAfter = (
+        mockCatalogApi.queryEntities as jest.Mock
+      ).mock.calls.filter((c: any) => c[0]?.totalItems === 'exclude').length;
+      const countCallsAfter = (
+        mockCatalogApi.queryEntities as jest.Mock
+      ).mock.calls.filter((c: any) => c[0]?.limit === 0).length;
+      expect(listCallsAfter).toBe(listCallsBefore + 1);
+      expect(countCallsAfter).toBe(countCallsBefore + 1);
+    });
+  });
+
   it('returns an error on catalogApi failure', async () => {
     const { result } = renderHook(() => useEntityList(), {
       wrapper: createWrapper({ pagination }),
@@ -917,6 +976,8 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
             'metadata.name',
             'metadata.title',
             'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
           ],
         },
       });
@@ -1244,6 +1305,7 @@ describe('versioned context', () => {
       setLimit: jest.fn(),
       setOffset: jest.fn(),
       paginationMode: 'none',
+      refresh: jest.fn(),
     };
 
     const { result } = renderHook(() => useEntityList(), {

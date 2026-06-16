@@ -30,7 +30,10 @@ import {
   ExtensionPointFactoryMiddleware,
   ServiceOrExtensionPoint,
 } from './types';
-import { OpaqueExtensionPointFactoryMiddleware } from '@internal/backend';
+import {
+  OpaqueExtensionPointFactoryMiddleware,
+  unwrapFeature,
+} from '@internal/backend';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type {
@@ -44,7 +47,7 @@ import { ConflictError, ForwardedError, toError } from '@backstage/errors';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationResultCollector } from './createInitializationResultCollector';
-import { deepFreeze, unwrapFeature } from './helpers';
+import { deepFreeze } from './helpers';
 import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-plugin-api';
 import { BackendStartupResult } from './types';
 import { BackendStartupError } from './BackendStartupError';

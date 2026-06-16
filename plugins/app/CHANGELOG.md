@@ -1,5 +1,23 @@
 # @backstage/plugin-app
 
+## 0.5.0
+
+### Minor Changes
+
+- 6e5fca3: **BREAKING** Changed the default discovery API implementation to use `FrontendHostDiscovery`, which supports the `discovery.endpoints` configuration for per-plugin endpoint overrides. Note that this will start honoring `discovery.endpoints` (including string `target` values), so if you currently use internal-only targets there, update them to the object form and move the internal URL to `target.internal`, omitting `target.external` (or setting it to a browser-reachable URL) to avoid routing the frontend to internal URLs.
+
+### Patch Changes
+
+- 33d03ed: fix: make Toast text content selectable
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/integration-react@1.2.19
+  - @backstage/plugin-app-react@0.2.4
+  - @backstage/plugin-permission-react@0.5.2
+
 ## 0.4.7-next.1
 
 ### Patch Changes

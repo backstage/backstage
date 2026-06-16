@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const BitbucketCloudConnectionType = createConnectionType({
   type: 'bitbucket-cloud',
+  title: 'Bitbucket Cloud',
   configSchema: z.object({
     host: z.string(),
   }),

@@ -247,6 +247,8 @@ describe('toStreamRequest', () => {
             'metadata.name',
             'metadata.title',
             'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
           ],
         },
       });
@@ -318,6 +320,8 @@ describe('toStreamRequest', () => {
             'metadata.name',
             'metadata.title',
             'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
           ],
         },
         orderFields: [{ field: 'metadata.name', order: 'asc' }],

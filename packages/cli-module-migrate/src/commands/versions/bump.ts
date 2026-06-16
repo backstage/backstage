@@ -79,7 +79,7 @@ export default async ({ args, info }: CliCommandContext) => {
     flags: { pattern: patternFlag, release, skipInstall, skipMigrate },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         pattern: {

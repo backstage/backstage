@@ -18,10 +18,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { useTechDocsReader } from './TechDocsReaderProvider';
+import { techdocsTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,6 +40,7 @@ const useStyles = makeStyles(theme => ({
 export const TechDocsStateIndicator = () => {
   let StateAlert: JSX.Element | null = null;
   const classes = useStyles();
+  const { t } = useTranslationRef(techdocsTranslationRef);
 
   const { state, contentReload, syncErrorMessage, buildLog } =
     useTechDocsReader();
@@ -51,8 +54,7 @@ export const TechDocsStateIndicator = () => {
         icon={<CircularProgress size="24px" />}
         action={<TechDocsBuildLogs buildLog={buildLog} />}
       >
-        Documentation is accessed for the first time and is being prepared. The
-        subsequent loads are much faster.
+        {t('stateIndicator.initialBuild.message')}
       </Alert>
     );
   }
@@ -66,8 +68,7 @@ export const TechDocsStateIndicator = () => {
         action={<TechDocsBuildLogs buildLog={buildLog} />}
         classes={{ root: classes.root }}
       >
-        A newer version of this documentation is being prepared and will be
-        available shortly.
+        {t('stateIndicator.contentStaleRefreshing.message')}
       </Alert>
     );
   }
@@ -79,13 +80,12 @@ export const TechDocsStateIndicator = () => {
         severity="success"
         action={
           <Button color="inherit" onClick={() => contentReload()}>
-            Refresh
+            {t('stateIndicator.contentStaleReady.refreshButton')}
           </Button>
         }
         classes={{ root: classes.root }}
       >
-        A newer version of this documentation is now available, please refresh
-        to view.
+        {t('stateIndicator.contentStaleReady.message')}
       </Alert>
     );
   }
@@ -98,8 +98,7 @@ export const TechDocsStateIndicator = () => {
         action={<TechDocsBuildLogs buildLog={buildLog} />}
         classes={{ root: classes.root, message: classes.message }}
       >
-        Building a newer version of this documentation failed.{' '}
-        {syncErrorMessage}
+        {t('stateIndicator.contentStaleError.message')} {syncErrorMessage}
       </Alert>
     );
   }
@@ -114,8 +113,7 @@ export const TechDocsStateIndicator = () => {
             action={<TechDocsBuildLogs buildLog={buildLog} />}
             classes={{ root: classes.root, message: classes.message }}
           >
-            Building a newer version of this documentation failed.{' '}
-            {syncErrorMessage}
+            {t('stateIndicator.contentStaleError.message')} {syncErrorMessage}
           </Alert>
         )}
         <TechDocsNotFound />

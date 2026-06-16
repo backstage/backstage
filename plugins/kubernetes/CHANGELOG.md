@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.20
+
+### Patch Changes
+
+- 07bd0b4: Removed the default Kubernetes standalone page that was registered at `/kubernetes`. This page was added by mistake and is not intended to be part of the plugin.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-kubernetes-react@0.5.20
+  - @backstage/plugin-permission-react@0.5.2
+
 ## 0.12.20-next.1
 
 ### Patch Changes

@@ -33,10 +33,12 @@ export function createConnectionType<
 >({
   configSchema,
   type,
+  title,
   authMethods,
   matchAuth,
 }: {
   type: TType;
+  title: string;
   configSchema: WithoutReservedFields<TConfigSchema>;
   authMethods: TAuthMethods;
   matchAuth?: MatchAuth<TAuthMethods>;
@@ -53,6 +55,7 @@ export function createConnectionType<
   const schema = validated
     .extend({
       type: z.literal(type),
+      title: z.string().min(1).optional(),
       match: matchSchema,
       auth: z.array(
         authOptions.length === 1
@@ -66,6 +69,7 @@ export function createConnectionType<
     .strict();
   return {
     type,
+    title,
     configSchema: validated,
     authMethods,
     schema,

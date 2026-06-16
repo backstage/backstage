@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.13.4
+
+### Patch Changes
+
+- 3d0ba59: Added retry with exponential back off to `Git.push()`. Scaffolder template actions that create a repository and immediately push to it (e.g., `publish:github`) can encounter transient failures when the repository is not yet fully provisioned. The push is now retried up to 5 times with increasing delays before failing. Authentication and permission errors (401, 403) fail immediately without retrying.
+- Updated dependencies
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-scaffolder-common@2.2.1
+  - @backstage/plugin-permission-node@0.11.1
+
 ## 0.13.4-next.0
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-events-backend
 
+## 0.6.3
+
+### Patch Changes
+
+- f4342b9: Increased the events bus request body limit to 5mb to allow larger event payloads.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-events-node@0.4.23
+
 ## 0.6.3-next.0
 
 ### Patch Changes

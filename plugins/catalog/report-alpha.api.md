@@ -158,13 +158,9 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
     readonly 'deleteEntity.dialogTitle': 'Are you sure you want to delete this entity?';
     readonly 'deleteEntity.actionButtonTitle': 'Delete entity';
-    readonly 'indexPage.title': '{{orgName}} Catalog';
-    readonly 'indexPage.createButtonTitle': 'Create';
-    readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
-    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
-    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.unknown': 'unknown';
+    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
     readonly 'aboutCard.editButtonTitle': 'Edit Metadata';
     readonly 'aboutCard.editButtonAriaLabel': 'Edit';
@@ -172,7 +168,6 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.refreshScheduledMessage': 'Refresh scheduled';
     readonly 'aboutCard.refreshButtonAriaLabel': 'Refresh';
     readonly 'aboutCard.launchTemplate': 'Launch Template';
-    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.viewSource': 'View Source';
     readonly 'aboutCard.descriptionField.value': 'No description';
     readonly 'aboutCard.descriptionField.label': 'Description';
@@ -190,6 +185,11 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.tagsField.value': 'No Tags';
     readonly 'aboutCard.tagsField.label': 'Tags';
     readonly 'aboutCard.targetsField.label': 'Targets';
+    readonly 'indexPage.title': '{{orgName}} Catalog';
+    readonly 'indexPage.createButtonTitle': 'Create';
+    readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
+    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
+    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'searchResultItem.type': 'Type';
     readonly 'searchResultItem.kind': 'Kind';
     readonly 'searchResultItem.owner': 'Owner';

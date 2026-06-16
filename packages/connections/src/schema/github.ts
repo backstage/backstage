@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const GithubConnectionType = createConnectionType({
   type: 'github',
+  title: 'GitHub',
   configSchema: z.object({
     host: z.string(),
     apiBaseUrl: z.string().optional(),

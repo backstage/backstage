@@ -27,6 +27,7 @@ autoscaling
 autoselect
 Avro
 backend's
+backoff
 backported
 backporting
 BEPs
@@ -562,6 +563,7 @@ untracked
 upsert
 upstreams
 upvote
+UIs
 URIs
 url
 URLs

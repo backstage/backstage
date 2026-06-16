@@ -1,5 +1,14 @@
 # @backstage/backend-app-api
 
+## 1.7.1
+
+### Patch Changes
+
+- 2e895ea: Internal refactor.
+- Updated dependencies
+  - @backstage/connections@0.1.0
+  - @backstage/backend-plugin-api@1.9.2
+
 ## 1.7.1-next.0
 
 ### Patch Changes
