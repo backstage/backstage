@@ -69,13 +69,13 @@
 
   .bui-InputIconStart,
   .bui-InputIconEnd {
-    display: flex;
     flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-content: center;
     pointer-events: none;
-    width: var(--text-field-item-height);
+    min-width: var(--text-field-item-height);
     height: var(--text-field-item-height);
+    padding-inline: var(--bui-space-2);
 
     & svg {
       width: calc(var(--text-field-item-height) / 2);
