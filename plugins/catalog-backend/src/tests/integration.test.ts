@@ -1173,19 +1173,34 @@ describe('Catalog Backend Integration', () => {
       'component:default/b': withOutputFields(entityBOverride),
     });
 
-    // Stop emitting B' from A, then do a full sync with A and B.
-    // The provider full sync detects that B's locationKey ('url:.') conflicts
-    // with its own (undefined) and removes its stale test→B ref. Processing
-    // then removes A→B (A no longer emits B). B becomes orphaned.
+    // Stop emitting B' from A, then do a provider full sync.
+    // The provider detects B's locationKey mismatch ('url:.' vs undefined)
+    // and puts B in toRemove+toAdd. However, deleteWithEagerPruningOfChildren
+    // retains B in refresh_state because it's still reachable via A→B.
+    // The re-add then fails (locationKey conflict on the existing row),
+    // so B loses its provider ref (test→B) but keeps A→B.
     processEntity.mockImplementation(async entity => entity);
     await harness.setInputEntities([entityA, entityB]);
     await expect(harness.process()).resolves.toEqual({});
+
+    // Processing removed A→B (A no longer emits B). B now has no refs.
     await harness.removeOrphanedEntities();
 
+    // B is gone. Only A remains.
+    await expect(harness.getRefreshStateReferences()).resolves.toEqual([
+      {
+        sourceKey: 'test',
+        targetEntityRef: 'component:default/a',
+      },
+    ]);
     await expect(harness.getOutputEntities()).resolves.toEqual({
       'component:default/a': withOutputFields(entityA),
-      'component:default/b': withOutputFields(entityB),
     });
+
+    // On the next provider sync, B no longer exists in refresh_state,
+    // so the provider can add it fresh with original content.
+    await harness.setInputEntities([entityA, entityB]);
+    await expect(harness.process()).resolves.toEqual({});
   });
 
   it('should be able to emit entities during processing with custom location keys', async () => {
