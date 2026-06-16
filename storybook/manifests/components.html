@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">53 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/53 infos</a><span class="filter-pill ok" aria-disabled="true">533 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">53 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/53 infos</a><span class="filter-pill ok" aria-disabled="true">534 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.5s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.8s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -13039,7 +13039,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
       <div class="badges">
         
         <label for="c-38-backstage-ui-select-info" class="badge info as-toggle">1 info</label>
-        <label for="c-38-backstage-ui-select-stories" class="badge ok as-toggle">28 stories</label>
+        <label for="c-38-backstage-ui-select-stories" class="badge ok as-toggle">29 stories</label>
         
         
       </div>
@@ -13131,12 +13131,21 @@ import { RiCheckLine, RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Server Backed Non Searchable Options</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ServerBackedNonSearchableOptions = () =&gt; &lt;ServerBackedSelect searchable={false} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Server Backed Options</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const ServerBackedOptions = () =&gt; &lt;ServerBackedSelect /&gt;;</code></pre>
+              <pre><code>const ServerBackedOptions = () =&gt; &lt;ServerBackedSelect searchable /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
