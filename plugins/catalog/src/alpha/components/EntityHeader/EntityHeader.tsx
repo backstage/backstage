@@ -30,8 +30,8 @@ import {
 } from '@backstage/plugin-catalog-react';
 
 import { EntityLabels } from '../EntityLabels';
-import { headerProps } from '../../../utils/headerProps.ts';
-import { findParentRelation } from '../../../utils/findParentRelation.ts';
+import { headerProps } from '../../../utils/headerProps';
+import { findParentRelation } from '../../../utils/findParentRelation';
 
 const useStyles = makeStyles(theme => ({
   breadcrumbs: {

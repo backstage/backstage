@@ -86,7 +86,7 @@ export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
           [setSearchParams],
         );
         const closeInspectEntityDialog = useCallback(
-          () => setSearchParams(),
+          () => setSearchParams({}),
           [setSearchParams],
         );
         return (

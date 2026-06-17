@@ -22,7 +22,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import MoreVert from '@material-ui/icons/MoreVert';
 import { JSX, SyntheticEvent, useState } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { catalogTranslationRef } from '../../translation.ts';
+import { catalogTranslationRef } from '../../translation';
 import { EntityContextMenuProvider } from '../../../context';
 
 /** @public */
@@ -61,7 +61,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     <>
       <Tooltip title={t('entityContextMenu.moreButtonTitle')} arrow>
         <IconButton
-          aria-label="more"
+          aria-label={t('entityContextMenu.moreButtonAriaLabel')}
           aria-controls="long-menu"
           aria-haspopup="true"
           aria-expanded={!!anchorEl}

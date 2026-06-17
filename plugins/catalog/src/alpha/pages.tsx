@@ -310,6 +310,10 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
                   } satisfies SubRoute,
                 ];
               }),
+            // `inputs.contents` (and the data each output carries) is provided
+            // once when the extension is wired up and is a stable outer-scope
+            // value for the lifetime of this component, so `entity` is the only
+            // reactive dependency here.
             [entity],
           );
 

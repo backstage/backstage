@@ -26,11 +26,22 @@ import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
 //     a bare `/` collapses to the empty string so it acts as an index route
 //     rather than a wildcard that would swallow every sub-path
 function normalizeRoutePath(path: string): string {
-  const withoutLeading = path.replace(/^\/+/, '');
+  // Strip leading and trailing slashes with index scanning rather than regular
+  // expressions to avoid any super-linear backtracking on inputs that contain
+  // long runs of `/`.
+  let start = 0;
+  while (start < path.length && path[start] === '/') {
+    start += 1;
+  }
+  const withoutLeading = path.slice(start);
   if (withoutLeading.endsWith('*')) {
     return withoutLeading;
   }
-  const trimmed = withoutLeading.replace(/\/+$/, '');
+  let end = withoutLeading.length;
+  while (end > 0 && withoutLeading[end - 1] === '/') {
+    end -= 1;
+  }
+  const trimmed = withoutLeading.slice(0, end);
   return trimmed ? `${trimmed}/*` : '';
 }
 

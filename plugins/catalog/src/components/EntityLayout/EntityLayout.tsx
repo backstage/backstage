@@ -63,8 +63,8 @@ import useAsync from 'react-use/esm/useAsync';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { headerProps } from '../../utils/headerProps.ts';
-import { findParentRelation } from '../../utils/findParentRelation.ts';
+import { headerProps } from '../../utils/headerProps';
+import { findParentRelation } from '../../utils/findParentRelation';
 
 /** @public */
 export type EntityLayoutRouteProps = {
