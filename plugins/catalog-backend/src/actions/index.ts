@@ -16,6 +16,7 @@
 
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { PermissionsService, AuthService } from '@backstage/backend-plugin-api';
 import { ModelHolder } from '../model/ModelHolder';
 import { createGetCatalogModelDescriptionAction } from './createGetCatalogModelDescriptionAction.ts';
 import { createGetCatalogEntityAction } from './createGetCatalogEntityAction.ts';
@@ -28,6 +29,8 @@ export const createCatalogActions = (options: {
   actionsRegistry: ActionsRegistryService;
   catalog: CatalogService;
   modelHolder: ModelHolder | undefined;
+  permissions: PermissionsService;
+  auth: AuthService;
   useExperimentalCatalogLayersDescriptions?: boolean;
 }) => {
   createGetCatalogModelDescriptionAction(options);

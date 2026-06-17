@@ -13,16 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PermissionsService, AuthService } from '@backstage/backend-plugin-api';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { NotFoundError } from '@backstage/errors';
+import { Location } from '@backstage/catalog-client';
+import {
+  ANNOTATION_ORIGIN_LOCATION,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
+import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export const createUnregisterCatalogEntitiesAction = ({
   catalog,
   actionsRegistry,
+  permissions,
+  auth,
 }: {
   catalog: CatalogService;
   actionsRegistry: ActionsRegistryService;
+  permissions: PermissionsService;
+  auth: AuthService;
 }) => {
   actionsRegistry.register({
     name: 'unregister-entity',
@@ -63,37 +75,86 @@ Once completed, all entities associated with the Location will be deleted from t
       output: z => z.object({}),
     },
     action: async ({ input: { type }, credentials }) => {
+      let locations: Location[] = [];
+      const serviceCredentials = await auth.getOwnServiceCredentials();
+
       if ('locationId' in type) {
-        await catalog.removeLocationById(type.locationId, {
-          credentials,
+        const location = await catalog.getLocationById(type.locationId, {
+          credentials: serviceCredentials,
         });
-      } else {
-        const locations = await catalog
-          .getLocations(
-            {},
-            {
-              credentials,
-            },
-          )
-          .then(response =>
-            response.items.filter(
-              location =>
-                location.target.toLowerCase() ===
-                type.locationUrl.toLowerCase(),
-            ),
+        if (!location) {
+          throw new NotFoundError(
+            `Location with ID ${type.locationId} not found`,
           );
+        }
+        locations = [location];
+      } else {
+        const response = await catalog.getLocations(
+          {},
+          {
+            credentials: serviceCredentials,
+          },
+        );
+        locations = response.items.filter(
+          location =>
+            location.target.toLowerCase() === type.locationUrl.toLowerCase(),
+        );
 
         if (locations.length === 0) {
           throw new NotFoundError(
             `Location with URL ${type.locationUrl} not found`,
           );
         }
+      }
 
-        for (const location of locations) {
-          await catalog.removeLocationById(location.id, {
-            credentials,
-          });
+      const entitiesToCheck: string[] = [];
+      for (const location of locations) {
+        if (location.entityRef) {
+          entitiesToCheck.push(location.entityRef);
         }
+        const originLocationRef = `${location.type}:${location.target}`;
+        const colocated = await catalog.getEntities(
+          {
+            filter: {
+              [`metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`]:
+                originLocationRef,
+            },
+            fields: ['kind', 'metadata.name', 'metadata.namespace'],
+          },
+          {
+            credentials: serviceCredentials,
+          },
+        );
+        for (const entity of colocated.items) {
+          const ref = stringifyEntityRef(entity);
+          if (!entitiesToCheck.includes(ref)) {
+            entitiesToCheck.push(ref);
+          }
+        }
+      }
+
+      if (entitiesToCheck.length > 0) {
+        const authorizationResults = await permissions.authorize(
+          entitiesToCheck.map(entityRef => ({
+            permission: catalogEntityDeletePermission,
+            resourceRef: entityRef,
+          })),
+          { credentials },
+        );
+
+        for (const { result } of authorizationResults) {
+          if (result === AuthorizeResult.DENY) {
+            throw new NotAllowedError(
+              'You are not authorized to delete some of the entities managed by this location.',
+            );
+          }
+        }
+      }
+
+      for (const location of locations) {
+        await catalog.removeLocationById(location.id, {
+          credentials,
+        });
       }
 
       return { output: {} };

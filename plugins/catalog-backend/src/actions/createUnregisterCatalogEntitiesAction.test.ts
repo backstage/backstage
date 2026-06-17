@@ -16,18 +16,40 @@
 import { createUnregisterCatalogEntitiesAction } from './createUnregisterCatalogEntitiesAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { PermissionsService, AuthService } from '@backstage/backend-plugin-api';
 
 describe('createUnregisterCatalogEntitiesAction', () => {
+  const mockPermissions = {
+    authorize: jest.fn().mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+  } as unknown as PermissionsService;
+
+  const mockAuth = {
+    getOwnServiceCredentials: jest.fn().mockResolvedValue({
+      token: 'mock-service-token',
+    }),
+  } as unknown as AuthService;
+
   describe('with locationId', () => {
     it('should successfully unregister a catalog location with a valid locationId', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const mockCatalog = catalogServiceMock();
 
       mockCatalog.removeLocationById = jest.fn().mockResolvedValue(undefined);
+      mockCatalog.getLocationById = jest.fn().mockResolvedValue({
+        id: 'test-location-id-1234',
+        type: 'url',
+        target:
+          'https://github.com/backstage/demo/blob/master/catalog-info.yaml',
+        entityRef: 'location:default/generated-loc',
+      });
+      mockCatalog.getEntities = jest.fn().mockResolvedValue({ items: [] });
 
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions: mockPermissions,
+        auth: mockAuth,
       });
 
       const result = await mockActionsRegistry.invoke({
@@ -52,10 +74,20 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       mockCatalog.removeLocationById = jest
         .fn()
         .mockRejectedValue(new Error(errorMessage));
+      mockCatalog.getLocationById = jest.fn().mockResolvedValue({
+        id: 'test-location-id-1234',
+        type: 'url',
+        target:
+          'https://github.com/backstage/demo/blob/master/catalog-info.yaml',
+        entityRef: 'location:default/generated-loc',
+      });
+      mockCatalog.getEntities = jest.fn().mockResolvedValue({ items: [] });
 
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions: mockPermissions,
+        auth: mockAuth,
       });
 
       await expect(
@@ -81,11 +113,14 @@ describe('createUnregisterCatalogEntitiesAction', () => {
           { id: 'location-id-2', target: 'https://other-url.com/catalog.yaml' },
         ],
       });
+      mockCatalog.getEntities = jest.fn().mockResolvedValue({ items: [] });
       mockCatalog.removeLocationById = jest.fn().mockResolvedValue(undefined);
 
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions: mockPermissions,
+        auth: mockAuth,
       });
 
       const result = await mockActionsRegistry.invoke({
@@ -122,11 +157,14 @@ describe('createUnregisterCatalogEntitiesAction', () => {
           },
         ],
       });
+      mockCatalog.getEntities = jest.fn().mockResolvedValue({ items: [] });
       mockCatalog.removeLocationById = jest.fn().mockResolvedValue(undefined);
 
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions: mockPermissions,
+        auth: mockAuth,
       });
 
       const result = await mockActionsRegistry.invoke({
@@ -162,11 +200,14 @@ describe('createUnregisterCatalogEntitiesAction', () => {
           { id: 'location-id-2', target: locationUrl },
         ],
       });
+      mockCatalog.getEntities = jest.fn().mockResolvedValue({ items: [] });
       mockCatalog.removeLocationById = jest.fn().mockResolvedValue(undefined);
 
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions: mockPermissions,
+        auth: mockAuth,
       });
 
       const result = await mockActionsRegistry.invoke({
@@ -208,6 +249,8 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions: mockPermissions,
+        auth: mockAuth,
       });
 
       await expect(
@@ -232,6 +275,8 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions: mockPermissions,
+        auth: mockAuth,
       });
 
       await expect(
@@ -248,6 +293,128 @@ describe('createUnregisterCatalogEntitiesAction', () => {
         name: 'Error',
         message: 'Failed to get locations',
       });
+    });
+  });
+
+  describe('with permission checks', () => {
+    it('should successfully unregister a catalog location if delete permission is allowed', async () => {
+      const mockActionsRegistry = actionsRegistryServiceMock();
+      const mockCatalog = catalogServiceMock();
+      const allowedPermissions = {
+        authorize: jest
+          .fn()
+          .mockResolvedValue([
+            { result: AuthorizeResult.ALLOW },
+            { result: AuthorizeResult.ALLOW },
+          ]),
+      } as unknown as PermissionsService;
+
+      const locationUrl =
+        'https://github.com/backstage/demo/blob/master/catalog-info.yaml';
+
+      mockCatalog.getLocationById = jest.fn().mockResolvedValue({
+        id: 'location-id-1',
+        type: 'url',
+        target: locationUrl,
+        entityRef: 'location:default/generated-loc',
+      });
+      mockCatalog.getEntities = jest.fn().mockResolvedValue({
+        items: [
+          {
+            kind: 'Component',
+            metadata: { name: 'test-component', namespace: 'default' },
+          },
+        ],
+      });
+      mockCatalog.removeLocationById = jest.fn().mockResolvedValue(undefined);
+
+      createUnregisterCatalogEntitiesAction({
+        catalog: mockCatalog,
+        actionsRegistry: mockActionsRegistry,
+        permissions: allowedPermissions,
+        auth: mockAuth,
+      });
+
+      const result = await mockActionsRegistry.invoke({
+        id: 'test:unregister-entity',
+        input: { type: { locationId: 'location-id-1' } },
+      });
+
+      expect(result.output).toEqual({});
+      expect(mockCatalog.getEntities).toHaveBeenCalledWith(
+        {
+          filter: {
+            'metadata.annotations.backstage.io/managed-by-origin-location': `url:${locationUrl}`,
+          },
+          fields: ['kind', 'metadata.name', 'metadata.namespace'],
+        },
+        expect.any(Object),
+      );
+      expect(allowedPermissions.authorize).toHaveBeenCalledWith(
+        [
+          {
+            permission: expect.objectContaining({
+              name: 'catalog.entity.delete',
+            }),
+            resourceRef: 'location:default/generated-loc',
+          },
+          {
+            permission: expect.objectContaining({
+              name: 'catalog.entity.delete',
+            }),
+            resourceRef: 'component:default/test-component',
+          },
+        ],
+        expect.any(Object),
+      );
+      expect(mockCatalog.removeLocationById).toHaveBeenCalledWith(
+        'location-id-1',
+        expect.any(Object),
+      );
+    });
+
+    it('should throw NotAllowedError and not unregister if delete permission is denied', async () => {
+      const mockActionsRegistry = actionsRegistryServiceMock();
+      const mockCatalog = catalogServiceMock();
+      const deniedPermissions = {
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.DENY }]),
+      } as unknown as PermissionsService;
+
+      const locationUrl =
+        'https://github.com/backstage/demo/blob/master/catalog-info.yaml';
+
+      mockCatalog.getLocationById = jest.fn().mockResolvedValue({
+        id: 'location-id-1',
+        type: 'url',
+        target: locationUrl,
+        entityRef: 'location:default/generated-loc',
+      });
+      mockCatalog.getEntities = jest.fn().mockResolvedValue({
+        items: [],
+      });
+      mockCatalog.removeLocationById = jest.fn().mockResolvedValue(undefined);
+
+      createUnregisterCatalogEntitiesAction({
+        catalog: mockCatalog,
+        actionsRegistry: mockActionsRegistry,
+        permissions: deniedPermissions,
+        auth: mockAuth,
+      });
+
+      await expect(
+        mockActionsRegistry.invoke({
+          id: 'test:unregister-entity',
+          input: { type: { locationId: 'location-id-1' } },
+        }),
+      ).rejects.toMatchObject({
+        name: 'NotAllowedError',
+        message:
+          'You are not authorized to delete some of the entities managed by this location.',
+      });
+
+      expect(mockCatalog.removeLocationById).not.toHaveBeenCalled();
     });
   });
 });
