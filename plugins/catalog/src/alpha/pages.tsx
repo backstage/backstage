@@ -162,7 +162,6 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityHeaderBlueprint.dataRefs.element.optional(),
       EntityHeaderBlueprint.dataRefs.component.optional(),
       EntityHeaderBlueprint.dataRefs.filterFunction.optional(),
-      EntityHeaderBlueprint.dataRefs.order.optional(),
     ]),
     contents: createExtensionInput([
       coreExtensionData.reactElement,
@@ -181,7 +180,6 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
     ]),
     layouts: createExtensionInput([
       EntityLayoutBlueprint.dataRefs.component,
-      EntityLayoutBlueprint.dataRefs.order.optional(),
       EntityLayoutBlueprint.dataRefs.filterFunction.optional(),
     ]),
   },
@@ -231,17 +229,17 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             (() => true),
         }));
 
-        // Get available headers, sorted by explicit order first, then by
-        // whether they have a filter so that more specific (filtered) headers
-        // win over generic ones when no explicit order is set.
+        // Get available headers, sorted so that more specific (filtered)
+        // headers win over generic ones. Headers are otherwise kept in their
+        // registration order, which can be controlled via `app-config.yaml`
+        // like any other extension.
         const headers = sortBy(
           inputs.headers.map(header => ({
             element: header.get(EntityHeaderBlueprint.dataRefs.element),
             component: header.get(EntityHeaderBlueprint.dataRefs.component),
             filter: header.get(EntityHeaderBlueprint.dataRefs.filterFunction),
-            order: header.get(EntityHeaderBlueprint.dataRefs.order),
           })),
-          [({ order }) => order, ({ filter }) => (filter ? 0 : 1)],
+          ({ filter }) => (filter ? 0 : 1),
         );
 
         const groupDefinitions =
@@ -250,13 +248,15 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             {} as EntityContentGroupDefinitions,
           ) ?? defaultEntityContentGroupDefinitions;
 
+        // Layouts follow the same selection rules as headers: a filtered
+        // (more specific) layout wins over a generic one, and ties keep their
+        // registration order, which can be ordered via `app-config.yaml`.
         const layouts = sortBy(
-          inputs.layouts.map(header => ({
-            component: header.get(EntityLayoutBlueprint.dataRefs.component),
-            filter: header.get(EntityLayoutBlueprint.dataRefs.filterFunction),
-            order: header.get(EntityLayoutBlueprint.dataRefs.order),
+          inputs.layouts.map(layout => ({
+            component: layout.get(EntityLayoutBlueprint.dataRefs.component),
+            filter: layout.get(EntityLayoutBlueprint.dataRefs.filterFunction),
           })),
-          [({ order }) => order, ({ filter }) => (filter ? 0 : 1)],
+          ({ filter }) => (filter ? 0 : 1),
         );
 
         const Component = () => {

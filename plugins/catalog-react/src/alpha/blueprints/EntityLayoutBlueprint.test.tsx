@@ -45,7 +45,9 @@ describe('EntityLayoutBlueprint', () => {
     const Component = createExtensionTester(extension).get(
       EntityLayoutBlueprint.dataRefs.component,
     );
-    expect(Component).toBeDefined();
+    if (!Component) {
+      throw new Error('Expected layout component to be defined');
+    }
 
     await renderInTestApp(
       <Suspense fallback="loading">
@@ -61,39 +63,6 @@ describe('EntityLayoutBlueprint', () => {
 
     expect(await screen.findByText('My Header')).toBeInTheDocument();
     expect(await screen.findByText('Tab')).toBeInTheDocument();
-  });
-
-  it('emits the order data ref when an order is provided', () => {
-    const tester = createExtensionTester(
-      EntityLayoutBlueprint.make({
-        name: 'test',
-        params: { loader: async () => TestLayout, order: 5 },
-      }),
-    );
-
-    expect(tester.get(EntityLayoutBlueprint.dataRefs.order)).toBe(5);
-  });
-
-  it('emits an explicit order of 0', () => {
-    const tester = createExtensionTester(
-      EntityLayoutBlueprint.make({
-        name: 'test',
-        params: { loader: async () => TestLayout, order: 0 },
-      }),
-    );
-
-    expect(tester.get(EntityLayoutBlueprint.dataRefs.order)).toBe(0);
-  });
-
-  it('does not emit an order data ref when no order is provided', () => {
-    const tester = createExtensionTester(
-      EntityLayoutBlueprint.make({
-        name: 'test',
-        params: { loader: async () => TestLayout },
-      }),
-    );
-
-    expect(tester.get(EntityLayoutBlueprint.dataRefs.order)).toBeUndefined();
   });
 
   it.each([

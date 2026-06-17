@@ -29,7 +29,6 @@ import { resolveEntityFilterData } from './resolveEntityFilterData';
 import {
   entityFilterExpressionDataRef,
   entityFilterFunctionDataRef,
-  entityLayoutOrderRef,
 } from './extensionData';
 import { JSX } from 'react';
 
@@ -51,7 +50,6 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
     element: coreExtensionData.reactElement,
-    order: entityLayoutOrderRef,
     component: entityLayoutHeaderComponentDataRef,
   },
   configSchema: {
@@ -62,12 +60,10 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
     entityFilterExpressionDataRef.optional(),
     coreExtensionData.reactElement.optional(),
     entityLayoutHeaderComponentDataRef.optional(),
-    entityLayoutOrderRef.optional(),
   ],
   *factory(
     params: {
       filter?: FilterPredicate | ((entity: Entity) => boolean);
-      order?: number;
     } & (
       | {
           loader: () => Promise<JSX.Element>;
@@ -80,7 +76,7 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
     ),
     { node, config },
   ) {
-    const { filter, order } = params;
+    const { filter } = params;
 
     yield* resolveEntityFilterData(filter, config, node);
 
@@ -92,10 +88,6 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
       yield coreExtensionData.reactElement(
         ExtensionBoundary.lazy(node, params.loader),
       );
-    }
-
-    if (order !== undefined) {
-      yield entityLayoutOrderRef(order);
     }
   },
 });

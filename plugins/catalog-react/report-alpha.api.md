@@ -81,20 +81,20 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'inspectEntityDialog.overviewPage.metadata.title': 'Metadata';
     readonly 'inspectEntityDialog.overviewPage.labels': 'Labels';
     readonly 'inspectEntityDialog.overviewPage.status.title': 'Status';
-    readonly 'inspectEntityDialog.overviewPage.relation.title': 'Relations';
-    readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
+    readonly 'inspectEntityDialog.overviewPage.identity.title': 'Identity';
     readonly 'inspectEntityDialog.overviewPage.tags': 'Tags';
+    readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
+    readonly 'inspectEntityDialog.overviewPage.relation.title': 'Relations';
     readonly 'inspectEntityDialog.overviewPage.copyAriaLabel': 'Copy {{label}}';
     readonly 'inspectEntityDialog.overviewPage.copiedStatus': 'Copied';
     readonly 'inspectEntityDialog.overviewPage.helpLinkAriaLabel': 'Learn more';
-    readonly 'inspectEntityDialog.overviewPage.identity.title': 'Identity';
     readonly 'inspectEntityDialog.yamlPage.title': 'Entity as YAML';
     readonly 'inspectEntityDialog.yamlPage.description': 'This is the raw entity data as received from the catalog, on YAML form.';
     readonly 'inspectEntityDialog.tabNames.json': 'Raw JSON';
+    readonly 'inspectEntityDialog.tabNames.yaml': 'Raw YAML';
     readonly 'inspectEntityDialog.tabNames.overview': 'Overview';
     readonly 'inspectEntityDialog.tabNames.ancestry': 'Ancestry';
     readonly 'inspectEntityDialog.tabNames.colocated': 'Colocated';
-    readonly 'inspectEntityDialog.tabNames.yaml': 'Raw YAML';
     readonly 'unregisterEntityDialog.title': 'Are you sure you want to unregister this entity?';
     readonly 'unregisterEntityDialog.cancelButtonTitle': 'Cancel';
     readonly 'unregisterEntityDialog.deleteButtonTitle': 'Delete Entity';
@@ -120,13 +120,13 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.label': 'Label';
     readonly 'entityTableColumnTitle.title': 'Title';
     readonly 'entityTableColumnTitle.description': 'Description';
-    readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.system': 'System';
     readonly 'entityTableColumnTitle.namespace': 'Namespace';
-    readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
-    readonly 'entityTableColumnTitle.owner': 'Owner';
-    readonly 'entityTableColumnTitle.targets': 'Targets';
     readonly 'entityTableColumnTitle.tags': 'Tags';
+    readonly 'entityTableColumnTitle.domain': 'Domain';
+    readonly 'entityTableColumnTitle.owner': 'Owner';
+    readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
+    readonly 'entityTableColumnTitle.targets': 'Targets';
     readonly 'entityRelationCard.emptyHelpLinkTitle': 'Learn how to change this.';
     readonly 'missingAnnotationEmptyState.title': 'Missing Annotation';
     readonly 'missingAnnotationEmptyState.readMore': 'Read more';
@@ -545,7 +545,6 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
   kind: 'entity-header';
   params: {
     filter?: FilterPredicate | ((entity: Entity) => boolean);
-    order?: number;
   } & (
     | {
         loader: () => Promise<JSX_2.Element>;
@@ -584,13 +583,6 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
-      >
-    | ExtensionDataRef<
-        number,
-        'catalog.entity-layout.order',
-        {
-          optional: true;
-        }
       >;
   inputs: {};
   config: {
@@ -608,11 +600,6 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
     element: ConfigurableExtensionDataRef<
       JSX_2.Element,
       'core.reactElement',
-      {}
-    >;
-    order: ConfigurableExtensionDataRef<
-      number,
-      'catalog.entity-layout.order',
       {}
     >;
     component: ConfigurableExtensionDataRef<
@@ -692,7 +679,6 @@ export const EntityLayoutBlueprint: ExtensionBlueprint<{
   params: {
     loader: () => Promise<(props: EntityLayoutBlueprintProps) => JSX_2.Element>;
     filter?: FilterPredicate | ((entity: Entity) => boolean);
-    order?: number;
   };
   output:
     | ExtensionDataRef<
@@ -705,13 +691,6 @@ export const EntityLayoutBlueprint: ExtensionBlueprint<{
     | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
-        {
-          optional: true;
-        }
-      >
-    | ExtensionDataRef<
-        number,
-        'catalog.entity-layout.order',
         {
           optional: true;
         }
@@ -734,11 +713,6 @@ export const EntityLayoutBlueprint: ExtensionBlueprint<{
     filterFunction: ConfigurableExtensionDataRef<
       (entity: Entity) => boolean,
       'catalog.entity-filter-function',
-      {}
-    >;
-    order: ConfigurableExtensionDataRef<
-      number,
-      'catalog.entity-layout.order',
       {}
     >;
     component: ConfigurableExtensionDataRef<
@@ -795,6 +769,7 @@ export const EntityTableColumnTitle: (
   input: EntityTableColumnTitleProps,
 ) =>
   | 'System'
+  | 'Title'
   | 'Domain'
   | 'Lifecycle'
   | 'Namespace'
@@ -804,7 +779,6 @@ export const EntityTableColumnTitle: (
   | 'Name'
   | 'Description'
   | 'Targets'
-  | 'Title'
   | 'Label';
 
 // @alpha (undocumented)

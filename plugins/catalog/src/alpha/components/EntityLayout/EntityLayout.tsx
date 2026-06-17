@@ -24,7 +24,10 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
-import { entityRouteRef, useAsyncEntity } from '@backstage/plugin-catalog-react';
+import {
+  entityRouteRef,
+  useAsyncEntity,
+} from '@backstage/plugin-catalog-react';
 import { EntityLayoutBlueprintProps } from '@backstage/plugin-catalog-react/alpha';
 import { catalogTranslationRef } from '../../translation';
 import { EntityTabs } from '../EntityTabs';

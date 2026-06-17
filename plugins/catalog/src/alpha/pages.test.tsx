@@ -973,92 +973,7 @@ describe('Entity page', () => {
       );
     });
 
-    it('Should prioritize headers by order', async () => {
-      const PrimaryHeader = ({
-        contextMenu,
-      }: {
-        contextMenu?: React.ReactNode;
-      }) => (
-        <header>
-          <h1>Primary Header</h1>
-          {contextMenu}
-        </header>
-      );
-
-      const SecondaryHeader = ({
-        contextMenu,
-      }: {
-        contextMenu?: React.ReactNode;
-      }) => (
-        <header>
-          <h1>Secondary Header</h1>
-          {contextMenu}
-        </header>
-      );
-
-      const primaryHeaderBlueprint = EntityHeaderBlueprint.make({
-        name: 'primary-header',
-        params: {
-          componentLoader: async () => PrimaryHeader,
-          order: 100,
-        },
-      });
-
-      const secondaryHeaderBlueprint = EntityHeaderBlueprint.make({
-        name: 'secondary-header',
-        params: {
-          componentLoader: async () => SecondaryHeader,
-          order: 200,
-        },
-      });
-
-      const tester = createExtensionTester(
-        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
-      )
-        .add(secondaryHeaderBlueprint) // Add secondary first
-        .add(primaryHeaderBlueprint); // Add primary second
-
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
-          },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
-          initialRouteEntries: [entityPath],
-          mountPath: '/catalog/:namespace/:kind/:name',
-        },
-      );
-
-      // Should render Primary header due to lower order value (higher priority)
-      await waitFor(() =>
-        expect(
-          screen.getByRole('heading', { name: /Primary Header/ }),
-        ).toBeInTheDocument(),
-      );
-
-      await waitFor(() =>
-        expect(
-          screen.queryByRole('heading', { name: /Secondary Header/ }),
-        ).not.toBeInTheDocument(),
-      );
-    });
-
-    it('Should prefer headers with filters over those without when no order is specified', async () => {
+    it('Should prefer headers with filters over those without', async () => {
       const GenericHeader = ({
         contextMenu,
       }: {
@@ -1162,7 +1077,6 @@ describe('Entity page', () => {
               <h1>Element Header</h1>
             </header>
           ),
-          order: 200,
         },
       });
 
@@ -1170,7 +1084,7 @@ describe('Entity page', () => {
         name: 'component-header',
         params: {
           componentLoader: async () => ComponentHeader,
-          order: 100,
+          filter: { kind: 'Component' },
         },
       });
 
@@ -1206,7 +1120,8 @@ describe('Entity page', () => {
         },
       );
 
-      // Should render Component header due to lower order value
+      // Should render the Component header since its filter matches the
+      // entity and takes precedence over the generic element header.
       await waitFor(() =>
         expect(
           screen.getByRole('heading', { name: /Component Header/ }),

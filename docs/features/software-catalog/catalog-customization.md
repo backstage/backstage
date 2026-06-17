@@ -606,8 +606,6 @@ export const myCustomHeader = EntityHeaderBlueprint.make({
     componentLoader: async () => MyEntityHeader,
     // Optional: only show for services
     filter: { kind: 'component', 'spec.type': 'service' },
-    // Optional: if you register multiple headers, smaller order wins
-    order: 1,
   },
 });
 ```
@@ -615,7 +613,7 @@ export const myCustomHeader = EntityHeaderBlueprint.make({
 Notes:
 
 - If you use `loader` instead of `componentLoader` you will not receive the `contextMenu` prop. Use `componentLoader` whenever you want to keep the menu button and contributed menu items.
-- You can register multiple headers and select which one applies using `filter` and `order`. The first matching header by order is used.
+- You can register multiple headers and select which one applies using `filter`. A header with a `filter` takes precedence over a generic one; otherwise the first matching header in registration order is used. Ordering can be controlled in `app-config.yaml` like any other extension.
 
 ### Customize the entire entity layout
 
@@ -663,15 +661,13 @@ export const myCustomEntityLayout = EntityLayoutBlueprint.make({
     loader: async () => MyEntityLayout,
     // Optional: make this layout only apply to specific entities
     filter: { kind: 'component' },
-    // Optional: order if you have multiple layouts
-    order: 100,
   },
 });
 ```
 
 Tips:
 
-- You can create different layouts for different entity types using `filter` and `order`.
+- You can create different layouts for different entity types using `filter`. A layout with a `filter` takes precedence over a generic one; ties keep their registration order, which can be ordered via `app-config.yaml` like any other extension.
 - If you want something close to the default behavior but with a small tweak (e.g., a banner above the tabs), implement your layout by re-creating the bits you need, or start from the minimal example above and add your own navigation.
 
 ### Configure groups, titles, and icons
