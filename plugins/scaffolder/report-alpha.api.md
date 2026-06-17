@@ -527,6 +527,7 @@ const _default: OverridableFrontendPlugin<
     'sub-page:scaffolder/templates': OverridableExtensionDefinition<{
       config: {
         enableBackstageUi: boolean;
+        filter: FilterPredicate | undefined;
         groups:
           | {
               title: string;
@@ -538,6 +539,7 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         enableBackstageUi?: boolean | undefined;
+        filter?: FilterPredicate | undefined;
         groups?:
           | {
               title: string;
