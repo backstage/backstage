@@ -1166,6 +1166,7 @@ export const ComboboxDefinition: {
     readonly root: 'bui-Combobox';
     readonly popover: 'bui-ComboboxPopover';
   };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly icon: {};
     readonly size: {
@@ -1198,7 +1199,6 @@ export const ComboboxInputDefinition: {
     readonly input: 'bui-ComboboxInputField';
     readonly chevron: 'bui-ComboboxInputChevron';
   };
-  readonly bg: 'consumer';
   readonly propDefs: {
     readonly icon: {};
     readonly placeholder: {};
@@ -1704,6 +1704,7 @@ export const DatePickerDefinition: {
   readonly classNames: {
     readonly root: 'bui-DatePicker';
   };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -1727,7 +1728,6 @@ export const DatePickerGroupDefinition: {
     readonly segment: 'bui-DatePickerSegment';
     readonly button: 'bui-DatePickerButton';
   };
-  readonly bg: 'consumer';
   readonly propDefs: {};
 };
 
@@ -1758,6 +1758,7 @@ export const DateRangePickerDefinition: {
   readonly classNames: {
     readonly root: 'bui-DateRangePicker';
   };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -3250,6 +3251,7 @@ export const SearchAutocompleteDefinition: {
     readonly popoverWidth: {};
     readonly popoverPlacement: {};
     readonly children: {};
+    readonly isDisabled: {};
     readonly isLoading: {};
     readonly defaultOpen: {};
     readonly className: {};
@@ -3285,6 +3287,7 @@ export type SearchAutocompleteOwnProps = {
   popoverPlacement?: PopoverProps_2['placement'];
   children?: ReactNode;
   isLoading?: boolean;
+  isDisabled?: boolean;
   defaultOpen?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -3484,6 +3487,7 @@ export const SelectDefinition: {
     readonly root: 'bui-Select';
     readonly popover: 'bui-SelectPopover';
   };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly icon: {};
     readonly size: {

@@ -46,19 +46,6 @@
     transition: box-shadow 0.2s ease-in-out;
     cursor: text;
 
-    /* bg consumer — auto-increment background based on parent context */
-    &[data-on-bg='neutral-1'] {
-      background-color: var(--bui-bg-neutral-2);
-    }
-
-    &[data-on-bg='neutral-2'] {
-      background-color: var(--bui-bg-neutral-3);
-    }
-
-    &[data-on-bg='neutral-3'] {
-      background-color: var(--bui-bg-neutral-4);
-    }
-
     &[data-focus-within] {
       outline: none;
       box-shadow: inset 0 0 0 1px var(--bui-ring);
@@ -69,8 +56,33 @@
     }
 
     &[data-disabled] {
-      opacity: 0.5;
       cursor: not-allowed;
+      color: var(--bui-fg-disabled);
+      background-color: var(--bui-bg-neutral-1-disabled);
+    }
+
+    .bui-DatePicker[data-on-bg='neutral-1'] & {
+      background-color: var(--bui-bg-neutral-2);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-2-disabled);
+      }
+    }
+
+    .bui-DatePicker[data-on-bg='neutral-2'] & {
+      background-color: var(--bui-bg-neutral-3);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-3-disabled);
+      }
+    }
+
+    .bui-DatePicker[data-on-bg='neutral-3'] & {
+      background-color: var(--bui-bg-neutral-4);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-4-disabled);
+      }
     }
 
     /* Sizes */
@@ -182,6 +194,11 @@
 
     &[data-pressed] {
       color: var(--bui-fg-primary);
+    }
+
+    .bui-DatePicker[data-disabled] & {
+      cursor: not-allowed;
+      color: var(--bui-fg-disabled);
     }
   }
 

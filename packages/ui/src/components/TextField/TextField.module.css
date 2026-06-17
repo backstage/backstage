@@ -23,18 +23,6 @@
     font-family: var(--bui-font-regular);
     width: 100%;
     flex: 1;
-
-    &[data-on-bg='neutral-1'] .bui-Input {
-      background-color: var(--bui-bg-neutral-2);
-    }
-
-    &[data-on-bg='neutral-2'] .bui-Input {
-      background-color: var(--bui-bg-neutral-3);
-    }
-
-    &[data-on-bg='neutral-3'] .bui-Input {
-      background-color: var(--bui-bg-neutral-4);
-    }
   }
 
   .bui-InputWrapper {
@@ -80,6 +68,10 @@
       width: 1.25rem;
       height: 1.25rem;
     }
+
+    .bui-TextField[data-disabled] & {
+      color: var(--bui-fg-disabled);
+    }
   }
 
   .bui-Input {
@@ -117,8 +109,37 @@
     }
 
     &[data-disabled] {
-      opacity: 0.5;
       cursor: not-allowed;
+      color: var(--bui-fg-disabled);
+      background-color: var(--bui-bg-neutral-1-disabled);
+
+      &::placeholder {
+        color: var(--bui-fg-disabled);
+      }
+    }
+
+    .bui-TextField[data-on-bg='neutral-1'] & {
+      background-color: var(--bui-bg-neutral-2);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-2-disabled);
+      }
+    }
+
+    .bui-TextField[data-on-bg='neutral-2'] & {
+      background-color: var(--bui-bg-neutral-3);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-3-disabled);
+      }
+    }
+
+    .bui-TextField[data-on-bg='neutral-3'] & {
+      background-color: var(--bui-bg-neutral-4);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-4-disabled);
+      }
     }
   }
 }

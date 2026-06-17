@@ -51,18 +51,6 @@
     background-color: var(--bui-bg-neutral-1);
     transition: box-shadow 0.2s ease-in-out;
 
-    &[data-on-bg='neutral-1'] {
-      background-color: var(--bui-bg-neutral-2);
-    }
-
-    &[data-on-bg='neutral-2'] {
-      background-color: var(--bui-bg-neutral-3);
-    }
-
-    &[data-on-bg='neutral-3'] {
-      background-color: var(--bui-bg-neutral-4);
-    }
-
     .bui-Combobox[data-focus-within] & {
       box-shadow: inset 0 0 0 1px var(--bui-ring);
     }
@@ -87,6 +75,32 @@
 
     &[data-disabled] {
       cursor: not-allowed;
+      color: var(--bui-fg-disabled);
+      background-color: var(--bui-bg-neutral-1-disabled);
+    }
+
+    .bui-Combobox[data-on-bg='neutral-1'] & {
+      background-color: var(--bui-bg-neutral-2);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-2-disabled);
+      }
+    }
+
+    .bui-Combobox[data-on-bg='neutral-2'] & {
+      background-color: var(--bui-bg-neutral-3);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-3-disabled);
+      }
+    }
+
+    .bui-Combobox[data-on-bg='neutral-3'] & {
+      background-color: var(--bui-bg-neutral-4);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-4-disabled);
+      }
     }
   }
 
@@ -105,6 +119,10 @@
     .bui-Combobox[data-size='medium'] & svg {
       width: 1.25rem;
       height: 1.25rem;
+    }
+
+    .bui-ComboboxInput[data-disabled] & {
+      color: var(--bui-fg-disabled);
     }
   }
 
@@ -128,9 +146,13 @@
       color: var(--bui-fg-secondary);
     }
 
-    &[disabled] {
+    &[data-disabled] {
       cursor: not-allowed;
       color: var(--bui-fg-disabled);
+
+      &::placeholder {
+        color: var(--bui-fg-disabled);
+      }
     }
   }
 

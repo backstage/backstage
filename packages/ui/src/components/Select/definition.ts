@@ -35,6 +35,7 @@ export const SelectDefinition = defineComponent<SelectOwnProps>()({
     root: 'bui-Select',
     popover: 'bui-SelectPopover',
   },
+  bg: 'consumer',
   propDefs: {
     icon: {},
     size: { dataAttribute: true, default: 'small' },
@@ -63,7 +64,6 @@ export const SelectTriggerDefinition = defineComponent<SelectTriggerOwnProps>()(
       chevron: 'bui-SelectTriggerChevron',
       value: 'bui-SelectValue',
     },
-    bg: 'consumer',
     propDefs: {
       icon: {},
     },

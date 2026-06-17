@@ -54,18 +54,6 @@
     background-color: var(--bui-bg-neutral-1);
     transition: box-shadow 0.2s ease-in-out;
 
-    &[data-on-bg='neutral-1'] {
-      background-color: var(--bui-bg-neutral-2);
-    }
-
-    &[data-on-bg='neutral-2'] {
-      background-color: var(--bui-bg-neutral-3);
-    }
-
-    &[data-on-bg='neutral-3'] {
-      background-color: var(--bui-bg-neutral-4);
-    }
-
     .bui-Select[data-focused] & {
       box-shadow: inset 0 0 0 1px var(--bui-ring);
     }
@@ -108,9 +96,38 @@
       box-shadow: inset 0 0 0 1px var(--bui-border-danger);
     }
 
-    &[disabled] {
+    &[data-disabled] {
       cursor: not-allowed;
       color: var(--bui-fg-disabled);
+      background-color: var(--bui-bg-neutral-1-disabled);
+
+      & svg {
+        color: var(--bui-fg-disabled);
+      }
+    }
+
+    .bui-Select[data-on-bg='neutral-1'] & {
+      background-color: var(--bui-bg-neutral-2);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-2-disabled);
+      }
+    }
+
+    .bui-Select[data-on-bg='neutral-2'] & {
+      background-color: var(--bui-bg-neutral-3);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-3-disabled);
+      }
+    }
+
+    .bui-Select[data-on-bg='neutral-3'] & {
+      background-color: var(--bui-bg-neutral-4);
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-4-disabled);
+      }
     }
   }
 
@@ -134,11 +151,15 @@
     color: var(--bui-fg-primary);
     text-align: left;
 
+    &[data-placeholder] {
+      color: var(--bui-fg-secondary);
+    }
+
     & .bui-SelectItemIndicator {
       display: none;
     }
 
-    &[disabled] {
+    .bui-SelectTrigger[data-disabled] & {
       color: var(--bui-fg-disabled);
     }
   }

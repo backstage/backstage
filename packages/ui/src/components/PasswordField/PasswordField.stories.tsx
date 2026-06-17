@@ -17,6 +17,8 @@ import preview from '../../../../../.storybook/preview';
 import { PasswordField } from './PasswordField';
 import { Form } from 'react-aria-components';
 import { Flex } from '../Flex';
+import { Box } from '../Box';
+import { Text } from '../Text';
 import { FieldLabel } from '../FieldLabel';
 import { RiSparklingLine } from '@remixicon/react';
 
@@ -138,5 +140,98 @@ export const CustomField = meta.story({
         defaultValue="Custom Field"
       />
     </>
+  ),
+});
+
+export const AutoBg = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div>
+        <Text>Default</Text>
+        <Flex mt="2" style={{ maxWidth: '300px' }}>
+          <PasswordField aria-label="Password" placeholder="Enter password" />
+        </Flex>
+      </div>
+      <Box bg="neutral" p="4">
+        <Text>Neutral 1 container</Text>
+        <Flex mt="2" style={{ maxWidth: '300px' }}>
+          <PasswordField aria-label="Password" placeholder="Enter password" />
+        </Flex>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4">
+          <Text>Neutral 2 container</Text>
+          <Flex mt="2" style={{ maxWidth: '300px' }}>
+            <PasswordField aria-label="Password" placeholder="Enter password" />
+          </Flex>
+        </Box>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4">
+            <Text>Neutral 3 container</Text>
+            <Flex mt="2" style={{ maxWidth: '300px' }}>
+              <PasswordField
+                aria-label="Password"
+                placeholder="Enter password"
+              />
+            </Flex>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
+  ),
+});
+
+export const AutoBgDisabled = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div>
+        <Text>Default</Text>
+        <Flex mt="2" style={{ maxWidth: '300px' }}>
+          <PasswordField
+            aria-label="Password"
+            placeholder="Enter password"
+            isDisabled
+          />
+        </Flex>
+      </div>
+      <Box bg="neutral" p="4">
+        <Text>Neutral 1 container</Text>
+        <Flex mt="2" style={{ maxWidth: '300px' }}>
+          <PasswordField
+            aria-label="Password"
+            placeholder="Enter password"
+            isDisabled
+          />
+        </Flex>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4">
+          <Text>Neutral 2 container</Text>
+          <Flex mt="2" style={{ maxWidth: '300px' }}>
+            <PasswordField
+              aria-label="Password"
+              placeholder="Enter password"
+              isDisabled
+            />
+          </Flex>
+        </Box>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4">
+            <Text>Neutral 3 container</Text>
+            <Flex mt="2" style={{ maxWidth: '300px' }}>
+              <PasswordField
+                aria-label="Password"
+                placeholder="Enter password"
+                isDisabled
+              />
+            </Flex>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
   ),
 });

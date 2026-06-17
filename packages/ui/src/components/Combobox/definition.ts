@@ -34,6 +34,7 @@ export const ComboboxDefinition = defineComponent<ComboboxOwnProps>()({
     root: 'bui-Combobox',
     popover: 'bui-ComboboxPopover',
   },
+  bg: 'consumer',
   propDefs: {
     icon: {},
     size: { dataAttribute: true, default: 'small' },
@@ -62,7 +63,6 @@ export const ComboboxInputDefinition = defineComponent<ComboboxInputOwnProps>()(
       input: 'bui-ComboboxInputField',
       chevron: 'bui-ComboboxInputChevron',
     },
-    bg: 'consumer',
     propDefs: {
       icon: {},
       placeholder: {},

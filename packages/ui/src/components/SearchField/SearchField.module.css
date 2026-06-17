@@ -38,18 +38,6 @@
       }
     }
 
-    &[data-on-bg='neutral-1'] .bui-SearchFieldInputWrapper {
-      background-color: var(--bui-bg-neutral-2);
-    }
-
-    &[data-on-bg='neutral-2'] .bui-SearchFieldInputWrapper {
-      background-color: var(--bui-bg-neutral-3);
-    }
-
-    &[data-on-bg='neutral-3'] .bui-SearchFieldInputWrapper {
-      background-color: var(--bui-bg-neutral-4);
-    }
-
     &[data-startcollapsed='true'] {
       transition: flex-basis 0.3s ease-in-out, width 0.3s ease-in-out,
         max-width 0.3s ease-in-out;
@@ -123,9 +111,34 @@
       height: 2.5rem;
     }
 
-    &[data-disabled] {
-      opacity: 0.5;
+    .bui-SearchField[data-disabled] & {
       cursor: not-allowed;
+      color: var(--bui-fg-disabled);
+      background-color: var(--bui-bg-neutral-1-disabled);
+    }
+
+    .bui-SearchField[data-on-bg='neutral-1'] & {
+      background-color: var(--bui-bg-neutral-2);
+
+      .bui-SearchField[data-disabled] & {
+        background-color: var(--bui-bg-neutral-2-disabled);
+      }
+    }
+
+    .bui-SearchField[data-on-bg='neutral-2'] & {
+      background-color: var(--bui-bg-neutral-3);
+
+      .bui-SearchField[data-disabled] & {
+        background-color: var(--bui-bg-neutral-3-disabled);
+      }
+    }
+
+    .bui-SearchField[data-on-bg='neutral-3'] & {
+      background-color: var(--bui-bg-neutral-4);
+
+      .bui-SearchField[data-disabled] & {
+        background-color: var(--bui-bg-neutral-4-disabled);
+      }
     }
   }
 
@@ -150,6 +163,10 @@
         width: 1.25rem;
         height: 1.25rem;
       }
+    }
+
+    .bui-SearchField[data-disabled] & {
+      color: var(--bui-fg-disabled);
     }
   }
 
@@ -181,6 +198,11 @@
 
     &[data-disabled] {
       cursor: not-allowed;
+      color: var(--bui-fg-disabled);
+
+      &::placeholder {
+        color: var(--bui-fg-disabled);
+      }
     }
 
     &:first-child {
@@ -210,6 +232,11 @@
 
     &:hover {
       color: var(--bui-fg-primary);
+    }
+
+    .bui-SearchField[data-disabled] & {
+      cursor: not-allowed;
+      color: var(--bui-fg-disabled);
     }
 
     & svg {

@@ -50,6 +50,7 @@ export const SearchAutocompleteDefinition =
       popoverWidth: {},
       popoverPlacement: {},
       children: {},
+      isDisabled: {},
       isLoading: {},
       defaultOpen: {},
       className: {},

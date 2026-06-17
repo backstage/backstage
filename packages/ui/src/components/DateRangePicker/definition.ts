@@ -28,6 +28,7 @@ export const DateRangePickerDefinition =
     classNames: {
       root: 'bui-DateRangePicker',
     },
+    bg: 'consumer',
     propDefs: {
       size: { dataAttribute: true, default: 'small' },
       className: {},
@@ -53,7 +54,6 @@ export const DateRangePickerGroupDefinition = defineComponent<
     separator: 'bui-DateRangePickerSeparator',
     button: 'bui-DateRangePickerButton',
   },
-  bg: 'consumer',
   propDefs: {},
 });
 

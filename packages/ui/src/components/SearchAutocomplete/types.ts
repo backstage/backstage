@@ -78,6 +78,11 @@ export type SearchAutocompleteOwnProps = {
   isLoading?: boolean;
 
   /**
+   * Whether the search input is disabled.
+   */
+  isDisabled?: boolean;
+
+  /**
    * Whether the results popover is open by default.
    */
   defaultOpen?: boolean;

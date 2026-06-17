@@ -27,6 +27,7 @@ export const DatePickerDefinition = defineComponent<DatePickerOwnProps>()({
   classNames: {
     root: 'bui-DatePicker',
   },
+  bg: 'consumer',
   propDefs: {
     size: { dataAttribute: true, default: 'small' },
     className: {},
@@ -50,7 +51,6 @@ export const DatePickerGroupDefinition = defineComponent<
     segment: 'bui-DatePickerSegment',
     button: 'bui-DatePickerButton',
   },
-  bg: 'consumer',
   propDefs: {},
 });
 

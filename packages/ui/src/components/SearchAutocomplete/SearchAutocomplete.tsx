@@ -67,6 +67,7 @@ export function SearchAutocomplete(props: SearchAutocompleteProps) {
     popoverWidth,
     popoverPlacement = 'bottom start',
     children,
+    isDisabled,
     isLoading,
     defaultOpen,
     style,
@@ -117,6 +118,7 @@ export function SearchAutocomplete(props: SearchAutocompleteProps) {
           className={classes.searchField}
           aria-label={ariaLabel ?? (ariaLabelledBy ? undefined : placeholder)}
           aria-labelledby={ariaLabelledBy}
+          isDisabled={isDisabled}
           data-size={dataAttributes['data-size']}
           onKeyDown={e => {
             if (e.key === 'Enter' && !overlayState.isOpen && hasValue) {
@@ -129,6 +131,7 @@ export function SearchAutocomplete(props: SearchAutocompleteProps) {
             ref={triggerRef}
             className={classes.root}
             {...dataAttributes}
+            data-disabled={isDisabled || undefined}
             style={style}
           >
             <div aria-hidden="true">

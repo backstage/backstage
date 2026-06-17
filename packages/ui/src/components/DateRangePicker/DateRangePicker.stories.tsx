@@ -24,6 +24,9 @@ import {
 } from '@internationalized/date';
 import { useLocale, Form } from 'react-aria-components';
 import { Button } from '../Button';
+import { Box } from '../Box';
+import { Flex } from '../Flex';
+import { Text } from '../Text';
 
 const meta = preview.meta({
   title: 'Backstage UI/DateRangePicker',
@@ -111,6 +114,43 @@ export const Disabled = meta.story({
       end: parseDate('2025-03-15'),
     },
   },
+});
+
+export const AutoBgDisabled = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div>
+        <Text>Default</Text>
+        <Flex mt="2" style={{ maxWidth: '360px' }}>
+          <DateRangePicker aria-label="Date range" isDisabled />
+        </Flex>
+      </div>
+      <Box bg="neutral" p="4">
+        <Text>Neutral 1 container</Text>
+        <Flex mt="2" style={{ maxWidth: '360px' }}>
+          <DateRangePicker aria-label="Date range" isDisabled />
+        </Flex>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4">
+          <Text>Neutral 2 container</Text>
+          <Flex mt="2" style={{ maxWidth: '360px' }}>
+            <DateRangePicker aria-label="Date range" isDisabled />
+          </Flex>
+        </Box>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4">
+            <Text>Neutral 3 container</Text>
+            <Flex mt="2" style={{ maxWidth: '360px' }}>
+              <DateRangePicker aria-label="Date range" isDisabled />
+            </Flex>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
+  ),
 });
 
 export const Invalid = meta.story({

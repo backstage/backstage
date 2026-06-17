@@ -443,3 +443,23 @@ export const OpenWithLoading = meta.story({
     );
   },
 });
+
+export const Disabled = meta.story({
+  args: {
+    ...WithItems.input.args,
+    isDisabled: true,
+  },
+  render: args => (
+    <SearchAutocomplete {...args} onInputChange={() => {}}>
+      {fruits.map(fruit => (
+        <SearchAutocompleteItem
+          key={fruit.id}
+          id={fruit.id}
+          textValue={fruit.name}
+        >
+          {fruit.name}
+        </SearchAutocompleteItem>
+      ))}
+    </SearchAutocomplete>
+  ),
+});

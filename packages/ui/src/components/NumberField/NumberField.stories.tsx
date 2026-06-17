@@ -177,6 +177,16 @@ export const AutoBg = meta.story({
         NumberField automatically detects its parent bg context and increments
         the neutral level by 1. No prop is needed — it's fully automatic.
       </div>
+      <div>
+        <Text>Default</Text>
+        <Flex mt="2" style={{ maxWidth: '300px' }}>
+          <NumberField
+            aria-label="Number"
+            placeholder="Enter number"
+            size="small"
+          />
+        </Flex>
+      </div>
       <Box bg="neutral" p="4">
         <Text>Neutral 1 container</Text>
         <Flex mt="2" style={{ maxWidth: '300px' }}>
@@ -208,6 +218,63 @@ export const AutoBg = meta.story({
                 aria-label="Number"
                 placeholder="Enter number"
                 size="small"
+              />
+            </Flex>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
+  ),
+});
+
+export const AutoBgDisabled = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div>
+        <Text>Default</Text>
+        <Flex mt="2" style={{ maxWidth: '300px' }}>
+          <NumberField
+            aria-label="Number"
+            placeholder="Enter number"
+            size="small"
+            isDisabled
+          />
+        </Flex>
+      </div>
+      <Box bg="neutral" p="4">
+        <Text>Neutral 1 container</Text>
+        <Flex mt="2" style={{ maxWidth: '300px' }}>
+          <NumberField
+            aria-label="Number"
+            placeholder="Enter number"
+            size="small"
+            isDisabled
+          />
+        </Flex>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4">
+          <Text>Neutral 2 container</Text>
+          <Flex mt="2" style={{ maxWidth: '300px' }}>
+            <NumberField
+              aria-label="Number"
+              placeholder="Enter number"
+              size="small"
+              isDisabled
+            />
+          </Flex>
+        </Box>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4">
+            <Text>Neutral 3 container</Text>
+            <Flex mt="2" style={{ maxWidth: '300px' }}>
+              <NumberField
+                aria-label="Number"
+                placeholder="Enter number"
+                size="small"
+                isDisabled
               />
             </Flex>
           </Box>
