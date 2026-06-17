@@ -66,8 +66,10 @@ import {
 } from '@backstage/plugin-techdocs-common';
 
 function TemplateListContent({
+  filter,
   groups: configuredGroups,
 }: {
+  filter?: (entity: TemplateEntityV1beta3) => boolean;
   groups?: TemplateGroupFilter[];
 }) {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
@@ -159,6 +161,7 @@ function TemplateListContent({
           <CatalogFilterLayout.Content>
             <TemplateGroups
               groups={groups}
+              templateFilter={filter}
               onTemplateSelected={onTemplateSelected}
               additionalLinksForEntity={additionalLinksForEntity}
             />
@@ -178,6 +181,7 @@ function TemplateListContent({
 export function TemplatesSubPage(props: {
   formFields?: Array<FormField>;
   formProps?: FormProps;
+  filter?: (entity: TemplateEntityV1beta3) => boolean;
   groups?: TemplateGroupFilter[];
 }) {
   const customFieldExtensions = useCustomFieldExtensions(undefined);
@@ -197,7 +201,12 @@ export function TemplatesSubPage(props: {
 
   return (
     <Routes>
-      <Route index element={<TemplateListContent groups={props.groups} />} />
+      <Route
+        index
+        element={
+          <TemplateListContent filter={props.filter} groups={props.groups} />
+        }
+      />
       <Route
         path=":namespace/:templateName"
         element={
