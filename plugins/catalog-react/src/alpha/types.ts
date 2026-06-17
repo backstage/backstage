@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { JSX } from 'react';
+import type { JSX, ReactElement } from 'react';
 
 /** @alpha */
 export type SubRoute = {
-  group: string;
+  group?: string;
   path: string;
   title: string;
+  icon?: string | ReactElement;
   children: JSX.Element;
 };

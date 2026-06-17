@@ -1,5 +1,216 @@
 # @backstage/plugin-signals-node
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-events-node@0.4.23
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-events-node@0.4.22
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+  - @backstage/types@1.2.2
+
+## 0.2.0
+
+### Minor Changes
+
+- 8397a9c: **BREAKING**: Removed the deprecated `SignalService` and `DefaultSignalService` exports. Use `SignalsService` and `DefaultSignalsService` instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/plugin-auth-node@0.7.0
+  - @backstage/config@1.3.7
+  - @backstage/plugin-events-node@0.4.21
+
+## 0.1.30-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+
+## 0.1.30-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-auth-node@0.7.0-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
+## 0.1.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+
+## 0.1.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-auth-node@0.6.14
+  - @backstage/plugin-events-node@0.4.20
+
+## 0.1.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+
+## 0.1.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.14-next.0
+  - @backstage/plugin-events-node@0.4.20-next.0
+
+## 0.1.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-events-node@0.4.19
+
+## 0.1.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+
+## 0.1.27
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/backend-plugin-api@1.6.0
+
+## 0.1.27-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+
+## 0.1.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config@1.3.6
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/types@1.2.2
+
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-auth-node@0.6.8
+  - @backstage/plugin-events-node@0.4.16
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+
 ## 0.1.24
 
 ### Patch Changes

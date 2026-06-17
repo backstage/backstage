@@ -20,6 +20,7 @@ import { CatalogAutocomplete } from './CatalogAutocomplete';
 export default {
   title: 'Catalog /CatalogAutocomplete',
   decorators: [(Story: ComponentType<{}>) => wrapInTestApp(<Story />)],
+  tags: ['!manifest'],
 };
 
 export const Default = (args: any) => {

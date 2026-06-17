@@ -5,12 +5,11 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
-import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
@@ -18,19 +17,19 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 const _default: OverridableFrontendPlugin<
   {},
   {
-    catalogIndex: ExternalRouteRef<undefined>;
+    catalogIndex: ExternalRouteRef<undefined, true>;
   },
   {
-    'entity-card:org/group-profile': ExtensionDefinition<{
+    'entity-card:org/group-profile': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'group-profile';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -58,20 +57,69 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
-    'entity-card:org/members-list': ExtensionDefinition<{
+    'entity-card:org/members-list': OverridableExtensionDefinition<{
+      config: {
+        initialRelationAggregation: 'direct' | 'aggregated' | undefined;
+        showAggregateMembersToggle: boolean | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
+      };
+      configInput: {
+        initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
+        showAggregateMembersToggle?: boolean | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
       kind: 'entity-card';
       name: 'members-list';
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:org/ownership': OverridableExtensionDefinition<{
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        initialRelationAggregation: 'direct' | 'aggregated' | undefined;
+        showAggregateMembersToggle: boolean | undefined;
+        ownedKinds: string[] | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
+        showAggregateMembersToggle?: boolean | undefined;
+        ownedKinds?: string[] | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -97,67 +145,26 @@ const _default: OverridableFrontendPlugin<
             }
           >;
       inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:org/ownership': ExtensionDefinition<{
       kind: 'entity-card';
       name: 'ownership';
-      config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
-    'entity-card:org/user-profile': ExtensionDefinition<{
+    'entity-card:org/user-profile': OverridableExtensionDefinition<{
       config: {
         maxRelations: number | undefined;
         hideIcons: boolean;
-      } & {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        hideIcons?: boolean | undefined;
         maxRelations?: number | undefined;
-      } & {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        hideIcons?: boolean | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -182,20 +189,12 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            optional: boolean;
-            singleton: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'entity-card';
       name: 'user-profile';
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -203,7 +202,7 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const orgTranslationRef: TranslationRef<
   'org',
   {
@@ -215,17 +214,13 @@ export const orgTranslationRef: TranslationRef<
     readonly 'groupProfileCard.listItemTitle.entityRef': 'Entity Ref';
     readonly 'groupProfileCard.listItemTitle.parentGroup': 'Parent Group';
     readonly 'groupProfileCard.listItemTitle.childGroups': 'Child Groups';
-    readonly 'membersListCard.title': 'Members';
-    readonly 'membersListCard.subtitle': 'of {{groupName}}';
-    readonly 'membersListCard.paginationLabel': ', page {{page}} of {{nbPages}}';
+    readonly 'membersListCard.title': '{{groupName}} members';
+    readonly 'membersListCard.cardLabel': 'User page for {{memberName}}';
     readonly 'membersListCard.noMembersDescription': 'This group has no members.';
-    readonly 'membersListCard.aggregateMembersToggle.ariaLabel': 'Users Type Switch';
-    readonly 'membersListCard.aggregateMembersToggle.directMembers': 'Direct Members';
-    readonly 'membersListCard.aggregateMembersToggle.aggregatedMembers': 'Aggregated Members';
+    readonly 'membersListCard.noSearchResult': 'Found no members matching "{{searchTerm}}".';
+    readonly 'membersListCard.aggregateMembersToggle.label': 'Include subgroups';
     readonly 'ownershipCard.title': 'Ownership';
-    readonly 'ownershipCard.aggregateRelationsToggle.ariaLabel': 'Ownership Type Switch';
-    readonly 'ownershipCard.aggregateRelationsToggle.directRelations': 'Direct Relations';
-    readonly 'ownershipCard.aggregateRelationsToggle.aggregatedRelations': 'Aggregated Relations';
+    readonly 'ownershipCard.aggregateRelationsToggle.label': 'Include indirect ownership';
     readonly 'userProfileCard.editIconButtonTitle': 'Edit Metadata';
     readonly 'userProfileCard.listItemTitle.email': 'Email';
     readonly 'userProfileCard.listItemTitle.memberOf': 'Member of';

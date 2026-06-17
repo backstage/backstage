@@ -20,6 +20,7 @@ import {
 import { CachedAzureDevOpsCredentialsProvider } from './CachedAzureDevOpsCredentialsProvider';
 import { ScmIntegrationRegistry } from '../registry';
 import { DefaultAzureCredential } from '@azure/identity';
+import { isVisualStudioDomain } from './core';
 
 /**
  * Default implementation of AzureDevOpsCredentialsProvider.
@@ -110,6 +111,17 @@ export class DefaultAzureDevOpsCredentialsProvider
     return undefined;
   }
 
+  private forVisualStudioOrganization(
+    url: URL,
+  ): AzureDevOpsCredentialsProvider | undefined {
+    const parts = url.host.split('.');
+    if (isVisualStudioDomain(url.origin) && parts.length > 0) {
+      return this.providers.get(url.host);
+    }
+
+    return undefined;
+  }
+
   private forHost(url: URL): AzureDevOpsCredentialsProvider | undefined {
     return this.providers.get(url.host);
   }
@@ -121,6 +133,7 @@ export class DefaultAzureDevOpsCredentialsProvider
     const provider =
       this.forAzureDevOpsOrganization(url) ??
       this.forAzureDevOpsServerOrganization(url) ??
+      this.forVisualStudioOrganization(url) ??
       this.forHost(url);
 
     if (provider === undefined) {

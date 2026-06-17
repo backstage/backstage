@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { ScmIntegrationRegistry } from '@backstage/integration';

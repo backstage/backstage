@@ -1,0 +1,113 @@
+# @backstage/cli-module-build
+
+## 0.1.4
+
+### Patch Changes
+
+- 696c78c: The `--help` output for commands now shows a generated usage line that lists the available flags and any positional arguments the command accepts.
+- 2e6ffe6: Updated the standalone CLI executable to use the new CLI module runner.
+- a1971ea: Suppress false-positive `@protobufjs/inquire` "Critical dependency" warning in the bundler. Since `protobufjs` 7.5.9, the dynamic require path in inquire is no longer exercised, but webpack/rspack still flags it during static analysis.
+- 8007b58: Updated dependency `embedded-postgres` to `18.3.0-beta.17`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+  - @backstage/config-loader@1.10.12
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- a1971ea: Suppress false-positive `@protobufjs/inquire` "Critical dependency" warning in the bundler. Since `protobufjs` 7.5.9, the dynamic require path in inquire is no longer exercised, but webpack/rspack still flags it during static analysis.
+- 8007b58: Updated dependency `embedded-postgres` to `18.3.0-beta.17`.
+
+## 0.1.3
+
+### Patch Changes
+
+- ed4ee6f: Fixed config path resolution for the embedded-postgres database client detection to resolve paths relative to the target package directory rather than the workspace root.
+- be7e4eb: The embedded Postgres database used during local development now respects user-provided connection configuration. If you configure `host`, `port`, `user`, or `password` under `backend.database.connection` alongside the `embedded-postgres` database client, those values will be forwarded to the embedded Postgres instance. Only values that you have not configured will be filled in with defaults. This makes it possible to run the embedded database on a specific host and port, for example to connect to it externally with `psql`.
+- 41070b8: Upgraded `@module-federation/enhanced`, `@module-federation/runtime`, and `@module-federation/sdk` from `^0.21.6` to `^2.3.3` to address known vulnerabilities.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/cli-node@0.3.2
+  - @backstage/module-federation-common@0.1.4
+  - @backstage/cli-common@0.2.2
+  - @backstage/config@1.3.8
+  - @backstage/config-loader@1.10.11
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- ed4ee6f: Fixed config path resolution for the embedded-postgres database client detection to resolve paths relative to the target package directory rather than the workspace root.
+- 41070b8: Upgraded `@module-federation/enhanced`, `@module-federation/runtime`, and `@module-federation/sdk` from `^0.21.6` to `^2.3.3` to address known vulnerabilities.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/module-federation-common@0.1.4-next.0
+  - @backstage/cli-common@0.2.2-next.0
+  - @backstage/cli-node@0.3.2-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/config-loader@1.10.11-next.0
+
+## 0.1.1
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- f1b493f: Fixed the embedded-postgres PID file being written before database initialization, which prevented the database from initializing successfully.
+- f52a296: Suppressed false-positive Module Federation warning for shared dependencies that use secondary entry points (e.g. `@mui/material/styles`). These sub-path `package.json` files lack a `version` field, causing the bundler to emit "No version specified" warnings that fail CI builds.
+- c16c508: When building dist-workspaces with --always-pack, batch `yarn pack` operations to avoid packing packages and their dependencies simultaneously.
+- f14df56: Added experimental support for using `embedded-postgres` as the database for local development. Set `backend.database.client` to `embedded-postgres` in your app config to enable this. The `embedded-postgres` package must be installed as an explicit dependency in your project.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/cli-common@0.2.1
+  - @backstage/cli-node@0.3.1
+  - @backstage/config-loader@1.10.10
+  - @backstage/config@1.3.7
+  - @backstage/module-federation-common@0.1.3
+
+## 0.1.1-next.2
+
+### Patch Changes
+
+- c16c508: When building dist-workspaces with --always-pack, batch `yarn pack` operations to avoid packing packages and their dependencies simultaneously.
+- f14df56: Added experimental support for using `embedded-postgres` as the database for local development. Set `backend.database.client` to `embedded-postgres` in your app config to enable this. The `embedded-postgres` package must be installed as an explicit dependency in your project.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/cli-node@0.3.1-next.1
+  - @backstage/config-loader@1.10.10-next.1
+  - @backstage/config@1.3.7-next.0
+  - @backstage/module-federation-common@0.1.3-next.0
+
+## 0.1.1-next.1
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+
+## 0.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/cli-node@0.3.1-next.0
+  - @backstage/config-loader@1.10.10-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/module-federation-common@0.1.2
+
+## 0.1.0
+
+### Minor Changes
+
+- 62d0849: Added `package bundle` command to create self-contained plugin bundles for dynamic loading, to be used by the `backend-dynamic-feature-service`. Supports backend and frontend plugins, with optional `--pre-packed-dir` for batch bundling from a pre-built workspace.
+- 329f394: Initial release of the CLI module packages. Each module provides a set of commands that can be discovered automatically by `@backstage/cli` or executed standalone.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.0
+  - @backstage/cli-common@0.2.0
+  - @backstage/module-federation-common@0.1.2
+  - @backstage/config-loader@1.10.9

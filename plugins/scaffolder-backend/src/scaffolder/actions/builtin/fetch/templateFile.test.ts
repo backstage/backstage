@@ -19,7 +19,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
   return { ...actual, fetchFile: jest.fn() };
 });
 
-import { join as joinPath } from 'path';
+import { join as joinPath } from 'node:path';
 import fs from 'fs-extra';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';

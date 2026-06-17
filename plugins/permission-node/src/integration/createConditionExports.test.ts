@@ -18,14 +18,17 @@ import {
   AuthorizeResult,
   createPermission,
 } from '@backstage/plugin-permission-common';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { createConditionExports } from './createConditionExports';
 import { createPermissionRule } from './createPermissionRule';
+import { createPermissionResourceRef } from './createPermissionResourceRef';
 
 const testIntegration = () =>
   createConditionExports({
-    pluginId: 'test-plugin',
-    resourceType: 'test-resource',
+    resourceRef: createPermissionResourceRef<any, any>().with({
+      pluginId: 'test-plugin',
+      resourceType: 'test-resource',
+    }),
     rules: {
       testRule1: createPermissionRule({
         name: 'testRule1',

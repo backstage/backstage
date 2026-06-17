@@ -23,11 +23,9 @@ the gitlab catalog plugin:
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gitlab
 ```
 
-### Installation with New Backend System
-
 Then add the following to your backend initialization:
 
-```ts title="packages/backend/src/index.ts
+```ts title="packages/backend/src/index.ts"
 // optional if you want HTTP endpoints to receive external events
 // backend.add(import('@backstage/plugin-events-backend'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
@@ -43,90 +41,13 @@ You need to decide how you want to receive events from external sources like
 
 - [via HTTP endpoint](https://github.com/backstage/backstage/blob/master/plugins/events-backend/README.md#configuration)
 - [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+- [via Google Pub/Sub](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-google-pubsub/README.md)
+- [via a Kafka topic](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-kafka/README.md)
 
 Further documentation:
 
 - [Events Plugin](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [GitLab Module for the Events Plugin](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md)
-
-### Installation with Legacy Backend System
-
-#### Installation without Events Support
-
-Add the segment below to `packages/backend/src/plugins/catalog.ts`:
-
-```ts title="packages/backend/src/plugins/catalog.ts"
-/* highlight-add-next-line */
-import { GitlabDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  /* highlight-add-start */
-  builder.addEntityProvider(
-    ...GitlabDiscoveryEntityProvider.fromConfig(env.config, {
-      logger: env.logger,
-      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { minutes: 30 },
-        timeout: { minutes: 3 },
-      }),
-      // optional: alternatively, use schedule
-      scheduler: env.scheduler,
-    }),
-  );
-  /* highlight-add-end */
-  // ..
-}
-```
-
-#### Installation with Events Support
-
-Please follow the installation instructions at
-
-- [Events Plugin](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
-- [GitLab Module for the Events Plugin](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md)
-
-Additionally, you need to decide how you want to receive events from external sources like
-
-- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
-- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
-
-Set up your provider
-
-```ts title="packages/backend/src/plugins/catalog.ts"
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-/* highlight-add-next-line */
-import { GitlabDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
-import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  builder.addProcessor(new ScaffolderEntitiesProcessor());
-  /* highlight-add-start */
-  const gitlabProvider = GitlabDiscoveryEntityProvider.fromConfig(env.config, {
-    logger: env.logger,
-    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-    schedule: env.scheduler.createScheduledTaskRunner({
-      frequency: { minutes: 30 },
-      timeout: { minutes: 3 },
-    }),
-    // optional: alternatively, use schedule
-    scheduler: env.scheduler,
-    events: env.events,
-  });
-  builder.addEntityProvider(gitlabProvider);
-  /* highlight-add-end */
-  const { processingEngine, router } = await builder.build();
-  await processingEngine.start();
-  return router;
-}
-```
 
 ## Configuration
 
@@ -136,7 +57,7 @@ to the catalog configuration.
 
 :::note Note
 
-If you are using the New Backend System, the `schedule` has to be setup in the config, as shown below.
+The `schedule` has to be setup in the config, as shown below.
 
 :::
 
@@ -150,11 +71,12 @@ catalog:
         fallbackBranch: master # Optional. Fallback to be used if there is no default branch configured at the Gitlab repository. It is only used, if `branch` is undefined. Uses `master` as default
         skipForkedRepos: false # Optional. If the project is a fork, skip repository
         includeArchivedRepos: false # Optional. If project is archived, include repository
-        group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
+        group: example-group # Optional (unless useSearch is true). Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
         groupPattern: # Optional. Filters for groups based on a list of RegEx. Default, no filters.
           - '^somegroup$'
           - 'anothergroup'
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
+        useSearch: false # Optional. Whether to use the GitLab group search API to find files. Requires Gitlab 'Premium' or 'Ultimate' licenses.  Defaults to `false`
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
         schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System

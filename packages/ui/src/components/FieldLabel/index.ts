@@ -15,4 +15,5 @@
  */
 
 export * from './FieldLabel';
+export { FieldLabelDefinition } from './definition';
 export * from './types';

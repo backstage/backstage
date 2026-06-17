@@ -1,8 +1,6 @@
-# Org Plugin
+# Org Plugin - Extension Reference
 
-> [!WARNING]
-> This documentation is made for those using the experimental new Frontend system.
-> If you are not using the new frontend system, please go [here](./README.md).
+This page contains detailed documentation for all extensions provided by the `@backstage/plugin-org` plugin. For general information about the plugin, see the [README](./README.md).
 
 This is a plugin that extends the Catalog entity page with some users and groups overview cards:
 
@@ -99,9 +97,9 @@ This [entity card](https://github.com/backstage/backstage/blob/master/plugins/ca
 
 Currently, this entity card extension has only one configuration:
 
-| Config key | Default value | Description                                                                                                                                 |
-| ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `filter`   | `kind:group`  | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
+| Config key | Default value       | Description                                                                                                                                 |
+| ---------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `filter`   | `{ kind: 'group' }` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
 
 This is how to configure the `group-profile` extension in the `app-config.yaml` file:
 
@@ -119,19 +117,23 @@ Use extension overrides for completely re-implementing the group-profile entity 
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'org',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'group-profile' entity card extension provided by the 'org' plugin
       name: 'group-profile',
-      // By default, this card will show up only for groups
-      filter: 'kind:group'
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomGroupProfileEntityCard />),
+      params: {
+        // By default, this card will show up only for groups
+        filter: { kind: 'group' },
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => (
+            <m.MyCustomGroupProfileEntityCard />
+          )),
+      },
     }),
   ],
 });
@@ -151,9 +153,9 @@ An [entity card](https://github.com/backstage/backstage/blob/master/plugins/cata
 
 Currently, this entity card extension has only one configuration:
 
-| Config key | Default value | Description                                                                                                                                 |
-| ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `filter`   | `kind:group`  | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
+| Config key | Default value       | Description                                                                                                                                 |
+| ---------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `filter`   | `{ kind: 'group' }` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
 
 This is how to configure the `members-list` extension in the `app-config.yaml` file:
 
@@ -171,19 +173,21 @@ Use extension overrides for completely re-implementing the members-list entity c
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'org',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'members-list' entity card extension provided by the 'org' plugin
       name: 'members-list',
-      // By default, this card will show up only for groups
-      filter: 'kind:group'
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomMembersListEntityCard />),
+      params: {
+        // By default, this card will show up only for groups
+        filter: { kind: 'group' },
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => <m.MyCustomMembersListEntityCard />),
+      },
     }),
   ],
 });
@@ -203,9 +207,9 @@ An [entity card](https://github.com/backstage/backstage/blob/master/plugins/cata
 
 Currently, this entity card extension has only one configuration:
 
-| Config key | Default value     | Description                                                                                                                                 |
-| ---------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `filter`   | `kind:group,user` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
+| Config key | Default value                          | Description                                                                                                                                 |
+| ---------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `filter`   | `{ kind: { $in: ['group', 'user'] } }` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
 
 This is how to configure the `ownership` extension in the `app-config.yaml` file:
 
@@ -223,19 +227,21 @@ Use extension overrides for completely re-implementing the ownership entity card
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'org',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'ownership' entity card extension provided by the 'org' plugin
       name: 'ownership',
-      // By default, this card will show up only for groups or users
-      filter: 'kind:group,user'
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomOwnershipEntityCard />),
+      params: {
+        // By default, this card will show up only for groups or users
+        filter: { kind: { $in: ['group', 'user'] } },
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => <m.MyCustomOwnershipEntityCard />),
+      },
     }),
   ],
 });
@@ -255,9 +261,9 @@ This [entity card](https://github.com/backstage/backstage/blob/master/plugins/ca
 
 Currently, this entity card extension has only one configuration:
 
-| Config key | Default value | Description                                                                                                                                 |
-| ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `filter`   | `kind:user`   | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
+| Config key | Default value      | Description                                                                                                                                 |
+| ---------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `filter`   | `{ kind: 'user' }` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
 
 This is how to configure the `user-profile` extension in the `app-config.yaml` file:
 
@@ -275,19 +281,21 @@ Use extension overrides for completely re-implementing the user-profile entity c
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'org',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'user-profile' entity card extension provided by the 'org' plugin
       name: 'user-profile',
-      // By default, this card will show up only for groups or users
-      filter: 'kind:user'
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomOwnershipEntityCard />),
+      params: {
+        // By default, this card will show up only for groups or users
+        filter: { kind: 'user' },
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => <m.MyCustomOwnershipEntityCard />),
+      },
     }),
   ],
 });
@@ -297,67 +305,37 @@ For more information about where to place extension overrides, see the official 
 
 ### My Groups Sidebar Item
 
-As the [NavItem](https://backstage.io/docs/reference/frontend-plugin-api.createnavitemextension) extension type does not support conditional rendering, this plugin does not provide navigation items, so to use the `MyGroupsSidebarItem` component, we recommend overriding the [App/Nav](https://backstage.io/docs/frontend-system/building-apps/built-in-extensions#app-nav) extension and adding the item statically.
-
-> [!IMPORTANT]
-> As you can see in the example below, we are using the same attachment point, inputs and outputs as the default App/Nav extension to avoid side effects on the NavItem and NavLogo extensions.
+This plugin does not provide a page extension for the groups sidebar item, since it requires conditional rendering based on the logged-in user. To use the `MyGroupsSidebarItem` component, add it to your custom sidebar implementation using the `NavContentBlueprint` in `packages/app/src/modules/nav/Sidebar.tsx`:
 
 ```tsx
-// ...
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
+import { NavContentBlueprint } from '@backstage/plugin-app-react';
 
-export default createFrontendModule({
-  pluginId: 'app',
-  extensions: [
-    createExtension({
-      // Name is necessary so the system knows that this extension will override the default app nav extension
-      name: 'nav',
-      // Keeping the same attachment point as in the default App/Nav extension
-      attachTo: { id: 'app/layout', input: 'nav' },
-      // Keeping the same inputs as in the default App/Nav extension
-      inputs: {
-        items: createExtensionInput({
-          target: createNavItemExtension.targetDataRef,
-        }),
-        logos: createExtensionInput(
-          {
-            elements: createNavLogoExtension.logoElementsDataRef,
-          },
-          {
-            singleton: true,
-            optional: true,
-          },
-        ),
-      },
-      // Keeping the same output as in the default App/Nav extension
-      output: {
-        element: coreExtensionData.reactElement,
-      },
-      factory({ inputs }) {
-        return {
-          element: (
-            <Sidebar>
-              {/* Code borrowed from the default extension implementation to render the logos and items inputs */}
-              <SidebarLogo {...inputs.logos?.output.elements} />
-              <SidebarDivider />
-              {inputs.items.map((item, index) => (
-                <SidebarNavItem {...item.output.target} key={index} />
-              ))}
-              {/* Here is where we actually modifies the default implementation by adding a static item to render a group of squad pages */}
-              <SidebarGroup label="Menu" icon={<MenuIcon />}>
-                {/* The MyGroupsSidebarItem provides quick access to the group(s) the logged in user is a member of directly in the sidebar. */}
-                <MyGroupsSidebarItem
-                  singularTitle="My Squad"
-                  pluralTitle="My Squads"
-                  icon={GroupIcon}
-                />
-              </SidebarGroup>
-            </Sidebar>
-          ),
-        };
-      },
-    }),
-  ],
+export const SidebarContent = NavContentBlueprint.make({
+  params: {
+    component: ({ navItems }) => {
+      const nav = navItems.withComponent(item => (
+        <SidebarItem icon={() => item.icon} to={item.href} text={item.title} />
+      ));
+
+      return (
+        <Sidebar>
+          <SidebarLogo />
+          <SidebarDivider />
+          <SidebarGroup label="Menu" icon={<MenuIcon />}>
+            {nav.rest()}
+            <MyGroupsSidebarItem
+              singularTitle="My Squad"
+              pluralTitle="My Squads"
+              icon={GroupIcon}
+            />
+          </SidebarGroup>
+        </Sidebar>
+      );
+    },
+  },
 });
 ```
+
+For more details on customizing the sidebar, see the [app migration guide](https://backstage.io/docs/frontend-system/building-apps/migrating#app-root-sidebar).

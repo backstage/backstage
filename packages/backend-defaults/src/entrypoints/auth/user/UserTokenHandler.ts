@@ -44,10 +44,13 @@ export class UserTokenHandler {
     return new UserTokenHandler(jwksClient, options.logger);
   }
 
-  constructor(
-    private readonly jwksClient: JwksClient,
-    private readonly logger: LoggerService,
-  ) {}
+  private readonly jwksClient: JwksClient;
+  private readonly logger: LoggerService;
+
+  constructor(jwksClient: JwksClient, logger: LoggerService) {
+    this.jwksClient = jwksClient;
+    this.logger = logger;
+  }
 
   async verifyToken(token: string) {
     const verifyOpts = this.#getTokenVerificationOptions(token);

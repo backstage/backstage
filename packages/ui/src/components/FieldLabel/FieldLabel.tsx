@@ -13,34 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Label } from 'react-aria-components';
+import { Label, Text } from 'react-aria-components';
 import { forwardRef } from 'react';
 import type { FieldLabelProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
+import { FieldLabelDefinition } from './definition';
 
-/** @public */
+/**
+ * Renders a label for a form field with optional secondary label and description text.
+ *
+ * @public
+ */
 export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
   (props: FieldLabelProps, ref) => {
-    const { label, secondaryLabel, description, htmlFor, id, ...rest } = props;
-
-    const { classNames } = useStyles('FieldLabel');
+    const { ownProps, restProps } = useDefinition(FieldLabelDefinition, props);
+    const {
+      classes,
+      label,
+      secondaryLabel,
+      description,
+      htmlFor,
+      id,
+      descriptionId,
+      descriptionSlot,
+    } = ownProps;
 
     if (!label) return null;
 
     return (
-      <div className={classNames.root} {...rest} ref={ref}>
+      <div className={classes.root} {...restProps} ref={ref}>
         {label && (
-          <Label className={classNames.label} htmlFor={htmlFor} id={id}>
+          <Label className={classes.label} htmlFor={htmlFor} id={id}>
             {label}
             {secondaryLabel && (
-              <span aria-hidden="true" className={classNames.secondaryLabel}>
+              <span aria-hidden="true" className={classes.secondaryLabel}>
                 ({secondaryLabel})
               </span>
             )}
           </Label>
         )}
         {description && (
-          <div className={classNames.description}>{description}</div>
+          <Text
+            slot={descriptionSlot}
+            className={classes.description}
+            elementType="div"
+            id={descriptionId}
+          >
+            {description}
+          </Text>
         )}
       </div>
     );

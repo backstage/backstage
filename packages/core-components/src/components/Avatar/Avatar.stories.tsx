@@ -28,6 +28,7 @@ const useStyles = makeStyles({
 export default {
   title: 'Data Display/Avatar',
   component: Avatar,
+  tags: ['!manifest'],
 };
 
 export const Default = () => (

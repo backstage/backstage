@@ -26,16 +26,24 @@ import {
   EntityProviderRefreshOptions,
   EntityProviderMutation,
 } from '@backstage/plugin-catalog-node';
+import type { ExtensionPointFactoryContext } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
+
+export type EntityProviderEntry = {
+  provider: EntityProvider;
+  context?: ExtensionPointFactoryContext;
+};
 
 class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
+  private readonly config: {
+    id: string;
+    providerDatabase: ProviderDatabase;
+  };
 
-  constructor(
-    private readonly config: {
-      id: string;
-      providerDatabase: ProviderDatabase;
-    },
-  ) {}
+  constructor(config: { id: string; providerDatabase: ProviderDatabase }) {
+    this.config = config;
+  }
 
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
     const db = this.config.providerDatabase;
@@ -97,15 +105,29 @@ class Connection implements EntityProviderConnection {
 
 export async function connectEntityProviders(
   db: ProviderDatabase,
-  providers: EntityProvider[],
+  providers: EntityProviderEntry[],
 ) {
   await Promise.all(
-    providers.map(async provider => {
+    providers.map(async entry => {
+      const { provider, context } = entry;
       const connection = new Connection({
         id: provider.getProviderName(),
         providerDatabase: db,
       });
-      return provider.connect(connection);
+      try {
+        await provider.connect(connection);
+      } catch (error: unknown) {
+        if (context) {
+          context.reportModuleStartupFailure({
+            error: new ForwardedError(
+              `Failed to connect entity provider '${provider.getProviderName()}'`,
+              error,
+            ),
+          });
+          return;
+        }
+        throw error;
+      }
     }),
   );
 }

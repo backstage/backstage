@@ -165,6 +165,12 @@ export function resolveAppTree(
     if (spec.id === rootNodeId) {
       rootNode = node;
     } else if (Array.isArray(spec.attachTo)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Extension '${spec.id}' is using multiple attachment points which is deprecated and will be removed in a future release. ` +
+          `Use a Utility API instead to share functionality across multiple locations. ` +
+          `See https://backstage.io/docs/frontend-system/architecture/27-sharing-extensions for migration guidance.`,
+      );
       let foundFirstParent = false;
       for (const origAttachTo of spec.attachTo) {
         let attachTo = origAttachTo;

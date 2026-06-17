@@ -425,4 +425,68 @@ describe('readProviderConfigs', () => {
 
     expect(() => readProviderConfigs(config)).toThrow();
   });
+
+  it('reads page sizes configuration', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            pageSizes: {
+              repositories: 10,
+            },
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(1);
+    expect(providerConfigs[0].pageSizes).toEqual({
+      repositories: 10,
+    });
+  });
+
+  it('handles missing page sizes configuration', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(1);
+    expect(providerConfigs[0].pageSizes).toBeUndefined();
+  });
+
+  it('reads multiple providers with different page sizes', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            providerWithPageSizes: {
+              organization: 'test-org1',
+              pageSizes: {
+                repositories: 15,
+              },
+            },
+            providerWithoutPageSizes: {
+              organization: 'test-org2',
+            },
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(2);
+    expect(providerConfigs[0].pageSizes).toEqual({
+      repositories: 15,
+    });
+    expect(providerConfigs[1].pageSizes).toBeUndefined();
+  });
 });

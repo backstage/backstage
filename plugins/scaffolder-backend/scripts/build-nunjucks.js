@@ -18,7 +18,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @backstage/no-undeclared-imports */
 
-const path = require('path');
+const path = require('node:path');
 
 const NUNJUCKS_LICENSE = `/**
  * Copyright (c) 2012-2015, James Long

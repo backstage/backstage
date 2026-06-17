@@ -18,16 +18,18 @@ import {
   ApiHolder,
   ExtensionDataContainer,
   ExtensionDataRef,
-  ExtensionFactoryMiddleware,
   ExtensionInput,
-  ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ResolvedExtensionInputs } from '../../../frontend-plugin-api/src/wiring/createExtension';
+import { ExtensionFactoryMiddleware } from '../wiring/types';
 import mapValues from 'lodash/mapValues';
 import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { createExtensionDataContainer } from '@internal/frontend';
 import { ErrorCollector } from '../wiring/createErrorCollector';
+import { evaluateFilterPredicate } from '@backstage/filter-predicates';
 
 const INSTANTIATION_FAILED = new Error('Instantiation failed');
 
@@ -38,21 +40,22 @@ const INSTANTIATION_FAILED = new Error('Instantiation failed');
 function mapWithFailures<T, U>(
   iterable: Iterable<T>,
   callback: (item: T) => U,
+  options?: { ignoreFailures?: boolean },
 ): U[] {
   let failed = false;
-  const results = Array.from(iterable).map(item => {
+  const results = [];
+  for (const item of iterable) {
     try {
-      return callback(item);
+      results.push(callback(item));
     } catch (error) {
       if (error === INSTANTIATION_FAILED) {
         failed = true;
       } else {
         throw error;
       }
-      return null as any;
     }
-  });
-  if (failed) {
+  }
+  if (failed && !options?.ignoreFailures) {
     throw INSTANTIATION_FAILED;
   }
   return results;
@@ -60,6 +63,19 @@ function mapWithFailures<T, U>(
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
+};
+
+type InstantiateAppNodeSubtreeOptions = {
+  rootNode: AppNode;
+  apis: ApiHolder;
+  collector: ErrorCollector;
+  extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
+  stopAtAttachment?(ctx: { node: AppNode; input: string }): boolean;
+  skipChild?(ctx: { node: AppNode; input: string; child: AppNode }): boolean;
+  onMissingApi?(ctx: { node: AppNode; apiRefId: string }): void;
+  predicateContext?: Record<string, unknown>;
+  reuseExistingInstances?: boolean;
+  writeNodeInstances?: boolean;
 };
 
 function resolveV1InputDataMap(
@@ -119,7 +135,7 @@ function resolveInputDataContainer(
         .map(r => `'${r.id}'`)
         .join(', ');
 
-      collector.report({
+      collector.child({ node: attachment }).report({
         code: 'EXTENSION_INPUT_DATA_MISSING',
         message: `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
       });
@@ -243,23 +259,35 @@ function resolveV1Inputs(
 }
 
 function resolveV2Inputs(
-  inputMap: {
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
+  inputMap: { [inputName in string]: ExtensionInput },
   attachments: ReadonlyMap<string, AppNode[]>,
   parentCollector: ErrorCollector<{ node: AppNode }>,
-): ResolvedExtensionInputs<{
-  [inputName in string]: ExtensionInput<
-    ExtensionDataRef,
-    { optional: boolean; singleton: boolean }
-  >;
-}> {
+  node: AppNode,
+): ResolvedExtensionInputs<{ [inputName in string]: ExtensionInput }> {
   return mapValues(inputMap, (input, inputName) => {
-    const attachedNodes = attachments.get(inputName) ?? [];
+    const allAttachedNodes = attachments.get(inputName) ?? [];
     const collector = parentCollector.child({ inputName });
+    const inputPluginId = node.spec.plugin.pluginId;
+
+    const attachedNodes = input.config.internal
+      ? allAttachedNodes.filter(attachment => {
+          const attachmentPluginId = attachment.spec.plugin.pluginId;
+          if (attachmentPluginId !== inputPluginId) {
+            collector.report({
+              code: 'EXTENSION_INPUT_INTERNAL_IGNORED',
+              message:
+                `extension '${attachment.spec.id}' from plugin '${attachmentPluginId}' attached to input '${inputName}' on '${node.spec.id}' was ignored, ` +
+                `the input is marked as internal and attached extensions must therefore be provided via an override or a module for the '${inputPluginId}' plugin, not the '${attachmentPluginId}' plugin`,
+              context: {
+                extensionId: attachment.spec.id,
+                plugin: attachment.spec.plugin,
+              },
+            });
+            return false;
+          }
+          return true;
+        })
+      : allAttachedNodes;
 
     if (input.config.singleton) {
       if (attachedNodes.length > 1) {
@@ -281,28 +309,39 @@ function resolveV2Inputs(
         }
         return undefined;
       }
-      return resolveInputDataContainer(
-        input.extensionData,
-        attachedNodes[0],
-        inputName,
-        collector,
-      );
+      try {
+        return resolveInputDataContainer(
+          input.extensionData,
+          attachedNodes[0],
+          inputName,
+          collector,
+        );
+      } catch (error) {
+        if (error === INSTANTIATION_FAILED) {
+          if (input.config.optional) {
+            return undefined;
+          }
+          collector.report({
+            code: 'EXTENSION_ATTACHMENT_MISSING',
+            message: `input '${inputName}' is required but it failed to be instantiated`,
+          });
+        }
+        throw error;
+      }
     }
 
-    return mapWithFailures(attachedNodes, attachment =>
-      resolveInputDataContainer(
-        input.extensionData,
-        attachment,
-        inputName,
-        collector,
-      ),
+    return mapWithFailures(
+      attachedNodes,
+      attachment =>
+        resolveInputDataContainer(
+          input.extensionData,
+          attachment,
+          inputName,
+          collector,
+        ),
+      { ignoreFailures: true },
     );
-  }) as ResolvedExtensionInputs<{
-    [inputName in string]: ExtensionInput<
-      ExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  }>;
+  }) as ResolvedExtensionInputs<{ [inputName in string]: ExtensionInput }>;
 }
 
 /** @internal */
@@ -312,12 +351,28 @@ export function createAppNodeInstance(options: {
   apis: ApiHolder;
   attachments: ReadonlyMap<string, AppNode[]>;
   collector: ErrorCollector;
+  onMissingApi?(ctx: { node: AppNode; apiRefId: string }): void;
 }): AppNodeInstance | undefined {
   const { node, apis, attachments } = options;
   const collector = options.collector.child({ node });
   const { id, extension, config } = node.spec;
   const extensionData = new Map<string, unknown>();
   const extensionDataRefs = new Set<ExtensionDataRef<unknown>>();
+  const scopedApis: ApiHolder =
+    options.onMissingApi === undefined
+      ? apis
+      : {
+          get(apiRef) {
+            const api = apis.get(apiRef);
+            if (api === undefined) {
+              options.onMissingApi?.({
+                node,
+                apiRefId: apiRef.id,
+              });
+            }
+            return api;
+          },
+        };
 
   let parsedConfig: { [x: string]: any };
   try {
@@ -342,7 +397,7 @@ export function createAppNodeInstance(options: {
     if (internalExtension.version === 'v1') {
       const namedOutputs = internalExtension.factory({
         node,
-        apis,
+        apis: scopedApis,
         config: parsedConfig,
         inputs: resolveV1Inputs(internalExtension.inputs, attachments),
       });
@@ -363,12 +418,13 @@ export function createAppNodeInstance(options: {
     } else if (internalExtension.version === 'v2') {
       const context = {
         node,
-        apis,
+        apis: scopedApis,
         config: parsedConfig,
         inputs: resolveV2Inputs(
           internalExtension.inputs,
           attachments,
           collector,
+          node,
         ),
       };
       const outputDataValues = options.extensionFactoryMiddleware
@@ -475,6 +531,87 @@ export function createAppNodeInstance(options: {
 }
 
 /**
+ * Starting at the provided node, instantiate a subtree without necessarily
+ * mutating the original app tree.
+ *
+ * @internal
+ */
+export function instantiateAppNodeSubtree(
+  options: InstantiateAppNodeSubtreeOptions,
+): AppNode | undefined {
+  const instantiatedNodes = new WeakMap<AppNode, AppNode | null>();
+
+  function createInstance(node: AppNode): AppNode | undefined {
+    if (instantiatedNodes.has(node)) {
+      return instantiatedNodes.get(node) ?? undefined;
+    }
+    if (options.reuseExistingInstances !== false && node.instance) {
+      instantiatedNodes.set(node, node);
+      return node;
+    }
+    if (node.spec.disabled) {
+      instantiatedNodes.set(node, null);
+      return undefined;
+    }
+    if (
+      options.predicateContext !== undefined &&
+      node.spec.if !== undefined &&
+      !evaluateFilterPredicate(node.spec.if, options.predicateContext)
+    ) {
+      instantiatedNodes.set(node, null);
+      return undefined;
+    }
+
+    const instantiatedAttachments = new Map<string, AppNode[]>();
+
+    for (const [input, children] of node.edges.attachments) {
+      if (options.stopAtAttachment?.({ node, input })) {
+        continue;
+      }
+      const instantiatedChildren = children.flatMap(child => {
+        if (options.skipChild?.({ node, input, child })) {
+          return [];
+        }
+        const childNode = createInstance(child);
+        return childNode ? [childNode] : [];
+      });
+      if (instantiatedChildren.length > 0) {
+        instantiatedAttachments.set(input, instantiatedChildren);
+      }
+    }
+
+    const instance = createAppNodeInstance({
+      extensionFactoryMiddleware: options.extensionFactoryMiddleware,
+      node,
+      apis: options.apis,
+      attachments: instantiatedAttachments,
+      collector: options.collector,
+      onMissingApi: options.onMissingApi,
+    });
+    if (!instance) {
+      instantiatedNodes.set(node, null);
+      return undefined;
+    }
+
+    if (options.writeNodeInstances === false) {
+      const detachedNode: AppNode = {
+        spec: node.spec,
+        edges: node.edges,
+        instance,
+      };
+      instantiatedNodes.set(node, detachedNode);
+      return detachedNode;
+    }
+
+    (node as Mutable<AppNode>).instance = instance;
+    instantiatedNodes.set(node, node);
+    return node;
+  }
+
+  return createInstance(options.rootNode);
+}
+
+/**
  * Starting at the provided node, instantiate all reachable nodes in the tree that have not been disabled.
  * @internal
  */
@@ -483,40 +620,45 @@ export function instantiateAppNodeTree(
   apis: ApiHolder,
   collector: ErrorCollector,
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware,
-): boolean {
-  function createInstance(node: AppNode): AppNodeInstance | undefined {
-    if (node.instance) {
-      return node.instance;
-    }
-    if (node.spec.disabled) {
-      return undefined;
-    }
-
-    const instantiatedAttachments = new Map<string, AppNode[]>();
-
-    for (const [input, children] of node.edges.attachments) {
-      const instantiatedChildren = children.flatMap(child => {
-        const childInstance = createInstance(child);
-        if (!childInstance) {
-          return [];
-        }
-        return [child];
-      });
-      if (instantiatedChildren.length > 0) {
-        instantiatedAttachments.set(input, instantiatedChildren);
+  optionsOrPredicateContext?:
+    | {
+        stopAtAttachment?(ctx: { node: AppNode; input: string }): boolean;
+        skipChild?(ctx: {
+          node: AppNode;
+          input: string;
+          child: AppNode;
+        }): boolean;
+        onMissingApi?(ctx: { node: AppNode; apiRefId: string }): void;
+        predicateContext?: Record<string, unknown>;
       }
-    }
+    | Record<string, unknown>,
+): boolean {
+  const options: {
+    stopAtAttachment?(ctx: { node: AppNode; input: string }): boolean;
+    skipChild?(ctx: { node: AppNode; input: string; child: AppNode }): boolean;
+    onMissingApi?(ctx: { node: AppNode; apiRefId: string }): void;
+    predicateContext?: Record<string, unknown>;
+  } =
+    optionsOrPredicateContext &&
+    ('stopAtAttachment' in optionsOrPredicateContext ||
+      'skipChild' in optionsOrPredicateContext ||
+      'onMissingApi' in optionsOrPredicateContext ||
+      'predicateContext' in optionsOrPredicateContext)
+      ? optionsOrPredicateContext
+      : {
+          predicateContext: optionsOrPredicateContext,
+        };
 
-    (node as Mutable<AppNode>).instance = createAppNodeInstance({
-      extensionFactoryMiddleware,
-      node,
+  return (
+    instantiateAppNodeSubtree({
+      rootNode,
       apis,
-      attachments: instantiatedAttachments,
       collector,
-    });
-
-    return node.instance;
-  }
-
-  return createInstance(rootNode) !== undefined;
+      extensionFactoryMiddleware,
+      stopAtAttachment: options.stopAtAttachment,
+      skipChild: options.skipChild,
+      onMissingApi: options.onMissingApi,
+      predicateContext: options.predicateContext,
+    }) !== undefined
+  );
 }

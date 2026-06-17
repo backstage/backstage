@@ -19,13 +19,14 @@ import { Knex } from 'knex';
 import { DefaultProcessingDatabase } from '../../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 // #region Helpers
 
 jest.setTimeout(600_000);
 
 const databases = TestDatabases.create({
-  ids: [/* 'MYSQL_8', */ 'POSTGRES_17', /* 'POSTGRES_13',*/ 'SQLITE_3'],
+  ids: [/* 'MYSQL_8', */ 'POSTGRES_18', /* 'POSTGRES_14',*/ 'SQLITE_3'],
   disableDocker: false,
 });
 
@@ -79,7 +80,9 @@ describePerformanceTest('getProcessableEntities', () => {
         const sut = new DefaultProcessingDatabase({
           database: knex,
           logger: mockServices.logger.mock(),
+          events: mockServices.events.mock(),
           refreshInterval: () => 0,
+          metrics: metricsServiceMock.mock(),
         });
 
         const start = Date.now();

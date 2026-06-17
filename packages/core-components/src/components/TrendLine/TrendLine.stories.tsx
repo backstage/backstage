@@ -21,6 +21,7 @@ import { InfoCard } from '../../layout/InfoCard';
 export default {
   title: 'Data Display/TrendLine',
   component: TrendLine,
+  tags: ['!manifest'],
 };
 
 const containerStyle = { width: 700 };

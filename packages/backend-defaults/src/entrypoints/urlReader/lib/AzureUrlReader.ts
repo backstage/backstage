@@ -34,11 +34,7 @@ import {
 } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
-import {
-  assertError,
-  NotFoundError,
-  NotModifiedError,
-} from '@backstage/errors';
+import { toError, NotFoundError, NotModifiedError } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
@@ -62,13 +58,22 @@ export class AzureUrlReader implements UrlReaderService {
     });
   };
 
+  private readonly integration: AzureIntegration;
+  private readonly deps: {
+    treeResponseFactory: ReadTreeResponseFactory;
+    credentialsProvider: AzureDevOpsCredentialsProvider;
+  };
+
   constructor(
-    private readonly integration: AzureIntegration,
-    private readonly deps: {
+    integration: AzureIntegration,
+    deps: {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: AzureDevOpsCredentialsProvider;
     },
-  ) {}
+  ) {
+    this.integration = integration;
+    this.deps = deps;
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -203,8 +208,8 @@ export class AzureUrlReader implements UrlReaderService {
           ],
           etag: data.etag ?? '',
         };
-      } catch (error) {
-        assertError(error);
+      } catch (e) {
+        const error = toError(e);
         if (error.name === 'NotFoundError') {
           return {
             files: [],

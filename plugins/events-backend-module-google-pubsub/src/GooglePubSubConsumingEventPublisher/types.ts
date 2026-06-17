@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
-import { Message } from '@google-cloud/pubsub';
+import { JsonObject, JsonValue } from '@backstage/types';
+
+/**
+ * The contextual information about a Google Pub/Sub message, as given to
+ * configured filters and mappers.
+ */
+export interface MessageContext extends JsonObject {
+  /**
+   * Parsed subset of the original message.
+   */
+  message: {
+    data: JsonValue;
+    attributes: {
+      [key in string]: string;
+    };
+  };
+}
 
 /**
  * A configured subscription task.
@@ -23,6 +39,7 @@ export interface SubscriptionTask {
   id: string;
   project: string;
   subscription: string;
-  mapToTopic: (message: Message) => string | undefined;
-  mapToMetadata: (message: Message) => Record<string, string>;
+  filter: (context: MessageContext) => boolean;
+  mapToTopic: (context: MessageContext) => string | undefined;
+  mapToMetadata: (context: MessageContext) => Record<string, string>;
 }

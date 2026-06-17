@@ -1,5 +1,210 @@
 # @backstage/plugin-auth-backend-module-auth0-provider
 
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-auth-node@0.7.2
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-auth-node@0.7.1
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 9244b70: Sign-out now redirects the browser to Auth0's `/v2/logout` endpoint, clearing the Auth0 session cookie so that the next sign-in creates a new Auth0 session. Previously, only the Backstage session was cleared, allowing users to sign back in without going through Auth0 logout first.
+
+  Set `federatedLogout: true` in the Auth0 provider config to additionally clear the upstream IdP session (e.g. Okta, Google). This is what guarantees a full re-login across the entire SSO chain and may require users to re-enter credentials.
+
+### Patch Changes
+
+- b3bbd42: Added `createAuth0Authenticator` factory function that accepts a `CacheService` to cache Auth0 profile API responses for 1 minute during token refreshes. This avoids hitting Auth0 rate limits on repeated page refreshes. The module now uses the cached variant by default. The existing `auth0Authenticator` export remains available for use without caching.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-auth-node@0.7.0
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- 9244b70: Added federated logout support. Set `federatedLogout: true` in the Auth0 provider config to clear both the Auth0 session and any upstream IdP session on sign-out. The authenticator returns a logout URL that redirects the browser to Auth0's `/v2/logout?federated` endpoint, ensuring users must fully re-authenticate after signing out.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-auth-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-auth-node@0.7.0-next.1
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/errors@1.2.7
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-auth-node@0.6.14
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-auth-node@0.6.14-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 36804fe: feat: Added organization option to authorization params of the strategy
+
+### Patch Changes
+
+- 867c905: Add support for organizational invites in auth0 strategy
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-auth-node@0.6.13
+
+## 0.3.0-next.1
+
+### Patch Changes
+
+- 867c905: Add support for organizational invites in auth0 strategy
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-auth-node@0.6.13-next.1
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 36804fe: feat: Added organization option to authorization params of the strategy
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+
+## 0.2.10
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-plugin-api@1.6.0
+
+## 0.2.10-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+
+## 0.2.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-auth-node@0.6.9
+
+## 0.2.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-auth-node@0.6.8
+
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+
 ## 0.2.7
 
 ### Patch Changes

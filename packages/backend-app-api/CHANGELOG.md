@@ -1,5 +1,249 @@
 # @backstage/backend-app-api
 
+## 1.7.1
+
+### Patch Changes
+
+- 2e895ea: Internal refactor.
+- Updated dependencies
+  - @backstage/connections@0.1.0
+  - @backstage/backend-plugin-api@1.9.2
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 1.7.0
+
+### Minor Changes
+
+- 3595c97: Added `ExtensionPointFactoryMiddleware` type and `createExtensionPointFactoryMiddleware` helper to reimplement extension point outputs at backend creation time.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/config@1.3.8
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 3595c97: Added `ExtensionPointFactoryMiddleware` type and `createExtensionPointFactoryMiddleware` helper to reimplement extension point outputs at backend creation time.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+
+## 1.6.1
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/config@1.3.7
+
+## 1.6.1-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+
+## 1.6.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+
+## 1.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.6.0
+
+### Minor Changes
+
+- 545557a: Registration errors should be forwarded as BackendStartupResult
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+
+## 1.6.0-next.1
+
+### Minor Changes
+
+- 545557a: Registration errors should be forwarded as BackendStartupResult
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.5.0
+
+### Minor Changes
+
+- f1d29b4: Added support for extension point factories, along with the ability to report module startup failures via the extension point factory context.
+
+### Patch Changes
+
+- 6bb2f21: Fixed memory leak by properly cleaning up process event listeners on backend shutdown.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+
+## 1.5.0-next.1
+
+### Patch Changes
+
+- 6bb2f21: Fixed memory leak by properly cleaning up process event listeners on backend shutdown.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 1.5.0-next.0
+
+### Minor Changes
+
+- f1d29b4: Added support for extension point factories, along with the ability to report module startup failures via the extension point factory context.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.4.1
+
+### Patch Changes
+
+- 04db26b: Clean up process event listeners on backend stop to prevent leaks
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 1.4.0
+
+### Minor Changes
+
+- 5a2d538: Introduced backend startup result tracking and error handling. The `Backend.start()` method now returns a `BackendStartupResult` with detailed success/failure status and timing information for all plugins and modules. When startup fails, a `BackendStartupError` is thrown that includes the complete startup results, making it easier to diagnose which plugins or modules failed.
+
+  This also improves the default error message when backend startup fails, and of course makes it possible to craft your own custom error reporting based on the startup results.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 5a2d538: Introduced backend startup result tracking and error handling. The `Backend.start()` method now returns a `BackendStartupResult` with detailed success/failure status and timing information for all plugins and modules. When startup fails, a `BackendStartupError` is thrown that includes the complete startup results, making it easier to diagnose which plugins or modules failed.
+
+  This also improves the default error message when backend startup fails, and of course makes it possible to craft your own custom error reporting based on the startup results.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.3.0
+
+### Minor Changes
+
+- a17d9df: Updates API for `instanceMetadata` service to return a list of plugins not features.
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- a17d9df: Updates API for `instanceMetadata` service to return a list of plugins not features.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 1.2.9-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+
+## 1.2.8
+
+### Patch Changes
+
+- dd69cf6: Moved up registration of unhandled rejections and errors listeners to be done as early as possible, avoiding flakiness in backend startups and instead always logging these failures rather than sometimes crashing the process.
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+
+## 1.2.8-next.1
+
+### Patch Changes
+
+- dd69cf6: Moved up registration of unhandled rejections and errors listeners to be done as early as possible, avoiding flakiness in backend startups and instead always logging these failures rather than sometimes crashing the process.
+
+## 1.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+
 ## 1.2.7
 
 ### Patch Changes

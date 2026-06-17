@@ -18,3 +18,4 @@ export { createCredentialsBarrier } from './createCredentialsBarrier';
 export { createLifecycleMiddleware } from './createLifecycleMiddleware';
 export type { LifecycleMiddlewareOptions } from './createLifecycleMiddleware';
 export { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
+export { createRateLimitMiddleware } from './createRateLimitMiddleware';

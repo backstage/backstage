@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import fs from 'fs-extra';
-import { join as joinPath } from 'path';
+import { join as joinPath } from 'node:path';
 import { createWorkspaceTemplateFileAction } from './workspaceTemplateFile';
 import { TemplateFileActionInput } from './templateFileActionHandler';
 

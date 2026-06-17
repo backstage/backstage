@@ -1,5 +1,165 @@
 # @backstage/plugin-events-backend-module-bitbucket-cloud
 
+## 0.2.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-events-node@0.4.23
+
+## 0.2.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
+## 0.2.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-events-node@0.4.22
+
+## 0.2.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+
+## 0.2.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/plugin-events-node@0.4.21
+
+## 0.2.30-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
+## 0.2.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+
+## 0.2.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-events-node@0.4.20
+
+## 0.2.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-events-node@0.4.20-next.1
+
+## 0.2.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/plugin-events-node@0.4.20-next.0
+
+## 0.2.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-events-node@0.4.19
+
+## 0.2.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+
+## 0.2.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/backend-plugin-api@1.6.0
+
+## 0.2.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+
+## 0.2.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+
+## 0.2.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-events-node@0.4.17
+
+## 0.2.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+
+## 0.2.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+
+## 0.2.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-events-node@0.4.16
+
+## 0.2.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+
 ## 0.2.24
 
 ### Patch Changes

@@ -24,40 +24,37 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
-import {
-  entityRouteRef,
-  useAsyncEntity,
-} from '@backstage/plugin-catalog-react';
+import { entityRouteRef, useAsyncEntity } from '@backstage/plugin-catalog-react';
+import { EntityLayoutBlueprintProps } from '@backstage/plugin-catalog-react/alpha';
 import { catalogTranslationRef } from '../../translation';
 import { EntityTabs } from '../EntityTabs';
-import { JSX } from 'react';
 
-export type EntityLayoutRouteProps = {
-  path: string;
-  title: string;
-  group: string;
-  children: JSX.Element;
-};
-
-/** @public */
-export interface EntityLayoutProps {
-  groupedRoutes: Array<EntityLayoutRouteProps>;
-  header: JSX.Element;
-}
-
-export const EntityLayout = (props: EntityLayoutProps) => {
-  const { groupedRoutes, header } = props;
+export const EntityLayout = (props: EntityLayoutBlueprintProps) => {
+  const {
+    groupedRoutes,
+    header,
+    groupDefinitions,
+    defaultContentOrder,
+    showNavItemIcons,
+  } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
   const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
-      {!loading && header}
+      {header}
 
       {loading && <Progress />}
 
-      {entity && <EntityTabs routes={groupedRoutes} />}
+      {entity && (
+        <EntityTabs
+          routes={groupedRoutes}
+          groupDefinitions={groupDefinitions}
+          defaultContentOrder={defaultContentOrder}
+          showIcons={showNavItemIcons}
+        />
+      )}
 
       {error && (
         <Content>
@@ -68,11 +65,14 @@ export const EntityLayout = (props: EntityLayoutProps) => {
       {!loading && !error && !entity && (
         <Content>
           <WarningPanel title={t('entityLabels.warningPanelTitle')}>
-            There is no {kind} with the requested{' '}
-            <Link to="https://backstage.io/docs/features/software-catalog/references">
-              kind, namespace, and name
-            </Link>
-            .
+            {t('entityPage.notFoundMessage', {
+              kind,
+              link: (
+                <Link to="https://backstage.io/docs/features/software-catalog/references">
+                  {t('entityPage.notFoundLinkText')}
+                </Link>
+              ),
+            })}
           </WarningPanel>
         </Content>
       )}

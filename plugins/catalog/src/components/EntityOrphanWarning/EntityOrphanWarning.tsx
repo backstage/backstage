@@ -16,7 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import Alert from '@material-ui/lab/Alert';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
@@ -24,6 +23,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { Alert, Button } from '@backstage/ui';
 
 /**
  * Returns true if the given entity has the orphan annotation given by the
@@ -55,9 +55,21 @@ export function EntityOrphanWarning() {
 
   return (
     <>
-      <Alert severity="warning" onClick={() => setConfirmationDialogOpen(true)}>
-        {t('deleteEntity.description')}
-      </Alert>
+      <Alert
+        status="warning"
+        icon
+        title={t('deleteEntity.description')}
+        customActions={
+          <Button
+            size="small"
+            variant="tertiary"
+            destructive
+            onPress={() => setConfirmationDialogOpen(true)}
+          >
+            {t('deleteEntity.actionButtonTitle')}
+          </Button>
+        }
+      />
       <DeleteEntityDialog
         open={confirmationDialogOpen}
         entity={entity!}

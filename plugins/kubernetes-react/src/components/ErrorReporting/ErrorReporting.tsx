@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useMemo } from 'react';
 import {
   ClusterAttributes,
   DetectedError,
   DetectedErrorsByCluster,
 } from '@backstage/plugin-kubernetes-common';
 import { Table, TableColumn } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 /**
  *
@@ -29,36 +32,6 @@ export type ErrorReportingProps = {
   detectedErrors: DetectedErrorsByCluster;
   clusters: ClusterAttributes[];
 };
-
-const columns: TableColumn<Row>[] = [
-  {
-    title: 'cluster',
-    width: '10%',
-    render: (row: Row) => row.cluster.title || row.cluster.name,
-  },
-  {
-    title: 'namespace',
-    width: '10%',
-    render: (row: Row) => row.error.sourceRef.namespace,
-  },
-  {
-    title: 'kind',
-    width: '10%',
-    render: (row: Row) => row.error.sourceRef.kind,
-  },
-  {
-    title: 'name',
-    width: '30%',
-    render: (row: Row) => {
-      return <>{row.error.sourceRef.name} </>;
-    },
-  },
-  {
-    title: 'messages',
-    width: '40%',
-    render: (row: Row) => row.error.message,
-  },
-];
 
 interface Row {
   cluster: ClusterAttributes;
@@ -83,6 +56,7 @@ export const ErrorReporting = ({
   detectedErrors,
   clusters,
 }: ErrorReportingProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const errors = Array.from(detectedErrors.entries())
     .flatMap(([clusterName, resourceErrors]) => {
       return resourceErrors.map(e => ({
@@ -92,11 +66,44 @@ export const ErrorReporting = ({
     })
     .sort(sortBySeverity);
 
+  const columns: TableColumn<Row>[] = useMemo(
+    () => [
+      {
+        title: String(t('errorReporting.columns.cluster')),
+        width: '10%',
+        render: (row: Row) => row.cluster.title || row.cluster.name,
+      },
+      {
+        title: String(t('errorReporting.columns.namespace')),
+        width: '10%',
+        render: (row: Row) => row.error.sourceRef.namespace,
+      },
+      {
+        title: String(t('errorReporting.columns.kind')),
+        width: '10%',
+        render: (row: Row) => row.error.sourceRef.kind,
+      },
+      {
+        title: String(t('errorReporting.columns.name')),
+        width: '30%',
+        render: (row: Row) => {
+          return <>{row.error.sourceRef.name} </>;
+        },
+      },
+      {
+        title: String(t('errorReporting.columns.messages')),
+        width: '40%',
+        render: (row: Row) => row.error.message,
+      },
+    ],
+    [t],
+  );
+
   return (
     <>
       {errors.length !== 0 && (
         <Table
-          title="Error Reporting"
+          title={t('errorReporting.title')}
           data={errors}
           columns={columns}
           options={{ paging: true, search: false, emptyRowsWhenPaging: false }}

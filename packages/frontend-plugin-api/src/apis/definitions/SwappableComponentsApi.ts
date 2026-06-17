@@ -15,7 +15,7 @@
  */
 
 import { SwappableComponentRef } from '../../components';
-import { createApiRef } from '@backstage/core-plugin-api';
+import { createApiRef } from '../system';
 
 /**
  * API for looking up components based on component refs.
@@ -36,6 +36,8 @@ export interface SwappableComponentsApi {
  *
  * @public
  */
-export const swappableComponentsApiRef = createApiRef<SwappableComponentsApi>({
-  id: 'core.swappable-components',
-});
+export const swappableComponentsApiRef =
+  createApiRef<SwappableComponentsApi>().with({
+    id: 'core.swappable-components',
+    pluginId: 'app',
+  });

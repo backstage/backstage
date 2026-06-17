@@ -1,5 +1,173 @@
 # @backstage/plugin-events-node
 
+## 0.4.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+
+## 0.4.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.4.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+
+## 0.4.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/types@1.2.2
+
+## 0.4.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+
+## 0.4.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+
+## 0.4.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+
+## 0.4.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.4.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+
+## 0.4.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+
+## 0.4.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.4.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+
+## 0.4.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.4.18
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+
+## 0.4.18-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.4.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.4.17
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+
+## 0.4.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 0.4.17-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+
+## 0.4.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+
 ## 0.4.15
 
 ### Patch Changes

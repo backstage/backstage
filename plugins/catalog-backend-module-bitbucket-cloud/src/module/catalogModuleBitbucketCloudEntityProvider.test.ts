@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { startTestBackend, mockServices } from '@backstage/backend-test-utils';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { catalogModuleBitbucketCloudEntityProvider } from './catalogModuleBitbucketCloudEntityProvider';
@@ -88,8 +88,13 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
       'bitbucketCloud-provider:default',
     );
     await provider.connect(connection);
-    expect(events.subscribed).toHaveLength(1);
-    expect(events.subscribed[0].id).toEqual('bitbucketCloud-provider:default');
+    expect(events.subscribed).toHaveLength(2);
+    expect(events.subscribed.map(s => s.id)).toContain(
+      'bitbucketCloud-provider:default',
+    );
+    expect(events.subscribed.map(s => s.id)).toContain(
+      'catalog-bitbucket-cloud-scm-events-bridge',
+    );
     expect(runner).toHaveBeenCalledTimes(1);
   });
 });

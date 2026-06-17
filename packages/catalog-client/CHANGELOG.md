@@ -1,5 +1,157 @@
 # @backstage/catalog-client
 
+## 1.16.0
+
+### Minor Changes
+
+- 8f20cc2: `CatalogApi.queryEntities` now accepts a `totalItems` option (`'include'` or `'exclude'`, default `'include'`) on initial requests. Pass `'exclude'` to skip the `totalItems` count when the caller doesn't need it.
+
+### Patch Changes
+
+- 378784e: Moved dependencies that are re-exported in the public API from `devDependencies` to `dependencies`. These were incorrectly demoted in #33936 because the source code only uses type imports, but the types still appear in the published API surface and need to be resolvable by consumers at build time.
+
+## 1.16.0-next.1
+
+### Patch Changes
+
+- 378784e: Moved dependencies that are re-exported in the public API from `devDependencies` to `dependencies`. These were incorrectly demoted in #33936 because the source code only uses type imports, but the types still appear in the published API surface and need to be resolvable by consumers at build time.
+
+## 1.16.0-next.0
+
+### Minor Changes
+
+- 8f20cc2: `CatalogApi.queryEntities` now accepts a `totalItems` option (`'include'` or `'exclude'`, default `'include'`) on initial requests. Pass `'exclude'` to skip the `totalItems` count when the caller doesn't need it.
+
+## 1.15.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/filter-predicates@0.1.3
+
+## 1.15.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/filter-predicates@0.1.3-next.0
+
+## 1.15.0
+
+### Minor Changes
+
+- c384fff: **BREAKING PRODUCERS**: Added required `entityRef` field to the `Location` type, exposing the stable entity reference for each registered location. Any code that produces `Location` objects must now include this field. Added `updateLocation` method to `CatalogApi` for updating the type and target of an existing location.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/filter-predicates@0.1.2
+
+## 1.14.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/filter-predicates@0.1.2-next.0
+
+## 1.14.0
+
+### Minor Changes
+
+- 972f686: Added support for the `query` field in `getEntitiesByRefs` requests, enabling predicate-based filtering with `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 5d95e8e: Add an `onConflict` option to location creation that can refresh an existing location instead of throwing a conflict error.
+- 56c908e: Added support for the `query` field in `getEntityFacets` requests, enabling predicate-based filtering with `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+- 51e23eb: Added predicate-based entity filtering via POST /entities/by-query endpoint.
+
+  Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$hasPrefix`, and (partially) `$contains` operators for expressive entity queries. Integrated into the existing `queryEntities` flow with full cursor-based pagination, permission enforcement, and `totalItems` support.
+
+  The catalog client's `queryEntities()` method automatically routes to the POST endpoint when a `query` predicate is provided.
+
+### Patch Changes
+
+- d2494d6: Minor update to catalog client docs
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/catalog-model@1.7.7
+
+## 1.14.0-next.2
+
+### Minor Changes
+
+- 5d95e8e: Add an `onConflict` option to location creation that can refresh an existing location instead of throwing a conflict error.
+
+## 1.14.0-next.1
+
+### Minor Changes
+
+- 972f686: Added support for the `query` field in `getEntitiesByRefs` requests, enabling predicate-based filtering with `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 56c908e: Added support for the `query` field in `getEntityFacets` requests, enabling predicate-based filtering with `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+- 51e23eb: Added predicate-based entity filtering via POST /entities/by-query endpoint.
+
+  Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$hasPrefix`, and (partially) `$contains` operators for expressive entity queries. Integrated into the existing `queryEntities` flow with full cursor-based pagination, permission enforcement, and `totalItems` support.
+
+  The catalog client's `queryEntities()` method automatically routes to the POST endpoint when a `query` predicate is provided.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+
+## 1.13.1-next.0
+
+### Patch Changes
+
+- d2494d6: Minor update to catalog client docs
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+
+## 1.13.0
+
+### Minor Changes
+
+- b4e8249: Implemented support for the new `queryLocations` and `streamLocations` that allow paginated/streamed and filtered location queries
+
+### Patch Changes
+
+- 9cf6762: Improved the `InMemoryCatalogClient` test utility to support ordering, pagination, full-text search, and field projection for entity query methods. Also fixed `getEntityFacets` to correctly handle multi-valued fields.
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.0
+
+## 1.12.2-next.0
+
+### Patch Changes
+
+- 9cf6762: Improved the `InMemoryCatalogClient` test utility to support ordering, pagination, full-text search, and field projection for entity query methods. Also fixed `getEntityFacets` to correctly handle multi-valued fields.
+
+## 1.12.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6
+
+## 1.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/errors@1.2.7
+
 ## 1.12.0
 
 ### Minor Changes

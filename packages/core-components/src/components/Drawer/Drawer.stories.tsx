@@ -25,6 +25,7 @@ import Close from '@material-ui/icons/Close';
 export default {
   title: 'Layout/Drawer',
   component: Drawer,
+  tags: ['!manifest'],
 };
 
 const useDrawerStyles = makeStyles((theme: Theme) =>

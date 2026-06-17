@@ -28,3 +28,13 @@ export {
   type CatalogService,
   type CatalogServiceRequestOptions,
 } from './catalogService';
+export type {
+  CatalogLocationsExtensionPoint,
+  CatalogProcessingExtensionPoint,
+  CatalogAnalysisExtensionPoint,
+} from './extensions';
+export {
+  catalogLocationsExtensionPoint,
+  catalogProcessingExtensionPoint,
+  catalogAnalysisExtensionPoint,
+} from './extensions';

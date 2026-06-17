@@ -19,6 +19,7 @@ import { BottomLink } from '../BottomLink';
 export default {
   title: 'Layout/BottomLink',
   component: BottomLink,
+  tags: ['!manifest'],
 };
 
 export const Default = (args: { link: string; title: string }) => (

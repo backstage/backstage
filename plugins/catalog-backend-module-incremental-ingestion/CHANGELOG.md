@@ -1,5 +1,408 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.7.13
+
+### Patch Changes
+
+- e846874: Alter column type for `ingestions.last_error` to remove the 255-character restriction.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.8.0
+  - @backstage/backend-defaults@0.17.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-events-node@0.4.23
+
+## 0.7.13-next.0
+
+### Patch Changes
+
+- e846874: Alter column type for `ingestions.last_error` to remove the 255-character restriction.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.8.0-next.0
+  - @backstage/backend-defaults@0.17.2-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
+## 0.7.12
+
+### Patch Changes
+
+- 32f0dfe: On PostgreSQL, `WHERE ref IN ($1, $2, ..., $N)` queries on the `ingestion_mark_entities` table now use `= ANY($1)` with a single array parameter instead. This reduces prepared statement bloat in the query plan cache when the number of entity refs varies between calls.
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/backend-defaults@0.17.1
+  - @backstage/plugin-catalog-backend@3.7.0
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/config@1.3.8
+  - @backstage/plugin-events-node@0.4.22
+
+## 0.7.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.1
+  - @backstage/backend-defaults@0.17.1-next.2
+  - @backstage/plugin-catalog-backend@3.7.0-next.2
+
+## 0.7.12-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/plugin-catalog-node@2.2.1-next.1
+  - @backstage/backend-defaults@0.17.1-next.1
+  - @backstage/plugin-catalog-backend@3.6.2-next.1
+
+## 0.7.12-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-defaults@0.17.1-next.0
+  - @backstage/plugin-catalog-backend@3.6.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+  - @backstage/types@1.2.2
+
+## 0.7.11
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/backend-defaults@0.17.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-catalog-backend@3.6.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/config@1.3.7
+  - @backstage/plugin-events-node@0.4.21
+  - @backstage/plugin-permission-common@0.9.8
+
+## 0.7.11-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-backend@3.6.0-next.2
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/backend-defaults@0.16.1-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+  - @backstage/plugin-permission-common@0.9.8-next.0
+
+## 0.7.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-defaults@0.16.1-next.1
+  - @backstage/plugin-catalog-backend@3.5.1-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
+## 0.7.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.5.1-next.0
+  - @backstage/backend-defaults@0.16.1-next.0
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+
+## 0.7.10
+
+### Patch Changes
+
+- 5f1e7b8: Migrated metrics from direct `@opentelemetry/api` usage to the alpha `MetricsService`, providing plugin-scoped metric attribution. The `@opentelemetry/api` dependency has been removed.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/backend-defaults@0.16.0
+  - @backstage/plugin-catalog-backend@3.5.0
+  - @backstage/plugin-catalog-node@2.1.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/catalog-model@1.7.7
+  - @backstage/plugin-events-node@0.4.20
+
+## 0.7.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/backend-defaults@0.16.0-next.2
+  - @backstage/plugin-catalog-backend@3.5.0-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+
+## 0.7.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.5.0-next.1
+  - @backstage/backend-defaults@0.16.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-common@0.9.6
+
+## 0.7.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.3-next.0
+  - @backstage/plugin-catalog-backend@3.5.0-next.0
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-common@0.9.6
+
+## 0.7.9
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.4.0
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/backend-defaults@0.15.2
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-events-node@0.4.19
+
+## 0.7.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/plugin-catalog-backend@3.4.0-next.2
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-events-node@0.4.19-next.0
+
+## 0.7.9-next.0
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.4.0-next.0
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.7.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-catalog-backend@3.3.1
+
+## 0.7.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-catalog-backend@3.3.1-next.1
+
+## 0.7.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-backend@3.3.1-next.0
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.7.7
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- fb029b6: Updated luxon types
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/plugin-catalog-backend@3.3.0
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 0.7.7-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- fb029b6: Updated luxon types
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/plugin-catalog-backend@3.2.1-next.1
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.7.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-backend@3.2.1-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.7.6
+
+### Patch Changes
+
+- 70745c5: Correctly handle entity removal computation when DB count query returns string
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/plugin-catalog-backend@3.2.0
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+
+## 0.7.6-next.1
+
+### Patch Changes
+
+- 70745c5: Correctly handle entity removal computation when DB count query returns string
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.2.0-next.1
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+
+## 0.7.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-catalog-backend@3.1.3-next.0
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 0.7.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.1.2
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-events-node@0.4.16
+  - @backstage/plugin-permission-common@0.9.2
+
+## 0.7.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-catalog-backend@3.1.1-next.1
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+
+## 0.7.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.1.1-next.0
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 0.7.4
 
 ### Patch Changes

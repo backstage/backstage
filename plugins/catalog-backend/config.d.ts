@@ -175,21 +175,25 @@ export interface Config {
     orphanProviderStrategy?: 'keep' | 'delete';
 
     /**
-     * The strategy to use when stitching together the final entities. The default mode is "deferred".
+     * The strategy to use when stitching together the final entities.
      */
-    stitchingStrategy?:
-      | {
-          /** Perform stitching in-band immediately when needed */
-          mode: 'immediate';
-        }
-      | {
-          /** Defer stitching to be performed asynchronously */
-          mode: 'deferred';
-          /** Polling interval for tasks in seconds */
-          pollingInterval?: HumanDuration | string;
-          /** How long to wait for a stitch to complete before giving up in seconds */
-          stitchTimeout?: HumanDuration | string;
-        };
+    stitchingStrategy?: {
+      /** @deprecated Immediate mode has been removed. This field is ignored. */
+      mode?: string;
+      /** Polling interval for tasks in seconds */
+      pollingInterval?: HumanDuration | string;
+      /** How long to wait for a stitch to complete before giving up in seconds */
+      stitchTimeout?: HumanDuration | string;
+    };
+
+    /**
+     * The strategy to use when there is a conflict with a location being registered.
+     *
+     * The default value is "reject".
+     *
+     * The "refresh" strategy will refresh the existing location instead of throwing a conflict error.
+     */
+    defaultLocationConflictStrategy?: 'refresh' | 'reject';
 
     /**
      * The interval at which the catalog should process its entities.
@@ -223,41 +227,82 @@ export interface Config {
     processingInterval?: HumanDuration | false;
 
     /**
-     * Catalog provide specific configuration.
-     * Additional configuration for providers are specified in the catalog
-     * modules.
+     * Provider-specific additional configuration options.
      */
-    providers?: {
+    providerOptions?: {
       /**
-       * Name is the provider ID, e.g. "bitbucketServer"
+       * Key is the provider name, value is an object with additional configuration
        */
       [name: string]: {
         /**
-         * Whether the provider is enabled or not. Defaults to true.
+         * Determines whether this provider is disabled or not. If not specified,
+         * defaults to false.
          */
-        enabled?: boolean;
+        disabled?: boolean;
       };
     };
+
     /**
-     * Configuration for entity processors. Additional configuration for
-     * processors are specified in the catalog modules.
+     * Processor-specific additional configuration options.
      */
-    processors?: {
+    processorOptions?: {
       /**
-       * Name is the processor ID, e.g. "catalog-processor"
+       * Key is the processor name, value is an object with additional configuration
        */
       [name: string]: {
         /**
-         * Whether the processor is enabled or not. Defaults to true.
+         * Determines whether this processor is disabled or not. If not specified,
+         * defaults to false.
          */
-        enabled?: boolean;
+        disabled?: boolean;
         /**
-         * The priority of the processor, which is used to determine the order in which
-         * processors are run. The default priority is 20, and lower value means
-         * that the processor runs earlier.
+         * The default priority is 20, and lower value means that the processor runs earlier.
          */
         priority?: number;
       };
     };
+
+    /**
+     * Settings that control what to do when receiving messages from the SCM
+     * events service.
+     *
+     * @defaultValue false
+     * @remarks
+     *
+     * This is primarily meant to affect builtin providers in the catalog
+     * backend such as the location handler, but other providers and processors
+     * may also read this configuration.
+     *
+     * If set to false, disable all handling of SCM events.
+     *
+     * If set to true, enable all default handling of SCM events. Note that the
+     * set of default handling can change over time.
+     *
+     * You can also configure individual handlers one by one.
+     */
+    scmEvents?:
+      | boolean
+      | {
+          /**
+           * Trigger refreshes (reprocessing) of entities that are affected by an
+           * SCM event. This may include source control file content changes,
+           * repository status changes, etc.
+           *
+           * @defaultValue true
+           */
+          refresh?: boolean;
+          /**
+           * Unregister entities that are deleted as a result of an SCM event.
+           *
+           * @defaultValue true
+           */
+          unregister?: boolean;
+          /**
+           * Move entities that are moved as a result of an SCM event.
+           *
+           * @defaultValue true
+           */
+          move?: boolean;
+        };
   };
 }

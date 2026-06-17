@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { PassThrough, Readable } from 'stream';
-import { ReadableStream as WebReadableStream } from 'stream/web';
+import { PassThrough, Readable } from 'node:stream';
+import { ReadableStream as WebReadableStream } from 'node:stream/web';
 
 export function parseLastModified(
   value: string | null | undefined,
@@ -42,7 +42,7 @@ export function responseToReadable(response: Response): Readable {
 // The NodeJS ReadableStream is that fetch returns is super basic and not even
 // iterable. This function converts it to the smarter, iterable stream/web
 // variant instead.
-export function toWeb(
+function toWeb(
   responseBody: ReadableStream<Uint8Array>,
 ): WebReadableStream<Uint8Array> {
   const reader = responseBody.getReader();

@@ -15,31 +15,27 @@
  */
 
 import {
-  AuthService,
   BackstageCredentials,
   CacheService,
 } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
   CompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
-export type CachedEntityLoaderOptions = {
-  auth: AuthService;
-  catalog: CatalogApi;
+type CachedEntityLoaderOptions = {
+  catalog: CatalogService;
   cache: CacheService;
 };
 
 export class CachedEntityLoader {
-  private readonly auth: AuthService;
-  private readonly catalog: CatalogApi;
+  private readonly catalog: CatalogService;
   private readonly cache: CacheService;
   private readonly readTimeout = 1000;
 
-  constructor({ auth, catalog, cache }: CachedEntityLoaderOptions) {
-    this.auth = auth;
+  constructor({ catalog, cache }: CachedEntityLoaderOptions) {
     this.catalog = catalog;
     this.cache = cache;
   }
@@ -47,7 +43,6 @@ export class CachedEntityLoader {
   async load(
     credentials: BackstageCredentials,
     entityRef: CompoundEntityRef,
-    token: string | undefined,
   ): Promise<Entity | undefined> {
     const cacheKey = this.getCacheKey(entityRef, credentials);
     let result = await this.getFromCache(cacheKey);
@@ -56,7 +51,7 @@ export class CachedEntityLoader {
       return result;
     }
 
-    result = await this.catalog.getEntityByRef(entityRef, { token });
+    result = await this.catalog.getEntityByRef(entityRef, { credentials });
 
     if (result) {
       this.cache.set(cacheKey, result, { ttl: 5000 });
@@ -78,14 +73,10 @@ export class CachedEntityLoader {
     entityName: CompoundEntityRef,
     credentials: BackstageCredentials,
   ): string {
-    const key = ['catalog', stringifyEntityRef(entityName)];
-
-    if (this.auth.isPrincipal(credentials, 'user')) {
-      key.push(credentials.principal.userEntityRef);
-    } else if (this.auth.isPrincipal(credentials, 'service')) {
-      key.push(credentials.principal.subject);
-    }
-
-    return key.join(':');
+    return [
+      'catalog',
+      stringifyEntityRef(entityName),
+      String(credentials), // these have a well defined toString method
+    ].join(':');
   }
 }

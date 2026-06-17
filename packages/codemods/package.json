@@ -1,6 +1,6 @@
 {
   "name": "@backstage/codemods",
-  "version": "0.1.52",
+  "version": "0.1.57",
   "description": "A collection of codemods for Backstage projects",
   "backstage": {
     "role": "cli"
@@ -45,13 +45,13 @@
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
     "chalk": "^4.0.0",
-    "commander": "^12.0.0",
+    "commander": "^14.0.3",
     "jscodeshift": "^0.16.0",
     "jscodeshift-add-imports": "^1.0.10"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/jscodeshift": "^0.12.0",
-    "@types/node": "^20.16.0"
+    "@types/node": "^22.13.14"
   }
 }

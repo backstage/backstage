@@ -32,6 +32,8 @@ import { usePodMetrics } from '../../../hooks/usePodMetrics';
 import { ResourceUtilization } from '../../ResourceUtilization';
 import { bytesToMiB, formatMillicores } from '../../../utils/resources';
 import { useIsPodDeleteEnabled } from '../../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../../translation';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -77,6 +79,7 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
   const classes = useDrawerContentStyles();
   const podMetrics = usePodMetrics(podAndErrors.cluster.name, podAndErrors.pod);
   const isPodDeleteEnabled = useIsPodDeleteEnabled();
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
 
   return (
     <KubernetesDrawer
@@ -108,17 +111,19 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
         {podMetrics && (
           <Grid container item xs={12}>
             <Grid item xs={12}>
-              <Typography variant="h5">Resource utilization</Typography>
+              <Typography variant="h5">
+                {t('podDrawer.resourceUtilization')}
+              </Typography>
             </Grid>
             <Grid item xs={6}>
               <ResourceUtilization
-                title="CPU requests"
+                title={t('podDrawer.cpuRequests')}
                 usage={podMetrics.cpu.currentUsage}
                 total={podMetrics.cpu.requestTotal}
                 totalFormatted={formatMillicores(podMetrics.cpu.requestTotal)}
               />
               <ResourceUtilization
-                title="CPU limits"
+                title={t('podDrawer.cpuLimits')}
                 usage={podMetrics.cpu.currentUsage}
                 total={podMetrics.cpu.limitTotal}
                 totalFormatted={formatMillicores(podMetrics.cpu.limitTotal)}
@@ -126,13 +131,13 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
             </Grid>
             <Grid item xs={6}>
               <ResourceUtilization
-                title="Memory requests"
+                title={t('podDrawer.memoryRequests')}
                 usage={podMetrics.memory.currentUsage}
                 total={podMetrics.memory.requestTotal}
                 totalFormatted={bytesToMiB(podMetrics.memory.requestTotal)}
               />
               <ResourceUtilization
-                title="Memory limits"
+                title={t('podDrawer.memoryLimits')}
                 usage={podMetrics.memory.currentUsage}
                 total={podMetrics.memory.limitTotal}
                 totalFormatted={bytesToMiB(podMetrics.memory.limitTotal)}

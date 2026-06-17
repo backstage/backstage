@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 import { SearchQuery, IndexableResultSet } from './types';
 
 /**

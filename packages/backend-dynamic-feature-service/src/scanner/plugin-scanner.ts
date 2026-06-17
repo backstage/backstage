@@ -15,11 +15,11 @@
  */
 import { Config } from '@backstage/config';
 import { ScannedPluginPackage, ScannedPluginManifest } from './types';
-import * as fs from 'fs/promises';
-import { Stats, lstatSync, existsSync } from 'fs';
+import * as fs from 'node:fs/promises';
+import { Stats, lstatSync, existsSync } from 'node:fs';
 import * as chokidar from 'chokidar';
-import * as path from 'path';
-import * as url from 'url';
+import * as path from 'node:path';
+import * as url from 'node:url';
 import debounce from 'lodash/debounce';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ForwardedError } from '@backstage/errors';
@@ -42,13 +42,22 @@ export class PluginScanner {
   private configUnsubscribe?: () => void;
   private rootDirectoryWatcher?: chokidar.FSWatcher;
   private subscribers: (() => void)[] = [];
+  private readonly config: Config;
+  private readonly logger: LoggerService;
+  private readonly backstageRoot: string;
+  private readonly preferAlpha: boolean;
 
   private constructor(
-    private readonly config: Config,
-    private readonly logger: LoggerService,
-    private readonly backstageRoot: string,
-    private readonly preferAlpha: boolean,
-  ) {}
+    config: Config,
+    logger: LoggerService,
+    backstageRoot: string,
+    preferAlpha: boolean,
+  ) {
+    this.config = config;
+    this.logger = logger;
+    this.backstageRoot = backstageRoot;
+    this.preferAlpha = preferAlpha;
+  }
 
   static create(options: DynamicPluginScannerOptions): PluginScanner {
     const scanner = new PluginScanner(

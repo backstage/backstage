@@ -16,7 +16,7 @@
 
 import { TestApiProvider } from '@backstage/test-utils';
 // eslint-disable-next-line no-restricted-imports
-import { TextEncoder } from 'util';
+import { TextEncoder } from 'node:util';
 import {
   base64EncodeContent,
   DryRunProvider,
@@ -32,7 +32,7 @@ import { renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { formDecoratorsApiRef } from '../../api';
 
-window.TextEncoder = TextEncoder;
+window.TextEncoder = TextEncoder as any;
 
 describe('base64EncodeContent', () => {
   it('encodes text files', () => {

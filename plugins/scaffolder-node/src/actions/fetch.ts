@@ -15,11 +15,14 @@
  */
 
 import { UrlReaderService } from '@backstage/backend-plugin-api';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
+import {
+  isChildPath,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 
 /**
  * A helper function that reads the contents of a directory from the given URL.
@@ -50,7 +53,9 @@ export async function fetchContents(options: {
   if (!fetchUrlIsAbsolute && baseUrl?.startsWith('file://')) {
     const basePath = baseUrl.slice('file://'.length);
     const srcDir = resolveSafeChildPath(path.dirname(basePath), fetchUrl);
-    await fs.copy(srcDir, outputPath);
+    await fs.copy(srcDir, outputPath, {
+      filter: src => isChildPath(srcDir, src),
+    });
   } else {
     const readUrl = getReadUrl(fetchUrl, baseUrl, integrations);
 

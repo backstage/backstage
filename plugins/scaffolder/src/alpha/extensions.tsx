@@ -15,23 +15,30 @@
  */
 
 import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
-import {
-  NavItemBlueprint,
-  PageBlueprint,
   ApiBlueprint,
+  createExtensionInput,
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
-  createExtensionInput,
+  PageBlueprint,
+  SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { z } from 'zod/v4';
+import {
+  createZodV4FilterPredicateSchema,
+  filterPredicateToFilterFunction,
+} from '@backstage/filter-predicates';
 import { rootRouteRef } from '../routes';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  FormFieldBlueprint,
+  formFieldsApiRef,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import {
+  scaffolderApiRef,
+  TemplateGroupFilter,
+} from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '../api';
 
 export const scaffolderPage = PageBlueprint.makeWithOverrides({
@@ -40,28 +47,110 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
       FormFieldBlueprint.dataRefs.formFieldLoader,
     ]),
   },
-  factory(originalFactory, { inputs }) {
-    const formFieldLoaders = inputs.formFields.map(i =>
-      i.get(FormFieldBlueprint.dataRefs.formFieldLoader),
-    );
+  factory(originalFactory) {
     return originalFactory({
-      routeRef: convertLegacyRouteRef(rootRouteRef),
+      routeRef: rootRouteRef,
       path: '/create',
-      loader: () =>
-        import('../components/Router/Router').then(m =>
-          compatWrapper(
-            <m.InternalRouter formFieldLoaders={formFieldLoaders} />,
-          ),
-        ),
+      title: 'Create',
+      icon: <CreateComponentIcon fontSize="inherit" />,
     });
   },
 });
 
-export const scaffolderNavItem = NavItemBlueprint.make({
+export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
+  name: 'templates',
+  configSchema: {
+    enableBackstageUi: z.boolean().optional().default(false),
+    groups: z
+      .array(
+        z.object({
+          title: z.string(),
+          filter: createZodV4FilterPredicateSchema(),
+        }),
+      )
+      .optional(),
+  },
+  factory(originalFactory, { apis, config }) {
+    const formFieldsApi = apis.get(formFieldsApiRef);
+
+    const groups: TemplateGroupFilter[] | undefined = config.groups?.map(
+      group => ({
+        title: group.title,
+        filter: filterPredicateToFilterFunction(group.filter),
+      }),
+    );
+
+    return originalFactory({
+      path: 'templates',
+      title: 'Templates',
+      loader: async () => {
+        const formFields = (await formFieldsApi?.loadFormFields()) ?? [];
+
+        return import('./components/TemplatesSubPage').then(m => (
+          <m.TemplatesSubPage
+            formFields={formFields}
+            groups={groups}
+            formProps={{
+              EXPERIMENTAL_theme: config.enableBackstageUi ? 'bui' : 'mui',
+            }}
+          />
+        ));
+      },
+    });
+  },
+});
+
+export const scaffolderTasksSubPage = SubPageBlueprint.make({
+  name: 'tasks',
   params: {
-    routeRef: convertLegacyRouteRef(rootRouteRef),
-    title: 'Create...',
-    icon: CreateComponentIcon,
+    path: 'tasks',
+    title: 'Tasks',
+    loader: () =>
+      import('./components/TasksSubPage').then(m => <m.TasksSubPage />),
+  },
+});
+
+export const scaffolderActionsSubPage = SubPageBlueprint.make({
+  name: 'actions',
+  params: {
+    path: 'actions',
+    title: 'Actions',
+    loader: () =>
+      Promise.all([
+        import('../components/ActionsPage'),
+        import('@backstage/core-components'),
+      ]).then(([m, { Content }]) => (
+        <Content>
+          <m.ActionPageContent />
+        </Content>
+      )),
+  },
+});
+
+export const scaffolderEditorSubPage = SubPageBlueprint.make({
+  name: 'editor',
+  params: {
+    path: 'edit',
+    title: 'Template Editor',
+    loader: () =>
+      import('./components/EditorSubPage').then(m => <m.EditorSubPage />),
+  },
+});
+
+export const scaffolderTemplatingExtensionsSubPage = SubPageBlueprint.make({
+  name: 'templating-extensions',
+  params: {
+    path: 'templating-extensions',
+    title: 'Templating Extensions',
+    loader: () =>
+      Promise.all([
+        import('../components/TemplatingExtensionsPage'),
+        import('@backstage/core-components'),
+      ]).then(([m, { Content }]) => (
+        <Content>
+          <m.TemplatingExtensionsPageContent linkLocal />
+        </Content>
+      )),
   },
 });
 
@@ -69,6 +158,75 @@ export const repoUrlPickerFormField = FormFieldBlueprint.make({
   name: 'repo-url-picker',
   params: {
     field: () => import('./fields/RepoUrlPicker').then(m => m.RepoUrlPicker),
+  },
+});
+
+export const entityNamePickerFormField = FormFieldBlueprint.make({
+  name: 'entity-name-picker',
+  params: {
+    field: () =>
+      import('./fields/EntityNamePicker').then(m => m.EntityNamePicker),
+  },
+});
+
+export const entityPickerFormField = FormFieldBlueprint.make({
+  name: 'entity-picker',
+  params: {
+    field: () => import('./fields/EntityPicker').then(m => m.EntityPicker),
+  },
+});
+
+export const ownerPickerFormField = FormFieldBlueprint.make({
+  name: 'owner-picker',
+  params: {
+    field: () => import('./fields/OwnerPicker').then(m => m.OwnerPicker),
+  },
+});
+
+export const entityTagsPickerFormField = FormFieldBlueprint.make({
+  name: 'entity-tags-picker',
+  params: {
+    field: () =>
+      import('./fields/EntityTagsPicker').then(m => m.EntityTagsPicker),
+  },
+});
+
+export const multiEntityPickerFormField = FormFieldBlueprint.make({
+  name: 'multi-entity-picker',
+  params: {
+    field: () =>
+      import('./fields/MultiEntityPicker').then(m => m.MultiEntityPicker),
+  },
+});
+
+export const myGroupsPickerFormField = FormFieldBlueprint.make({
+  name: 'my-groups-picker',
+  params: {
+    field: () => import('./fields/MyGroupsPicker').then(m => m.MyGroupsPicker),
+  },
+});
+
+export const ownedEntityPickerFormField = FormFieldBlueprint.make({
+  name: 'owned-entity-picker',
+  params: {
+    field: () =>
+      import('./fields/OwnedEntityPicker').then(m => m.OwnedEntityPicker),
+  },
+});
+
+export const repoBranchPickerFormField = FormFieldBlueprint.make({
+  name: 'repo-branch-picker',
+  params: {
+    field: () =>
+      import('./fields/RepoBranchPicker').then(m => m.RepoBranchPicker),
+  },
+});
+
+export const repoOwnerPickerFormField = FormFieldBlueprint.make({
+  name: 'repo-owner-picker',
+  params: {
+    field: () =>
+      import('./fields/RepoOwnerPicker').then(m => m.RepoOwnerPicker),
   },
 });
 

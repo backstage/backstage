@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
+import { targetPaths } from '@backstage/cli-common';
 import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';
-import { paths as cliPaths } from '../../../../lib/paths';
 import chalk from 'chalk';
 import { exec } from '../../../../lib/exec';
 import {
@@ -49,7 +49,7 @@ capture:
     ${YAML_SCHEMA_PATH}:
         # 🔧 Runnable example with simple get requests.
         # Run with "PORT=3000 optic capture ${YAML_SCHEMA_PATH} --update interactive" in '${
-      cliPaths.targetDir
+      targetPaths.dir
     }'
         # You can change the server and the 'requests' section to experiment
         server:
@@ -61,10 +61,12 @@ capture:
                 # 🔧 Specify a command that will generate traffic
                 command: yarn backstage-cli package test --no-watch ${ROUTER_TEST_PATHS.map(
                   e => `"${e}"`,
-                ).join(' ')} 
+                ).join(' ')}
   `,
   );
-  if (await cliPaths.resolveTargetRoot('node_modules/.bin/prettier')) {
+  if (
+    await fs.pathExists(targetPaths.resolveRoot('node_modules/.bin/prettier'))
+  ) {
     await exec(`yarn prettier`, ['--write', opticConfigFilePath]);
   }
 }

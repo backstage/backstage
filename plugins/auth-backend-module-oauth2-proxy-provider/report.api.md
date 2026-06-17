@@ -4,7 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { IncomingHttpHeaders } from 'http';
+import { IncomingHttpHeaders } from 'node:http';
 import { ProxyAuthenticator } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
@@ -42,5 +42,12 @@ export namespace oauth2ProxySignInResolvers {
         }
       | undefined
     >;
+  const forwardedPreferredUsernameMatchingUserEntityName: SignInResolverFactory<
+    OAuth2ProxyResult,
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
+  >;
 }
 ```

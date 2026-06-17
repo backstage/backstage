@@ -7,3 +7,4 @@ documentation: https://github.com/TeraSky-OSS/backstage-plugins/tree/main/plugin
 iconUrl: https://github.com/cncf/artwork/blob/main/projects/crossplane/icon/color/crossplane-icon-color.png?raw=true
 npmPackageName: '@terasky/backstage-plugin-crossplane-resources-frontend'
 addedDate: '2024-12-30'
+status: active

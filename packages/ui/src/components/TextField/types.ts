@@ -15,27 +15,45 @@
  */
 
 import type { TextFieldProps as AriaTextFieldProps } from 'react-aria-components';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
 import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
-export interface TextFieldProps
-  extends AriaTextFieldProps,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
-  /**
-   * An icon to render before the input
-   */
-  icon?: ReactNode;
-
+export type TextFieldOwnProps = {
   /**
    * The size of the text field
    * @defaultValue 'medium'
    */
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 
+  className?: string;
+
+  /**
+   * An icon to render before the input
+   */
+  icon?: ReactNode;
+
   /**
    * Text to display in the input when it has no value
    */
   placeholder?: string;
+
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+};
+
+/** @public */
+export interface TextFieldProps
+  extends Omit<AriaTextFieldProps, 'className' | 'description'>,
+    TextFieldOwnProps {
+  /**
+   * The HTML input type for the text field
+   *
+   * @remarks
+   * Use `SearchField` for
+   * search inputs and `PasswordField` for password inputs.
+   */
+  type?: 'text' | 'email' | 'tel' | 'url';
 }

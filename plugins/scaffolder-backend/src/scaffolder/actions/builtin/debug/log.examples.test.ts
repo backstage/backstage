@@ -16,7 +16,7 @@
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createDebugLogAction } from './log';
-import { join } from 'path';
+import { join } from 'node:path';
 import yaml from 'yaml';
 import { examples } from './log.examples';
 import { createMockDirectory } from '@backstage/backend-test-utils';

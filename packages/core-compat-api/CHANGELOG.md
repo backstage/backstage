@@ -1,5 +1,295 @@
 # @backstage/core-compat-api
 
+## 0.5.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-app-react@0.2.4
+
+## 0.5.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-app-react@0.2.4-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.1
+
+## 0.5.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.0.1-next.0
+
+## 0.5.11
+
+### Patch Changes
+
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/filter-predicates@0.1.3
+  - @backstage/plugin-catalog-react@3.0.0
+  - @backstage/plugin-app-react@0.2.3
+
+## 0.5.11-next.0
+
+### Patch Changes
+
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-catalog-react@2.1.5-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/filter-predicates@0.1.3-next.0
+  - @backstage/plugin-app-react@0.2.3-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
+## 0.5.10
+
+### Patch Changes
+
+- 77ab7d5: Hide the default page header for pages created through the compatibility wrappers, since legacy plugins already render their own headers.
+- 49397c1: Removed unnecessary type argument from internal `createRouteRef` call.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-catalog-react@2.1.2
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/filter-predicates@0.1.2
+  - @backstage/core-plugin-api@1.12.5
+  - @backstage/plugin-app-react@0.2.2
+
+## 0.5.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-react@2.1.2-next.2
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/filter-predicates@0.1.2-next.0
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+
+## 0.5.10-next.1
+
+### Patch Changes
+
+- 77ab7d5: Hide the default page header for pages created through the compatibility wrappers, since legacy plugins already render their own headers.
+- 49397c1: Removed unnecessary type argument from internal `createRouteRef` call.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.2-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-plugin-api@1.12.5-next.1
+  - @backstage/plugin-app-react@0.2.2-next.1
+
+## 0.5.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.1-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/plugin-app-react@0.2.2-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
+## 0.5.9
+
+### Patch Changes
+
+- b15a685: Added `withApis`, which is a Higher-Order Component for providing APIs as props to a component via `useApiHolder`.
+- 8e09233: Added a missing dependency on `@backstage/filter-predicates` to `@backstage/core-compat-api`. This fixes package metadata for consumers that use compatibility helpers relying on filter predicate support.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.0
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/plugin-app-react@0.2.1
+  - @backstage/filter-predicates@0.1.1
+
+## 0.5.9-next.2
+
+### Patch Changes
+
+- b15a685: Added `withApis`, which is a Higher-Order Component for providing APIs as props to a component via `useApiHolder`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/plugin-app-react@0.2.1-next.1
+
+## 0.5.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-app-react@0.2.1-next.0
+
+## 0.5.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-app-react@0.2.1-next.0
+
+## 0.5.8
+
+### Patch Changes
+
+- c38b74d: Internal updates for blueprint moves to `@backstage/plugin-app-react`.
+- ef6916e: Added `IconElement` type as a replacement for the deprecated `IconComponent`. The `IconsApi` now has a new `icon()` method that returns `IconElement`, while the existing `getIcon()` method is deprecated. The `IconBundleBlueprint` now accepts both `IconComponent` and `IconElement` values.
+- 53b6549: Plugins in the new frontend system now have a `pluginId` field rather than `id` to better align with naming conventions used throughout the frontend and backend systems. The old field is still present but marked as deprecated. All internal code has been updated to prefer `pluginId` while maintaining backward compatibility by falling back to `id` when needed.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/plugin-app-react@0.2.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/version-bridge@1.0.12
+
+## 0.5.8-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/version-bridge@1.0.12-next.0
+  - @backstage/plugin-app-react@0.1.1-next.0
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- c38b74d: Internal updates for blueprint moves to `@backstage/plugin-app-react`.
+- 53b6549: Plugins in the new frontend system now have a `pluginId` field rather than `id` to better align with naming conventions used throughout the frontend and backend systems. The old field is still present but marked as deprecated. All internal code has been updated to prefer `pluginId` while maintaining backward compatibility by falling back to `id` when needed.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-app-react@0.1.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/plugin-catalog-react@1.21.5
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.5.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-react@1.21.4-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.4
+
+### Patch Changes
+
+- 4d03f08: Internal refactor of route reference implementations with minor updates to the `toString` implementations.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-plugin-api@1.12.0
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/version-bridge@1.0.11
+
 ## 0.5.2
 
 ### Patch Changes

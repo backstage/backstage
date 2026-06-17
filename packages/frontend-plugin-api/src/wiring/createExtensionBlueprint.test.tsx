@@ -30,7 +30,8 @@ import {
 } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
-import { ExtensionDefinition } from './createExtension';
+import { createExtension, ExtensionDefinition } from './createExtension';
+import { z as zodV4 } from 'zod/v4';
 import {
   createExtensionDataContainer,
   OpaqueExtensionDefinition,
@@ -92,11 +93,7 @@ describe('createExtensionBlueprint', () => {
   it('should allow creation of extension blueprints with a generator', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
-      // Try multiple attachment points for this one
-      attachTo: [
-        { id: 'test-1', input: 'default' },
-        { id: 'test-2', input: 'default' },
-      ],
+      attachTo: { id: 'test-1', input: 'default' },
       output: [coreExtensionData.reactElement],
       *factory(params: { text: string }) {
         yield coreExtensionData.reactElement(<h1>{params.text}</h1>);
@@ -112,10 +109,7 @@ describe('createExtensionBlueprint', () => {
 
     expect(extension).toEqual({
       $$type: '@backstage/ExtensionDefinition',
-      attachTo: [
-        { id: 'test-1', input: 'default' },
-        { id: 'test-2', input: 'default' },
-      ],
+      attachTo: { id: 'test-1', input: 'default' },
       configSchema: undefined,
       disabled: false,
       inputs: {},
@@ -255,6 +249,7 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
+    // @ts-expect-error: overlapping config key 'text'
     TestExtensionBlueprint.makeWithOverrides({
       name: 'my-extension',
       params: {
@@ -262,9 +257,8 @@ describe('createExtensionBlueprint', () => {
       },
       config: {
         schema: {
-          // @ts-expect-error
-          text: z => z.number(),
-          something: z => z.string(),
+          text: (z: any) => z.number(),
+          something: (z: any) => z.string(),
         },
       },
     });
@@ -314,6 +308,73 @@ describe('createExtensionBlueprint', () => {
         },
       }).reactElement(),
     );
+  });
+
+  it('should merge configSchema from blueprint with deprecated config.schema from override', () => {
+    const TestBlueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [coreExtensionData.reactElement],
+      configSchema: {
+        title: zodV4.string().default('default title'),
+      },
+      factory(_, { config }) {
+        return [
+          coreExtensionData.reactElement(<div>{String(config.title)}</div>),
+        ];
+      },
+    });
+
+    const extension = TestBlueprint.makeWithOverrides({
+      name: 'my-extension',
+      config: {
+        schema: {
+          extra: z => z.string(),
+        },
+      },
+      factory(origFactory, { config }) {
+        const c = config as { title: string; extra: string };
+        expect(c.title).toBe('default title');
+        expect(c.extra).toBe('extra value');
+        return origFactory({});
+      },
+    });
+
+    expect.assertions(2);
+
+    renderInTestApp(
+      createExtensionTester(extension, {
+        config: { extra: 'extra value' },
+      }).reactElement(),
+    );
+  });
+
+  it('should emit a deprecation warning when using config.schema', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      createExtension({
+        name: 'test-deprecated-warning',
+        attachTo: { id: 'test', input: 'default' },
+        output: [coreExtensionData.reactElement],
+        config: {
+          schema: {
+            title: z => z.string().default('hello'),
+          },
+        },
+        factory() {
+          return [coreExtensionData.reactElement(<div />)];
+        },
+      });
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'DEPRECATION WARNING: The `config.schema` option for extension config is deprecated',
+        ),
+      );
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 
   it('should allow getting inputs properly', () => {
@@ -1343,6 +1404,237 @@ describe('createExtensionBlueprint', () => {
         }),
       ),
     ).toThrow('Refused to override params and factory at the same time');
+  });
+
+  // Tests for backward compatibility - runtime still supports multiple attachment points
+  // but the TypeScript types no longer allow them
+  describe('with relative attachment points (backward compat)', () => {
+    const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
+
+    it('should create an extension with relative attachment points', () => {
+      const blueprint = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: [
+          { relative: {}, input: 'tabs' },
+          { relative: { kind: 'page' }, input: 'tabs' },
+          { relative: { name: 'index' }, input: 'tabs' },
+          { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
+        ] as any,
+        output: [dataRef],
+        factory: () => [dataRef('bar')],
+      });
+
+      expect(String(blueprint.make({ params: {} }))).toBe(
+        'ExtensionDefinition{kind=test,attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@tabs}',
+      );
+      expect(
+        String(
+          blueprint.make({
+            attachTo: [
+              { relative: { kind: 'page' }, input: 'tabs' },
+              { relative: { name: 'index' }, input: 'tabs' },
+              { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
+            ] as any,
+            params: {},
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@tabs}',
+      );
+      expect(
+        String(
+          blueprint.makeWithOverrides({
+            attachTo: {
+              relative: { kind: 'page', name: 'index' },
+              input: 'tabs',
+            },
+            factory: orig => orig({}),
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>/index@tabs}',
+      );
+    });
+
+    it('should create an extension with relative attachment points by reference', () => {
+      const baseOpts = {
+        attachTo: { id: 'root', input: 'children' },
+        inputs: {
+          tabs: createExtensionInput([dataRef]),
+        },
+        output: [],
+        factory: () => [],
+      };
+      const parent1 = createExtension({
+        ...baseOpts,
+      });
+      const parent2 = createExtension({
+        ...baseOpts,
+        kind: 'page',
+      });
+      const parent3 = createExtension({
+        ...baseOpts,
+        name: 'index',
+      });
+      const parent4 = createExtension({
+        ...baseOpts,
+        inputs: {},
+        kind: 'page',
+        name: 'index',
+      }).override({
+        inputs: {
+          otherTabs: createExtensionInput([dataRef]),
+        },
+        factory: () => [],
+      });
+      const blueprint = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: [
+          parent1.inputs.tabs,
+          parent2.inputs.tabs,
+          parent3.inputs.tabs,
+          parent4.inputs.otherTabs,
+        ] as any,
+        output: [dataRef],
+        factory: () => [dataRef('bar')],
+      });
+      expect(String(blueprint.make({ params: {} }))).toBe(
+        'ExtensionDefinition{kind=test,attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+      );
+      expect(
+        String(
+          blueprint.make({
+            attachTo: [
+              parent2.inputs.tabs,
+              parent3.inputs.tabs,
+              parent4.inputs.otherTabs,
+            ] as any,
+            params: {},
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+      );
+      expect(
+        String(
+          blueprint.makeWithOverrides({
+            attachTo: parent4.inputs.otherTabs,
+            factory: orig => orig({}),
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>/index@otherTabs}',
+      );
+    });
+
+    it('should provide type safe attachments by reference', () => {
+      const stringDataRef = createExtensionDataRef<string>().with({
+        id: 'test.string',
+      });
+      const numberDataRef = createExtensionDataRef<number>().with({
+        id: 'test.number',
+      });
+
+      const parent = createExtensionBlueprint({
+        kind: 'test-parent',
+        attachTo: { id: 'root', input: 'children' },
+        inputs: {
+          string: createExtensionInput([stringDataRef]),
+          stringOpt: createExtensionInput([stringDataRef.optional()]),
+          number: createExtensionInput([numberDataRef]),
+          numberOpt: createExtensionInput([numberDataRef.optional()]),
+          both: createExtensionInput([stringDataRef, numberDataRef]),
+          bothOptString: createExtensionInput([
+            stringDataRef.optional(),
+            numberDataRef,
+          ]),
+          bothOptNumber: createExtensionInput([
+            stringDataRef,
+            numberDataRef.optional(),
+          ]),
+          bothOpt: createExtensionInput([
+            stringDataRef.optional(),
+            numberDataRef.optional(),
+          ]),
+        },
+        output: [],
+        factory: () => [],
+      }).make({ params: {} });
+      const strOutExt = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: parent.inputs.string,
+        output: [stringDataRef],
+        factory: () => [stringDataRef('str')],
+      });
+      strOutExt.make({
+        attachTo: parent.inputs.string,
+        params: {},
+      });
+      strOutExt.makeWithOverrides({
+        attachTo: parent.inputs.stringOpt,
+        factory: orig => orig({}),
+      });
+      strOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.number,
+        params: {},
+      });
+      strOutExt.makeWithOverrides({
+        attachTo: parent.inputs.numberOpt,
+        factory: orig => orig({}),
+      });
+      strOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.both,
+        params: {},
+      });
+      strOutExt.make({
+        attachTo: parent.inputs.bothOptNumber,
+        params: {},
+      });
+      strOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.bothOptString,
+        params: {},
+      });
+      strOutExt.make({
+        attachTo: parent.inputs.bothOpt,
+        params: {},
+      });
+      const numberOutExt = createExtensionBlueprint({
+        kind: 'test',
+        // @ts-expect-error
+        attachTo: parent.inputs.string,
+        output: [numberDataRef],
+        factory: () => [numberDataRef(1)],
+      });
+      numberOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.string,
+        params: {},
+      });
+      numberOutExt.makeWithOverrides({
+        attachTo: parent.inputs.number,
+        factory: orig => orig({}),
+      });
+      const bothOutExt = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: parent.inputs.both,
+        output: [numberDataRef, stringDataRef],
+        factory: () => [numberDataRef(1), stringDataRef('str')],
+      });
+      bothOutExt.makeWithOverrides({
+        output: [numberDataRef.optional(), stringDataRef],
+        factory: orig => orig({}),
+      });
+      bothOutExt.makeWithOverrides({
+        // @ts-expect-error
+        attachTo: parent.inputs.both,
+        output: [numberDataRef.optional(), stringDataRef],
+        factory: orig => orig({}),
+      });
+      expect('types').not.toBe('broken');
+    });
   });
 
   describe('with advanced parameter types', () => {

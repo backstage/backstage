@@ -25,7 +25,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Base64Decode } from 'base64-stream';
 import fetch, { Response } from 'node-fetch';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import {
   GerritIntegration,
   ScmIntegrations,
@@ -40,7 +40,7 @@ import {
   NotFoundError,
   NotModifiedError,
   ResponseError,
-  assertError,
+  toError,
 } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { Minimatch } from 'minimatch';
@@ -84,10 +84,16 @@ export class GerritUrlReader implements UrlReaderService {
     });
   };
 
+  private readonly integration: GerritIntegration;
+  private readonly deps: { treeResponseFactory: ReadTreeResponseFactory };
+
   constructor(
-    private readonly integration: GerritIntegration,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {}
+    integration: GerritIntegration,
+    deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
+    this.integration = integration;
+    this.deps = deps;
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -168,8 +174,8 @@ export class GerritUrlReader implements UrlReaderService {
           ],
           etag: data.etag ?? '',
         };
-      } catch (error) {
-        assertError(error);
+      } catch (e) {
+        const error = toError(e);
         if (error.name === 'NotFoundError') {
           return {
             files: [],

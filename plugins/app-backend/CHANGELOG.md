@@ -1,5 +1,260 @@
 # @backstage/plugin-app-backend
 
+## 0.5.15
+
+### Patch Changes
+
+- ca450be: Added a new `app.disablePublicEntryPoint` config option that allows you to opt out of the automatic public sign-in entry point. When set to `true`, the app backend will skip serving the public entry point to unauthenticated users, even if the app was bundled with an `index-public-experimental` entry point.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/config-loader@1.10.12
+  - @backstage/plugin-app-node@0.1.46
+  - @backstage/plugin-auth-node@0.7.2
+
+## 0.5.15-next.0
+
+### Patch Changes
+
+- ca450be: Added a new `app.disablePublicEntryPoint` config option that allows you to opt out of the automatic public sign-in entry point. When set to `true`, the app backend will skip serving the public entry point to unauthenticated users, even if the app was bundled with an `index-public-experimental` entry point.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-app-node@0.1.46-next.0
+
+## 0.5.14
+
+### Patch Changes
+
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-auth-node@0.7.1
+  - @backstage/config@1.3.8
+  - @backstage/config-loader@1.10.11
+  - @backstage/plugin-app-node@0.1.45
+
+## 0.5.14-next.0
+
+### Patch Changes
+
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/config-loader@1.10.11-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-app-node@0.1.45-next.0
+
+## 0.5.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-auth-node@0.7.0
+  - @backstage/config-loader@1.10.10
+  - @backstage/config@1.3.7
+  - @backstage/plugin-app-node@0.1.44
+
+## 0.5.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-auth-node@0.7.0-next.2
+  - @backstage/config-loader@1.10.10-next.1
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+
+## 0.5.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-auth-node@0.7.0-next.1
+  - @backstage/plugin-app-node@0.1.44-next.1
+
+## 0.5.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/config-loader@1.10.10-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/plugin-app-node@0.1.44-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.5.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/config-loader@1.10.9
+  - @backstage/plugin-auth-node@0.6.14
+  - @backstage/plugin-app-node@0.1.43
+
+## 0.5.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-app-node@0.1.43-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+
+## 0.5.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-app-node@0.1.43-next.0
+  - @backstage/plugin-auth-node@0.6.14-next.0
+
+## 0.5.11
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/config-loader@1.10.8
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-app-node@0.1.42
+
+## 0.5.11-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/config-loader@1.10.8-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/plugin-app-node@0.1.42-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.5.10
+
+### Patch Changes
+
+- 9ccf84e: Updated plugin metadata.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-app-node@0.1.41
+  - @backstage/plugin-auth-node@0.6.11
+
+## 0.5.9
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-app-node@0.1.40
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/config-loader@1.10.7
+
+## 0.5.9-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-app-node@0.1.40-next.1
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config-loader@1.10.7-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.5.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-app-node@0.1.40-next.0
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.7-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.5.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config-loader@1.10.6
+  - @backstage/config@1.3.6
+  - @backstage/plugin-app-node@0.1.39
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-app-node@0.1.39-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+
+## 0.5.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/config-loader@1.10.6-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-app-node@0.1.39-next.0
+
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.5
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-app-node@0.1.38
+  - @backstage/plugin-auth-node@0.6.8
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.4-next.0
+  - @backstage/config@1.3.4-next.0
+  - @backstage/plugin-app-node@0.1.38-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+
 ## 0.5.6
 
 ### Patch Changes

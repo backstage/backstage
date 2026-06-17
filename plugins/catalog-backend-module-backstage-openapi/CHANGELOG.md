@@ -1,5 +1,271 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.5.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-catalog-node@2.2.2
+
+## 0.5.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/backend-openapi-utils@0.6.10-next.0
+
+## 0.5.14
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/backend-openapi-utils@0.6.9
+  - @backstage/config@1.3.8
+
+## 0.5.14-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/plugin-catalog-node@2.2.1-next.1
+
+## 0.5.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-openapi-utils@0.6.9-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+
+## 0.5.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/backend-openapi-utils@0.6.8
+  - @backstage/config@1.3.7
+
+## 0.5.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/backend-openapi-utils@0.6.8-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+
+## 0.5.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-openapi-utils@0.6.8-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+
+## 0.5.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/backend-openapi-utils@0.6.8-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 0.5.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-catalog-node@2.1.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/backend-openapi-utils@0.6.7
+
+## 0.5.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/backend-openapi-utils@0.6.7-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+
+## 0.5.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/backend-openapi-utils@0.6.7-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 0.5.11
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-openapi-utils@0.6.6
+  - @backstage/backend-plugin-api@1.7.0
+
+## 0.5.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.5.11-next.0
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-openapi-utils@0.6.6-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 0.5.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/backend-openapi-utils@0.6.5
+
+## 0.5.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.5-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 0.5.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 0.5.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.4-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+
+## 0.5.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/backend-openapi-utils@0.6.4-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+
+## 0.5.8
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/backend-openapi-utils@0.6.3
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/backend-openapi-utils@0.6.3-next.1
+
+## 0.5.8-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/backend-openapi-utils@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-openapi-utils@0.6.2
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-node@1.19.1
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/backend-openapi-utils@0.6.2-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+
 ## 0.5.6
 
 ### Patch Changes

@@ -160,7 +160,11 @@ Options:
 Usage: backstage-repo-tools package schema openapi generate [options]
 
 Options:
+  --client-additional-properties [properties]
   --client-package [package]
+  --server
+  --server-additional-properties [properties]
+  --watch
   -h, --help
 ```
 

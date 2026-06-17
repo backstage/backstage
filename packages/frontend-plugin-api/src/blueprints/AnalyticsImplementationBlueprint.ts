@@ -21,7 +21,10 @@ import {
   createExtensionDataRef,
 } from '../wiring';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `AnalyticsImplementationFactory` from `@backstage/plugin-app-react` instead.
+ */
 export type AnalyticsImplementationFactory<
   Deps extends { [name in string]: unknown } = {},
 > = {
@@ -38,10 +41,11 @@ const factoryDataRef =
  * Creates analytics implementations.
  *
  * @public
+ * @deprecated Use `AnalyticsImplementationBlueprint` from `@backstage/plugin-app-react` instead.
  */
 export const AnalyticsImplementationBlueprint = createExtensionBlueprint({
   kind: 'analytics',
-  attachTo: [{ id: 'api:app/analytics', input: 'implementations' }],
+  attachTo: { id: 'api:app/analytics', input: 'implementations' },
   output: [factoryDataRef],
   dataRefs: {
     factory: factoryDataRef,

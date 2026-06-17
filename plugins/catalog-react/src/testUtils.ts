@@ -22,3 +22,7 @@
 
 export { catalogApiMock } from './testUtils/catalogApiMock';
 export { MockEntityListContextProvider } from './testUtils/MockEntityListContextProvider';
+export {
+  createTestEntityPage,
+  type TestEntityPageOptions,
+} from './testUtils/createTestEntityPage';

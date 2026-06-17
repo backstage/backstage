@@ -22,7 +22,7 @@ import {
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
-import path from 'path';
+import path from 'node:path';
 import { examples } from './templateFile.examples';
 import { createTemplateFileActionHandler } from './templateFileActionHandler';
 

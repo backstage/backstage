@@ -64,31 +64,63 @@ you will not have any templates available to use. These need to be [added to the
 To get up and running and try out some templates quickly, you can or copy the
 catalog locations from the [create-app template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/app-config.yaml.hbs).
 
-## Audit Events
+## Configuration
 
-The Scaffolder backend emits audit events for various operations. Events are grouped logically by `eventId`, with `subEventId` providing further distinction when needed.
+### Default Environment
 
-**Template Events:**
+The scaffolder supports a `defaultEnvironment` configuration that provides default parameters and secrets to all templates. This reduces template complexity and improves security by centralizing common values.
 
-- **`template-parameter-schema`**: Retrieves template parameter schemas. (GET `/v2/templates/:namespace/:kind/:name/parameter-schema`)
+```yaml
+scaffolder:
+  defaultEnvironment:
+    parameters:
+      region: eu-west-1
+      organizationName: acme-corp
+      defaultRegistry: registry.acme-corp.com
+    secrets:
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      DOCKER_REGISTRY_TOKEN: ${DOCKER_REGISTRY_TOKEN}
+```
 
-**Action Events:**
+#### Default parameters
 
-- **`action-fetch`**: Retrieves installed actions. (GET `/v2/actions`)
+Default parameters are accessible via `${{ environment.parameters.* }}` in templates. Default parameters are isolated in their own context to avoid naming conflicts.
 
-**Task Events:**
+```yaml
+ parameters:
+    - title: Fill in some steps
+      required:
+        - organizationName
+      properties:
+        organizationName:
+          title: organizationName
+          type: string
+          description: Unique name of the organization
+          ui:autofocus: true
+          ui:options:
+            rows: 5
 
-- **`task`**: Operations related to Scaffolder tasks.
+  steps:
+    - id: deploy
+      name: Deploy Application
+      action: aws:deploy
+      input:
+        region: ${{ environment.parameters.region }}  # Resolves to defaultEnvironment.parameters.region
+        organization: ${{ parameters.organizationName }}  # Resolves to frontend input value
+        otherOrganization: ${{ environment.parameters.organizationName }}  # Resolves to defaultEnvironment.parameters.organizationName
+```
 
-  Filter on `actionType`.
+#### Secrets
 
-  - **`create`**: Creates a new task. (POST `/v2/tasks`)
-  - **`list`**: Fetches details of all tasks. (GET `/v2/tasks`)
-  - **`get`**: Fetches details of a specific task. (GET `/v2/tasks/:taskId`)
-  - **`cancel`**: Cancels a running task. (POST `/v2/tasks/:taskId/cancel`)
-  - **`retry`**: Retries a failed task. (POST `/v2/tasks/:taskId/retry`)
-  - **`stream`**: Retrieves a stream of task logs. (GET `/v2/tasks/:taskId/eventstream`)
-  - **`events`**: Retrieves a snapshot of task logs. (GET `/v2/tasks/:taskId/events`)
-  - **`dry-run`**: Creates a dry-run task. (POST `/v2/dry-run`) All audit logs for events associated with dry runs have the `meta.isDryLog` flag set to `true`.
-  - **`stale-cancel`**: Automated cancellation of stale tasks.
-  - **`execute`**: Tracks the initiation and completion of a real scaffolder task execution. This event will not occur during dry runs.
+Default secrets are resolved from environment variables and accessible via `${{ environment.secrets.* }}` in template actions. Secrets are only available during action execution, not in frontend forms.
+
+```yaml
+- id: deploy
+  name: Deploy with credentials
+  action: aws:deploy
+  input:
+    accessKey: ${{ environment.secrets.AWS_ACCESS_KEY }} # Resolves to defaultEnvironment.secrets.AWS_ACCESS_KEY
+```
+
+**Security Note:** Secrets are automatically masked in logs and are only available to backend actions, never exposed to the frontend.

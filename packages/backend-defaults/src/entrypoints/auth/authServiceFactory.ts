@@ -20,7 +20,10 @@ import {
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { DefaultAuthService } from './DefaultAuthService';
-import { ExternalTokenHandler } from './external/ExternalTokenHandler';
+import {
+  ExternalAuthTokenHandler,
+  externalTokenHandlersServiceRef,
+} from './external/ExternalAuthTokenHandler';
 import {
   DefaultPluginTokenHandler,
   PluginTokenHandler,
@@ -64,6 +67,7 @@ export const authServiceFactory = createServiceFactory({
     plugin: coreServices.pluginMetadata,
     database: coreServices.database,
     pluginTokenHandlerDecorator: pluginTokenHandlerDecoratorServiceRef,
+    externalTokenHandlers: externalTokenHandlersServiceRef,
   },
   async factory({
     config,
@@ -72,6 +76,7 @@ export const authServiceFactory = createServiceFactory({
     logger,
     database,
     pluginTokenHandlerDecorator,
+    externalTokenHandlers,
   }) {
     const disableDefaultAuthPolicy =
       config.getOptionalBoolean(
@@ -102,10 +107,11 @@ export const authServiceFactory = createServiceFactory({
       }),
     );
 
-    const externalTokens = ExternalTokenHandler.create({
+    const externalTokens = ExternalAuthTokenHandler.create({
       ownPluginId: plugin.getId(),
       config,
       logger,
+      externalTokenHandlers,
     });
 
     return new DefaultAuthService(

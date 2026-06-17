@@ -3,49 +3,51 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "yarn sync:css",
     "build": "next build",
-    "lint": "next lint",
-    "prestart": "yarn sync:css",
-    "start": "concurrently \"yarn sync:css:watch\" \"next dev\"",
-    "sync:css": "node scripts/sync-css.js",
-    "sync:css:watch": "node scripts/sync-css.js --watch"
+    "lint": "eslint .",
+    "start": "next dev",
+    "sync:changelog": "node scripts/sync-changelog.mjs",
+    "sync:changelog:dry-run": "node scripts/sync-changelog.mjs --dry-run",
+    "sync:changelog:force": "node scripts/sync-changelog.mjs --force"
   },
   "resolutions": {
-    "@types/react": "19.1.9",
-    "@types/react-dom": "19.1.7"
+    "@remixicon/react": ">=4.6.0 <4.9.0",
+    "@types/react": "19.2.10",
+    "@types/react-dom": "19.2.3"
   },
   "dependencies": {
+    "@base-ui-components/react": "^1.0.0-beta.4",
     "@codemirror/lang-sass": "^6.0.2",
     "@codemirror/view": "^6.34.4",
     "@lezer/highlight": "^1.2.1",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
-    "@next/mdx": "15.3.4",
-    "@remixicon/react": "^4.6.0",
-    "@storybook/react": "^8.6.12",
+    "@next/mdx": "16.2.6",
+    "@remixicon/react": ">=4.6.0 <4.9.0",
     "@uiw/codemirror-themes": "^4.23.7",
     "@uiw/react-codemirror": "^4.23.7",
+    "clsx": "^2.1.1",
     "html-react-parser": "^5.2.5",
     "motion": "^12.4.1",
-    "next": "15.4.7",
+    "next": "16.2.6",
     "next-mdx-remote-client": "^2.1.2",
     "prop-types": "^15.8.1",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
-    "shiki": "^1.26.1",
-    "storybook": "^8.6.12"
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "shiki": "^3.13.0"
   },
   "devDependencies": {
+    "@octokit/rest": "^22.0.1",
+    "@shikijs/transformers": "^3.13.0",
     "@types/mdx": "^2.0.13",
-    "@types/node": "^20",
-    "@types/react": "19.1.9",
-    "@types/react-dom": "19.1.7",
-    "chokidar": "^3.6.0",
-    "concurrently": "^8.2.2",
-    "eslint": "^8",
-    "eslint-config-next": "15.3.4",
-    "lightningcss": "^1.28.2",
-    "typescript": "^5"
+    "@types/node": "^22.13.14",
+    "@types/react": "19.2.10",
+    "@types/react-dom": "19.2.3",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "postcss": "^8.5.10",
+    "postcss-import": "^16.1.1",
+    "typescript": "^5",
+    "unified": "^11.0.4"
   }
 }

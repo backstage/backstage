@@ -24,7 +24,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 
 import { Config } from '@backstage/config';
-import { getAuthorizationHeader } from './helpers';
+import { getAuthorizationHeader, getGitAuth } from './helpers';
 import { examples } from './bitbucketCloud.examples';
 
 const createRepository = async (opts: {
@@ -216,7 +216,7 @@ export function createPublishBitbucketCloudAction(options: {
         );
       }
 
-      const authorization = getAuthorizationHeader(
+      const authorization = await getAuthorizationHeader(
         ctx.input.token ? { token: ctx.input.token } : integrationConfig.config,
       );
 
@@ -242,28 +242,9 @@ export function createPublishBitbucketCloudAction(options: {
         email: config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
-      let auth;
-
-      if (ctx.input.token) {
-        auth = {
-          username: 'x-token-auth',
-          password: ctx.input.token,
-        };
-      } else {
-        if (
-          !integrationConfig.config.username ||
-          !integrationConfig.config.appPassword
-        ) {
-          throw new Error(
-            'Credentials for Bitbucket Cloud integration required for this action.',
-          );
-        }
-
-        auth = {
-          username: integrationConfig.config.username,
-          password: integrationConfig.config.appPassword,
-        };
-      }
+      const auth = await getGitAuth(
+        ctx.input.token ? { token: ctx.input.token } : integrationConfig.config,
+      );
 
       const signingKey =
         integrationConfig.config.commitSigningKey ??

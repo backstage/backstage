@@ -24,6 +24,8 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { ButtonLink, Container, Header } from '@backstage/ui';
+import { RiAddLine } from '@remixicon/react';
 import {
   CatalogFilterLayout,
   DefaultFilters,
@@ -40,17 +42,33 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { CatalogExportButton } from '../CatalogExportButton/CatalogExportButton';
+import type { CatalogExportSettings } from '../CatalogExportButton';
+import Box from '@material-ui/core/Box';
+import styles from './DefaultCatalogPage.module.css';
 
 /** @internal */
 export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
+  exportSettings?: CatalogExportSettings;
 };
+
+function CatalogPageContent(props: BaseCatalogPageProps) {
+  const { filters, content = <CatalogTable /> } = props;
+
+  return (
+    <CatalogFilterLayout>
+      <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
+      <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
+    </CatalogFilterLayout>
+  );
+}
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const { filters, content = <CatalogTable />, pagination } = props;
+  const { pagination, exportSettings } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -58,27 +76,77 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   const { allowed } = usePermission({
     permission: catalogEntityCreatePermission,
   });
+  const headerActions = (
+    <>
+      {allowed && (
+        <CreateButton
+          title={t('indexPage.createButtonTitle')}
+          to={createComponentLink && createComponentLink()}
+        />
+      )}
+      {exportSettings?.enabled && (
+        <Box ml={2}>
+          <CatalogExportButton settings={exportSettings} />
+        </Box>
+      )}
+      <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
+    </>
+  );
 
   return (
-    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
-      <Content>
-        <ContentHeader title="">
-          {allowed && (
-            <CreateButton
-              title={t('indexPage.createButtonTitle')}
-              to={createComponentLink && createComponentLink()}
-            />
-          )}
-          <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
-        </ContentHeader>
-        <EntityListProvider pagination={pagination}>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </EntityListProvider>
-      </Content>
-    </PageWithHeader>
+    <EntityListProvider pagination={pagination}>
+      <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
+        <Content>
+          <ContentHeader title="">{headerActions}</ContentHeader>
+          <CatalogPageContent {...props} />
+        </Content>
+      </PageWithHeader>
+    </EntityListProvider>
+  );
+}
+
+/** @internal */
+export function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
+  const { pagination, exportSettings } = props;
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
+  const createComponentLink = useRouteRef(createComponentRouteRef);
+  const createComponentHref = createComponentLink?.();
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
+
+  return (
+    <EntityListProvider pagination={pagination}>
+      <Header
+        title={t('indexPage.title', { orgName })}
+        customActions={
+          <>
+            {allowed && createComponentHref && (
+              <ButtonLink
+                variant="primary"
+                href={createComponentHref}
+                iconStart={<RiAddLine />}
+              >
+                {t('indexPage.createButtonTitle')}
+              </ButtonLink>
+            )}
+            {exportSettings?.enabled && (
+              <CatalogExportButton settings={exportSettings} iconOnly />
+            )}
+            <div className={styles.supportButton}>
+              <SupportButton>
+                {t('indexPage.supportButtonContent')}
+              </SupportButton>
+            </div>
+          </>
+        }
+      />
+      <Container>
+        <CatalogPageContent {...props} />
+      </Container>
+    </EntityListProvider>
   );
 }
 
@@ -98,6 +166,7 @@ export interface DefaultCatalogPageProps {
   filters?: ReactNode;
   initiallySelectedNamespaces?: string[];
   pagination?: EntityListPagination;
+  exportSettings?: CatalogExportSettings;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -112,6 +181,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     ownerPickerMode,
     filters,
     initiallySelectedNamespaces,
+    exportSettings,
   } = props;
 
   return (
@@ -135,6 +205,49 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         />
       }
       pagination={pagination}
+      exportSettings={exportSettings}
+    />
+  );
+}
+
+/** @public */
+export function NfsDefaultCatalogPage(props: DefaultCatalogPageProps) {
+  const {
+    columns,
+    actions,
+    initiallySelectedFilter = 'owned',
+    initialKind = 'component',
+    tableOptions = {},
+    emptyContent,
+    pagination,
+    ownerPickerMode,
+    filters,
+    initiallySelectedNamespaces,
+    exportSettings,
+  } = props;
+
+  return (
+    <NfsBaseCatalogPage
+      filters={
+        filters ?? (
+          <DefaultFilters
+            initialKind={initialKind}
+            initiallySelectedFilter={initiallySelectedFilter}
+            ownerPickerMode={ownerPickerMode}
+            initiallySelectedNamespaces={initiallySelectedNamespaces}
+          />
+        )
+      }
+      content={
+        <CatalogTable
+          columns={columns}
+          actions={actions}
+          tableOptions={tableOptions}
+          emptyContent={emptyContent}
+        />
+      }
+      pagination={pagination}
+      exportSettings={exportSettings}
     />
   );
 }

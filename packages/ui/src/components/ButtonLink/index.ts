@@ -15,4 +15,5 @@
  */
 
 export * from './ButtonLink';
+export { ButtonLinkDefinition } from './definition';
 export * from './types';

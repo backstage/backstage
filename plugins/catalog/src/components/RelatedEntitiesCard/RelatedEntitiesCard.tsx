@@ -70,6 +70,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
  * this card as its implementation with some of the props set to the appropriate
  * values.
  *
+ * @deprecated Use {@link @backstage/plugin-catalog-react/alpha#EntityRelationCard} instead.
  * @public
  */
 export const RelatedEntitiesCard = <T extends Entity>(
@@ -139,6 +140,10 @@ RelatedEntitiesCard.asResourceEntities = asResourceEntities;
 RelatedEntitiesCard.systemEntityColumns = systemEntityColumns;
 RelatedEntitiesCard.systemEntityHelpLink = systemEntityHelpLink;
 RelatedEntitiesCard.asSystemEntities = asSystemEntities;
+RelatedEntitiesCard.domainEntityColumns = domainEntityColumns;
+/**
+ * @deprecated Use `RelatedEntitiesCard.domainEntityColumns` instead. This was a typo in the original property name.
+ */
 RelatedEntitiesCard.domainEntityColums = domainEntityColumns;
 RelatedEntitiesCard.domainEntityHelpLink = domainEntityHelpLink;
 RelatedEntitiesCard.asDomainEntities = asDomainEntities;

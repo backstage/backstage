@@ -29,7 +29,11 @@ const kindMappings: Record<string, string> = {
 
 /** @public */
 export class GkeClusterLinksFormatter implements ClusterLinksFormatter {
-  constructor(private readonly googleAuthApi: ProfileInfoApi | undefined) {}
+  private readonly googleAuthApi: ProfileInfoApi | undefined;
+
+  constructor(googleAuthApi: ProfileInfoApi | undefined) {
+    this.googleAuthApi = googleAuthApi;
+  }
   async formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL> {
     if (!options.dashboardParameters) {
       throw new Error('GKE dashboard requires a dashboardParameters option');

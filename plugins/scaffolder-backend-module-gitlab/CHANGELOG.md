@@ -1,5 +1,320 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.11.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+
+## 0.11.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-scaffolder-node@0.13.4-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.11.6
+
+### Patch Changes
+
+- 8474da5: Added `allowEmpty` input option to the `gitlab:repo:push` action, allowing empty commits. Required from GitLab 18.8 or later.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-scaffolder-node@0.13.3
+  - @backstage/config@1.3.8
+
+## 0.11.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-scaffolder-node@0.13.3-next.0
+
+## 0.11.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-scaffolder-node@0.13.2
+  - @backstage/integration@2.0.1
+  - @backstage/config@1.3.7
+
+## 0.11.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.2-next.2
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+
+## 0.11.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-scaffolder-node@0.13.1-next.1
+
+## 0.11.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@2.0.0
+
+## 0.11.4
+
+### Patch Changes
+
+- 5730c8e: Added `maskedAndHidden` option to `gitlab:projectVariable:create` and `publish:gitlab` action to support creating GitLab project variables that are both masked and hidden. Updated gitbeaker to version 43.8.0 for proper type support.
+- 0c1726a: Added new `gitlab:group:access` scaffolder action to add or remove users and groups as members of GitLab groups. The action supports specifying members via `userIds` and/or `groupIds` array parameters, configurable access levels (Guest, Reporter, Developer, Maintainer, Owner), and defaults to the 'add' action when not specified.
+- 4b8fcf0: Added two optional inputs to the `publish:gitlab` action:
+
+  - `settings.name`: set a custom human-readable project title that differs from the repository slug.
+  - `ownerUsername`: add a specific GitLab user as project owner (access level 50) of the newly created repository. Requires a privileged token in the integration configuration.
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-scaffolder-node@0.13.0
+  - @backstage/integration@2.0.0
+
+## 0.11.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/plugin-scaffolder-node@0.13.0-next.2
+
+## 0.11.4-next.1
+
+### Patch Changes
+
+- 0c1726a: Added new `gitlab:group:access` scaffolder action to add or remove users and groups as members of GitLab groups. The action supports specifying members via `userIds` and/or `groupIds` array parameters, configurable access levels (Guest, Reporter, Developer, Maintainer, Owner), and defaults to the 'add' action when not specified.
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-scaffolder-node@0.13.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 0.11.4-next.0
+
+### Patch Changes
+
+- 5730c8e: Added `maskedAndHidden` option to `gitlab:projectVariable:create` and `publish:gitlab` action to support creating GitLab project variables that are both masked and hidden. Updated gitbeaker to version 43.8.0 for proper type support.
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-scaffolder-node@0.12.6-next.0
+
+## 0.11.3
+
+### Patch Changes
+
+- 6b5e7d9: Allow setting optional description on group creation
+- 7455dae: Use node prefix on native imports
+- f0f9403: Changed `gitlab:group:ensureExists` action to use `Groups.show` API instead of `Groups.search` for checking if a group path exists. This is more efficient as it directly retrieves the group by path rather than searching and filtering results.
+- 32c51c0: Added new `gitlab:user:info` scaffolder action that retrieves information about a GitLab user. The action can fetch either the current authenticated user or a specific user by ID.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-scaffolder-node@0.12.5
+
+## 0.11.3-next.2
+
+### Patch Changes
+
+- 6b5e7d9: Allow setting optional description on group creation
+- f0f9403: Changed `gitlab:group:ensureExists` action to use `Groups.show` API instead of `Groups.search` for checking if a group path exists. This is more efficient as it directly retrieves the group by path rather than searching and filtering results.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 0.11.3-next.1
+
+### Patch Changes
+
+- 32c51c0: Added new `gitlab:user:info` scaffolder action that retrieves information about a GitLab user. The action can fetch either the current authenticated user or a specific user by ID.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 0.11.2-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 0.11.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/integration@1.19.2
+
+## 0.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
+## 0.11.0
+
+### Minor Changes
+
+- f2d034b: In the `gitlabRepoPush` action, add 'auto' possibility for `commitAction` input.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 0.11.0-next.1
+
+### Minor Changes
+
+- f2d034b: In the `gitlabRepoPush` action, add 'auto' possibility for `commitAction` input.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-scaffolder-node@0.12.2-next.1
+
+## 0.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-scaffolder-node@0.12.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 0.10.0
+
+### Minor Changes
+
+- ff96d7e: fix scaffolder action createDeployToken to allow usage of oauth tokens
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-scaffolder-node@0.12.1
+
+## 0.10.0-next.1
+
+### Minor Changes
+
+- ff96d7e: fix scaffolder action createDeployToken to allow usage of oauth tokens
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+
+## 0.9.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+
+## 0.9.6
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- f5e0963: Removed unused dependencies
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+
+## 0.9.6-next.2
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
 ## 0.9.5
 
 ### Patch Changes

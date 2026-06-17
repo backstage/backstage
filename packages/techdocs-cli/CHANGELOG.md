@@ -1,5 +1,297 @@
 # @techdocs/cli
 
+## 1.11.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.3
+  - @backstage/plugin-techdocs-node@1.15.1
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.2-next.0
+  - @backstage/plugin-techdocs-node@1.15.1-next.0
+
+## 1.11.0
+
+### Minor Changes
+
+- 329f592: Add support for disabling external font downloads via techdocs-cli `techdocs-cli generate --disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/backend-defaults@0.17.1
+  - @backstage/plugin-techdocs-node@1.15.0
+  - @backstage/cli-common@0.2.2
+  - @backstage/config@1.3.8
+
+## 1.11.0-next.1
+
+### Minor Changes
+
+- 329f592: Add support for disabling external font downloads via techdocs-cli `techdocs-cli generate --disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.15.0-next.1
+
+## 1.10.8-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/cli-common@0.2.2-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-techdocs-node@1.14.6-next.0
+
+## 1.10.7
+
+### Patch Changes
+
+- 980b7f5: Updated proxy documentation to recommend Node.js built-in proxy support via `NODE_USE_ENV_PROXY` instead of `global-agent`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/cli-common@0.2.1
+  - @backstage/plugin-techdocs-node@1.14.5
+  - @backstage/config@1.3.7
+
+## 1.10.7-next.1
+
+### Patch Changes
+
+- 980b7f5: Updated proxy documentation to recommend Node.js built-in proxy support via `NODE_USE_ENV_PROXY` instead of `global-agent`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.16.1-next.2
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/plugin-techdocs-node@1.14.5-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+
+## 1.10.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/backend-defaults@0.16.1-next.0
+  - @backstage/plugin-techdocs-node@1.14.5-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+
+## 1.10.6
+
+### Patch Changes
+
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- Updated dependencies
+  - @backstage/backend-defaults@0.16.0
+  - @backstage/cli-common@0.2.0
+  - @backstage/plugin-techdocs-node@1.14.4
+  - @backstage/catalog-model@1.7.7
+
+## 1.10.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.1
+  - @backstage/plugin-techdocs-node@1.14.3-next.1
+  - @backstage/backend-defaults@0.16.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+
+## 1.10.6-next.0
+
+### Patch Changes
+
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.0
+  - @backstage/backend-defaults@0.15.3-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/plugin-techdocs-node@1.14.3-next.0
+
+## 1.10.5
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 27798df: Migrate the Techdocs CLI embedded app to the New Frontend System (NFS)
+- 508d127: Updated dependency `find-process` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.2
+  - @backstage/plugin-techdocs-node@1.14.2
+  - @backstage/cli-common@0.1.18
+
+## 1.10.5-next.1
+
+### Patch Changes
+
+- 508d127: Updated dependency `find-process` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/plugin-techdocs-node@1.14.2-next.1
+
+## 1.10.5-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-techdocs-node@1.14.1-next.0
+  - @backstage/cli-common@0.1.18-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+
+## 1.10.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/cli-common@0.1.17
+  - @backstage/plugin-techdocs-node@1.14.0
+
+## 1.10.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+
+## 1.10.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.1
+  - @backstage/plugin-techdocs-node@1.13.11-next.0
+
+## 1.10.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/cli-common@0.1.16
+  - @backstage/config@1.3.6
+  - @backstage/plugin-techdocs-node@1.13.10
+
+## 1.10.3
+
+### Patch Changes
+
+- 43629b1: Updated to use new utilities from `@backstage/cli-common`.
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/plugin-techdocs-node@1.13.10
+  - @backstage/cli-common@0.1.16
+
+## 1.10.3-next.2
+
+### Patch Changes
+
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/plugin-techdocs-node@1.13.10-next.1
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+
+## 1.10.3-next.1
+
+### Patch Changes
+
+- 43629b1: Updated to use new utilities from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.1
+
+## 1.10.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.0
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/plugin-techdocs-node@1.13.10-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+
+## 1.10.2
+
+### Patch Changes
+
+- c2a2017: Fix for missing styles due to move to BUI.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/plugin-techdocs-node@1.13.9
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- c2a2017: Fix for missing styles due to move to BUI.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-techdocs-node@1.13.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/cli-common@0.1.15
+
+## 1.10.0
+
+### Minor Changes
+
+- 43afbe5: Techdocs CLI serve supports automatic refresh, relying on `mkdocs` `watch` feature.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/config@1.3.5
+  - @backstage/plugin-techdocs-node@1.13.8
+
+## 1.9.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/plugin-techdocs-node@1.13.8-next.1
+
+## 1.9.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/plugin-techdocs-node@1.13.8-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.3
+
 ## 1.9.8
 
 ### Patch Changes

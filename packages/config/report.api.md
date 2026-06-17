@@ -48,7 +48,7 @@ export class ConfigReader implements Config {
   constructor(
     data: JsonObject_2 | undefined,
     context?: string,
-    fallback?: ConfigReader | undefined,
+    fallback?: ConfigReader,
     prefix?: string,
   );
   static fromConfigs(configs: AppConfig[]): ConfigReader;

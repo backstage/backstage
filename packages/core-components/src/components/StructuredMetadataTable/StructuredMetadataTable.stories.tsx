@@ -41,6 +41,7 @@ const metadata = {
 export default {
   title: 'Data Display/Structured Metadata Table',
   component: StructuredMetadataTable,
+  tags: ['!manifest'],
 };
 
 const Wrapper = ({ children }: PropsWithChildren<{}>) => (

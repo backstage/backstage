@@ -4,6 +4,12 @@ title: Structure of a Plugin
 description: Details about structure of a plugin
 ---
 
+:::caution Legacy Documentation
+
+This page describes the structure of a plugin for the **old frontend system**. For the new frontend system, see [Building Frontend Plugins](../frontend-system/building-plugins/01-index.md). The general folder structure is similar, but the plugin wiring in `plugin.ts` differs significantly.
+
+:::
+
 Nice, you have a new plugin! We'll soon see how we can develop it into doing
 great things. But first off, let's look at what we get out of the box.
 
@@ -81,8 +87,8 @@ export const ExamplePage = examplePlugin.provide(
 ```
 
 This is where the plugin is created and where it creates and exports extensions
-that can be imported and used the app. See reference docs for
-[`createPlugin`](../reference/core-plugin-api.createplugin.md) or introduction to
+that can be imported and used in the app. See reference docs for
+[`createPlugin`](https://backstage.io/api/stable/functions/_backstage_core-plugin-api.index.createPlugin.html) or introduction to
 the new [Composability System](./composability.md).
 
 ## Components

@@ -5,9 +5,13 @@
 ```ts
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export function createBackend(): Backend;
+
+// @public (undocumented)
+export const defaultServiceFactories: ServiceFactory[];
 
 // @public
 export const discoveryFeatureLoader: BackendFeature;

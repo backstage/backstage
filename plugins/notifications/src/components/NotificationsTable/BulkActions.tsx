@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 import { Notification } from '@backstage/plugin-notifications-common';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import MarkAsUnreadIcon from '@material-ui/icons/Markunread' /* TODO: use Drafts and MarkAsUnread once we have mui 5 icons */;
-import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
-import MarkAsUnsavedIcon from '@material-ui/icons/LabelOff' /* TODO: use BookmarkRemove and BookmarkAdd once we have mui 5 icons */;
-import MarkAsSavedIcon from '@material-ui/icons/Label';
-import MarkAllReadIcon from '@material-ui/icons/DoneAll';
+import { ButtonIcon, Flex, Tooltip, TooltipTrigger } from '@backstage/ui';
+import {
+  RiCheckDoubleLine,
+  RiBookmarkLine,
+  RiBookmark3Line,
+  RiCheckboxCircleLine,
+  RiMailLine,
+} from '@remixicon/react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { notificationsTranslationRef } from '../../translation';
 
 export const BulkActions = ({
   selectedNotifications,
@@ -38,6 +40,7 @@ export const BulkActions = ({
   onSwitchSavedStatus: (ids: Notification['id'][], newStatus: boolean) => void;
   onMarkAllRead?: () => void;
 }) => {
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const isDisabled = selectedNotifications.size === 0;
   const bulkNotifications = notifications.filter(notification =>
     selectedNotifications.has(notification.id),
@@ -51,62 +54,58 @@ export const BulkActions = ({
   );
 
   const markAsReadText = isOneRead
-    ? 'Return selected among unread'
-    : 'Mark selected as read';
-  const IconComponent = isOneRead ? MarkAsUnreadIcon : MarkAsReadIcon;
+    ? t('table.bulkActions.returnSelectedAmongUnread')
+    : t('table.bulkActions.markSelectedAsRead');
+  const ReadIcon = isOneRead ? RiMailLine : RiCheckboxCircleLine;
 
   const markAsSavedText = isOneSaved
-    ? 'Undo save for selected'
-    : 'Save selected for later';
-  const SavedIconComponent = isOneSaved ? MarkAsUnsavedIcon : MarkAsSavedIcon;
+    ? t('table.bulkActions.undoSaveForSelected')
+    : t('table.bulkActions.saveSelectedForLater');
+  const SavedIcon = isOneSaved ? RiBookmark3Line : RiBookmarkLine;
+  const markAllReadText = t('table.bulkActions.markAllRead');
 
   return (
-    <Grid container wrap="nowrap">
-      <Grid item xs={3}>
-        {onMarkAllRead ? (
-          <Tooltip title="Mark all read">
-            <div>
-              {/* The <div> here is a workaround for the Tooltip which does not work for a "disabled" child */}
-              <IconButton disabled={!isUnread} onClick={onMarkAllRead}>
-                <MarkAllReadIcon aria-label={markAsSavedText} />
-              </IconButton>
-            </div>
-          </Tooltip>
-        ) : (
-          <div />
-        )}
-      </Grid>
+    <Flex gap="1">
+      {onMarkAllRead ? (
+        <TooltipTrigger>
+          <ButtonIcon
+            aria-label={markAllReadText}
+            isDisabled={!isUnread}
+            onPress={onMarkAllRead}
+            icon={<RiCheckDoubleLine size={16} />}
+            variant="secondary"
+          />
+          <Tooltip>{markAllReadText}</Tooltip>
+        </TooltipTrigger>
+      ) : (
+        <div />
+      )}
 
-      <Grid item xs={3}>
-        <Tooltip title={markAsSavedText}>
-          <div>
-            {/* The <div> here is a workaround for the Tooltip which does not work for a "disabled" child */}
-            <IconButton
-              disabled={isDisabled}
-              onClick={() => {
-                onSwitchSavedStatus([...selectedNotifications], !isOneSaved);
-              }}
-            >
-              <SavedIconComponent aria-label={markAsSavedText} />
-            </IconButton>
-          </div>
-        </Tooltip>
-      </Grid>
+      <TooltipTrigger>
+        <ButtonIcon
+          aria-label={markAsSavedText}
+          isDisabled={isDisabled}
+          onPress={() => {
+            onSwitchSavedStatus([...selectedNotifications], !isOneSaved);
+          }}
+          icon={<SavedIcon size={16} />}
+          variant="secondary"
+        />
+        <Tooltip>{markAsSavedText}</Tooltip>
+      </TooltipTrigger>
 
-      <Grid item xs={3}>
-        <Tooltip title={markAsReadText}>
-          <div>
-            <IconButton
-              disabled={isDisabled}
-              onClick={() => {
-                onSwitchReadStatus([...selectedNotifications], !isOneRead);
-              }}
-            >
-              <IconComponent aria-label={markAsReadText} />
-            </IconButton>
-          </div>
-        </Tooltip>
-      </Grid>
-    </Grid>
+      <TooltipTrigger>
+        <ButtonIcon
+          aria-label={markAsReadText}
+          isDisabled={isDisabled}
+          onPress={() => {
+            onSwitchReadStatus([...selectedNotifications], !isOneRead);
+          }}
+          icon={<ReadIcon size={16} />}
+          variant="secondary"
+        />
+        <Tooltip>{markAsReadText}</Tooltip>
+      </TooltipTrigger>
+    </Flex>
   );
 };

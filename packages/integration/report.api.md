@@ -74,6 +74,27 @@ export type AwsS3IntegrationConfig = {
 };
 
 // @public
+export class AzureBlobStorageIntegration implements ScmIntegration {
+  constructor(integrationConfig: AzureBlobStorageIntegrationConfig);
+  // (undocumented)
+  get config(): AzureBlobStorageIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<AzureBlobStorageIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number | undefined;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
 export type AzureBlobStorageIntegrationConfig = {
   accountName?: string;
   accountKey?: string;
@@ -89,26 +110,11 @@ export type AzureBlobStorageIntegrationConfig = {
   };
 };
 
-// @public
-export class AzureBlobStorageIntergation implements ScmIntegration {
-  constructor(integrationConfig: AzureBlobStorageIntegrationConfig);
-  // (undocumented)
-  get config(): AzureBlobStorageIntegrationConfig;
-  // (undocumented)
-  static factory: ScmIntegrationsFactory<AzureBlobStorageIntergation>;
-  // (undocumented)
-  resolveEditUrl(url: string): string;
-  // (undocumented)
-  resolveUrl(options: {
-    url: string;
-    base: string;
-    lineNumber?: number | undefined;
-  }): string;
-  // (undocumented)
-  get title(): string;
-  // (undocumented)
-  get type(): string;
-}
+// @public @deprecated
+export const AzureBlobStorageIntergation: typeof AzureBlobStorageIntegration;
+
+// @public @deprecated
+export type AzureBlobStorageIntergation = AzureBlobStorageIntegration;
 
 // @public
 export type AzureClientSecretCredential = AzureCredentialBase & {
@@ -201,8 +207,6 @@ export class AzureIntegration implements ScmIntegration {
 // @public
 export type AzureIntegrationConfig = {
   host: string;
-  token?: string;
-  credential?: AzureDevOpsCredential;
   credentials?: AzureDevOpsCredential[];
   commitSigningKey?: string;
 };
@@ -250,37 +254,8 @@ export type BitbucketCloudIntegrationConfig = {
   username?: string;
   appPassword?: string;
   token?: string;
-  commitSigningKey?: string;
-};
-
-// @public @deprecated
-export class BitbucketIntegration implements ScmIntegration {
-  constructor(integrationConfig: BitbucketIntegrationConfig);
-  // (undocumented)
-  get config(): BitbucketIntegrationConfig;
-  // (undocumented)
-  static factory: ScmIntegrationsFactory<BitbucketIntegration>;
-  // (undocumented)
-  resolveEditUrl(url: string): string;
-  // (undocumented)
-  resolveUrl(options: {
-    url: string;
-    base: string;
-    lineNumber?: number;
-  }): string;
-  // (undocumented)
-  get title(): string;
-  // (undocumented)
-  get type(): string;
-}
-
-// @public @deprecated
-export type BitbucketIntegrationConfig = {
-  host: string;
-  apiBaseUrl: string;
-  token?: string;
-  username?: string;
-  appPassword?: string;
+  clientId?: string;
+  clientSecret?: string;
   commitSigningKey?: string;
 };
 
@@ -314,14 +289,6 @@ export type BitbucketServerIntegrationConfig = {
   password?: string;
   commitSigningKey?: string;
 };
-
-// @public @deprecated
-export function buildGerritGitilesArchiveUrl(
-  config: GerritIntegrationConfig,
-  project: string,
-  branch: string,
-  filePath: string,
-): string;
 
 // @public
 export function buildGerritGitilesArchiveUrlFromLocation(
@@ -424,14 +391,6 @@ export function getAzureDownloadUrl(url: string): string;
 // @public
 export function getAzureFileFetchUrl(url: string): string;
 
-// @public @deprecated
-export function getAzureRequestOptions(
-  config: AzureIntegrationConfig,
-  additionalHeaders?: Record<string, string>,
-): Promise<{
-  headers: Record<string, string>;
-}>;
-
 // @public
 export function getBitbucketCloudDefaultBranch(
   url: string,
@@ -451,36 +410,17 @@ export function getBitbucketCloudFileFetchUrl(
 ): string;
 
 // @public
+export function getBitbucketCloudOAuthToken(
+  clientId: string,
+  clientSecret: string,
+): Promise<string>;
+
+// @public
 export function getBitbucketCloudRequestOptions(
   config: BitbucketCloudIntegrationConfig,
-): {
+): Promise<{
   headers: Record<string, string>;
-};
-
-// @public @deprecated
-export function getBitbucketDefaultBranch(
-  url: string,
-  config: BitbucketIntegrationConfig,
-): Promise<string>;
-
-// @public @deprecated
-export function getBitbucketDownloadUrl(
-  url: string,
-  config: BitbucketIntegrationConfig,
-): Promise<string>;
-
-// @public @deprecated
-export function getBitbucketFileFetchUrl(
-  url: string,
-  config: BitbucketIntegrationConfig,
-): string;
-
-// @public @deprecated
-export function getBitbucketRequestOptions(
-  config: BitbucketIntegrationConfig,
-): {
-  headers: Record<string, string>;
-};
+}>;
 
 // @public
 export function getBitbucketServerDefaultBranch(
@@ -571,14 +511,6 @@ export function getGithubFileFetchUrl(
   credentials: GithubCredentials,
 ): string;
 
-// @public @deprecated
-export function getGitHubRequestOptions(
-  config: GithubIntegrationConfig,
-  credentials: GithubCredentials,
-): {
-  headers: Record<string, string>;
-};
-
 // @public
 export function getGitilesAuthenticationUrl(
   config: GerritIntegrationConfig,
@@ -588,7 +520,7 @@ export function getGitilesAuthenticationUrl(
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
-  token?: string,
+  _token?: string,
 ): Promise<string>;
 
 // @public
@@ -665,6 +597,7 @@ export type GithubAppConfig = {
   clientId: string;
   clientSecret: string;
   allowedInstallationOwners?: string[];
+  publicAccess?: boolean;
 };
 
 // @public
@@ -675,7 +608,7 @@ export class GithubAppCredentialsMux {
     RestEndpointMethodTypes['apps']['listInstallations']['response']['data']
   >;
   // (undocumented)
-  getAppToken(owner: string, repo?: string): Promise<string | undefined>;
+  getAppToken(owner?: string, repo?: string): Promise<string | undefined>;
 }
 
 // @public
@@ -750,6 +683,8 @@ export class GitLabIntegration implements ScmIntegration {
   // (undocumented)
   static factory: ScmIntegrationsFactory<GitLabIntegration>;
   // (undocumented)
+  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+  // (undocumented)
   resolveEditUrl(url: string): string;
   // (undocumented)
   resolveUrl(options: {
@@ -770,10 +705,37 @@ export type GitLabIntegrationConfig = {
   token?: string;
   baseUrl: string;
   commitSigningKey?: string;
+  retry?: {
+    maxRetries?: number;
+    retryStatusCodes?: number[];
+    maxApiRequestsPerMinute?: number;
+  };
 };
 
 // @public
+export class GoogleGcsIntegration implements ScmIntegration {
+  constructor(integrationConfig: GoogleGcsIntegrationConfig);
+  // (undocumented)
+  get config(): GoogleGcsIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<GoogleGcsIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number | undefined;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
 export type GoogleGcsIntegrationConfig = {
+  host: string;
   clientEmail?: string;
   privateKey?: string;
 };
@@ -815,9 +777,7 @@ export interface IntegrationsByType {
   // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
   // (undocumented)
-  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntergation>;
-  // @deprecated (undocumented)
-  bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   // (undocumented)
   bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
   // (undocumented)
@@ -831,18 +791,10 @@ export interface IntegrationsByType {
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
   // (undocumented)
+  googleGcs: ScmIntegrationsGroup<GoogleGcsIntegration>;
+  // (undocumented)
   harness: ScmIntegrationsGroup<HarnessIntegration>;
 }
-
-// @public @deprecated
-export function parseGerritGitilesUrl(
-  config: GerritIntegrationConfig,
-  url: string,
-): {
-  branch: string;
-  filePath: string;
-  project: string;
-};
 
 // @public
 export function parseGerritJsonResponse(response: Response): Promise<unknown>;
@@ -949,16 +901,6 @@ export function readBitbucketCloudIntegrationConfigs(
   configs: Config[],
 ): BitbucketCloudIntegrationConfig[];
 
-// @public @deprecated
-export function readBitbucketIntegrationConfig(
-  config: Config,
-): BitbucketIntegrationConfig;
-
-// @public @deprecated
-export function readBitbucketIntegrationConfigs(
-  configs: Config[],
-): BitbucketIntegrationConfig[];
-
 // @public
 export function readBitbucketServerIntegrationConfig(
   config: Config,
@@ -1044,9 +986,7 @@ export interface ScmIntegrationRegistry
   // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
   // (undocumented)
-  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntergation>;
-  // @deprecated (undocumented)
-  bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   // (undocumented)
   bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
   // (undocumented)
@@ -1079,9 +1019,7 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   // (undocumented)
   get azure(): ScmIntegrationsGroup<AzureIntegration>;
   // (undocumented)
-  get azureBlobStorage(): ScmIntegrationsGroup<AzureBlobStorageIntergation>;
-  // @deprecated (undocumented)
-  get bitbucket(): ScmIntegrationsGroup<BitbucketIntegration>;
+  get azureBlobStorage(): ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   // (undocumented)
   get bitbucketCloud(): ScmIntegrationsGroup<BitbucketCloudIntegration>;
   // (undocumented)
@@ -1100,6 +1038,8 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   get github(): ScmIntegrationsGroup<GithubIntegration>;
   // (undocumented)
   get gitlab(): ScmIntegrationsGroup<GitLabIntegration>;
+  // (undocumented)
+  get googleGcs(): ScmIntegrationsGroup<GoogleGcsIntegration>;
   // (undocumented)
   get harness(): ScmIntegrationsGroup<HarnessIntegration>;
   // (undocumented)

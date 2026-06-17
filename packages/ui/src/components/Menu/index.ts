@@ -26,15 +26,25 @@ export {
   MenuSection,
   MenuSeparator,
 } from './Menu';
+export { MenuDefinition } from './definition';
 export type {
   MenuTriggerProps,
   SubmenuTriggerProps,
   MenuProps,
+  MenuPopoverOwnProps,
+  MenuOwnProps,
   MenuListBoxProps,
+  MenuListBoxOwnProps,
   MenuAutocompleteProps,
+  MenuAutocompleteOwnProps,
   MenuAutocompleteListBoxProps,
+  MenuAutocompleteListBoxOwnProps,
   MenuItemProps,
+  MenuItemOwnProps,
   MenuListBoxItemProps,
+  MenuListBoxItemOwnProps,
   MenuSectionProps,
+  MenuSectionOwnProps,
   MenuSeparatorProps,
+  MenuSeparatorOwnProps,
 } from './types';

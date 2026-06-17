@@ -21,6 +21,7 @@ import {
   createServiceRef,
   coreServices,
   createBackendPlugin,
+  ExtensionPointFactoryContext,
 } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import request from 'supertest';
@@ -407,5 +408,115 @@ describe('TestBackend', () => {
         ],
       }),
     ).rejects.toThrow('nah');
+  });
+
+  it('should support factory-based extension points', async () => {
+    expect.assertions(2);
+
+    const extensionPoint = createExtensionPoint<{
+      getValue(): number;
+    }>({ id: 'test-factory' });
+
+    const testPlugin = createBackendPlugin({
+      pluginId: 'test',
+      register(env) {
+        const instances: Array<{ getValue(): number }> = [];
+
+        env.registerExtensionPoint({
+          extensionPoint,
+          factory: () => {
+            const instance = {
+              getValue: () => 42,
+            };
+            instances.push(instance);
+            return instance;
+          },
+        });
+
+        env.registerInit({
+          deps: {},
+          async init() {
+            // Factory is called during module initialization, which happens before plugin init
+            expect(instances).toHaveLength(1);
+          },
+        });
+      },
+    });
+
+    const testModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'test-module',
+      register(env) {
+        env.registerInit({
+          deps: { ext: extensionPoint },
+          async init({ ext }) {
+            expect(ext.getValue()).toBe(42);
+          },
+        });
+      },
+    });
+
+    await startTestBackend({
+      features: [testPlugin, testModule],
+    });
+  });
+
+  it('should support reportModuleStartupFailure in factory-based extension points', async () => {
+    const extensionPoint = createExtensionPoint<{
+      getValue(): number;
+    }>({ id: 'test-failure' });
+
+    const testPlugin = createBackendPlugin({
+      pluginId: 'test',
+      register(env) {
+        let capturedContext: ExtensionPointFactoryContext | undefined;
+
+        env.registerExtensionPoint({
+          extensionPoint,
+          factory: context => {
+            capturedContext = context;
+            return {
+              getValue: () => 42,
+            };
+          },
+        });
+
+        env.registerInit({
+          deps: {},
+          async init() {
+            // Plugin init runs after all modules have been initialized
+            // At this point, the module result exists and we can report a failure
+            capturedContext?.reportModuleStartupFailure({
+              error: new Error('NOPE'),
+            });
+          },
+        });
+      },
+    });
+
+    const testModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'test-module',
+      register(env) {
+        env.registerInit({
+          deps: { ext: extensionPoint },
+          async init({ ext }) {
+            // Use the extension point - this creates the context
+            ext.getValue();
+          },
+        });
+      },
+    });
+
+    await expect(
+      startTestBackend({
+        features: [testPlugin, testModule],
+      }),
+    ).rejects.toThrow(
+      new Error(
+        `Backend startup failed due to the following errors:
+  Module 'test-module' for plugin 'test' startup failed; caused by Error: NOPE`,
+      ),
+    );
   });
 });

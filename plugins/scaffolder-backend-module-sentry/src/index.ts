@@ -15,4 +15,5 @@
  */
 
 export { createSentryCreateProjectAction } from './actions/createProject';
+export { createSentryFetchDSNAction } from './actions/fetchDSN';
 export { sentryModule as default } from './module';

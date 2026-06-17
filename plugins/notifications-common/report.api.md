@@ -9,6 +9,7 @@ import { JsonValue } from '@backstage/types';
 // @public (undocumented)
 export type ChannelSetting = {
   id: string;
+  enabled?: boolean;
   origins: OriginSetting[];
 };
 
@@ -63,6 +64,7 @@ export type NotificationProcessorFilters = {
   minSeverity?: NotificationSeverity;
   maxSeverity?: NotificationSeverity;
   excludedTopics?: string[];
+  includedTopics?: string[];
 };
 
 // @public (undocumented)

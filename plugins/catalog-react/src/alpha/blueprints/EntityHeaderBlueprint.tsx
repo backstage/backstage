@@ -20,10 +20,12 @@ import {
   createExtensionDataRef,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
-import { EntityPredicate } from '../predicates';
+import {
+  FilterPredicate,
+  createZodV4FilterPredicateSchema,
+} from '@backstage/filter-predicates';
 import { Entity } from '@backstage/catalog-model';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
-import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 import {
   entityFilterExpressionDataRef,
   entityFilterFunctionDataRef,
@@ -32,12 +34,12 @@ import {
 import { JSX } from 'react';
 
 /** @alpha */
-export interface EntityContentLayoutHeaderProps {
+export interface EntityHeaderBlueprintProps {
   contextMenu?: JSX.Element;
 }
 
 const entityLayoutHeaderComponentDataRef = createExtensionDataRef<
-  (props: EntityContentLayoutHeaderProps) => JSX.Element
+  (props: EntityHeaderBlueprintProps) => JSX.Element
 >().with({
   id: 'catalog.entity-header.component',
 });
@@ -52,10 +54,8 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
     order: entityLayoutOrderRef,
     component: entityLayoutHeaderComponentDataRef,
   },
-  config: {
-    schema: {
-      filter: z => createEntityPredicateSchema(z).optional(),
-    },
+  configSchema: {
+    filter: createZodV4FilterPredicateSchema().optional(),
   },
   output: [
     entityFilterFunctionDataRef.optional(),
@@ -66,7 +66,7 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
   ],
   *factory(
     params: {
-      filter?: EntityPredicate | ((entity: Entity) => boolean);
+      filter?: FilterPredicate | ((entity: Entity) => boolean);
       order?: number;
     } & (
       | {
@@ -74,7 +74,7 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
         }
       | {
           componentLoader: () => Promise<
-            (props: EntityContentLayoutHeaderProps) => JSX.Element
+            (props: EntityHeaderBlueprintProps) => JSX.Element
           >;
         }
     ),

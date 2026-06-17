@@ -27,15 +27,23 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 
 export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
+  private readonly storage: Storage;
+  private readonly logger: LoggerService;
+  private readonly config?: Config;
+
   static create(logger: LoggerService, config?: Config) {
     return new GcpBucketWorkspaceProvider(new Storage(), logger, config);
   }
 
   private constructor(
-    private readonly storage: Storage,
-    private readonly logger: LoggerService,
-    private readonly config?: Config,
-  ) {}
+    storage: Storage,
+    logger: LoggerService,
+    config?: Config,
+  ) {
+    this.storage = storage;
+    this.logger = logger;
+    this.config = config;
+  }
 
   public async cleanWorkspace(options: { taskId: string }): Promise<void> {
     const file = this.storage

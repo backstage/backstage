@@ -45,7 +45,7 @@ export const UrlUpdater = () => {
     }
 
     const query =
-      qs.parse(location.search.substring(1), { arrayLimit: 0 }) || {};
+      qs.parse(location.search.substring(1), { arrayLimit: 10000 }) || {};
 
     if (query.filters) {
       setFilters(query.filters as JsonObject);
@@ -59,9 +59,7 @@ export const UrlUpdater = () => {
       setPageCursor(query.pageCursor as string);
     }
 
-    if (query.types) {
-      setTypes(query.types as string[]);
-    }
+    setTypes(query.types ? (query.types as string[]) : []);
   }, [prevQueryParams, location, setTerm, setTypes, setPageCursor, setFilters]);
 
   useEffect(() => {

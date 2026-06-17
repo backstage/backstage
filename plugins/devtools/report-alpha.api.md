@@ -6,13 +6,16 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -21,7 +24,7 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'api:devtools': ExtensionDefinition<{
+    'api:devtools': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
       config: {};
@@ -36,52 +39,194 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'nav-item:devtools': ExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      };
-    }>;
-    'page:devtools': ExtensionDefinition<{
-      kind: 'page';
-      name: undefined;
+    'page:devtools': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
+        title: string | undefined;
       };
       configInput: {
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            string,
+            'core.title',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
+        pages: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef_2<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'core.title',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              IconElement,
+              'core.icon',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
+      kind: 'page';
+      name: undefined;
+      params: {
+        path: string;
+        title?: string;
+        icon?: IconElement;
+        loader?: () => Promise<JSX_2.Element>;
+        routeRef?: RouteRef_2;
+        noHeader?: boolean;
+      };
+    }>;
+    'sub-page:devtools/config': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'config';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
             {
               optional: true;
             }
           >;
       inputs: {};
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
+        title: string;
+        icon?: IconElement;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
+      };
+    }>;
+    'sub-page:devtools/info': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'info';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
+    'sub-page:devtools/scheduled-tasks': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'scheduled-tasks';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
       };
     }>;
   }

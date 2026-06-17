@@ -16,8 +16,7 @@
 
 import { isChildPath } from '@backstage/cli-common';
 import { NotAllowedError } from '@backstage/errors';
-import { resolve as resolvePath } from 'path';
-import { realpathSync as realPath } from 'fs';
+import { resolve as resolvePath } from 'node:path';
 
 /** @internal */
 export const packagePathMocks = new Map<
@@ -63,10 +62,9 @@ export function resolvePackagePath(name: string, ...paths: string[]) {
  * @returns A path that is guaranteed to point to or within the base path.
  */
 export function resolveSafeChildPath(base: string, path: string): string {
-  const resolvedBasePath = resolveRealPath(base);
-  const targetPath = resolvePath(resolvedBasePath, path);
+  const targetPath = resolvePath(base, path);
 
-  if (!isChildPath(resolvedBasePath, resolveRealPath(targetPath))) {
+  if (!isChildPath(base, targetPath)) {
     throw new NotAllowedError(
       'Relative path is not allowed to refer to a directory outside its parent',
     );
@@ -76,16 +74,5 @@ export function resolveSafeChildPath(base: string, path: string): string {
   return resolvePath(base, path);
 }
 
-function resolveRealPath(path: string): string {
-  try {
-    return realPath(path);
-  } catch (ex) {
-    if (ex.code !== 'ENOENT') {
-      throw ex;
-    }
-  }
-
-  return path;
-}
 // Re-export isChildPath so that backend packages don't need to depend on cli-common
 export { isChildPath };

@@ -1,5 +1,219 @@
 # @backstage/plugin-events-backend-module-kafka
 
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-events-node@0.4.23
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/config@1.3.8
+  - @backstage/plugin-events-node@0.4.22
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+  - @backstage/types@1.2.2
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/config@1.3.7
+  - @backstage/plugin-events-node@0.4.21
+
+## 0.3.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-events-node@0.4.20
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-events-node@0.4.20-next.1
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.20-next.0
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-events-node@0.4.19
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+
+## 0.3.0
+
+### Minor Changes
+
+- ef5bbd8: Add support for Kafka offset configuration (`fromBeginning`) and `autoCommit`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- ef5bbd8: Add support for Kafka offset configuration (`fromBeginning`) and `autoCommit`
+
+## 0.2.0
+
+### Minor Changes
+
+- 2c74ea9: Added support for multiple named instances in `kafkaConsumingEventPublisher` configuration. The previous single configuration format is still supported for backward compatibility.
+- 2c74ea9: Added `KafkaPublishingEventConsumer` to support sending Backstage events to Kafka topics.
+
+  This addition enables Backstage to publish events to external Kafka systems, complementing the existing ability to receive events from Kafka. This allows for better integration with external systems that rely on Kafka for event streaming.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/backend-plugin-api@1.6.0
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+
+## 0.1.5
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/config@1.3.6
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/types@1.2.2
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-events-node@0.4.16
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+
 ## 0.1.3
 
 ### Patch Changes

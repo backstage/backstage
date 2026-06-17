@@ -16,7 +16,12 @@
 
 import chokidar, { FSWatcher } from 'chokidar';
 import fs from 'fs-extra';
-import { basename, dirname, isAbsolute, resolve as resolvePath } from 'path';
+import {
+  basename,
+  dirname,
+  isAbsolute,
+  resolve as resolvePath,
+} from 'node:path';
 import {
   AsyncConfigSourceGenerator,
   ConfigSource,

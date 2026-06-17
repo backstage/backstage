@@ -378,6 +378,100 @@ describe('<EntityPicker />', () => {
     });
   });
 
+  describe('ui:autoSelect behavior', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          defaultKind: 'Group',
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('default behavior', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      // Type partial match and blur
+      fireEvent.change(input, { target: { value: 'team' } });
+      fireEvent.blur(input);
+
+      // Default behavior with freeSolo enabled processes the typed value
+      expect(onChange).toHaveBeenCalledWith('group:default/team');
+    });
+
+    it('does not autoSelect value onBlur', async () => {
+      uiSchema = {
+        'ui:options': {
+          defaultKind: 'Group',
+          autoSelect: false,
+        },
+      };
+      props = {
+        ...props,
+        uiSchema,
+      } as unknown as FieldProps<any>;
+
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      // Type and blur - with autoSelect=false, the autocomplete won't auto-select on blur
+      fireEvent.change(input, { target: { value: 'team' } });
+      fireEvent.blur(input);
+
+      // With autoSelect=false, onChange should not be called on blur
+      // This is the key difference - users must explicitly select an option
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('autoSelects entity onBlur', async () => {
+      uiSchema = {
+        'ui:options': {
+          defaultKind: 'Group',
+          autoSelect: true,
+        },
+      };
+      props = {
+        ...props,
+        uiSchema,
+      } as unknown as FieldProps<any>;
+
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      // Type and blur
+      fireEvent.change(input, { target: { value: 'squad' } });
+      fireEvent.blur(input);
+
+      // With autoSelect=true and freeSolo, processes the typed value
+      expect(onChange).toHaveBeenCalledWith('group:default/squad');
+    });
+  });
+
   describe('uses full entity ref', () => {
     beforeEach(() => {
       uiSchema = {

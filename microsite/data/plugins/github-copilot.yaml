@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://platformnewsletter.blob.core.windows.net/$web/copilot.png
 npmPackageName: '@backstage-community/plugin-copilot'
 addedDate: '2024-10-21'
+status: active

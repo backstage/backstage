@@ -33,23 +33,25 @@ import {
 import { CatalogService } from '@backstage/plugin-catalog-node';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
+  readonly clusterSuppliers: KubernetesClustersSupplier[];
+  readonly logger: LoggerService;
+
   constructor(
-    readonly clusterSuppliers: KubernetesClustersSupplier[],
-    readonly logger: LoggerService,
-  ) {}
+    clusterSuppliers: KubernetesClustersSupplier[],
+    logger: LoggerService,
+  ) {
+    this.clusterSuppliers = clusterSuppliers;
+    this.logger = logger;
+  }
 
   async getClusters(options: {
     credentials: BackstageCredentials;
   }): Promise<ClusterDetails[]> {
     const clusters = await Promise.all(
       this.clusterSuppliers.map(supplier => supplier.getClusters(options)),
-    )
-      .then(res => {
-        return res.flat();
-      })
-      .catch(e => {
-        throw e;
-      });
+    ).then(res => {
+      return res.flat();
+    });
     return this.warnDuplicates(clusters);
   }
 
@@ -95,6 +97,7 @@ export const getCombinedClusterSupplier = (
         case 'gke':
           return GkeClusterLocator.fromConfig(
             clusterLocatorMethod,
+            logger,
             refreshInterval,
           );
         default:

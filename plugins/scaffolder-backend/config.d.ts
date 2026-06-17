@@ -108,5 +108,26 @@ export interface Config {
     auditor?: {
       taskParameterMaxLength?: number;
     };
+
+    /**
+     * Default environment variables and secrets available to all templates.
+     */
+    defaultEnvironment?: {
+      /**
+       * Default parameters accessible via ${{ environment.parameters.* }} in templates.
+       */
+      parameters?: {
+        [key: string]: string;
+      };
+
+      /**
+       * Secret values from environment variables accessible via ${{ environment.secrets.* }} in templates.
+       * Values should reference environment variables like ${SECRET_NAME}.
+       * @visibility secret
+       */
+      secrets?: {
+        [key: string]: string;
+      };
+    };
   };
 }

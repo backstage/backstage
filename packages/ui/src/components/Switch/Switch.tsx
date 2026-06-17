@@ -17,16 +17,30 @@
 import { forwardRef } from 'react';
 import { Switch as AriaSwitch } from 'react-aria-components';
 import type { SwitchProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
+import { SwitchDefinition } from './definition';
 
-/** @public */
+/**
+ * A toggle control for switching between on and off states, with an optional visible label.
+ *
+ * @public
+ */
 export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
-  ({ label, ...props }, ref) => {
-    const { classNames } = useStyles('Switch');
+  (props, ref) => {
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      SwitchDefinition,
+      props,
+    );
+    const { classes, label } = ownProps;
 
     return (
-      <AriaSwitch className={classNames.root} ref={ref} {...props}>
-        <div className={classNames.indicator} />
+      <AriaSwitch
+        className={classes.root}
+        ref={ref}
+        {...dataAttributes}
+        {...restProps}
+      >
+        <div className={classes.indicator} />
         {label}
       </AriaSwitch>
     );

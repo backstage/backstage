@@ -133,7 +133,11 @@ export class AppIdentityProxy implements IdentityApi {
 
     await this.#cookieAuthSignOut?.();
 
-    window.location.href = this.signOutTargetUrl;
+    this.navigateToUrl(this.signOutTargetUrl);
+  }
+
+  private navigateToUrl(url: string): void {
+    window.location.href = url;
   }
 
   enableCookieAuth(ctx: {

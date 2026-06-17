@@ -19,6 +19,8 @@ import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Chip from '@material-ui/core/Chip';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 export const IngressDrawer = ({
   ingress,
@@ -27,6 +29,7 @@ export const IngressDrawer = ({
   ingress: V1Ingress;
   expanded?: boolean;
 }) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const namespace = ingress.metadata?.namespace;
   return (
     <KubernetesStructuredMetadataTableDrawer
@@ -56,7 +59,7 @@ export const IngressDrawer = ({
         </Grid>
         {namespace && (
           <Grid item>
-            <Chip size="small" label={`namespace: ${namespace}`} />
+            <Chip size="small" label={`${t('namespace.label')} ${namespace}`} />
           </Grid>
         )}
       </Grid>

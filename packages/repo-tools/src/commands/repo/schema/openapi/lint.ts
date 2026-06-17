@@ -49,13 +49,15 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
     {
       extends: [oas, ruleset],
       rules: {
-        'allow-reserved-in-params': {
-          given: '$.paths..parameters[*]',
+        'allow-reserved-in-query-params': {
+          given: '$.paths..parameters[?(@.in == "query")]',
           then: {
             field: 'allowReserved',
             function: truthy,
           },
           severity: 'error',
+          message:
+            'Query parameters must specify allowReserved (true or false)',
         },
       },
       overrides: [
@@ -68,6 +70,8 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
             'operation-tags': 'off',
             'hosts-https-only-oas3': 'off',
             'no-unknown-error-format': 'off',
+            // Disabled as it currently gives false positives when 'example' is used as a property name.
+            'oas3-valid-media-example': 'off',
           },
         },
       ],

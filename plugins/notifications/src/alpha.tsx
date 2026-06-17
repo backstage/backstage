@@ -21,22 +21,18 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/frontend-plugin-api';
+import { RiNotification3Line } from '@remixicon/react';
 import { rootRouteRef } from './routes';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
 import { NotificationsClient, notificationsApiRef } from './api';
 
 const page = PageBlueprint.make({
   params: {
     path: '/notifications',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     loader: () =>
-      import('./components/NotificationsPage').then(m =>
-        compatWrapper(<m.NotificationsPage />),
-      ),
+      import('./components/NotificationsPage').then(m => (
+        <m.NfsNotificationsPage />
+      )),
   },
 });
 
@@ -53,10 +49,20 @@ const api = ApiBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'notifications',
+  title: 'Notifications',
+  icon: <RiNotification3Line />,
   info: { packageJson: () => import('../package.json') },
-  routes: convertLegacyRouteRefs({
+  routes: {
     root: rootRouteRef,
-  }),
+  },
   // TODO(Rugvip): Nav item (i.e. NotificationsSidebarItem) currently needs to be installed manually
   extensions: [page, api],
 });
+
+import { notificationsTranslationRef as _notificationsTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-notifications` instead.
+ */
+export const notificationsTranslationRef = _notificationsTranslationRef;

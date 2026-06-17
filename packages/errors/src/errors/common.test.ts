@@ -23,7 +23,7 @@ describe('common', () => {
       const error = new E('abcdef');
       expect(error.name).toBe(name);
       expect(error.message).toBe('abcdef');
-      expect(error.stack).toContain(__filename);
+      expect(error.stack).toContain('common.test.ts');
       expect(error.toString()).toContain(name);
       expect(error.toString()).toContain('abcdef');
     }

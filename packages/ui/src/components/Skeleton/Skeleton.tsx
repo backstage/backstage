@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-import { useStyles } from '../../hooks/useStyles';
-import { SkeletonProps } from './types';
+import type { SkeletonProps } from './types';
+import { useDefinition } from '../../hooks/useDefinition';
+import { SkeletonDefinition } from './definition';
 
-/** @public */
+/**
+ * A placeholder shape displayed while content is loading, matching the size and layout of the content it replaces.
+ *
+ * @public
+ */
 export const Skeleton = (props: SkeletonProps) => {
-  const { width = 80, height = 24, rounded = false, ...rest } = props;
-  const { classNames } = useStyles('Skeleton');
+  const { ownProps, restProps, dataAttributes } = useDefinition(
+    SkeletonDefinition,
+    props,
+  );
+  const { classes, width, height, style } = ownProps;
 
   return (
     <div
-      className={classNames.root}
-      data-rounded={rounded}
+      className={classes.root}
+      {...dataAttributes}
       style={{
         width,
         height,
+        ...style,
       }}
-      {...rest}
+      {...restProps}
     />
   );
 };

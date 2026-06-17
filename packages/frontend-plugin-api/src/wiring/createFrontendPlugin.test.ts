@@ -142,6 +142,17 @@ describe('createFrontendPlugin', () => {
     expect(String(plugin)).toBe('Plugin{id=test}');
   });
 
+  it('should warn about invalid plugin IDs', () => {
+    const consoleWarn = jest
+      .spyOn(console, 'warn')
+      .mockImplementation(() => {});
+    createFrontendPlugin({ pluginId: 'invalid&id' });
+    expect(consoleWarn).toHaveBeenCalledWith(
+      expect.stringContaining("The pluginId 'invalid&id' will be invalid soon"),
+    );
+    consoleWarn.mockRestore();
+  });
+
   it('should create a plugin with extension instances', async () => {
     const plugin = createFrontendPlugin({
       pluginId: 'test',
@@ -160,6 +171,7 @@ describe('createFrontendPlugin', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": undefined,
         "name": "1",
@@ -348,6 +360,7 @@ describe('createFrontendPlugin', () => {
           "configSchema": undefined,
           "disabled": false,
           "factory": [Function],
+          "if": undefined,
           "inputs": {},
           "kind": undefined,
           "name": "1",

@@ -35,6 +35,14 @@ Most utility APIs are usable directly without any configuration. But they are pr
 
 These cases are all described in [the main article](./04-configuring.md).
 
+## Testing with utility APIs
+
+> For details, [see the main article](./05-testing.md).
+
+When testing frontend components and extensions, you often need to provide mock implementations of the utility APIs they depend on. The `@backstage/frontend-test-utils` package provides the `mockApis` namespace with ready-made mocks for all core utility APIs, which can be passed to test utilities like `renderInTestApp` and `TestApiProvider`.
+
+These are described in detail in [the main article](./05-testing.md).
+
 ## Migrating from the old frontend system
 
 If you want to learn how to migrate your own utility APIs from the old frontend system to the new one, that's described in the [Migrating APIs guide](../building-plugins/05-migrating.md#migrating-apis).

@@ -19,7 +19,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
   return { ...actual, fetchContents: jest.fn() };
 });
 
-import { join as joinPath, sep as pathSep } from 'path';
+import { join as joinPath, sep as pathSep } from 'node:path';
 import fs from 'fs-extra';
 import {
   UrlReaderService,

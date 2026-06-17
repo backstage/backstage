@@ -1,5 +1,87 @@
 # @backstage/eslint-plugin
 
+## 0.3.1
+
+### Patch Changes
+
+- 5d80f77: Adds a new `@backstage/no-deprecated-bui-tokens` lint rule that warns when a deprecated `@backstage/ui` CSS token is referenced in a JavaScript or TypeScript file (including CSS-in-JS patterns and template literals). The rule is included in the `recommended` config, so plugin authors using `plugin:@backstage/recommended` will receive warnings automatically when using tokens that have been superseded by the new semantic color families. Note that plain CSS and CSS module files are outside ESLint's scope and are not covered by this rule.
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 5d80f77: Adds a new `@backstage/no-deprecated-bui-tokens` lint rule that warns when a deprecated `@backstage/ui` CSS token is referenced in a JavaScript or TypeScript file (including CSS-in-JS patterns and template literals). The rule is included in the `recommended` config, so plugin authors using `plugin:@backstage/recommended` will receive warnings automatically when using tokens that have been superseded by the new semantic color families. Note that plain CSS and CSS module files are outside ESLint's scope and are not covered by this rule.
+
+## 0.3.0
+
+### Minor Changes
+
+- ab1cdbb: Added a new `no-self-package-imports` lint rule, enabled as `error` in the recommended config, that reports when a package imports itself by its own name instead of using a relative path. This pattern causes circular initialization errors in bundled ESM and with `jest.requireActual`.
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- ab1cdbb: Added a new `no-self-package-imports` lint rule, enabled as `error` in the recommended config, that reports when a package imports itself by its own name instead of using a relative path. This pattern causes circular initialization errors in bundled ESM and with `jest.requireActual`.
+
+## 0.2.3
+
+### Patch Changes
+
+- df43b0e: Fixed `no-mixed-plugin-imports` rule to return `null` from non-fixable suggestion handlers and added an explicit `SuggestionReportDescriptor[]` type annotation, matching the stricter type checking in TypeScript 6.0.
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- df43b0e: Fixed `no-mixed-plugin-imports` rule to return `null` from non-fixable suggestion handlers and added an explicit `SuggestionReportDescriptor[]` type annotation, matching the stricter type checking in TypeScript 6.0.
+
+## 0.2.2
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+
+## 0.2.1
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+
+## 0.2.0
+
+### Minor Changes
+
+- 926389b: Added `@backstage/no-ui-css-imports-in-non-frontend` rule, which ensures that CSS from `@backstage/ui` is not imported outside of the frontend app.
+
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 926389b: Added `@backstage/no-ui-css-imports-in-non-frontend` rule, which ensures that CSS from `@backstage/ui` is not imported outside of the frontend app.
+
+## 0.1.12
+
+### Patch Changes
+
+- 5e98e61: Minor doc updates
+- a1dae71: Allow frontend plugin to import from another frontend plugin with same plugin id.
+
+  This prevents the ESLint rule from incorrectly flagging these imports in the new frontend system
+  where plugin override requires cross-plugin imports.
+
 ## 0.1.11
 
 ### Patch Changes

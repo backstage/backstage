@@ -20,6 +20,10 @@ import gfm from 'remark-gfm';
 import { Children, createElement } from 'react';
 import { CodeSnippet } from '../CodeSnippet';
 import { HeadingProps } from 'react-markdown/lib/ast-to-react';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import type { PluggableList } from 'react-markdown/lib/react-markdown';
+import { Link } from '../Link';
 
 export type MarkdownContentClassKey = 'markdown';
 
@@ -106,7 +110,45 @@ const components: Options['components'] = {
   h4: headingRenderer,
   h5: headingRenderer,
   h6: headingRenderer,
+
+  a: ({ href, children, title, target, rel }) =>
+    href ? (
+      <Link
+        to={href}
+        title={title}
+        {...(target ? { target } : {})}
+        {...(rel ? { rel } : {})}
+      >
+        {children}
+      </Link>
+    ) : (
+      <>{children}</>
+    ),
 };
+
+const gfmRehypePlugins: PluggableList = [
+  [
+    rehypeRaw,
+    {
+      tagfilter: true,
+    },
+  ],
+  [
+    rehypeSanitize,
+    {
+      ...defaultSchema,
+      attributes: {
+        ...defaultSchema.attributes,
+        code: [
+          ...(defaultSchema.attributes?.code ?? []),
+          // for syntax highlighting classes in code blocks
+          // breaks the codesnippet component override above if omitted
+          ['className'],
+        ],
+      },
+    },
+  ],
+];
 
 /**
  * Renders markdown with the default dialect {@link https://github.github.com/gfm/ | gfm - GitHub flavored Markdown} to backstage theme styled HTML.
@@ -127,6 +169,7 @@ export function MarkdownContent(props: Props) {
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
+      rehypePlugins={dialect === 'gfm' ? gfmRehypePlugins : []}
       className={`${classes.markdown} ${className ?? ''}`.trim()}
       children={content}
       components={components}

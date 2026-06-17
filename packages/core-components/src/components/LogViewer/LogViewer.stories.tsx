@@ -24,6 +24,7 @@ export default {
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
   ],
+  tags: ['!manifest'],
 };
 
 const exampleLog = `Starting up task with 3 steps

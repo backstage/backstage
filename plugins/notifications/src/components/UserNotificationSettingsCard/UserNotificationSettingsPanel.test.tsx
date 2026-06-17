@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { UserNotificationSettingsPanel } from './UserNotificationSettingsPanel';
 import { NotificationFormatProvider } from './UserNotificationSettingsCard.tsx';
 
 describe('UserNotificationSettingsPanel', () => {
-  it('renders each origin only once even if present in multiple channels', () => {
+  it('renders each origin only once even if present in multiple channels', async () => {
     const settings = {
       channels: [
         {
@@ -43,7 +44,7 @@ describe('UserNotificationSettingsPanel', () => {
         },
       ],
     };
-    render(
+    await renderInTestApp(
       <NotificationFormatProvider originMap={{}} topicMap={{}}>
         <UserNotificationSettingsPanel
           settings={settings}

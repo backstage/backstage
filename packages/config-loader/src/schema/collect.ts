@@ -15,16 +15,16 @@
  */
 
 import fs from 'fs-extra';
-import { EOL } from 'os';
+import { EOL } from 'node:os';
 import {
   resolve as resolvePath,
   relative as relativePath,
   dirname,
   sep,
-} from 'path';
+} from 'node:path';
 import { ConfigSchemaPackageEntry } from './types';
 import { JsonObject } from '@backstage/types';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 
 type Item = {
   name?: string;
@@ -36,6 +36,17 @@ const req =
   typeof __non_webpack_require__ === 'undefined'
     ? require
     : __non_webpack_require__;
+
+/**
+ * Exported for test mocking. Jest 30's module resolver has issues with
+ * nested node_modules, requiring tests to use an alternative resolution strategy.
+ * @internal
+ */
+export const internal = {
+  resolvePackagePath(name: string, options?: { paths: string[] }): string {
+    return req.resolve(name, options);
+  },
+};
 
 /**
  * This collects all known config schemas across all dependencies of the app.
@@ -62,11 +73,9 @@ export async function collectConfigSchemas(
       const { name, parentPath } = item;
 
       try {
-        pkgPath = req.resolve(
+        pkgPath = internal.resolvePackagePath(
           `${name}/package.json`,
-          parentPath && {
-            paths: [parentPath],
-          },
+          parentPath ? { paths: [parentPath] } : undefined,
         );
       } catch {
         // We can somewhat safely ignore packages that don't export package.json,
@@ -240,9 +249,9 @@ async function compileTsSchemas(
         );
       }
     } catch (error) {
-      assertError(error);
-      if (error.message !== 'type Config not found') {
-        throw error;
+      const err = toError(error);
+      if (err.message !== 'type Config not found') {
+        throw err;
       }
     }
 

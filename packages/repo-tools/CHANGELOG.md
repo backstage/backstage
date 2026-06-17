@@ -1,5 +1,360 @@
 # @backstage/repo-tools
 
+## 0.17.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/config-loader@1.10.12
+
+## 0.17.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.17.2
+
+### Patch Changes
+
+- 927c003: Replaced internal error utilities with shared ones from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/cli-node@0.3.2
+  - @backstage/cli-common@0.2.2
+  - @backstage/config-loader@1.10.11
+
+## 0.17.2-next.0
+
+### Patch Changes
+
+- 927c003: Replaced internal error utilities with shared ones from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/cli-common@0.2.2-next.0
+  - @backstage/cli-node@0.3.2-next.0
+  - @backstage/config-loader@1.10.11-next.0
+
+## 0.17.1
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 377de36: Fixed the `peer-deps` command to only require peer dependencies that are actually referenced by each package, rather than requiring all tracked peer dependencies for every package with any React dependency.
+- 8e9679b: Parallelized CLI report generation, reducing wall-clock time by ~4x.
+- ca2dc15: Internal code cleanup.
+- 270efef: Added support for packages that only support React 18+ in the `peer-deps` command.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/cli-common@0.2.1
+  - @backstage/cli-node@0.3.1
+  - @backstage/config-loader@1.10.10
+
+## 0.17.1-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/cli-node@0.3.1-next.1
+  - @backstage/config-loader@1.10.10-next.1
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+
+## 0.17.1-next.1
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- 8e9679b: Parallelized CLI report generation, reducing wall-clock time by ~4x.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+
+## 0.17.1-next.0
+
+### Patch Changes
+
+- 270efef: Added support for packages that only support React 18+ in the `peer-deps` command.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/cli-node@0.3.1-next.0
+  - @backstage/config-loader@1.10.10-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/errors@1.2.7
+
+## 0.17.0
+
+### Minor Changes
+
+- 0fbcf23: Added support for OpenAPI 3.1 to all `schema openapi` commands. The commands now auto-detect the OpenAPI version from the spec file and use the appropriate generator, supporting both OpenAPI 3.0.x and 3.1.x specifications.
+
+### Patch Changes
+
+- 426edbe: Fixed `generate-catalog-info` command failing with "too many arguments" when invoked by lint-staged via the pre-commit hook.
+- d5779e5: Updated the CLI report parser to support cleye-style help output, and strip ANSI escape codes from captured output.
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- 2a51546: Fixed prettier existence checks in OpenAPI commands to use `fs.pathExists` instead of checking the resolved path string, which was always truthy.
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- 18a946c: Updated `@microsoft/api-extractor` to `7.57.3` and added tests for `getTsDocConfig`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/cli-node@0.3.0
+  - @backstage/cli-common@0.2.0
+  - @backstage/config-loader@1.10.9
+  - @backstage/catalog-model@1.7.7
+
+## 0.17.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/cli-common@0.2.0-next.2
+
+## 0.17.0-next.1
+
+### Minor Changes
+
+- 0fbcf23: Added support for OpenAPI 3.1 to all `schema openapi` commands. The commands now auto-detect the OpenAPI version from the spec file and use the appropriate generator, supporting both OpenAPI 3.0.x and 3.1.x specifications.
+
+### Patch Changes
+
+- 426edbe: Fixed `generate-catalog-info` command failing with "too many arguments" when invoked by lint-staged via the pre-commit hook.
+- d5779e5: Updated the CLI report parser to support cleye-style help output, and strip ANSI escape codes from captured output.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.1
+  - @backstage/cli-node@0.2.19-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/errors@1.2.7
+
+## 0.16.6-next.0
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- 2a51546: Fixed prettier existence checks in OpenAPI commands to use `fs.pathExists` instead of checking the resolved path string, which was always truthy.
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- 18a946c: Updated `@microsoft/api-extractor` to `7.57.3` and added tests for `getTsDocConfig`
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.0
+  - @backstage/cli-node@0.2.19-next.0
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+
+## 0.16.4
+
+### Patch Changes
+
+- cd75ed0: Add newline to OpenAPI license template files.
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Bump to tar v7
+- 6523040: Support Prettier v3 for api-reports
+- be7ebad: Updated package-docs exclude list to reflect renamed example app packages.
+- df59ee6: The `type-deps` command now follows relative imports and re-exports into declaration chunk files, and detects ambient global types such as the `jest` namespace.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/config-loader@1.10.8
+  - @backstage/cli-common@0.1.18
+  - @backstage/cli-node@0.2.18
+
+## 0.16.4-next.2
+
+### Patch Changes
+
+- be7ebad: Updated package-docs exclude list to reflect renamed example app packages.
+- df59ee6: The `type-deps` command now follows relative imports and re-exports into declaration chunk files, and detects ambient global types such as the `jest` namespace.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/config-loader@1.10.8-next.0
+
+## 0.16.4-next.1
+
+### Patch Changes
+
+- 6523040: Support Prettier v3 for api-reports
+- Updated dependencies
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.16.3-next.0
+
+### Patch Changes
+
+- cd75ed0: Add newline to OpenAPI license template files.
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Bump to tar v7
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/config-loader@1.10.8-next.0
+  - @backstage/cli-common@0.1.18-next.0
+  - @backstage/cli-node@0.2.17-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+
+## 0.16.2
+
+### Patch Changes
+
+- 498f9dd: Fixed help text for `backstage-repo-tools package schema openapi generate` command.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/cli-common@0.1.17
+
+## 0.16.1
+
+### Patch Changes
+
+- 688f070: Updated to use new utilities from `@backstage/cli-common`.
+- 85895f9: Updates OpenAPI generator templates to preserve original property names (like 'group-name', 'user-id') from OpenAPI specs when propertyNaming=original is specified. Previously, these were always converted to camelCase regardless of the propertyNaming setting.
+
+  - Updates modelGeneric.mustache templates in both client and server generators
+  - Updates modelTaggedUnion.mustache templates in both client and server generators
+  - Uses {{baseName}} when available, falls back to {{name}} for backward compatibility
+  - Maintains backward compatibility - no changes when propertyNaming=original is not used
+
+- 2bae83a: Bump `@microsoft/api-documenter` and `@microsoft/api-extractor` to latest versions.
+- d1e38a7: Properly create workspace in OS temporary directory for `generate-patch` command
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-node@0.2.16
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/cli-common@0.1.16
+  - @backstage/config-loader@1.10.7
+
+## 0.16.1-next.2
+
+### Patch Changes
+
+- 2bae83a: Bump `@microsoft/api-documenter` and `@microsoft/api-extractor` to latest versions.
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config-loader@1.10.7-next.1
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/cli-node@0.2.16-next.1
+  - @backstage/errors@1.2.7
+
+## 0.16.1-next.1
+
+### Patch Changes
+
+- 688f070: Updated to use new utilities from `@backstage/cli-common`.
+- d1e38a7: Properly create workspace in OS temporary directory for `generate-patch` command
+- Updated dependencies
+  - @backstage/cli-node@0.2.16-next.1
+  - @backstage/cli-common@0.1.16-next.1
+
+## 0.16.1-next.0
+
+### Patch Changes
+
+- 85895f9: Updates OpenAPI generator templates to preserve original property names (like 'group-name', 'user-id') from OpenAPI specs when propertyNaming=original is specified. Previously, these were always converted to camelCase regardless of the propertyNaming setting.
+
+  - Updates modelGeneric.mustache templates in both client and server generators
+  - Updates modelTaggedUnion.mustache templates in both client and server generators
+  - Uses {{baseName}} when available, falls back to {{name}} for backward compatibility
+  - Maintains backward compatibility - no changes when propertyNaming=original is not used
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/cli-node@0.2.16-next.0
+  - @backstage/config-loader@1.10.7-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+
+## 0.16.0
+
+### Minor Changes
+
+- 11c61f2: The `package-docs` command will now automatically use a `typedoc.json` file if one exists at the root of your project.
+
+### Patch Changes
+
+- 8f56eae: Updated knip-reports to detect dependencies in dev/alpha pattern
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config-loader@1.10.6
+  - @backstage/cli-node@0.2.15
+  - @backstage/catalog-model@1.7.6
+
+## 0.16.0-next.2
+
+### Minor Changes
+
+- 11c61f2: The `package-docs` command will now automatically use a `typedoc.json` file if one exists at the root of your project.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.2
+
+## 0.15.4-next.1
+
+### Patch Changes
+
+- 8f56eae: Updated knip-reports to detect dependencies in dev/alpha pattern
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 0.15.4-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config-loader@1.10.6-next.0
+  - @backstage/cli-node@0.2.15-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.15.3
+
+### Patch Changes
+
+- 1359279: Fixed an issue with the OpenAPI generated client and server where import/export statements were duplicated.
+- Updated dependencies
+  - @backstage/config-loader@1.10.5
+  - @backstage/backend-plugin-api@1.4.4
+
+## 0.15.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/cli-node@0.2.14
+
 ## 0.15.2
 
 ### Patch Changes

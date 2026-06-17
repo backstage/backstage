@@ -18,7 +18,7 @@ import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
 import { timestampToDateTime } from '../../conversion';
-import { DbRefreshStateRow } from '../../tables';
+import { DbStitchQueueRow } from '../../tables';
 
 // TODO(freben): There is no retry counter or similar. If items start
 // perpetually crashing during stitching, they'll just get silently retried over
@@ -31,7 +31,7 @@ import { DbRefreshStateRow } from '../../tables';
  *
  * This assumes that the stitching strategy is set to deferred.
  *
- * They are expected to already have the next_stitch_ticket set (by
+ * They are expected to already have the stitch_ticket set (by
  * markForStitching) so that their tickets can be returned with each item.
  *
  * All returned items have their next_stitch_at updated to be moved forward by
@@ -51,47 +51,50 @@ export async function getDeferredStitchableEntities(options: {
   }>
 > {
   const { knex, batchSize, stitchTimeout } = options;
-
-  let itemsQuery = knex<DbRefreshStateRow>('refresh_state').select(
-    'entity_ref',
-    'next_stitch_at',
-    'next_stitch_ticket',
+  const useLocking = ['mysql', 'mysql2', 'pg'].includes(
+    knex.client.config.client,
   );
 
-  // This avoids duplication of work because of race conditions and is
-  // also fast because locked rows are ignored rather than blocking.
-  // It's only available in MySQL and PostgreSQL
-  if (['mysql', 'mysql2', 'pg'].includes(knex.client.config.client)) {
-    itemsQuery = itemsQuery.forUpdate().skipLocked();
-  }
+  // The SELECT FOR UPDATE SKIP LOCKED + UPDATE must run inside a single
+  // transaction so that the row locks held by FOR UPDATE persist until
+  // next_stitch_at has been bumped. Without the transaction the locks
+  // are released after the SELECT auto-commits, and another worker can
+  // claim the same rows before the UPDATE runs.
+  const run = async (tx: Knex | Knex.Transaction) => {
+    const items: DbStitchQueueRow[] = await tx('stitch_queue')
+      .select('entity_ref', 'next_stitch_at', 'stitch_ticket')
+      .where('next_stitch_at', '<=', tx.fn.now())
+      .orderBy('next_stitch_at', 'asc')
+      .limit(batchSize)
+      .modify(qb => {
+        if (useLocking) {
+          qb.forUpdate().skipLocked();
+        }
+      });
 
-  const items = await itemsQuery
-    .whereNotNull('next_stitch_at')
-    .whereNotNull('next_stitch_ticket')
-    .where('next_stitch_at', '<=', knex.fn.now())
-    .orderBy('next_stitch_at', 'asc')
-    .limit(batchSize);
+    if (!items.length) {
+      return [];
+    }
 
-  if (!items.length) {
-    return [];
-  }
+    await tx('stitch_queue')
+      .whereIn(
+        'entity_ref',
+        items.map(i => i.entity_ref),
+      )
+      .update({
+        next_stitch_at: nowPlus(tx, stitchTimeout),
+      });
 
-  await knex<DbRefreshStateRow>('refresh_state')
-    .whereIn(
-      'entity_ref',
-      items.map(i => i.entity_ref),
-    )
-    // avoid race condition where someone completes a stitch right between these statements
-    .whereNotNull('next_stitch_ticket')
-    .update({
-      next_stitch_at: nowPlus(knex, stitchTimeout),
-    });
+    return items.map(i => ({
+      entityRef: i.entity_ref,
+      stitchTicket: i.stitch_ticket,
+      stitchRequestedAt: timestampToDateTime(i.next_stitch_at),
+    }));
+  };
 
-  return items.map(i => ({
-    entityRef: i.entity_ref,
-    stitchTicket: i.next_stitch_ticket!,
-    stitchRequestedAt: timestampToDateTime(i.next_stitch_at!),
-  }));
+  return knex.isTransaction || !useLocking
+    ? await run(knex)
+    : await knex.transaction(run);
 }
 
 function nowPlus(knex: Knex, duration: HumanDuration): Knex.Raw {

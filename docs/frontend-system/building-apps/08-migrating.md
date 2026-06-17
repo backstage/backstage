@@ -9,7 +9,7 @@ description: How to migrate existing apps to the new frontend system
 
 This section describes how to migrate an existing Backstage app package to use the new frontend system. The app package is typically found at `packages/app` in your project and is responsible for wiring together the Backstage frontend application.
 
-> **Who is this for?**  
+> **Who is this for?**
 > This guide is intended for maintainers of Backstage app packages (`packages/app`) who want to upgrade from the legacy frontend system to the new extension-based architecture.
 
 > **Prerequisites:**
@@ -22,10 +22,10 @@ This section describes how to migrate an existing Backstage app package to use t
 
 We recommend a **two-phase migration process** to ensure a smooth and manageable transition:
 
-- **Phase 1: Minimal Changes for Hybrid Configuration**  
+- **Phase 1: Minimal Changes for Hybrid Configuration**
   In this phase, you make the smallest set of changes necessary to enable your app to run in a hybrid mode. This allows you to start using the new frontend system while still relying on compatibility helpers and legacy code. The goal is to unblock your migration quickly, so you can benefit from the new system without a full rewrite.
 
-- **Phase 2: Complete Transition to the New Frontend System**  
+- **Phase 2: Complete Transition to the New Frontend System**
   After your app is running in hybrid mode, you can gradually refactor your codebase to remove legacy code and compatibility helpers. This phase focuses on fully adopting the new frontend architecture, ensuring your codebase is clean, maintainable, and takes full advantage of the new features.
 
 :::warning
@@ -154,36 +154,6 @@ const app = createApp({
     // ...
     convertedOptionsModule,
   ],
-});
-```
-
-If you were binding routes from a legacy `createApp`, you will need to use the `convertLegacyRouteRefs` and/or `convertLegacyRouteRef` to convert the routes to be compatible with the new system.
-
-For example, if both the `catalogPlugin` and `scaffolderPlugin` are legacy plugins, you can bind their routes like this:
-
-```ts
-import { createApp } from '@backstage/frontend-defaults';
-import {
-  // ...
-  convertLegacyRouteRefs,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
-
-// Ommitting converted options changes
-//...
-
-const app = createApp({
-  features: [
-    // ...
-    convertedOptionsModule,
-  ],
-  // highlight-add-start
-  bindRoutes({ bind }) {
-    bind(convertLegacyRouteRefs(catalogPlugin.externalRoutes), {
-      createComponent: convertLegacyRouteRef(scaffolderPlugin.routes.root),
-    });
-  },
-  // highlight-add-end
 });
 ```
 
@@ -474,7 +444,7 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-import { SignInPageBlueprint } from '@backstage/frontend-plugin-api';
+import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 
 const signInPage = SignInPageBlueprint.make({
   params: {
@@ -522,7 +492,7 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-import { ThemeBlueprint } from '@backstage/frontend-plugin-api';
+import { ThemeBlueprint } from '@backstage/plugin-app-react';
 
 const customLightThemeExtension = ThemeBlueprint.make({
   name: 'custom-light',
@@ -565,7 +535,7 @@ const app = createApp({
 Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app.
 
 ```ts
-import { IconBundleBlueprint } from '@backstage/frontend-plugin-api';
+import { IconBundleBlueprint } from '@backstage/plugin-app-react';
 
 const exampleIconBundle = IconBundleBlueprint.make({
   name: 'example-bundle',
@@ -589,21 +559,6 @@ const app = createApp({
 #### `bindRoutes`
 
 Route bindings can still be done using this option, but you now also have the ability to bind routes using static configuration instead. See the section on [binding routes](../architecture/36-routes.md#binding-external-route-references) for more information.
-
-Note that if you are binding routes from a legacy plugin that was converted using `convertLegacyAppRoot`, you will need to use the `convertLegacyRouteRefs` and/or `convertLegacyRouteRef` to convert the routes to be compatible with the new system.
-
-For example, if both the `catalogPlugin` and `scaffolderPlugin` are legacy plugins, you can bind their routes like this:
-
-```ts
-const app = createApp({
-  features: convertLegacyAppRoot(...),
-  bindRoutes({ bind }) {
-    bind(convertLegacyRouteRefs(catalogPlugin.externalRoutes), {
-      createComponent: convertLegacyRouteRef(scaffolderPlugin.routes.root),
-    });
-  },
-});
-```
 
 #### `__experimentalTranslations`
 
@@ -631,10 +586,8 @@ Can be converted to the following extension:
 
 ```tsx
 import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
-import {
-  createTranslationMessages,
-  TranslationBlueprint,
-} from '@backstage/frontend-plugin-api';
+import { createTranslationMessages } from '@backstage/frontend-plugin-api';
+import { TranslationBlueprint } from '@backstage/plugin-app-react';
 
 const catalogTranslations = TranslationBlueprint.make({
   name: 'catalog-overrides',
@@ -707,7 +660,7 @@ const convertedRootFeatures = convertLegacyAppRoot(
 );
 ```
 
-Any app root wrapper needs to be migrated to be an extension, created using `AppRootWrapperBlueprint`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
+Any app root wrapper needs to be migrated to be an extension, created using `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
 
 Here is an example converting the `CustomAppBarrier` into extension:
 
@@ -721,8 +674,6 @@ createApp({
         AppRootWrapperBlueprint.make({
           name: 'custom-app-barrier',
           params: {
-            // Whenever your component uses legacy core packages, wrap it with "compatWrapper"
-            // e.g. props => compatWrapper(<CustomAppBarrier {...props} />)
             Component: CustomAppBarrier,
           },
         }),
@@ -735,7 +686,7 @@ createApp({
 
 #### App Root Sidebar
 
-New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items which are the other `NavItem` extensions provided by the system.
+New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items. Nav items are auto-discovered from page extensions registered under `app/routes`, with metadata from page config or plugin defaults.
 
 In order to migrate your existing sidebar, you will want to create an override for the `app/nav` extension. You can do this by copying the standard of having a `src/modules/nav/` folder, which can contain an extension which you can install into the `app` in the form of a `module`.
 
@@ -749,18 +700,21 @@ export const navModule = createFrontendModule({
 });
 ```
 
-Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where the component that is passed to the `compatWrapper` is the entire `Sidebar` component from your `Root` component.
+Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where you implement the entire `Sidebar` component.
 
-The `compatWrapper` is there to ensure that any legacy plugins using things like `useRouteRef` work well in the new system, so if you run into some errors which look like compatibility issues, make sure that this wrapper is used in the relevant places.
+The component receives a `navItems` prop with `take(id)` and `rest()` methods for placing specific items in custom positions. The recommended approach is to use `navItems.withComponent(...)` to define a component for rendering each nav item, and then use the returned `take(id)` and `rest()` methods to get pre-rendered elements directly. Items taken from the renderer are also taken from the main list. Keys are automatically assigned when rendering via `rest()`.
 
 ```tsx title="in packages/app/src/modules/nav/Sidebar.tsx"
-import { compatWrapper } from '@backstage/core-compat-api';
-import { NavContentBlueprint } from '@backstage/frontend-plugin-api';
+import { NavContentBlueprint } from '@backstage/plugin-app-react';
 
 export const SidebarContent = NavContentBlueprint.make({
   params: {
-    component: ({ items }) =>
-      compatWrapper(
+    component: ({ navItems }) => {
+      const nav = navItems.withComponent(item => (
+        <SidebarItem icon={() => item.icon} to={item.href} text={item.title} />
+      ));
+
+      return (
         <Sidebar>
           <SidebarLogo />
           <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
@@ -768,41 +722,25 @@ export const SidebarContent = NavContentBlueprint.make({
           </SidebarGroup>
           <SidebarDivider />
           <SidebarGroup label="Menu" icon={<MenuIcon />}>
-            ...
-          </SidebarGroup>
-          <SidebarGroup label="Plugins">
+            {nav.take('page:catalog')}
+            {nav.take('page:scaffolder')}
+            <SidebarDivider />
             <SidebarScrollWrapper>
-              {/* Items in this group will be scrollable if they run out of space */}
-              {items.map((item, index) => (
-                <SidebarItem {...item} key={index} />
-              ))}
+              {nav.rest({ sortBy: 'title' })}
             </SidebarScrollWrapper>
           </SidebarGroup>
-        </Sidebar>,
-      ),
+        </Sidebar>
+      );
+    },
   },
 });
 ```
 
-The `items` property is a list of all extensions provided by the `NavItemBlueprint` that are currently installed in the App. If you don't want to auto populate this list you can simply remove the rendering of that `SidebarGroup`, but otherwise you can see from the above example how a `SidebarItem` element is rendered for each of the items in the list.
+The deprecated `items` prop (a flat list compatible with `<SidebarItem {...item} />`) remains supported for backward compatibility. If you don't want to auto-populate the list, simply remove the rendering of that `SidebarGroup`.
 
-You might also notice that when you're rendering additional fixed icons for plugins that these might become duplicated as the plugin provides a `NavItem` extension and you're also rendering one in the `Sidebar` manually. In order to remove the item from the list of `items` which is passed through, we recommend that you disable that extension using config:
+You might also notice that when you're rendering additional fixed icons for plugins (e.g. Search in a dedicated group) these might become duplicated, since that page is also included in `nav.rest()`. To exclude an item from the remaining list, call `nav.take('page:search')` before calling `nav.rest()` — you can discard the return value. Items that have been taken will not appear in `rest()`.
 
-```yaml title="in app-config.yaml"
-app:
-  extensions:
-    - nav-item:search: false
-    - nav-item:catalog: false
-```
-
-You can also determine the order of the provided auto installed `NavItems` that you get from the system in config. The below example ensures that the `catalog` navigation item will proceed the `search` navigation item when being passed through as the `item` prop.
-
-```yaml title="in app-config.yaml"
-app:
-  extensions:
-    - nav-item:catalog
-    - nav-item:search
-```
+To hide a page from the sidebar without disabling the page itself, use `nav.take('page:...')` in your custom sidebar implementation before calling `nav.rest()`, or disable the page extension in config with `page:<plugin-id>: false`.
 
 #### App Root Routes
 
@@ -854,6 +792,22 @@ const routes = (
 If you are using [app feature discovery](../architecture/10-app.md#feature-discovery) the installation step is simple, it's already done! The new version of the scaffolder plugin was already discovered and present in the app, it was simply disabled because the plugin created from the legacy route had higher priority. If you do not use feature discovery, you will instead need to manually install the new scaffolder plugin in your app through the `features` option of `createApp`.
 
 Continue this process for each of your legacy routes until you have migrated all of them. For any plugin with additional extensions installed as children of the `Route`, refer to the plugin READMEs for more detailed instructions. For the entity pages, refer to the [separate section](#catalog-entity-page).
+
+##### Migrating `<Redirect>` routes
+
+If your old routes include `<Redirect>` elements to forward users from one path to another, you can replace them with the built-in redirect configuration on the `app/routes` extension:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - app/routes:
+        config:
+          redirects:
+            - from: /old-path
+              to: /new-path
+```
+
+See the [`app/routes` built-in extension documentation](./03-built-in-extensions.md#configuring-redirects) for more details.
 
 ### Migrating core, internal and third-party plugins
 
@@ -954,46 +908,45 @@ It's encouraged that once you switch over to using the new frontend system, that
 
 This practice is also pretty important early on, as it's going to help you get familiar with the practices of the new frontend system.
 
-When creating a new Backstage app with `create-app` and using the `--next` flag you'll automatically get these choices in the `yarn new` command, but if you want to bring these templates to an older app, you can add the following to your root `package.json`:
-
-```json
-{
-  ...
-  "scripts": {
-    ...
-    "new": "backstage-cli new"
-  },
-  "backstage": {
-    "cli": {
-      "new": {
-        "globals": {
-          "license": "UNLICENSED"
-        },
-        "templates": [
-          "@backstage/cli/templates/new-frontend-plugin",
-          "@backstage/cli/templates/new-frontend-plugin-module",
-          "@backstage/cli/templates/backend-plugin",
-          "@backstage/cli/templates/backend-plugin-module",
-          "@backstage/cli/templates/plugin-web-library",
-          "@backstage/cli/templates/plugin-node-library",
-          "@backstage/cli/templates/plugin-common-library",
-          "@backstage/cli/templates/web-library",
-          "@backstage/cli/templates/node-library",
-          "@backstage/cli/templates/scaffolder-backend-module"
-        ]
-      }
-    }
-  }
-}
-```
+The `yarn new` command now defaults to the new frontend system templates for frontend plugins. If you have an older app that was created before this change, you can simply update the `@backstage/cli-module-new` package to get access to the new templates.
 
 ## Troubleshooting
 
-We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting. If you run `yarn add @backstage/plugin-app-visualizer` in `packages/app` it should be automatically added to the sidebar, and available on `/visualizer`.
+### Using the App Visualizer Plugin
 
-There is a `tree` mode that can be very helpful in understanding which plugins are being automatically detected and the extensions that they are providing to the system. You should also be able to see any legacy extensions which are being converted and added to the app.
+We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting. It provides a visual overview of your app's extension tree, making it easy to verify that plugins are installed correctly, see how extensions are wired together, and identify issues during migration.
 
-This can be really useful output when raising any issue to the main repository too, so we can dig in to see what's happening with the system.
+#### Installation
+
+Install the plugin in your app package:
+
+```bash
+yarn --cwd packages/app add @backstage/plugin-app-visualizer
+```
+
+When integrated into your app, the plugin provides the `/visualizer` route. Depending on your app setup, it may also appear in the sidebar as a **Visualizer** entry.
+
+#### Available Views
+
+The app visualizer provides three views, each accessible via tabs at the top of the page:
+
+- **Tree** — Displays the full extension tree as an interactive hierarchy. Each node represents an extension, showing its ID, the plugin it belongs to, and whether it is enabled or disabled. This is the most useful view during migration, as it lets you verify which plugins are being automatically detected and which legacy extensions have been converted. Expand nodes to see child extensions and their configuration.
+
+- **Detailed** — Shows a list of all extensions with additional metadata. Use this view to inspect individual extension properties, configuration, and attachment points. It is helpful for debugging configuration overrides and understanding how extensions are resolved.
+
+- **Text** — Renders the extension tree as plain text. This is useful for copying and pasting into GitHub issues or Discord when asking for help, since it provides a compact, readable snapshot of your app's structure.
+
+#### Using the Visualizer During Migration
+
+During migration, the tree view is particularly helpful for:
+
+- **Verifying plugin detection** — After converting your app with `convertLegacyAppOptions` and `convertLegacyAppRoot`, open the tree view to confirm that all expected plugins appear. Legacy plugins that were converted will show up alongside native new-system plugins.
+
+- **Spotting duplicate extensions** — If you see duplicate entries for the same plugin or page, it likely means the plugin is being loaded both through the legacy conversion helpers and the new system. See the [duplicate cards troubleshooting section](#im-seeing-duplicate-cards-for-entity-pages) below.
+
+- **Sharing debug output** — When raising issues, use the text view to copy your extension tree and include it in your bug report. This gives maintainers immediate visibility into your app's structure.
+
+You can also use the **Copy tree as JSON** button in the page header to export the full extension tree as a JSON structure, which can be attached to issue reports for deeper analysis.
 
 ### I'm seeing duplicate cards for Entity Pages
 

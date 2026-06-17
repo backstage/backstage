@@ -25,6 +25,8 @@ import Skeleton from '@material-ui/lab/Skeleton';
 
 import { ContainerScope } from './types';
 import { usePodLogs } from './usePodLogs';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../../translation';
 
 /**
  * Props for PodLogs
@@ -45,6 +47,7 @@ export const PodLogs: FC<PodLogsProps> = ({
   containerScope,
   previous,
 }: PodLogsProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const { value, error, loading } = usePodLogs({
     containerScope,
     previous,
@@ -72,8 +75,8 @@ export const PodLogs: FC<PodLogsProps> = ({
           (value.text === '' ? (
             <EmptyState
               missing="data"
-              title="No logs emitted"
-              description="No logs were emitted by the container"
+              title={t('podLogs.title')}
+              description={t('podLogs.description')}
             />
           ) : (
             <LogViewer text={value.text} />

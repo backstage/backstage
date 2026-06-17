@@ -14,52 +14,21 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import { Text } from '../../Text';
-import { Link } from '../../Link';
 import { Cell as ReactAriaCell } from 'react-aria-components';
 import type { CellProps } from '../types';
-import { useStyles } from '../../../hooks/useStyles';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { CellDefinition } from '../definition';
 
-/** @public */
+/**
+ * A low-level table cell primitive for building custom cell content.
+ * For standard use cases, prefer `CellText` or `CellProfile`.
+ *
+ * @public
+ */
 const Cell = (props: CellProps) => {
-  const {
-    className,
-    title,
-    description,
-    color = 'primary',
-    leadingIcon,
-    href,
-    ...rest
-  } = props;
+  const { ownProps, restProps } = useDefinition(CellDefinition, props);
 
-  const { classNames } = useStyles('Table');
-
-  return (
-    <ReactAriaCell className={clsx(classNames.cell, className)} {...rest}>
-      <div className={classNames.cellContentWrapper}>
-        {leadingIcon && (
-          <div className={classNames.cellIcon}>{leadingIcon}</div>
-        )}
-        <div className={classNames.cellContent}>
-          {href ? (
-            <Link href={href} variant="body-medium" color={color}>
-              {title}
-            </Link>
-          ) : (
-            <Text as="p" variant="body-medium" color={color}>
-              {title}
-            </Text>
-          )}
-          {description && (
-            <Text variant="body-medium" color="secondary">
-              {description}
-            </Text>
-          )}
-        </div>
-      </div>
-    </ReactAriaCell>
-  );
+  return <ReactAriaCell className={ownProps.classes.root} {...restProps} />;
 };
 
 Cell.displayName = 'Cell';

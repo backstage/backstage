@@ -7,7 +7,7 @@ import { Entity } from '@backstage/catalog-model';
 import type { EntityMeta } from '@backstage/catalog-model';
 import type { JsonArray } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { KindValidator } from '@backstage/catalog-model';
 import { Observable } from '@backstage/types';
@@ -58,7 +58,7 @@ export type LogEvent = {
 // @public
 export interface ScaffolderApi {
   // (undocumented)
-  autocomplete?(
+  autocomplete(
     request: {
       token: string;
       provider: string;
@@ -67,99 +67,6 @@ export interface ScaffolderApi {
     },
     options?: ScaffolderRequestOptions,
   ): Promise<{
-    results: {
-      title?: string;
-      id: string;
-    }[];
-  }>;
-  cancelTask(
-    taskId: string,
-    options?: ScaffolderRequestOptions,
-  ): Promise<{
-    status?: ScaffolderTaskStatus;
-  }>;
-  // (undocumented)
-  dryRun?(
-    request: ScaffolderDryRunOptions,
-    options?: ScaffolderRequestOptions,
-  ): Promise<ScaffolderDryRunResponse>;
-  // (undocumented)
-  getIntegrationsList(
-    options: ScaffolderGetIntegrationsListOptions,
-  ): Promise<ScaffolderGetIntegrationsListResponse>;
-  // (undocumented)
-  getTask(
-    taskId: string,
-    options?: ScaffolderRequestOptions,
-  ): Promise<ScaffolderTask>;
-  // (undocumented)
-  getTemplateParameterSchema(
-    templateRef: string,
-    options?: ScaffolderRequestOptions,
-  ): Promise<TemplateParameterSchema>;
-  listActions(options?: ScaffolderRequestOptions): Promise<ListActionsResponse>;
-  // (undocumented)
-  listTasks?(
-    request: {
-      filterByOwnership: 'owned' | 'all';
-      limit?: number;
-      offset?: number;
-    },
-    options?: ScaffolderRequestOptions,
-  ): Promise<{
-    tasks: ScaffolderTask[];
-    totalTasks?: number;
-  }>;
-  listTemplatingExtensions?(
-    options?: ScaffolderRequestOptions,
-  ): Promise<ListTemplatingExtensionsResponse>;
-  retry?(
-    taskId: string,
-    options?: ScaffolderRequestOptions,
-  ): Promise<{
-    id: string;
-  }>;
-  scaffold(
-    request: ScaffolderScaffoldOptions,
-    options?: ScaffolderRequestOptions,
-  ): Promise<ScaffolderScaffoldResponse>;
-  // (undocumented)
-  streamLogs(
-    request: ScaffolderStreamLogsOptions,
-    options?: ScaffolderRequestOptions,
-  ): Observable<LogEvent>;
-}
-
-// @public
-export class ScaffolderClient implements ScaffolderApi {
-  constructor(options: {
-    discoveryApi: {
-      getBaseUrl(pluginId: string): Promise<string>;
-    };
-    fetchApi: {
-      fetch: typeof fetch;
-    };
-    identityApi?: {
-      getBackstageIdentity(): Promise<{
-        type: 'user';
-        userEntityRef: string;
-        ownershipEntityRefs: string[];
-      }>;
-    };
-    scmIntegrationsApi: ScmIntegrationRegistry;
-    useLongPollingLogs?: boolean;
-  });
-  autocomplete({
-    token,
-    resource,
-    provider,
-    context,
-  }: {
-    token: string;
-    provider: string;
-    resource: string;
-    context: Record<string, string>;
-  }): Promise<{
     results: {
       title?: string;
       id: string;
@@ -206,7 +113,98 @@ export class ScaffolderClient implements ScaffolderApi {
   listTemplatingExtensions(
     options?: ScaffolderRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse>;
-  retry?(
+  retry(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    id: string;
+  }>;
+  scaffold(
+    request: ScaffolderScaffoldOptions,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
+  // (undocumented)
+  streamLogs(
+    request: ScaffolderStreamLogsOptions,
+    options?: ScaffolderRequestOptions,
+  ): Observable<LogEvent>;
+}
+
+// @public
+export class ScaffolderClient implements ScaffolderApi {
+  constructor(options: {
+    discoveryApi: {
+      getBaseUrl(pluginId: string): Promise<string>;
+    };
+    fetchApi: {
+      fetch: typeof fetch;
+    };
+    identityApi?: {
+      getBackstageIdentity(): Promise<{
+        type: 'user';
+        userEntityRef: string;
+        ownershipEntityRefs: string[];
+      }>;
+    };
+    scmIntegrationsApi: ScmIntegrationRegistry;
+    useLongPollingLogs?: boolean;
+  });
+  autocomplete(
+    input: {
+      token: string;
+      provider: string;
+      resource: string;
+      context: Record<string, string>;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    results: {
+      title?: string;
+      id: string;
+    }[];
+  }>;
+  cancelTask(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    status?: ScaffolderTaskStatus;
+  }>;
+  // (undocumented)
+  dryRun(
+    request: ScaffolderDryRunOptions,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderDryRunResponse>;
+  // (undocumented)
+  getIntegrationsList(
+    options: ScaffolderGetIntegrationsListOptions,
+  ): Promise<ScaffolderGetIntegrationsListResponse>;
+  // (undocumented)
+  getTask(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderTask>;
+  // (undocumented)
+  getTemplateParameterSchema(
+    templateRef: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<TemplateParameterSchema>;
+  listActions(options?: ScaffolderRequestOptions): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks(
+    request: {
+      filterByOwnership: 'owned' | 'all';
+      limit?: number;
+      offset?: number;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    tasks: ScaffolderTask[];
+    totalTasks?: number;
+  }>;
+  listTemplatingExtensions(
+    options?: ScaffolderRequestOptions,
+  ): Promise<ListTemplatingExtensionsResponse>;
+  retry(
     taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{
@@ -272,6 +270,7 @@ export interface ScaffolderGetIntegrationsListResponse {
 
 // @public (undocumented)
 export type ScaffolderOutputLink = {
+  if?: string | boolean;
   title?: string;
   icon?: string;
   url?: string;
@@ -280,6 +279,7 @@ export type ScaffolderOutputLink = {
 
 // @public (undocumented)
 export type ScaffolderOutputText = {
+  if?: string | boolean;
   title?: string;
   icon?: string;
   content?: string;
@@ -415,11 +415,18 @@ export interface TemplateEntityV1beta3 extends Entity {
     type: string;
     presentation?: TemplatePresentationV1beta3;
     EXPERIMENTAL_recovery?: TemplateRecoveryV1beta3;
+    formDecorators?: {
+      id: string;
+      input?: JsonObject;
+    }[];
     EXPERIMENTAL_formDecorators?: {
       id: string;
       input?: JsonObject;
     }[];
     parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
+    secrets?: {
+      schema?: JsonObject;
+    };
     steps: Array<TemplateEntityStepV1beta3>;
     output?: {
       [name: string]: string;
@@ -478,6 +485,10 @@ export type TemplateParameterSchema = {
     description?: string;
     schema: JsonObject;
   }>;
+  formDecorators?: {
+    id: string;
+    input?: JsonObject;
+  }[];
   EXPERIMENTAL_formDecorators?: {
     id: string;
     input?: JsonObject;

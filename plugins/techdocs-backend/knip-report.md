@@ -1,12 +1,8 @@
 # Knip report
 
-## Unused dependencies (5)
+## Unused dependencies (1)
 
-| Name                                             | Location     | Severity |
-| :----------------------------------------------- | :----------- | :------- |
-| @backstage/plugin-search-backend-module-techdocs | plugins/techdocs-backend/package.json | error    |
-| @backstage/plugin-permission-common              | plugins/techdocs-backend/package.json | error    |
-| @backstage/plugin-techdocs-common                | plugins/techdocs-backend/package.json | error    |
-| @backstage/plugin-catalog-common                 | plugins/techdocs-backend/package.json | error    |
-| lodash                                           | plugins/techdocs-backend/package.json | error    |
+| Name                      | Location          | Severity |
+| :------------------------ | :---------------- | :------- |
+| @backstage/catalog-client | package.json:65:6 | error    |
 

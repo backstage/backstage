@@ -32,10 +32,10 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { readAzureBlobStorageConfigs } from './config';
 import {
-  AzureBlobStorageIntergation,
+  AzureBlobStorageIntegration,
   DefaultAzureCredentialsManager,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -105,13 +105,20 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
       );
     });
   }
+  private readonly config: AzureBlobStorageConfig;
+  private readonly integration: AzureBlobStorageIntegration;
+  private readonly credentialsProvider: DefaultAzureCredentialsManager;
+
   private constructor(
-    private readonly config: AzureBlobStorageConfig,
-    private readonly integration: AzureBlobStorageIntergation,
-    private readonly credentialsProvider: DefaultAzureCredentialsManager,
+    config: AzureBlobStorageConfig,
+    integration: AzureBlobStorageIntegration,
+    credentialsProvider: DefaultAzureCredentialsManager,
     logger: LoggerService,
     schedule: SchedulerServiceTaskRunner,
   ) {
+    this.config = config;
+    this.integration = integration;
+    this.credentialsProvider = credentialsProvider;
     this.logger = logger.child({ target: this.getProviderName() });
     this.scheduleFn = this.createScheduleFn(schedule);
   }
@@ -127,7 +134,7 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: AzureBlobStorageEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

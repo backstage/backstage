@@ -5,7 +5,10 @@
 ```ts
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
+import { RootSystemMetadataService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { TracingService } from '@backstage/backend-plugin-api/alpha';
 
 // @public (undocumented)
 export const actionsRegistryServiceFactory: ServiceFactory<
@@ -17,6 +20,27 @@ export const actionsRegistryServiceFactory: ServiceFactory<
 // @public (undocumented)
 export const actionsServiceFactory: ServiceFactory<
   ActionsService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha
+export const metricsServiceFactory: ServiceFactory<
+  MetricsService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha
+export const rootSystemMetadataServiceFactory: ServiceFactory<
+  RootSystemMetadataService,
+  'root',
+  'singleton'
+>;
+
+// @alpha
+export const tracingServiceFactory: ServiceFactory<
+  TracingService,
   'plugin',
   'singleton'
 >;

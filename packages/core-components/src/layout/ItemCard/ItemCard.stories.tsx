@@ -27,6 +27,7 @@ import { ItemCardHeader } from './ItemCardHeader';
 
 export default {
   title: 'Layout/Item Cards',
+  tags: ['!manifest'],
 };
 
 const text =

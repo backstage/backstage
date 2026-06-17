@@ -17,63 +17,25 @@ import { EventsContent } from './Events';
 import { render } from '@testing-library/react';
 import { Event } from 'kubernetes-models/v1';
 import { DateTime } from 'luxon';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('EventsContent', () => {
   const oneHourAgo = DateTime.now().minus({ hours: 1 }).toISO();
+  const translationApi = mockApis.translation();
+  const errorApi = { post: jest.fn(), error$: jest.fn() };
+
   it('should show info events', () => {
     const { getByText } = render(
-      <EventsContent
-        events={[
-          {
-            type: 'Info',
-            message: 'hello there',
-            reason: 'something happened',
-            count: 52,
-            metadata: {
-              creationTimestamp: oneHourAgo,
-            },
-          } as Event,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, translationApi],
+          [errorApiRef, errorApi],
         ]}
-      />,
-    );
-    expect(getByText('First event 1 hour ago (count: 52)')).toBeInTheDocument();
-    expect(getByText('something happened: hello there')).toBeInTheDocument();
-  });
-  it('should show warning events', () => {
-    const { getByText } = render(
-      <EventsContent
-        events={[
-          {
-            type: 'Warning',
-            message: 'uh oh',
-            reason: 'something happened',
-            count: 23,
-            metadata: {
-              creationTimestamp: oneHourAgo,
-            },
-          } as Event,
-        ]}
-      />,
-    );
-    expect(getByText('First event 1 hour ago (count: 23)')).toBeInTheDocument();
-    expect(getByText('something happened: uh oh')).toBeInTheDocument();
-  });
-
-  it('should only show warning events when warningEventsOnly set', () => {
-    const { getByText, queryByText } = render(
-      <EventsContent
-        warningEventsOnly
-        events={
-          [
-            {
-              type: 'Warning',
-              message: 'uh oh',
-              reason: 'something happened',
-              count: 23,
-              metadata: {
-                creationTimestamp: oneHourAgo,
-              },
-            },
+      >
+        <EventsContent
+          events={[
             {
               type: 'Info',
               message: 'hello there',
@@ -82,10 +44,75 @@ describe('EventsContent', () => {
               metadata: {
                 creationTimestamp: oneHourAgo,
               },
-            },
-          ] as Event[]
-        }
-      />,
+            } as Event,
+          ]}
+        />
+      </TestApiProvider>,
+    );
+    expect(getByText('First event 1 hour ago (count: 52)')).toBeInTheDocument();
+    expect(getByText('something happened: hello there')).toBeInTheDocument();
+  });
+  it('should show warning events', () => {
+    const { getByText } = render(
+      <TestApiProvider
+        apis={[
+          [translationApiRef, translationApi],
+          [errorApiRef, errorApi],
+        ]}
+      >
+        <EventsContent
+          events={[
+            {
+              type: 'Warning',
+              message: 'uh oh',
+              reason: 'something happened',
+              count: 23,
+              metadata: {
+                creationTimestamp: oneHourAgo,
+              },
+            } as Event,
+          ]}
+        />
+      </TestApiProvider>,
+    );
+    expect(getByText('First event 1 hour ago (count: 23)')).toBeInTheDocument();
+    expect(getByText('something happened: uh oh')).toBeInTheDocument();
+  });
+
+  it('should only show warning events when warningEventsOnly set', () => {
+    const { getByText, queryByText } = render(
+      <TestApiProvider
+        apis={[
+          [translationApiRef, translationApi],
+          [errorApiRef, errorApi],
+        ]}
+      >
+        <EventsContent
+          warningEventsOnly
+          events={
+            [
+              {
+                type: 'Warning',
+                message: 'uh oh',
+                reason: 'something happened',
+                count: 23,
+                metadata: {
+                  creationTimestamp: oneHourAgo,
+                },
+              },
+              {
+                type: 'Info',
+                message: 'hello there',
+                reason: 'something happened',
+                count: 52,
+                metadata: {
+                  creationTimestamp: oneHourAgo,
+                },
+              },
+            ] as Event[]
+          }
+        />
+      </TestApiProvider>,
     );
     expect(queryByText('First event 1 hour ago (count: 52)')).toBeNull();
     expect(queryByText('something happened: hello there')).toBeNull();

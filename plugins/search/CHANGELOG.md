@@ -1,5 +1,422 @@
 # @backstage/plugin-search
 
+## 1.7.5
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/plugin-search-react@1.11.5
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+
+## 1.7.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/ui@0.15.1-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.1
+  - @backstage/plugin-search-react@1.11.5-next.1
+
+## 1.7.5-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.0.1-next.0
+  - @backstage/core-components@0.18.11-next.0
+  - @backstage/plugin-search-react@1.11.5-next.0
+
+## 1.7.4
+
+### Patch Changes
+
+- 44d77e9: Removed separate nav item extensions. Sidebar entries are now provided via `title` and `icon` on each plugin's page extension.
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 085133f: The `zod` dependency has been bumped from `^3.25.76 || ^4.0.0` to `^4.0.0`, since `configSchema` requires the full Zod v4 package for JSON Schema support.
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/errors@1.3.1
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-catalog-react@3.0.0
+  - @backstage/plugin-search-react@1.11.4
+  - @backstage/plugin-search-common@1.2.24
+
+## 1.7.4-next.0
+
+### Patch Changes
+
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 085133f: The `zod` dependency has been bumped from `^3.25.76 || ^4.0.0` to `^4.0.0`, since `configSchema` requires the full Zod v4 package for JSON Schema support.
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-catalog-react@2.1.5-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/plugin-search-react@1.11.4-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-search-common@1.2.24-next.0
+
+## 1.7.1
+
+### Patch Changes
+
+- 34aebcc: Fixed the `SearchModal` leaving the page in a broken state by not restoring body overflow and aria-hidden attributes when closing.
+- Updated dependencies
+  - @backstage/ui@0.14.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-catalog-react@2.1.2
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/core-plugin-api@1.12.5
+  - @backstage/plugin-search-common@1.2.23
+  - @backstage/plugin-search-react@1.11.1
+
+## 1.7.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.2
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+  - @backstage/plugin-search-react@1.11.1-next.2
+  - @backstage/plugin-search-common@1.2.23-next.0
+
+## 1.7.1-next.1
+
+### Patch Changes
+
+- 34aebcc: Fixed the `SearchModal` leaving the page in a broken state by not restoring body overflow and aria-hidden attributes when closing.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+  - @backstage/plugin-search-react@1.11.1-next.1
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/plugin-catalog-react@2.1.1-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/plugin-search-react@1.11.1-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-search-common@1.2.22
+
+## 1.7.0
+
+### Minor Changes
+
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+
+### Patch Changes
+
+- d5eb954: Fixes the search component not registering the first search on navigate to the search page.
+- aa29b50: New frontend system pages now use the default plugin header together with `HeaderPage` instead of the legacy core page header pattern.
+- 3f36ce1: Updated alpha plugin icons to follow the new frontend icon sizing rules when rendered in plugin and navigation surfaces.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.0
+  - @backstage/ui@0.13.0
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/plugin-search-react@1.11.0
+
+## 1.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/core-components@0.18.8-next.1
+  - @backstage/plugin-search-react@1.10.5-next.1
+
+## 1.6.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-search-react@1.10.5-next.0
+
+## 1.6.2-next.0
+
+### Patch Changes
+
+- d5eb954: Fixes the search component not registering the first search on navigate to the search page.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.10.5-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-search-common@1.2.22
+
+## 1.6.0
+
+### Minor Changes
+
+- feef8d9: Added support for configuring the default search type in the search page via the `search.defaultType` option in `app-config.yaml`. This applies to both the legacy and new frontend systems. If not set, the default is empty, which means searching for "all" types.
+
+### Patch Changes
+
+- 018ca87: Added `title` and `icon` to the plugin definition for the new frontend system.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-search-react@1.10.3
+
+## 1.6.0-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/version-bridge@1.0.12-next.0
+  - @backstage/plugin-search-react@1.10.3-next.2
+
+## 1.6.0-next.1
+
+### Minor Changes
+
+- feef8d9: Added support for configuring the default search type in the search page via the `search.defaultType` option in `app-config.yaml`. This applies to both the legacy and new frontend systems. If not set, the default is empty, which means searching for "all" types.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/plugin-search-react@1.10.3-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 1.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/plugin-search-common@1.2.22-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-search-react@1.10.3-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.5.3
+
+### Patch Changes
+
+- 5c49a00: Update for the `qs` library bump: the old array limit setting has changed to be more strict; you can no longer just give a zero to mean unlimited. So we choose an arbitrary high value, to at least go higher than the default 20.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-search-react@1.10.2
+  - @backstage/plugin-catalog-react@1.21.5
+
+## 1.5.2-next.1
+
+### Patch Changes
+
+- 5c49a00: Update for the `qs` library bump: the old array limit setting has changed to be more strict; you can no longer just give a zero to mean unlimited. So we choose an arbitrary high value, to at least go higher than the default 20.
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+  - @backstage/plugin-search-react@1.10.2-next.0
+
+## 1.5.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/plugin-search-react@1.10.1
+
+## 1.5.1
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/plugin-search-react@1.10.1
+  - @backstage/core-plugin-api@1.12.1
+
+## 1.5.1-next.1
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.2
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.21
+  - @backstage/plugin-search-react@1.10.1-next.0
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-react@1.21.4-next.0
+  - @backstage/plugin-search-react@1.10.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.21
+
+## 1.5.0
+
+### Minor Changes
+
+- a521911: Add support for customizable icons in `SearchResultListItemBlueprint` and related components
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/plugin-search-react@1.10.0
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-search-common@1.2.21
+
+## 1.5.0-next.1
+
+### Minor Changes
+
+- a521911: Add support for customizable icons in `SearchResultListItemBlueprint` and related components
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.10.0-next.1
+  - @backstage/plugin-catalog-react@1.21.3-next.1
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+  - @backstage/core-compat-api@0.5.4-next.0
+
+## 1.4.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.9.6-next.0
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.21-next.0
+
+## 1.4.31
+
+### Patch Changes
+
+- 67a3e1a: Implemented AbortController request cancellation for overlapping search requests. This change ensures that when users type quickly, previous search requests are properly canceled before new ones start.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/plugin-search-react@1.9.5
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-search-common@1.2.20
+
+## 1.4.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/plugin-search-react@1.9.5-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-search-common@1.2.20-next.0
+
+## 1.4.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/plugin-search-react@1.9.5-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.19
+
 ## 1.4.30
 
 ### Patch Changes

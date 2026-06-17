@@ -22,7 +22,6 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
  * The validation function for the `repoUrl` that is returned from the
  * field extension. Ensures that you have all the required fields filled for
  * the different providers that exist.
- *
  * @public
  */
 export const repoPickerValidation = (
@@ -40,9 +39,16 @@ export const repoPickerValidation = (
         'Incomplete repository location provided, host not provided',
       );
     } else {
-      if (integrationApi?.byHost(host)?.type === 'bitbucket') {
+      const integrationType = integrationApi?.byHost(host)?.type;
+      if (
+        integrationType === 'bitbucketCloud' ||
+        integrationType === 'bitbucketServer'
+      ) {
         // workspace is only applicable for bitbucket cloud
-        if (host === 'bitbucket.org' && !searchParams.get('workspace')) {
+        if (
+          integrationType === 'bitbucketCloud' &&
+          !searchParams.get('workspace')
+        ) {
           validation.addError(
             'Incomplete repository location provided, workspace not provided',
           );
@@ -53,7 +59,7 @@ export const repoPickerValidation = (
             'Incomplete repository location provided, project not provided',
           );
         }
-      } else if (integrationApi?.byHost(host)?.type === 'azure') {
+      } else if (integrationType === 'azure') {
         if (!searchParams.get('project')) {
           validation.addError(
             'Incomplete repository location provided, project not provided',

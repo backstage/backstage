@@ -23,11 +23,12 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
+  buildDefaultUserTransformer,
   GithubMultiOrgEntityProvider,
   TeamTransformer,
   UserTransformer,
 } from '@backstage/plugin-catalog-backend-module-github';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GithubOrgEntityCleanerProvider } from './GithubOrgEntityCleanerProvider';
 
@@ -93,13 +94,14 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
+        cache: coreServices.cache,
         config: coreServices.rootConfig,
         events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },
 
-      async init({ catalog, config, events, logger, scheduler }) {
+      async init({ catalog, cache, config, events, logger, scheduler }) {
         const definitions = readDefinitionsFromConfig(config);
 
         for (const definition of definitions) {
@@ -116,10 +118,19 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
                 definition.schedule,
               ),
               logger,
-              userTransformer,
+              userTransformer:
+                userTransformer ??
+                buildDefaultUserTransformer({
+                  useVerifiedEmails: definition.useVerifiedEmails,
+                }),
               teamTransformer,
               alwaysUseDefaultNamespace:
                 definitions.length === 1 && definition.orgs?.length === 1,
+              pageSizes: definition.pageSizes,
+              excludeSuspendedUsers: definition.excludeSuspendedUsers,
+              cache,
+              experimental_checkForSuspendedUsersWithRest:
+                definition.experimental_checkForSuspendedUsersWithRest,
             }),
           );
         }
@@ -133,6 +144,14 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
   githubUrl: string;
   orgs?: string[];
   schedule: SchedulerServiceTaskScheduleDefinition;
+  pageSizes?: {
+    teams?: number;
+    teamMembers?: number;
+    organizationMembers?: number;
+  };
+  excludeSuspendedUsers?: boolean;
+  experimental_checkForSuspendedUsersWithRest?: boolean;
+  useVerifiedEmails?: boolean;
 }> {
   const baseKey = 'catalog.providers.githubOrg';
   const baseConfig = rootConfig.getOptional(baseKey);
@@ -151,5 +170,21 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     schedule: readSchedulerServiceTaskScheduleDefinitionFromConfig(
       c.getConfig('schedule'),
     ),
+    pageSizes: c.has('pageSizes')
+      ? {
+          teams: c.getOptionalNumber('pageSizes.teams'),
+          teamMembers: c.getOptionalNumber('pageSizes.teamMembers'),
+          organizationMembers: c.getOptionalNumber(
+            'pageSizes.organizationMembers',
+          ),
+        }
+      : undefined,
+    excludeSuspendedUsers:
+      c.getOptionalBoolean('excludeSuspendedUsers') ?? false,
+    experimental_checkForSuspendedUsersWithRest:
+      c.getOptionalBoolean('experimental_checkForSuspendedUsersWithRest') ??
+      false,
+    useVerifiedEmails:
+      c.getOptionalBoolean('defaultUserTransformer.useVerifiedEmails') ?? false,
   }));
 }

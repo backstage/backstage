@@ -20,16 +20,12 @@ import {
   ExternalRouteRef,
   FrontendFeature,
 } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  isRouteRef,
-  toInternalRouteRef,
-} from '../../../frontend-plugin-api/src/routing/RouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalSubRouteRef } from '../../../frontend-plugin-api/src/routing/SubRouteRef';
-import { OpaqueFrontendPlugin } from '@internal/frontend';
+  OpaqueRouteRef,
+  OpaqueSubRouteRef,
+  OpaqueExternalRouteRef,
+  OpaqueFrontendPlugin,
+} from '@internal/frontend';
 import { ErrorCollector } from '../wiring/createErrorCollector';
 
 /** @internal */
@@ -62,12 +58,12 @@ export function collectRouteIds(
         continue;
       }
 
-      if (isRouteRef(ref)) {
-        const internalRef = toInternalRouteRef(ref);
+      if (OpaqueRouteRef.isType(ref)) {
+        const internalRef = OpaqueRouteRef.toInternal(ref);
         internalRef.setId(refId);
         routesById.set(refId, ref);
       } else {
-        const internalRef = toInternalSubRouteRef(ref);
+        const internalRef = OpaqueSubRouteRef.toInternal(ref);
         routesById.set(refId, internalRef);
       }
     }
@@ -82,7 +78,7 @@ export function collectRouteIds(
         continue;
       }
 
-      const internalRef = toInternalExternalRouteRef(ref);
+      const internalRef = OpaqueExternalRouteRef.toInternal(ref);
       internalRef.setId(refId);
       externalRoutesById.set(refId, ref);
     }

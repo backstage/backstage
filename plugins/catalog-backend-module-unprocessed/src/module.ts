@@ -19,7 +19,10 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { UnprocessedEntitiesModule } from './UnprocessedEntitiesModule';
-import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
+import {
+  unprocessedEntitiesDeletePermission,
+  unprocessedEntitiesReadPermission,
+} from '@backstage/plugin-catalog-unprocessed-entities-common';
 
 /**
  * Catalog Module for Unprocessed Entities
@@ -55,6 +58,7 @@ export const catalogModuleUnprocessedEntities = createBackendModule({
         });
 
         permissionsRegistry.addPermissions([
+          unprocessedEntitiesReadPermission,
           unprocessedEntitiesDeletePermission,
         ]);
 

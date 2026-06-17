@@ -20,6 +20,16 @@
  * @packageDocumentation
  */
 
-export { findPaths, BACKSTAGE_JSON } from './paths';
+export { findPaths, findOwnPaths, targetPaths, BACKSTAGE_JSON } from './paths';
 export { isChildPath } from './isChildPath';
-export type { Paths, ResolveFunc } from './paths';
+export type { Paths, TargetPaths, OwnPaths, ResolveFunc } from './paths';
+export { bootstrapEnvProxyAgents } from './proxyBootstrap';
+export {
+  run,
+  runOutput,
+  runCheck,
+  type RunChildProcess,
+  type RunOptions,
+  type RunOnOutput,
+} from './run';
+export { ExitCodeError } from './errors';

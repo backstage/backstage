@@ -5,10 +5,6 @@ sidebar_label: Org Data
 description: Importing users and groups from Microsoft Entra ID into Backstage
 ---
 
-:::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/azure/org--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
-:::
-
 The Backstage catalog can be set up to ingest organizational data - users and
 teams - directly from a tenant in Microsoft Entra ID via the
 Microsoft Graph API.
@@ -30,7 +26,7 @@ catalog:
       default:
         tenantId: ${AZURE_TENANT_ID}
         user:
-          filter: accountEnabled eq true and userType eq 'member'
+          filter: userType eq 'member'
         group:
           filter: >
             securityEnabled eq false
@@ -45,7 +41,7 @@ catalog:
 For large organizations, this plugin can take a long time, so be careful setting low frequency / timeouts and importing a large amount of users / groups for the first try.
 :::
 
-Finally, updated your backend by adding the following line:
+Finally, update your backend by adding the following line:
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend'));
@@ -53,6 +49,37 @@ backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(import('@backstage/plugin-catalog-backend-module-msgraph'));
 /* highlight-add-end */
 ```
+
+## Incremental Ingestion for Large Tenants
+
+For very large Azure AD tenants where loading the full dataset into memory at once is not feasible, the `@backstage/plugin-catalog-backend-module-msgraph-incremental` package provides a memory-efficient alternative. It processes users and groups one page at a time and persists the `@odata.nextLink` cursor so ingestion resumes from the last completed page after a pod restart.
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-incremental-ingestion
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-msgraph-incremental
+```
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend'));
+/* highlight-add-start */
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-incremental-ingestion'),
+);
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-msgraph-incremental'),
+);
+/* highlight-add-end */
+```
+
+It uses the same `catalog.providers.microsoftGraphOrg` configuration as the standard module. The following options are **not** supported by the incremental provider: `userGroupMember*` and `groupIncludeSubGroups`. Use `MicrosoftGraphOrgEntityProvider` if you require those.
+
+|                            | `MicrosoftGraphOrgEntityProvider` | Incremental provider |
+| -------------------------- | --------------------------------- | -------------------- |
+| Memory usage               | Full dataset in RAM               | One page at a time   |
+| Resume on restart          | Starts from scratch               | Resumes from cursor  |
+| `userGroupMember*` options | Supported                         | Not supported        |
+| `groupIncludeSubGroups`    | Supported                         | Not supported        |
+| Suitable for large tenants | No                                | Yes                  |
 
 ## Authenticating with Microsoft Graph
 
@@ -94,8 +121,9 @@ To grant the managed identity the same permissions as mentioned in _App Registra
 
 ## Filtering imported Users and Groups
 
-By default, the plugin will import all users and groups from your directory.
-This can be customized through [filters](https://learn.microsoft.com/en-us/graph/filter-query-parameter) and [search](https://learn.microsoft.com/en-us/graph/search-query-parameter) queries. Keep in mind that if you omit filters and search queries for the user or group properties, the plugin will automatically import all available users or groups.
+By default, the plugin will import all **enabled** users and all groups from your directory.
+Disabled user accounts (`accountEnabled eq false`) are automatically excluded.
+This can be further customized through [filters](https://learn.microsoft.com/en-us/graph/filter-query-parameter) and [search](https://learn.microsoft.com/en-us/graph/search-query-parameter) queries. Any custom `user.filter` is combined with the base `accountEnabled eq true` filter using `and`.
 
 ### Groups
 
@@ -124,17 +152,18 @@ microsoftGraphOrg:
 In addition to these groups, one additional group will be created for your organization.
 All imported groups will be a child of this group.
 
-By default the provider will get groups using the msgraph `/group` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.group` will return the right type of group object. [See usage](#Using-path-parameter) for more details.
+By default the provider will get groups using the msgraph `/group` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.group` will return the right type of group object. [See usage](#using-path-parameter) for more details.
 
 ### Users
 
 There are two modes for importing users - You can import all user objects matching a `filter`.
+The `accountEnabled eq true` base filter is applied automatically and combined with any custom filter you provide.
 
 ```yaml
 microsoftGraphOrg:
   providerId:
     user:
-      filter: accountEnabled eq true and userType eq 'member'
+      filter: userType eq 'member'
 ```
 
 Alternatively you can import users that are members of specific groups.
@@ -149,7 +178,7 @@ microsoftGraphOrg:
       search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
 ```
 
-By default the provider will get user using the msgraph `/user` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.user` will return the right type of user object. [See usage](#Using-path-parameter) for more details.
+By default the provider will get user using the msgraph `/user` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.user` will return the right type of user object. [See usage](#using-path-parameter) for more details.
 
 ### Using `path` parameter
 

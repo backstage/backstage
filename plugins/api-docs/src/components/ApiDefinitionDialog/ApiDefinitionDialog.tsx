@@ -16,6 +16,7 @@
 
 import { ApiEntity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -133,10 +134,11 @@ export function ApiDefinitionDialog(props: {
     >
       <DialogTitle id="api-definition-dialog-title" disableTypography>
         <Typography className={classes.type}>
-          API - {definitionWidget?.title ?? 'Raw'}
+          API -{' '}
+          {definitionWidget?.title ?? t('apiDefinitionDialog.rawButtonTitle')}
         </Typography>
         <Typography className={classes.title} variant="h1">
-          {entity.metadata.title ?? entity.metadata.name}
+          <EntityDisplayName entityRef={entity} />
         </Typography>
       </DialogTitle>
       <DialogContent dividers className={classes.root}>
@@ -151,7 +153,10 @@ export function ApiDefinitionDialog(props: {
           {definitionWidget ? (
             <Tab label={definitionWidget.title} {...a11yProps(tabIndex++)} />
           ) : null}
-          <Tab label="Raw" {...a11yProps(tabIndex++)} />
+          <Tab
+            label={t('apiDefinitionDialog.rawButtonTitle')}
+            {...a11yProps(tabIndex++)}
+          />
         </Tabs>
 
         {definitionWidget ? (

@@ -21,9 +21,13 @@ import {
 } from '@backstage/backend-plugin-api';
 import { EventsService } from '@backstage/plugin-events-node';
 import { PubSub } from '@google-cloud/pubsub';
-import { Counter, metrics } from '@opentelemetry/api';
+import type {
+  MetricsService,
+  MetricsServiceCounter,
+} from '@backstage/backend-plugin-api/alpha';
 import { readSubscriptionTasksFromConfig } from './config';
-import { SubscriptionTask } from './types';
+import { EventContext, SubscriptionTask } from './types';
+import { JsonValue } from '@backstage/types';
 
 /**
  * Reads messages off of the events system and forwards them into Google Pub/Sub
@@ -34,7 +38,9 @@ export class EventConsumingGooglePubSubPublisher {
   readonly #events: EventsService;
   readonly #tasks: SubscriptionTask[];
   readonly #pubSubFactory: (projectId: string) => PubSub;
-  readonly #metrics: { messages: Counter };
+  readonly #metrics: {
+    messages: MetricsServiceCounter<{ subscription: string; status: string }>;
+  };
   #activeClientsByProjectId: Map<string, PubSub>;
 
   static create(options: {
@@ -42,10 +48,12 @@ export class EventConsumingGooglePubSubPublisher {
     logger: LoggerService;
     rootLifecycle: RootLifecycleService;
     events: EventsService;
+    metrics: MetricsService;
   }) {
     const publisher = new EventConsumingGooglePubSubPublisher({
       logger: options.logger,
       events: options.events,
+      metrics: options.metrics,
       tasks: readSubscriptionTasksFromConfig(options.config),
       pubSubFactory: projectId => new PubSub({ projectId }),
     });
@@ -64,6 +72,7 @@ export class EventConsumingGooglePubSubPublisher {
   constructor(options: {
     logger: LoggerService;
     events: EventsService;
+    metrics: MetricsService;
     tasks: SubscriptionTask[];
     pubSubFactory: (projectId: string) => PubSub;
   }) {
@@ -72,14 +81,13 @@ export class EventConsumingGooglePubSubPublisher {
     this.#tasks = options.tasks;
     this.#pubSubFactory = options.pubSubFactory;
 
-    const meter = metrics.getMeter('default');
     this.#metrics = {
-      messages: meter.createCounter(
+      messages: options.metrics.createCounter(
         'events.google.pubsub.publisher.messages.total',
         {
           description:
             'Number of Pub/Sub messages sent by EventConsumingGooglePubSubPublisher',
-          unit: 'short',
+          unit: '{message}',
         },
       ),
     };
@@ -103,7 +111,20 @@ export class EventConsumingGooglePubSubPublisher {
         onEvent: async event => {
           let status: 'success' | 'failed' | 'ignored' = 'failed';
           try {
-            const topic = task.mapToTopic(event);
+            const context: EventContext = {
+              event: {
+                topic: event.topic,
+                eventPayload: event.eventPayload as JsonValue,
+                metadata: event.metadata,
+              },
+            };
+
+            if (!task.filter(context)) {
+              status = 'ignored';
+              return;
+            }
+
+            const topic = task.mapToTopic(context);
             if (!topic) {
               status = 'ignored';
               return;
@@ -117,7 +138,7 @@ export class EventConsumingGooglePubSubPublisher {
 
             await pubsub.topic(topic.topic).publishMessage({
               json: event.eventPayload,
-              attributes: task.mapToAttributes(event),
+              attributes: task.mapToAttributes(context),
             });
 
             status = 'success';

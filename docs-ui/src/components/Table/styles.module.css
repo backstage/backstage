@@ -17,7 +17,7 @@
   padding: 12px 16px !important;
   border: none !important;
   text-align: left;
-  background-color: var(--panel) !important;
+  background-color: var(--bg) !important;
   font-size: 16px;
 
   & p {

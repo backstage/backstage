@@ -138,8 +138,9 @@ export const UserListPicker = (props: UserListPickerProps) => {
   const {
     filters,
     updateFilters,
-    queryParameters: { kind: kindParameter, user: userParameter },
+    queryParameters: { user: userParameter },
   } = useEntityList();
+  const kindParameter = filters.kind?.value?.toLowerCase();
 
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.

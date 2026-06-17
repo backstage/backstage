@@ -15,6 +15,7 @@
  */
 
 import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
+import { performance } from 'node:perf_hooks';
 import { buildEntitySearch, mapToRows, traverse } from './buildEntitySearch';
 
 describe('buildEntitySearch', () => {
@@ -48,6 +49,23 @@ describe('buildEntitySearch', () => {
         { key: 'root.list.a', value: 1 },
         { key: 'root.list.a', value: 2 },
       ]);
+    });
+
+    it('handles large arrays without quadratic performance degradation', () => {
+      // Generate an array with 500 unique string items to verify that the
+      // Set-based dedup scales linearly rather than quadratically.
+      // With the previous Array.some() approach this would cause ~125,000
+      // comparisons; with Set.has() it's ~500 lookups.
+      const items = Array.from({ length: 500 }, (_, i) => `tag-${i}`);
+      const input = { tags: items };
+
+      const start = performance.now();
+      const output = traverse(input);
+      const elapsed = performance.now() - start;
+
+      expect(output).toHaveLength(1000);
+      // Should complete well under 100ms with O(n); O(n²) would be noticeably slower
+      expect(elapsed).toBeLessThan(100);
     });
 
     it('skips over special keys', () => {
@@ -235,6 +253,41 @@ describe('buildEntitySearch', () => {
           value: 'k:ns/b',
         },
       ]);
+    });
+
+    it('deduplicates rows from duplicate array values', () => {
+      const rows = buildEntitySearch('eid', {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: { name: 'n', tags: ['java', 'java', 'Java'] },
+      });
+      // 'java' and 'Java' both normalise to value 'java'; all three occurrences
+      // should collapse into a single row (first-wins for original_value).
+      const tagRows = rows.filter(r => r.key === 'metadata.tags');
+      expect(tagRows).toHaveLength(1);
+      expect(tagRows[0]).toEqual(
+        expect.objectContaining({ value: 'java', original_value: 'java' }),
+      );
+      // The synthetic boolean path key (metadata.tags.java) should also appear
+      // exactly once.
+      const boolRows = rows.filter(r => r.key === 'metadata.tags.java');
+      expect(boolRows).toHaveLength(1);
+    });
+
+    it('treats null and empty-string values as distinct for deduplication', () => {
+      // An array with both null and '' for the same key must produce two rows
+      // since value=null and value='' are distinct in the database.
+      const rows = buildEntitySearch('eid', {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: { name: 'n' },
+        spec: { foo: [null, ''] },
+      });
+      const fooRows = rows.filter(r => r.key === 'spec.foo');
+      expect(fooRows).toHaveLength(2);
+      const values = fooRows.map(r => r.value);
+      expect(values).toContain(null);
+      expect(values).toContain('');
     });
 
     it('rejects duplicate keys', () => {

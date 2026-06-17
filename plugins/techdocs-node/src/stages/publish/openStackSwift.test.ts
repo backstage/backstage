@@ -23,10 +23,10 @@ import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 import { OpenStackSwiftPublish } from './openStackSwift';
 import { PublisherBase, TechDocsMetadata } from './types';
-import { Stream, Readable } from 'stream';
+import { Stream, Readable } from 'node:stream';
 import {
   createMockDirectory,
   mockServices,

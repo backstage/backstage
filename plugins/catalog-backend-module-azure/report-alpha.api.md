@@ -4,6 +4,38 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CatalogScmEvent } from '@backstage/plugin-catalog-node/alpha';
+
+// @alpha
+export function analyzeAzureDevOpsWebhookEvent(
+  eventType: string,
+  eventPayload: unknown,
+  options: AnalyzeAzureDevOpsWebhookEventOptions,
+): Promise<AnalyzeAzureDevOpsWebhookEventResult>;
+
+// @alpha
+export interface AnalyzeAzureDevOpsWebhookEventOptions {
+  isRelevantPath: (path: string) => boolean;
+}
+
+// @alpha
+export type AnalyzeAzureDevOpsWebhookEventResult =
+  | {
+      result: 'unsupported-event';
+      event: string;
+    }
+  | {
+      result: 'ignored';
+      reason: string;
+    }
+  | {
+      result: 'aborted';
+      reason: string;
+    }
+  | {
+      result: 'ok';
+      events: CatalogScmEvent[];
+    };
 
 // @alpha (undocumented)
 const _feature: BackendFeature;

@@ -1,5 +1,316 @@
 # @backstage/plugin-app-visualizer
 
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+
+## 0.2.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/ui@0.15.1-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+
+## 0.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+
+## 0.2.4
+
+### Patch Changes
+
+- e2d9831: Tightened React Aria dependency version ranges from `^` to `~` to prevent unintended minor version upgrades.
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- 44d77e9: Removed separate nav item extensions. Sidebar entries are now provided via `title` and `icon` on each plugin's page extension.
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+
+## 0.2.4-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- e2d9831: Tightened React Aria dependency version ranges from `^` to `~` to prevent unintended minor version upgrades.
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- e220589: Updated `PluginHeaderActionBlueprint` usage to pass params as a plain object.
+- Updated dependencies
+  - @backstage/ui@0.14.0
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/core-plugin-api@1.12.5
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- e220589: Updated `PluginHeaderActionBlueprint` usage to pass params as a plain object.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- c25532a: Switched dev entry point to use `createDevApp` from `@backstage/frontend-dev-utils`.
+- Updated dependencies
+  - @backstage/ui@0.13.0
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/core-components@0.18.8-next.1
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.1
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.12.1-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- ef6916e: Migrated to use `SubPageBlueprint` for tabbed navigation and added a copy-tree-as-JSON plugin header action using `PluginHeaderActionBlueprint`. The plugin now specifies a `title` and `icon`.
+
+### Patch Changes
+
+- cb090b4: Bump react-aria-components to v1.14.0
+- c38b74d: Internal updates for blueprint moves to `@backstage/plugin-app-react`.
+- 4137a43: Updated CSS token references to use renamed `--bui-border-2` token.
+- 4d50e1f: Improved rendering performance of the details page.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/ui@0.12.0
+  - @backstage/core-components@0.18.7
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+
+## 0.1.28-next.1
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/ui@0.12.0-next.2
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+
+## 0.1.28-next.0
+
+### Patch Changes
+
+- cb090b4: Bump react-aria-components to v1.14.0
+- c38b74d: Internal updates for blueprint moves to `@backstage/plugin-app-react`.
+- 4d50e1f: Improved rendering performance of the details page.
+- Updated dependencies
+  - @backstage/ui@0.12.0-next.0
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+
+## 0.1.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.11.0
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+
+## 0.1.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.11.0-next.0
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.1.26
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/ui@0.10.0
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.10.0-next.1
+  - @backstage/core-components@0.18.4-next.1
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/ui@0.9.1-next.0
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+
+## 0.1.25
+
+### Patch Changes
+
+- e81b3f0: Improve tree visualizer to use a horizontal layout and fill the content space.
+- 722e2df: Migrated to use `@backstage/ui`.
+- Updated dependencies
+  - @backstage/ui@0.9.0
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+
+## 0.1.25-next.2
+
+### Patch Changes
+
+- 722e2df: Migrated to use `@backstage/ui`.
+- Updated dependencies
+  - @backstage/ui@0.9.0-next.3
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
+## 0.1.25-next.1
+
+### Patch Changes
+
+- e81b3f0: Improve tree visualizer to use a horizontal layout and fill the content space.
+- Updated dependencies
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+
+## 0.1.24
+
+### Patch Changes
+
+- 4406144: Ensure that the text rendering has react keys for all elements
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.1.24-next.2
+
+### Patch Changes
+
+- 4406144: Ensure that the text rendering has react keys for all elements
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
+## 0.1.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+
+## 0.1.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/core-plugin-api@1.11.0
+
 ## 0.1.23
 
 ### Patch Changes

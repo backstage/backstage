@@ -21,10 +21,10 @@ const itIfDocker = isDockerDisabledForTests() ? it.skip : it;
 
 jest.setTimeout(60_000);
 
-describe('TestCaches', () => {
-  const caches = TestCaches.create();
+const caches = TestCaches.create();
 
-  it.each(caches.eachSupportedId())('fires up a cache, %p', async cacheId => {
+describe.each(caches.eachSupportedId())('TestCaches, %p', cacheId => {
+  it('fires up a cache', async () => {
     const { keyv } = await caches.init(cacheId);
     await keyv.set('test', 'value');
     await expect(keyv.get('test')).resolves.toBe('value');

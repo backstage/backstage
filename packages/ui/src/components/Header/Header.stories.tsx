@@ -14,57 +14,41 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj, StoryFn } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
+import type { StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
-import type { HeaderTab } from './types';
-import {
-  Button,
-  HeaderPage,
-  Container,
-  Text,
-  ButtonIcon,
-  MenuTrigger,
-  Menu,
-  MenuItem,
-} from '../../';
+import { HeaderMetadataUsers } from './HeaderMetadataUsers';
+import { HeaderMetadataStatus } from './HeaderMetadataStatus';
+import type { HeaderNavTabItem } from './types';
 import { MemoryRouter } from 'react-router-dom';
-import {
-  RiHeartLine,
-  RiEmotionHappyLine,
-  RiCloudy2Line,
-  RiMore2Line,
-} from '@remixicon/react';
-import { HeaderPageBreadcrumb } from '../HeaderPage/types';
+import { BUIProvider } from '../../provider';
+import { Button, ButtonIcon, MenuTrigger, Menu, MenuItem } from '../../';
+import { RiMore2Line } from '@remixicon/react';
+import { Container } from '../Container';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Header',
   component: Header,
   parameters: {
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof Header>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-const withRouter = (Story: StoryFn) => (
-  <MemoryRouter>
-    <Story />
-  </MemoryRouter>
-);
-
-const tabs: HeaderTab[] = [
+const tabs: HeaderNavTabItem[] = [
   {
     id: 'overview',
     label: 'Overview',
+    href: '/overview',
   },
   {
     id: 'checks',
     label: 'Checks',
+    href: '/checks',
   },
   {
     id: 'tracks',
     label: 'Tracks',
+    href: '/tracks',
   },
   {
     id: 'campaigns',
@@ -75,21 +59,6 @@ const tabs: HeaderTab[] = [
     id: 'integrations',
     label: 'Integrations',
     href: '/integrations',
-  },
-];
-
-const tabs2: HeaderTab[] = [
-  {
-    id: 'Banana',
-    label: 'Banana',
-  },
-  {
-    id: 'Apple',
-    label: 'Apple',
-  },
-  {
-    id: 'Orange',
-    label: 'Orange',
   },
 ];
 
@@ -113,111 +82,42 @@ const menuItems = [
   },
 ];
 
-const breadcrumbs: HeaderPageBreadcrumb[] = [
-  {
-    label: 'Home',
-    href: '/',
-  },
-  {
-    label: 'Dashboard',
-    href: '/dashboard',
-  },
-  {
-    label: 'Settings',
-    href: '/settings',
-  },
-];
+const withRouter = (Story: StoryFn) => (
+  <MemoryRouter initialEntries={['/overview']}>
+    <BUIProvider>
+      <Story />
+    </BUIProvider>
+  </MemoryRouter>
+);
 
-// Extract layout decorator as a reusable constant
-const layoutDecorator = [
-  (Story: StoryFn) => (
-    <>
-      <div
-        style={{
-          width: '250px',
-          position: 'fixed',
-          left: 'var(--sb-panel-left)',
-          top: 'var(--sb-panel-top)',
-          bottom: 'var(--sb-panel-bottom)',
-          backgroundColor: 'var(--sb-sidebar-bg)',
-          borderRadius: 'var(--sb-panel-radius)',
-          border: 'var(--sb-sidebar-border)',
-          borderRight: 'var(--sb-sidebar-border-right)',
-          zIndex: 1,
-        }}
-      />
-      <div
-        style={{
-          paddingLeft: 'var(--sb-content-padding-inline)',
-          minHeight: '200vh',
-        }}
-      >
-        <Story />
-        <Container>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-        </Container>
-      </div>
-    </>
-  ),
-  withRouter,
-];
-
-export const Default: Story = {
-  args: {},
-  decorators: [withRouter],
-};
-
-export const WithTabs: Story = {
+export const Default = meta.story({
   args: {
+    title: 'Page Title',
+  },
+});
+
+export const WithTabs = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
     tabs,
   },
-  decorators: [withRouter],
-};
+});
 
-export const WithCustomActions: Story = {
-  args: {},
+export const WithCustomActions = meta.story({
   decorators: [withRouter],
-  render: args => (
+  render: () => (
     <Header
-      {...args}
+      {...Default.input.args}
       customActions={
         <>
-          <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
-          <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
-          <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+          <Button>Custom action</Button>
           <MenuTrigger>
-            <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
+            <ButtonIcon
+              variant="tertiary"
+              icon={<RiMore2Line />}
+              aria-label="More options"
+            />
             <Menu placement="bottom end">
               {menuItems.map(option => (
                 <MenuItem
@@ -234,312 +134,387 @@ export const WithCustomActions: Story = {
       }
     />
   ),
+});
+
+export const WithBreadcrumbs = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    breadcrumbs: [{ label: 'Home', href: '/' }],
+  },
+});
+
+export const WithLongBreadcrumbs = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    breadcrumbs: [
+      { label: 'Home', href: '/' },
+      { label: 'Long Breadcrumb Name', href: '/long-breadcrumb' },
+    ],
+  },
+});
+
+export const WithDescription = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    description:
+      'This is a description of the page. It can include [inline links](https://backstage.io).',
+  },
+});
+
+export const WithTags = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    tags: [
+      { label: 'TypeScript' },
+      { label: 'Platform', href: '/platform' },
+      { label: 'Gold' },
+    ],
+  },
+});
+
+export const WithMetadata = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    metadata: [
+      { label: 'Owner', value: 'platform-team' },
+      { label: 'Type', value: 'website' },
+    ],
+  },
+});
+
+const users = {
+  giles: {
+    name: 'Giles Peyton-Nicoll',
+    src: 'https://i.pravatar.cc/150?u=giles',
+    href: '/users/giles',
+  },
+  alice: {
+    name: 'Alice Johnson',
+    src: 'https://i.pravatar.cc/150?u=alicej',
+    href: '/users/alice',
+  },
+  bob: {
+    name: 'Bob Smith',
+    src: 'https://i.pravatar.cc/150?u=bob',
+    href: '/users/bob',
+  },
+  carol: {
+    name: 'Carol Williams',
+    src: 'https://i.pravatar.cc/150?u=carol',
+    href: '/users/carol',
+  },
 };
 
-export const WithAllOptionsAndTabs: Story = {
+export const WithMetadataUsers = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <Header
+      {...Default.input.args}
+      metadata={[
+        {
+          label: 'Owner',
+          value: <HeaderMetadataUsers users={[users.giles]} />,
+        },
+        {
+          label: 'Contributors',
+          value: (
+            <HeaderMetadataUsers
+              users={[users.alice, users.bob, users.carol]}
+            />
+          ),
+        },
+      ]}
+    />
+  ),
+});
+
+export const WithMetadataUsersNoLinks = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <Header
+      {...Default.input.args}
+      metadata={[
+        {
+          label: 'Owner',
+          value: (
+            <HeaderMetadataUsers
+              users={[{ name: users.giles.name, src: users.giles.src }]}
+            />
+          ),
+        },
+        {
+          label: 'Contributors',
+          value: (
+            <HeaderMetadataUsers
+              users={[
+                { name: users.alice.name, src: users.alice.src },
+                { name: users.bob.name, src: users.bob.src },
+                { name: users.carol.name, src: users.carol.src },
+              ]}
+            />
+          ),
+        },
+      ]}
+    />
+  ),
+});
+
+export const WithMetadataStatus = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <Header
+      {...Default.input.args}
+      metadata={[
+        {
+          label: 'Status',
+          value: <HeaderMetadataStatus label="Passing" color="success" />,
+        },
+        {
+          label: 'Build',
+          value: (
+            <HeaderMetadataStatus
+              label="Failed"
+              color="danger"
+              href="/builds/123"
+            />
+          ),
+        },
+        {
+          label: 'Coverage',
+          value: <HeaderMetadataStatus label="Warning" color="warning" />,
+        },
+      ]}
+    />
+  ),
+});
+
+export const WithDescriptionTagsAndMetadata = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <Header
+      {...Default.input.args}
+      description="This is a description of the page. It can include [inline links](https://backstage.io)."
+      tags={[
+        { label: 'TypeScript' },
+        { label: 'Platform', href: '/platform' },
+        { label: 'Gold' },
+      ]}
+      metadata={[
+        {
+          label: 'Owner',
+          value: <HeaderMetadataUsers users={[users.giles]} />,
+        },
+        {
+          label: 'Contributors',
+          value: (
+            <HeaderMetadataUsers
+              users={[users.alice, users.bob, users.carol]}
+            />
+          ),
+        },
+        { label: 'Type', value: 'website' },
+        { label: 'Tier', value: 'gold' },
+      ]}
+    />
+  ),
+});
+
+export const WithEverything = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <Header
+      {...Default.input.args}
+      tabs={tabs}
+      customActions={<Button>Custom action</Button>}
+      breadcrumbs={[{ label: 'Home', href: '/' }]}
+      description="This is a description of the page. It can include [inline links](https://backstage.io)."
+      tags={[
+        { label: 'TypeScript' },
+        { label: 'Platform', href: '/platform' },
+        { label: 'Gold' },
+      ]}
+      metadata={[
+        { label: 'Type', value: 'website' },
+        {
+          label: 'Owner',
+          value: <HeaderMetadataUsers users={[users.giles]} />,
+        },
+        {
+          label: 'Contributors',
+          value: (
+            <HeaderMetadataUsers
+              users={[users.alice, users.bob, users.carol]}
+            />
+          ),
+        },
+      ]}
+    />
+  ),
+});
+
+const groupedTabs: HeaderNavTabItem[] = [
+  { id: 'overview', label: 'Overview', href: '/overview' },
+  {
+    id: 'docs-group',
+    label: 'Documentation',
+    items: [
+      { id: 'docs', label: 'TechDocs', href: '/docs' },
+      { id: 'api-docs', label: 'API Reference', href: '/api-docs' },
+    ],
+  },
+  { id: 'ci', label: 'CI/CD', href: '/ci' },
+];
+
+export const WithGroupedTabs = meta.story({
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter initialEntries={['/docs']}>
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
+      </MemoryRouter>
+    ),
+  ],
   args: {
-    ...WithCustomActions.args,
+    ...Default.input.args,
+    tabs: groupedTabs,
+  },
+});
+
+export const WithExplicitActiveTab = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
     tabs,
+    activeTabId: 'campaigns',
   },
-  decorators: [withRouter],
-  render: WithCustomActions.render,
-};
+});
 
-export const WithHeaderPage: Story = {
-  args: {
-    ...WithAllOptionsAndTabs.args,
-  },
+export const NonSticky = meta.story({
   decorators: [withRouter],
-  render: args => (
+  render: () => (
     <>
       <Header
-        {...args}
-        customActions={
-          <>
-            <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
-            <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
-            <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
-          </>
-        }
-      />
-      <HeaderPage
-        title="Page title"
-        tabs={tabs2}
+        title="Sticky Page Title"
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
         customActions={<Button>Custom action</Button>}
-        breadcrumbs={breadcrumbs}
       />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the entire header scroll away with the rest of
+            the page content. Line {i + 1}.
+          </p>
+        ))}
+      </Container>
     </>
   ),
-};
+});
 
-export const WithLayout: Story = {
-  decorators: layoutDecorator,
-  render: args => (
-    <>
-      <Header {...args} tabs={tabs} />
-      <HeaderPage
-        title="Page title"
-        tabs={tabs2}
-        customActions={<Button>Custom action</Button>}
-        breadcrumbs={breadcrumbs}
-      />
-    </>
-  ),
-};
-
-export const WithLayoutNoTabs: Story = {
-  decorators: layoutDecorator,
-  render: args => (
-    <>
-      <Header {...args} />
-      <HeaderPage title="Page title" tabs={tabs2} />
-    </>
-  ),
-};
-
-export const WithEverything: Story = {
-  args: {
-    tabs,
-    titleLink: '/',
-  },
-  decorators: layoutDecorator,
-  render: args => (
+export const Sticky = meta.story({
+  decorators: [withRouter],
+  render: () => (
     <>
       <Header
-        {...args}
-        customActions={
-          <>
-            <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
-            <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
-            <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
-          </>
-        }
+        title="Sticky Page Title"
+        sticky
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
       />
-      <HeaderPage
-        title="Page title"
-        tabs={tabs2}
-        customActions={
-          <>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="primary">Primary</Button>
-          </>
-        }
-      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the title bar stick to the top while the tags,
+            description, and metadata scroll away. Line {i + 1}.
+          </p>
+        ))}
+      </Container>
     </>
   ),
-};
+});
 
-export const WithMockedURLCampaigns: Story = {
-  args: {
-    tabs,
-  },
-  render: args => (
-    <MemoryRouter initialEntries={['/campaigns']}>
-      <Header {...args} />
-      <Container>
-        <Text as="p">
-          Current URL is mocked to be: <strong>/campaigns</strong>
-        </Text>
-        <Text as="p">
-          Notice how the "Campaigns" tab is selected (highlighted) because it
-          matches the current path.
-        </Text>
+export const StickyWithLongTitle = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <>
+      <Header
+        title="This is a very long page title that should demonstrate how the sticky Header behaves when the title takes up significantly more horizontal space than usual"
+        sticky
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
+      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the long title bar stick to the top while the
+            tags, description, and metadata scroll away. Line {i + 1}.
+          </p>
+        ))}
       </Container>
-    </MemoryRouter>
+    </>
   ),
-};
+});
 
-export const WithMockedURLIntegrations: Story = {
-  args: {
-    tabs,
-  },
-  render: args => (
-    <MemoryRouter initialEntries={['/integrations']}>
-      <Header {...args} />
-      <Container>
-        <Text as="p">
-          Current URL is mocked to be: <strong>/integrations</strong>
-        </Text>
-        <Text as="p">
-          Notice how the "Integrations" tab is selected (highlighted) because it
-          matches the current path.
-        </Text>
+export const StickyWithBreadcrumbsAndLongTitle = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <>
+      <Header
+        title="This is a very long page title that should demonstrate how sticky breadcrumbs and titles behave when both need to fit in the compact stuck state"
+        sticky
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Very Long Breadcrumb Name', href: '/long-breadcrumb' },
+        ]}
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
+      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the breadcrumb and long title bar stick to the
+            top while the tags, description, and metadata scroll away. Line{' '}
+            {i + 1}.
+          </p>
+        ))}
       </Container>
-    </MemoryRouter>
+    </>
   ),
-};
-
-export const WithMockedURLNoMatch: Story = {
-  args: {
-    tabs,
-  },
-  render: args => (
-    <MemoryRouter initialEntries={['/some-other-page']}>
-      <Header {...args} />
-      <Container>
-        <Text as="p">
-          Current URL is mocked to be: <strong>/some-other-page</strong>
-        </Text>
-        <Text as="p">
-          No tab is selected because the current path doesn't match any tab's
-          href.
-        </Text>
-        <Text as="p">
-          Tabs without href (like "Overview", "Checks", "Tracks") fall back to
-          React Aria's internal state.
-        </Text>
-      </Container>
-    </MemoryRouter>
-  ),
-};
-
-export const WithTabsMatchingStrategies: Story = {
-  args: {
-    title: 'Route Matching Demo',
-    tabs: [
-      {
-        id: 'home',
-        label: 'Home',
-        href: '/home',
-      },
-      {
-        id: 'mentorship',
-        label: 'Mentorship',
-        href: '/mentorship',
-        matchStrategy: 'prefix',
-      },
-      {
-        id: 'catalog',
-        label: 'Catalog',
-        href: '/catalog',
-        matchStrategy: 'prefix',
-      },
-      {
-        id: 'settings',
-        label: 'Settings',
-        href: '/settings',
-      },
-    ],
-  },
-  render: args => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
-      <Header {...args} />
-      <Container>
-        <Text>
-          <strong>Current URL:</strong> /mentorship/events
-        </Text>
-        <br />
-        <Text>
-          Notice how the "Mentorship" tab is active even though we're on a
-          nested route. This is because it uses{' '}
-          <code>matchStrategy="prefix"</code>.
-        </Text>
-        <br />
-        <Text>
-          • <strong>Home</strong>: exact matching (default) - not active
-        </Text>
-        <Text>
-          • <strong>Mentorship</strong>: prefix matching - IS active (URL starts
-          with /mentorship)
-        </Text>
-        <Text>
-          • <strong>Catalog</strong>: prefix matching - not active
-        </Text>
-        <Text>
-          • <strong>Settings</strong>: exact matching (default) - not active
-        </Text>
-      </Container>
-    </MemoryRouter>
-  ),
-};
-
-export const WithTabsExactMatching: Story = {
-  args: {
-    title: 'Exact Matching Demo',
-    tabs: [
-      {
-        id: 'mentorship',
-        label: 'Mentorship',
-        href: '/mentorship',
-      },
-      {
-        id: 'events',
-        label: 'Events',
-        href: '/mentorship/events',
-      },
-      {
-        id: 'mentors',
-        label: 'Mentors',
-        href: '/mentorship/mentors',
-      },
-    ],
-  },
-  render: args => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
-      <Header {...args} />
-      <Container>
-        <Text>
-          <strong>Current URL:</strong> /mentorship/events
-        </Text>
-        <br />
-        <Text>
-          With default exact matching, only the "Events" tab is active because
-          it exactly matches the current URL. The "Mentorship" tab is not active
-          even though the URL is under /mentorship.
-        </Text>
-      </Container>
-    </MemoryRouter>
-  ),
-};
-
-export const WithTabsPrefixMatchingDeep: Story = {
-  args: {
-    title: 'Deep Nesting Demo',
-    tabs: [
-      {
-        id: 'catalog',
-        label: 'Catalog',
-        href: '/catalog',
-        matchStrategy: 'prefix',
-      },
-      {
-        id: 'users',
-        label: 'Users',
-        href: '/catalog/users',
-        matchStrategy: 'prefix',
-      },
-      {
-        id: 'components',
-        label: 'Components',
-        href: '/catalog/components',
-        matchStrategy: 'prefix',
-      },
-    ],
-  },
-  render: args => (
-    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
-      <Header {...args} />
-      <Container>
-        <Text>
-          <strong>Current URL:</strong> /catalog/users/john/details
-        </Text>
-        <br />
-        <Text>Both "Catalog" and "Users" tabs are active because:</Text>
-        <Text>
-          • <strong>Catalog</strong>: URL starts with /catalog
-        </Text>
-        <Text>
-          • <strong>Users</strong>: URL starts with /catalog/users
-        </Text>
-        <Text>
-          • <strong>Components</strong>: not active (URL doesn't start with
-          /catalog/components)
-        </Text>
-        <br />
-        <Text>
-          This demonstrates how prefix matching works with deeply nested routes.
-        </Text>
-      </Container>
-    </MemoryRouter>
-  ),
-};
+});

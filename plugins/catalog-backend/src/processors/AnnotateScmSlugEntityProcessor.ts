@@ -29,14 +29,22 @@ const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 const GITLAB_ACTIONS_ANNOTATION = 'gitlab.com/project-slug';
 const AZURE_ACTIONS_ANNOTATION = 'dev.azure.com/project-repo';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `@backstage-community/plugin-catalog-backend-module-annotate-scm-slug` instead, this will be removed in a future release
+ */
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
-  constructor(
-    private readonly opts: {
-      scmIntegrationRegistry: ScmIntegrationRegistry;
-      kinds?: string[];
-    },
-  ) {}
+  private readonly opts: {
+    scmIntegrationRegistry: ScmIntegrationRegistry;
+    kinds?: string[];
+  };
+
+  constructor(opts: {
+    scmIntegrationRegistry: ScmIntegrationRegistry;
+    kinds?: string[];
+  }) {
+    this.opts = opts;
+  }
 
   getProcessorName(): string {
     return 'AnnotateScmSlugEntityProcessor';

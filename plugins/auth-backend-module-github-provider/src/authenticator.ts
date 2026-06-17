@@ -22,10 +22,18 @@ import {
   PassportProfile,
 } from '@backstage/plugin-auth-node';
 
+/** @public */
+export type GithubProfile = PassportProfile & {
+  nodeId?: string;
+};
+
 const ACCESS_TOKEN_PREFIX = 'access-token-v2.';
 
 /** @public */
-export const githubAuthenticator = createOAuthAuthenticator({
+export const githubAuthenticator = createOAuthAuthenticator<
+  PassportOAuthAuthenticatorHelper,
+  GithubProfile
+>({
   defaultProfileTransform:
     PassportOAuthAuthenticatorHelper.defaultProfileTransform,
   scopes: {
@@ -90,7 +98,7 @@ export const githubAuthenticator = createOAuthAuthenticator({
     if (!session.refreshToken && !session.expiresInSeconds) {
       session.refreshToken = ACCESS_TOKEN_PREFIX + session.accessToken;
     }
-    return { fullProfile, session };
+    return { fullProfile: fullProfile as GithubProfile, session };
   },
 
   async refresh(input, helper) {
@@ -115,7 +123,7 @@ export const githubAuthenticator = createOAuthAuthenticator({
         });
 
       return {
-        fullProfile,
+        fullProfile: fullProfile as GithubProfile,
         session: {
           accessToken,
           tokenType: 'bearer',

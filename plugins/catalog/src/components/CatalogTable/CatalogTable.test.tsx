@@ -126,7 +126,8 @@ describe('CatalogTable component', () => {
         },
       },
     );
-    expect(screen.getByText(/Owned Components \(3\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Owned Components/)).toBeInTheDocument();
+    expect(screen.getByText(/\(3\)/)).toBeInTheDocument();
     expect(screen.getByText(/component1/)).toBeInTheDocument();
     expect(screen.getByText(/component2/)).toBeInTheDocument();
     expect(screen.getByText(/component3/)).toBeInTheDocument();
@@ -294,11 +295,15 @@ describe('CatalogTable component', () => {
   ])(
     'should render correct columns with kind filter $kind',
     async ({ kind, expectedColumns }) => {
+      const kindEntities = entities.map(e => ({
+        ...e,
+        kind: kind ?? e.kind,
+      }));
       await renderInTestApp(
         <ApiProvider apis={mockApis}>
           <MockEntityListContextProvider
             value={{
-              entities,
+              entities: kindEntities,
               filters: {
                 kind: kind
                   ? new EntityKindFilter(kind.toLocaleLowerCase('en-US'), kind)

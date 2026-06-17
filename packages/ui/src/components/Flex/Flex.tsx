@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-import { createElement, forwardRef } from 'react';
-import { FlexProps } from './types';
-import clsx from 'clsx';
-import { flexPropDefs } from './Flex.props';
-import { extractProps } from '../../utils/extractProps';
-import { gapPropDefs } from '../../props/gap-props';
-import { spacingPropDefs } from '../../props/spacing.props';
-import { useStyles } from '../../hooks/useStyles';
+import { forwardRef } from 'react';
+import type { FlexProps } from './types';
+import { useDefinition } from '../../hooks/useDefinition';
+import { FlexDefinition } from './definition';
 
-/** @public */
+/**
+ * A flexbox layout container with props for controlling gap, alignment, justification, and direction.
+ *
+ * @public
+ */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  const propDefs = {
-    ...gapPropDefs,
-    ...flexPropDefs,
-    ...spacingPropDefs,
-  };
+  const { ownProps, dataAttributes, utilityStyle, restProps } = useDefinition(
+    FlexDefinition,
+    { gap: '4', ...props },
+  );
+  const { classes, childrenWithBgProvider } = ownProps;
 
-  const { classNames } = useStyles('Flex');
-  const { className, style } = extractProps(props, propDefs);
-
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.root, className),
-    style,
-    children: props.children,
-  });
+  return (
+    <div
+      ref={ref}
+      className={classes.root}
+      style={{ ...utilityStyle, ...ownProps.style }}
+      {...dataAttributes}
+      {...restProps}
+    >
+      {childrenWithBgProvider}
+    </div>
+  );
 });
+
+Flex.displayName = 'Flex';

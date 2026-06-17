@@ -1,5 +1,432 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-techdocs-node@1.15.1
+
+## 2.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/plugin-techdocs-node@1.15.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 2.2.0
+
+### Minor Changes
+
+- 5ef8d16: Add support for disabling external font downloads via app-config option `techdocs.generator.mkdocs.disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-techdocs-node@1.15.0
+  - @backstage/catalog-client@1.15.1
+  - @backstage/config@1.3.8
+
+## 2.2.0-next.1
+
+### Minor Changes
+
+- 5ef8d16: Add support for disabling external font downloads via app-config option `techdocs.generator.mkdocs.disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.2-next.1
+  - @backstage/plugin-techdocs-node@1.15.0-next.1
+
+## 2.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-client@1.15.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/plugin-techdocs-node@1.14.6-next.0
+  - @backstage/types@1.2.2
+
+## 2.1.7
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 5e32f77: Migrated internal usage of the deprecated `catalogServiceRef` from `@backstage/plugin-catalog-node/alpha` to the stable `catalogServiceRef` from `@backstage/plugin-catalog-node`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/plugin-techdocs-node@1.14.5
+  - @backstage/catalog-client@1.15.0
+  - @backstage/integration@2.0.1
+  - @backstage/config@1.3.7
+
+## 2.1.7-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 5e32f77: Migrated internal usage of the deprecated `catalogServiceRef` from `@backstage/plugin-catalog-node/alpha` to the stable `catalogServiceRef` from `@backstage/plugin-catalog-node`.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/plugin-techdocs-node@1.14.5-next.2
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-client@1.14.1-next.0
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+
+## 2.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-techdocs-node@1.14.5-next.1
+
+## 2.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/plugin-techdocs-node@1.14.5-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@2.0.0
+  - @backstage/types@1.2.2
+
+## 2.1.6
+
+### Patch Changes
+
+- cb7c6b1: Added `techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys` configuration option to explicitly bypass MkDocs configuration key restrictions. This enables support for additional MkDocs configuration keys beyond the default safe allow list, such as the `hooks` key which some MkDocs plugins require.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/plugin-techdocs-node@1.14.4
+  - @backstage/integration@2.0.0
+  - @backstage/plugin-catalog-node@2.1.0
+  - @backstage/catalog-model@1.7.7
+
+## 2.1.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-techdocs-node@1.14.4-next.2
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+
+## 2.1.6-next.1
+
+### Patch Changes
+
+- cb7c6b1: Added `techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys` configuration option to explicitly bypass MkDocs configuration key restrictions. This enables support for additional MkDocs configuration keys beyond the default safe allow list, such as the `hooks` key which some MkDocs plugins require.
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/plugin-techdocs-node@1.14.3-next.1
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 2.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-techdocs-node@1.14.3-next.0
+
+## 2.1.5
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-techdocs-node@1.14.2
+  - @backstage/catalog-client@1.13.0
+
+## 2.1.5-next.2
+
+### Patch Changes
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-techdocs-node@1.14.2-next.1
+
+## 2.1.5-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/plugin-techdocs-node@1.14.2-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+
+## 2.1.5-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-techdocs-node@1.14.1-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 2.1.4
+
+### Patch Changes
+
+- b6ff2a5: Some AWS `publisher` config options such as `region`, `endpoint`, `accountId` are now marked as `@visibility backend` instead of `secret`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-techdocs-node@1.14.0
+
+## 2.1.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+
+## 2.1.4-next.1
+
+### Patch Changes
+
+- b6ff2a5: Some AWS `publisher` config options such as `region`, `endpoint`, `accountId` are now marked as `@visibility backend` instead of `secret`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.1
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-techdocs-node@1.13.11-next.0
+
+## 2.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.19.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-techdocs-node@1.13.10
+
+## 2.1.3
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 2bae83a: Corrected `ErrorCallback` type to work with Node 22 types
+- 592361e: The `techdocs` config is now marked as optional.
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/plugin-techdocs-node@1.13.10
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 2.1.3-next.2
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 2bae83a: Corrected `ErrorCallback` type to work with Node 22 types
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/plugin-techdocs-node@1.13.10-next.1
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+
+## 2.1.3-next.1
+
+### Patch Changes
+
+- 592361e: The `techdocs` config is now marked as optional.
+
+## 2.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/plugin-techdocs-node@1.13.10-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 2.1.2
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-techdocs-node@1.13.9
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/catalog-client@1.12.1
+
+## 2.1.2-next.1
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-techdocs-node@1.13.9-next.1
+
+## 2.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-techdocs-node@1.13.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.8-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 2.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/integration@1.18.1
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-search-backend-module-techdocs@0.4.7
+  - @backstage/plugin-techdocs-node@1.13.8
+
+## 2.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.7-next.1
+  - @backstage/plugin-techdocs-node@1.13.8-next.1
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 2.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-techdocs-node@1.13.8-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-search-backend-module-techdocs@0.4.7-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+
 ## 2.1.0
 
 ### Minor Changes

@@ -1,5 +1,285 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/core-plugin-api@1.12.7
+
+## 0.5.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/core-plugin-api@1.12.7-next.0
+
+## 0.5.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+
+## 0.5.19
+
+### Patch Changes
+
+- e68cb8a: Added optional clustersCacheTtlMs option to KubernetesBackendClient that caches getClusters() responses for the specified duration, avoiding repeated /clusters requests when multiple proxy calls resolve cluster auth in quick succession.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/core-components@0.18.10
+  - @backstage/errors@1.3.1
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-kubernetes-common@0.9.12
+
+## 0.5.19-next.1
+
+### Patch Changes
+
+- e68cb8a: Added optional clustersCacheTtlMs option to KubernetesBackendClient that caches getClusters() responses for the specified duration, avoiding repeated /clusters requests when multiple proxy calls resolve cluster auth in quick succession.
+
+## 0.5.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.12-next.0
+
+## 0.5.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/core-components@0.18.9
+  - @backstage/core-plugin-api@1.12.5
+  - @backstage/plugin-kubernetes-common@0.9.11
+
+## 0.5.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/plugin-kubernetes-common@0.9.11-next.0
+
+## 0.5.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.10
+
+## 0.5.17
+
+### Patch Changes
+
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/catalog-model@1.7.7
+
+## 0.5.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.10
+
+## 0.5.16
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- ce3639c: Add PersistentVolume and PersistentVolumeClaims Rendering
+- d56542c: Updated dependency `@xterm/addon-attach` to `^0.12.0`.
+  Updated dependency `@xterm/addon-fit` to `^0.11.0`.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/core-components@0.18.7
+  - @backstage/plugin-kubernetes-common@0.9.10
+  - @backstage/core-plugin-api@1.12.3
+
+## 0.5.16-next.2
+
+### Patch Changes
+
+- d56542c: Updated dependency `@xterm/addon-attach` to `^0.12.0`.
+  Updated dependency `@xterm/addon-fit` to `^0.11.0`.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+
+## 0.5.16-next.1
+
+### Patch Changes
+
+- ce3639c: Add PersistentVolume and PersistentVolumeClaims Rendering
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.10-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 0.5.16-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.10-next.0
+
+## 0.5.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5
+
+## 0.5.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.5.14
+
+### Patch Changes
+
+- f966a85: Enabled a pod terminal at GKE
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+- f15d5f1: add missing i18n support for kubernetes and kubernetes-react
+- Updated dependencies
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-kubernetes-common@0.9.9
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.5.14-next.1
+
+### Patch Changes
+
+- f966a85: Enabled a pod terminal at GKE
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.1
+  - @backstage/plugin-kubernetes-common@0.9.9-next.0
+
+## 0.5.14-next.0
+
+### Patch Changes
+
+- f15d5f1: add missing i18n support for kubernetes and kubernetes-react
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.8
+
+## 0.5.13
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-components@0.18.3
+  - @backstage/plugin-kubernetes-common@0.9.8
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/catalog-model@1.7.6
+
+## 0.5.13-next.1
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.8-next.1
+  - @backstage/core-components@0.18.3-next.2
+
+## 0.5.13-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.8-next.0
+
+## 0.5.12
+
+### Patch Changes
+
+- ac405f2: The configmaps added to be rendered
+- f7a4144: Fixes calculation of CPU utilization in the PodTable
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/plugin-kubernetes-common@0.9.7
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.5.12-next.2
+
+### Patch Changes
+
+- ac405f2: The configmaps added to be rendered
+- f7a4144: Fixes calculation of CPU utilization in the PodTable
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+
+## 0.5.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-kubernetes-common@0.9.7-next.1
+
+## 0.5.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/plugin-kubernetes-common@0.9.7-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.5.11
 
 ### Patch Changes

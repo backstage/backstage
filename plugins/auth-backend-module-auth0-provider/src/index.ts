@@ -20,5 +20,5 @@
  * @packageDocumentation
  */
 
-export { auth0Authenticator } from './authenticator';
+export { auth0Authenticator, createAuth0Authenticator } from './authenticator';
 export { authModuleAuth0Provider as default } from './module';

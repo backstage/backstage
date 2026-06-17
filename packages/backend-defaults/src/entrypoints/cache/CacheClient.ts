@@ -20,7 +20,7 @@ import {
   CacheServiceSetOptions,
 } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import Keyv from 'keyv';
 import { ttlToMilliseconds } from './types';
 

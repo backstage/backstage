@@ -1,5 +1,162 @@
 # @backstage/config-loader
 
+## 1.10.12
+
+### Patch Changes
+
+- 02c4e8a: Removed unused `json-schema` runtime dependency. The package was only used for TypeScript types from `@types/json-schema`; affected imports have been converted to `import type` to allow safe removal.
+
+## 1.10.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/cli-common@0.2.2
+  - @backstage/config@1.3.8
+
+## 1.10.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/cli-common@0.2.2-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/types@1.2.2
+
+## 1.10.10
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/cli-common@0.2.1
+  - @backstage/config@1.3.7
+
+## 1.10.10-next.1
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/config@1.3.7-next.0
+
+## 1.10.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.9
+
+### Patch Changes
+
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0
+
+## 1.10.9-next.0
+
+### Patch Changes
+
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.8
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/cli-common@0.1.18
+
+## 1.10.8-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/cli-common@0.1.18-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.7
+
+### Patch Changes
+
+- 741c47a: Updated dependency `typescript-json-schema` to `^0.67.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
+## 1.10.7-next.1
+
+### Patch Changes
+
+- 741c47a: Updated dependency `typescript-json-schema` to `^0.67.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.6
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6
+
+## 1.10.6-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.5
+
+### Patch Changes
+
+- b45b094: Allow colon to be used as config key.
+- Updated dependencies
+  - @backstage/config@1.3.5
+
+## 1.10.4-next.0
+
+### Patch Changes
+
+- b45b094: Allow colon to be used as config key.
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
 ## 1.10.3
 
 ### Patch Changes

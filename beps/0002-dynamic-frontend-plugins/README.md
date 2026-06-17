@@ -301,7 +301,7 @@ An example of [integration with scalprum](https://github.com/backstage/backstage
 
 **Dynamic Feature configuration**
 
-The dynamic remote loading can be added directly into the [`createApp`](https://backstage.io/docs/reference/frontend-defaults.createapp) function.
+The dynamic remote loading can be added directly into the [`createApp`](https://backstage.io/api/stable/functions/_backstage_frontend-defaults.createApp.html) function.
 
 The current `feature` type can be expanded with a `DynamicFrontendFeature` type:
 
@@ -351,7 +351,7 @@ const scalprum = initialize({
 });
 ```
 
-Because the [`appLoader`](https://backstage.io/docs/reference/frontend-defaults.createapp) is already async, it is a perfect place to load the plugin registry and init the dynamic plugins.
+Because the [`appLoader`](https://backstage.io/api/stable/functions/_backstage_frontend-defaults.createApp.html) is already async, it is a perfect place to load the plugin registry and init the dynamic plugins.
 
 Initializing the dynamic feature is just a case of mapping the `DynamicFrontendFeature` to `FrontendFeature` via Scalprum:
 
@@ -633,7 +633,7 @@ Chunk optimization should be disabled for the initial implementation.
 
 The `publicPath` output config in webpack is a mandatory attribute for federated modules. However, at build time, it is impossible to guess where the assets are served from. From origin to the pathname, this is specific to each installation.
 
-We can leverage the [auto](https://webpack.js.org/guides/public-path/#automatic-publicpath) option. However this means that some manifest transformation has to happen at runtime when entry scripts are loaded into the browser. More on that in the [Plugin manifest](#plugin-manifest), [CDN Plugin](#dynamic-assets-server-plugin), and [Plugin loading](#plugin-loading) sections.
+We can leverage the [auto](https://webpack.js.org/guides/public-path/#automatic-publicpath) option. However this means that some manifest transformation has to happen at runtime when entry scripts are loaded into the browser. More on that in the [Plugin manifest](#plugin-manifest), [CDN Plugin](#dynamic-assets-server), and [Plugin loading](#plugin-loading) sections.
 
 #### Sample webpack configuration
 

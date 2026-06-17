@@ -171,6 +171,9 @@ describe('SearchBar', () => {
 
     expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
 
     jest.runAllTimers();
@@ -203,6 +206,9 @@ describe('SearchBar', () => {
 
     expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: '' }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
   });
 
@@ -254,6 +260,9 @@ describe('SearchBar', () => {
     await waitFor(() =>
       expect(searchApiMock.query).not.toHaveBeenLastCalledWith(
         expect.objectContaining({ term: value }),
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+        }),
       ),
     );
 
@@ -265,6 +274,9 @@ describe('SearchBar', () => {
 
     expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
 
     jest.runAllTimers();

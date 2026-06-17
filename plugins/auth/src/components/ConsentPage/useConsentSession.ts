@@ -23,20 +23,14 @@ import {
 import { useCallback } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
-import { isError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 
 interface Session {
   id: string;
   clientName?: string;
   clientId: string;
   redirectUri: string;
-  scopes?: string[];
-  responseType?: string;
-  state?: string;
-  nonce?: string;
-  codeChallenge?: string;
-  codeChallengeMethod?: string;
-  expiresAt?: string;
+  scope?: string;
 }
 
 type ConsentState =
@@ -111,9 +105,7 @@ export const useConsentSession = (opts: { sessionId?: string }) => {
     if (sessionState.error) {
       return {
         status: 'error',
-        error: isError(sessionState.error)
-          ? sessionState.error.message
-          : 'Failed to load consent request',
+        error: toError(sessionState.error).message,
       };
     }
     if (sessionState.value) {
@@ -133,7 +125,7 @@ export const useConsentSession = (opts: { sessionId?: string }) => {
           await handleActionInternal(action, state.session);
         } catch (err) {
           alertApi.post({
-            message: isError(err) ? err.message : `Failed to ${action} consent`,
+            message: toError(err).message,
             severity: 'error',
           });
         }

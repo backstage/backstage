@@ -16,7 +16,7 @@
 import { AnyJWK, KeyStore, StoredKey } from './types';
 import { exportJWK, importPKCS8, importSPKI, JWK } from 'jose';
 import { KeyLike } from 'jose';
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import { Config } from '@backstage/config';
 
 export type KeyPair = {

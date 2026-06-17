@@ -18,7 +18,7 @@ import yaml from 'yaml';
 
 export const examples: TemplateExample[] = [
   {
-    description: 'Creating a group at the top level',
+    description: 'Creating a group at the top level, with a description',
     example: yaml.stringify({
       steps: [
         {
@@ -28,6 +28,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com',
             path: ['group1'],
+            description: 'This is a top-level group',
           },
         },
       ],

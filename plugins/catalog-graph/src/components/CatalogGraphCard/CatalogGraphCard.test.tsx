@@ -241,7 +241,7 @@ describe('<CatalogGraphCard/>', () => {
     expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'click',
-        subject: 'b:d/c',
+        subject: 'd/c',
         attributes: {
           to: '/entity/{kind}/{namespace}/{name}',
         },

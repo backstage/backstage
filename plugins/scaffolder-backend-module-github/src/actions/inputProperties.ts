@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z as zod } from 'zod';
+import { z as zod } from 'zod/v3';
 
 const repoUrl = (z: typeof zod) =>
   z.string({
@@ -421,50 +421,59 @@ const autoInit = (z: typeof zod) =>
     .default(false)
     .optional();
 
+const workflowAccess = (z: typeof zod) =>
+  z
+    .enum(['none', 'organization', 'user'], {
+      description:
+        'Level of access for workflows outside of the repository. Default is "none".',
+    })
+    .optional();
+
 export {
-  repoUrl,
-  description,
-  homepage,
   access,
-  requireCodeOwnerReviews,
-  dismissStaleReviews,
-  requiredStatusCheckContexts,
-  requireBranchesToBeUpToDate,
-  requiredConversationResolution,
-  requireLastPushApproval,
-  repoVisibility,
-  deleteBranchOnMerge,
-  gitAuthorName,
-  gitAuthorEmail,
+  allowAutoMerge,
   allowMergeCommit,
+  allowRebaseMerge,
   allowSquashMerge,
   allowUpdateBranch,
-  squashMergeCommitTitle,
-  squashMergeCommitMessage,
-  allowRebaseMerge,
-  allowAutoMerge,
+  autoInit,
+  blockCreations,
+  branch,
+  bypassPullRequestAllowances,
   collaborators,
+  customProperties,
+  defaultBranch,
+  deleteBranchOnMerge,
+  description,
+  dismissStaleReviews,
+  gitAuthorEmail,
+  gitAuthorName,
+  gitCommitMessage,
+  hasIssues,
   hasProjects,
   hasWiki,
-  hasIssues,
-  token,
-  topics,
-  defaultBranch,
-  gitCommitMessage,
-  sourcePath,
-  repoVariables,
-  secrets,
+  homepage,
   oidcCustomization,
-  customProperties,
-  subscribe,
-  requiredApprovingReviewCount,
-  restrictions,
-  requiredCommitSigning,
-  requiredLinearHistory,
   protectDefaultBranch,
   protectEnforceAdmins,
-  bypassPullRequestAllowances,
-  branch,
-  blockCreations,
-  autoInit,
+  repoUrl,
+  repoVariables,
+  repoVisibility,
+  requireBranchesToBeUpToDate,
+  requireCodeOwnerReviews,
+  requiredApprovingReviewCount,
+  requiredCommitSigning,
+  requiredConversationResolution,
+  requiredLinearHistory,
+  requiredStatusCheckContexts,
+  requireLastPushApproval,
+  restrictions,
+  secrets,
+  sourcePath,
+  squashMergeCommitMessage,
+  squashMergeCommitTitle,
+  subscribe,
+  token,
+  topics,
+  workflowAccess,
 };

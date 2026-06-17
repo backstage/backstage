@@ -1,0 +1,274 @@
+{
+  "persistentVolumes": [
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pv-aws-ebs",
+        "uid": "1ea073bc-7a4b-4b99-8321-0305bce85568",
+        "resourceVersion": "1362732552",
+        "creationTimestamp": "2021-07-16T22:39:58Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "capacity": {
+          "storage": "100Gi"
+        },
+        "accessModes": ["ReadWriteOnce"],
+        "persistentVolumeReclaimPolicy": "Delete",
+        "storageClassName": "gp3",
+        "csi": {
+          "driver": "ebs.csi.aws.com",
+          "volumeHandle": "vol-1234567890abcdef0"
+        }
+      },
+      "status": {
+        "phase": "Bound"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pv-aws-efs",
+        "uid": "2fb184cd-8b5c-5c10-9432-1416cdf96679",
+        "resourceVersion": "1362732553",
+        "creationTimestamp": "2021-07-17T10:20:15Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "capacity": {
+          "storage": "5Ti"
+        },
+        "accessModes": ["ReadWriteMany"],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "efs-sc",
+        "csi": {
+          "driver": "efs.csi.aws.com",
+          "volumeHandle": "fs-0123456789abcdef0"
+        }
+      },
+      "status": {
+        "phase": "Available"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pv-aws-s3",
+        "uid": "3gc295de-9c6d-6d21-a543-2527def07790",
+        "resourceVersion": "1362732554",
+        "creationTimestamp": "2021-07-18T08:45:30Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "capacity": {
+          "storage": "10Ti"
+        },
+        "accessModes": ["ReadWriteMany"],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "s3-csi",
+        "csi": {
+          "driver": "s3.csi.aws.com",
+          "volumeHandle": "my-s3-bucket"
+        }
+      },
+      "status": {
+        "phase": "Bound"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pv-gcp-pd",
+        "uid": "4hd3a6ef-ad7e-7e32-b654-3638eff18801",
+        "resourceVersion": "1362732555",
+        "creationTimestamp": "2021-07-18T15:30:45Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "capacity": {
+          "storage": "200Gi"
+        },
+        "accessModes": ["ReadWriteOnce"],
+        "persistentVolumeReclaimPolicy": "Delete",
+        "storageClassName": "ssd",
+        "csi": {
+          "driver": "pd.csi.storage.gke.io",
+          "volumeHandle": "projects/my-project/zones/us-central1-a/disks/my-disk"
+        }
+      },
+      "status": {
+        "phase": "Bound"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pv-gcp-filestore",
+        "uid": "5ie4b7f0-be8f-8f43-c765-4749f0029912",
+        "resourceVersion": "1362732556",
+        "creationTimestamp": "2021-07-19T09:15:30Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "capacity": {
+          "storage": "1Ti"
+        },
+        "accessModes": ["ReadWriteMany"],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "filestore-csi",
+        "csi": {
+          "driver": "filestore.csi.storage.gke.io",
+          "volumeHandle": "projects/my-project/locations/us-central1-c/instances/my-filestore"
+        }
+      },
+      "status": {
+        "phase": "Available"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pv-gcp-gcsfuse",
+        "uid": "6jf5c8g1-cf90-9054-d876-5850g1130a23",
+        "resourceVersion": "1362732557",
+        "creationTimestamp": "2021-07-20T12:30:45Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "capacity": {
+          "storage": "50Ti"
+        },
+        "accessModes": ["ReadWriteMany"],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "gcsfuse",
+        "csi": {
+          "driver": "gcsfuse.csi.storage.gke.io",
+          "volumeHandle": "my-gcs-bucket"
+        }
+      },
+      "status": {
+        "phase": "Available"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pv-azure-disk",
+        "uid": "7kg6d9h2-dg01-0165-e987-6961h2241b34",
+        "resourceVersion": "1362732558",
+        "creationTimestamp": "2021-07-20T14:45:20Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "capacity": {
+          "storage": "128Gi"
+        },
+        "accessModes": ["ReadWriteOnce"],
+        "persistentVolumeReclaimPolicy": "Delete",
+        "storageClassName": "managed-premium",
+        "csi": {
+          "driver": "disk.csi.azure.com",
+          "volumeHandle": "/subscriptions/subscription-id/resourceGroups/rg/providers/Microsoft.Compute/disks/my-disk"
+        }
+      },
+      "status": {
+        "phase": "Bound"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pv-azure-file",
+        "uid": "8lh7e0i3-eh12-1276-f098-7072i3352c45",
+        "resourceVersion": "1362732559",
+        "creationTimestamp": "2021-07-21T11:20:10Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "capacity": {
+          "storage": "100Gi"
+        },
+        "accessModes": ["ReadWriteMany"],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "azurefile",
+        "csi": {
+          "driver": "file.csi.azure.com",
+          "volumeHandle": "unique-volumeid"
+        }
+      },
+      "status": {
+        "phase": "Available"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pv-azure-blob",
+        "uid": "9mi8f1j4-fi23-2387-g109-8183j4463d56",
+        "resourceVersion": "1362732560",
+        "creationTimestamp": "2021-07-22T16:30:25Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "capacity": {
+          "storage": "500Gi"
+        },
+        "accessModes": ["ReadWriteMany"],
+        "persistentVolumeReclaimPolicy": "Delete",
+        "storageClassName": "azureblob",
+        "csi": {
+          "driver": "blob.csi.azure.com",
+          "volumeHandle": "my-storage-account/my-container"
+        }
+      },
+      "status": {
+        "phase": "Bound"
+      }
+    }
+  ]
+}

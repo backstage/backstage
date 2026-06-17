@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name               | Location     | Severity |
-| :----------------- | :----------- | :------- |
-| @types/json-schema | packages/catalog-model/package.json | error    |
+| Name               | Location          | Severity |
+| :----------------- | :---------------- | :------- |
+| @types/json-schema | package.json:60:6 | error    |
 

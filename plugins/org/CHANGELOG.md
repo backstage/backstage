@@ -1,5 +1,463 @@
 # @backstage/plugin-org
 
+## 0.7.5
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+
+## 0.7.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/ui@0.15.1-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.1
+
+## 0.7.5-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.0.1-next.0
+  - @backstage/core-components@0.18.11-next.0
+
+## 0.7.4
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 085133f: The `zod` dependency has been bumped from `^3.25.76 || ^4.0.0` to `^4.0.0`, since `configSchema` requires the full Zod v4 package for JSON Schema support.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-catalog-react@3.0.0
+  - @backstage/plugin-catalog-common@1.1.10
+
+## 0.7.4-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+  - @backstage/plugin-catalog-react@2.1.5-next.1
+
+## 0.7.4-next.0
+
+### Patch Changes
+
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 085133f: The `zod` dependency has been bumped from `^3.25.76 || ^4.0.0` to `^4.0.0`, since `configSchema` requires the full Zod v4 package for JSON Schema support.
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/plugin-catalog-react@2.1.5-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/plugin-catalog-common@1.1.10-next.0
+
+## 0.7.1
+
+### Patch Changes
+
+- 64c9a20: The `MembersListCard` now prefers `metadata.title` over `metadata.name` when displaying the group membership card, similarly to the rest of the group profile cards
+- 87eb31c: Fixed `GroupProfileCard` and `UserProfileCard` content overflowing on narrow screens.
+- d156cf4: Added `title` and `icon` to the new frontend system plugin definition.
+- f1f59b1: Replaced deprecated `humanizeEntityRef` usage with the Catalog Presentation API.
+- Updated dependencies
+  - @backstage/ui@0.14.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-react@2.1.2
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/core-plugin-api@1.12.5
+  - @backstage/plugin-catalog-common@1.1.9
+
+## 0.7.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+  - @backstage/plugin-catalog-common@1.1.9-next.0
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- 87eb31c: Fixed `GroupProfileCard` and `UserProfileCard` content overflowing on narrow screens.
+- d156cf4: Added `title` and `icon` to the new frontend system plugin definition.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/plugin-catalog-react@2.1.1-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 0.7.0
+
+### Minor Changes
+
+- d14b6e0: **BREAKING**: Migrated `MembersListCard`, `OwnershipCard`, and `CatalogGraphCard` to use BUI card primitives via `EntityInfoCard`.
+
+  - `OwnershipCard`: Removed `variant` and `maxScrollHeight` props. Card height and scrolling are now controlled by the parent container — the card fills its container and the body scrolls automatically when content overflows.
+  - `CatalogGraphCard`: Removed `variant` prop.
+  - `MembersListCard`: Translation keys `subtitle`, `paginationLabel`, `aggregateMembersToggle.directMembers`, `aggregateMembersToggle.aggregatedMembers`, and `aggregateMembersToggle.ariaLabel` have been removed. The `title` key now includes `{{groupName}}`. New keys added: `cardLabel`, `noSearchResult`, `aggregateMembersToggle.label`.
+  - `OwnershipCard`: Translation keys `aggregateRelationsToggle.directRelations`, `aggregateRelationsToggle.aggregatedRelations`, and `aggregateRelationsToggle.ariaLabel` have been removed. New key added: `aggregateRelationsToggle.label`.
+  - Removed `MemberComponentClassKey` export, and `root` and `cardContent` from `MembersListCardClassKey`, `card` from `OwnershipCardClassKey`, and `card` from `CatalogGraphCardClassKey`.
+
+  **Migration:**
+
+  ```diff
+  - <EntityOwnershipCard variant="gridItem" />
+  + <EntityOwnershipCard />
+  ```
+
+  ```diff
+  - <EntityCatalogGraphCard variant="gridItem" height={400} />
+  + <EntityCatalogGraphCard height={400} />
+  ```
+
+- 5fc35bb: Migrated `EntityAboutCard`, `EntityLinksCard`, `EntityLabelsCard`, `GroupProfileCard`, and `UserProfileCard` from MUI/InfoCard to use the new BUI card layout and BUI components where possible.
+
+  **BREAKING**: Removed `variant` prop from EntityAboutCard, EntityUserProfileCard, EntityGroupProfileCard, EntityLabelsCard, EntityLinksCard. Removed `gridSizes` prop from `AboutField`.
+
+  **Migration:**
+
+  Simply delete the obsolete `variant` and `gridSizes` props, e.g:
+
+  ```diff
+  -      <EntityAboutCard variant="gridItem" />
+  +      <EntityAboutCard />
+  ```
+
+  ```diff
+  -      <AboutField label="Owner" gridSizes={{ xs: 12, sm: 6, lg: 4 }} />
+  +      <AboutField label="Owner" />
+  ```
+
+### Patch Changes
+
+- 538c985: Updated installation documentation to use feature discovery as the default.
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.0
+  - @backstage/ui@0.13.0
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/catalog-model@1.7.7
+
+## 0.7.0-next.2
+
+### Minor Changes
+
+- d14b6e0: **BREAKING**: Migrated `MembersListCard`, `OwnershipCard`, and `CatalogGraphCard` to use BUI card primitives via `EntityInfoCard`.
+
+  - `OwnershipCard`: Removed `variant` and `maxScrollHeight` props. Card height and scrolling are now controlled by the parent container — the card fills its container and the body scrolls automatically when content overflows.
+  - `CatalogGraphCard`: Removed `variant` prop.
+  - `MembersListCard`: Translation keys `subtitle`, `paginationLabel`, `aggregateMembersToggle.directMembers`, `aggregateMembersToggle.aggregatedMembers`, and `aggregateMembersToggle.ariaLabel` have been removed. The `title` key now includes `{{groupName}}`. New keys added: `cardLabel`, `noSearchResult`, `aggregateMembersToggle.label`.
+  - `OwnershipCard`: Translation keys `aggregateRelationsToggle.directRelations`, `aggregateRelationsToggle.aggregatedRelations`, and `aggregateRelationsToggle.ariaLabel` have been removed. New key added: `aggregateRelationsToggle.label`.
+  - Removed `MemberComponentClassKey` export, and `root` and `cardContent` from `MembersListCardClassKey`, `card` from `OwnershipCardClassKey`, and `card` from `CatalogGraphCardClassKey`.
+
+  **Migration:**
+
+  ```diff
+  - <EntityOwnershipCard variant="gridItem" />
+  + <EntityOwnershipCard />
+  ```
+
+  ```diff
+  - <EntityCatalogGraphCard variant="gridItem" height={400} />
+  + <EntityCatalogGraphCard height={400} />
+  ```
+
+- 5fc35bb: Migrated `EntityAboutCard`, `EntityLinksCard`, `EntityLabelsCard`, `GroupProfileCard`, and `UserProfileCard` from MUI/InfoCard to use the new BUI card layout and BUI components where possible.
+
+  **BREAKING**: Removed `variant` prop from EntityAboutCard, EntityUserProfileCard, EntityGroupProfileCard, EntityLabelsCard, EntityLinksCard. Removed `gridSizes` prop from `AboutField`.
+
+  **Migration:**
+
+  Simply delete the obsolete `variant` and `gridSizes` props, e.g:
+
+  ```diff
+  -      <EntityAboutCard variant="gridItem" />
+  +      <EntityAboutCard />
+  ```
+
+  ```diff
+  -      <AboutField label="Owner" gridSizes={{ xs: 12, sm: 6, lg: 4 }} />
+  +      <AboutField label="Owner" />
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/core-components@0.18.8-next.1
+
+## 0.6.50-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 0.6.50-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 0.6.49
+
+### Patch Changes
+
+- ac9bead: Added `@backstage/frontend-test-utils` dev dependency.
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 4183614: Updated usage of deprecated APIs in the new frontend system.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 1dee6de: Add search functionality in MembersListCard
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 0.6.49-next.2
+
+### Patch Changes
+
+- ac9bead: Added `@backstage/frontend-test-utils` dev dependency.
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 4183614: Updated usage of deprecated APIs in the new frontend system.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+
+## 0.6.49-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 0.6.49-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+
+## 0.6.48
+
+### Patch Changes
+
+- db3cfd7: Adds the Resource kind to the `useGetEntities` fallback so that Resources are included by default when no specific kinds are provided in the group ownership card.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+
+## 0.6.48-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+
+## 0.6.48-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.6.47
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.6.47-next.1
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.2
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.6.47-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-react@1.21.4-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.6.46
+
+### Patch Changes
+
+- 6db9e7e: Improved responsiveness of GroupProfileCard component
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.6.46-next.1
+
+### Patch Changes
+
+- 6db9e7e: Improved responsiveness of GroupProfileCard component
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.2
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
+## 0.6.46-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+
+## 0.6.45
+
+### Patch Changes
+
+- 8b7351f: Add `initialRelationAggregation` and `showAggregateMembersToggle` options to `EntityMembersListCard` as well to `EntityOwnershipCard`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-catalog-common@1.1.6
+
+## 0.6.45-next.2
+
+### Patch Changes
+
+- 8b7351f: Add `initialRelationAggregation` and `showAggregateMembersToggle` options to `EntityMembersListCard` as well to `EntityOwnershipCard`
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+
+## 0.6.45-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+
+## 0.6.45-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/plugin-catalog-common@1.1.5
+
 ## 0.6.44
 
 ### Patch Changes

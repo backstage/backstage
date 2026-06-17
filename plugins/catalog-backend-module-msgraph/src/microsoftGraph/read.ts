@@ -42,6 +42,47 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 
 const PAGE_SIZE = 999;
 
+// The default properties returned by the Microsoft Graph API for User
+// objects when no $select is specified. accountEnabled is NOT included
+// in this set — it requires an explicit $select.
+// https://learn.microsoft.com/en-us/graph/api/user-list#optional-query-parameters
+const DEFAULT_USER_SELECT = [
+  'businessPhones',
+  'displayName',
+  'givenName',
+  'id',
+  'jobTitle',
+  'mail',
+  'mobilePhone',
+  'officeLocation',
+  'preferredLanguage',
+  'surname',
+  'userPrincipalName',
+];
+
+// Fields that our code requires regardless of what the user or default
+// projection provides. These are always added to the $select list.
+const MINIMUM_USER_SELECT = ['id', 'accountEnabled'];
+
+function ensureMinimumSelect(select: string[] | undefined): string[] {
+  const base = select?.length ? select : DEFAULT_USER_SELECT;
+  const lower = new Set(base.map(s => s.toLocaleLowerCase('en-US')));
+  const missing = MINIMUM_USER_SELECT.filter(
+    f => !lower.has(f.toLocaleLowerCase('en-US')),
+  );
+  return missing.length > 0 ? [...base, ...missing] : base;
+}
+
+async function* filterDisabledUsers(
+  users: AsyncIterable<MicrosoftGraph.User>,
+): AsyncIterable<MicrosoftGraph.User> {
+  for await (const user of users) {
+    if (user.accountEnabled !== false) {
+      yield user;
+    }
+  }
+}
+
 export async function readMicrosoftGraphUsers(
   client: MicrosoftGraphClient,
   options: {
@@ -53,19 +94,23 @@ export async function readMicrosoftGraphUsers(
     loadUserPhotos?: boolean;
     transformer?: UserTransformer;
     logger: LoggerService;
+    signal?: AbortSignal;
   },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
 }> {
-  const users = client.getUsers(
-    {
-      filter: options.userFilter,
-      expand: options.userExpand,
-      select: options.userSelect,
-      top: PAGE_SIZE,
-    },
-    options.queryMode,
-    options.userPath,
+  const users = filterDisabledUsers(
+    client.getUsers(
+      {
+        filter: options.userFilter,
+        expand: options.userExpand,
+        select: ensureMinimumSelect(options.userSelect),
+        top: PAGE_SIZE,
+      },
+      options.queryMode,
+      options.userPath,
+      options.signal,
+    ),
   );
 
   return {
@@ -84,7 +129,6 @@ export async function readMicrosoftGraphUsersInGroups(
   options: {
     queryMode?: 'basic' | 'advanced';
     userExpand?: string;
-    userFilter?: string;
     userSelect?: string[];
     loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
@@ -93,6 +137,7 @@ export async function readMicrosoftGraphUsersInGroups(
     groupExpand?: string;
     transformer?: UserTransformer;
     logger: LoggerService;
+    signal?: AbortSignal;
   },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
@@ -112,20 +157,23 @@ export async function readMicrosoftGraphUsersInGroups(
     },
     options.queryMode,
     options.userGroupMemberPath,
+    options.signal,
   )) {
     // Process all groups in parallel, otherwise it can take quite some time
     userGroupMemberPromises.push(
       limiter(async () => {
         let groupMemberCount = 0;
-        for await (const user of client.getGroupUserMembers(
-          group.id!,
-          {
-            expand: options.userExpand,
-            filter: options.userFilter,
-            select: options.userSelect,
-            top: PAGE_SIZE,
-          },
-          options.queryMode,
+        for await (const user of filterDisabledUsers(
+          client.getGroupUserMembers(
+            group.id!,
+            {
+              expand: options.userExpand,
+              select: ensureMinimumSelect(options.userSelect),
+              top: PAGE_SIZE,
+            },
+            options.queryMode,
+            options.signal,
+          ),
         )) {
           userGroupMembers.set(user.id!, user);
           groupMemberCount++;
@@ -161,12 +209,12 @@ export async function readMicrosoftGraphUsersInGroups(
 export async function readMicrosoftGraphOrganization(
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: { transformer?: OrganizationTransformer },
+  options?: { transformer?: OrganizationTransformer; signal?: AbortSignal },
 ): Promise<{
   rootGroup?: GroupEntity; // With all relations empty
 }> {
   // For now we expect a single root organization
-  const organization = await client.getOrganization(tenantId);
+  const organization = await client.getOrganization(tenantId, options?.signal);
   const transformer = options?.transformer ?? defaultOrganizationTransformer;
   const rootGroup = await transformer(organization);
 
@@ -186,6 +234,7 @@ export async function readMicrosoftGraphGroups(
     groupIncludeSubGroups?: boolean;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
+    signal?: AbortSignal;
   },
 ): Promise<{
   groups: GroupEntity[]; // With all relations empty
@@ -200,6 +249,7 @@ export async function readMicrosoftGraphGroups(
 
   const { rootGroup } = await readMicrosoftGraphOrganization(client, tenantId, {
     transformer: options?.organizationTransformer,
+    signal: options?.signal,
   });
   if (rootGroup) {
     groupMember.set(rootGroup.metadata.name, new Set<string>());
@@ -219,6 +269,7 @@ export async function readMicrosoftGraphGroups(
     },
     options?.queryMode,
     options?.groupPath,
+    options?.signal,
   )) {
     // Process all groups in parallel, otherwise it can take quite some time
     promises.push(
@@ -238,9 +289,14 @@ export async function readMicrosoftGraphGroups(
           return;
         }
 
-        for await (const member of client.getGroupMembers(group.id!, {
-          top: PAGE_SIZE,
-        })) {
+        for await (const member of client.getGroupMembers(
+          group.id!,
+          {
+            top: PAGE_SIZE,
+          },
+          undefined,
+          options?.signal,
+        )) {
           if (!member.id) {
             continue;
           }
@@ -261,6 +317,8 @@ export async function readMicrosoftGraphGroups(
                 for await (const subMember of client.getGroupMembers(
                   member.id!,
                   { top: PAGE_SIZE },
+                  undefined,
+                  options?.signal,
                 )) {
                   if (!subMember.id) {
                     continue;
@@ -425,6 +483,7 @@ export async function readMicrosoftGraphOrg(
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
     logger: LoggerService;
+    signal?: AbortSignal;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
   let users: UserEntity[] = [];
@@ -439,7 +498,6 @@ export async function readMicrosoftGraphOrg(
       {
         queryMode: options.queryMode,
         userExpand: options.userExpand,
-        userFilter: options.userFilter,
         userSelect: options.userSelect,
         userGroupMemberFilter: options.userGroupMemberFilter,
         userGroupMemberSearch: options.userGroupMemberSearch,
@@ -447,6 +505,7 @@ export async function readMicrosoftGraphOrg(
         loadUserPhotos: options.loadUserPhotos,
         transformer: options.userTransformer,
         logger: options.logger,
+        signal: options.signal,
       },
     );
     users = usersInGroups;
@@ -460,6 +519,7 @@ export async function readMicrosoftGraphOrg(
       loadUserPhotos: options.loadUserPhotos,
       transformer: options.userTransformer,
       logger: options.logger,
+      signal: options.signal,
     });
     users = usersWithFilter;
   }
@@ -474,6 +534,7 @@ export async function readMicrosoftGraphOrg(
       groupIncludeSubGroups: options.groupIncludeSubGroups,
       groupTransformer: options.groupTransformer,
       organizationTransformer: options.organizationTransformer,
+      signal: options.signal,
     });
 
   resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);
@@ -511,7 +572,7 @@ async function transformUsers(
             );
           }
         } catch (e) {
-          logger.warn(`Unable to load user photo for`, {
+          logger.debug(`Unable to load user photo for`, {
             user: user.id,
             error: e,
           });

@@ -32,6 +32,12 @@ export interface Config {
           audience?: string;
           connection?: string;
           connectionScope?: string;
+          organization?: string;
+          /**
+           * Whether to perform federated logout, clearing both the Auth0
+           * session and any upstream IdP session. Defaults to false.
+           */
+          federatedLogout?: boolean;
           sessionDuration?: HumanDuration | string;
         };
       };

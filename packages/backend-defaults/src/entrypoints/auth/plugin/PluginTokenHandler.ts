@@ -16,7 +16,7 @@
 
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { decodeJwt, importJWK, SignJWT, decodeProtectedHeader } from 'jose';
-import { assertError, AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, toError } from '@backstage/errors';
 import { jwtVerify } from 'jose';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { JwksClient } from '../JwksClient';
@@ -46,7 +46,7 @@ type Options = {
 
 /**
  * @public
- * Issues and verifies {@link https://backstage.iceio/docs/auth/service-to-service-auth | service-to-service tokens}.
+ * Issues and verifies {@link https://backstage.io/docs/auth/service-to-service-auth | service-to-service tokens}.
  */
 export interface PluginTokenHandler {
   verifyToken(
@@ -77,14 +77,28 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
     );
   }
 
+  private readonly logger: LoggerService;
+  private readonly ownPluginId: string;
+  private readonly keySource: PluginKeySource;
+  private readonly algorithm: string;
+  private readonly keyDurationSeconds: number;
+  private readonly discovery: DiscoveryService;
+
   private constructor(
-    private readonly logger: LoggerService,
-    private readonly ownPluginId: string,
-    private readonly keySource: PluginKeySource,
-    private readonly algorithm: string,
-    private readonly keyDurationSeconds: number,
-    private readonly discovery: DiscoveryService,
-  ) {}
+    logger: LoggerService,
+    ownPluginId: string,
+    keySource: PluginKeySource,
+    algorithm: string,
+    keyDurationSeconds: number,
+    discovery: DiscoveryService,
+  ) {
+    this.logger = logger;
+    this.ownPluginId = ownPluginId;
+    this.keySource = keySource;
+    this.algorithm = algorithm;
+    this.keyDurationSeconds = keyDurationSeconds;
+    this.discovery = discovery;
+  }
 
   async verifyToken(
     token: string,
@@ -196,8 +210,10 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
         this.supportedTargetPlugins.add(targetPluginId);
         return true;
       } catch (error) {
-        assertError(error);
-        this.logger.error('Unexpected failure for target JWKS check', error);
+        this.logger.error(
+          'Unexpected failure for target JWKS check',
+          toError(error),
+        );
         return false;
       } finally {
         this.targetPluginInflightChecks.delete(targetPluginId);

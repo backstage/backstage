@@ -1,5 +1,313 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.3.18
+
+### Patch Changes
+
+- a07e6a3: Updated internal usage of `AzureBlobStorageIntegration` (previously misspelled as `AzureBlobStorageIntergation`) following the rename in `@backstage/integration`.
+- Updated dependencies
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-events-node@0.4.23
+
+## 0.3.18-next.0
+
+### Patch Changes
+
+- a07e6a3: Updated internal usage of `AzureBlobStorageIntegration` (previously misspelled as `AzureBlobStorageIntergation`) following the rename in `@backstage/integration`.
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
+## 0.3.17
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/integration@2.0.2
+  - @backstage/config@1.3.8
+  - @backstage/plugin-catalog-common@1.1.10
+  - @backstage/plugin-events-node@0.4.22
+
+## 0.3.17-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.2.1-next.1
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+  - @backstage/plugin-catalog-common@1.1.10-next.0
+
+## 0.3.16
+
+### Patch Changes
+
+- 39d27ee: Add Azure DevOps SCM event translation layer for instant catalog reprocessing.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/integration@2.0.1
+  - @backstage/config@1.3.7
+  - @backstage/plugin-catalog-common@1.1.9
+  - @backstage/plugin-events-node@0.4.21
+
+## 0.3.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+  - @backstage/plugin-catalog-common@1.1.9-next.0
+
+## 0.3.16-next.1
+
+### Patch Changes
+
+- 39d27ee: Add Azure DevOps SCM event translation layer for instant catalog reprocessing.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
+## 0.3.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/integration@2.0.0
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 0.3.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/integration@2.0.0
+  - @backstage/plugin-catalog-node@2.1.0
+
+## 0.3.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+
+## 0.3.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 0.3.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 0.3.14
+
+### Patch Changes
+
+- cc6206e: Added support for `{org}.visualstudio.com` domains used by Azure DevOps
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- 6c8a464: Added missing `branch` field to the `azureDevOps` provider config schema.
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 0.3.14-next.2
+
+### Patch Changes
+
+- cc6206e: Added support for `{org}.visualstudio.com` domains used by Azure DevOps
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.3.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.3.14-next.0
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+
+## 0.3.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+
+## 0.3.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 0.3.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+
+## 0.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.3.11
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.3.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 0.3.11-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+
+## 0.3.10
+
+### Patch Changes
+
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- 99fcf98: Removed unused dependencies
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-catalog-node@1.19.1
+
+## 0.3.10-next.2
+
+### Patch Changes
+
+- 99fcf98: Removed unused dependencies
+
+## 0.3.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+
+## 0.3.10-next.0
+
+### Patch Changes
+
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.19.0
+
 ## 0.3.9
 
 ### Patch Changes

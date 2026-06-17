@@ -127,7 +127,9 @@ function baseImplementation(
 ): typeof crossFetch {
   const implementation = options?.baseImplementation;
   if (!implementation) {
-    return crossFetch;
+    // Return a wrapper that evaluates global.fetch at call time, not construction time.
+    // This allows MSW to patch global.fetch after MockFetchApi is constructed.
+    return (input, init) => global.fetch(input, init);
   } else if (implementation === 'none') {
     return () => Promise.resolve(new Response());
   }

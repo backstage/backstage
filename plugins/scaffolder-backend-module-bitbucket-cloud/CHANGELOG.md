@@ -1,5 +1,329 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-bitbucket-cloud-common@0.3.11
+
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.11-next.0
+  - @backstage/plugin-scaffolder-node@0.13.4-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-scaffolder-node@0.13.3
+  - @backstage/config@1.3.8
+  - @backstage/plugin-bitbucket-cloud-common@0.3.10
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-scaffolder-node@0.13.3-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.10-next.0
+
+## 0.3.5
+
+### Patch Changes
+
+- ed6b53c: Removed bare catch-and-rethrow blocks that served no purpose.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-scaffolder-node@0.13.2
+  - @backstage/integration@2.0.1
+  - @backstage/config@1.3.7
+  - @backstage/plugin-bitbucket-cloud-common@0.3.9
+
+## 0.3.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.2-next.2
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.9-next.0
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-scaffolder-node@0.13.1-next.1
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@2.0.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.8
+
+## 0.3.4
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-scaffolder-node@0.13.0
+  - @backstage/integration@2.0.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.8
+
+## 0.3.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/plugin-scaffolder-node@0.13.0-next.2
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-scaffolder-node@0.13.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-bitbucket-cloud-common@0.3.8-next.1
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-bitbucket-cloud-common@0.3.8-next.0
+  - @backstage/plugin-scaffolder-node@0.12.6-next.0
+
+## 0.3.3
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 14741e2: Fully enable API token functionality for Bitbucket-Cloud.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-scaffolder-node@0.12.5
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 14741e2: Fully enable API token functionality for Bitbucket-Cloud.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-bitbucket-cloud-common@0.3.6
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.6-next.0
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 37fba1d: Added support for Bitbucket Cloud OAuth. This introduces an alternative authentication method using a workspace OAuth consumer, alongside App Passwords (deprecated) and API tokens. OAuth does not require a bot or service account and avoids token expiry issues.
+
+  **BREAKING CHANGES**
+
+  - **@backstage/integration** (`src/bitbucketCloud/core.ts`)
+
+    - `getBitbucketCloudRequestOptions` now returns a `Promise` and **must** be awaited.
+
+  - **@backstage/plugin-scaffolder-backend-module-bitbucket-cloud** (`src/actions/helpers.ts`)
+    - `getBitbucketClient` now returns a `Promise` and **must** be awaited.
+    - `getAuthorizationHeader` now returns a `Promise` and **must** be awaited.
+
+  **OAuth usage example**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - clientId: client-id
+        clientSecret: client-secret
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.5
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 0.2.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-bitbucket-cloud-common@0.3.5-next.0
+  - @backstage/plugin-scaffolder-node@0.12.2-next.1
+
+## 0.2.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-scaffolder-node@0.12.2-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.5-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 0.2.15
+
+### Patch Changes
+
+- fa255f5: Support for Bitbucket Cloud's API token was added as `appPassword` is deprecated (no new creation from September 9, 2025) and will be removed on June 9, 2026.
+
+  API token usage example:
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: user@domain.com
+        token: my-token
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-bitbucket-cloud-common@0.3.4
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-scaffolder-node@0.12.1
+
+## 0.2.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+
+## 0.2.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-bitbucket-cloud-common@0.3.4-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+
+## 0.2.14
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/config@1.3.5
+  - @backstage/plugin-bitbucket-cloud-common@0.3.3
+  - @backstage/backend-plugin-api@1.4.4
+
+## 0.2.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+
+## 0.2.14-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.3-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
 ## 0.2.13
 
 ### Patch Changes

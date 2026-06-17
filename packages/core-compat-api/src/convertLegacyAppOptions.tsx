@@ -16,21 +16,23 @@
 
 import { ComponentType } from 'react';
 import {
-  SwappableComponentBlueprint,
   ApiBlueprint,
   ErrorDisplayProps,
   createExtension,
   createFrontendModule,
   ExtensionDefinition,
   FrontendModule,
-  IconBundleBlueprint,
-  RouterBlueprint,
-  SignInPageBlueprint,
-  ThemeBlueprint,
   ErrorDisplay as SwappableErrorDisplay,
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
 } from '@backstage/frontend-plugin-api';
+import {
+  IconBundleBlueprint,
+  RouterBlueprint,
+  SignInPageBlueprint,
+  SwappableComponentBlueprint,
+  ThemeBlueprint,
+} from '@backstage/plugin-app-react';
 import {
   AnyApiFactory,
   AppComponents,

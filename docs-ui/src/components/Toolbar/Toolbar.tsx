@@ -1,52 +1,148 @@
 'use client';
 
-import { RiGithubLine, RiNpmjsLine } from '@remixicon/react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
-import { Logo } from './Logo';
-import { ThemeSelector } from './theme';
-import { ThemeNameSelector } from './theme-name';
+import { useState, useEffect } from 'react';
+import {
+  RiArrowDownSLine,
+  RiDiscordLine,
+  RiGithubLine,
+  RiMoonLine,
+  RiSearchLine,
+  RiSunLine,
+} from '@remixicon/react';
+import {
+  Button,
+  ListBox,
+  ListBoxItem,
+  Popover,
+  Select,
+  SelectValue,
+  ToggleButton,
+  ToggleButtonGroup,
+} from 'react-aria-components';
 import styles from './Toolbar.module.css';
+import { usePlayground } from '@/utils/playground-context';
+import { Logo } from '@/components/Sidebar/Logo';
+import { CommandPalette } from '@/components/CommandPalette';
 
 interface ToolbarProps {
   version: string;
 }
 
-export const Toolbar = ({ version }: ToolbarProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollY } = useScroll();
+const themes = [
+  { name: 'Backstage', value: 'backstage' },
+  { name: 'Spotify', value: 'spotify' },
+  { name: 'Custom theme', value: 'custom' },
+];
 
-  // Transform scroll velocity to vertical movement
-  const y = useTransform(scrollY, [0, 100], [0, -20], {
-    clamp: false,
-  });
+export const Toolbar = ({ version }: ToolbarProps) => {
+  const {
+    selectedTheme,
+    setSelectedTheme,
+    selectedThemeName,
+    setSelectedThemeName,
+  } = usePlayground();
+
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+
+  useEffect(() => {
+    const isMac = /mac(os|intosh)/i.test(navigator.userAgent);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (isMac ? e.metaKey : e.ctrlKey)) {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
-    <div className={styles.toolbar} ref={containerRef}>
+    <div className={styles.toolbar}>
       <div className={styles.left}>
-        <Logo />
-      </div>
-      <motion.div className={styles.right} style={{ y }}>
-        <div className={styles.version}>Version {version} - Alpha</div>
-        <div className={styles.actions}>
-          <div className={styles.versionLinks}>
-            <a
-              href="https://github.com/backstage/backstage/tree/master/packages/ui"
-              target="_blank"
-            >
-              <RiGithubLine size={16} />
-            </a>
-            <a
-              href="https://www.npmjs.com/package/@backstage/ui"
-              target="_blank"
-            >
-              <RiNpmjsLine size={16} />
-            </a>
-          </div>
-          <ThemeNameSelector />
-          <ThemeSelector />
+        <div className={styles.logoMobile}>
+          <Logo />
         </div>
-      </motion.div>
+        <button
+          type="button"
+          className={styles.searchButton}
+          onClick={() => setIsCommandPaletteOpen(true)}
+        >
+          <RiSearchLine size={14} />
+          <span className={styles.searchLabel}>Search</span>
+          <kbd className={styles.searchKbd}>⌘K</kbd>
+        </button>
+      </div>
+      <div className={styles.actions}>
+        <Select
+          defaultValue="backstage"
+          value={selectedThemeName}
+          onChange={setSelectedThemeName}
+          aria-label="Theme"
+        >
+          <Button className={styles.bubble}>
+            <SelectValue />
+            <RiArrowDownSLine aria-hidden="true" size={16} />
+          </Button>
+          <Popover className={styles.Popup}>
+            <ListBox className={styles.ListBox}>
+              {themes.map(({ name, value }) => (
+                <ListBoxItem key={value} id={value} className={styles.Item}>
+                  {name}
+                </ListBoxItem>
+              ))}
+            </ListBox>
+          </Popover>
+        </Select>
+        <a
+          href="https://www.npmjs.com/package/@backstage/ui"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.bubble}
+          data-hide-tablet
+        >
+          Version {version}
+        </a>
+        <a
+          href="https://github.com/backstage/backstage/tree/master/packages/ui"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.bubble}
+          data-hide-tablet
+          aria-label="View source on GitHub"
+        >
+          <RiGithubLine size={16} />
+        </a>
+        <a
+          href="https://discord.gg/backstage-687207715902193673"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.bubble}
+          data-hide-tablet
+          aria-label="Join Backstage on Discord"
+        >
+          <RiDiscordLine size={16} />
+        </a>
+        <ToggleButtonGroup
+          defaultSelectedKeys={['light']}
+          selectedKeys={selectedTheme}
+          onSelectionChange={setSelectedTheme}
+          disallowEmptySelection
+          className={styles.buttonGroup}
+          aria-label="Color scheme"
+        >
+          <ToggleButton id="light" aria-label="Light theme">
+            <RiSunLine aria-hidden="true" size={16} />
+          </ToggleButton>
+          <ToggleButton id="dark" aria-label="Dark theme">
+            <RiMoonLine aria-hidden="true" size={16} />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </div>
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onOpenChange={setIsCommandPaletteOpen}
+      />
     </div>
   );
 };

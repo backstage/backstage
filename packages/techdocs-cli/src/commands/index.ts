@@ -59,7 +59,7 @@ export function registerCommands(program: Command) {
       'Name for site when using default MkDocs config',
       'Documentation Site',
     )
-    .option('-v --verbose', 'Enable verbose output.', false)
+    .option('-v, --verbose', 'Enable verbose output.', false)
     .option(
       '--omitTechdocsCoreMkdocsPlugin',
       "Don't patch MkDocs file automatically with techdocs-core plugin.",
@@ -68,6 +68,11 @@ export function registerCommands(program: Command) {
     .option(
       '--legacyCopyReadmeMdToIndexMd',
       'Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default <docs-dir>/index.md is not provided.',
+      false,
+    )
+    .option(
+      '--disableExternalFonts',
+      'Disable external font downloads by default by setting theme.font: false in mkdocs.yml when not already configured. Useful for air-gapped environments where Google fonts cannot be accessed.',
       false,
     )
     .option(
@@ -142,7 +147,7 @@ export function registerCommands(program: Command) {
       'Optional Controls the number of API requests allowed to be performed simultaneously.',
       '25',
     )
-    .option('-v --verbose', 'Enable verbose output.', false)
+    .option('-v, --verbose', 'Enable verbose output.', false)
     .action(lazy(() => import('./migrate/migrate'), 'default'));
 
   program
@@ -253,7 +258,7 @@ export function registerCommands(program: Command) {
       'Documentation Site',
     )
     .option('-p, --port <PORT>', 'Port to serve documentation locally', '8000')
-    .option('-v --verbose', 'Enable verbose output.', false)
+    .option('-v, --verbose', 'Enable verbose output.', false)
     .action(lazy(() => import('./serve/mkdocs'), 'default'));
 
   program
@@ -284,7 +289,7 @@ export function registerCommands(program: Command) {
       'Documentation Site',
     )
     .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
-    .option('-v --verbose', 'Enable verbose output.', false)
+    .option('-v, --verbose', 'Enable verbose output.', false)
     .option(
       '--preview-app-bundle-path <PATH_TO_BUNDLE>',
       'Preview documentation using another web app',

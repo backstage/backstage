@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import { JWK, exportJWK, importPKCS8, importSPKI } from 'jose';
 import { KeyLike } from 'jose';
 import { KeyPayload } from './types';
@@ -67,10 +67,13 @@ const SECONDS_IN_MS = 1000;
  * private and public key paths in the `create` method.
  */
 export class StaticConfigPluginKeySource implements PluginKeySource {
-  private constructor(
-    private readonly keyPairs: KeyPair[],
-    private readonly keyDurationSeconds: number,
-  ) {}
+  private readonly keyPairs: KeyPair[];
+  private readonly keyDurationSeconds: number;
+
+  private constructor(keyPairs: KeyPair[], keyDurationSeconds: number) {
+    this.keyPairs = keyPairs;
+    this.keyDurationSeconds = keyDurationSeconds;
+  }
 
   public static async create(options: {
     sourceConfig: Config;

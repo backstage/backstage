@@ -25,6 +25,18 @@ const rootDep = createServiceRef<number>({ id: 'y', scope: 'root' });
 const pluginDep = createServiceRef<boolean>({ id: 'z' });
 function unused(..._any: any[]) {}
 
+describe('createServiceRef', () => {
+  it('should create a ServiceRef', () => {
+    expect(ref.id).toBe('x');
+    expect(ref.scope).toBe('plugin');
+    expect(ref.T).toBe(null);
+    expect(String(ref)).toBe('serviceRef{x}');
+    expect(JSON.stringify(ref)).toBe(
+      '{"$$type":"@backstage/ServiceRef","id":"x","scope":"plugin","multiton":false}',
+    );
+  });
+});
+
 describe('createServiceFactory', () => {
   it('should create a plugin scoped factory', () => {
     const factory = createServiceFactory({

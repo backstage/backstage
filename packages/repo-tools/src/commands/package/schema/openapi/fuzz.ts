@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import { paths as cliPaths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 import chalk from 'chalk';
 import { spawn } from '../../../../lib/exec';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
 import { ConfigSources } from '@backstage/config-loader';
 import YAML from 'js-yaml';
-import { join } from 'path';
+import { join } from 'node:path';
 import { OptionValues } from 'commander';
 import { sync as existsSync } from 'command-exists';
 
@@ -40,7 +40,7 @@ async function fuzz(opts: OptionValues) {
     await fs.readFile(resolvedOpenapiPath, 'utf8'),
   ) as { info: { title: string } };
   const configSource = ConfigSources.default({
-    rootDir: cliPaths.targetRoot,
+    rootDir: targetPaths.rootDir,
   });
   const config = await ConfigSources.toConfig(configSource);
   const pluginId = openapiSpec.info.title;
@@ -48,7 +48,7 @@ async function fuzz(opts: OptionValues) {
   if (opts.debug) {
     args.push(
       '--cassette-path',
-      cliPaths.resolveTargetRoot(join('.cassettes', `${pluginId}.yml`)),
+      targetPaths.resolveRoot(join('.cassettes', `${pluginId}.yml`)),
     );
   }
 

@@ -34,19 +34,62 @@ export class ExternalRouteRefImpl<
   declare $$routeRefType: 'external';
   readonly [routeRefType] = 'external';
 
+  private readonly id: string;
+  readonly params: ParamKeys<Params>;
+  readonly optional: Optional;
+  readonly defaultTarget: string | undefined;
+
   constructor(
-    private readonly id: string,
-    readonly params: ParamKeys<Params>,
-    readonly optional: Optional,
-    readonly defaultTarget: string | undefined,
-  ) {}
+    id: string,
+    params: ParamKeys<Params>,
+    optional: Optional,
+    defaultTarget: string | undefined,
+  ) {
+    this.id = id;
+    this.params = params;
+    this.optional = optional;
+    this.defaultTarget = defaultTarget;
+  }
 
   toString() {
+    if (this.#nfsId) {
+      return `externalRouteRef{id=${this.#nfsId},legacyId=${this.id}}`;
+    }
     return `routeRef{type=external,id=${this.id}}`;
   }
 
   getDefaultTarget() {
     return this.defaultTarget;
+  }
+
+  // NFS implementation below
+  readonly $$type = '@backstage/ExternalRouteRef';
+  readonly version = 'v1';
+  readonly T = undefined as any;
+
+  #nfsId: string | undefined = undefined;
+
+  getParams(): string[] {
+    return this.params as string[];
+  }
+  getDescription(): string {
+    if (this.#nfsId) {
+      return this.#nfsId;
+    }
+    return this.id;
+  }
+  setId(newId: string) {
+    if (!newId) {
+      throw new Error(`ExternalRouteRef id must be a non-empty string`);
+    }
+    if (this.#nfsId && this.#nfsId !== newId) {
+      throw new Error(
+        `ExternalRouteRef was referenced twice as both '${
+          this.#nfsId
+        }' and '${newId}'`,
+      );
+    }
+    this.#nfsId = newId;
   }
 }
 
@@ -96,5 +139,5 @@ export function createExternalRouteRef<
     (options.params ?? []) as ParamKeys<OptionalParams<Params>>,
     Boolean(options.optional) as Optional,
     options?.defaultTarget,
-  );
+  ) as ExternalRouteRef<OptionalParams<Params>, Optional>;
 }

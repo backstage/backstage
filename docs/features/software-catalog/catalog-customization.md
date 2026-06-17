@@ -4,423 +4,254 @@ title: Catalog Customization
 description: How to add custom filters or interface elements to the Backstage software catalog
 ---
 
-The Backstage software catalog comes with a default `CatalogIndexPage` to filter and find catalog entities. This is already set up by default by `@backstage/create-app`. If you want to change the default index page - to set the initially selected filter, adjust columns, add actions, or to add a custom filter to the catalog - the following sections will show you how.
+::::info
+This documentation is written for the new frontend system, which is the default
+in new Backstage apps. If your Backstage app still uses the old frontend system,
+read the [old frontend system version of this guide](./catalog-customization--old.md)
+instead.
+::::
 
-## Pagination
+The Backstage software catalog comes with a default catalog index page and entity pages that are highly configurable through `app-config.yaml`. This guide covers how to customize the catalog in the new frontend system.
 
-Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of Backstage, so make sure you are on that version or newer to use this feature. To enable pagination you simply need to pass in the `pagination` prop like this:
+## Catalog index page
 
-```tsx title="packages/app/src/App.tsx"
-<Route path="/catalog" element={<CatalogIndexPage pagination />} />
+The catalog index page can be configured through extensions in `app-config.yaml`. For example, to enable pagination:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:catalog:
+        config:
+          pagination: true
 ```
 
-## Initially Selected Filter
+You can also configure pagination with additional options:
 
-By default, the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
-
-```tsx title="packages/app/src/App.tsx"
-<Route
-  path="/catalog"
-  element={<CatalogIndexPage initiallySelectedFilter="all" />}
-/>
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:catalog:
+        config:
+          pagination:
+            mode: offset
+            limit: 20
 ```
 
-Possible options are: owned, starred, or all
+### Configuring Catalog Export
 
-## Initially Selected Kind
+The catalog export feature is available in the new frontend system and can be enabled via the `app-config.yaml`.
+This will enable a button, which by default contains options to export data from the catalog table in CSV and JSON format.
+When exporting, a dialog opens that lets the user choose the export format and select which columns to include.
 
-By default, the initially selected Kind when viewing the Catalog is Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
+#### Basic Configuration
 
-```tsx title="packages/app/src/App.tsx"
-<Route path="/catalog" element={<CatalogIndexPage initialKind="domain" />} />
+To enable catalog export, add the following configuration:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:catalog:
+        config:
+          exportSettings:
+            enabled: true
+            # Optional: hide the built-in CSV and JSON formats, showing only your own supplied exporters
+            disableBuiltinExporters: false
 ```
 
-Possible options are all the [default Kinds](system-model.md) as well as any custom Kinds that you have added.
+This will display an "Export selection" button on the catalog index page that allows users to export the currently filtered catalog entities in CSV or JSON format.
 
-## Owner Picker Mode
+#### Advanced Configuration
 
-The Owner filter by default will only contain a list of Users and/or Groups that actually own an entity in the Catalog, now you may have reason to change this. Here's how:
+For advanced export customization like custom export formats, create a frontend module that provides a catalog export extension:
 
-```tsx title="packages/app/src/App.tsx"
-<Route path="/catalog" element={<CatalogIndexPage ownerPickerMode="all" />} />
-```
+```tsx title="src/catalogExportExtension.tsx"
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { CatalogExportConfigBlueprint } from '@backstage/plugin-catalog/alpha';
+import type { CatalogExporter } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
-Possible options are: owners-only or all
+// Define custom export formats using streaming async generators
+const yamlExporter: CatalogExporter = ({ apis, columns, streamRequest }) => {
+  const catalogApi = apis.get(catalogApiRef);
 
-## Table Options
-
-The tables used within Backstage are built on top of [`@material-table/core`](https://material-table-core.github.io/) and the `CatalogIndexPage` has a `tableOptions` prop that allows you to customize the underlying table to a certain extent, but there are some hard coded Backstage settings that can't be changed. Here's an example of how to use this prop to disable the search filter field in the table's header:
-
-```tsx title="packages/app/src/App.tsx"
-<Route
-  path="/catalog"
-  element={<CatalogIndexPage tableOptions={{ search: false }} />}
-/>
-```
-
-There are many options that can be set using `tableOptions`, the full list of settings can be found in the [`@material-table/core` `Options` interface](https://github.com/material-table-core/core/blob/v3.1.0/types/index.d.ts#L323) (this link goes to `v3.1.0` of `@material-table/core` as that is the version currently used by Backstage).
-
-## Customize Columns
-
-The columns you see in the `CatalogIndexPage` were selected to be a good starting point for most, but there may be cases where you would like to add or remove columns from existing or custom Kinds.
-
-### Adding a column to an existing Kind
-
-Suppose we want to add a new User Email column to the `User` kind in the Catalog. We can do this by overriding the `columns` that we pass into the `CatalogIndexPage` component in our `App.tsx`. First, we need to match the entity kind that we want to override, and then define the columns to show:
-
-```tsx title="packages/app/src/App.tsx"
-{/* prettier-ignore */ /* highlight-add-start */}
-const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
-  if (entityListContext.filters.kind?.value === 'user') {
-    return [
-      // Render existing columns
-      ...CatalogTable.defaultColumnsFunc(entityListContext),
-      // Add new columns here
-    ];
-  }
-
-  return CatalogTable.defaultColumnsFunc(entityListContext);
-};
-{/* prettier-ignore */ /* highlight-add-end */}
-```
-
-Then, we can implement the `createUserEmailColumn` function and add it to the list of columns. `field` is used to access the data from the entity, while `render` lets us customize how we display the data:
-
-```tsx title="packages/app/src/App.tsx"
-{/* highlight-add-start */}
-const createUserEmailColumn = (): TableColumn<CatalogTableRow> => ({
-  title: 'User Email',
-  field: 'entity.spec.profile.email',
-  render: ({ entity }) => (
-    <OverflowTooltip
-      text={entity.spec?.profile?.['email'] || 'N/A'}
-      placement="bottom-start"
-    />
-  ),
-});
-{/* highlight-add-end */}
-
-const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
-  if (entityListContext.filters.kind?.value === 'user') {
-    return [
-      // Render existing columns
-      ...CatalogTable.defaultColumnsFunc(entityListContext),
-      // Add new columns here
-      {/* highlight-add-next-line */}
-      createUserEmailColumn(),
-    ];
-  }
-
-  return CatalogTable.defaultColumnsFunc(entityListContext);
-};
-```
-
-Finally, we can pass the `myColumnsFunc` to the `CatalogIndexPage` component:
-
-```tsx title="packages/app/src/App.tsx"
-const routes = (
-  <FlatRoutes>
-    <Route
-      path="/catalog"
-      element={
-        <CatalogIndexPage
-          pagination={{ mode: 'offset', limit: 20 }}
-          {/* highlight-add-next-line */}
-          columns={myColumnsFunc}
-        />
+  // Return an async generator that yields YAML chunks
+  async function* generateYaml() {
+    for await (const page of catalogApi.streamEntities(streamRequest)) {
+      for (const entity of page) {
+        // Serialize each entity to YAML and yield immediately
+        yield serializeEntityToYaml(entity, columns);
+        yield '---\n'; // YAML document separator
       }
-    />
-    {/* Other routes */}
-  </FlatRoutes>
-)
-```
-
-### Adding columns to a custom or specific Kind
-
-Another use case for customization is when adding a custom `Kind`. This feature is available in Backstage >= `v1.23.0`. For example:
-
-```tsx title="packages/app/src/App.tsx"
-import {
-  CatalogEntityPage,
-  CatalogIndexPage,
-  catalogPlugin,
-  {/* highlight-add-start */}
-  CatalogTable,
-  CatalogTableColumnsFunc,
-  {/* highlight-add-end */}
-} from '@backstage/plugin-catalog';
-
-{/* highlight-add-start */}
-const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
-  if (entityListContext.filters.kind?.value === 'MyKind') {
-    return [
-      CatalogTable.columns.createNameColumn(),
-      CatalogTable.columns.createOwnerColumn(),
-    ];
+    }
   }
 
-  return CatalogTable.defaultColumnsFunc(entityListContext);
+  return {
+    generator: generateYaml(),
+    contentType: 'application/x-yaml',
+  };
 };
-{/* highlight-add-end */}
 
-{/* highlight-remove-next-line */}
-<Route path="/catalog" element={<CatalogIndexPage />} />
-{/* highlight-add-next-line */}
-<Route path="/catalog" element={<CatalogIndexPage columns={myColumnsFunc} />} />
-```
-
-:::note Note
-
-In the examples above, the contents of the files have been shortened for simplicity.
-
-:::
-
-## Customize Actions
-
-The `CatalogIndexPage` comes with three default actions - view, edit, and star. You might want to add more.
-
-To do this, first you'll need to add `@mui/utils` to your `packages/app/package.json`:
-
-```sh
-yarn --cwd packages/app add @mui/utils
-```
-
-Then you'll do the following:
-
-```tsx title="packages/app/src/App.tsx"
-import {
-  AlertDisplay,
-  OAuthRequestDialog,
-  SignInPage,
-  {/* highlight-add-next-line */}
-  TableProps,
-} from '@backstage/core-components';
-
-import {
-  CatalogEntityPage,
-  CatalogIndexPage,
-  {/* highlight-add-next-line */}
-  CatalogTableRow,
-  catalogPlugin,
-} from '@backstage/plugin-catalog';
-
-{/* highlight-add-start */}
-import { Typography } from '@material-ui/core';
-import OpenInNew from '@material-ui/icons/OpenInNew';
-import { visuallyHidden } from '@mui/utils';
-{/* highlight-add-end */}
-
-{/* highlight-add-start */}
-const customActions: TableProps<CatalogTableRow>['actions'] = [
-  ({ entity }) => {
-    const url = 'https://backstage.io/';
-    const title = `View - ${entity.metadata.name}`;
-
-    return {
-      icon: () => (
-        <>
-          <Typography style={visuallyHidden}>{title}</Typography>
-          <OpenInNew fontSize="small" />
-        </>
-      ),
-      tooltip: title,
-      disabled: !url,
-      onClick: () => {
-        if (!url) return;
-        window.open(url, '_blank');
-      },
-    };
+// Create the extension using the blueprint
+const catalogExportExtension = CatalogExportConfigBlueprint.make({
+  params: {
+    exporters: {
+      yaml: { exporter: yamlExporter, label: 'YAML' },
+    },
+    columns: [{ entityFilterKey: 'metadata.name', title: 'Name' }],
+    onSuccess: () => {
+      console.log('Export successful!');
+    },
+    onError: ({ error }) => {
+      console.error('Export failed:', error);
+    },
   },
-];
-{/* highlight-add-end */}
+});
 
-{/* highlight-remove-next-line */}
-<Route path="/catalog" element={<CatalogIndexPage />} />
-{/* highlight-add-next-line */}
-<Route path="/catalog" element={<CatalogIndexPage actions={customActions} />} />
+// Create the module that provides this extension
+export default createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [catalogExportExtension],
+});
 ```
 
-:::note Note
+Then register this module in your app features:
 
-In the example above, the contents of `App.tsx` has been shortened for simplicity.
+```tsx title="packages/app-next/src/App.tsx"
+import catalogExportExtension from './catalogExportExtension';
 
-:::
-
-The above customization will override the existing actions. Currently, the only way to keep them and add your own is to also include the existing actions in your array by copying them from the [`defaultActions`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/catalog/src/components/CatalogTable/CatalogTable.tsx#L113-L168).
-
-## Customize Filters
-
-There are various ways to customize filters: adjusting the existing filters with props, adding or removing default filters, creating brand-new custom filters, etc. The following sections cover these cases:
-
-### Default Filter Props
-
-There are a set of default filters that you can use, which surface all the props mentioned earlier in this document. Here's how they can be used:
-
-```tsx title="packages/app/src/App.tsx"
-import { DefaultFilters } from '@backstage/plugin-catalog-react';
-
-<Route
-  path="/catalog"
-  element={
-    <CatalogIndexPage
-      filters={
-        <>
-          <DefaultFilters
-            initialKind="Domain"
-            initiallySelectedFilter="all"
-            ownerPickerMode="all"
-          />
-        </>
-      }
-    />
-  }
-/>;
+const app = createApp({
+  features: [
+    // ... other features
+    catalogExportExtension,
+  ],
+});
 ```
 
-### Removing Default Filters
+The `CatalogExportConfigBlueprint` supports the following properties:
 
-If you have reasons not to use the Lifecycle, Tag, and Processing Status filters, here's an example of how to remove them:
+- **`exporters`** - Record of custom export format configurations (e.g., XML, YAML), each using the `CatalogExporterConfig` shape with an `exporter` function and optional `label`
+- **`columns`** - Custom columns to include in the export. Each column specifies an entity field path (`entityFilterKey`) and an optional display `title`. If not provided, defaults to Name, Type, Owner, and Description
+- **`onSuccess`** - Callback function invoked on successful export
+- **`onError`** - Callback function invoked if export fails, receives `{ error: Error }`
+
+### Catalog filters
+
+The catalog index page includes a set of default filters (kind, type, owner, lifecycle, tag, namespace, processing status). These filters can be configured through extensions. For example, to set the initial kind filter:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-filter:catalog/kind:
+        config:
+          initialFilter: domain
+```
+
+To set the initial list filter to "all" instead of "owned":
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-filter:catalog/list:
+        config:
+          initialFilter: all
+```
+
+### Custom filters
+
+You can create custom catalog filters using the `CatalogFilterBlueprint` from `@backstage/plugin-catalog-react/alpha`. For example, to add a custom security tier filter:
+
+```tsx title="packages/app/src/catalog/SecurityTierFilter.tsx"
+import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+export const securityTierFilter = CatalogFilterBlueprint.make({
+  name: 'security-tier',
+  params: {
+    loader: async () => {
+      const { EntitySecurityTierPicker } = await import(
+        './EntitySecurityTierPicker'
+      );
+      return <EntitySecurityTierPicker />;
+    },
+  },
+});
+```
+
+Then install it as a frontend module:
+
+```tsx title="packages/app/src/catalog/catalogCustomizations.tsx"
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { securityTierFilter } from './SecurityTierFilter';
+
+export default createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [securityTierFilter],
+});
+```
+
+Then register the module in your app:
 
 ```tsx title="packages/app/src/App.tsx"
+import { createApp } from '@backstage/frontend-defaults';
+import catalogCustomizations from './catalog/catalogCustomizations';
+
+const app = createApp({
+  features: [catalogCustomizations],
+});
+
+export default app.createRoot();
+```
+
+### Removing default filters
+
+Default filters can be disabled through `app-config.yaml` by setting them to `false`:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-filter:catalog/lifecycle: false
+    - catalog-filter:catalog/tag: false
+    - catalog-filter:catalog/processing-status: false
+```
+
+## Customizing columns, actions, and table options
+
+In the old frontend system, customizing the catalog table columns, row actions,
+and table options was done by passing props directly to the `CatalogIndexPage`
+component. In the new frontend system, these customizations are done by
+overriding the `page:catalog` extension.
+
+For example, to customize the catalog index page with custom columns or actions,
+you can override the page extension using a frontend module:
+
+```tsx title="packages/app/src/catalog/customCatalogPage.tsx"
 import {
-  EntityKindPicker,
-  EntityTypePicker,
-  UserListPicker,
-  EntityOwnerPicker,
-  EntityNamespacePicker,
-} from '@backstage/plugin-catalog-react';
+  PageBlueprint,
+  createFrontendModule,
+  createRouteRef,
+} from '@backstage/frontend-plugin-api';
 
-<Route
-  path="/catalog"
-  element={
-    <CatalogIndexPage
-      filters={
-        <>
-          <EntityKindPicker />
-          <EntityTypePicker />
-          <UserListPicker />
-          <EntityOwnerPicker />
-          <EntityNamespacePicker />
-        </>
-      }
-    />
-  }
-/>;
+const customCatalogPage = PageBlueprint.make({
+  params: {
+    path: '/catalog',
+    routeRef: createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
+    loader: async () => {
+      const { CustomCatalogPage } = await import('./CustomCatalogPage');
+      return <CustomCatalogPage />;
+    },
+  },
+});
+
+export default createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [customCatalogPage],
+});
 ```
 
-### Custom Filters
+Inside your custom catalog page component you have full control over the table
+columns, actions, and options. You can compose a page using components from
+`@backstage/plugin-catalog` and `@backstage/plugin-catalog-react`:
 
-You can add custom filters. For example, suppose that we want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Here is how we can build a filter to support that need.
-
-First we need to create a new filter that implements the `EntityFilter` interface:
-
-```ts
-import { EntityFilter } from '@backstage/plugin-catalog-react';
-import { Entity } from '@backstage/catalog-model';
-
-class EntitySecurityTierFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
-  filterEntity(entity: Entity): boolean {
-    const tier = entity.metadata.annotations?.['company.com/security-tier'];
-    return tier !== undefined && this.values.includes(tier);
-  }
-}
-```
-
-The `EntityFilter` interface permits backend filters, which are passed along to the `catalog-backend` - or frontend filters, which are applied after entities are loaded from the backend.
-
-We'll use this filter to extend the default filters in a type-safe way. Let's create the custom filter shape extending the default somewhere alongside this filter:
-
-```ts
-export type CustomFilters = DefaultEntityFilters & {
-  securityTiers?: EntitySecurityTierFilter;
-};
-```
-
-To control this filter, we can create a React component that shows checkboxes for the security tiers. This component will make use of the `useEntityList` hook, which accepts this extended filter type as a [generic](https://www.typescriptlang.org/docs/handbook/2/generics.html) parameter:
-
-```tsx
-export const EntitySecurityTierPicker = () => {
-  // The securityTiers key is recognized due to the CustomFilter generic
-  const {
-    filters: { securityTiers },
-    updateFilters,
-  } = useEntityList<CustomFilters>();
-
-  // Toggles the value, depending on whether it's already selected
-  function onChange(value: string) {
-    const newTiers = securityTiers?.values.includes(value)
-      ? securityTiers.values.filter(tier => tier !== value)
-      : [...(securityTiers?.values ?? []), value];
-    updateFilters({
-      securityTiers: newTiers.length
-        ? new EntitySecurityTierFilter(newTiers)
-        : undefined,
-    });
-  }
-
-  const tierOptions = ['1', '2', '3'];
-  return (
-    <FormControl component="fieldset">
-      <Typography variant="button">Security Tier</Typography>
-      <FormGroup>
-        {tierOptions.map(tier => (
-          <FormControlLabel
-            key={tier}
-            control={
-              <Checkbox
-                checked={securityTiers?.values.includes(tier)}
-                onChange={() => onChange(tier)}
-              />
-            }
-            label={`Tier ${tier}`}
-          />
-        ))}
-      </FormGroup>
-    </FormControl>
-  );
-};
-```
-
-Now we can add the component to `CatalogIndexPage`:
-
-```tsx title="packages/app/src/App.tsx"
-{/* prettier-ignore */ /* highlight-add-start */}
-import { DefaultFilters } from '@backstage/plugin-catalog-react';
-{/* prettier-ignore */ /* highlight-add-end */}
-
-const routes = (
-  <FlatRoutes>
-    <Navigate key="/" to="catalog" />
-    {/* highlight-remove-next-line */}
-    <Route path="/catalog" element={<CatalogIndexPage />} />
-    {/* highlight-add-start */}
-    <Route
-      path="/catalog"
-      element={
-        <CatalogIndexPage
-          filters={
-            <>
-              <DefaultFilters />
-              <EntitySecurityTierPicker />
-            </>
-          }
-        />
-      }
-    />
-    {/* highlight-add-end */}
-    {/* ... */}
-  </FlatRoutes>
-);
-```
-
-The same method can be used to customize the _default_ filters with a different interface - for such usage, the generic argument isn't needed since the filter shape remains the same as the default.
-
-## Advanced Customization
-
-For those where none of the above fits their needs you can take the option of creating a fully custom `CatalogIndexPage`.
-
-```tsx title="packages/app/src/components/catalog/CustomCatalogIndex.tsx"
+```tsx title="packages/app/src/catalog/CustomCatalogPage.tsx"
 import {
   PageWithHeader,
   Content,
@@ -447,12 +278,12 @@ export const CustomCatalogPage = () => {
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
 
   return (
-    <PageWithHeader title={orgName} themeId="home">
-      <Content>
-        <ContentHeader title="">
-          <SupportButton>All your software catalog entities</SupportButton>
-        </ContentHeader>
-        <EntityListProvider pagination>
+    <EntityListProvider pagination>
+      <PageWithHeader title={orgName} themeId="home">
+        <Content>
+          <ContentHeader title="">
+            <SupportButton>All your software catalog entities</SupportButton>
+          </ContentHeader>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
               <EntityKindPicker />
@@ -468,48 +299,27 @@ export const CustomCatalogPage = () => {
               <CatalogTable />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
-        </EntityListProvider>
-      </Content>
-    </PageWithHeader>
+        </Content>
+      </PageWithHeader>
+    </EntityListProvider>
   );
 };
 ```
 
-The above is a very basic version of a fully custom `CatalogIndexPage`, you'll want to explore the various props to see what you can all do with them. This was built off the building blocks seen in the [`DefaultCatalogPage`](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/DefaultCatalogPage.tsx)
-
 :::note Note
 
-The catalog index page is designed to have a minimal code footprint to support easy customization, but creating a replica does introduce a possibility of drifting out of date over time. Be sure to check the catalog [CHANGELOG](https://github.com/backstage/backstage/blob/master/plugins/catalog/CHANGELOG.md) periodically.
+The catalog index page is designed to have a minimal code footprint to support
+easy customization, but creating a replica does introduce a possibility of
+drifting out of date over time. Be sure to check the catalog
+[CHANGELOG](https://github.com/backstage/backstage/blob/master/plugins/catalog/CHANGELOG.md)
+periodically.
 
 :::
 
-To use this custom `CatalogIndexPage` which we called `CustomCatalogPage`, you'll need to make the following change:
+For more details on extension overrides and the different override patterns
+available, see the [extension overrides](../../frontend-system/architecture/25-extension-overrides.md) documentation.
 
-```tsx title="packages/app/src/App.tsx"
-const routes = (
-  <FlatRoutes>
-    <Navigate key="/" to="catalog" />
-    {/* highlight-remove-next-line */}
-    <Route path="/catalog" element={<CatalogIndexPage />} />
-    {/* highlight-add-start */}
-    <Route path="/catalog" element={<CatalogIndexPage />}>
-      <CustomCatalogPage />
-    </Route>
-    {/* highlight-add-end */}
-    {/* ... */}
-  </FlatRoutes>
-);
-```
-
-## New Frontend System
-
-This section of the documentation explains how to create and configure catalog extensions in the [new frontend system](../../frontend-system/index.md).
-
-:::warning Warning
-
-This section is a work in progress.
-
-:::
+## Entity page
 
 ### Entity filters
 
@@ -571,10 +381,8 @@ Finally, entity predicates also support value operators that can be used in plac
 ```json
 {
   "filter": {
-    {
-      "kind": "component",
-      "spec.type": { "$in": ["service", "website"] }
-    },
+    "kind": "component",
+    "spec.type": { "$in": ["service", "website"] }
   }
 }
 ```
@@ -695,7 +503,7 @@ filter:
   relations:
     $contains:
       type: ownedBy
-      target:
+      targetRef:
         $in: [group:default/admins, group:default/viewers]
 ```
 
@@ -780,10 +588,10 @@ Example using a component and preserving the context menu:
 ```tsx
 import {
   EntityHeaderBlueprint,
-  type EntityContentLayoutHeaderProps,
+  type EntityHeaderBlueprintProps,
 } from '@backstage/plugin-catalog-react/alpha';
 
-const MyEntityHeader = ({ contextMenu }: EntityContentLayoutHeaderProps) => {
+const MyEntityHeader = ({ contextMenu }: EntityHeaderBlueprintProps) => {
   return (
     <header>
       <h1>My Custom Header</h1>
@@ -806,15 +614,16 @@ export const myCustomHeader = EntityHeaderBlueprint.make({
 
 Notes:
 
-- If you use loader instead of `componentLoader` you will not receive the `contextMenu` prop. Use `componentLoader` whenever you want to keep the menu button and contributed menu items.
+- If you use `loader` instead of `componentLoader` you will not receive the `contextMenu` prop. Use `componentLoader` whenever you want to keep the menu button and contributed menu items.
 - You can register multiple headers and select which one applies using `filter` and `order`. The first matching header by order is used.
 
 ### Customize the entire entity layout
 
-To override the whole entity page layout, provide a custom layout component via the `EntityLayoutBlueprint`. Your component receives two props:
+To override the whole entity page layout, provide a custom layout component via the `EntityLayoutBlueprint`. Your component receives the following props:
 
 - `header`: the header element that was selected (either the default or your overridden header). You should render it near the top.
-- `groupedRoutes`: an array of route descriptors with a path, title, group, and children. You are responsible for rendering navigation and routing for these.
+- `groupedRoutes`: an array of route descriptors, each with a `path`, `title`, `children`, and optional `group` and `icon`. You are responsible for rendering navigation and routing for these.
+- `groupDefinitions`, `defaultContentOrder`, and `showNavItemIcons`: the resolved group configuration (see [Configure groups, titles, and icons](#configure-groups-titles-and-icons)). Use these if you want to reproduce the default grouping behavior.
 
 Minimal example that renders a simple link bar and the selected content:
 
@@ -864,3 +673,106 @@ Tips:
 
 - You can create different layouts for different entity types using `filter` and `order`.
 - If you want something close to the default behavior but with a small tweak (e.g., a banner above the tabs), implement your layout by re-creating the bits you need, or start from the minimal example above and add your own navigation.
+
+### Configure groups, titles, and icons
+
+You can define and customize the tab groups that appear on the entity page, as well as enable icons for both groups and individual tabs.
+
+```yaml
+app:
+  extensions:
+    # Entity page (new frontend system)
+    - page:catalog/entity:
+        config:
+          # Show icons next to group and tab titles
+          showNavItemIcons: true
+
+          # Optionally override default groups and their icons
+          groups:
+            - overview:
+                title: Overview
+                icon: dashboard
+            - quality:
+                title: Quality
+                icon: verified
+            - documentation:
+                title: Docs
+                icon: description
+```
+
+Notes:
+
+- Icons for groups and tabs are resolved via the app's IconsApi. When using a string icon id (for example `"dashboard"`), ensure that the corresponding icon bundles are enabled/installed in your app (see the [IconBundleBlueprint documentation](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.IconBundleBlueprint.html)).
+- Group icons are only rendered if `showNavItemIcons` is set to `true`.
+
+### Content ordering within groups
+
+By default, content items within each group are sorted alphabetically by title. You can change this with the `defaultContentOrder` option, which supports two modes:
+
+- **`title`** (default) — sort alphabetically by the content extension's title (case-insensitive).
+- **`natural`** — preserve the natural extension discovery/registration order.
+
+A page-level `defaultContentOrder` sets the default for all groups, and individual groups can override it with a per-group `contentOrder`:
+
+```yaml
+app:
+  extensions:
+    - page:catalog/entity:
+        config:
+          # Default content order for all groups
+          defaultContentOrder: title
+
+          groups:
+            - documentation:
+                title: Docs
+                # Override: keep natural order for this group
+                contentOrder: natural
+```
+
+Note that content ordering only applies to content items within groups. Ungrouped tabs (those not matching any group definition) always retain their natural order.
+
+### Group aliases
+
+Groups can declare `aliases` — a list of other group IDs that should be treated as equivalent. Any entity content extension targeting an aliased group ID will be included in the aliasing group. This is useful when renaming or merging groups without having to reconfigure individual extensions:
+
+```yaml
+app:
+  extensions:
+    - page:catalog/entity:
+        config:
+          groups:
+            - develop:
+                title: Develop
+                # Content targeting 'development' will appear in this group
+                aliases:
+                  - development
+```
+
+### Overriding or disabling a tab's group (per extension)
+
+Each entity content extension (tabs on the entity page) can declare a default `group` in code. You can override or disable this per installation in `app-config.yaml` using the extension's config:
+
+```yaml
+app:
+  extensions:
+    # ...
+    # Example entity content extension instance id
+    - entity-content:example/my-content:
+        config:
+          # Move this tab to a custom group you defined above
+          group: custom
+          # Show an icon for this entity content page but only if `showNavItemIcons` is enabled for the `page:catalog/entity` extension
+          icon: my-icon
+
+    # Disassociate from any group and show as a standalone tab
+    - entity-content:example/another-content:
+        config:
+          group: false
+```
+
+### Tab icons for entity content
+
+Entity content extensions can also declare an `icon` parameter. When provided as a string, the icon id is looked up via the IconsApi. For the icon to render:
+
+- The entity page must have `showNavItemIcons: true` (see configuration above).
+- The icon id must be available in the app's enabled icon bundles.

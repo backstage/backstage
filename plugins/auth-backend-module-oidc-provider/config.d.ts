@@ -33,6 +33,7 @@ export interface Config {
           additionalScopes?: string | string[];
           prompt?: string;
           timeout?: HumanDuration | string;
+          startUrlSearchParams?: [string: string];
           signIn?: {
             resolvers: Array<
               | {

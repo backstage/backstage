@@ -1,13 +1,14 @@
 {
   "name": "@backstage/plugin-devtools-backend",
-  "version": "0.5.9",
+  "version": "0.5.18",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "devtools",
     "pluginPackages": [
       "@backstage/plugin-devtools",
       "@backstage/plugin-devtools-backend",
-      "@backstage/plugin-devtools-common"
+      "@backstage/plugin-devtools-common",
+      "@backstage/plugin-devtools-react"
     ]
   },
   "publishConfig": {
@@ -38,7 +39,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -51,13 +51,11 @@
     "@manypkg/get-packages": "^1.1.3",
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.0.0",
-    "express": "^4.18.1",
+    "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.0.0",
     "lodash": "^4.17.21",
-    "ping": "^0.4.1",
-    "semver": "^7.5.3",
-    "yn": "^4.0.0"
+    "ping": "^0.4.1"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

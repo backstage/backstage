@@ -89,6 +89,7 @@ export default {
         },
       ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = (args: EntityPeekAheadPopoverProps) => (

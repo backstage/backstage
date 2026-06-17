@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
@@ -63,7 +63,6 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(searchApiMock.query).toHaveBeenCalledTimes(1);
   });
 
   it('Should use parent search context if defined', async () => {
@@ -88,7 +87,9 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(searchApiMock.query).toHaveBeenCalledWith(initialState);
+    expect(searchApiMock.query).toHaveBeenCalledWith(initialState, {
+      signal: expect.any(AbortSignal),
+    });
   });
 
   it('Should create a local search context if a parent is not defined', async () => {
@@ -104,11 +105,20 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(searchApiMock.query).toHaveBeenCalledWith({
-      term: '',
-      filters: {},
-      types: [],
-      pageCursor: undefined,
+
+    const input = screen.getByLabelText<HTMLInputElement>('Search');
+    await userEvent.type(input, 'text');
+
+    await waitFor(() => {
+      expect(searchApiMock.query).toHaveBeenCalledWith(
+        {
+          term: 'text',
+          filters: {},
+          types: [],
+          pageCursor: undefined,
+        },
+        { signal: expect.any(AbortSignal) },
+      );
     });
   });
 
@@ -141,25 +151,8 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(searchApiMock.query).toHaveBeenCalledTimes(1);
     await userEvent.keyboard('{Escape}');
     expect(toggleModal).toHaveBeenCalledTimes(1);
-  });
-
-  it('should render SearchModal hiding its content', async () => {
-    const { getByTestId } = await renderInTestApp(
-      <ApiProvider apis={apiRegistry}>
-        <SearchModal open hidden toggleModal={toggleModal} />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/search': rootRouteRef,
-        },
-      },
-    );
-
-    expect(getByTestId('search-bar-next')).toBeInTheDocument();
-    expect(getByTestId('search-bar-next')).not.toBeVisible();
   });
 
   it('should focus on its search bar when opened', async () => {
@@ -200,6 +193,7 @@ describe('SearchModal', () => {
 
     expect(searchApiMock.query).toHaveBeenCalledWith(
       expect.objectContaining({ term: 'term' }),
+      { signal: expect.any(AbortSignal) },
     );
 
     const input = screen.getByLabelText<HTMLInputElement>('Search');
@@ -232,6 +226,7 @@ describe('SearchModal', () => {
 
     expect(searchApiMock.query).toHaveBeenCalledWith(
       expect.objectContaining({ term: 'term' }),
+      { signal: expect.any(AbortSignal) },
     );
 
     const fullResultsBtn = screen.getByRole('button', {
@@ -240,5 +235,37 @@ describe('SearchModal', () => {
     await userEvent.click(fullResultsBtn);
 
     expect(navigate).toHaveBeenCalledWith('/search?query=term');
+  });
+
+  it('should completely unmount the Dialog from DOM when open prop is false', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open={false} hidden={false} toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    // Dialog should not exist in the DOM at all (unmounted, not just hidden)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('should completely unmount the Dialog from DOM when hidden prop is true', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    // Dialog should not exist in the DOM at all (unmounted, not just hidden)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

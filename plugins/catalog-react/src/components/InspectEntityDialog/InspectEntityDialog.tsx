@@ -15,16 +15,16 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import { makeStyles } from '@material-ui/core/styles';
-import { ComponentProps, useEffect, useState, ReactNode } from 'react';
+import {
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanel,
+} from '@backstage/ui';
+import { useMemo } from 'react';
 import { AncestryPage } from './components/AncestryPage';
 import { ColocatedPage } from './components/ColocatedPage';
 import { JsonPage } from './components/JsonPage';
@@ -33,70 +33,68 @@ import { YamlPage } from './components/YamlPage';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-const useStyles = makeStyles(theme => ({
-  fullHeightDialog: {
-    height: 'calc(100% - 64px)',
-  },
-  root: {
-    display: 'flex',
-    flexGrow: 1,
-    width: '100%',
-    backgroundColor: theme.palette.background.paper,
-  },
-  tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-    flexShrink: 0,
-  },
-  tabContents: {
-    flexGrow: 1,
-    overflowX: 'auto',
-  },
-}));
+type TabKey = 'overview' | 'ancestry' | 'colocated' | 'json' | 'yaml';
 
-function TabPanel(props: {
-  children?: ReactNode;
-  index: number;
-  value: number;
+const TAB_KEYS: TabKey[] = [
+  'overview',
+  'ancestry',
+  'colocated',
+  'json',
+  'yaml',
+];
+
+function DialogContents(props: {
+  entity: Entity;
+  initialTab?: TabKey;
+  onSelect?: (tab: string) => void;
 }) {
-  const { children, value, index, ...other } = props;
-  const classes = useStyles();
+  const { entity, initialTab, onSelect } = props;
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+
+  const tabNames = useMemo(
+    () => ({
+      overview: t('inspectEntityDialog.tabNames.overview'),
+      ancestry: t('inspectEntityDialog.tabNames.ancestry'),
+      colocated: t('inspectEntityDialog.tabNames.colocated'),
+      json: t('inspectEntityDialog.tabNames.json'),
+      yaml: t('inspectEntityDialog.tabNames.yaml'),
+    }),
+    [t],
+  );
+
+  const tabContent: Record<TabKey, JSX.Element> = {
+    overview: <OverviewPage entity={entity} />,
+    ancestry: <AncestryPage entity={entity} />,
+    colocated: <ColocatedPage entity={entity} />,
+    json: <JsonPage entity={entity} />,
+    yaml: <YamlPage entity={entity} />,
+  };
+
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      className={classes.tabContents}
-      {...other}
-    >
-      {value === index && (
-        <Box pl={3} pr={3}>
-          {children}
-        </Box>
-      )}
-    </div>
+    <>
+      <DialogHeader>{t('inspectEntityDialog.title')}</DialogHeader>
+      <DialogBody>
+        <Tabs
+          defaultSelectedKey={initialTab || 'overview'}
+          onSelectionChange={key => onSelect?.(key as string)}
+        >
+          <TabList aria-label={t('inspectEntityDialog.tabsAriaLabel')}>
+            {TAB_KEYS.map(tab => (
+              <Tab key={tab} id={tab}>
+                {tabNames[tab]}
+              </Tab>
+            ))}
+          </TabList>
+          {TAB_KEYS.map(tab => (
+            <TabPanel key={tab} id={tab}>
+              {tabContent[tab]}
+            </TabPanel>
+          ))}
+        </Tabs>
+      </DialogBody>
+    </>
   );
 }
-
-function a11yProps(index: number) {
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
-}
-
-const tabNames: Record<
-  NonNullable<ComponentProps<typeof InspectEntityDialog>['initialTab']>,
-  string
-> = {
-  overview: 'Overview',
-  ancestry: 'Ancestry',
-  colocated: 'Colocated',
-  json: 'Raw JSON',
-  yaml: 'Raw YAML',
-} as const;
-
-const tabs = Object.keys(tabNames) as Array<keyof typeof tabNames>;
 
 /**
  * A dialog that lets users inspect the low level details of their entities.
@@ -110,80 +108,26 @@ export function InspectEntityDialog(props: {
   onClose: () => void;
   onSelect?: (tab: string) => void;
 }) {
-  const classes = useStyles();
+  const { open, entity, initialTab, onClose, onSelect } = props;
 
-  const [activeTab, setActiveTab] = useState(
-    getTabIndex(tabs, props.initialTab),
-  );
-  const { t } = useTranslationRef(catalogReactTranslationRef);
-
-  useEffect(() => {
-    getTabIndex(tabs, props.initialTab);
-  }, [props.open, props.initialTab]);
-
-  if (!props.entity) {
+  if (!entity) {
     return null;
   }
 
   return (
     <Dialog
-      fullWidth
-      maxWidth="xl"
-      open={props.open}
-      onClose={props.onClose}
-      aria-labelledby="entity-inspector-dialog-title"
-      PaperProps={{ className: classes.fullHeightDialog }}
+      isOpen={open}
+      onOpenChange={isOpen => !isOpen && onClose()}
+      width="940px"
+      height="100vh"
     >
-      <DialogTitle id="entity-inspector-dialog-title">
-        {t('inspectEntityDialog.title')}
-      </DialogTitle>
-      <DialogContent dividers>
-        <div className={classes.root}>
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={activeTab}
-            onChange={(_, tabIndex) => {
-              setActiveTab(tabIndex);
-              props.onSelect?.(tabs[tabIndex]);
-            }}
-            aria-label="Inspector options"
-            className={classes.tabs}
-          >
-            {tabs.map((tab, index) => (
-              <Tab key={tab} label={tabNames[tab]} {...a11yProps(index)} />
-            ))}
-          </Tabs>
-
-          <TabPanel value={activeTab} index={0}>
-            <OverviewPage entity={props.entity} />
-          </TabPanel>
-          <TabPanel value={activeTab} index={1}>
-            <AncestryPage entity={props.entity} />
-          </TabPanel>
-          <TabPanel value={activeTab} index={2}>
-            <ColocatedPage entity={props.entity} />
-          </TabPanel>
-          <TabPanel value={activeTab} index={3}>
-            <JsonPage entity={props.entity} />
-          </TabPanel>
-          <TabPanel value={activeTab} index={4}>
-            <YamlPage entity={props.entity} />
-          </TabPanel>
-        </div>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={props.onClose} color="primary">
-          {t('inspectEntityDialog.closeButtonTitle')}
-        </Button>
-      </DialogActions>
+      {open && (
+        <DialogContents
+          entity={entity}
+          initialTab={initialTab}
+          onSelect={onSelect}
+        />
+      )}
     </Dialog>
   );
-}
-
-function getTabIndex(
-  allTabs: string[],
-  initialTab: keyof typeof tabNames | undefined,
-) {
-  return initialTab ? allTabs.indexOf(initialTab) : 0;
 }

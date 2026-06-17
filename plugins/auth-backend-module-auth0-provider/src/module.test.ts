@@ -87,4 +87,186 @@ describe('authModuleAuth0Provider', () => {
       nonce: decodeURIComponent(nonceCookie.value),
     });
   });
+
+  it('should pass through organization and invitation parameters to the authorization URL', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    connection: 'connection',
+                    connectionScope: 'connectionScope',
+                    organization: 'foo-organization',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(server);
+
+    const res = await agent.get(
+      '/api/auth/auth0/start?env=development&organization=foo-organization&invitation=foo-invitation',
+    );
+
+    const startUrl = new URL(res.get('location'));
+    expect(startUrl.origin).toBe('https://domain');
+    expect(startUrl.pathname).toBe('/authorize');
+    expect(Object.fromEntries(startUrl.searchParams)).toEqual(
+      expect.objectContaining({
+        organization: 'foo-organization',
+        invitation: 'foo-invitation',
+      }),
+    );
+  });
+
+  it('should throw an error if the organization in the request does not match the organization configured in the strategy', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    connection: 'connection',
+                    connectionScope: 'connectionScope',
+                    organization: 'bar-organization',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(server);
+
+    const res = await agent.get(
+      '/api/auth/auth0/start?env=development&organization=foo-organization&invitation=foo-invitation',
+    );
+
+    expect(res.status).toEqual(400);
+    expect(res.text).toContain(
+      'Organization mismatch. The organization provided in the request does not match the organization configured in the strategy.',
+    );
+  });
+
+  it('should return Auth0 logout URL without federated param by default', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'test-client-id',
+                    clientSecret: 'clientSecret',
+                    domain: 'test.eu.auth0.com',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const res = await request(server)
+      .post('/api/auth/auth0/logout')
+      .query({ env: 'development' })
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .set('Origin', 'http://localhost:3000');
+
+    expect(res.status).toBe(200);
+    expect(res.body.logoutUrl).toContain('test.eu.auth0.com/v2/logout');
+    expect(res.body.logoutUrl).not.toContain('federated');
+    expect(res.body.logoutUrl).toContain('client_id=test-client-id');
+    expect(res.body.logoutUrl).toContain(
+      `returnTo=${encodeURIComponent('http://localhost:3000')}`,
+    );
+  });
+
+  it('should include federated param when federatedLogout is true', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'test-client-id',
+                    clientSecret: 'clientSecret',
+                    domain: 'test.eu.auth0.com',
+                    federatedLogout: true,
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const res = await request(server)
+      .post('/api/auth/auth0/logout')
+      .query({ env: 'development' })
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .set('Origin', 'http://localhost:3000');
+
+    expect(res.status).toBe(200);
+    expect(res.body.logoutUrl).toContain('test.eu.auth0.com/v2/logout');
+    expect(res.body.logoutUrl).toContain('federated');
+    expect(res.body.logoutUrl).toContain('client_id=test-client-id');
+    expect(res.body.logoutUrl).toContain(
+      `returnTo=${encodeURIComponent('http://localhost:3000')}`,
+    );
+  });
 });

@@ -16,7 +16,7 @@
 
 // @ts-check
 
-const path = require('path');
+const path = require('node:path');
 const visitImports = require('../lib/visitImports');
 const getPackageMap = require('../lib/getPackages');
 

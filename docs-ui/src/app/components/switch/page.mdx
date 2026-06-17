@@ -1,0 +1,97 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { switchPropDefs } from './props-definition';
+import {
+  snippetUsage,
+  defaultSnippet,
+  disabledSnippet,
+  defaultSelectedSnippet,
+  readOnlySnippet,
+  controlledSnippet,
+} from './snippets';
+import {
+  Default,
+  Disabled,
+  DefaultSelected,
+  ReadOnly,
+  Controlled,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { SwitchDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  switch: 'https://react-aria.adobe.com/Switch',
+};
+
+<PageTitle
+  title="Switch"
+  description="A toggle control for on/off settings with label support."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={snippetUsage} />
+
+## API reference
+
+<PropsTable data={switchPropDefs} />
+
+<ReactAriaLink component="Switch" href={reactAriaUrls.switch} />
+
+## Examples
+
+### Disabled
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Disabled />}
+  code={disabledSnippet}
+/>
+
+### Default selected
+
+Use `defaultSelected` to start the switch in the on state for uncontrolled usage.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<DefaultSelected />}
+  code={defaultSelectedSnippet}
+/>
+
+### Read only
+
+Use `isReadOnly` to prevent interaction while keeping the switch focusable and its value visible.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ReadOnly />}
+  code={readOnlySnippet}
+/>
+
+### Controlled
+
+Use `isSelected` and `onChange` together for controlled state.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Controlled />}
+  code={controlledSnippet}
+/>
+
+<Theming definition={SwitchDefinition} />
+
+<ChangelogComponent component="switch" />

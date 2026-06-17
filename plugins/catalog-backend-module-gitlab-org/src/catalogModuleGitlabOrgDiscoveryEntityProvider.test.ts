@@ -21,7 +21,7 @@ import {
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { catalogModuleGitlabOrgDiscoveryEntityProvider } from './catalogModuleGitlabOrgDiscoveryEntityProvider';

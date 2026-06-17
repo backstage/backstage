@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, dirname } from 'path';
+import { resolve as resolvePath, dirname } from 'node:path';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import forge from 'node-forge';
 

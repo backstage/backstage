@@ -1,5 +1,87 @@
 # @backstage/plugin-notifications-common
 
+## 0.2.3
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/config@1.3.8
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/config@1.3.8-next.0
+  - @backstage/types@1.2.2
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.7
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.7-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- e9eb400: Allow configuring included topics for email notifications.
+
+## 0.2.0
+
+### Minor Changes
+
+- 87e597c: Adds support for default configuration for an entire notification channel.
+  This setting will also be inherited down to origins and topics while still respecting the users individual choices.
+
+  This will be handy if you want to use a "opt-in" strategy.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6
+
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 87e597c: Adds support for default configuration for an entire notification channel.
+  This setting will also be inherited down to origins and topics while still respecting the users individual choices.
+
+  This will be handy if you want to use a "opt-in" strategy.
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/types@1.2.2
+
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+
+## 0.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
 ## 0.1.0
 
 ### Minor Changes

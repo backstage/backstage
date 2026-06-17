@@ -16,16 +16,16 @@
 import { PackageGraph } from '@backstage/cli-node';
 import { OptionValues } from 'commander';
 import { exec } from '../../../../lib/exec';
+import { targetPaths } from '@backstage/cli-common';
 import {
   CiRunDetails,
   generateCompareSummaryMarkdown,
 } from '../../../../lib/openapi/optic/helpers';
-import { paths as cliPaths } from '../../../../lib/paths';
 import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';
 
 function cleanUpApiName(e: { apiName: string }) {
   e.apiName = e.apiName
-    .replace(cliPaths.targetDir, '')
+    .replace(targetPaths.dir, '')
     .replace(YAML_SCHEMA_PATH, '');
 }
 
@@ -46,7 +46,7 @@ export async function command(opts: OptionValues) {
     const changedOpenApiSpecs = changedFiles
       .split('\n')
       .filter(e => e.endsWith(YAML_SCHEMA_PATH))
-      .map(e => cliPaths.resolveTarget(e));
+      .map(e => targetPaths.resolve(e));
 
     // filter packages by changedFiles
     packages = packages.filter(pkg =>

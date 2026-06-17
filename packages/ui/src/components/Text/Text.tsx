@@ -15,40 +15,28 @@
  */
 
 import { forwardRef } from 'react';
-import clsx from 'clsx';
 import type { ElementType } from 'react';
 import type { TextProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
+import { TextDefinition } from './definition';
 
 function TextComponent<T extends ElementType = 'span'>(
-  {
-    as,
-    variant = 'body-medium',
-    weight = 'regular',
-    color = 'primary',
-    className,
-    truncate,
-    style,
-    ...restProps
-  }: TextProps<T>,
+  props: TextProps<T>,
   ref: React.Ref<any>,
 ) {
-  const Component = as || 'span';
+  const { ownProps, restProps, dataAttributes } = useDefinition(
+    TextDefinition,
+    props,
+  );
+  const { classes, as } = ownProps;
 
-  const { classNames, dataAttributes } = useStyles('Text', {
-    variant,
-    weight,
-    color,
-  });
+  const Component = as;
 
   return (
     <Component
       ref={ref}
-      className={clsx(classNames.root, className)}
-      data-truncate={truncate}
-      data-as={as}
+      className={classes.root}
       {...dataAttributes}
-      style={style}
       {...restProps}
     />
   );
@@ -56,7 +44,11 @@ function TextComponent<T extends ElementType = 'span'>(
 
 TextComponent.displayName = 'Text';
 
-/** @public */
+/**
+ * A typographic primitive that renders text with design system variants, weights, and colors, and can render as any HTML element.
+ *
+ * @public
+ */
 export const Text = forwardRef(TextComponent) as {
   <T extends ElementType = 'p'>(
     props: TextProps<T> & { ref?: React.ComponentPropsWithRef<T>['ref'] },

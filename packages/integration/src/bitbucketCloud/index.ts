@@ -24,5 +24,6 @@ export {
   getBitbucketCloudDefaultBranch,
   getBitbucketCloudDownloadUrl,
   getBitbucketCloudFileFetchUrl,
+  getBitbucketCloudOAuthToken,
   getBitbucketCloudRequestOptions,
 } from './core';

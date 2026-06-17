@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { join as joinPath } from 'path';
+import { join as joinPath } from 'node:path';
 import fs from 'fs-extra';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';

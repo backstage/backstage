@@ -55,10 +55,11 @@ export interface MyTaskPageProps {
     editor?: boolean;
     actions?: boolean;
     create?: boolean;
+    templatingExtensions?: boolean;
   };
 }
 
-const ListTaskPageContent = (props: MyTaskPageProps) => {
+export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const { initiallySelectedFilter = 'owned' } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const [limit, setLimit] = useState(5);
@@ -193,7 +194,10 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
       props?.contextMenu?.create !== false
         ? () => navigate(createLink())
         : undefined,
-    onTemplatingExtensionsClicked: () => navigate(templatingExtensionsLink()),
+    onTemplatingExtensionsClicked:
+      props?.contextMenu?.templatingExtensions !== false
+        ? () => navigate(templatingExtensionsLink())
+        : undefined,
   };
   return (
     <Page themeId="home">

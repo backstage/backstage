@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import {
   TaskStore,
   TaskStoreCreateTaskOptions,
@@ -85,8 +85,6 @@ export type RawDbTaskEventRow = {
 
 /**
  * DatabaseTaskStore
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
- * @public
  */
 export type DatabaseTaskStoreOptions = {
   database: DatabaseService | Knex;
@@ -118,8 +116,6 @@ const parseSqlDateToIsoString = <T>(input: T): T | string => {
 
 /**
  * DatabaseTaskStore
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
- * @public
  */
 export class DatabaseTaskStore implements TaskStore {
   private readonly db: Knex;
@@ -723,7 +719,7 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async retryTask?(options: {
+  async retryTask(options: {
     secrets?: TaskSecrets;
     taskId: string;
   }): Promise<void> {

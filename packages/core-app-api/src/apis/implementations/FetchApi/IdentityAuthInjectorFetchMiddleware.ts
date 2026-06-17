@@ -64,12 +64,22 @@ export class IdentityAuthInjectorFetchMiddleware implements FetchMiddleware {
     });
   }
 
+  public readonly identityApi: IdentityApi;
+  public readonly allowUrl: (url: string) => boolean;
+  public readonly headerName: string;
+  public readonly headerValue: (pluginId: string) => string;
+
   constructor(
-    public readonly identityApi: IdentityApi,
-    public readonly allowUrl: (url: string) => boolean,
-    public readonly headerName: string,
-    public readonly headerValue: (pluginId: string) => string,
-  ) {}
+    identityApi: IdentityApi,
+    allowUrl: (url: string) => boolean,
+    headerName: string,
+    headerValue: (pluginId: string) => string,
+  ) {
+    this.identityApi = identityApi;
+    this.allowUrl = allowUrl;
+    this.headerName = headerName;
+    this.headerValue = headerValue;
+  }
 
   apply(next: typeof fetch): typeof fetch {
     return async (input, init) => {

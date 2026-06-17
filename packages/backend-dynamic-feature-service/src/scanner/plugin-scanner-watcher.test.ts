@@ -17,11 +17,11 @@
 import { PluginScanner } from './plugin-scanner';
 import { LogContent, Logs, MockedLogger } from '../__testUtils__/testUtils';
 import { Config, ConfigReader } from '@backstage/config';
-import path, { join } from 'path';
+import path, { join } from 'node:path';
 import { ScannedPluginPackage } from './types';
-import { mkdtempSync, rmSync } from 'fs';
-import { mkdir, writeFile, rm } from 'fs/promises';
-import { tmpdir } from 'os';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdir, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import waitForExpect from 'wait-for-expect';
 
 describe('plugin-scanner', () => {

@@ -134,6 +134,91 @@ describe('hasAnnotation permission rule', () => {
         ),
       ).toEqual(true);
     });
+    it('should be case insensitive when matching annotation', () => {
+      expect(
+        hasAnnotation.apply(
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'test-component',
+              annotations: {
+                'other-annotation': 'foo',
+                'backstage.io/test-annotation': 'bar',
+              },
+            },
+          },
+          {
+            annotation: 'BACKSTAGE.IO/TEST-ANNOTATION',
+          },
+        ),
+      ).toEqual(true);
+    });
+    it('should be case insensitive when matching annotation values', () => {
+      expect(
+        hasAnnotation.apply(
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'test-component',
+              annotations: {
+                'other-annotation': 'foo',
+                'backstage.io/test-annotation': 'bar',
+              },
+            },
+          },
+          {
+            annotation: 'BACKSTAGE.IO/TEST-ANNOTATION',
+            value: 'BAR',
+          },
+        ),
+      ).toEqual(true);
+    });
+
+    it('matches annotation value across case-differing duplicate keys', () => {
+      expect(
+        hasAnnotation.apply(
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'test-component',
+              annotations: {
+                Foo: 'false',
+                foo: 'true',
+              },
+            },
+          },
+          {
+            annotation: 'Foo',
+            value: 'true',
+          },
+        ),
+      ).toEqual(true);
+    });
+
+    it('returns false when no case-differing duplicate key has the expected value', () => {
+      expect(
+        hasAnnotation.apply(
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'test-component',
+              annotations: {
+                Foo: 'false',
+                foo: 'true',
+              },
+            },
+          },
+          {
+            annotation: 'Foo',
+            value: 'other',
+          },
+        ),
+      ).toEqual(false);
+    });
   });
 
   describe('toQuery', () => {

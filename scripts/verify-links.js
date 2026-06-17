@@ -17,11 +17,96 @@
 
 /* eslint-disable @backstage/no-undeclared-imports */
 
-const { resolve: resolvePath, join: joinPath, dirname } = require('path');
-const fs = require('fs').promises;
-const { existsSync } = require('fs');
+const { resolve: resolvePath, join: joinPath, dirname } = require('node:path');
+const fs = require('node:fs').promises;
+const { existsSync, statSync } = require('node:fs');
 
 const IGNORED_DIRS = ['node_modules', 'dist', 'bin', '.git'];
+const projectRoot = resolvePath(__dirname, '..');
+
+// Zero-width and other invisible Unicode characters that shouldn't appear in URLs
+const INVISIBLE_CHAR_PATTERN =
+  /[\u200B\u200C\u200D\u200E\u200F\uFEFF\u00AD\u2060\u2028\u2029]/;
+
+// Generates a GitHub/Docusaurus-compatible heading slug.
+// Handles explicit {#custom-id} overrides and standard slugification.
+function headingToSlug(headingText) {
+  const explicitId = headingText.match(/\{#([^}]+)\}\s*$/);
+  if (explicitId) {
+    return explicitId[1];
+  }
+
+  let slug = headingText
+    .toLowerCase()
+    // Remove inline code backticks
+    .replace(/`/g, '')
+    // Remove markdown bold/italic markers
+    .replace(/[*_]/g, '')
+    // Remove markdown links, keep link text
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
+
+  // Remove HTML tags in a loop to handle nested fragments like <scr<script>ipt>
+  let previous;
+  do {
+    previous = slug;
+    slug = slug.replace(/<[^>]+>/g, '');
+  } while (slug !== previous);
+
+  return (
+    slug
+      // Replace special characters with hyphens (keeping alphanumeric, hyphens, spaces)
+      .replace(/[^\w\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+  );
+}
+
+// Extracts all heading anchors from a markdown file's content,
+// handling duplicate headings with -1, -2, etc. suffixes (GitHub/Docusaurus behavior)
+function extractHeadingAnchors(content) {
+  const anchors = new Set();
+  const slugCounts = new Map();
+
+  // Strip fenced code blocks to avoid matching headings inside them
+  const stripped = content.replace(/^```[^\n]*\n[\s\S]*?^```/gm, '');
+
+  const headingPattern = /^#{1,6}\s+(.+)$/gm;
+  for (
+    let match = headingPattern.exec(stripped);
+    match !== null;
+    match = headingPattern.exec(stripped)
+  ) {
+    const baseSlug = headingToSlug(match[1]);
+    const count = slugCounts.get(baseSlug) || 0;
+    slugCounts.set(baseSlug, count + 1);
+
+    if (count === 0) {
+      anchors.add(baseSlug);
+    } else {
+      anchors.add(`${baseSlug}-${count}`);
+    }
+  }
+  return anchors;
+}
+
+// Cache for file content and extracted anchors to avoid repeated reads
+const anchorCache = new Map();
+
+async function getAnchorsForFile(filePath) {
+  const absPath = resolvePath(projectRoot, filePath);
+  if (anchorCache.has(absPath)) {
+    return anchorCache.get(absPath);
+  }
+  try {
+    const content = await fs.readFile(absPath, 'utf8');
+    const anchors = extractHeadingAnchors(content);
+    anchorCache.set(absPath, anchors);
+    return anchors;
+  } catch {
+    anchorCache.set(absPath, null);
+    return null;
+  }
+}
 
 async function listFiles(dir) {
   const files = await fs.readdir(dir);
@@ -40,15 +125,23 @@ async function listFiles(dir) {
   return paths.flat();
 }
 
-const projectRoot = resolvePath(__dirname, '..');
-
 async function verifyUrl(basePath, absUrl, docPages) {
-  const url = absUrl
-    .replace(/#.*$/, '')
-    .replace(
-      /https:\/\/github.com\/backstage\/backstage\/(tree|blob)\/master/,
-      '',
+  // Check for invisible/zero-width characters in the URL
+  if (INVISIBLE_CHAR_PATTERN.test(absUrl)) {
+    return { url: absUrl, basePath, problem: 'invisible-chars' };
+  }
+
+  const anchorMatch = absUrl.match(/#(.+)$/);
+  const anchor = anchorMatch ? anchorMatch[1] : undefined;
+  const urlWithoutAnchor = absUrl.replace(/#.*$/, '');
+  const isGitHubUrl =
+    /https:\/\/github.com\/backstage\/backstage\/(tree|blob)\/master/.test(
+      urlWithoutAnchor,
     );
+  const url = urlWithoutAnchor.replace(
+    /https:\/\/github.com\/backstage\/backstage\/(tree|blob)\/master/,
+    '',
+  );
 
   // Avoid having absolute URL links within docs/, so that links work on the site
   if (
@@ -57,15 +150,35 @@ async function verifyUrl(basePath, absUrl, docPages) {
     ) &&
     basePath.match(/^(?:docs|microsite)\//)
   ) {
-    // Exception for linking to the changelogs, since we encourage those to be browsed in GitHub
+    // Exception for linking to the changelogs, since we encourage those to be browsed in GitHub.
+    // When linked from the matching release notes file, allow the link even if the changelog
+    // doesn't exist yet — it is generated during the release process after the notes are merged.
     if (absUrl.match(/docs\/releases\/.+-changelog\.md$/)) {
       if (docPages.has(url.slice(0, -'.md'.length))) {
+        return undefined;
+      }
+      const changelogBase = url.match(/\/(v[^/]+)-changelog\.md$/);
+      const sourceVersion = basePath.match(/docs\/releases\/(v[^-]+)\.md$/);
+      if (
+        changelogBase &&
+        sourceVersion &&
+        changelogBase[1] === sourceVersion[1]
+      ) {
         return undefined;
       }
       return { url: absUrl, basePath, problem: 'missing' };
     }
 
     return { url: absUrl, basePath, problem: 'github' };
+  }
+
+  // Same-file anchor reference (e.g. #some-heading)
+  if (!url && anchor) {
+    const anchors = await getAnchorsForFile(basePath);
+    if (anchors && !anchors.has(anchor)) {
+      return { url: absUrl, basePath, problem: 'bad-anchor' };
+    }
+    return undefined;
   }
 
   if (!url) {
@@ -99,6 +212,17 @@ async function verifyUrl(basePath, absUrl, docPages) {
       }
     }
 
+    if (url.startsWith('/api/stable/')) {
+      const apiPath = resolvePath(
+        projectRoot,
+        `type-docs/${url.slice('/api/stable/'.length)}`,
+      );
+      if (existsSync(apiPath)) {
+        return undefined;
+      }
+      return { url, basePath, apiPath, problem: 'api-missing' };
+    }
+
     const staticPath = resolvePath(projectRoot, 'microsite/static', `.${url}`);
     if (existsSync(staticPath)) {
       return undefined;
@@ -121,12 +245,42 @@ async function verifyUrl(basePath, absUrl, docPages) {
     return { url, basePath, problem: 'missing' };
   }
 
+  // Flag relative links to directories that are missing /index.md —
+  // these resolve as existing dirs but aren't valid doc links.
+  // Only check within docs/ since other directories (like microsite/)
+  // may legitimately link to directories in READMEs.
+  if (
+    basePath.match(/^docs\//) &&
+    !url.startsWith('/') &&
+    existsSync(path) &&
+    statSync(path).isDirectory()
+  ) {
+    return { url: absUrl, basePath, problem: 'directory-link' };
+  }
+
+  // Verify anchors in cross-file links, but skip rewritten GitHub URLs
+  // since their anchors may reference generated content we can't verify locally
+  if (anchor && path.endsWith('.md') && !isGitHubUrl) {
+    const targetAnchors = await getAnchorsForFile(
+      path.startsWith(projectRoot) ? path.slice(projectRoot.length + 1) : path,
+    );
+    if (targetAnchors && !targetAnchors.has(anchor)) {
+      return { url: absUrl, basePath, problem: 'bad-anchor' };
+    }
+  }
+
   return undefined;
+}
+
+// Strips fenced code blocks from markdown content so we don't check links inside them
+function stripCodeBlocks(content) {
+  return content.replace(/^```[^\n]*\n[\s\S]*?^```/gm, '');
 }
 
 async function verifyFile(filePath, docPages) {
   const content = await fs.readFile(filePath, 'utf8');
-  const mdLinks = content.match(/\[.+?\]\(.+?\)/g) || [];
+  const strippedContent = stripCodeBlocks(content);
+  const mdLinks = strippedContent.match(/\[.+?\]\(.+?\)/g) || [];
   const badUrls = [];
 
   for (const mdLink of mdLinks) {
@@ -138,7 +292,7 @@ async function verifyFile(filePath, docPages) {
   }
 
   const multiLineLinks =
-    content.match(/\[[^\]\n]+?\n[^\]\n]*?(?:\n[^\]\n]*?)?\]\(/g) || [];
+    strippedContent.match(/\[[^\]\n]+?\n[^\]\n]*?(?:\n[^\]\n]*?)?\]\(/g) || [];
   badUrls.push(
     ...multiLineLinks.map(url => ({
       url,
@@ -182,7 +336,6 @@ async function main() {
   process.chdir(projectRoot);
 
   const isCI = Boolean(process.env.CI);
-  const hasReference = existsSync(resolvePath(projectRoot, 'docs/reference'));
 
   const files = await listFiles('.');
   const mdFiles = files.filter(f => f.endsWith('.md'));
@@ -196,15 +349,24 @@ async function main() {
     badUrls.push(...badFileUrls);
   }
 
+  const hasReference = existsSync(resolvePath(projectRoot, 'docs/reference'));
   if (!hasReference) {
     console.log(
       "Skipping API reference link validation, no docs/reference/ dir. Reference docs can be built with 'yarn build:api-docs'",
     );
   }
 
+  const hasApiDocs = existsSync(resolvePath(projectRoot, 'type-docs'));
+  if (!hasApiDocs) {
+    console.log(
+      "Skipping API docs link validation, no type-docs/ dir. API docs can be built with 'yarn backstage-repo-tools package-docs'",
+    );
+  }
+
   if (badUrls.length) {
     console.log(`Found ${badUrls.length} bad links within repo`);
-    for (const { url, basePath, problem } of badUrls) {
+    for (const badUrl of badUrls) {
+      const { url, basePath, problem } = badUrl;
       if (problem === 'missing') {
         if (url.startsWith('../reference/') && !isCI && !hasReference) {
           continue;
@@ -238,6 +400,14 @@ async function main() {
         if (suggestion) {
           console.error(`  Replace with: ${suggestion}`);
         }
+      } else if (problem === 'api-missing') {
+        if (!hasApiDocs) {
+          continue;
+        }
+        console.error('Invalid API docs link');
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
+        console.error(`  Resolved path: ${badUrl.apiPath}`);
       } else if (problem === 'not-relative') {
         console.error('Links within /docs/ must be relative');
         console.error(`  From: ${basePath}`);
@@ -252,6 +422,20 @@ async function main() {
         console.error(`Links are not allowed to span multiple lines:`);
         console.error(`  From: ${basePath}`);
         console.error(`  To: ${url.replace(/\n/g, '\n      ')}`);
+      } else if (problem === 'bad-anchor') {
+        console.error(`Anchor not found in target document`);
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
+      } else if (problem === 'directory-link') {
+        console.error(
+          `Link points to a directory instead of a file, use index.md suffix`,
+        );
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
+      } else if (problem === 'invisible-chars') {
+        console.error(`Link contains invisible or zero-width characters`);
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${JSON.stringify(url)}`);
       }
     }
     process.exit(1);

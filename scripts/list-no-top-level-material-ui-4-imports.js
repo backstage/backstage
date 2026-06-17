@@ -17,7 +17,7 @@
 
 const fs = require('fs-extra');
 const { getPackages } = require('@manypkg/get-packages');
-const { resolve, join } = require('path');
+const { resolve, join } = require('node:path');
 
 async function main() {
   const rootPath = resolve(__dirname, '..');

@@ -1,174 +1,102 @@
-import { ComponentCards, ComponentCard } from '@/components/ComponentCards';
+import { ComponentGrid } from '@/components/ComponentGrid';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ColorFamily } from '@/components/ColorFamily';
+import {
+  surfacesSnippet,
+  adaptiveSnippet,
+  customCardSnippet,
+  customTokensSnippet,
+  colorPickerSnippet,
+} from './snippets';
 
-## Welcome to Backstage UI, the new design library for Backstage plugins.
+# Get Started with BUI
 
-This project is still under active development but we will make sure to document
-the API as we go. We are aiming to improve the general UI of Backstage and
-plugins across Backstage. This new library will take time to build but we are
-building it incrementally with not conflict with the existing theming system.
+Backstage UI is a design system created specifically for Backstage, built with React, TypeScript, and vanilla CSS.
+This open-source library is hosted in the Backstage monorepo. While it can be used in other projects, Backstage UI
+is designed to deliver a consistent, accessible, and extensible experience tailored to Backstage users.
 
-### Actions
+Backstage UI is installed by default on every instance of Backstage, so you can start using it right away.
+If your setup doesn&apos;t include it yet, follow the [installation guide](/get-started/installation) to get started.
 
-<ComponentCards>
-  <ComponentCard
-    title="Button"
-    description="A button component to help you trigger actions."
-    href="/components/button"
-  />
-  <ComponentCard
-    title="ButtonLink"
-    description="A button component to help you trigger actions."
-    href="/components/button-link"
-  />
-  <ComponentCard
-    title="ButtonIcon"
-    description="A button for actions with an icon."
-    href="/components/button-icon"
-  />
-  <ComponentCard
-    title="Link"
-    description="A link component to help you navigate to other pages."
-    href="/components/link"
-  />
-</ComponentCards>
+## Layout containers
 
-### Layout
+[`Box`](/components/box), [`Flex`](/components/flex), [`Grid`](/components/grid), and [`Card`](/components/card) are the foundation of every layout in Backstage UI.
+Each one offers a set of utility props that map directly to our design tokens, so you can build consistent
+layouts without writing any CSS. When nested, they also act as surfaces and automatically increment the
+background depth so visual hierarchy is handled for you.
 
-<ComponentCards>
-  <ComponentCard
-    title="Box"
-    description="The simplest component to help you style your content."
-    href="/components/box"
-  />
-  <ComponentCard
-    title="Flex"
-    description="A flex container for your layout."
-    href="/components/flex"
-  />
-  <ComponentCard
-    title="Grid"
-    description="A grid container for your layout."
-    href="/components/grid"
-  />
-  <ComponentCard
-    title="Container"
-    description="Helps you center your content."
-    href="/components/container"
-  />
-  <ComponentCard
-    title="Card"
-    description="A component to separate your content on the page."
-    href="/components/card"
-  />
-  <ComponentCard
-    title="Collapsible"
-    description="A collapsible component for expandable content."
-    href="/components/collapsible"
-  />
-</ComponentCards>
+<CodeBlock
+  lang="tsx"
+  title="Nested surfaces with automatic styling"
+  code={surfacesSnippet}
+/>
 
-### Selection and inputs
+## Adaptive components
 
-<ComponentCards>
-  <ComponentCard
-    title="Checkbox"
-    description="A checkbox component to help you select items."
-    href="/components/checkbox"
-  />
-  <ComponentCard
-    title="TextField"
-    description="A text field component to help you input text."
-    href="/components/text-field"
-  />
-  <ComponentCard
-    title="SearchField"
-    description="A search field component to help you search for items."
-    href="/components/search-field"
-  />
-  <ComponentCard
-    title="Select"
-    description="A select component to help you select items."
-    href="/components/select"
-  />
-  <ComponentCard
-    title="Switch"
-    description="A switch component to help you toggle items."
-    href="/components/switch"
-  />
-  <ComponentCard
-    title="RadioGroup"
-    description="A radio group component to help you select items."
-    href="/components/radio-group"
-  />
-</ComponentCards>
+Components like [`Card`](/components/card), [`Button`](/components/button), [`Text`](/components/text), and others are **adaptive components**. They
+automatically adjust their colors, borders, and backgrounds to match the surface they live on. Drop a
+[`Button`](/components/button) inside a [`Card`](/components/card) inside a [`Box`](/components/box) and each component styles itself appropriately
+without any extra configuration.
 
-### Navigation
+<CodeBlock
+  lang="tsx"
+  title="Nested surfaces with automatic styling"
+  code={adaptiveSnippet}
+/>
 
-<ComponentCards>
-  <ComponentCard
-    title="Header"
-    description="A header component to help you display a header."
-    href="/components/header"
-  />
-  <ComponentCard
-    title="HeaderPage"
-    description="A header to complement the Header component."
-    href="/components/header-page"
-  />
-  <ComponentCard
-    title="Menu"
-    description="A menu component to help you display a menu."
-    href="/components/menu"
-  />
-  <ComponentCard
-    title="Tabs"
-    description="A tabs component to help you display a tabs."
-    href="/components/tabs"
-  />
-</ComponentCards>
+## The neutral scale background colors
 
-### Images and icons
+<ColorFamily />
 
-<ComponentCards>
-  <ComponentCard
-    title="Avatar"
-    description="A avatar component to help you display user avatars."
-    href="/components/avatar"
-  />
-  <ComponentCard
-    title="Icon"
-    description="A icon component to help you display icons."
-    href="/components/icon"
-  />
-</ComponentCards>
+## Creating custom components
 
-### Feedback indicators
+As much as possible we would like you to use components directly without creating custom components. If you need to create a custom component, you should use the components provided by Backstage UI.
 
-<ComponentCards>
-  <ComponentCard
-    title="Skeleton"
-    description="A skeleton component to help you display loading states."
-    href="/components/skeleton"
-  />
-  <ComponentCard
-    title="Tooltip"
-    description="A tooltip component to help you display a tooltip."
-    href="/components/tooltip"
-  />
-</ComponentCards>
+<CodeBlock
+  lang="tsx"
+  title="Creating a custom card using BUI components"
+  code={customCardSnippet}
+/>
 
-### Typography
+If you need to build custom components outside of BUI, you can use our [design tokens](/tokens) as CSS variables to ensure your styles stay consistent with the rest of the system.
 
-<ComponentCards>
-  <ComponentCard
-    title="Text"
-    description="A text component to help you style your text."
-    href="/components/text"
-  />
-</ComponentCards>
+<CodeBlock
+  lang="tsx"
+  title="Creating a custom component using BUI tokens"
+  code={customTokensSnippet}
+/>
 
-## Support
+When building custom interactive components, we strongly recommend using [React Aria](https://react-spectrum.adobe.com/react-aria/) as your foundation. React Aria provides all the necessary accessibility features out of the box — keyboard navigation, focus management, ARIA attributes, and screen reader support — so you can focus on styling and logic without worrying about compliance.
 
-Now that you have the basics down, you can start building your plugin using the new design system.
-Please familiarise yourself first with our theming principles. This will help you understand the core concepts of the design system.
-If you have any questions, please reach out to us on [Discord](https://discord.gg/MUpMjP2).
+<CodeBlock
+  lang="tsx"
+  title="Building a color picker using React Aria and BUI tokens"
+  code={colorPickerSnippet}
+/>
+
+## Philosophy
+
+Backstage empowers product teams to build software faster and with greater quality. Its extensibility,
+however, required us to rethink how to deliver a consistent and accessible user experience. Our goal is
+to enable plugin creators to design plugins that seamlessly integrate with Backstage&apos;s look and feel while
+still allowing customization to match individual brands.
+
+Instead of reinventing the wheel, we chose to focus on layout and styling while leveraging existing headless
+component libraries for functionality. This approach allows us to dedicate our efforts to creating a cohesive
+and flexible theming system.
+
+## Team
+
+Backstage UI is designed and maintained primarily by Spotify&apos;s Backstage team, leveraging Spotify&apos;s expertise in
+crafting high-quality design and technology. Drawing from our experience in building reliable and intuitive
+user experiences for the music industry, we&apos;ve created a design system that looks great and works seamlessly.
+
+## Community
+
+Backstage UI is an open-source project and we welcome contributions from the community. If you are interested in
+contributing to Backstage UI, please read our [contributing guide](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)
+and our [code of conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md).
+
+## License
+
+Backstage UI is licensed under the Apache 2.0 license. See the [LICENSE](https://github.com/backstage/backstage/blob/master/LICENSE) file for more details.

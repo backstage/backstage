@@ -52,16 +52,24 @@ export type DatabaseManagerOptions = {
  * Testable implementation class for {@link DatabaseManager} below.
  */
 export class DatabaseManagerImpl {
+  private readonly config: Config;
+  private readonly connectors: Record<string, Connector>;
+  private readonly options?: DatabaseManagerOptions;
+  private readonly databaseCache: Map<string, Promise<Knex>>;
+  private readonly keepaliveIntervals: Map<string, NodeJS.Timeout>;
+
   constructor(
-    private readonly config: Config,
-    private readonly connectors: Record<string, Connector>,
-    private readonly options?: DatabaseManagerOptions,
-    private readonly databaseCache: Map<string, Promise<Knex>> = new Map(),
-    private readonly keepaliveIntervals: Map<
-      string,
-      NodeJS.Timeout
-    > = new Map(),
+    config: Config,
+    connectors: Record<string, Connector>,
+    options?: DatabaseManagerOptions,
+    databaseCache: Map<string, Promise<Knex>> = new Map(),
+    keepaliveIntervals: Map<string, NodeJS.Timeout> = new Map(),
   ) {
+    this.config = config;
+    this.connectors = connectors;
+    this.options = options;
+    this.databaseCache = databaseCache;
+    this.keepaliveIntervals = keepaliveIntervals;
     // If a rootLifecycle service was provided, register a shutdown hook to
     // clean up any database connections.
     if (options?.rootLifecycle !== undefined) {
@@ -262,7 +270,11 @@ export class DatabaseManager {
     );
   }
 
-  private constructor(private readonly impl: DatabaseManagerImpl) {}
+  private readonly impl: DatabaseManagerImpl;
+
+  private constructor(impl: DatabaseManagerImpl) {
+    this.impl = impl;
+  }
 
   /**
    * Generates a DatabaseService for consumption by plugins.

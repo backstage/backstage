@@ -29,6 +29,7 @@ import {
   ProgressProps,
   ExternalRouteRef,
   IconComponent,
+  IconElement,
   IconsApi,
   RouteFunc,
   RouteRef,
@@ -41,7 +42,7 @@ import {
   NotFoundErrorPage,
   ErrorDisplay,
 } from '@backstage/frontend-plugin-api';
-import { ComponentType, useMemo } from 'react';
+import { ComponentType, createElement, useMemo } from 'react';
 import { ReactNode } from 'react';
 import { toLegacyPlugin } from './BackwardsCompatProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -97,6 +98,11 @@ class CompatIconsApi implements IconsApi {
 
   constructor(app: AppContext) {
     this.#app = app;
+  }
+
+  icon(key: string): IconElement | undefined {
+    const Icon = this.#app.getSystemIcon(key);
+    return Icon ? createElement(Icon) : undefined;
   }
 
   getIcon(key: string): IconComponent | undefined {

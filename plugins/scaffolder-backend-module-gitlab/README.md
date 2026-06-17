@@ -117,6 +117,7 @@ spec:
         value: "${{ steps['gitlab-access-token'].output.access_token }}"
         variableType: 'env_var'
         masked: true
+        maskedAndHidden: false
         variableProtected: false
         raw: false
         environmentScope: '*'

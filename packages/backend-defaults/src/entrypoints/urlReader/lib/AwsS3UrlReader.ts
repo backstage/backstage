@@ -33,11 +33,7 @@ import {
   ScmIntegrations,
   AwsS3IntegrationConfig,
 } from '@backstage/integration';
-import {
-  assertError,
-  ForwardedError,
-  NotModifiedError,
-} from '@backstage/errors';
+import { toError, ForwardedError, NotModifiedError } from '@backstage/errors';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import {
@@ -49,8 +45,8 @@ import {
 } from '@aws-sdk/client-s3';
 import { AbortController } from '@aws-sdk/abort-controller';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import { Readable } from 'stream';
-import { relative } from 'path/posix';
+import { Readable } from 'node:stream';
+import { relative } from 'node:path/posix';
 
 export const DEFAULT_REGION = 'us-east-1';
 
@@ -74,7 +70,12 @@ export function parseUrl(
   const host = parsedUrl.host;
 
   // Treat Amazon hosted separately because it has special region logic
-  if (config.host === 'amazonaws.com' || config.host === 'amazonaws.com.cn') {
+  if (
+    config.host === 'amazonaws.com' ||
+    config.host === 'amazonaws.com.cn' ||
+    config.host.endsWith('.amazonaws.com') ||
+    config.host.endsWith('.amazonaws.com.cn')
+  ) {
     const match = host.match(
       /^(?:([a-z0-9.-]+)\.)?s3(?:[.-]([a-z0-9-]+))?\.amazonaws\.com(\.cn)?$/,
     );
@@ -151,13 +152,23 @@ export class AwsS3UrlReader implements UrlReaderService {
     });
   };
 
+  private readonly credsManager: AwsCredentialsManager;
+  private readonly integration: AwsS3Integration;
+  private readonly deps: {
+    treeResponseFactory: ReadTreeResponseFactory;
+  };
+
   constructor(
-    private readonly credsManager: AwsCredentialsManager,
-    private readonly integration: AwsS3Integration,
-    private readonly deps: {
+    credsManager: AwsCredentialsManager,
+    integration: AwsS3Integration,
+    deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
-  ) {}
+  ) {
+    this.credsManager = credsManager;
+    this.integration = integration;
+    this.deps = deps;
+  }
 
   /**
    * If accessKeyId and secretAccessKey are missing, the standard credentials provider chain will be used:
@@ -385,8 +396,8 @@ export class AwsS3UrlReader implements UrlReaderService {
         ],
         etag: data.etag ?? '',
       };
-    } catch (error) {
-      assertError(error);
+    } catch (e) {
+      const error = toError(e);
       if (error.name === 'NotFoundError') {
         return {
           files: [],

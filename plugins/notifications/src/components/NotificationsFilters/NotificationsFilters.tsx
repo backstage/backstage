@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ChangeEvent } from 'react';
-
-import Divider from '@material-ui/core/Divider';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
+import { Select, Text, Flex } from '@backstage/ui';
+import type { Key } from 'react-aria-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { notificationsTranslationRef } from '../../translation';
 import { GetNotificationsOptions } from '../../api';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 
@@ -47,58 +42,53 @@ export type NotificationsFiltersProps = {
 
 const ALL = '___all___';
 
-export const CreatedAfterOptions: {
-  [key: string]: { label: string; getDate: () => Date };
-} = {
+type TranslationKey = keyof (typeof notificationsTranslationRef)['T'];
+
+export const CreatedAfterOptions = {
   last24h: {
-    label: 'Last 24h',
+    labelKey: 'filters.createdAfter.last24h' satisfies TranslationKey,
     getDate: () => new Date(Date.now() - 24 * 3600 * 1000),
   },
   lastWeek: {
-    label: 'Last week',
+    labelKey: 'filters.createdAfter.lastWeek' satisfies TranslationKey,
     getDate: () => new Date(Date.now() - 7 * 24 * 3600 * 1000),
   },
   all: {
-    label: 'Any time',
+    labelKey: 'filters.createdAfter.anyTime' satisfies TranslationKey,
     getDate: () => new Date(0),
   },
-};
+} as const;
 
-export const SortByOptions: {
-  [key: string]: {
-    label: string;
-    sortBy: SortBy;
-  };
-} = {
+export const SortByOptions = {
   newest: {
-    label: 'Newest on top',
+    labelKey: 'filters.sortBy.newest' satisfies TranslationKey,
     sortBy: {
-      sort: 'created',
-      sortOrder: 'desc',
+      sort: 'created' as const,
+      sortOrder: 'desc' as const,
     },
   },
   oldest: {
-    label: 'Oldest on top',
+    labelKey: 'filters.sortBy.oldest' satisfies TranslationKey,
     sortBy: {
-      sort: 'created',
-      sortOrder: 'asc',
+      sort: 'created' as const,
+      sortOrder: 'asc' as const,
     },
   },
   topic: {
-    label: 'Topic',
+    labelKey: 'filters.sortBy.topic' satisfies TranslationKey,
     sortBy: {
-      sort: 'topic',
-      sortOrder: 'asc',
+      sort: 'topic' as const,
+      sortOrder: 'asc' as const,
     },
   },
   origin: {
-    label: 'Origin',
+    labelKey: 'filters.sortBy.origin' satisfies TranslationKey,
     sortBy: {
-      sort: 'origin',
-      sortOrder: 'asc',
+      sort: 'origin' as const,
+      sortOrder: 'asc' as const,
     },
   },
-};
+} as const;
 
 const getSortByText = (sortBy?: SortBy): string => {
   if (sortBy?.sort === 'created' && sortBy?.sortOrder === 'asc') {
@@ -112,13 +102,6 @@ const getSortByText = (sortBy?: SortBy): string => {
   }
 
   return 'newest';
-};
-
-const AllSeverityOptions: { [key in NotificationSeverity]: string } = {
-  critical: 'Critical',
-  high: 'High',
-  normal: 'Normal',
-  low: 'Low',
 };
 
 export const NotificationsFilters = ({
@@ -136,24 +119,23 @@ export const NotificationsFilters = ({
   onTopicChanged,
   allTopics,
 }: NotificationsFiltersProps) => {
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const sortByText = getSortByText(sorting);
 
-  const handleOnCreatedAfterChanged = (
-    event: ChangeEvent<{ name?: string; value: unknown }>,
-  ) => {
-    onCreatedAfterChanged(event.target.value as string);
+  const handleOnCreatedAfterChanged = (key: Key | Key[] | null) => {
+    if (key !== null && !Array.isArray(key))
+      onCreatedAfterChanged(key as string);
   };
 
-  const handleOnViewChanged = (
-    event: ChangeEvent<{ name?: string; value: unknown }>,
-  ) => {
-    if (event.target.value === 'unread') {
+  const handleOnViewChanged = (key: Key | Key[] | null) => {
+    const value = Array.isArray(key) ? key[0] : key;
+    if (value === 'unread') {
       onUnreadOnlyChanged(true);
       onSavedChanged(undefined);
-    } else if (event.target.value === 'read') {
+    } else if (value === 'read') {
       onUnreadOnlyChanged(false);
       onSavedChanged(undefined);
-    } else if (event.target.value === 'saved') {
+    } else if (value === 'saved') {
       onUnreadOnlyChanged(undefined);
       onSavedChanged(true);
     } else {
@@ -163,10 +145,9 @@ export const NotificationsFilters = ({
     }
   };
 
-  const handleOnSortByChanged = (
-    event: ChangeEvent<{ name?: string; value: unknown }>,
-  ) => {
-    const idx = (event.target.value as string) || 'newest';
+  const handleOnSortByChanged = (key: Key | Key[] | null) => {
+    const idx = (((Array.isArray(key) ? key[0] : key) as string) ||
+      'newest') as keyof typeof SortByOptions;
     const option = SortByOptions[idx];
     onSortingChanged({ ...option.sortBy });
   };
@@ -180,132 +161,86 @@ export const NotificationsFilters = ({
     viewValue = 'read';
   }
 
-  const handleOnSeverityChanged = (
-    event: ChangeEvent<{ name?: string; value: unknown }>,
-  ) => {
+  const handleOnSeverityChanged = (key: Key | Key[] | null) => {
     const value: NotificationSeverity =
-      (event.target.value as NotificationSeverity) || 'normal';
+      ((Array.isArray(key) ? key[0] : key) as NotificationSeverity) || 'normal';
     onSeverityChanged(value);
   };
 
-  const handleOnTopicChanged = (
-    event: ChangeEvent<{ name?: string; value: unknown }>,
-  ) => {
-    const value = event.target.value as string;
+  const handleOnTopicChanged = (key: Key | Key[] | null) => {
+    const value = (Array.isArray(key) ? key[0] : key) as string;
     onTopicChanged(value === ALL ? undefined : value);
   };
 
-  const sortedAllTopics = (allTopics || []).sort((a, b) => a.localeCompare(b));
+  const sortedAllTopics = [...(allTopics ?? [])].sort((a, b) =>
+    a.localeCompare(b),
+  );
 
   return (
-    <>
-      <Grid container>
-        <Grid item xs={12}>
-          <Typography variant="h6">Filters</Typography>
-          <Divider variant="fullWidth" />
-        </Grid>
+    <Flex direction="column" gap="4">
+      <div>
+        <Text variant="title-x-small">{t('filters.title')}</Text>
+      </div>
 
-        <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel id="notifications-filter-view">View</InputLabel>
-            <Select
-              labelId="notifications-filter-view"
-              label="View"
-              value={viewValue}
-              onChange={handleOnViewChanged}
-            >
-              <MenuItem value="unread">Unread notifications</MenuItem>
-              <MenuItem value="read">Read notifications</MenuItem>
-              <MenuItem value="saved">Saved</MenuItem>
-              <MenuItem value="all">All</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
+      <Select
+        label={t('filters.view.label')}
+        value={viewValue}
+        onChange={handleOnViewChanged}
+        options={[
+          { value: 'unread', label: t('filters.view.unread') },
+          { value: 'read', label: t('filters.view.read') },
+          { value: 'saved', label: t('filters.view.saved') },
+          { value: 'all', label: t('filters.view.all') },
+        ]}
+      />
 
-        <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel id="notifications-filter-created">Sent out</InputLabel>
+      <Select
+        label={t('filters.createdAfter.label')}
+        value={createdAfter}
+        onChange={handleOnCreatedAfterChanged}
+        options={Object.keys(CreatedAfterOptions).map((key: string) => ({
+          value: key,
+          label: t(
+            CreatedAfterOptions[key as keyof typeof CreatedAfterOptions]
+              .labelKey,
+          ),
+        }))}
+      />
 
-            <Select
-              label="Sent out"
-              labelId="notifications-filter-created"
-              placeholder="Notifications since"
-              value={createdAfter}
-              onChange={handleOnCreatedAfterChanged}
-            >
-              {Object.keys(CreatedAfterOptions).map((key: string) => (
-                <MenuItem value={key} key={key}>
-                  {CreatedAfterOptions[key].label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
+      <Select
+        label={t('filters.sortBy.label')}
+        value={sortByText}
+        onChange={handleOnSortByChanged}
+        options={Object.keys(SortByOptions).map((key: string) => ({
+          value: key,
+          label: t(SortByOptions[key as keyof typeof SortByOptions].labelKey),
+        }))}
+      />
 
-        <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel id="notifications-filter-sort">Sort by</InputLabel>
+      <Select
+        label={t('filters.severity.label')}
+        value={severity}
+        onChange={handleOnSeverityChanged}
+        options={(
+          ['critical', 'high', 'normal', 'low'] as NotificationSeverity[]
+        ).map(key => ({
+          value: key,
+          label: t(`filters.severity.${key}`),
+        }))}
+      />
 
-            <Select
-              label="Sort by"
-              labelId="notifications-filter-sort"
-              placeholder="Field to sort by"
-              value={sortByText}
-              onChange={handleOnSortByChanged}
-            >
-              {Object.keys(SortByOptions).map((key: string) => (
-                <MenuItem value={key} key={key}>
-                  {SortByOptions[key].label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel id="notifications-filter-severity">
-              Min severity
-            </InputLabel>
-
-            <Select
-              label="Min severity"
-              labelId="notifications-filter-severity"
-              value={severity}
-              onChange={handleOnSeverityChanged}
-            >
-              {Object.keys(AllSeverityOptions).map((key: string) => (
-                <MenuItem value={key} key={key}>
-                  {AllSeverityOptions[key as NotificationSeverity]}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel id="notifications-filter-topic">Topic</InputLabel>
-
-            <Select
-              label="Topic"
-              labelId="notifications-filter-topic"
-              value={topic ?? ALL}
-              onChange={handleOnTopicChanged}
-            >
-              <MenuItem value={ALL} key={ALL}>
-                Any topic
-              </MenuItem>
-
-              {sortedAllTopics.map((item: string) => (
-                <MenuItem value={item} key={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-      </Grid>
-    </>
+      <Select
+        label={t('filters.topic.label')}
+        value={topic ?? ALL}
+        onChange={handleOnTopicChanged}
+        options={[
+          { value: ALL, label: t('filters.topic.anyTopic') },
+          ...sortedAllTopics.map((item: string) => ({
+            value: item,
+            label: item,
+          })),
+        ]}
+      />
+    </Flex>
   );
 };

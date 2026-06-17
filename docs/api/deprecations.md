@@ -83,7 +83,7 @@ migrate to your own custom API.
 
 First, you'll need to define a new Utility API reference. If you're only using
 the API for sign-in, you can put the definition in `packages/app/src/apis.ts`.
-However, if you need to access your auth API inside plugins you you'll need to
+However, if you need to access your auth API inside plugins you'll need to
 export it from a common package. If you don't already have one, we recommend
 creating `@internal/apis` and from there exporting the API reference.
 
@@ -124,7 +124,7 @@ createApiFactory({
 ```
 
 Provider specific factory implementations, copy the code you need into the
-factory method depending on which apiRef you previously used.
+factory method depending on which API ref you previously used.
 
 ```ts
 // samlAuthApiRef

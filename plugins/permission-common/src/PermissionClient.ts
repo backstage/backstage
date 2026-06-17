@@ -17,8 +17,8 @@
 import { Config } from '@backstage/config';
 import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
-import * as uuid from 'uuid';
-import { z } from 'zod';
+
+import { z } from 'zod/v3';
 import {
   AuthorizeResult,
   PermissionMessageBatch,
@@ -146,7 +146,7 @@ export class PermissionClient implements PermissionEvaluator {
     options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
     if (!this.enabled) {
-      return requests.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
+      return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
     if (this.enableBatchedRequests) {
@@ -168,7 +168,7 @@ export class PermissionClient implements PermissionEvaluator {
     options?: PermissionClientRequestOptions,
   ): Promise<QueryPermissionResponse[]> {
     if (!this.enabled) {
-      return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
+      return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
     return this.makeRequest(queries, queryPermissionResponseSchema, options);
@@ -181,7 +181,7 @@ export class PermissionClient implements PermissionEvaluator {
   ) {
     const request: PermissionMessageBatch<TQuery> = {
       items: queries.map(query => ({
-        id: uuid.v4(),
+        id: globalThis.crypto.randomUUID(),
         ...query,
       })),
     };
@@ -213,7 +213,7 @@ export class PermissionClient implements PermissionEvaluator {
         request[permission.name] ||= {
           permission,
           resourceRef: [],
-          id: uuid.v4(),
+          id: globalThis.crypto.randomUUID(),
         };
 
         if (resourceRef) {
@@ -222,7 +222,7 @@ export class PermissionClient implements PermissionEvaluator {
       } else {
         request[permission.name] ||= {
           permission,
-          id: uuid.v4(),
+          id: globalThis.crypto.randomUUID(),
         };
       }
     }

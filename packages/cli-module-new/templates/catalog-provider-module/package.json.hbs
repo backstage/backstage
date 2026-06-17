@@ -1,0 +1,36 @@
+{
+  "name": "{{packageName}}",
+  "description": "The {{fullModuleId}} module for @backstage/plugin-catalog-backend",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "{{versionQuery '@backstage/backend-plugin-api'}}",
+    "@backstage/plugin-catalog-node": "{{versionQuery '@backstage/plugin-catalog-node'}}"
+  },
+  "devDependencies": {
+    "@backstage/cli": "{{versionQuery '@backstage/cli'}}",
+    "@backstage/backend-test-utils": "{{versionQuery '@backstage/backend-test-utils'}}"
+  },
+  "files": [
+    "dist"
+  ]
+}

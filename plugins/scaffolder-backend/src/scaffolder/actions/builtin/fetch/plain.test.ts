@@ -19,7 +19,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
   return { ...actual, fetchContents: jest.fn() };
 });
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';

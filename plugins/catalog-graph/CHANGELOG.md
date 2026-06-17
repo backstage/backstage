@@ -1,5 +1,467 @@
 # @backstage/plugin-catalog-graph
 
+## 0.6.5
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+
+## 0.6.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.1
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/ui@0.15.1-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.1
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.0
+  - @backstage/core-components@0.18.11-next.0
+
+## 0.6.4
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 085133f: The `zod` dependency has been bumped from `^3.25.76 || ^4.0.0` to `^4.0.0`, since `configSchema` requires the full Zod v4 package for JSON Schema support.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-catalog-react@3.0.0
+  - @backstage/catalog-client@1.15.1
+
+## 0.6.4-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+  - @backstage/plugin-catalog-react@2.1.5-next.1
+
+## 0.6.4-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 085133f: The `zod` dependency has been bumped from `^3.25.76 || ^4.0.0` to `^4.0.0`, since `configSchema` requires the full Zod v4 package for JSON Schema support.
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/plugin-catalog-react@2.1.5-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/catalog-client@1.15.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/types@1.2.2
+
+## 0.6.1
+
+### Patch Changes
+
+- effa7bf: Updated `README-alpha.md` extension examples to use current APIs.
+- 0e147e8: Added `title` and `icon` to the new frontend system plugin definition.
+- 416ad45: Replaced `humanizeEntityRef` with the Catalog Presentation API in `CatalogGraphCard` and `CatalogGraphPage` components for consistent entity display.
+- d5899c2: Support configuring `showArrowHeads` on `page:catalog-graph` and `entity-card:catalog-graph/relations`.
+- Updated dependencies
+  - @backstage/ui@0.14.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-react@2.1.2
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/catalog-client@1.15.0
+  - @backstage/core-plugin-api@1.12.5
+
+## 0.6.1-next.2
+
+### Patch Changes
+
+- d5899c2: Support configuring `showArrowHeads` on `page:catalog-graph` and `entity-card:catalog-graph/relations`.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.2
+  - @backstage/catalog-client@1.14.1-next.0
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- 0e147e8: Added `title` and `icon` to the new frontend system plugin definition.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/plugin-catalog-react@2.1.1-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/types@1.2.2
+
+## 0.6.0
+
+### Minor Changes
+
+- d14b6e0: **BREAKING**: Migrated `MembersListCard`, `OwnershipCard`, and `CatalogGraphCard` to use BUI card primitives via `EntityInfoCard`.
+
+  - `OwnershipCard`: Removed `variant` and `maxScrollHeight` props. Card height and scrolling are now controlled by the parent container — the card fills its container and the body scrolls automatically when content overflows.
+  - `CatalogGraphCard`: Removed `variant` prop.
+  - `MembersListCard`: Translation keys `subtitle`, `paginationLabel`, `aggregateMembersToggle.directMembers`, `aggregateMembersToggle.aggregatedMembers`, and `aggregateMembersToggle.ariaLabel` have been removed. The `title` key now includes `{{groupName}}`. New keys added: `cardLabel`, `noSearchResult`, `aggregateMembersToggle.label`.
+  - `OwnershipCard`: Translation keys `aggregateRelationsToggle.directRelations`, `aggregateRelationsToggle.aggregatedRelations`, and `aggregateRelationsToggle.ariaLabel` have been removed. New key added: `aggregateRelationsToggle.label`.
+  - Removed `MemberComponentClassKey` export, and `root` and `cardContent` from `MembersListCardClassKey`, `card` from `OwnershipCardClassKey`, and `card` from `CatalogGraphCardClassKey`.
+
+  **Migration:**
+
+  ```diff
+  - <EntityOwnershipCard variant="gridItem" />
+  + <EntityOwnershipCard />
+  ```
+
+  ```diff
+  - <EntityCatalogGraphCard variant="gridItem" height={400} />
+  + <EntityCatalogGraphCard height={400} />
+  ```
+
+### Patch Changes
+
+- 538c985: Updated installation documentation to use feature discovery as the default.
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.0
+  - @backstage/ui@0.13.0
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+
+## 0.6.0-next.2
+
+### Minor Changes
+
+- d14b6e0: **BREAKING**: Migrated `MembersListCard`, `OwnershipCard`, and `CatalogGraphCard` to use BUI card primitives via `EntityInfoCard`.
+
+  - `OwnershipCard`: Removed `variant` and `maxScrollHeight` props. Card height and scrolling are now controlled by the parent container — the card fills its container and the body scrolls automatically when content overflows.
+  - `CatalogGraphCard`: Removed `variant` prop.
+  - `MembersListCard`: Translation keys `subtitle`, `paginationLabel`, `aggregateMembersToggle.directMembers`, `aggregateMembersToggle.aggregatedMembers`, and `aggregateMembersToggle.ariaLabel` have been removed. The `title` key now includes `{{groupName}}`. New keys added: `cardLabel`, `noSearchResult`, `aggregateMembersToggle.label`.
+  - `OwnershipCard`: Translation keys `aggregateRelationsToggle.directRelations`, `aggregateRelationsToggle.aggregatedRelations`, and `aggregateRelationsToggle.ariaLabel` have been removed. New key added: `aggregateRelationsToggle.label`.
+  - Removed `MemberComponentClassKey` export, and `root` and `cardContent` from `MembersListCardClassKey`, `card` from `OwnershipCardClassKey`, and `card` from `CatalogGraphCardClassKey`.
+
+  **Migration:**
+
+  ```diff
+  - <EntityOwnershipCard variant="gridItem" />
+  + <EntityOwnershipCard />
+  ```
+
+  ```diff
+  - <EntityCatalogGraphCard variant="gridItem" height={400} />
+  + <EntityCatalogGraphCard height={400} />
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/core-components@0.18.8-next.1
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/types@1.2.2
+
+## 0.5.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/types@1.2.2
+
+## 0.5.7
+
+### Patch Changes
+
+- ac9bead: Added `@backstage/frontend-test-utils` dev dependency.
+- 8dd27c4: Fix large icon rendering in catalog graph nodes
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 4183614: Updated usage of deprecated APIs in the new frontend system.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/core-plugin-api@1.12.3
+
+## 0.5.7-next.2
+
+### Patch Changes
+
+- ac9bead: Added `@backstage/frontend-test-utils` dev dependency.
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 4183614: Updated usage of deprecated APIs in the new frontend system.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+
+## 0.5.7-next.1
+
+### Patch Changes
+
+- 8dd27c4: Fix large icon rendering in catalog graph nodes
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/types@1.2.2
+
+## 0.5.6
+
+### Patch Changes
+
+- 5c49a00: Update for the `qs` library bump: the old array limit setting has changed to be more strict; you can no longer just give a zero to mean unlimited. So we choose an arbitrary high value, to at least go higher than the default 20.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+
+## 0.5.5-next.1
+
+### Patch Changes
+
+- 5c49a00: Update for the `qs` library bump: the old array limit setting has changed to be more strict; you can no longer just give a zero to mean unlimited. So we choose an arbitrary high value, to at least go higher than the default 20.
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.5.4
+
+### Patch Changes
+
+- a67c144: Fixed zoom out description (replace `&amp;` with &)
+- f3f84f1: Minor extension type updates after frontend API bump
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.5.4-next.1
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.2
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/types@1.2.2
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- a67c144: Fixed zoom out description (replace `&amp;` with &)
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-react@1.21.4-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/types@1.2.2
+
+## 0.5.3
+
+### Patch Changes
+
+- a2d7ae7: Ensure the catalog graph entity card respects the height prop so the visualization scales down properly on wide screens.
+- 1c7e1ce: - Revert `viewbox` back to old values.
+  - Added `fullScreen` prop to `EntityCatalogGraphCard`
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/catalog-client@1.12.1
+
+## 0.5.3-next.2
+
+### Patch Changes
+
+- a2d7ae7: Ensure the catalog graph entity card respects the height prop so the visualization scales down properly on wide screens.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.2
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.1
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+  - @backstage/core-compat-api@0.5.4-next.0
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/types@1.2.2
+
+## 0.5.2
+
+### Patch Changes
+
+- 87b5e6e: Add missing API implementation for catalog graph plugin in NFS apps.
+- 431130c: Added `renderEdge` prop to `<DependencyGraph />` component in `@backstage/core-components` to allow custom rendering of graph edges.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.5.2-next.2
+
+### Patch Changes
+
+- 431130c: Added `renderEdge` prop to `<DependencyGraph />` component in `@backstage/core-components` to allow custom rendering of graph edges.
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
+## 0.5.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/catalog-client@1.12.0
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- 87b5e6e: Add missing API implementation for catalog graph plugin in NFS apps.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/types@1.2.2
+
 ## 0.5.0
 
 ### Minor Changes

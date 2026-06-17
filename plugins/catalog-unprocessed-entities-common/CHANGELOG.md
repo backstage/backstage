@@ -1,5 +1,122 @@
 # @backstage/plugin-catalog-unprocessed-entities-common
 
+## 0.0.16
+
+### Patch Changes
+
+- fa06df6: Added `unprocessedEntitiesReadPermission` for authorizing read access to unprocessed entity endpoints.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/plugin-permission-common@0.9.9
+
+## 0.0.16-next.1
+
+### Patch Changes
+
+- fa06df6: Added `unprocessedEntitiesReadPermission` for authorizing read access to unprocessed entity endpoints.
+
+## 0.0.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+
+## 0.0.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-permission-common@0.9.8
+
+## 0.0.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/plugin-permission-common@0.9.8-next.0
+
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.6
+
+## 0.0.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+
+## 0.0.12
+
+### Patch Changes
+
+- df4d646: Moved types, API and client to the common package, allowing both frontend and
+  backend plugins to use the `CatalogUnprocessedEntitiesClient`.
+
+  The following types, clients and interfaces have been deprecated and should be
+  imported from the `@backstage/plugin-catalog-unprocessed-entities-common` instead:
+  `CatalogUnprocessedEntitiesApi`, `CatalogUnprocessedEntitiesApiResponse`, `UnprocessedEntity`,
+  `UnprocessedEntityCache`, `UnprocessedEntityError`, `CatalogUnprocessedEntitiesClient`.
+
+  All those types, clients and interfaces are re-exported temporarily in the
+  `@backstage/plugin-catalog-unprocessed-entities` package until cleaned up.
+
+## 0.0.12-next.0
+
+### Patch Changes
+
+- df4d646: Moved types, API and client to the common package, allowing both frontend and
+  backend plugins to use the `CatalogUnprocessedEntitiesClient`.
+
+  The following types, clients and interfaces have been deprecated and should be
+  imported from the `@backstage/plugin-catalog-unprocessed-entities-common` instead:
+  `CatalogUnprocessedEntitiesApi`, `CatalogUnprocessedEntitiesApiResponse`, `UnprocessedEntity`,
+  `UnprocessedEntityCache`, `UnprocessedEntityError`, `CatalogUnprocessedEntitiesClient`.
+
+  All those types, clients and interfaces are re-exported temporarily in the
+  `@backstage/plugin-catalog-unprocessed-entities` package until cleaned up.
+
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.0.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2
+
+## 0.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2-next.0
+
 ## 0.0.9
 
 ### Patch Changes

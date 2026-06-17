@@ -1,0 +1,196 @@
+/*
+ * Copyright 2020 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  RuleSetRule,
+  RspackPluginInstance,
+  CssExtractRspackPlugin,
+  WebpackPluginInstance,
+} from '@rspack/core';
+
+type Transforms = {
+  loaders: RuleSetRule[];
+  plugins: Array<RspackPluginInstance | WebpackPluginInstance>;
+};
+
+type TransformOptions = {
+  isDev: boolean;
+  isBackend?: boolean;
+  webpack?: typeof import('webpack').webpack;
+};
+
+export const transforms = (options: TransformOptions): Transforms => {
+  const { isDev, isBackend, webpack } = options;
+
+  const CssExtractPlugin: typeof CssExtractRspackPlugin = webpack
+    ? (require('mini-css-extract-plugin') as unknown as typeof CssExtractRspackPlugin)
+    : CssExtractRspackPlugin;
+
+  // This ensures that styles inserted from the style-loader and any
+  // async style chunks are always given lower priority than JSS styles.
+  // Note that this function is stringified and executed in the browser
+  // after transpilation, so stick to simple syntax
+  function insertBeforeJssStyles(element: any) {
+    const head = document.head;
+    // This makes sure that any style elements we insert get put before the
+    // dynamic styles from JSS, such as the ones from `makeStyles()`.
+    // TODO(Rugvip): This will likely break in material-ui v5, keep an eye on it.
+    const firstJssNode = head.querySelector('style[data-jss]');
+    if (!firstJssNode) {
+      head.appendChild(element);
+    } else {
+      head.insertBefore(element, firstJssNode);
+    }
+  }
+
+  const loaders = [
+    {
+      test: /\.(tsx?)$/,
+      exclude: /node_modules/,
+      use: [
+        {
+          loader: webpack
+            ? require.resolve('swc-loader')
+            : 'builtin:swc-loader',
+          options: {
+            jsc: {
+              target: 'es2023',
+              externalHelpers: !isBackend,
+              parser: {
+                syntax: 'typescript',
+                tsx: !isBackend,
+                dynamicImport: true,
+              },
+              transform: {
+                react: isBackend
+                  ? undefined
+                  : {
+                      runtime: 'automatic',
+                      refresh: isDev,
+                    },
+              },
+            },
+          },
+        },
+      ],
+    },
+    {
+      test: /\.(jsx?|mjs|cjs)$/,
+      exclude: /node_modules/,
+      use: [
+        {
+          loader: webpack
+            ? require.resolve('swc-loader')
+            : 'builtin:swc-loader',
+          options: {
+            jsc: {
+              target: 'es2023',
+              externalHelpers: !isBackend,
+              parser: {
+                syntax: 'ecmascript',
+                jsx: !isBackend,
+                dynamicImport: true,
+              },
+              transform: {
+                react: isBackend
+                  ? undefined
+                  : {
+                      runtime: 'automatic',
+                      refresh: isDev,
+                    },
+              },
+            },
+          },
+        },
+      ],
+    },
+    {
+      test: /\.(js|mjs|cjs)$/,
+      resolve: {
+        fullySpecified: false,
+      },
+    },
+    {
+      test: [
+        /\.bmp$/,
+        /\.gif$/,
+        /\.jpe?g$/,
+        /\.png$/,
+        /\.frag$/,
+        /\.vert$/,
+        { and: [/\.svg$/, { not: [/\.icon\.svg$/] }] },
+        /\.xml$/,
+        /\.ico$/,
+        /\.webp$/,
+      ],
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash:8][ext]',
+      },
+    },
+    {
+      test: /\.(eot|woff|woff2|ttf)$/i,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash][ext][query]',
+      },
+    },
+    {
+      test: /\.ya?ml$/,
+      use: require.resolve('yml-loader'),
+    },
+    {
+      include: /\.(md)$/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash][ext][query]',
+      },
+    },
+    {
+      test: /\.css$/i,
+      use: [
+        isDev
+          ? {
+              loader: require.resolve('style-loader'),
+              options: {
+                insert: insertBeforeJssStyles,
+              },
+            }
+          : CssExtractPlugin.loader,
+        {
+          loader: require.resolve('css-loader'),
+          options: {
+            sourceMap: true,
+          },
+        },
+      ],
+    },
+  ];
+
+  const plugins = new Array<RspackPluginInstance | WebpackPluginInstance>();
+
+  if (!isDev) {
+    plugins.push(
+      new CssExtractPlugin({
+        filename: 'static/[name].[contenthash:8].css',
+        chunkFilename: 'static/[name].[id].[contenthash:8].css',
+        insert: insertBeforeJssStyles, // Only applies to async chunks
+      }),
+    );
+  }
+
+  return { loaders, plugins };
+};

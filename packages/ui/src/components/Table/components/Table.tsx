@@ -14,21 +14,282 @@
  * limitations under the License.
  */
 
-import { useStyles } from '../../../hooks/useStyles';
+import { useId } from 'react-aria';
 import {
-  Table as ReactAriaTable,
-  type TableProps,
+  type Key,
+  ResizableTableContainer,
+  Virtualizer,
 } from 'react-aria-components';
+import { TableLayout } from 'react-stately';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { TableWrapperDefinition } from '../definition';
+import { TableRoot } from './TableRoot';
+import { TableHeader } from './TableHeader';
+import { TableBody } from './TableBody';
+import { Row } from './Row';
+import { Column } from './Column';
+import { TablePagination } from '../../TablePagination';
+import type {
+  TableProps,
+  TableItem,
+  RowConfig,
+  RowRenderFn,
+  TablePaginationType,
+} from '../types';
+import { useMemo } from 'react';
+import { VisuallyHidden } from '../../VisuallyHidden';
+import { Flex } from '../../Flex';
+import { TableBodySkeleton } from './TableBodySkeleton';
 
-/** @public */
-export const Table = (props: TableProps) => {
-  const { classNames } = useStyles('Table');
+function isRowRenderFn<T extends TableItem>(
+  rowConfig: RowConfig<T> | RowRenderFn<T> | undefined,
+): rowConfig is RowRenderFn<T> {
+  return typeof rowConfig === 'function';
+}
+
+function useDisabledRows<T extends TableItem>({
+  data,
+  rowConfig,
+}: Pick<TableProps<T>, 'data' | 'rowConfig'>): Set<Key> | undefined {
+  return useMemo(() => {
+    if (!data || typeof rowConfig === 'function' || !rowConfig?.getIsDisabled) {
+      return;
+    }
+
+    return data.reduce<Set<Key>>((set, item) => {
+      const isDisabled = rowConfig.getIsDisabled?.(item);
+      if (isDisabled) {
+        set.add(String(item.id));
+      }
+      return set;
+    }, new Set<Key>());
+  }, [data, rowConfig]);
+}
+
+function useLiveRegionLabel(
+  pagination: TablePaginationType,
+  isStale: boolean,
+  isLoading: boolean,
+  hasData: boolean,
+): string {
+  if (isLoading) {
+    return 'Loading table data.';
+  }
+
+  if (!hasData || pagination.type === 'none') {
+    return '';
+  }
+
+  const { pageSize, offset, totalCount, getLabel } = pagination;
+
+  if (isStale) {
+    return 'Loading table data.';
+  }
+
+  let liveRegionLabel = 'Table page loaded. ';
+
+  if (getLabel) {
+    liveRegionLabel += getLabel({ pageSize, offset, totalCount });
+  } else if (offset !== undefined) {
+    const fromCount = offset + 1;
+    const toCount = Math.min(offset + pageSize, totalCount ?? 0);
+    liveRegionLabel += `Showing ${fromCount} to ${toCount} of ${totalCount}`;
+  }
+  return liveRegionLabel;
+}
+
+/**
+ * A full-featured data table with built-in pagination, sorting, row selection, loading and error states, and optional virtualization.
+ * Pair with `useTable` to manage data fetching and state, or pass `data`, `columnConfig`, and `pagination` directly for manual control.
+ *
+ * @public
+ */
+export function Table<T extends TableItem>({
+  columnConfig,
+  data,
+  isPending = false,
+  loading = false,
+  isStale = false,
+  error,
+  pagination,
+  sort,
+  rowConfig,
+  selection,
+  emptyState,
+  className,
+  style,
+  virtualized,
+}: TableProps<T>) {
+  const pending = isPending || loading;
+  const {
+    ownProps: { classes },
+  } = useDefinition(TableWrapperDefinition, { className });
+  const liveRegionId = useId();
+
+  const visibleColumns = useMemo(
+    () => columnConfig.filter(col => !col.isHidden),
+    [columnConfig],
+  );
+  const disabledRows = useDisabledRows({ data, rowConfig });
+
+  const {
+    mode: selectionMode,
+    selected: selectedKeys,
+    behavior: selectionBehavior,
+    onSelectionChange,
+  } = selection || {};
+
+  const isInitialLoading = pending && !data;
+
+  if (error) {
+    return (
+      <div className={classes.root} style={style}>
+        Error: {error.message}
+      </div>
+    );
+  }
+
+  const liveRegionLabel = useLiveRegionLabel(
+    pagination,
+    isStale,
+    isInitialLoading,
+    data !== undefined,
+  );
+
+  const manualColumnSizing = columnConfig.some(
+    col =>
+      col.width != null ||
+      col.minWidth != null ||
+      col.maxWidth != null ||
+      col.defaultWidth != null,
+  );
+
+  const wrapResizable = manualColumnSizing
+    ? (elem: React.ReactNode) => (
+        <ResizableTableContainer className={classes.resizableContainer}>
+          {elem}
+        </ResizableTableContainer>
+      )
+    : (elem: React.ReactNode) => <>{elem}</>;
+
+  const layoutOptions =
+    typeof virtualized === 'object' ? virtualized : undefined;
+
+  const wrapVirtualized = (elem: React.ReactNode) =>
+    virtualized ? (
+      <Virtualizer layout={TableLayout} layoutOptions={layoutOptions}>
+        {elem}
+      </Virtualizer>
+    ) : (
+      elem
+    );
+
+  const wrapScrollContainer = (elem: React.ReactNode) => (
+    <div className={classes.scrollContainer}>{elem}</div>
+  );
 
   return (
-    <ReactAriaTable
-      className={classNames.table}
-      aria-label="Data table"
-      {...props}
-    />
+    <div className={classes.root} style={style}>
+      <VisuallyHidden aria-live="polite" id={liveRegionId}>
+        {liveRegionLabel}
+      </VisuallyHidden>
+      {wrapResizable(
+        wrapScrollContainer(
+          wrapVirtualized(
+            <TableRoot
+              {...(isInitialLoading
+                ? {}
+                : {
+                    selectionMode,
+                    selectionBehavior,
+                    selectedKeys,
+                    onSelectionChange,
+                  })}
+              sortDescriptor={sort?.descriptor ?? undefined}
+              onSortChange={sort?.onSortChange}
+              disabledKeys={disabledRows}
+              stale={isStale}
+              isPending={isInitialLoading}
+              aria-describedby={liveRegionId}
+            >
+              <TableHeader columns={visibleColumns}>
+                {column =>
+                  column.header ? (
+                    column.header()
+                  ) : (
+                    <Column
+                      id={column.id}
+                      isRowHeader={column.isRowHeader}
+                      allowsSorting={column.isSortable}
+                      width={column.width}
+                      defaultWidth={column.defaultWidth}
+                      minWidth={column.minWidth}
+                      maxWidth={column.maxWidth}
+                    >
+                      {column.label}
+                    </Column>
+                  )
+                }
+              </TableHeader>
+              {isInitialLoading ? (
+                <TableBodySkeleton columns={visibleColumns} />
+              ) : (
+                <TableBody
+                  items={data}
+                  dependencies={[visibleColumns]}
+                  renderEmptyState={
+                    emptyState
+                      ? () => <Flex p="3">{emptyState}</Flex>
+                      : undefined
+                  }
+                >
+                  {item => {
+                    const itemIndex = data?.indexOf(item) ?? -1;
+
+                    if (isRowRenderFn(rowConfig)) {
+                      return rowConfig({
+                        item,
+                        index: itemIndex,
+                      });
+                    }
+
+                    return (
+                      <Row
+                        id={String(item.id)}
+                        columns={visibleColumns}
+                        href={rowConfig?.getHref?.(item)}
+                        onAction={
+                          rowConfig?.onClick
+                            ? () => rowConfig?.onClick?.(item)
+                            : undefined
+                        }
+                      >
+                        {column => column.cell(item)}
+                      </Row>
+                    );
+                  }}
+                </TableBody>
+              )}
+            </TableRoot>,
+          ),
+        ),
+      )}
+      {pagination.type === 'page' && (
+        <TablePagination
+          pageSize={pagination.pageSize}
+          pageSizeOptions={pagination.pageSizeOptions}
+          offset={pagination.offset}
+          totalCount={pagination.totalCount}
+          hasNextPage={pagination.hasNextPage}
+          hasPreviousPage={pagination.hasPreviousPage}
+          onNextPage={pagination.onNextPage}
+          onPreviousPage={pagination.onPreviousPage}
+          onPageSizeChange={pagination.onPageSizeChange}
+          showPageSizeOptions={pagination.showPageSizeOptions}
+          getLabel={pagination.getLabel}
+          showPaginationLabel={pagination.showPaginationLabel}
+        />
+      )}
+    </div>
   );
-};
+}

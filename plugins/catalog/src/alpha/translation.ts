@@ -16,7 +16,7 @@
 
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-/** @alpha */
+/** @public */
 export const catalogTranslationRef = createTranslationRef({
   id: 'catalog',
   messages: {
@@ -25,15 +25,22 @@ export const catalogTranslationRef = createTranslationRef({
       createButtonTitle: 'Create',
       supportButtonContent: 'All your software catalog entities',
     },
+    entityPage: {
+      notFoundMessage: 'There is no {{kind}} with the requested {{link}}.',
+      notFoundLinkText: 'kind, namespace, and name',
+    },
     aboutCard: {
       title: 'About',
       refreshButtonTitle: 'Schedule entity refresh',
       editButtonTitle: 'Edit Metadata',
+      editButtonAriaLabel: 'Edit',
       createSimilarButtonTitle: 'Create something similar',
       refreshScheduledMessage: 'Refresh scheduled',
+      refreshButtonAriaLabel: 'Refresh',
       launchTemplate: 'Launch Template',
       viewTechdocs: 'View TechDocs',
       viewSource: 'View Source',
+      unknown: 'unknown',
       descriptionField: {
         label: 'Description',
         value: 'No description',
@@ -54,6 +61,9 @@ export const catalogTranslationRef = createTranslationRef({
         label: 'Parent Component',
         value: 'No Parent Component',
       },
+      kindField: {
+        label: 'Kind',
+      },
       typeField: {
         label: 'Type',
       },
@@ -69,8 +79,10 @@ export const catalogTranslationRef = createTranslationRef({
       },
     },
     searchResultItem: {
+      kind: 'Kind',
+      type: 'Type',
       lifecycle: 'Lifecycle',
-      Owner: 'Owner',
+      owner: 'Owner',
     },
     catalogTable: {
       warningPanelTitle: 'Could not fetch catalog entities.',
@@ -78,18 +90,19 @@ export const catalogTranslationRef = createTranslationRef({
       editActionTitle: 'Edit',
       starActionTitle: 'Add to favorites',
       unStarActionTitle: 'Remove from favorites',
+      allFilters: 'All',
     },
     dependencyOfComponentsCard: {
       title: 'Dependency of components',
-      emptyMessage: 'No component depends on this component',
+      emptyMessage: 'No component depends on this component.',
     },
     dependsOnComponentsCard: {
       title: 'Depends on components',
-      emptyMessage: 'No component is a dependency of this component',
+      emptyMessage: 'No component is a dependency of this component.',
     },
     dependsOnResourcesCard: {
       title: 'Depends on resources',
-      emptyMessage: 'No resource is a dependency of this component',
+      emptyMessage: 'No resource is a dependency of this component.',
     },
     entityContextMenu: {
       copiedMessage: 'Copied!',
@@ -97,9 +110,12 @@ export const catalogTranslationRef = createTranslationRef({
       inspectMenuTitle: 'Inspect entity',
       copyURLMenuTitle: 'Copy entity URL',
       unregisterMenuTitle: 'Unregister entity',
+      moreButtonAriaLabel: 'more',
     },
     entityLabelsCard: {
       title: 'Labels',
+      columnKeyLabel: 'Label',
+      columnValueLabel: 'Value',
       emptyDescription:
         'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:',
       readMoreButtonTitle: 'Read more',
@@ -121,38 +137,53 @@ export const catalogTranslationRef = createTranslationRef({
         'Want to help us build this? Check out our Getting Started documentation.',
       docButtonTitle: 'DOCS',
     },
+    entityTabs: {
+      tabsAriaLabel: 'Tabs',
+    },
     deleteEntity: {
       dialogTitle: 'Are you sure you want to delete this entity?',
       deleteButtonTitle: 'Delete',
       cancelButtonTitle: 'Cancel',
       description:
-        'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.',
+        'This entity is not referenced by any location and is therefore not receiving updates.',
+      actionButtonTitle: 'Delete entity',
+    },
+    catalogExportButton: {
+      triggerButtonTitle: 'Export selection',
+      dialogTitle: 'Export catalog selection',
+      formatLabel: 'Format',
+      columnsLabel: 'Columns',
+      cancelButtonTitle: 'Cancel',
+      confirmButtonTitle: 'Confirm',
+      exportingButtonTitle: 'Exporting…',
+      successMessage: 'Catalog exported successfully',
+      errorMessage: 'Failed to export catalog: {{errorMessage}}',
     },
     entityProcessingErrorsDescription: 'The error below originates from',
     entityRelationWarningDescription:
       "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ",
     hasComponentsCard: {
       title: 'Has components',
-      emptyMessage: 'No component is part of this system',
+      emptyMessage: 'No component is part of this system.',
     },
     hasResourcesCard: {
       title: 'Has resources',
-      emptyMessage: 'No resource is part of this system',
+      emptyMessage: 'No resource is part of this system.',
     },
     hasSubcomponentsCard: {
       title: 'Has subcomponents',
-      emptyMessage: 'No subcomponent is part of this component',
+      emptyMessage: 'No subcomponent is part of this component.',
     },
     hasSubdomainsCard: {
       title: 'Has subdomains',
-      emptyMessage: 'No subdomain is part of this domain',
+      emptyMessage: 'No subdomain is part of this domain.',
     },
     hasSystemsCard: {
       title: 'Has systems',
-      emptyMessage: 'No system is part of this domain',
+      emptyMessage: 'No system is part of this domain.',
     },
     relatedEntitiesCard: {
-      emptyHelpLinkTitle: 'Learn how to change this',
+      emptyHelpLinkTitle: 'Learn how to change this.',
     },
     systemDiagramCard: {
       title: 'System Diagram',

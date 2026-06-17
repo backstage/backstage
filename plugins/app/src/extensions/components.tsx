@@ -17,15 +17,19 @@ import {
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
   ErrorDisplay as SwappableErrorDisplay,
-  SwappableComponentBlueprint,
+  PageLayout as SwappablePageLayout,
+  type PageLayoutProps,
 } from '@backstage/frontend-plugin-api';
-
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import {
   ErrorPage,
   ErrorPanel,
   Progress as ProgressComponent,
 } from '@backstage/core-components';
+import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
+import { useMemo } from 'react';
+import { useResolvedPath } from 'react-router-dom';
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -60,6 +64,55 @@ export const ErrorDisplay = SwappableComponentBlueprint.make({
               Retry
             </Button>
           </ErrorPanel>
+        );
+      },
+    }),
+});
+
+export const PageLayout = SwappableComponentBlueprint.make({
+  name: 'core-page-layout',
+  params: define =>
+    define({
+      component: SwappablePageLayout,
+      loader: () => (props: PageLayoutProps) => {
+        const {
+          title,
+          icon,
+          noHeader,
+          titleLink,
+          headerActions,
+          tabs,
+          children,
+        } = props;
+        // TODO(Rugvip): Different solution to this path handling would be good
+        const parentPath = useResolvedPath('.').pathname.replace(/\/$/, '');
+        const resolvedTabs = useMemo(
+          () =>
+            tabs?.map(tab => ({
+              ...tab,
+              href: tab.href.startsWith('/')
+                ? tab.href
+                : `${parentPath}/${tab.href}`.replace(/\/{2,}/g, '/'),
+              matchStrategy: 'prefix' as const,
+            })),
+          [tabs, parentPath],
+        );
+
+        if (noHeader) {
+          return <>{children}</>;
+        }
+
+        return (
+          <>
+            <PluginHeader
+              title={title}
+              icon={icon}
+              titleLink={titleLink}
+              tabs={resolvedTabs}
+              customActions={headerActions}
+            />
+            {children}
+          </>
         );
       },
     }),

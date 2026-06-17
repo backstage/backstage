@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
+import { RiAddCircleLine } from '@remixicon/react';
+
 import {
   configApiRef,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
 import {
   createFrontendPlugin,
   PageBlueprint,
@@ -35,19 +33,29 @@ import {
 import { CatalogImportClient, catalogImportApiRef } from './api';
 import { rootRouteRef } from './plugin';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 
-export * from './translation';
+import { catalogImportTranslationRef as _catalogImportTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-catalog-import` instead.
+ */
+export const catalogImportTranslationRef = _catalogImportTranslationRef;
 
 // TODO: It's currently possible to override the import page with a custom one. We need to decide
 //       whether this type of override is typically done with an input or by overriding the entire extension.
 const catalogImportPage = PageBlueprint.make({
   params: {
     path: '/catalog-import',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     loader: () =>
-      import('./components/ImportPage').then(m =>
-        compatWrapper(<m.ImportPage />),
-      ),
+      import('./components/ImportPage').then(m => (
+        <RequirePermission permission={catalogEntityCreatePermission}>
+          <m.ImportPage />
+        </RequirePermission>
+      )),
   },
 });
 
@@ -85,11 +93,11 @@ const catalogImportApi = ApiBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'catalog-import',
+  title: 'Register Existing Component',
+  icon: <RiAddCircleLine />,
   info: { packageJson: () => import('../package.json') },
   extensions: [catalogImportApi, catalogImportPage],
   routes: {
-    importPage: convertLegacyRouteRef(rootRouteRef),
+    importPage: rootRouteRef,
   },
 });
-
-export { catalogImportTranslationRef } from './translation';

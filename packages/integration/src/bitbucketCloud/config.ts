@@ -49,8 +49,24 @@ export type BitbucketCloudIntegrationConfig = {
 
   /**
    * The access token to use for requests to Bitbucket Cloud (bitbucket.org).
+   *
+   * See https://support.atlassian.com/bitbucket-cloud/docs/api-tokens/
    */
   token?: string;
+
+  /**
+   * The OAuth client ID for Bitbucket Cloud.
+   *
+   * See https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/
+   */
+  clientId?: string;
+
+  /**
+   * The OAuth client secret for Bitbucket Cloud.
+   *
+   * See https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/
+   */
+  clientSecret?: string;
 
   /** PGP private key for signing commits. */
   commitSigningKey?: string;
@@ -69,14 +85,36 @@ export function readBitbucketCloudIntegrationConfig(
   const apiBaseUrl = BITBUCKET_CLOUD_API_BASE_URL;
   // If config is provided, we assume authenticated access is desired
   // (as the anonymous one is provided by default).
-  const username = config.getString('username');
-  const appPassword = config.getString('appPassword')?.trim();
+  const username = config.getOptionalString('username');
+  // TODO: appPassword can be removed once fully
+  // deprecated by BitBucket on 9th June 2026.
+  const appPassword = config.getOptionalString('appPassword')?.trim();
+  const token = config.getOptionalString('token');
+  const clientId = config.getOptionalString('clientId')?.trim();
+  const clientSecret = config.getOptionalString('clientSecret')?.trim();
+
+  // Validate: if username is provided, token or appPassword is required
+  if (username && !token && !appPassword) {
+    throw new Error(
+      `Bitbucket Cloud integration must be configured with as username and either a token or an appPassword.`,
+    );
+  }
+
+  // Validate: OAuth requires both clientId and clientSecret
+  if ((clientId && !clientSecret) || (clientSecret && !clientId)) {
+    throw new Error(
+      `Bitbucket Cloud integration has incomplete OAuth configuration. Both clientId and clientSecret are required.`,
+    );
+  }
 
   return {
     host,
     apiBaseUrl,
     username,
     appPassword,
+    token,
+    clientId,
+    clientSecret,
     commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }

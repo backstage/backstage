@@ -10,3 +10,4 @@ documentation: https://github.com/humanitec/humanitec-backstage-plugins
 iconUrl: /img/humanitec-logo.png
 npmPackageName: '@humanitec/backstage-plugin'
 addedDate: '2022-06-22'
+status: active

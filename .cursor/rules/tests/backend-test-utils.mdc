@@ -1,0 +1,91 @@
+---
+description: Enforce usage of @backstage/backend-test-utils in backend tests
+globs: ['**/*.test.*', '**/*.spec.*']
+alwaysApply: false
+---
+# Backstage Backend Testing Rules
+
+**CRITICAL**: When writing tests for Backstage backend code, you MUST use utilities from `@backstage/backend-test-utils` wherever possible. Do NOT create custom mocks, test databases, caches, or service implementations when equivalent utilities exist in backend-test-utils.
+
+## Required Usage
+
+1. **Service Mocking**: Always use `mockServices` from `@backstage/backend-test-utils` instead of creating custom service mocks. This includes:
+   - `mockServices.auth()` - For authentication service mocking
+   - `mockServices.httpAuth()` - For HTTP authentication service mocking
+   - `mockServices.database()` - For database service mocking
+   - `mockServices.cache()` - For cache service mocking
+   - `mockServices.logger()` - For logger service mocking
+   - `mockServices.permissions()` - For permissions service mocking
+   - `mockServices.scheduler()` - For scheduler service mocking
+   - `mockServices.userInfo()` - For user info service mocking
+   - `mockServices.events()` - For events service mocking
+   - `mockServices.urlReader()` - For URL reader service mocking
+   - `mockServices.rootConfig()` - For root config service mocking
+   - `mockServices.rootLogger()` - For root logger service mocking
+   - `mockServices.rootHealth()` - For root health service mocking
+   - `mockServices.rootLifecycle()` - For root lifecycle service mocking
+   - `mockServices.httpRouter()` - For HTTP router service mocking
+   - `mockServices.lifecycle()` - For lifecycle service mocking
+   - `mockServices.auditor()` - For auditor service mocking
+   - `mockServices.permissionsRegistry()` - For permissions registry service mocking
+
+2. **Credentials**: Always use `mockCredentials` from `@backstage/backend-test-utils` for creating test credentials instead of manually constructing credential objects.
+
+3. **Test Backend**: Always use `startTestBackend` and `TestBackend` from `@backstage/backend-test-utils` when testing backend features, plugins, or modules. This provides a fully configured test backend with all necessary services.
+
+4. **Service Factory Testing**: Use `ServiceFactoryTester` from `@backstage/backend-test-utils` when testing individual service factories in isolation.
+
+5. **Database Testing**: Always use `TestDatabases` from `@backstage/backend-test-utils` for database testing. This supports multiple database engines (PostgreSQL, MySQL, SQLite) and handles ephemeral test database creation and cleanup automatically.
+
+6. **Cache Testing**: Always use `TestCaches` from `@backstage/backend-test-utils` for cache testing. This supports multiple cache backends (Redis, Valkey, Memcache) and handles ephemeral test cache creation and cleanup automatically.
+
+7. **Filesystem Testing**: Use `createMockDirectory` from `@backstage/backend-test-utils` when testing code that interacts with the filesystem. This provides a safe, isolated temporary directory for tests.
+
+8. **MSW Integration**: Use `registerMswTestHooks` from `@backstage/backend-test-utils` when setting up Mock Service Worker for HTTP request mocking in tests.
+
+9. **Error Handler**: Use `mockErrorHandler` from `@backstage/backend-test-utils` when testing Express routers that need error handling middleware.
+
+10. **Alpha Services**: For alpha/experimental services, use the utilities from `@backstage/backend-test-utils/alpha` (e.g., `actionsRegistryServiceMock`, `actionsServiceMock`).
+
+## Import Patterns
+
+Always import from the main package:
+
+```typescript
+import {
+  mockServices,
+  mockCredentials,
+  startTestBackend,
+  TestDatabases,
+  TestCaches,
+  createMockDirectory,
+  registerMswTestHooks,
+  mockErrorHandler,
+  ServiceFactoryTester
+} from '@backstage/backend-test-utils';
+```
+
+For alpha services:
+
+```typescript
+import {
+  actionsRegistryServiceMock,
+  actionsServiceMock
+} from '@backstage/backend-test-utils/alpha';
+```
+
+## When to Use
+
+- **Always** use these utilities when writing backend tests
+- **Never** create custom mocks for services that have equivalents in backend-test-utils
+- **Never** manually set up test databases or caches when TestDatabases/TestCaches are available
+- **Never** create custom test backends when startTestBackend is available
+
+## Benefits
+
+Using backend-test-utils ensures:
+- Consistent test setup across the codebase
+- Proper cleanup and resource management
+- Support for multiple database/cache backends
+- Well-tested and maintained utilities
+- Reduced boilerplate in test code

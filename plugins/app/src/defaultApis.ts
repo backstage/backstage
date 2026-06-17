@@ -19,6 +19,7 @@ import {
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
+  FrontendHostDiscovery,
   GoogleAuth,
   GithubAuth,
   OktaAuth,
@@ -28,7 +29,6 @@ import {
   BitbucketServerAuth,
   OAuthRequestManager,
   WebStorage,
-  UrlPatternDiscovery,
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
@@ -37,6 +37,7 @@ import {
   VMwareCloudAuth,
   OpenShiftAuth,
 } from '../../../packages/core-app-api/src/apis/implementations';
+import { ToastApiForwarder, toastApiForwarderRef } from './apis';
 
 import {
   alertApiRef,
@@ -59,7 +60,11 @@ import {
   vmwareCloudAuthApiRef,
   openshiftAuthApiRef,
 } from '@backstage/core-plugin-api';
-import { ApiBlueprint, dialogApiRef } from '@backstage/frontend-plugin-api';
+import {
+  ApiBlueprint,
+  dialogApiRef,
+  toastApiRef,
+} from '@backstage/frontend-plugin-api';
 import {
   ScmAuth,
   ScmIntegrationsApi,
@@ -88,10 +93,7 @@ export const apis = [
       defineParams({
         api: discoveryApiRef,
         deps: { configApi: configApiRef },
-        factory: ({ configApi }) =>
-          UrlPatternDiscovery.compile(
-            `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
-          ),
+        factory: ({ configApi }) => FrontendHostDiscovery.fromConfig(configApi),
       }),
   }),
   ApiBlueprint.make({
@@ -101,6 +103,24 @@ export const apis = [
         api: alertApiRef,
         deps: {},
         factory: () => new AlertApiForwarder(),
+      }),
+  }),
+  ApiBlueprint.make({
+    name: 'toast-forwarder',
+    params: defineParams =>
+      defineParams({
+        api: toastApiForwarderRef,
+        deps: {},
+        factory: () => new ToastApiForwarder(),
+      }),
+  }),
+  ApiBlueprint.make({
+    name: 'toast',
+    params: defineParams =>
+      defineParams({
+        api: toastApiRef,
+        deps: { forwarder: toastApiForwarderRef },
+        factory: ({ forwarder }) => forwarder,
       }),
   }),
   analyticsApi,

@@ -1,5 +1,349 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-notifications-node@0.2.27
+
+## 0.3.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-notifications-node@0.2.27-next.0
+
+## 0.3.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/integration-aws-node@0.2.0
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/plugin-notifications-common@0.2.3
+  - @backstage/plugin-notifications-node@0.2.26
+  - @backstage/catalog-client@1.15.1
+  - @backstage/config@1.3.8
+
+## 0.3.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.9.1-next.1
+
+## 0.3.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.3-next.0
+  - @backstage/plugin-notifications-node@0.2.26-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-client@1.15.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/integration-aws-node@0.1.22-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/types@1.2.2
+
+## 0.3.20
+
+### Patch Changes
+
+- 19ef9fb: build(deps): bump `nodemailer` from 7.0.13 to 8.0.4
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/catalog-client@1.15.0
+  - @backstage/plugin-notifications-node@0.2.25
+  - @backstage/config@1.3.7
+  - @backstage/integration-aws-node@0.1.21
+  - @backstage/plugin-notifications-common@0.2.2
+
+## 0.3.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-client@1.14.1-next.0
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/integration-aws-node@0.1.21-next.0
+  - @backstage/plugin-notifications-node@0.2.25-next.2
+  - @backstage/plugin-notifications-common@0.2.2-next.0
+
+## 0.3.20-next.1
+
+### Patch Changes
+
+- 19ef9fb: build(deps): bump `nodemailer` from 7.0.13 to 8.0.4
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-notifications-node@0.2.25-next.1
+
+## 0.3.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/plugin-notifications-node@0.2.25-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.2.1
+
+## 0.3.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/plugin-catalog-node@2.1.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/plugin-notifications-node@0.2.24
+
+## 0.3.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+  - @backstage/plugin-notifications-node@0.2.24-next.2
+
+## 0.3.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/plugin-notifications-node@0.2.24-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.2.1
+
+## 0.3.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-notifications-node@0.2.24-next.0
+
+## 0.3.18
+
+### Patch Changes
+
+- e9eb400: Allow configuring included topics for email notifications.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-notifications-node@0.2.23
+
+## 0.3.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-notifications-node@0.2.23-next.1
+
+## 0.3.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/integration-aws-node@0.1.20-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-notifications-node@0.2.23-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.2.0
+
+## 0.3.17
+
+### Patch Changes
+
+- a5d5b3a: SES config for the notification email processor now supports utilizing an ARN for the SES identity when sending an email after the SES SDK V2 update.
+
+  The `sesConfig.fromArn` will set the `fromEmailAddressIdentityArn` option for the SES `SendEmailCommand`. The `sesConfig.sourceArn` field is removed since no equivalent option is available in the send email command options. Setting `sesConfig.sourceArn` will have no effect and log a warning. Example changes:
+
+  ```diff
+  notifications:
+    processors:
+      email:
+        transportConfig:
+          transport: "ses"
+          region: "us-west-2"
+        sender: "sender@mycompany.com"
+        replyTo: "no-reply@mycompany.com"
+        sesConfig:
+  -       sourceArn: "arn:aws:ses:us-west-2:123456789012:identity/example.com"
+          fromArn: "arn:aws:ses:us-west-2:123456789012:identity/example.com"
+  ```
+
+- b267aea: Updated dependency `@types/nodemailer` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-notifications-node@0.2.22
+
+## 0.3.17-next.1
+
+### Patch Changes
+
+- b267aea: Updated dependency `@types/nodemailer` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/plugin-notifications-node@0.2.22-next.1
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/plugin-notifications-node@0.2.22-next.0
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.2.0
+
+## 0.3.16
+
+### Patch Changes
+
+- 22a5362: Updated `AWS SES` client to version 2 to support `nodemailer` version 7.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-notifications-node@0.2.21
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/catalog-client@1.12.1
+
+## 0.3.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.2
+  - @backstage/plugin-notifications-node@0.2.21-next.2
+
+## 0.3.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-notifications-node@0.2.21-next.1
+
+## 0.3.15-next.0
+
+### Patch Changes
+
+- 22a5362: Updated `AWS SES` client to version 2 to support `nodemailer` version 7.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-notifications-node@0.2.21-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration-aws-node@0.1.19-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-notifications-common@0.1.2-next.0
+
+## 0.3.14
+
+### Patch Changes
+
+- b8cf31a: chore(deps): bump `nodemailer` from 6.9.16 to 7.0.7
+- f5e0963: Removed unused dependencies
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/integration-aws-node@0.1.18
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-notifications-common@0.1.1
+  - @backstage/plugin-notifications-node@0.2.20
+
+## 0.3.14-next.1
+
+### Patch Changes
+
+- b8cf31a: chore(deps): bump `nodemailer` from 6.9.16 to 7.0.7
+- f5e0963: Removed unused dependencies
+
+## 0.3.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration-aws-node@0.1.18-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-notifications-common@0.1.1-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-notifications-node@0.2.20-next.0
+  - @backstage/catalog-client@1.12.0
+
 ## 0.3.13
 
 ### Patch Changes

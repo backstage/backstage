@@ -6,22 +6,34 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
 import { Expand } from '@backstage/types';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { ListActionsResponse } from '@backstage/plugin-scaffolder-common';
+import { ListTemplatingExtensionsResponse } from '@backstage/plugin-scaffolder-common';
+import { LogEvent } from '@backstage/plugin-scaffolder-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Observable } from '@backstage/types';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { ScaffolderDryRunOptions } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderDryRunResponse } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderScaffoldOptions } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderScaffoldResponse } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderTask } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderTaskStatus } from '@backstage/plugin-scaffolder-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
-import { SpawnOptionsWithoutStdio } from 'child_process';
+import { ServiceRef } from '@backstage/backend-plugin-api';
+import { SpawnOptionsWithoutStdio } from 'node:child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import type { TemplateParameterSchema } from '@backstage/plugin-scaffolder-common';
 import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
-import { Writable } from 'stream';
-import { z } from 'zod';
+import { Writable } from 'node:stream';
+import { z } from 'zod/v3';
 
 // @public
 export type ActionContext<
@@ -307,6 +319,135 @@ export const parseRepoUrl: (
 };
 
 // @public (undocumented)
+export function removeFiles(options: {
+  dir: string;
+  filepath: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: LoggerService | undefined;
+}): Promise<void>;
+
+// @public
+export interface ScaffolderActionsExtensionPoint {
+  // (undocumented)
+  addActions(...actions: TemplateAction<any, any, any>[]): void;
+}
+
+// @public
+export const scaffolderActionsExtensionPoint: ExtensionPoint<ScaffolderActionsExtensionPoint>;
+
+// @public
+export interface ScaffolderService {
+  // (undocumented)
+  autocomplete(
+    request: {
+      token: string;
+      provider: string;
+      resource: string;
+      context: Record<string, string>;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<{
+    results: {
+      title?: string;
+      id: string;
+    }[];
+  }>;
+  // (undocumented)
+  cancelTask(
+    request: {
+      taskId: string;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<{
+    status?: ScaffolderTaskStatus;
+  }>;
+  // (undocumented)
+  dryRun(
+    request: ScaffolderDryRunOptions,
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<ScaffolderDryRunResponse>;
+  // (undocumented)
+  getLogs(
+    request: {
+      taskId: string;
+      after?: number;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<LogEvent[]>;
+  // (undocumented)
+  getTask(
+    request: {
+      taskId: string;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<ScaffolderTask>;
+  // (undocumented)
+  getTemplateParameterSchema(
+    request: {
+      templateRef: string;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<TemplateParameterSchema>;
+  // (undocumented)
+  listActions(
+    request?: {},
+    options?: ScaffolderServiceRequestOptions,
+  ): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks(
+    request: {
+      createdBy?: string;
+      limit?: number;
+      offset?: number;
+      status?: ScaffolderTaskStatus | ScaffolderTaskStatus[];
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<{
+    items: ScaffolderTask[];
+    totalItems: number;
+  }>;
+  // (undocumented)
+  listTemplatingExtensions(
+    request?: {},
+    options?: ScaffolderServiceRequestOptions,
+  ): Promise<ListTemplatingExtensionsResponse>;
+  // (undocumented)
+  retry(
+    request: {
+      taskId: string;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<{
+    id: string;
+  }>;
+  // (undocumented)
+  scaffold(
+    request: ScaffolderScaffoldOptions,
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
+}
+
+// @public
+export const scaffolderServiceRef: ServiceRef<
+  ScaffolderService,
+  'plugin',
+  'singleton'
+>;
+
+// @public (undocumented)
+export interface ScaffolderServiceRequestOptions {
+  // (undocumented)
+  credentials: BackstageCredentials;
+}
+
+// @public (undocumented)
 export interface SerializedFile {
   // (undocumented)
   content: Buffer;
@@ -327,7 +468,7 @@ export function serializeDirectoryContents(
   },
 ): Promise<SerializedFile[]>;
 
-// @public
+// @public @deprecated
 export type SerializedTask = {
   id: string;
   spec: TaskSpec;
@@ -339,7 +480,7 @@ export type SerializedTask = {
   state?: JsonObject;
 };
 
-// @public
+// @public @deprecated
 export type SerializedTaskEvent = {
   id: number;
   isTaskRecoverable?: boolean;
@@ -353,10 +494,10 @@ export type SerializedTaskEvent = {
   createdAt: string;
 };
 
-// @public
+// @public @deprecated
 export interface TaskBroker {
   // (undocumented)
-  cancel?(taskId: string): Promise<void>;
+  cancel(taskId: string): Promise<void>;
   // (undocumented)
   claim(): Promise<TaskContext>;
   // (undocumented)
@@ -370,7 +511,7 @@ export interface TaskBroker {
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
-  list?(options?: {
+  list(options?: {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
@@ -388,35 +529,30 @@ export interface TaskBroker {
     tasks: SerializedTask[];
     totalTasks?: number;
   }>;
-  // @deprecated (undocumented)
-  list?(options: { createdBy?: string; status?: TaskStatus }): Promise<{
-    tasks: SerializedTask[];
-    totalTasks?: number;
-  }>;
   // (undocumented)
-  recoverTasks?(): Promise<void>;
+  recoverTasks(): Promise<void>;
   // (undocumented)
-  retry?(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
+  retry(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
   // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type TaskBrokerDispatchOptions = {
   spec: TaskSpec;
   secrets?: TaskSecrets;
   createdBy?: string;
 };
 
-// @public
+// @public @deprecated
 export type TaskBrokerDispatchResult = {
   taskId: string;
 };
 
-// @public
+// @public @deprecated
 export type TaskCompletionState = 'failed' | 'completed';
 
-// @public
+// @public @deprecated
 export interface TaskContext {
   // (undocumented)
   cancelSignal: AbortSignal;
@@ -460,16 +596,16 @@ export interface TaskContext {
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
-// @public
+// @public @deprecated
 export type TaskFilter = {
   key: string;
   values?: string[];
 };
 
-// @public
+// @public @deprecated
 export type TaskFilters =
   | {
       anyOf: TaskFilter[];
@@ -487,7 +623,7 @@ export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
 
-// @public
+// @public @deprecated
 export type TaskStatus =
   | 'cancelled'
   | 'completed'

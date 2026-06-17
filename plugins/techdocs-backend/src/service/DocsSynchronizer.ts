@@ -20,7 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { assertError, NotFoundError } from '@backstage/errors';
+import { NotFoundError, toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   GeneratorBuilder,
@@ -28,7 +28,7 @@ import {
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
 import pLimit, { Limit } from 'p-limit';
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
 import {
@@ -146,13 +146,13 @@ export class DocsSynchronizer {
         return;
       }
     } catch (e) {
-      assertError(e);
+      const buildError = toError(e);
       const msg = `Failed to build the docs page for entity ${stringifyEntityRef(
         entity,
-      )}: ${e.message}`;
+      )}: ${buildError.message}`;
       taskLogger.error(msg);
-      this.logger.error(msg, e);
-      error(e);
+      this.logger.error(msg, buildError);
+      error(buildError);
       return;
     }
 
@@ -241,10 +241,9 @@ export class DocsSynchronizer {
         finish({ updated: false });
       }
     } catch (e) {
-      assertError(e);
       // In case of error, log and allow the user to go about their business.
       this.logger.error(
-        `Error syncing cache for ${entityTripletPath}: ${e.message}`,
+        `Error syncing cache for ${entityTripletPath}: ${toError(e).message}`,
       );
       finish({ updated: false });
     } finally {

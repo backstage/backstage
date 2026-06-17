@@ -15,29 +15,18 @@
  */
 
 import { Config } from '@backstage/config';
-import { readAccessRestrictionsFromConfig } from './helpers';
-import { AccessRestriptionsMap, TokenHandler } from './types';
+import { createExternalTokenHandler } from './helpers';
 
 const MIN_TOKEN_LENGTH = 8;
 
-/**
- * Handles `type: static` access.
- *
- * @internal
- */
-export class StaticTokenHandler implements TokenHandler {
-  #entries = new Map<
-    string,
-    {
-      subject: string;
-      allAccessRestrictions?: AccessRestriptionsMap;
-    }
-  >();
-
-  add(config: Config) {
-    const token = config.getString('options.token');
-    const subject = config.getString('options.subject');
-    const allAccessRestrictions = readAccessRestrictionsFromConfig(config);
+export const staticTokenHandler = createExternalTokenHandler<{
+  token: string;
+  subject: string;
+}>({
+  type: 'static',
+  initialize(ctx: { options: Config }): { token: string; subject: string } {
+    const token = ctx.options.getString('token');
+    const subject = ctx.options.getString('subject');
 
     if (!token.match(/^\S+$/)) {
       throw new Error('Illegal token, must be a set of non-space characters');
@@ -47,16 +36,17 @@ export class StaticTokenHandler implements TokenHandler {
       );
     } else if (!subject.match(/^\S+$/)) {
       throw new Error('Illegal subject, must be a set of non-space characters');
-    } else if (this.#entries.has(token)) {
-      throw new Error(
-        'Static externalAccess token was declared more than once',
-      );
     }
 
-    this.#entries.set(token, { subject, allAccessRestrictions });
-  }
-
-  async verifyToken(token: string) {
-    return this.#entries.get(token);
-  }
-}
+    return { token, subject };
+  },
+  async verifyToken(
+    token: string,
+    context: { token: string; subject: string },
+  ) {
+    if (token === context.token) {
+      return { subject: context.subject };
+    }
+    return undefined;
+  },
+});

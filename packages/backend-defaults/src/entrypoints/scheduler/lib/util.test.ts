@@ -56,6 +56,29 @@ describe('util', () => {
       await promise;
       expect(true).toBe(true);
     }, 1_000);
+
+    it('handles durations longer than 2^31 ms by chunking setTimeout calls', async () => {
+      jest.useFakeTimers();
+      try {
+        const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+        let resolved = false;
+        const promise = sleep(Duration.fromMillis(thirtyDaysMs)).then(() => {
+          resolved = true;
+        });
+
+        expect(jest.getTimerCount()).toBe(1);
+
+        await jest.advanceTimersByTimeAsync(2 ** 30);
+        expect(resolved).toBe(false);
+        expect(jest.getTimerCount()).toBe(1);
+
+        await jest.advanceTimersByTimeAsync(thirtyDaysMs - 2 ** 30);
+        await promise;
+        expect(resolved).toBe(true);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
   });
 
   describe('delegateAbortController', () => {

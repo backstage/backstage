@@ -68,7 +68,7 @@ export const createBitbucketPipelinesRunAction = (options: {
       const host = 'bitbucket.org';
       const integrationConfig = integrations.bitbucketCloud.byHost(host);
 
-      const authorization = getAuthorizationHeader(
+      const authorization = await getAuthorizationHeader(
         token ? { token } : integrationConfig!.config,
       );
       let response: Response;

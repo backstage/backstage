@@ -20,6 +20,7 @@ import {
   FrontendFeature,
   FrontendPlugin,
 } from '@backstage/frontend-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
@@ -31,6 +32,37 @@ import {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { ErrorCollector } from '../wiring/createErrorCollector';
+
+function normalizePlugin(plugin: FrontendPlugin): FrontendPlugin {
+  // Ensure pluginId is always set for plugins in the app
+  if (!plugin.pluginId && 'id' in plugin && typeof plugin.id === 'string') {
+    (plugin as any).pluginId = plugin.id;
+  }
+  return plugin;
+}
+
+function combinePredicates(
+  left: FilterPredicate | undefined,
+  right: FilterPredicate | undefined,
+) {
+  if (!left) {
+    return right;
+  }
+  if (!right) {
+    return left;
+  }
+
+  return { $all: [left, right] };
+}
+
+function getExtensionPredicate(options: {
+  internalExtension: ReturnType<typeof toInternalExtension>;
+}) {
+  if (options.internalExtension.version === 'v2') {
+    return options.internalExtension.if;
+  }
+  return undefined;
+}
 
 /** @internal */
 export function resolveAppNodeSpecs(options: {
@@ -48,7 +80,9 @@ export function resolveAppNodeSpecs(options: {
     collector,
   } = options;
 
-  const plugins = features.filter(OpaqueFrontendPlugin.isType);
+  const plugins = features
+    .filter(OpaqueFrontendPlugin.isType)
+    .map(normalizePlugin);
   const modules = features.filter(isInternalFrontendModule);
 
   const filterForbidden = (
@@ -57,7 +91,7 @@ export function resolveAppNodeSpecs(options: {
     if (forbidden.has(extension.id)) {
       collector.report({
         code: 'EXTENSION_IGNORED',
-        message: `It is forbidden to override the '${extension.id}' extension, attempted by the '${extension.plugin.id}' plugin`,
+        message: `It is forbidden to override the '${extension.id}' extension, attempted by the '${extension.plugin.pluginId}' plugin`,
         context: {
           plugin: extension.plugin,
           extensionId: extension.id,
@@ -69,29 +103,53 @@ export function resolveAppNodeSpecs(options: {
   };
 
   const pluginExtensions = plugins.flatMap(plugin => {
-    return OpaqueFrontendPlugin.toInternal(plugin)
-      .extensions.map(extension => ({
-        ...extension,
-        plugin,
-      }))
+    const internalPlugin = OpaqueFrontendPlugin.toInternal(plugin);
+    return internalPlugin.extensions
+      .map(extension => {
+        const internalExtension = toInternalExtension(extension);
+        return {
+          ...internalExtension,
+          plugin,
+          if: combinePredicates(
+            internalPlugin.if,
+            internalExtension.version === 'v2'
+              ? internalExtension.if
+              : undefined,
+          ),
+        };
+      })
       .filter(filterForbidden);
   });
-  const moduleExtensions = modules.flatMap(mod =>
-    toInternalFrontendModule(mod)
-      .extensions.flatMap(extension => {
+  const moduleExtensions = modules.flatMap(mod => {
+    const internalModule = toInternalFrontendModule(mod);
+    return internalModule.extensions
+      .flatMap(extension => {
+        const internalExtension = toInternalExtension(extension);
+
         // Modules for plugins that are not installed are ignored
-        const plugin = plugins.find(p => p.id === mod.pluginId);
+        const plugin = plugins.find(p => p.pluginId === mod.pluginId);
         if (!plugin) {
           return [];
         }
 
-        return [{ ...extension, plugin }];
+        return [
+          {
+            ...internalExtension,
+            plugin,
+            if: combinePredicates(
+              internalModule.if,
+              internalExtension.version === 'v2'
+                ? internalExtension.if
+                : undefined,
+            ),
+          },
+        ];
       })
-      .filter(filterForbidden),
-  );
+      .filter(filterForbidden);
+  });
 
   const appPlugin =
-    plugins.find(plugin => plugin.id === 'app') ??
+    plugins.find(plugin => plugin.pluginId === 'app') ??
     createFrontendPlugin({
       pluginId: 'app',
     });
@@ -106,6 +164,7 @@ export function resolveAppNodeSpecs(options: {
           source: plugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
+          if: getExtensionPredicate({ internalExtension }),
           config: undefined as unknown,
         },
       };
@@ -119,6 +178,7 @@ export function resolveAppNodeSpecs(options: {
           plugin: appPlugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
+          if: getExtensionPredicate({ internalExtension }),
           config: undefined as unknown,
         },
       };
@@ -138,6 +198,9 @@ export function resolveAppNodeSpecs(options: {
       configuredExtensions[index].extension = internalExtension;
       configuredExtensions[index].params.attachTo = internalExtension.attachTo;
       configuredExtensions[index].params.disabled = internalExtension.disabled;
+      configuredExtensions[index].params.if = getExtensionPredicate({
+        internalExtension,
+      });
     } else {
       // Add the extension as a new one when not overriding an existing one
       configuredExtensions.push({
@@ -147,6 +210,7 @@ export function resolveAppNodeSpecs(options: {
           source: extension.plugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
+          if: getExtensionPredicate({ internalExtension }),
           config: undefined,
         },
       });
@@ -159,7 +223,7 @@ export function resolveAppNodeSpecs(options: {
       if (seenExtensionIds.has(extension.id)) {
         collector.report({
           code: 'EXTENSION_IGNORED',
-          message: `The '${extension.id}' extension from the '${params.plugin.id}' plugin is a duplicate and will be ignored`,
+          message: `The '${extension.id}' extension from the '${params.plugin.pluginId}' plugin is a duplicate and will be ignored`,
           context: {
             plugin: params.plugin,
             extensionId: extension.id,
@@ -225,6 +289,7 @@ export function resolveAppNodeSpecs(options: {
     attachTo: param.params.attachTo,
     extension: param.extension,
     disabled: param.params.disabled,
+    if: param.params.if,
     plugin: param.params.plugin,
     source: param.params.source,
     config: param.params.config,

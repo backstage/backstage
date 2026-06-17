@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-var path = require('path');
+var path = require('node:path');
 
 module.exports = {
   root: true,
-  plugins: ['@spotify', 'notice', 'react', 'testing-library', '@backstage'],
+  plugins: ['@spotify', 'notice', 'react', 'testing-library', '@backstage', 'node-import'],
   rules: {
+    'node-import/prefer-node-protocol': 1,
     '@backstage/no-mixed-plugin-imports': [
       'error',
       {

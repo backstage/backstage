@@ -20,19 +20,16 @@ import {
   fetchApiRef,
   ApiBlueprint,
   PageBlueprint,
-  NavItemBlueprint,
+  SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
 
 import {
   catalogUnprocessedEntitiesApiRef,
   CatalogUnprocessedEntitiesClient,
 } from '../api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
 import QueueIcon from '@material-ui/icons/Queue';
 import { rootRouteRef } from '../routes';
+import { Container } from '@backstage/ui';
 
 /** @alpha */
 export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
@@ -50,35 +47,50 @@ export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
 
 /** @alpha */
 export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
+  disabled: true,
   params: {
     path: '/catalog-unprocessed-entities',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
+    title: 'Unprocessed Entities',
+    icon: <QueueIcon fontSize="inherit" />,
     loader: () =>
-      import('../components/UnprocessedEntities').then(m =>
-        compatWrapper(<m.UnprocessedEntities />),
-      ),
+      import('../components/UnprocessedEntities').then(m => (
+        <m.NfsUnprocessedEntities />
+      )),
   },
 });
 
-/** @alpha */
-export const catalogUnprocessedEntitiesNavItem = NavItemBlueprint.make({
+/**
+ * DevTools content for catalog unprocessed entities.
+ *
+ * @alpha
+ */
+export const unprocessedEntitiesDevToolsContent = SubPageBlueprint.make({
+  attachTo: { id: 'page:devtools', input: 'pages' },
   params: {
+    path: 'unprocessed-entities',
     title: 'Unprocessed Entities',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
-    icon: QueueIcon,
+    loader: () =>
+      import('../components/UnprocessedEntities').then(m => (
+        <Container>
+          <m.UnprocessedEntitiesContent />
+        </Container>
+      )),
   },
 });
 
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'catalog-unprocessed-entities',
+  title: 'Unprocessed Entities',
+  icon: <QueueIcon fontSize="inherit" />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
-    root: convertLegacyRouteRef(rootRouteRef),
+    root: rootRouteRef,
   },
   extensions: [
     catalogUnprocessedEntitiesApi,
     catalogUnprocessedEntitiesPage,
-    catalogUnprocessedEntitiesNavItem,
+    unprocessedEntitiesDevToolsContent,
   ],
 });

@@ -24,6 +24,7 @@ repo [command]                                 Command that run across an entire
 package [command]                              Lifecycle scripts for individual packages
 migrate [command]                              Migration utilities
 versions:bump [options]                        Bump Backstage packages to the latest versions
+translations [command]                         Translation message management
 clean                                          Delete cache directories [DEPRECATED]
 build-workspace <workspace-dir> [packages...]  Builds a temporary dist workspace from the provided
                                                 packages
@@ -119,11 +120,11 @@ Usage: backstage-cli repo lint [options]
 Lint all packages in the project
 
 Options:
-  --format <format>         Lint report output format (default: "eslint-formatter-friendly")
-  --since <ref>             Only lint packages that changed since the specified ref
-  --successCache            Enable success caching, which skips running tests for unchanged packages that were successful in the previous run
-  --successCacheDir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
-  --fix                     Attempt to automatically fix violations
+  --format <format>           Lint report output format (default: "eslint-formatter-friendly")
+  --since <ref>               Only lint packages that changed since the specified ref
+  --success-cache             Enable success caching, which skips running lint for unchanged packages that were successful in the previous run
+  --success-cache-dir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
+  --fix                       Attempt to automatically fix violations
 ```
 
 ## repo test
@@ -152,7 +153,7 @@ If arguments are provided, they will be forwarded to Jest and used to filter tes
 yarn test packages/app/src/App.test.tsx
 ```
 
-If you want to avoid re-running tests that have not changed since the last successful run in CI, you can use the `--successCache` flag. By default this cache is stored in `node_modules/.cache/backstage-cli`, but you can choose a different directory with the `--successCacheDir <path>`.
+If you want to avoid re-running tests that have not changed since the last successful run in CI, you can use the `--success-cache` flag. By default this cache is stored in `node_modules/.cache/backstage-cli`, but you can choose a different directory with the `--success-cache-dir <path>`.
 
 ```text
 Usage: backstage-cli repo test [options]
@@ -160,11 +161,11 @@ Usage: backstage-cli repo test [options]
 Run tests, forwarding args to Jest, defaulting to watch mode
 
 Options:
-  --since <ref>             Only test packages that changed since the specified ref
-  --successCache            Enable success caching, which skips running tests for unchanged packages that were successful in the previous run
-  --successCacheDir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
-  --jest-help               Show help for Jest CLI options, which are passed through
-  -h, --help                display help for command
+  --since <ref>               Only test packages that changed since the specified ref
+  --success-cache             Enable success caching, which skips running tests for unchanged packages that were successful in the previous run
+  --success-cache-dir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
+  --jest-help                 Show help for Jest CLI options, which are passed through
+  -h, --help                  display help for command
 ```
 
 ## package start
@@ -177,11 +178,12 @@ Usage: backstage-cli package start [options]
 Start a package for local development
 
 Options:
-  --config <path>  Config files to load instead of app-config.yaml (default: [])
-  --role <name>    Run the command with an explicit package role
-  --check          Enable type checking and linting if available
-  --inspect        Enable debugger in Node.js environments
-  --inspect-brk    Enable debugger in Node.js environments, breaking before code starts
+  --config <path>     Config files to load instead of app-config.yaml (default: [])
+  --role <name>       Run the command with an explicit package role
+  --check             Enable type checking and linting if available
+  --inspect           Enable debugger in Node.js environments
+  --inspect-brk       Enable debugger in Node.js environments, breaking before code starts
+  --entrypoint <path> Entry directory path (uses index file) or entry file path (without extension). Defaults to "dev"
 ```
 
 ## package build
@@ -199,7 +201,131 @@ Options:
   --skip-build-dependencies  Skip the automatic building of local dependencies. Applies to backend packages only.
   --stats                    If bundle stats are available, write them to the output directory. Applies to app packages only.
   --config <path>            Config files to load instead of app-config.yaml. Applies to app packages only. (default: [])
+  --module-federation        Build a package as a module federation remote. Applies to frontend plugin packages only.
 ```
+
+## package bundle
+
+:::caution Experimental
+This command is experimental and may receive breaking changes in future releases
+without a deprecation period. It is hidden from the main `--help` output.
+:::
+
+Bundle a plugin for dynamic loading. This creates a self-contained plugin
+package that can be deployed independently and loaded dynamically by a Backstage
+application. Supports both backend and frontend plugins.
+
+Unlike regular builds, the bundle command:
+
+- Creates a fully self-contained plugin deliverable
+
+- Produces module federation assets (frontend) or includes plugin dependencies in the plugin's private `node_modules`, building and packing (with `yarn pack`) the local `workspace:^` dependencies first (backend).
+- Generates a config schema from plugin-related packages only.
+- Validates that the plugin exports valid dynamic loading entry points (backend only)
+
+### Usage
+
+```bash
+# Bundle the current package (output: ./bundle/)
+yarn backstage-cli package bundle
+
+# Bundle to a specific directory (output: ../dynamic-plugins/<mangled-package-name>/)
+yarn backstage-cli package bundle --output-destination ../dynamic-plugins
+
+# Override the bundle subdirectory name
+yarn backstage-cli package bundle --output-name my-plugin-bundle
+
+# Clean output before bundling
+yarn backstage-cli package bundle --clean
+
+# Skip building for the plugin and its local dependencies
+yarn backstage-cli package bundle --no-build
+
+# Skip dependency installation and entrypoint validation
+yarn backstage-cli package bundle --no-install
+
+# Stream detailed output from build, pack, and install steps
+yarn backstage-cli package bundle --verbose
+
+# Use a pre-built dist workspace for batch bundling.
+# First, create the workspace with:
+#   backstage-cli build-workspace <output-dir> [packages...] --alwaysPack
+# Then pass <output-dir> as --pre-packed-dir:
+yarn backstage-cli package bundle --pre-packed-dir ../dist-workspace
+```
+
+### Options
+
+```text
+Usage: backstage-cli package bundle [options]
+
+Bundle a plugin for dynamic loading
+
+Options:
+  --output-destination <dir>  Directory in which the bundle subdirectory is created.
+                              Defaults to the current package directory.
+  --output-name <name>        Name of the bundle subdirectory. Defaults to "bundle" when
+                              output stays in the package directory, or to the mangled
+                              package name (e.g. myorg-plugin-foo) when
+                              --output-destination is specified.
+  --clean                     Clean the output directory before bundling
+  --no-build                  Skip building packages (assumes they are already built)
+  --no-install                Skip dependency installation and entrypoint validation.
+  --verbose                   Stream detailed output from internal steps (build, pack,
+                              install) to the console. Without this flag, output is
+                              captured to per-step log files and only shown on error.
+  --pre-packed-dir <dir>      Path to a pre-built dist workspace (from
+                              build-workspace --alwaysPack). Skips local dependency
+                              packing and uses pre-packed packages directly. For frontend
+                              plugins, this also enables yarn.lock generation for SBOM.
+```
+
+### Output Contract
+
+The bundle output is a directory that can be deployed as a standalone unit.
+Consumers of the bundle (such as `@backstage/backend-dynamic-feature-service`
+or `@backstage/frontend-dynamic-feature-loader`) can rely on the following
+guarantees:
+
+**All bundles:**
+
+- A `package.json` at the bundle root with entry points configured for dynamic
+  loading. The `backstage.role` and `files` fields are preserved from the source package.
+- A `dist/` directory containing the built plugin code.
+- A `dist/.config-schema.json` file (when any config schemas apply) containing
+  gathered schemas from the plugin, its local workspace dependencies, and
+  third-party dependencies. Schemas from unrelated Backstage packages are excluded.
+- No `scripts` or `devDependencies` in `package.json`.
+
+**Backend plugins** (`backend-plugin`, `backend-plugin-module`):
+
+- A `node_modules/` directory with all production dependencies (including local
+  workspace dependencies), pinned to their exact versions from the source lockfile.
+- `bundleDependencies` is set to `true` in `package.json`.
+
+**Frontend plugins** (`frontend-plugin`, `frontend-plugin-module`):
+
+- `main` points to `dist/remoteEntry.js` (the Module Federation remote entry).
+- `types` points to `dist/@mf-types/index.d.ts` when type declarations are
+  available.
+- No embedded `node_modules/` directory.
+
+### Environment Variables
+
+The bundle command supports the same environment variables as the Backstage yarn plugin
+for resolving `backstage:^` version specifiers:
+
+- `BACKSTAGE_MANIFEST_FILE`: Path to a local manifest file (for offline usage)
+- `BACKSTAGE_VERSIONS_BASE_URL`: Custom base URL for fetching release manifests
+
+### Supported Package Roles
+
+The bundle command supports packages with the following roles:
+
+- `backend-plugin`
+- `backend-plugin-module`
+- `frontend-plugin`
+- `frontend-plugin-module`
 
 ## package lint
 
@@ -285,7 +411,7 @@ it is possible to pre-select what you want to create using the `--select` flag,
 and provide options using `--option`, for example:
 
 ```bash
-backstage-cli new --select plugin --option pluginId=foo
+backstage-cli new --select frontend-plugin --option pluginId=foo
 ```
 
 This command is typically added as script in the root `package.json` to be
@@ -411,8 +537,16 @@ package. This essentially calls `yarn pack` in each included package and unpacks
 the resulting archive in the target `workspace-dir`.
 
 ```text
-Usage: backstage-cli build-workspace [options] <workspace-dir>
+Usage: backstage-cli build-workspace [options] <workspace-dir> [packages...]
+
+Options:
+  --alwaysPack  Force workspace output to be a result of running `yarn pack` on
+                each package (warning: very slow)
 ```
+
+When `--alwaysPack` is used, the output directory can be passed to
+`backstage-cli package bundle --pre-packed-dir` to speed up batch bundling of
+multiple plugins from the same monorepo.
 
 ## create-github-app
 
@@ -427,12 +561,150 @@ YAML file that can be referenced in the GitHub integration configuration.
 Usage: backstage-cli create-github-app <github-org>
 ```
 
+## translations export
+
+Export translation messages from an app and all of its frontend plugins to JSON
+files. This command must be run from within a package directory (e.g.
+`packages/app`), not from the repository root.
+
+The command discovers all `TranslationRef` definitions in the dependency tree,
+extracts their default messages using the TypeScript type system, and writes
+them as JSON files along with a manifest.
+
+For more details on the translation workflow, see the
+[Internationalization](../../plugins/internationalization.md) documentation.
+
+```text
+Usage: backstage-cli translations export [options]
+
+Options:
+  --output <dir>       Output directory for exported messages and manifest (default: "translations")
+  --pattern <pattern>  File path pattern for message files relative to the output
+                       directory, with {id} and {lang} placeholders
+                       (default: "messages/{id}.{lang}.json")
+  -h, --help           display help for command
+```
+
+### Examples
+
+Export translations with default settings:
+
+```bash
+cd packages/app
+yarn backstage-cli translations export
+```
+
+Export with language-based directory grouping:
+
+```bash
+yarn backstage-cli translations export --pattern '{lang}/{id}.json'
+```
+
+## translations import
+
+Generate translation resource wiring code from translated JSON files. Reads the
+manifest and translated message files produced by `translations export`, and
+generates a TypeScript module that creates `TranslationResource` objects for each
+translated ref.
+
+The file pattern used during export is stored in the manifest and automatically
+used by the import command.
+
+```text
+Usage: backstage-cli translations import [options]
+
+Options:
+  --input <dir>    Input directory containing the manifest and translated message files (default: "translations")
+  --output <path>  Output path for the generated wiring module (default: "src/translations/resources.ts")
+  -h, --help       display help for command
+```
+
+### Examples
+
+Generate wiring code with default settings:
+
+```bash
+cd packages/app
+yarn backstage-cli translations import
+```
+
 ## info
 
 Outputs debug information which is useful when opening an issue. Outputs system
 information, node.js and npm versions, CLI version and type (inside backstage
-repo or a created app), all `@backstage/*` package dependency versions.
+repo or a created app), all `@backstage/*` package dependency versions, and any
+packages that contain a `backstage` field in their `package.json`.
+
+The command distinguishes between installed packages (from npm) and local
+workspace packages, making it easier to understand your Backstage setup.
 
 ```text
-Usage: backstage-cli info
+Usage: backstage-cli info [options]
+
+Options:
+  --include <patterns...>  Glob patterns for additional packages to include
+                           (e.g., @mycompany/backstage-*)
+  --format <text|json>     Output format (default: text)
+  -h, --help               display help for command
+```
+
+### Examples
+
+Output debug information to the console:
+
+```bash
+yarn backstage-cli info
+```
+
+Include additional packages matching a glob pattern:
+
+```bash
+yarn backstage-cli info --include "@mycompany/*"
+```
+
+Output as JSON:
+
+```bash
+yarn backstage-cli info --format json
+```
+
+Export JSON to a file for further processing:
+
+```bash
+yarn backstage-cli info --format json > backstage-info.json
+```
+
+Combine options to include custom packages and export to JSON:
+
+```bash
+yarn backstage-cli info --include "@mycompany/backstage-*" --include "@internal/*" --format json > debug-info.json
+```
+
+Export text output to a file:
+
+```bash
+yarn backstage-cli info --format text > backstage-info.txt
+```
+
+### JSON Output Format
+
+When using `--format json`, the output is structured as follows:
+
+```json
+{
+  "system": {
+    "os": "Darwin 23.0.0 - darwin/arm64",
+    "node": "v18.17.0",
+    "yarn": "3.6.0",
+    "cli": { "version": "0.27.0", "local": false },
+    "backstage": "1.20.0"
+  },
+  "dependencies": {
+    "@backstage/core-plugin-api": "1.8.0",
+    "@backstage/plugin-catalog": "1.15.0"
+  },
+  "local": {
+    "@mycompany/backstage-plugin-custom": "0.1.0"
+  }
+}
 ```

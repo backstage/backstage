@@ -32,7 +32,7 @@ More specifically, the Software Catalog enables two main use-cases:
 ## Getting Started
 
 The Software Catalog is available to browse at `/catalog`. If you've followed
-[Getting Started with Backstage](../../getting-started), you should be able to
+[Getting Started with Backstage](../../getting-started/index.md), you should be able to
 browse the catalog at `http://localhost:3000`.
 
 ![screenshot of software catalog](../../assets/software-catalog/software-catalog-home.png)
@@ -126,7 +126,7 @@ _starring_ of components:
 The software catalog is a great way to organize the infrastructure tools you use
 to manage the software. This is how Backstage creates one developer portal for
 all your tools. Rather than asking teams to jump between different
-infrastructure UIs (and incurring additional cognitive overhead each time they
+infrastructure user interfaces (and incurring additional cognitive overhead each time they
 make a context switch), most of these tools can be organized around the entities
 in the catalog.
 
@@ -135,6 +135,12 @@ in the catalog.
 Your Backstage developer portal can be customized by incorporating
 [existing open source plugins](https://github.com/backstage/backstage/tree/master/plugins),
 or by [building your own](../../plugins/index.md).
+
+## Unprocessed Entities
+
+Sometimes entities fail to process correctly. The **Unprocessed Entities** feature helps Backstage admins find and diagnose these entities to understand the state of the catalog.
+
+To use this feature, check out the documentation for the [catalog-unprocessed-entities plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-unprocessed-entities) and its [backend module](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-unprocessed).
 
 ## Links
 

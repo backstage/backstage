@@ -1,0 +1,152 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { toggleButtonGroupPropDefs } from './props-definition';
+import {
+  toggleButtonGroupHeroSnippet,
+  toggleButtonGroupUsageSnippet,
+  toggleButtonGroupSurfacesSnippet,
+  toggleButtonGroupSingleSnippet,
+  toggleButtonGroupMultipleSnippet,
+  toggleButtonGroupIconsSnippet,
+  toggleButtonGroupIconsOnlySnippet,
+  toggleButtonGroupDisallowEmptySnippet,
+  toggleButtonGroupVerticalSnippet,
+  toggleButtonGroupDisabledSnippet,
+} from './snippets';
+import {
+  ToggleButtonGroupSingle,
+  ToggleButtonGroupMultiple,
+  ToggleButtonGroupVertical,
+  ToggleButtonGroupDisabled,
+  ToggleButtonGroupDisallowEmpty,
+  ToggleButtonGroupIcons,
+  ToggleButtonGroupIconsOnly,
+  ToggleButtonGroupSurfaces,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  toggleButtonGroup: 'https://react-aria.adobe.com/ToggleButtonGroup',
+};
+
+<PageTitle
+  title="ToggleButtonGroup"
+  description="A container for toggle buttons with single or multiple selection."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<ToggleButtonGroupSingle />}
+  code={toggleButtonGroupHeroSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={toggleButtonGroupUsageSnippet} />
+
+## API reference
+
+<PropsTable data={toggleButtonGroupPropDefs} />
+
+<ReactAriaLink
+  component="ToggleButtonGroup"
+  href={reactAriaUrls.toggleButtonGroup}
+/>
+
+## Examples
+
+### Surfaces
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<ToggleButtonGroupSurfaces />}
+  code={toggleButtonGroupSurfacesSnippet}
+/>
+
+### Single selection
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ToggleButtonGroupSingle />}
+  code={toggleButtonGroupSingleSnippet}
+  layout="side-by-side"
+/>
+
+### Multiple selection
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ToggleButtonGroupMultiple />}
+  code={toggleButtonGroupMultipleSnippet}
+  layout="side-by-side"
+/>
+
+### Icons and text
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ToggleButtonGroupIcons />}
+  code={toggleButtonGroupIconsSnippet}
+  layout="side-by-side"
+/>
+
+### Icons only
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ToggleButtonGroupIconsOnly />}
+  code={toggleButtonGroupIconsOnlySnippet}
+  layout="side-by-side"
+/>
+
+### Disallow empty selection
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ToggleButtonGroupDisallowEmpty />}
+  code={toggleButtonGroupDisallowEmptySnippet}
+  layout="side-by-side"
+/>
+
+### Vertical orientation
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ToggleButtonGroupVertical />}
+  code={toggleButtonGroupVerticalSnippet}
+  layout="side-by-side"
+/>
+
+### Disabled
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ToggleButtonGroupDisabled />}
+  code={toggleButtonGroupDisabledSnippet}
+  layout="side-by-side"
+/>
+
+<Theming definition={ToggleButtonGroupDefinition} />
+
+<ChangelogComponent component="toggle-button-group" />

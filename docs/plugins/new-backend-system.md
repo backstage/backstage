@@ -4,6 +4,12 @@ title: New Backend System
 description: Details of the new backend system
 ---
 
+:::caution Legacy Documentation
+
+This section is part of the legacy plugins documentation. The canonical documentation for the backend system has moved to the [Backend System](../backend-system/index.md) section, which includes more detailed and up-to-date guides for [building plugins and modules](../backend-system/building-plugins-and-modules/01-index.md), [architecture](../backend-system/architecture/01-index.md), and [core services](../backend-system/core-services/01-index.md).
+
+:::
+
 ## Status
 
 The new backend system is released and ready for production use, and many plugins and modules have already been migrated. We recommend all plugins and deployments to migrate to the new system.
@@ -195,7 +201,7 @@ A `ServiceRef` is a named reference to an interface which are later used to reso
 Services is what provides common utilities that previously resided in the `PluginEnvironment` such as Config, Logging and Database.
 
 On startup the backend will make sure that the services are initialized before being passed to the plugin/module that depend on them.
-ServiceRefs contain a scope which is used to determine if the serviceFactory creating the service will create a new instance scoped per plugin/module or if it will be shared. `plugin` scoped services will be created once per plugin/module and `root` scoped services will be created once per backend instance.
+ServiceRefs contain a scope which is used to determine if the service factory creating the service will create a new instance scoped per plugin/module or if it will be shared. `plugin` scoped services will be created once per plugin/module and `root` scoped services will be created once per backend instance.
 
 #### Defining a Service
 

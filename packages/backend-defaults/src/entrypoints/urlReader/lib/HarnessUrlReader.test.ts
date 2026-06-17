@@ -29,7 +29,7 @@ import getRawBody from 'raw-body';
 import { HarnessUrlReader } from './HarnessUrlReader';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -215,7 +215,7 @@ describe('HarnessUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.zip',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),

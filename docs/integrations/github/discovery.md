@@ -5,10 +5,6 @@ sidebar_label: Discovery
 description: Automatically discovering catalog entities from repositories in a GitHub organization or App
 ---
 
-:::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/github/discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
-:::
-
 ## GitHub Provider
 
 The GitHub integration has a discovery provider for discovering catalog
@@ -58,7 +54,7 @@ To receive the `repository.transferred` event, the new owner account must have t
 
 :::
 
-When creating the webhook in GitHub the "Payload URL" will looks something along these lines: `https://<your-intance-name>/api/events/http/github` and the "Content Type" should be `application/json`.
+When creating the webhook in GitHub the "Payload URL" will looks something along these lines: `https://<your-instance-name>/api/events/http/github` and the "Content Type" should be `application/json`.
 
 The GitHub Webhooks UI will send a trial event to validate it can connect when you save your new Webhook. It is possible to retry this trial event if it fails and you want to send it again. Additionally there is a Recent Deliveries tab you can use to validate that the events are being fired should you need to do any later troubleshooting.
 
@@ -141,7 +137,7 @@ events:
               region: us-east-2
 ```
 
-The [AWS SQS module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-aws-sqs/README.md#configuration) has more details on the configuration options, the example above includes on the required options.
+The [AWS SQS module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-aws-sqs/README.md#configuration) has more details on the configuration options, the example above includes only the required options.
 
 ### Events Setup using Google Pub/Sub module
 
@@ -179,7 +175,53 @@ events:
             targetTopic: 'github.{{ event.attributes.x-github-event }}'
 ```
 
-The [Google Pub/Sub module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-google-pubsub/README.md#configuration) has more details on the configuration options, the example above includes on the required options.
+The [Google Pub/Sub module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-google-pubsub/README.md#configuration) has more details on the configuration options, the example above includes only the required options.
+
+### Events Setup using Kafka module
+
+Alternatively to using the HTTP endpoint you can use the Kafka module, here's how.
+
+First we need to add the package:
+
+```bash title="from your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-events-backend-module-kafka
+```
+
+Then we need to add it to your backend:
+
+```ts title="in packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-events-backend'));
+backend.add(import('@backstage/plugin-events-backend-module-github'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-events-backend-module-kafka'));
+/* highlight-add-end */
+```
+
+Finally you will want to configure it:
+
+```yaml title="app-config.yaml
+events:
+  modules:
+    kafka:
+      kafkaConsumingEventPublisher:
+        # Client ID used by Backstage to identify when connecting to the Kafka cluster.
+        clientId: your-client-id
+        # List of brokers in the Kafka cluster to connect to.
+        brokers:
+          - broker1
+          - broker2
+        topics:
+          # Replace with actual topic name as expected by subscribers
+          - topic: 'backstage.topic'
+            kafka:
+              # The Kafka topics to subscribe to.
+              topics:
+                - topic1
+              # The GroupId to be used by the topic consumers.
+              groupId: your-group-id
+```
+
+The [Kafka module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-kafka/README.md#configuration) has more details on the configuration options, the example above includes only the required options.
 
 ## Configuration
 
@@ -210,6 +252,8 @@ catalog:
         filters: # optional filters
           branch: 'develop' # optional string
           repository: '.*' # optional Regex
+        pageSizes:
+          repositories: 25
       wildcardProviderId:
         organization: 'new-org' # string
         catalogPath: '/groups/**/*.yaml' # this will search all folders for files that end in .yaml
@@ -308,6 +352,10 @@ If you do so, `default` will be used as provider ID.
     The amount of time that should pass before the first invocation happens.
   - **`scope`** _(optional)_:
     `'global'` or `'local'`. Sets the scope of concurrency control.
+- **`pageSizes`** _(optional)_:
+  Configure page sizes for GitHub GraphQL API queries. This can help prevent `RESOURCE_LIMITS_EXCEEDED` errors.
+  - **`repositories`** _(optional)_:
+    Number of repositories to fetch per page. Defaults to `25`. Reduce this value if hitting API resource limits.
 
 ## GitHub API Rate Limits
 
@@ -323,7 +371,7 @@ schedule:
   timeout: { minutes: 3 }
 ```
 
-More information about scheduling can be found on the [SchedulerServiceTaskScheduleDefinition](https://backstage.io/docs/reference/backend-plugin-api.schedulerservicetaskscheduledefinition) page.
+More information about scheduling can be found on the [SchedulerServiceTaskScheduleDefinition](https://backstage.io/api/stable/interfaces/_backstage_backend-plugin-api.index.SchedulerServiceTaskScheduleDefinition.html) page.
 
 Alternatively, or additionally, you can configure [github-apps](github-apps.md) authentication
 which carries a much higher rate limit at GitHub.

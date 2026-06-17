@@ -27,7 +27,7 @@ export type ExtensionPoint<T> = {
 
   /**
    * Utility for getting the type of the extension point, using `typeof extensionPoint.T`.
-   * Attempting to actually read this value will result in an exception.
+   * Reading this value will always return `null`. It is only intended for use with `typeof extensionPoint.T`.
    */
   T: T;
 
@@ -36,16 +36,58 @@ export type ExtensionPoint<T> = {
   $$type: '@backstage/ExtensionPoint';
 };
 
+/**
+ * Context provided to extension point factories.
+ *
+ * @public
+ */
+export interface ExtensionPointFactoryContext {
+  /**
+   * Report a startup failure that happened as part of using an extension that
+   * the module provided. This should be called before the plugin's `init`
+   * function returns.
+   */
+  reportModuleStartupFailure(options: { error: Error }): void;
+}
+
 /** @ignore */
 type DepsToInstances<
   TDeps extends {
     [key in string]: ServiceRef<unknown> | ExtensionPoint<unknown>;
   },
 > = {
-  [key in keyof TDeps]: TDeps[key] extends ServiceRef<unknown, any, 'multiton'>
+  [key in keyof TDeps]: TDeps[key] extends ServiceRef<
+    unknown,
+    'root' | 'plugin',
+    'multiton'
+  >
     ? Array<TDeps[key]['T']>
     : TDeps[key]['T'];
 };
+
+/**
+ * Declares that a plugin or module consumes a particular connection type.
+ *
+ * @alpha
+ */
+export interface ConnectionRegistration {
+  /**
+   * The connection type identifier, matching the `type` field in connections
+   * config and in calls to `find` / `findOptional` on the connections service.
+   */
+  type: string;
+  /**
+   * Whether the connection is essential for the plugin or module to function.
+   * If true, the backend will fail to start if no matching connection is
+   * configured. Defaults to false.
+   */
+  required?: boolean;
+  /**
+   * Human-readable explanation of why the plugin or module needs this
+   * connection type. Surfaced in tooling and startup diagnostics.
+   */
+  description?: string;
+}
 
 /**
  * The callbacks passed to the `register` method of a backend plugin.
@@ -53,10 +95,20 @@ type DepsToInstances<
  * @public
  */
 export interface BackendPluginRegistrationPoints {
+  /**
+   * Registers an implementation for an extension point.
+   */
   registerExtensionPoint<TExtensionPoint>(
     ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
   ): void;
+  /**
+   * Registers a factory that produces a separate implementation for an extension point for each module.
+   */
+  registerExtensionPoint<TExtensionPoint>(options: {
+    extensionPoint: ExtensionPoint<TExtensionPoint>;
+    factory: (context: ExtensionPointFactoryContext) => TExtensionPoint;
+  }): void;
   registerInit<
     TDeps extends {
       [name in string]: ServiceRef<unknown>;
@@ -77,6 +129,10 @@ export interface BackendModuleRegistrationPoints {
     ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
   ): void;
+  registerExtensionPoint<TExtensionPoint>(options: {
+    extensionPoint: ExtensionPoint<TExtensionPoint>;
+    factory: (context: ExtensionPointFactoryContext) => TExtensionPoint;
+  }): void;
   registerInit<
     TDeps extends {
       [name in string]: ServiceRef<unknown> | ExtensionPoint<unknown>;
@@ -88,11 +144,26 @@ export interface BackendModuleRegistrationPoints {
 }
 
 /** @internal */
+export interface InternalBackendPluginRegistrationPoints
+  extends BackendPluginRegistrationPoints {
+  registerConnection(registration: ConnectionRegistration): void;
+}
+
+/** @internal */
+export interface InternalBackendModuleRegistrationPoints
+  extends BackendModuleRegistrationPoints {
+  registerConnection(registration: ConnectionRegistration): void;
+}
+
+/** @internal */
 export interface InternalBackendRegistrations extends BackendFeature {
   version: 'v1';
   featureType: 'registrations';
   getRegistrations(): Array<
-    InternalBackendPluginRegistration | InternalBackendModuleRegistration
+    | InternalBackendPluginRegistration
+    | InternalBackendModuleRegistration
+    | InternalBackendPluginRegistrationV1_1
+    | InternalBackendModuleRegistrationV1_1
   >;
 }
 
@@ -113,6 +184,37 @@ export interface InternalBackendModuleRegistration {
   moduleId: string;
   type: 'module';
   extensionPoints: Array<readonly [ExtensionPoint<unknown>, unknown]>;
+  init: {
+    deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
+    func(deps: Record<string, unknown>): Promise<void>;
+  };
+}
+
+/** @internal */
+export type ExtensionPointRegistration = {
+  extensionPoint: ExtensionPoint<unknown>;
+  factory: (context: ExtensionPointFactoryContext) => unknown;
+};
+
+/** @internal */
+export interface InternalBackendPluginRegistrationV1_1 {
+  pluginId: string;
+  type: 'plugin-v1.1';
+  extensionPoints: Array<ExtensionPointRegistration>;
+  connections: ConnectionRegistration[];
+  init: {
+    deps: Record<string, ServiceRef<unknown>>;
+    func(deps: Record<string, unknown>): Promise<void>;
+  };
+}
+
+/** @internal */
+export interface InternalBackendModuleRegistrationV1_1 {
+  pluginId: string;
+  moduleId: string;
+  type: 'module-v1.1';
+  extensionPoints: Array<ExtensionPointRegistration>;
+  connections: ConnectionRegistration[];
   init: {
     deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
     func(deps: Record<string, unknown>): Promise<void>;

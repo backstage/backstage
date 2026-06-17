@@ -20,10 +20,9 @@ import {
   mockServices,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { createDeferred } from '@backstage/types';
 import { Knex } from 'knex';
-import { default as catalogPlugin } from '../..';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import {
   SyntheticLoadEntitiesProcessor,
@@ -44,10 +43,13 @@ class Tracker {
   private insertBaseEntitiesEnd: number | undefined;
   private readonly deferred = createDeferred();
 
-  constructor(
-    private readonly knex: Knex,
-    private readonly load: SyntheticLoadOptions,
-  ) {}
+  private readonly knex: Knex;
+  private readonly load: SyntheticLoadOptions;
+
+  constructor(knex: Knex, load: SyntheticLoadOptions) {
+    this.knex = knex;
+    this.load = load;
+  }
 
   events(): SyntheticLoadEvents {
     return {
@@ -141,64 +143,11 @@ class Tracker {
   }
 }
 
+const databases = TestDatabases.create({
+  ids: [/* 'MYSQL_8', */ 'POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
+});
+
 describePerformanceTest('stitchingPerformance', () => {
-  const databases = TestDatabases.create({
-    ids: [/* 'MYSQL_8', */ 'POSTGRES_17', 'POSTGRES_13', 'SQLITE_3'],
-  });
-
-  it.each(databases.eachSupportedId())(
-    'runs stitching in immediate mode, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await applyDatabaseMigrations(knex);
-
-      const load: SyntheticLoadOptions = {
-        baseEntitiesCount: 1000,
-        baseRelationsCount: 3,
-        baseRelationsSkew: 0.3,
-        childrenCount: 3,
-      };
-
-      const config = {
-        backend: { baseUrl: 'http://localhost:7007' },
-        catalog: { stitchingStrategy: { mode: 'immediate' } },
-      };
-
-      const tracker = new Tracker(knex, load);
-
-      const backend = await startTestBackend({
-        features: [
-          catalogPlugin,
-          mockServices.rootConfig.factory({ data: config }),
-          mockServices.database.factory({ knex }),
-          createBackendModule({
-            pluginId: 'catalog',
-            moduleId: 'synthetic-load-entities',
-            register(reg) {
-              reg.registerInit({
-                deps: {
-                  catalog: catalogProcessingExtensionPoint,
-                },
-                async init({ catalog }) {
-                  catalog.addEntityProvider(
-                    new SyntheticLoadEntitiesProvider(load, tracker.events()),
-                  );
-                  catalog.addProcessor(
-                    new SyntheticLoadEntitiesProcessor(load),
-                  );
-                },
-              });
-            },
-          }),
-        ],
-      });
-
-      await expect(tracker.completion()).resolves.toBeUndefined();
-      await backend.stop();
-      await knex.destroy();
-    },
-  );
-
   it.each(databases.eachSupportedId())(
     'runs stitching in deferred mode, %p',
     async databaseId => {

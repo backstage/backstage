@@ -1,5 +1,357 @@
 # @backstage/backend-plugin-api
 
+## 1.9.2
+
+### Patch Changes
+
+- 02c4e8a: Removed unused `json-schema` runtime dependency. The package was only used for TypeScript types from `@types/json-schema`; affected imports have been converted to `import type` to allow safe removal.
+- 0211390: Added optional `secrets` schema support to `ActionsRegistryActionOptions` and `ActionsRegistryActionContext`. Actions can now declare a Zod secrets schema separate from the input schema, enabling surfaces to collect sensitive credentials independently from tool arguments. Added optional `secrets` field to `ActionsServiceAction` metadata and `ActionsService.invoke()` parameters.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.2
+  - @backstage/plugin-permission-node@0.11.1
+
+## 1.9.2-next.1
+
+### Patch Changes
+
+- 0211390: Added optional `secrets` schema support to `ActionsRegistryActionOptions` and `ActionsRegistryActionContext`. Actions can now declare a Zod secrets schema separate from the input schema, enabling surfaces to collect sensitive credentials independently from tool arguments. Added optional `secrets` field to `ActionsServiceAction` metadata and `ActionsService.invoke()` parameters.
+
+## 1.9.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/plugin-permission-node@0.11.1-next.0
+
+## 1.9.1
+
+### Patch Changes
+
+- 90b572e: Adds an alpha `TracingService` to provide a unified interface for emitting trace spans across Backstage plugins.
+- 6209065: Added `context` and `propagation` to the alpha `TracingService`. Plugins can bridge OpenTelemetry context across async boundaries via `tracing.propagation.extract(tracing.context.active(), carrier)` followed by `tracing.context.with(ctx, fn)`, and read propagated baggage via `tracing.propagation.getActiveBaggage()` or `tracing.propagation.getBaggage(ctx)`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-auth-node@0.7.1
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/cli-common@0.2.2
+  - @backstage/config@1.3.8
+
+## 1.9.1-next.1
+
+### Patch Changes
+
+- 90b572e: Adds an alpha `TracingService` to provide a unified interface for emitting trace spans across Backstage plugins.
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/cli-common@0.2.2-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/types@1.2.2
+
+## 1.9.0
+
+### Minor Changes
+
+- 4559806: Added support for typed `examples` on actions registered via the actions registry. Action authors can now provide examples with compile-time-checked `input` and `output` values that match their schema definitions.
+
+### Patch Changes
+
+- 213ebe7: Aligned `.T` behavior between `ExtensionPoint` and `ServiceRef` to consistently return `null` instead of throwing.
+- 68c557b: Added stricter type checks in `isDatabaseConflictError`.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-auth-node@0.7.0
+  - @backstage/cli-common@0.2.1
+  - @backstage/plugin-permission-node@0.10.12
+  - @backstage/config@1.3.7
+  - @backstage/plugin-permission-common@0.9.8
+
+## 1.9.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-auth-node@0.7.0-next.2
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-permission-common@0.9.8-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.2
+
+## 1.9.0-next.1
+
+### Minor Changes
+
+- 4559806: Added support for typed `examples` on actions registered via the actions registry. Action authors can now provide examples with compile-time-checked `input` and `output` values that match their schema definitions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.0-next.1
+  - @backstage/plugin-permission-node@0.10.12-next.1
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+
+## 1.8.0
+
+### Minor Changes
+
+- cc8348e: Added optional `visibilityPermission` field to `ActionsRegistryActionOptions`, allowing actions to declare a `BasicPermission` that controls visibility and access.
+
+  ```typescript
+  import { createPermission } from '@backstage/plugin-permission-common';
+
+  const myPermission = createPermission({
+    name: 'myPlugin.myAction.use',
+    attributes: {},
+  });
+
+  actionsRegistry.register({
+    name: 'my-action',
+    title: 'My Action',
+    description: 'An action that requires permission',
+    visibilityPermission: myPermission,
+    schema: {
+      input: z => z.object({ name: z.string() }),
+      output: z => z.object({ ok: z.boolean() }),
+    },
+    action: async ({ input }) => {
+      return { output: { ok: true } };
+    },
+  });
+  ```
+
+  Actions without a `visibilityPermission` field continue to work as before.
+
+- 015668c: Added `cancelTask` method to the `SchedulerService` interface and implementation, allowing cancellation of currently running scheduled tasks. For global tasks, the database lock is released and a periodic liveness check aborts the running task function. For local tasks, the task's abort signal is triggered directly. A new `POST /.backstage/scheduler/v1/tasks/:id/cancel` endpoint is also available.
+
+### Patch Changes
+
+- dee4283: Added `pluginId` field to `ActionsServiceAction` type, populated from the registering plugin's metadata.
+- 1ee5b28: Adds an alpha `MetricsService` to provide a unified interface for metrics instrumentation across Backstage plugins.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-permission-node@0.10.11
+  - @backstage/plugin-auth-node@0.6.14
+
+## 1.8.0-next.1
+
+### Minor Changes
+
+- 015668c: Added `cancelTask` method to the `SchedulerService` interface and implementation, allowing cancellation of currently running scheduled tasks. For global tasks, the database lock is released and a periodic liveness check aborts the running task function. For local tasks, the task's abort signal is triggered directly. A new `POST /.backstage/scheduler/v1/tasks/:id/cancel` endpoint is also available.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.2
+  - @backstage/plugin-auth-node@0.6.14-next.2
+  - @backstage/plugin-permission-node@0.10.11-next.1
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- 1ee5b28: Adds an alpha `MetricsService` to provide a unified interface for metrics instrumentation across Backstage plugins.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.14-next.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
+## 1.7.0
+
+### Minor Changes
+
+- f1d29b4: Added support for extension point factories. This makes it possible to call `registerExtensionPoint` with a single options argument and provide a factory for the extension point rather than a direct implementation. The factory is passed a context with a `reportModuleStartupFailure` method that makes it possible for plugins to report and attribute startup errors to the module that consumed the extension point.
+- bb9b471: Plugin IDs that do not match the standard format are deprecated (letters, digits, and dashes only, starting with a letter). Plugin IDs that do no match this format will be rejected in a future release.
+
+  In addition, plugin IDs that don't match the legacy pattern that also allows underscores, with be rejected.
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/cli-common@0.1.18
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+
+## 1.7.0-next.1
+
+### Minor Changes
+
+- bb9b471: Plugin IDs that do not match the standard format are deprecated (letters, digits, and dashes only, starting with a letter). Plugin IDs that do no match this format will be rejected in a future release.
+
+  In addition, plugin IDs that don't match the legacy pattern that also allows underscores, with be rejected.
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- f1d29b4: Added support for extension point factories. This makes it possible to call `registerExtensionPoint` with a single options argument and provide a factory for the extension point rather than a direct implementation. The factory is passed a context with a `reportModuleStartupFailure` method that makes it possible for plugins to report and attribute startup errors to the module that consumed the extension point.
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/cli-common@0.1.18-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.6.1
+
+### Patch Changes
+
+- ae4dd5d: Move some of the symlink resolution to `isChildPath`
+- Updated dependencies
+  - @backstage/cli-common@0.1.17
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+
+## 1.6.0
+
+### Minor Changes
+
+- 2a0c4b0: Adds a new experimental `RootSystemMetadataService` for tracking the collection of Backstage instances that may be deployed at any one time. It currently offers a single API, `getInstalledPlugins` that returns a list of installed plugins based on config you have set up in `discovery.endpoints` as well as the plugins installed on the instance you're calling the API with. It does not handle wildcard values or fallback values. The intention is for this plugin to provide plugin authors with a simple interface to fetch a trustworthy list of all installed plugins.
+
+### Patch Changes
+
+- d9759a1: **BREAKING ALPHA**: The old `instanceMetadataService` has been removed from alpha. Please switch over to using the stable `coreServices.rootInstanceMetadata` and related types instead, available from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/cli-common@0.1.16
+
+## 1.6.0-next.1
+
+### Minor Changes
+
+- 2a0c4b0: Adds a new experimental `RootSystemMetadataService` for tracking the collection of Backstage instances that may be deployed at any one time. It currently offers a single API, `getInstalledPlugins` that returns a list of installed plugins based on config you have set up in `discovery.endpoints` as well as the plugins installed on the instance you're calling the API with. It does not handle wildcard values or fallback values. The intention is for this plugin to provide plugin authors with a simple interface to fetch a trustworthy list of all installed plugins.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- d9759a1: **BREAKING ALPHA**: The old `instanceMetadataService` has been removed from alpha. Please switch over to using the stable `coreServices.rootInstanceMetadata` and related types instead, available from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.5.0
+
+### Minor Changes
+
+- a17d9df: Promote `instanceMetadata` service to main entrypoint.
+- 62fc2de: Explicitly mark `coreServices.rootInstanceMetadata` as a root service.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config@1.3.6
+  - @backstage/plugin-permission-node@0.10.6
+
+## 1.5.0-next.2
+
+### Minor Changes
+
+- 62fc2de: Explicitly mark `coreServices.rootInstanceMetadata` as a root service.
+
+## 1.5.0-next.1
+
+### Minor Changes
+
+- a17d9df: Promote `instanceMetadata` service to main entrypoint.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
+## 1.4.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 1.4.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/plugin-auth-node@0.6.8
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-node@0.10.5
+
+## 1.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+
 ## 1.4.3
 
 ### Patch Changes

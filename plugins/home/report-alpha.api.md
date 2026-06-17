@@ -9,21 +9,25 @@ import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { HomePageLayoutProps } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetBlueprintParams } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha
 const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
   },
   {},
   {
-    'api:home/visits': ExtensionDefinition<{
+    'api:home/visits': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'visits';
       config: {};
@@ -38,7 +42,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'app-root-element:home/visit-listener': ExtensionDefinition<{
+    'app-root-element:home/visit-listener': OverridableExtensionDefinition<{
       kind: 'app-root-element';
       name: 'visit-listener';
       config: {};
@@ -49,64 +53,144 @@ const _default: OverridableFrontendPlugin<
         element: JSX.Element;
       };
     }>;
-    'page:home': ExtensionDefinition<{
+    'home-page-widget:home/random-joke': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'random-joke';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/starred-entities': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'starred-entities';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/toolkit': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'toolkit';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'page:home': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
+        title: string | undefined;
       };
       configInput: {
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            string,
+            'core.title',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
           >;
       inputs: {
-        props: ExtensionInput<
+        pages: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
           | ConfigurableExtensionDataRef<
-              JSX_2.Element,
-              'core.reactElement',
+              RouteRef<AnyRouteRefParams>,
+              'core.routing.ref',
               {
                 optional: true;
               }
             >
           | ConfigurableExtensionDataRef<
               string,
-              'title',
+              'core.title',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              IconElement,
+              'core.icon',
               {
                 optional: true;
               }
             >,
           {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        widgets: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            HomePageWidgetData,
+            'home.widget.data',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        layout: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            (props: HomePageLayoutProps) => JSX_2.Element,
+            'home.layout.component',
+            {}
+          >,
+          {
             singleton: true;
             optional: true;
+            internal: true;
           }
         >;
       };
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
-        loader: () => Promise<JSX.Element>;
+        title?: string;
+        icon?: IconElement;
+        loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;
+        noHeader?: boolean;
       };
     }>;
   }
 >;
 export default _default;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const homeTranslationRef: TranslationRef<
   'home',
   {
     readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
+    readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
     readonly 'customHomepageButtons.edit': 'Edit';
     readonly 'customHomepageButtons.restoreDefaults': 'Restore defaults';
@@ -114,6 +198,7 @@ export const homeTranslationRef: TranslationRef<
     readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepage.noWidgets': "No widgets added. Start by clicking the 'Add widget' button.";
     readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
+    readonly 'widgetSettingsOverlay.editSettingsTooltip': 'Edit settings';
     readonly 'widgetSettingsOverlay.editSettingsTooptip': 'Edit settings';
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
@@ -131,13 +216,6 @@ export const homeTranslationRef: TranslationRef<
     readonly 'featuredDocsCard.empty.learnMoreLinkTitle': 'DOCS';
     readonly 'featuredDocsCard.learnMoreTitle': 'LEARN MORE';
   }
->;
-
-// @alpha (undocumented)
-export const titleExtensionDataRef: ConfigurableExtensionDataRef<
-  string,
-  'title',
-  {}
 >;
 
 // (No @packageDocumentation comment for this package)

@@ -14,17 +14,31 @@
  * limitations under the License.
  */
 
-import type { SpaceProps } from '../../types';
-import { FlexOwnProps } from './Flex.props';
-import type { GapProps } from '../../props/gap-props';
+import type { ReactNode, CSSProperties } from 'react';
+import type {
+  Responsive,
+  Space,
+  SpaceProps,
+  ProviderBg,
+  FlexItemProps,
+} from '../../types';
 
 /** @public */
-export interface FlexProps extends SpaceProps {
-  children: React.ReactNode;
-  gap?: GapProps['gap'];
-  align?: FlexOwnProps['align'];
-  justify?: FlexOwnProps['justify'];
-  direction?: FlexOwnProps['direction'];
+export type FlexOwnProps = {
+  children: ReactNode;
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+/** @public */
+export interface FlexProps
+  extends SpaceProps,
+    FlexItemProps,
+    FlexOwnProps,
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
+  gap?: Responsive<Space>;
+  align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
+  justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
+  direction?: Responsive<'row' | 'column' | 'row-reverse' | 'column-reverse'>;
 }

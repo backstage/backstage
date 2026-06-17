@@ -279,6 +279,62 @@ describe('oidcAuthenticator', () => {
       expect(searchParams.get('response_type')).toBe('code');
     });
 
+    it('passes custom start URL search parameters', async () => {
+      const customImplementation = oidcAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+          clientId: 'clientId123',
+          clientSecret: 'clientSecret',
+          startUrlSearchParams: {
+            foo: '1',
+            bar: '2',
+          },
+        }),
+      });
+
+      const startResponse = await oidcAuthenticator.start(
+        startRequest,
+        customImplementation,
+      );
+
+      const { searchParams } = new URL(startResponse.url);
+
+      expect(searchParams.get('foo')).toBe('1');
+      expect(searchParams.get('bar')).toBe('2');
+    });
+
+    it('does not override the core start URL search parameters with custom ones', async () => {
+      const customImplementation = oidcAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+          clientId: 'clientId123',
+          clientSecret: 'clientSecret',
+          startUrlSearchParams: {
+            foo: '1',
+            prompt: 'customPrompt',
+            scope: 'customScope',
+            state: 'customState',
+            nonce: 'customNonce',
+          },
+        }),
+      });
+
+      const startResponse = await oidcAuthenticator.start(
+        startRequest,
+        customImplementation,
+      );
+
+      const { searchParams } = new URL(startResponse.url);
+
+      expect(searchParams.get('foo')).toBe('1');
+      expect(searchParams.get('scope')).not.toBe('customScope');
+      expect(searchParams.get('state')).not.toBe('customState');
+      expect(searchParams.get('nonce')).not.toBe('customNonce');
+      expect(searchParams.get('prompt')).not.toBe('customPrompt');
+    });
+
     it('passes a nonce', async () => {
       const startResponse = await oidcAuthenticator.start(
         startRequest,

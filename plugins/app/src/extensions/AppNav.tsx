@@ -18,55 +18,146 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
-  NavItemBlueprint,
-  NavContentBlueprint,
-  NavContentComponentProps,
   routeResolutionApiRef,
+  appTreeApiRef,
   IconComponent,
+  IconElement,
   RouteRef,
+  RouteResolutionApi,
   useApi,
-  NavContentComponent,
 } from '@backstage/frontend-plugin-api';
+import { legacyNavItemTargetDataRef } from './legacyNavItem';
+import {
+  NavContentBlueprint,
+  NavContentComponent,
+  NavContentComponentProps,
+  NavContentNavItem,
+  NavContentNavItems,
+} from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { useMemo } from 'react';
 
+class NavItemBag implements NavContentNavItems {
+  readonly #items: NavContentNavItem[];
+  readonly #index: Map<string, NavContentNavItem>;
+  readonly #taken: Set<string>;
+  #restItems: NavContentNavItem[] | undefined;
+
+  constructor(items: NavContentNavItem[], taken?: Iterable<string>) {
+    this.#items = items;
+    this.#index = new Map(items.map(item => [item.node.spec.id, item]));
+    this.#taken = new Set(taken);
+  }
+
+  take(id: string): NavContentNavItem | undefined {
+    const item = this.#index.get(id);
+    if (item && !this.#taken.has(id)) {
+      this.#taken.add(id);
+      if (this.#restItems) {
+        const index = this.#restItems.findIndex(
+          restItem => restItem.node.spec.id === id,
+        );
+        if (index !== -1) {
+          this.#restItems.splice(index, 1);
+        }
+      }
+    }
+    return item;
+  }
+
+  rest(): NavContentNavItem[] {
+    if (!this.#restItems) {
+      this.#restItems = this.#items.filter(
+        item => !this.#taken.has(item.node.spec.id),
+      );
+    }
+    return this.#restItems;
+  }
+
+  clone(): NavContentNavItems {
+    return new NavItemBag(this.#items, this.#taken);
+  }
+
+  withComponent(Component: (props: NavContentNavItem) => JSX.Element) {
+    let renderedItems: JSX.Element[] | undefined;
+
+    return {
+      take: (id: string) => {
+        const item = this.take(id);
+        if (item && renderedItems) {
+          const index = renderedItems.findIndex(
+            renderedItem => renderedItem.key === item.node.spec.id,
+          );
+          if (index !== -1) {
+            renderedItems.splice(index, 1);
+          }
+        }
+        return item ? <Component key={item.node.spec.id} {...item} /> : null;
+      },
+      rest: (options?: { sortBy?: 'title' }) => {
+        const items = this.rest();
+        if (!renderedItems) {
+          if (options?.sortBy === 'title') {
+            items.sort((a, b) => a.title.localeCompare(b.title));
+          }
+          renderedItems = items.map(item => (
+            <Component key={item.node.spec.id} {...item} />
+          ));
+        }
+        return renderedItems;
+      },
+    };
+  }
+}
+
 function DefaultNavContent(props: NavContentComponentProps) {
+  const items = props.navItems.rest();
   return (
     <Sidebar>
-      {props.items.map((item, index) => (
+      {items.map(item => (
         <SidebarItem
-          to={item.to}
-          icon={item.icon}
-          text={item.text}
-          key={index}
+          to={item.href}
+          icon={() => item.icon}
+          text={item.title}
+          key={item.node.spec.id}
         />
       ))}
     </Sidebar>
   );
 }
 
-// This helps defer rendering until the app is being rendered, which is needed
-// because the RouteResolutionApi can't be called until the app has been fully initialized.
+// Tries to resolve a routeRef to a link path, returning undefined if it
+// can't be resolved (e.g. parameterized routes).
+function tryResolveLink(
+  routeResolutionApi: RouteResolutionApi,
+  routeRef: RouteRef,
+): string | undefined {
+  try {
+    const link = routeResolutionApi.resolve(routeRef);
+    return link?.();
+  } catch {
+    return undefined;
+  }
+}
+
+// Defers rendering until the app is fully initialized so that APIs like
+// RouteResolutionApi and AppTreeApi are available.
 function NavContentRenderer(props: {
   Content: NavContentComponent;
-  items: Array<{
+  legacyNavItems: Array<{
     title: string;
     icon: IconComponent;
     routeRef: RouteRef<undefined>;
   }>;
 }) {
+  const appTreeApi = useApi(appTreeApiRef);
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
-  const items = useMemo(() => {
-    return props.items.flatMap(item => {
+  // Deprecated items: just resolve nav item routeRefs to paths, no page discovery.
+  const legacyItems = useMemo(() => {
+    return props.legacyNavItems.flatMap(item => {
       const link = routeResolutionApi.resolve(item.routeRef);
-      if (!link) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `NavItemBlueprint: unable to resolve route ref ${item.routeRef}`,
-        );
-        return [];
-      }
+      if (!link) return [];
       return [
         {
           to: link(),
@@ -77,19 +168,91 @@ function NavContentRenderer(props: {
         },
       ];
     });
-  }, [props.items, routeResolutionApi]);
+  }, [props.legacyNavItems, routeResolutionApi]);
 
-  return <props.Content items={items} />;
+  // New navItems: discover pages from the extension tree, merged with nav items.
+  const navItems = useMemo(() => {
+    const { tree } = appTreeApi.getTree();
+    const routesNode = tree.nodes.get('app/routes');
+    if (!routesNode) return new NavItemBag([]);
+
+    // Index nav items by routeRef for matching against pages
+    const navItemsByRouteRef = new Map<
+      RouteRef,
+      { title: string; icon: IconComponent }
+    >(props.legacyNavItems.map(item => [item.routeRef, item]));
+
+    const pageNodes = routesNode.edges.attachments.get('routes') ?? [];
+    const items = pageNodes.flatMap((node): NavContentNavItem[] => {
+      if (!node.instance || node.spec.disabled) {
+        return [];
+      }
+
+      const routeRef = node.instance.getData(coreExtensionData.routeRef);
+      if (!routeRef) {
+        return [];
+      }
+
+      const matchingNavItem = navItemsByRouteRef.get(routeRef);
+
+      // PageBlueprint resolves title as: config.title ?? params.title ?? plugin.title ?? pluginId
+      // We want the priority: page (config/params) -> nav item -> plugin -> pluginId
+      const resolvedTitle = node.instance.getData(coreExtensionData.title);
+      const pluginTitle = node.spec.plugin.title;
+      const pluginIcon = node.spec.plugin.icon;
+      const pluginId = node.spec.plugin.pluginId;
+      const hasExplicitPageTitle =
+        resolvedTitle !== undefined &&
+        resolvedTitle !== pluginTitle &&
+        resolvedTitle !== pluginId;
+      const title = hasExplicitPageTitle
+        ? resolvedTitle
+        : matchingNavItem?.title ?? pluginTitle ?? pluginId;
+
+      // PageBlueprint resolves icon as: params.icon ?? plugin.icon
+      // We want the priority: page (params) -> nav item -> plugin -> (excluded)
+      const resolvedIcon = node.instance.getData(coreExtensionData.icon);
+      const hasExplicitPageIcon = resolvedIcon && !node.spec.plugin.icon;
+      const NavItemIcon = matchingNavItem?.icon;
+
+      let icon: IconElement | undefined;
+      if (hasExplicitPageIcon) {
+        icon = resolvedIcon;
+      } else if (NavItemIcon) {
+        icon = <NavItemIcon />;
+      } else if (resolvedIcon) {
+        icon = resolvedIcon;
+      } else if (pluginIcon) {
+        icon = pluginIcon;
+      }
+
+      if (!title || !icon) {
+        return [];
+      }
+
+      const to = tryResolveLink(routeResolutionApi, routeRef);
+      if (!to) {
+        return [];
+      }
+
+      return [{ node, href: to, title, icon, routeRef }];
+    });
+
+    return new NavItemBag(items);
+  }, [appTreeApi, routeResolutionApi, props.legacyNavItems]);
+
+  return <props.Content navItems={navItems} items={legacyItems} />;
 }
 
 export const AppNav = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
-    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
+    items: createExtensionInput([legacyNavItemTargetDataRef]),
     content: createExtensionInput([NavContentBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
+      internal: true,
     }),
   },
   output: [coreExtensionData.reactElement],
@@ -100,8 +263,8 @@ export const AppNav = createExtension({
 
     yield coreExtensionData.reactElement(
       <NavContentRenderer
-        items={inputs.items.map(item =>
-          item.get(NavItemBlueprint.dataRefs.target),
+        legacyNavItems={inputs.items.map(item =>
+          item.get(legacyNavItemTargetDataRef),
         )}
         Content={Content}
       />,

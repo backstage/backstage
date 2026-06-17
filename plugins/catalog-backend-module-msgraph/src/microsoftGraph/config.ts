@@ -61,9 +61,11 @@ export type MicrosoftGraphProviderConfig = {
    */
   clientSecret?: string;
   /**
-   * The filter to apply to extract users.
+   * The filter to apply to extract users. Disabled users
+   * (`accountEnabled === false`) are always filtered out client-side
+   * regardless of this setting.
    *
-   * E.g. "accountEnabled eq true and userType eq 'member'"
+   * E.g. "userType eq 'member'"
    */
   userFilter?: string;
   /**

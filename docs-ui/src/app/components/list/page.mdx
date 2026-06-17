@@ -1,0 +1,103 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import {
+  Default,
+  WithIcons,
+  WithDescription,
+  SelectionModeSingle,
+  SelectionModeMultiple,
+  Disabled,
+} from './components';
+import { listPropDefs, listRowPropDefs } from './props-definition';
+import {
+  usage,
+  preview,
+  withIcons,
+  withDescription,
+  selectionModeSingle,
+  selectionModeMultiple,
+  disabled,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ListDefinition, ListRowDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+export const reactAriaUrls = {
+  gridList: 'https://react-aria.adobe.com/GridList',
+};
+
+<PageTitle
+  title="List"
+  description="A list of interactive rows with support for keyboard navigation, single or multiple selection, and row actions."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={preview} />
+
+## Usage
+
+<CodeBlock code={usage} />
+
+## API reference
+
+### List
+
+Container for a list of interactive rows.
+
+<PropsTable data={listPropDefs} />
+
+<ReactAriaLink component="GridList" href={reactAriaUrls.gridList} />
+
+### ListRow
+
+Individual row within a List.
+
+<PropsTable data={listRowPropDefs} />
+
+<ReactAriaLink component="GridListItem" href={reactAriaUrls.gridList} />
+
+## Examples
+
+### With icons
+
+<Snippet align="center" py={4} open preview={<WithIcons />} code={withIcons} />
+
+### With description
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithDescription />}
+  code={withDescription}
+/>
+
+### Single selection
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SelectionModeSingle />}
+  code={selectionModeSingle}
+/>
+
+### Multiple selection
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SelectionModeMultiple />}
+  code={selectionModeMultiple}
+/>
+
+### Disabled items
+
+<Snippet align="center" py={4} open preview={<Disabled />} code={disabled} />
+
+<Theming definition={ListDefinition} />
+
+<ChangelogComponent component={['list', 'list-row']} />

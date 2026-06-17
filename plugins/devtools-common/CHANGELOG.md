@@ -1,5 +1,109 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.9
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/types@1.2.2
+
+## 0.1.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.8
+
+## 0.1.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.8-next.0
+
+## 0.1.23
+
+### Patch Changes
+
+- f80195e: Added `cancelScheduledTask` to the DevTools API and a cancel button to the scheduled tasks UI.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.7
+
+## 0.1.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.6
+
+## 0.1.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/types@1.2.2
+
+## 0.1.21
+
+### Patch Changes
+
+- be6cef5: Add support for adding `unprocessed-entities` and other tabs to `devtools` when using the New Frontend system
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.4
+
+## 0.1.20
+
+### Patch Changes
+
+- 291bf9d: Added scheduled tasks UI feature for the DevTools plugin
+
+## 0.1.19
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3-next.1
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 0.1.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2-next.0
+
 ## 0.1.17
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 .container {
   display: flex;
-  background-color: var(--panel);
+  background-color: var(--bg);
   padding: 1.5rem;
   border-radius: 0.25rem;
   border: 1px solid var(--border);

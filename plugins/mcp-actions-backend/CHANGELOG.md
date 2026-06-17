@@ -1,5 +1,332 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.14
+
+### Patch Changes
+
+- ed1be73: Validate each action against the MCP tool schema when responding to `tools/list`, and skip any action that doesn't conform instead of failing the entire response. A single misbehaving action with a malformed input schema will now be logged as a warning and omitted from the tool list, letting the remaining actions continue to be served.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+
+## 0.1.14-next.1
+
+### Patch Changes
+
+- ed1be73: Validate each action against the MCP tool schema when responding to `tools/list`, and skip any action that doesn't conform instead of failing the entire response. A single misbehaving action with a malformed input schema will now be logged as a warning and omitted from the tool list, letting the remaining actions continue to be served.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.1
+  - @backstage/backend-plugin-api@1.9.2-next.1
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.1.13
+
+### Patch Changes
+
+- ca8951a: Fixed an issue where actions returned Markdown-formatted JSON instead of plain JSON and a `structuredContent` field for model context protocol responses.
+- 8916f83: Trace spans are now emitted for MCP `tools/call` invocations, following OpenTelemetry server-side MCP semantic conventions.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/catalog-client@1.15.1
+  - @backstage/config@1.3.8
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-client@1.15.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/types@1.2.2
+
+## 0.1.12
+
+### Patch Changes
+
+- 282c114: Fix OAuth 2.0 Protected Resource Metadata endpoint returning internal plugin URL, preventing some MCP clients like Claude Code from authenticating
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- c6abc52: Fixed the `.well-known/oauth-protected-resource` resource URL to comply with
+  [RFC 9728 Section 7.3](https://datatracker.ietf.org/doc/html/rfc9728#name-impersonation-attacks). Enabling dynamic resource paths.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/catalog-client@1.15.0
+  - @backstage/config@1.3.7
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- 282c114: Fix OAuth 2.0 Protected Resource Metadata endpoint returning internal plugin URL, preventing some MCP clients like Claude Code from authenticating
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-client@1.14.1-next.0
+  - @backstage/config@1.3.7-next.0
+
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.1.10
+
+### Patch Changes
+
+- 62f0a53: Fixed error forwarding in the actions registry so that known errors like `InputError` and `NotFoundError` thrown by actions preserve their original status codes and messages instead of being wrapped in `ForwardedError` and coerced to 500.
+- dee4283: Added `mcpActions.name` and `mcpActions.description` config options to customize the MCP server identity. Namespaced tool names now use dot separator to align with the MCP spec convention.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- c74b697: Added support for splitting MCP actions into multiple servers via `mcpActions.servers` configuration. Each server gets its own endpoint at `/api/mcp-actions/v1/{key}` with actions scoped using include/exclude filter rules. Tool names are now namespaced with the plugin ID by default, configurable via `mcpActions.namespacedToolNames`. When `mcpActions.servers` is not configured, the plugin continues to serve a single server at `/api/mcp-actions/v1`.
+- dc81af1: Adds two new metrics to track MCP server operations and sessions.
+
+  - `mcp.server.operation.duration`: The duration taken to process an individual MCP operation
+  - `mcp.server.session.duration`: The duration of the MCP session from the perspective of the server
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/plugin-catalog-node@2.1.0
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- c74b697: Added support for splitting MCP actions into multiple servers via `mcpActions.servers` configuration. Each server gets its own endpoint at `/api/mcp-actions/v1/{key}` with actions scoped using include/exclude filter rules. Tool names are now namespaced with the plugin ID by default, configurable via `mcpActions.namespacedToolNames`. When `mcpActions.servers` is not configured, the plugin continues to serve a single server at `/api/mcp-actions/v1`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- 62f0a53: Fixed error forwarding in the actions registry so that known errors like `InputError` and `NotFoundError` thrown by actions preserve their original status codes and messages instead of being wrapped in `ForwardedError` and coerced to 500.
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- dc81af1: Adds two new metrics to track MCP server operations and sessions.
+
+  - `mcp.server.operation.duration`: The duration taken to process an individual MCP operation
+  - `mcp.server.session.duration`: The duration of the MCP session from the perspective of the server
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.1.9
+
+### Patch Changes
+
+- 31de2c9: Added OAuth Protected Resource Metadata endpoint (`/.well-known/oauth-protected-resource`) per RFC 9728. This allows MCP clients to discover the authorization server for the resource.
+
+  Also enabled OAuth well-known endpoints when CIMD (Client ID Metadata Documents) is configured, not just when DCR is enabled.
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-client@1.13.0
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.1.7
+
+### Patch Changes
+
+- 4d82a35: build(deps): bump `@modelcontextprotocol/sdk` from 1.24.3 to 1.25.2
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- 4d82a35: build(deps): bump `@modelcontextprotocol/sdk` from 1.24.3 to 1.25.2
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 0.1.6
+
+### Patch Changes
+
+- e83e038: Added `@cfworker/json-schema` as a dependency to this package part of the `@modelcontextprotocol/sdk` bump as it's required in the types
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 79ef471: Clarify error handling in readme and update handleError.ts to include all backstage/errors
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- e83e038: Added `@cfworker/json-schema` as a dependency to this package part of the `@modelcontextprotocol/sdk` bump as it's required in the types
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 79ef471: Clarify error handling in readme and update handleError.ts to include all backstage/errors
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.1.5
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/catalog-client@1.12.1
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-node@1.19.1
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-client@1.12.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.0
+
 ## 0.1.3
 
 ### Patch Changes

@@ -1,5 +1,852 @@
 # @backstage/plugin-catalog-backend
 
+## 3.8.0
+
+### Minor Changes
+
+- 8f20cc2: `/entities/by-query` now accepts a `totalItems` parameter (`'include'` or `'exclude'`, default `'include'`) that controls whether the response's `totalItems` count is computed. Pass `'exclude'` to skip the count entirely when the caller doesn't need it — useful for cursor-paginated user interfaces that only display the count cosmetically. The accepted values list is forward-compatible: future modes (e.g. approximate counts) can be added without breaking existing callers.
+
+  The internal `QueryEntitiesInitialRequest.skipTotalItems` option has been replaced by `totalItems: 'include' | 'exclude'`. Note that `skipTotalItems` was never exposed as a REST API parameter, so this is only a TypeScript-level change affecting direct callers of `EntitiesCatalog.queryEntities`.
+
+  Sort field keys are now lowercased before comparing against `search.key`, fixing silent mismatches for camelCase field names. The `NULLS LAST` ordering clause has been removed since NULL sort values are already excluded by the `WHERE` clause.
+
+- dc7678c: Removed the immediate mode stitching strategy. All stitching now uses the deferred mode, which processes entities asynchronously via a worker queue. If your configuration includes `catalog.stitchingStrategy.mode: 'immediate'`, it will be ignored with a deprecation warning. The `pollingInterval` and `stitchTimeout` settings continue to work as before.
+
+### Patch Changes
+
+- 9698738: Dropped the legacy `search_entity_id_idx` index which is now redundant with the covering unique index on `(entity_id, key, value)`. The old index caused the query planner to choose an inefficient scan pattern for catalog list queries with multiple sort fields, leading to severely degraded performance on large catalogs.
+- ccfa4f1: Optimized `entitiesBatch` on PostgreSQL to use `= ANY(array)` instead of `WHERE IN ($1, $2, ...)`. This produces a single stable query plan regardless of batch size, instead of up to 200 different plans that pollute the query plan cache. On PostgreSQL, batching is no longer needed so all entity refs are fetched in a single query.
+- 750b310: `HAS_LABEL` and `HAS_ANNOTATION` permission rules are now case insensitive.
+- 24775dc: Added a migration that tunes PostgreSQL automatic vacuum thresholds on the `search`, `final_entities`, `relations`, and `refresh_state_references` tables, and fixes column statistics for `entity_id` in the `search` table. This prevents the query planner from falling back to sequential scans when table maintenance falls behind, keeping catalog queries fast on large installations.
+- 39c5fbb: Added extended multi-column statistics on `(key, value)` in the `search` table (PostgreSQL only). This tells the query planner about the correlation between the `key` and `value` columns, fixing severe row count estimation errors on compound filter queries. Without this, the planner could choose to materialize and sort thousands of rows instead of using the LIMIT short-circuit index scan — causing 10-40x slower catalog list views when multiple filters are active.
+- 4829e89: Split the `queryEntities` list and count into separate queries instead of a multi-reference CTE. When the `filtered` CTE was referenced twice (once for the count, once for the data), PostgreSQL refused to inline it, forcing full materialization of the filtered set before applying `LIMIT`. By running the count as a standalone query, the list CTE is only referenced once, allowing the planner to short-circuit on `LIMIT` and return the first page in milliseconds instead of waiting for the full filtered set to materialize.
+
+  The standalone count query also fixes a pre-existing bug where `totalItems` was inflated for entities with multi-valued sort fields (e.g. tags). The old CTE-based count counted search rows, so an entity with 3 tags would be counted 3 times. The new count uses `EXISTS` to count distinct entities, aligning `totalItems` with the number of entities actually reachable through cursor pagination.
+
+- 774d698: Fixed a race condition in the stitch queue and entity processing claim logic where `SELECT FOR UPDATE SKIP LOCKED` row locks were released before the subsequent timestamp bump, allowing multiple workers to claim the same rows. Both the select and update now run inside a single transaction for MySQL and PostgreSQL.
+- 0b8b677: Improved stitch queue semantics to prevent overlapping stitches for the same entity. New stitch requests that arrive while a stitch is in progress now only update the ticket (not the timestamp), so the in-progress worker is not interrupted. When the worker completes and detects a pending re-stitch, the queue entry becomes immediately eligible for pickup instead of waiting for the timeout period.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-events-node@0.4.23
+  - @backstage/plugin-permission-node@0.11.1
+
+## 3.8.0-next.1
+
+### Patch Changes
+
+- 9698738: Dropped the legacy `search_entity_id_idx` index which is now redundant with the covering unique index on `(entity_id, key, value)`. The old index caused the query planner to choose an inefficient scan pattern for catalog list queries with multiple sort fields, leading to severely degraded performance on large catalogs.
+- ccfa4f1: Optimized `entitiesBatch` on PostgreSQL to use `= ANY(array)` instead of `WHERE IN ($1, $2, ...)`. This produces a single stable query plan regardless of batch size, instead of up to 200 different plans that pollute the query plan cache. On PostgreSQL, batching is no longer needed so all entity refs are fetched in a single query.
+- 24775dc: Added a migration that tunes PostgreSQL automatic vacuum thresholds on the `search`, `final_entities`, `relations`, and `refresh_state_references` tables, and fixes column statistics for `entity_id` in the `search` table. This prevents the query planner from falling back to sequential scans when table maintenance falls behind, keeping catalog queries fast on large installations.
+
+## 3.8.0-next.0
+
+### Minor Changes
+
+- 8f20cc2: `/entities/by-query` now accepts a `totalItems` parameter (`'include'` or `'exclude'`, default `'include'`) that controls whether the response's `totalItems` count is computed. Pass `'exclude'` to skip the count entirely when the caller doesn't need it — useful for cursor-paginated user interfaces that only display the count cosmetically. The accepted values list is forward-compatible: future modes (e.g. approximate counts) can be added without breaking existing callers.
+
+  The internal `QueryEntitiesInitialRequest.skipTotalItems` option has been replaced by `totalItems: 'include' | 'exclude'`. Note that `skipTotalItems` was never exposed as a REST API parameter, so this is only a TypeScript-level change affecting direct callers of `EntitiesCatalog.queryEntities`.
+
+  Sort field keys are now lowercased before comparing against `search.key`, fixing silent mismatches for camelCase field names. The `NULLS LAST` ordering clause has been removed since NULL sort values are already excluded by the `WHERE` clause.
+
+- dc7678c: Removed the immediate mode stitching strategy. All stitching now uses the deferred mode, which processes entities asynchronously via a worker queue. If your configuration includes `catalog.stitchingStrategy.mode: 'immediate'`, it will be ignored with a deprecation warning. The `pollingInterval` and `stitchTimeout` settings continue to work as before.
+
+### Patch Changes
+
+- 39c5fbb: Added extended multi-column statistics on `(key, value)` in the `search` table (PostgreSQL only). This tells the query planner about the correlation between the `key` and `value` columns, fixing severe row count estimation errors on compound filter queries. Without this, the planner could choose to materialize and sort thousands of rows instead of using the LIMIT short-circuit index scan — causing 10-40x slower catalog list views when multiple filters are active.
+- 4829e89: Split the `queryEntities` list and count into separate queries instead of a multi-reference CTE. When the `filtered` CTE was referenced twice (once for the count, once for the data), PostgreSQL refused to inline it, forcing full materialization of the filtered set before applying `LIMIT`. By running the count as a standalone query, the list CTE is only referenced once, allowing the planner to short-circuit on `LIMIT` and return the first page in milliseconds instead of waiting for the full filtered set to materialize.
+
+  The standalone count query also fixes a pre-existing bug where `totalItems` was inflated for entities with multi-valued sort fields (e.g. tags). The old CTE-based count counted search rows, so an entity with 3 tags would be counted 3 times. The new count uses `EXISTS` to count distinct entities, aligning `totalItems` with the number of entities actually reachable through cursor pagination.
+
+- 774d698: Fixed a race condition in the stitch queue and entity processing claim logic where `SELECT FOR UPDATE SKIP LOCKED` row locks were released before the subsequent timestamp bump, allowing multiple workers to claim the same rows. Both the select and update now run inside a single transaction for MySQL and PostgreSQL.
+- 0b8b677: Improved stitch queue semantics to prevent overlapping stitches for the same entity. New stitch requests that arrive while a stitch is in progress now only update the ticket (not the timestamp), so the in-progress worker is not interrupted. When the worker completes and detects a pending re-stitch, the queue entry becomes immediately eligible for pickup instead of waiting for the timeout period.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+  - @backstage/backend-openapi-utils@0.6.10-next.0
+
+## 3.7.0
+
+### Minor Changes
+
+- c2de113: **BREAKING**: When paginating entities with an order field via `/entities/by-query`, entities that lack the order field are now excluded from both the result set and the `totalItems` count. Previously these entities appeared at the end of the sorted result via `NULLS LAST`, but cursor-based pagination could not actually reach them past the first page — the count over-reported the number of navigable entities. The new behavior aligns the count with what is actually returned.
+
+  This also removes the `DISTINCT` deduplication from the sort-field CTE, which is a prerequisite for the planner to use the `(key, value, entity_id)` index in sort order and short-circuit on `LIMIT`. Installations with duplicate search rows should land the search-table deduplication migration before adopting this change.
+
+### Patch Changes
+
+- 3f5e7ec: Added `catalog.actions.experimentalCatalogLayersDescriptions.enabled` config option. When enabled, the `query-catalog-entities` action description references `get-catalog-model-description` for field information instead of embedding a static model description.
+- ccbad9d: Improved the performance of the `catalog_entities_count` metric.
+
+  The legacy Prometheus and OpenTelemetry observable gauges previously each ran their own copy of the per-kind count query against the `search` table on every metrics scrape. On large catalogs this could pile up faster than the queries completed, contending for buffers and stalling the database.
+
+  The two callbacks now share a single query result with a short in-process TTL cache, and the underlying query reads from `final_entities` instead of `search`, avoiding the bitmap heap scans that dominated the previous form. The emitted labels and values are unchanged.
+
+- 17a9550: Deprecated immediate mode stitching (`catalog.stitchingStrategy.mode: 'immediate'`). A warning is now logged on startup when immediate mode is configured. Immediate mode will be removed in the next Backstage release. Migrate to deferred mode (the default) by removing the `stitchingStrategy` configuration or setting `mode: 'deferred'`.
+- add5d1a: Restructured the entity listing endpoint so that, when a sort field is specified, the search-by-key index drives the query rather than being side-joined onto `final_entities`. This lets PostgreSQL walk the `(key, value, entity_id)` index in already-sorted order and short-circuit on `LIMIT`, reducing typical broad-filter paginated list times from seconds to milliseconds. Entities that lack the sort field still appear at the end of sorted results (NULLS LAST semantics preserved), ordered by `entity_id`.
+- 387ea7d: Simplified the entity facets aggregation from `COUNT(DISTINCT entity_id)` to `COUNT(*)`. The unique constraint on `(entity_id, key, value)` guarantees each entity appears at most once per search row group, making the `DISTINCT` unnecessary. This allows the database to use a simpler aggregation plan.
+- 3f55b73: Improved the performance of the entity facets endpoint when filters are applied. The filtered entity set is now combined with the search table through an inner join rather than a `WHERE entity_id IN (subquery)`. Results are unchanged; on large catalogs the query planner is able to choose dramatically cheaper plans, with measured improvements ranging from roughly 1.2× on already-fast cases to 7× or more on high-cardinality facets.
+- b33f845: Fixed several database migration `down` functions that were not properly reversible, causing the SQL report to show warnings:
+
+  - `20241003170511_alter_target_in_locations.js`: both `up` and `down` now include `.notNullable()` when altering the `locations.target` column, preventing the `NOT NULL` constraint from being accidentally dropped when widening the column type from `varchar(255)` to `text`.
+  - `20220116144621_remove_legacy.js`: the `down` function now properly recreates the three dropped legacy tables (`entities`, `entities_search`, `entities_relations`) with correct columns and indices.
+  - `20210302150147_refresh_state.js`: the `down` function now drops dependent tables in the correct order (avoiding a FK constraint violation) and fixes a typo where the table was referred to as `references` instead of `refresh_state_references`.
+  - `20201005122705_add_entity_full_name.js`: the `down` function now drops the `full_name` column from `entities` (not `entities_search`), and restores the `entities_unique_name` index with the correct column order `(kind, name, namespace)`.
+  - `20200702153613_entities.js`: the `down` function now uses `table.integer('generation')` instead of `table.string('generation')`, restoring the correct column type.
+
+- cde3643: Added missing description to the `type` parameter on the `unregister-entity` MCP action.
+- cf195de: Fixed a performance regression in the `/entity-facets` endpoint when filters or permission conditions are applied, by routing the EXISTS-based filter through `final_entities` instead of correlating against the much larger `search` table.
+- 07ec25d: Moved `generateStableHash` out of shared utility file to avoid pulling `node:crypto` into browser bundles
+- bc32c13: Added a missing index on `relations.target_entity_ref`. Several query paths (orphan deletion, entity ancestry, eager pruning) join or filter on this column, but no index existed — causing full sequential scans of the relations table on every invocation. On a production catalog with ~3.5M relation rows, individual lookups were taking ~122ms (full table scan) instead of <1ms (index scan).
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- 7445f0f: Added a migration that removes duplicate rows from the `search` table, creates covering indices for improved query performance, and adds a `UNIQUE` constraint on `(entity_id, key, value)`.
+
+  This is a long-running migration on large catalogs. On PostgreSQL with millions of search rows, the index creation may take 5-15 minutes per index. During this time, other pods running the previous version will continue to serve traffic normally — the index creation does not block reads or writes. However, if a Kubernetes liveness probe kills the pod before the index build completes, the build is lost and the next startup will start over. On large tables this can repeat indefinitely.
+
+  **For large installations**, it is recommended to run the following SQL commands against your PostgreSQL database **before deploying** this version. Each index build takes a few minutes but does not block reads or writes. If these have already completed, the migration will detect the existing indices and skip all work — startup will be instant.
+
+  ```sql
+  -- Step 1: Remove duplicate search rows
+  WITH cte AS (
+    SELECT ctid, row_number() OVER (PARTITION BY entity_id, key, value) AS rn
+    FROM search
+  )
+  DELETE FROM search USING cte WHERE search.ctid = cte.ctid AND cte.rn > 1;
+
+  -- Step 2: Create new indices (run each separately)
+  CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS
+    search_entity_key_value_idx ON search (entity_id, key, value);
+  CREATE INDEX CONCURRENTLY IF NOT EXISTS
+    search_key_value_entity_idx ON search (key, value, entity_id);
+  CREATE INDEX CONCURRENTLY IF NOT EXISTS
+    search_facets_covering_idx ON search (key, original_value, entity_id)
+    WHERE original_value IS NOT NULL;
+
+  -- Step 3: Drop old indices that are no longer needed
+  DROP INDEX CONCURRENTLY IF EXISTS search_key_value_idx;
+  DROP INDEX CONCURRENTLY IF EXISTS search_key_original_value_idx;
+  ```
+
+  Also fixed `buildEntitySearch` to remove duplicate output for entities with duplicate array values, and added `ON CONFLICT DO UPDATE` to `syncSearchRows` so that concurrent stitching races are handled gracefully.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/filter-predicates@0.1.3
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/backend-openapi-utils@0.6.9
+  - @backstage/catalog-client@1.15.1
+  - @backstage/config@1.3.8
+  - @backstage/plugin-catalog-common@1.1.10
+  - @backstage/plugin-events-node@0.4.22
+
+## 3.7.0-next.2
+
+### Minor Changes
+
+- c2de113: **BREAKING**: When paginating entities with an order field via `/entities/by-query`, entities that lack the order field are now excluded from both the result set and the `totalItems` count. Previously these entities appeared at the end of the sorted result via `NULLS LAST`, but cursor-based pagination could not actually reach them past the first page — the count over-reported the number of navigable entities. The new behavior aligns the count with what is actually returned.
+
+  This also removes the `DISTINCT` deduplication from the sort-field CTE, which is a prerequisite for the planner to use the `(key, value, entity_id)` index in sort order and short-circuit on `LIMIT`. Installations with duplicate search rows should land the search-table deduplication migration before adopting this change.
+
+### Patch Changes
+
+- ccbad9d: Improved the performance of the `catalog_entities_count` metric.
+
+  The legacy Prometheus and OpenTelemetry observable gauges previously each ran their own copy of the per-kind count query against the `search` table on every metrics scrape. On large catalogs this could pile up faster than the queries completed, contending for buffers and stalling the database.
+
+  The two callbacks now share a single query result with a short in-process TTL cache, and the underlying query reads from `final_entities` instead of `search`, avoiding the bitmap heap scans that dominated the previous form. The emitted labels and values are unchanged.
+
+- add5d1a: Restructured the entity listing endpoint so that, when a sort field is specified, the search-by-key index drives the query rather than being side-joined onto `final_entities`. This lets PostgreSQL walk the `(key, value, entity_id)` index in already-sorted order and short-circuit on `LIMIT`, reducing typical broad-filter paginated list times from seconds to milliseconds. Entities that lack the sort field still appear at the end of sorted results (NULLS LAST semantics preserved), ordered by `entity_id`.
+- 387ea7d: Simplified the entity facets aggregation from `COUNT(DISTINCT entity_id)` to `COUNT(*)`. The unique constraint on `(entity_id, key, value)` guarantees each entity appears at most once per search row group, making the `DISTINCT` unnecessary. This allows the database to use a simpler aggregation plan.
+- 3f55b73: Improved the performance of the entity facets endpoint when filters are applied. The filtered entity set is now combined with the search table through an inner join rather than a `WHERE entity_id IN (subquery)`. Results are unchanged; on large catalogs the query planner is able to choose dramatically cheaper plans, with measured improvements ranging from roughly 1.2× on already-fast cases to 7× or more on high-cardinality facets.
+- cde3643: Added missing description to the `type` parameter on the `unregister-entity` MCP action.
+- 7445f0f: Added a migration that removes duplicate rows from the `search` table, creates covering indices for improved query performance, and adds a `UNIQUE` constraint on `(entity_id, key, value)`.
+
+  This is a long-running migration on large catalogs. On PostgreSQL with millions of search rows, the index creation may take 5-15 minutes per index. During this time, other pods running the previous version will continue to serve traffic normally — the index creation does not block reads or writes. However, if a Kubernetes liveness probe kills the pod before the index build completes, the build is lost and the next startup will start over. On large tables this can repeat indefinitely.
+
+  **For large installations**, it is recommended to run the following SQL commands against your PostgreSQL database **before deploying** this version. Each index build takes a few minutes but does not block reads or writes. If these have already completed, the migration will detect the existing indices and skip all work — startup will be instant.
+
+  ```sql
+  -- Step 1: Remove duplicate search rows
+  WITH cte AS (
+    SELECT ctid, row_number() OVER (PARTITION BY entity_id, key, value) AS rn
+    FROM search
+  )
+  DELETE FROM search USING cte WHERE search.ctid = cte.ctid AND cte.rn > 1;
+
+  -- Step 2: Create new indices (run each separately)
+  CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS
+    search_entity_key_value_idx ON search (entity_id, key, value);
+  CREATE INDEX CONCURRENTLY IF NOT EXISTS
+    search_key_value_entity_idx ON search (key, value, entity_id);
+  CREATE INDEX CONCURRENTLY IF NOT EXISTS
+    search_facets_covering_idx ON search (key, original_value, entity_id)
+    WHERE original_value IS NOT NULL;
+
+  -- Step 3: Drop old indices that are no longer needed
+  DROP INDEX CONCURRENTLY IF EXISTS search_key_value_idx;
+  DROP INDEX CONCURRENTLY IF EXISTS search_key_original_value_idx;
+  ```
+
+  Also fixed `buildEntitySearch` to remove duplicate output for entities with duplicate array values, and added `ON CONFLICT DO UPDATE` to `syncSearchRows` so that concurrent stitching races are handled gracefully.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.1
+
+## 3.6.2-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/plugin-catalog-node@2.2.1-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
+## 3.6.1-next.0
+
+### Patch Changes
+
+- b33f845: Fixed several database migration `down` functions that were not properly reversible, causing the SQL report to show warnings:
+
+  - `20241003170511_alter_target_in_locations.js`: both `up` and `down` now include `.notNullable()` when altering the `locations.target` column, preventing the `NOT NULL` constraint from being accidentally dropped when widening the column type from `varchar(255)` to `text`.
+  - `20220116144621_remove_legacy.js`: the `down` function now properly recreates the three dropped legacy tables (`entities`, `entities_search`, `entities_relations`) with correct columns and indices.
+  - `20210302150147_refresh_state.js`: the `down` function now drops dependent tables in the correct order (avoiding a FK constraint violation) and fixes a typo where the table was referred to as `references` instead of `refresh_state_references`.
+  - `20201005122705_add_entity_full_name.js`: the `down` function now drops the `full_name` column from `entities` (not `entities_search`), and restores the `entities_unique_name` index with the correct column order `(kind, name, namespace)`.
+  - `20200702153613_entities.js`: the `down` function now uses `table.integer('generation')` instead of `table.string('generation')`, restoring the correct column type.
+
+- cf195de: Fixed a performance regression in the `/entity-facets` endpoint when filters or permission conditions are applied, by routing the EXISTS-based filter through `final_entities` instead of correlating against the much larger `search` table.
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-openapi-utils@0.6.9-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-client@1.15.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/filter-predicates@0.1.3-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.10-next.0
+
+## 3.6.0
+
+### Minor Changes
+
+- d16311f: Added a `location_entity_ref` column to the `locations` database table that stores the full entity ref of the corresponding `kind: Location` catalog entity for each registered location row. The value is pre-computed and persisted so that it no longer needs to be recomputed from the location's type and target on every read.
+- e5fcfcb: Added `ModelProcessor` that validates catalog entities against the compiled catalog model schemas, and integrated it into the `CatalogBuilder` and `CatalogPlugin`. This processor is only activated if you explicitly add catalog model sources to your backend; there is no functional change for regular catalog usage.
+- c384fff: Location responses now include an `entityRef` field with the stable entity reference for each location. The `entityRef` field is also filterable via `POST /locations/by-query`. Added `PUT /locations/:id` endpoint for updating the type and target of an existing location.
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- 7e63730: Removed deprecated `PermissionAuthorizer` support and the `createPermissionIntegrationRouter` fallback path from `CatalogBuilder`. The `permissionsRegistry` service is now required, and `permissions` is always a `PermissionsService`.
+- 056e18e: Removed the internal `addPermissions` and `addPermissionRules` methods from `CatalogBuilder`, and removed the `catalogPermissionExtensionPoint` wiring from `CatalogPlugin`. Custom permission rules and permissions should be registered via `coreServices.permissionsRegistry` directly.
+- 6884814: Improved catalog entity filter query performance by switching from `IN (subquery)` to `EXISTS (correlated subquery)` patterns. This enables PostgreSQL semi-join optimizations and fixes `NOT IN` NULL-semantics pitfalls by using `NOT EXISTS` instead.
+- 9da73bf: Reduced search table write churn during stitching by syncing only changed rows instead of doing a full delete and re-insert. On Postgres this uses a single writable CTE, on MySQL a temporary table merge with deadlock retry, and on SQLite the previous bulk replace.
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 375b546: Fixed a deadlock in the catalog processing loop that occurred when running multiple replicas. The `getProcessableEntities` method used `SELECT ... FOR UPDATE SKIP LOCKED` to prevent concurrent processors from claiming the same rows, but the call was not wrapped in a transaction, so the row locks were released before the subsequent `UPDATE` executed. This allowed multiple replicas to select and update overlapping rows, causing PostgreSQL deadlock errors (code 40P01).
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/filter-predicates@0.1.2
+  - @backstage/catalog-client@1.15.0
+  - @backstage/backend-openapi-utils@0.6.8
+  - @backstage/integration@2.0.1
+  - @backstage/plugin-permission-node@0.10.12
+  - @backstage/config@1.3.7
+  - @backstage/plugin-catalog-common@1.1.9
+  - @backstage/plugin-events-node@0.4.21
+  - @backstage/plugin-permission-common@0.9.8
+
+## 3.6.0-next.2
+
+### Minor Changes
+
+- d16311f: Added a `location_entity_ref` column to the `locations` database table that stores the full entity ref of the corresponding `kind: Location` catalog entity for each registered location row. The value is pre-computed and persisted so that it no longer needs to be recomputed from the location's type and target on every read.
+
+### Patch Changes
+
+- 7e63730: Removed deprecated `PermissionAuthorizer` support and the `createPermissionIntegrationRouter` fallback path from `CatalogBuilder`. The `permissionsRegistry` service is now required, and `permissions` is always a `PermissionsService`.
+- 056e18e: Removed the internal `addPermissions` and `addPermissionRules` methods from `CatalogBuilder`, and removed the `catalogPermissionExtensionPoint` wiring from `CatalogPlugin`. Custom permission rules and permissions should be registered via `coreServices.permissionsRegistry` directly.
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-openapi-utils@0.6.8-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-client@1.14.1-next.0
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/filter-predicates@0.1.2-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+  - @backstage/plugin-permission-common@0.9.8-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.2
+  - @backstage/plugin-catalog-common@1.1.9-next.0
+
+## 3.5.1-next.1
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- 6884814: Improved catalog entity filter query performance by switching from `IN (subquery)` to `EXISTS (correlated subquery)` patterns. This enables PostgreSQL semi-join optimizations and fixes `NOT IN` NULL-semantics pitfalls by using `NOT EXISTS` instead.
+- 9da73bf: Reduced search table write churn during stitching by syncing only changed rows instead of doing a full delete and re-insert. On Postgres this uses a single writable CTE, on MySQL a temporary table merge with deadlock retry, and on SQLite the previous bulk replace.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-openapi-utils@0.6.8-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+  - @backstage/plugin-permission-node@0.10.12-next.1
+
+## 3.5.1-next.0
+
+### Patch Changes
+
+- 375b546: Fixed a deadlock in the catalog processing loop that occurred when running multiple replicas. The `getProcessableEntities` method used `SELECT ... FOR UPDATE SKIP LOCKED` to prevent concurrent processors from claiming the same rows, but the call was not wrapped in a transaction, so the row locks were released before the subsequent `UPDATE` executed. This allowed multiple replicas to select and update overlapping rows, causing PostgreSQL deadlock errors (code 40P01).
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.0
+  - @backstage/backend-openapi-utils@0.6.8-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/integration@2.0.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.7
+
+## 3.5.0
+
+### Minor Changes
+
+- a6b2819: Added `query-catalog-entities` action to the catalog backend actions registry. Supports predicate-based filtering with `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 972f686: Added support for predicate-based filtering on the `/entities/by-refs` endpoint via the `query` field in the request body. Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 5d95e8e: Add an `onConflict` option to location creation that can refresh an existing location instead of throwing a conflict error.
+- 56c908e: Added support for predicate-based filtering on the `/entity-facets` endpoint via a new `POST` method. Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+- bf71677: Added opentelemetry metrics for SCM events:
+
+  - `catalog.events.scm.messages` with attribute `eventType`: Counter for the number of SCM events actually received by the catalog backend. The `eventType` is currently either `location` or `repository`.
+
+- 51e23eb: Added predicate-based entity filtering via POST /entities/by-query endpoint.
+
+  Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$hasPrefix`, and (partially) `$contains` operators for expressive entity queries. Integrated into the existing `queryEntities` flow with full cursor-based pagination, permission enforcement, and `totalItems` support.
+
+  The catalog client's `queryEntities()` method automatically routes to the POST endpoint when a `query` predicate is provided.
+
+### Patch Changes
+
+- a91bd1b: Improved catalog entity deletion so parent invalidation and deferred relation restitch scheduling are coordinated more safely.
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- 7416e8b: Moved stitch queue concerns out of `refresh_state` and `final_entities` into a dedicated `stitch_queue` table with `entity_ref` as the primary key. The `stitch_ticket` is used for optimistic concurrency control. When a stitch completes successfully and the ticket hasn't changed, the corresponding row is deleted from the queue. The migration handles existing data and is fully reversible.
+- fbf382f: Minor internal optimisation
+- 1ee5b28: Migrates existing catalog metrics to use the alpha MetricsService. This release is a 1:1 migration with no breaking changes.
+- 72747b4: Deprecated two processors as they have been moved to the Community Plugins repo with their own backend modules:
+
+  - `AnnotateScmSlugEntityProcessor`: Use `@backstage-community/plugin-catalog-backend-module-annotate-scm-slug` instead
+  - `CodeOwnersProcessor`: Use `@backstage-community/plugin-catalog-backend-module-codeowners` instead
+
+- 3644b72: Make the `search` foreign key catalog migration non-blocking on large tables by using batch deletes and PostgreSQL `NOT VALID`/`VALIDATE` to reduce lock duration
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- 3181973: Changed the `search` table foreign key to point to `final_entities` instead of `refresh_state`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/integration@2.0.0
+  - @backstage/plugin-catalog-node@2.1.0
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-permission-node@0.10.11
+  - @backstage/catalog-model@1.7.7
+  - @backstage/backend-openapi-utils@0.6.7
+  - @backstage/plugin-events-node@0.4.20
+
+## 3.5.0-next.2
+
+### Minor Changes
+
+- 5d95e8e: Add an `onConflict` option to location creation that can refresh an existing location instead of throwing a conflict error.
+
+### Patch Changes
+
+- 7416e8b: Moved stitch queue concerns out of `refresh_state` and `final_entities` into a dedicated `stitch_queue` table with `entity_ref` as the primary key. The `stitch_ticket` is used for optimistic concurrency control. When a stitch completes successfully and the ticket hasn't changed, the corresponding row is deleted from the queue. The migration handles existing data and is fully reversible.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/backend-openapi-utils@0.6.7-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+  - @backstage/plugin-permission-node@0.10.11-next.1
+
+## 3.5.0-next.1
+
+### Minor Changes
+
+- a6b2819: Added `query-catalog-entities` action to the catalog backend actions registry. Supports predicate-based filtering with `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 972f686: Added support for predicate-based filtering on the `/entities/by-refs` endpoint via the `query` field in the request body. Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 56c908e: Added support for predicate-based filtering on the `/entity-facets` endpoint via a new `POST` method. Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+- 51e23eb: Added predicate-based entity filtering via POST /entities/by-query endpoint.
+
+  Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$hasPrefix`, and (partially) `$contains` operators for expressive entity queries. Integrated into the existing `queryEntities` flow with full cursor-based pagination, permission enforcement, and `totalItems` support.
+
+  The catalog client's `queryEntities()` method automatically routes to the POST endpoint when a `query` predicate is provided.
+
+### Patch Changes
+
+- 72747b4: Deprecated two processors as they have been moved to the Community Plugins repo with their own backend modules:
+
+  - `AnnotateScmSlugEntityProcessor`: Use `@backstage-community/plugin-catalog-backend-module-annotate-scm-slug` instead
+  - `CodeOwnersProcessor`: Use `@backstage-community/plugin-catalog-backend-module-codeowners` instead
+
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-openapi-utils@0.6.7-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
+## 3.5.0-next.0
+
+### Minor Changes
+
+- bf71677: Added opentelemetry metrics for SCM events:
+
+  - `catalog.events.scm.messages` with attribute `eventType`: Counter for the number of SCM events actually received by the catalog backend. The `eventType` is currently either `location` or `repository`.
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- fbf382f: Minor internal optimisation
+- 1ee5b28: Migrates existing catalog metrics to use the alpha MetricsService. This release is a 1:1 migration with no breaking changes.
+- 3181973: Changed the `search` table foreign key to point to `final_entities` instead of `refresh_state`
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/backend-openapi-utils@0.6.7-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
+## 3.4.0
+
+### Minor Changes
+
+- f1d29b4: Failures to connect catalog providers are now attributed to the module that provided the failing provider. This means that such failures will be reported as module startup failures rather than a failure to start the catalog plugin, and will therefore respect `onPluginModuleBootFailure` configuration instead.
+- 34cc520: Implemented handling of events from the newly introduced alpha
+  `catalogScmEventsServiceRef` service, in the builtin entity providers. This
+  allows entities to get refreshed, and locations updated or removed, as a
+  response to incoming events. In its first iteration, only the GitHub module
+  implements such event handling however.
+
+  This is not yet enabled by default, but this fact may change in a future
+  release. To try it out, ensure that you have the latest catalog GitHub module
+  installed, and set the following in your app-config:
+
+  ```yaml
+  catalog:
+    scmEvents: true
+  ```
+
+  Or if you want to pick and choose from the various features:
+
+  ```yaml
+  catalog:
+    scmEvents:
+      # refresh (reprocess) upon events?
+      refresh: true
+      # automatically unregister locations based on events? (files deleted, repos archived, etc)
+      unregister: true
+      # automatically move locations based on events? (repo transferred, file renamed, etc)
+      move: true
+  ```
+
+- b4e8249: Implemented the `POST /locations/by-query` endpoint which allows paginated, filtered location queries
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- 7455dae: Use node prefix on native imports
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- 08a5813: Fixed O(n²) performance bottleneck in `buildEntitySearch` `traverse()` by replacing `Array.some()` linear scan with a `Set` for O(1) duplicate path key detection.
+- 1e669cc: Migrate audit events reference docs to http://backstage.io/docs.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-openapi-utils@0.6.6
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-events-node@0.4.19
+
+## 3.4.0-next.2
+
+### Patch Changes
+
+- 08a5813: Fixed O(n²) performance bottleneck in `buildEntitySearch` `traverse()` by replacing `Array.some()` linear scan with a `Set` for O(1) duplicate path key detection.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/plugin-permission-node@0.10.10-next.0
+
+## 3.4.0-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 3.4.0-next.0
+
+### Minor Changes
+
+- f1d29b4: Failures to connect catalog providers are now attributed to the module that provided the failing provider. This means that such failures will be reported as module startup failures rather than a failure to start the catalog plugin, and will therefore respect `onPluginModuleBootFailure` configuration instead.
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- 7455dae: Use node prefix on native imports
+- 1e669cc: Migrate audit events reference docs to http://backstage.io/docs.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-openapi-utils@0.6.6-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+
+## 3.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+
+## 3.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
+## 3.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.5-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.19.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-permission-node@0.10.7
+
+## 3.3.0
+
+### Minor Changes
+
+- dce1824: Added `ActionsRegistry` actions for `register-entity` and `unregister-entity`
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 8101ec1: Fixed default refresh service to go through the whole ancestry of the entity.
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 3.2.1-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.4-next.1
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+  - @backstage/plugin-permission-common@0.9.3
+
+## 3.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/backend-openapi-utils@0.6.4-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-common@0.9.3
+
+## 3.2.0
+
+### Minor Changes
+
+- 2d229b2: Enable YAML merge keys in yamlPlaceholderResolver
+- 9d3ec06: Make YAML merge (<<:) support configurable in the Backstage Catalog instead of always being enabled
+- 8c26af4: Enable YAML merge keys in yamlPlaceholderResolver
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/backend-openapi-utils@0.6.3
+  - @backstage/catalog-client@1.12.1
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-node@0.10.6
+
+## 3.2.0-next.1
+
+### Minor Changes
+
+- 2d229b2: Enable YAML merge keys in yamlPlaceholderResolver
+- 9d3ec06: Make YAML merge (<<:) support configurable in the Backstage Catalog instead of always being enabled
+- 8c26af4: Enable YAML merge keys in yamlPlaceholderResolver
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/backend-openapi-utils@0.6.3-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
+## 3.1.3-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-openapi-utils@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 3.1.2
+
+### Patch Changes
+
+- 9890488: Internal refactor to remove remnants of the old backend system
+- 6493c98: Log before provider-orphaning eviction happens
+- 2aaf01a: Fix for duplicate search results in entity-facets API call
+- e489661: Moved catalog processor and provider disabling and priorities under own config objects.
+
+  This is due to issue with some existing providers, such as GitHub, using array syntax for the provider configuration.
+
+  The new config format is not backwards compatible, so users will need to update their config files. The new format
+  is as follows:
+
+  ```yaml
+  catalog:
+    providerOptions:
+      providerA:
+        disabled: false
+      providerB:
+        disabled: true
+    processorOptions:
+      processorA:
+        disabled: false
+        priority: 10
+      processorB:
+        disabled: true
+  ```
+
+- 77516c5: Added new `catalog:validate-entity` action to actions registry.
+
+  This action can be used to validate entities against the software catalog.
+  This is useful for validating `catalog-info.yaml` file changes locally using the
+  Backstage MCP server.
+
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/config@1.3.5
+  - @backstage/backend-openapi-utils@0.6.2
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-events-node@0.4.16
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-node@0.10.5
+
+## 3.1.2-next.2
+
+### Patch Changes
+
+- 6493c98: Log before provider-orphaning eviction happens
+- 77516c5: Added new `catalog:validate-entity` action to actions registry.
+
+  This action can be used to validate entities against the software catalog.
+  This is useful for validating `catalog-info.yaml` file changes locally using the
+  Backstage MCP server.
+
+## 3.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+  - @backstage/backend-openapi-utils@0.6.2-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 3.1.1-next.0
+
+### Patch Changes
+
+- 9890488: Internal refactor to remove remnants of the old backend system
+- 2aaf01a: Fix for duplicate search results in entity-facets API call
+- e489661: Moved catalog processor and provider disabling and priorities under own config objects.
+
+  This is due to issue with some existing providers, such as GitHub, using array syntax for the provider configuration.
+
+  The new config format is not backwards compatible, so users will need to update their config files. The new format
+  is as follows:
+
+  ```yaml
+  catalog:
+    providerOptions:
+      providerA:
+        disabled: false
+      providerB:
+        disabled: true
+    processorOptions:
+      processorA:
+        disabled: false
+        priority: 10
+      processorB:
+        disabled: true
+  ```
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 3.1.0
 
 ### Minor Changes

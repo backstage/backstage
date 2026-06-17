@@ -58,16 +58,33 @@ export function isError(value: unknown): value is ErrorLike {
  * @param value - an unknown value
  */
 export function assertError(value: unknown): asserts value is ErrorLike {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    throw new Error(`Encountered invalid error, not an object, got '${value}'`);
+  if (!isError(value)) {
+    throw new Error(`Encountered invalid error, got '${value}'`);
   }
-  const maybe = value as Partial<ErrorLike>;
-  if (typeof maybe.name !== 'string' || maybe.name === '') {
-    throw new Error(`Encountered error object without a name, got '${value}'`);
+}
+
+/**
+ * Converts an unknown value to an {@link ErrorLike} object.
+ *
+ * If the value is already an {@link ErrorLike} object, it is returned as-is.
+ * If the value is a string, a new `Error` is created with that string as the message.
+ * For all other values, a new `Error` is created with a message of the form
+ * `unknown error '<stringified>'`.
+ *
+ * @public
+ * @param value - an unknown value
+ * @returns an {@link ErrorLike} object
+ */
+export function toError(value: unknown): ErrorLike {
+  if (isError(value)) {
+    return value;
   }
-  if (typeof maybe.message !== 'string') {
-    throw new Error(
-      `Encountered error object without a message, got '${value}'`,
-    );
+  if (typeof value === 'string') {
+    return new Error(value) as ErrorLike;
+  }
+  try {
+    return new Error(`unknown error '${value}'`) as ErrorLike;
+  } catch {
+    return new Error(`unknown error of type '${typeof value}'`) as ErrorLike;
   }
 }

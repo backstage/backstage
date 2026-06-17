@@ -1,5 +1,347 @@
 # @backstage/core-components
 
+## 0.18.11
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- a07e6a3: Added the correctly-spelled `'header'` literal to the `TableFiltersClassKey` union type and deprecated the previous typoed `'heder'` literal. The generated CSS class with the old key is preserved for backwards compatibility; switch to `'header'` to avoid future removal.
+- c161e1c: Lazy-load `react-syntax-highlighter` and `@dagrejs/dagre` so they are no longer pulled in eagerly through the barrel export. This reduces the upfront module cost of importing from `@backstage/core-components` by roughly 10 MB. The public API is unchanged.
+- dbe93a7: Fix autologout not working correctly when closing all tabs
+- 8add9b9: Fixed the proxy-based sign-in page failing to read the session token when the proxy issues a token whose payload is encoded using the URL-safe base64 alphabet. Such tokens are now decoded correctly so sign-in no longer breaks.
+- f35372d: Fixed text clipping in SidebarSubmenuItem by correcting line-height from 1 to 1.5
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.7
+
+## 0.18.11-next.2
+
+### Patch Changes
+
+- c161e1c: Lazy-load `react-syntax-highlighter` and `@dagrejs/dagre` so they are no longer pulled in eagerly through the barrel export. This reduces the upfront module cost of importing from `@backstage/core-components` by roughly 10 MB. The public API is unchanged.
+
+## 0.18.11-next.1
+
+### Patch Changes
+
+- dbe93a7: Fix autologout not working correctly when closing all tabs
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.7-next.0
+
+## 0.18.11-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- a07e6a3: Added the correctly-spelled `'header'` literal to the `TableFiltersClassKey` union type and deprecated the previous typoed `'heder'` literal. The generated CSS class with the old key is preserved for backwards compatibility; switch to `'header'` to avoid future removal.
+- 8add9b9: Fixed the proxy-based sign-in page failing to read the session token when the proxy issues a token whose payload is encoded using the URL-safe base64 alphabet. Such tokens are now decoded correctly so sign-in no longer breaks.
+
+## 0.18.10
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- 021b368: Added stable DOM markers to the legacy Page and Header so adjacent layout components can coordinate spacing without relying on generated class names.
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/config@1.3.8
+
+## 0.18.10-next.1
+
+### Patch Changes
+
+- 021b368: Added stable DOM markers to the legacy Page and Header so adjacent layout components can coordinate spacing without relying on generated class names.
+
+## 0.18.10-next.0
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/theme@0.7.3
+  - @backstage/version-bridge@1.0.12
+
+## 0.18.9
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 320eed3: Resolved DOM nesting warning in OAuthRequestDialog by rendering secondary text as block-level spans.
+- 58b9f3f: Use Backstage Link component for markdown anchor rendering to ensure consistent internal and external link behavior.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/theme@0.7.3
+  - @backstage/config@1.3.7
+  - @backstage/core-plugin-api@1.12.5
+
+## 0.18.9-next.1
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 58b9f3f: Use Backstage Link component for markdown anchor rendering to ensure consistent internal and external link behavior.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/theme@0.7.3-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+
+## 0.18.9-next.0
+
+### Patch Changes
+
+- 320eed3: Resolved DOM nesting warning in OAuthRequestDialog by rendering secondary text as block-level spans.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.2
+  - @backstage/version-bridge@1.0.12
+
+## 0.18.8
+
+### Patch Changes
+
+- e26e3de: The login request dialog now handles auth provider icons passed as `IconElement` in addition to `IconComponent`.
+- 8e09233: Fixed the shared `Progress` component to provide an accessible name for its loading indicator by default.
+- 8b1a847: Fixed Table component layout when both `filters` and `title` props are used together. The filter controls now use a dedicated CSS class (`filterControls`) instead of incorrectly reusing the root container class.
+- 3f36ce1: Clarified the `IconElement` sizing contract for the new frontend system and aligned legacy system icon rendering with the new icon API.
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- 470f72d: The `LogViewer` component from `@backstage/core-components` now supports downloading logs if a callback is passed to `onDownloadLogs`
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.4
+
+## 0.18.8-next.1
+
+### Patch Changes
+
+- 8b1a847: Fixed Table component layout when both `filters` and `title` props are used together. The filter controls now use a dedicated CSS class (`filterControls`) instead of incorrectly reusing the root container class.
+- 470f72d: The `LogViewer` component from `@backstage/core-components` now supports downloading logs if a callback is passed to `onDownloadLogs`
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.4-next.1
+
+## 0.18.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.2
+  - @backstage/version-bridge@1.0.12
+
+## 0.18.7
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- cebfea7: Removed link styles from LinkButton to avoid styling inconsistencies related to import order.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/theme@0.7.2
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/version-bridge@1.0.12
+
+## 0.18.7-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/version-bridge@1.0.12-next.0
+  - @backstage/theme@0.7.2-next.1
+
+## 0.18.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.7.2-next.0
+
+## 0.18.6-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- cebfea7: Removed link styles from LinkButton to avoid styling inconsistencies related to import order.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.5
+
+### Patch Changes
+
+- a723b8a: The MarkdownContent component now handles HTML content the same way as GitHub when rendering GitHub-flavored Markdown
+- c671db9: Fixed bug in Table component where the toolbar layout would break when both a title and filters were present.
+- 55a9dc2: Update colour token again in ItemCardHeader to respect theme definition.
+
+## 0.18.5-next.0
+
+### Patch Changes
+
+- a723b8a: The MarkdownContent component now handles HTML content the same way as GitHub when rendering GitHub-flavored Markdown
+
+## 0.18.4
+
+### Patch Changes
+
+- 9a942a4: Fixed bug in the `LogViewer` component where shift + click always opened a new window instead of just changing the selection.
+
+  In addition, improved the `LogViewer` component by a few usability enhancements:
+
+  - Added support for multiple selections using cmd/ctrl + click
+  - Improved the generated hash that is added to the URL to also support ranges & multiple selections
+  - Added an hover effect & info tooltip to the "Copy to clipboard" button to indicate its functionality
+  - Added some color and a separator to the line numbers to improve readability
+
+- 207c3c8: long words like urls now breaks to new line on warning panels instead of overflowing the container
+- 4c00303: Add `tooltipClasses` prop to `OverflowTooltip` component to allow customisation of the tooltip
+- 5d52dab: Add i18n support for LogViewer search control
+- f6b49ce: added support for wrapLongLines option in CodeSnippet
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+
+## 0.18.4-next.2
+
+### Patch Changes
+
+- 4c00303: Add `tooltipClasses` prop to `OverflowTooltip` component to allow customisation of the tooltip
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.4-next.1
+
+### Patch Changes
+
+- 9a942a4: Fixed bug in the `LogViewer` component where shift + click always opened a new window instead of just changing the selection.
+
+  In addition, improved the `LogViewer` component by a few usability enhancements:
+
+  - Added support for multiple selections using cmd/ctrl + click
+  - Improved the generated hash that is added to the URL to also support ranges & multiple selections
+  - Added an hover effect & info tooltip to the "Copy to clipboard" button to indicate its functionality
+  - Added some color and a separator to the line numbers to improve readability
+
+- 207c3c8: long words like urls now breaks to new line on warning panels instead of overflowing the container
+- 5d52dab: Add i18n support for LogViewer search control
+
+## 0.18.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.3
+
+### Patch Changes
+
+- 1c7e1ce: - Revert `viewbox` back to old values.
+  - Added `fullScreen` prop to `EntityCatalogGraphCard`
+- 96ad674: Line numbers in LogViewer will not be selectable in UI anymore
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/config@1.3.6
+
+## 0.18.3-next.2
+
+### Patch Changes
+
+- 96ad674: Line numbers in LogViewer will not be selectable in UI anymore
+
+## 0.18.3-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.1
+
+## 0.18.3-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.2
+
+### Patch Changes
+
+- d493126: Swap base token for semantic token in ItemCardHeader to ensure readability in light mode.
+- 431130c: Added `renderEdge` prop to `<DependencyGraph />` component in `@backstage/core-components` to allow custom rendering of graph edges.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- 95935fb: Fixed dependency graph automatically scrolling forever
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/theme@0.7.0
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.18.2-next.3
+
+### Patch Changes
+
+- 431130c: Added `renderEdge` prop to `<DependencyGraph />` component in `@backstage/core-components` to allow custom rendering of graph edges.
+
+## 0.18.2-next.2
+
+### Patch Changes
+
+- 95935fb: Fixed dependency graph automatically scrolling forever
+- Updated dependencies
+  - @backstage/theme@0.6.9-next.0
+
+## 0.18.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+
+## 0.18.2-next.0
+
+### Patch Changes
+
+- d493126: Swap base token for semantic token in ItemCardHeader to ensure readability in light mode.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8
+  - @backstage/version-bridge@1.0.11
+
 ## 0.18.0
 
 ### Minor Changes

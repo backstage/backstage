@@ -14,7 +14,21 @@
  * limitations under the License.
  */
 
-import { EventParams } from '@backstage/plugin-events-node';
+import { JsonObject, JsonValue } from '@backstage/types';
+
+/**
+ * The contextual information about an event, as given to
+ * configured filters and mappers.
+ */
+export interface EventContext extends JsonObject {
+  // Actually the raw EventParams; slightly modified payload type to avoid type
+  // inference issues.
+  event: {
+    topic: string;
+    eventPayload: JsonValue;
+    metadata?: Record<string, string | string[] | undefined>;
+  };
+}
 
 /**
  * A configured subscription task.
@@ -23,8 +37,9 @@ export interface SubscriptionTask {
   id: string;
   sourceTopics: string[];
   targetTopicPattern: string;
+  filter: (context: EventContext) => boolean;
   mapToTopic: (
-    event: EventParams,
+    context: EventContext,
   ) => { project: string; topic: string } | undefined;
-  mapToAttributes: (event: EventParams) => Record<string, string>;
+  mapToAttributes: (context: EventContext) => Record<string, string>;
 }

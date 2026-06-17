@@ -103,6 +103,8 @@ export function defaultUserTransformer(
 
   annotations[`${options.integrationConfig.host}/user-login`] =
     options.user.web_url;
+  annotations[`${options.integrationConfig.host}/user-id`] =
+    options.user.id.toString();
   if (options.user?.group_saml_identity?.extern_uid) {
     annotations[`${options.integrationConfig.host}/saml-external-uid`] =
       options.user.group_saml_identity.extern_uid;

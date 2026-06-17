@@ -19,7 +19,6 @@ import { mockServices } from '@backstage/backend-test-utils';
 import {
   coreServices,
   createBackendPlugin,
-  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { EventSource } from 'eventsource';
@@ -48,12 +47,13 @@ describe('gateway', () => {
     },
   });
 
-  const discovery = mockServices.discovery.mock();
-  discovery.getBaseUrl.mockImplementation(async (pluginId: string) => {
-    if (pluginId === 'external-plugin') {
-      return 'http://localhost:7778/api/external-plugin';
-    }
-    return `http://localhost:7777/api/${pluginId}`;
+  const discovery = mockServices.discovery.mock({
+    async getBaseUrl(pluginId) {
+      if (pluginId === 'external-plugin') {
+        return 'http://localhost:7778/api/external-plugin';
+      }
+      return `http://localhost:7777/api/${pluginId}`;
+    },
   });
 
   beforeAll(async () => {
@@ -68,13 +68,7 @@ describe('gateway', () => {
     );
     backend.add(mockServices.auth.factory());
     backend.add(mockServices.httpAuth.factory());
-    backend.add(
-      createServiceFactory({
-        service: coreServices.discovery,
-        deps: {},
-        factory: () => discovery,
-      }),
-    );
+    backend.add(discovery.factory);
     backend.add(dummyPlugin);
     backend.add(import('./'));
 
@@ -159,6 +153,41 @@ describe('gateway', () => {
 
     const data = await response.json();
     expect(data).toEqual({ bar: true });
+  });
+
+  it('should detect looped requests', async () => {
+    const response = await fetch(
+      'http://localhost:7777/api/nonexistent-plugin/foo',
+    );
+    expect(response.status).toBe(508);
+
+    const data = await response.json();
+    expect(data).toEqual({
+      error: {
+        name: 'LoopDetectedError',
+        message: 'Maximum proxy hop count exceeded (3)',
+      },
+    });
+  });
+
+  it('should detect looped requests with intentional negative hop count', async () => {
+    const response = await fetch(
+      'http://localhost:7777/api/nonexistent-plugin/foo',
+      {
+        headers: {
+          'backstage-gateway-hops': '-1000000',
+        },
+      },
+    );
+    expect(response.status).toBe(508);
+
+    const data = await response.json();
+    expect(data).toEqual({
+      error: {
+        name: 'LoopDetectedError',
+        message: 'Maximum proxy hop count exceeded (3)',
+      },
+    });
   });
 
   it('should close the response for sse connections', async () => {

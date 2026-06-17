@@ -99,7 +99,7 @@ even if a valid ID token was attached that a cluster would authorize.
 
 ## Other known limitations
 
-The proxy as it was released in [Backstage 1.9](../../releases/v1.9.0-changelog.md#patch-changes-15)
+The proxy as it was released in [Backstage 1.9](../../releases/v1.9.0-changelog.md)
 has a known bug:
 
 - [#15901](https://github.com/backstage/backstage/issues/15901) - it cannot

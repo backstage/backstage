@@ -146,8 +146,8 @@ To clarify how to utilize the Auditor feature effectively, we recommend explorin
 - **Code Implementation Example (createRouter.ts):**
   - The [`createRouter.ts`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/service/createRouter.ts) file within the Catalog Backend showcases a practical integration of the `AuditorService` within a Backstage backend plugin.
   - Specifically, the lines that demonstrate the creation of an audit event. This includes setting critical parameters such as `eventId` and `severityLevel`, as well as incorporating relevant metadata like `queryType` and `entityRef`.
-- **Documentation Example (README.md):**
-  - The "Audit Events" section of the Catalog Backend's [`README.md`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/README.md#audit-events) provides a well-structured example of documenting emitted audit events.
+- **Documentation Example:**
+  - The "Audit Events" section of the Software Catalog [Audit Documentation](../../features/software-catalog/audit-events.md) provides a well-structured example of documenting emitted audit events.
   - It illustrates how to detail various `eventId` values and their corresponding `meta` fields (e.g., `queryType`, `actionType`) for different plugin operations.
 
 These examples provide both a code-level demonstration and a documentation guideline for effectively utilizing the `AuditorService` to manage audit events within your Backstage plugins.

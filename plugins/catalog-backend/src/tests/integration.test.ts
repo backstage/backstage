@@ -20,7 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
-import { InputError } from '@backstage/errors';
+import { InputError, NotImplementedError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -30,7 +30,7 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { Knex } from 'knex';
 import merge from 'lodash/merge';
 import { EntitiesCatalog } from '../catalog/types';
@@ -56,6 +56,7 @@ import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { entitiesResponseToObjects } from '../service/response';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 const voidLogger = mockServices.logger.mock();
 
@@ -129,8 +130,10 @@ class WaitingProgressTracker implements ProgressTrackerWithErrorReports {
   #counts = new Map<string, number>();
   #errors = new Map<string, Error[]>();
   #inFlight = new Array<Promise<void>>();
+  private readonly entityRefs?: Set<string>;
 
-  constructor(private readonly entityRefs?: Set<string>) {
+  constructor(entityRefs?: Set<string>) {
+    this.entityRefs = entityRefs;
     let resolve: (errors: Record<string, Error[]>) => void;
     this.#promise = new Promise<Record<string, Error[]>>(_resolve => {
       resolve = _resolve;
@@ -199,6 +202,7 @@ class WaitingProgressTracker implements ProgressTrackerWithErrorReports {
 class TestHarness {
   readonly #catalog: EntitiesCatalog;
   readonly #engine: CatalogProcessingEngine;
+  readonly #stitcher: DefaultStitcher;
   readonly #refresh: RefreshService;
   readonly #provider: TestProvider;
   readonly #proxyProgressTracker: ProxyProgressTracker;
@@ -223,11 +227,6 @@ class TestHarness {
           connection: ':memory:',
         },
       },
-      catalog: {
-        stitchingStrategy: {
-          mode: 'immediate',
-        },
-      },
     });
     const logger = options?.logger ?? mockServices.logger.mock();
 
@@ -244,7 +243,9 @@ class TestHarness {
     const processingDatabase = new DefaultProcessingDatabase({
       database: options.db,
       logger,
+      events: mockServices.events.mock(),
       refreshInterval: () => 0.05,
+      metrics: metricsServiceMock.mock(),
     });
 
     const integrations = ScmIntegrations.fromConfig(config);
@@ -273,16 +274,15 @@ class TestHarness {
       logger,
       parser: defaultEntityDataParser,
       policy: EntityPolicies.allOf([]),
-      legacySingleProcessorValidation: false,
     });
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: options.db,
       logger,
+      metrics: metricsServiceMock.mock(),
     });
     const catalog = new DefaultEntitiesCatalog({
       database: options.db,
       logger,
-      stitcher,
       enableRelationsCompatibility: options?.enableRelationsCompatibility,
     });
     const proxyProgressTracker = new ProxyProgressTracker(
@@ -295,13 +295,15 @@ class TestHarness {
       processingDatabase,
       knex: options.db,
       orchestrator,
-      stitcher,
+      scheduler: mockServices.scheduler(),
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 50,
       onProcessingError: event => {
         proxyProgressTracker.reportError(event.unprocessedEntity, event.errors);
       },
       tracker: proxyProgressTracker,
+      events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     const refresh = new DefaultRefreshService({ database: catalogDatabase });
@@ -313,20 +315,22 @@ class TestHarness {
       providers.push(...options.additionalProviders);
     }
 
-    await connectEntityProviders(providerDatabase, providers);
+    await connectEntityProviders(
+      providerDatabase,
+      providers.map(p => ({
+        provider: p,
+        context: {
+          reportModuleStartupFailure: () => {
+            throw new NotImplementedError();
+          },
+        },
+      })),
+    );
 
     return new TestHarness(
       catalog,
-      {
-        async start() {
-          await engine.start();
-          await stitcher.start();
-        },
-        async stop() {
-          await engine.stop();
-          await stitcher.stop();
-        },
-      },
+      engine,
+      stitcher,
       refresh,
       provider,
       proxyProgressTracker,
@@ -337,6 +341,7 @@ class TestHarness {
   constructor(
     catalog: EntitiesCatalog,
     engine: CatalogProcessingEngine,
+    stitcher: DefaultStitcher,
     refresh: RefreshService,
     provider: TestProvider,
     proxyProgressTracker: ProxyProgressTracker,
@@ -344,6 +349,7 @@ class TestHarness {
   ) {
     this.#catalog = catalog;
     this.#engine = engine;
+    this.#stitcher = stitcher;
     this.#refresh = refresh;
     this.#provider = provider;
     this.#proxyProgressTracker = proxyProgressTracker;
@@ -354,13 +360,25 @@ class TestHarness {
     const tracker = new WaitingProgressTracker(entityRefs);
     this.#proxyProgressTracker.setTracker(tracker);
 
-    this.#engine.start();
+    await this.#engine.start();
+    await this.#stitcher.start();
 
     const errors = await tracker.wait();
 
-    this.#engine.stop();
+    await this.#engine.stop();
     await tracker.waitForFinish();
 
+    // Wait for the stitch queue to drain while the stitcher is still running
+    const start = Date.now();
+    while (Date.now() - start < 10_000) {
+      const queue = await this.#db('stitch_queue').select('*');
+      if (queue.length === 0) {
+        break;
+      }
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+
+    await this.#stitcher.stop();
     this.#proxyProgressTracker.setTracker(new NoopProgressTracker());
 
     return errors;
@@ -393,7 +411,6 @@ class TestHarness {
   async removeOrphanedEntities() {
     await deleteOrphanedEntities({
       knex: this.#db,
-      strategy: { mode: 'immediate' },
     });
   }
 
@@ -518,6 +535,39 @@ describe('Catalog Backend Integration', () => {
           ],
         },
       },
+    });
+  });
+
+  it('should report module failures when provider connect throws', async () => {
+    const db = await databases.init('SQLITE_3');
+    await applyDatabaseMigrations(db);
+    const providerDatabase = new DefaultProviderDatabase({
+      database: db,
+      logger: mockServices.logger.mock(),
+    });
+    const error = new Error('NOPE');
+    const reportFailure = jest.fn();
+    const provider: EntityProvider = {
+      getProviderName: () => 'failing',
+      async connect() {
+        throw error;
+      },
+    };
+
+    await expect(
+      connectEntityProviders(providerDatabase, [
+        {
+          provider,
+          context: {
+            reportModuleStartupFailure: reportFailure,
+          },
+        },
+      ]),
+    ).resolves.toBeUndefined();
+    expect(reportFailure).toHaveBeenCalledWith({
+      error: new Error(
+        "Failed to connect entity provider 'failing'; caused by Error: NOPE",
+      ),
     });
   });
 

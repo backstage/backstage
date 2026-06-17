@@ -21,7 +21,7 @@ import {
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import {
   CatalogProcessor,
   CatalogProcessorResult,
@@ -47,10 +47,13 @@ export class ProcessorOutputCollector {
   private readonly refreshKeys = new Array<RefreshKeyData>();
   private done = false;
 
-  constructor(
-    private readonly logger: LoggerService,
-    private readonly parentEntity: Entity,
-  ) {}
+  private readonly logger: LoggerService;
+  private readonly parentEntity: Entity;
+
+  constructor(logger: LoggerService, parentEntity: Entity) {
+    this.logger = logger;
+    this.parentEntity = parentEntity;
+  }
 
   generic(): (i: CatalogProcessorResult) => void {
     return i => this.receive(this.logger, i);
@@ -94,9 +97,11 @@ export class ProcessorOutputCollector {
       try {
         entity = validateEntityEnvelope(i.entity);
       } catch (e) {
-        assertError(e);
-        logger.debug(`Envelope validation failed at ${location}, ${e}`);
-        this.errors.push(e);
+        const validationError = toError(e);
+        logger.debug(
+          `Envelope validation failed at ${location}, ${validationError}`,
+        );
+        this.errors.push(validationError);
         return;
       }
 

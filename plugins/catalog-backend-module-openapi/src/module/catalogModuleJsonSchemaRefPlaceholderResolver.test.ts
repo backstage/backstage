@@ -16,7 +16,7 @@
 
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { PlaceholderResolver } from '@backstage/plugin-catalog-node';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { catalogModuleJsonSchemaRefPlaceholderResolver } from './catalogModuleJsonSchemaRefPlaceholderResolver';
 import { jsonSchemaRefPlaceholderResolver } from '../jsonSchemaRefPlaceholderResolver';
 

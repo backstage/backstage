@@ -15,15 +15,23 @@
  */
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { range } from 'lodash';
-import { Transform } from 'stream';
+import { Transform } from 'node:stream';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 import { DatabaseStore } from '../database';
 
 describe('PgSearchEngineIndexer', () => {
+  const subTx = {
+    rollback: jest.fn(),
+    commit: jest.fn(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any;
+
   const tx = {
     rollback: jest.fn(),
     commit: jest.fn(),
+    transaction: jest.fn().mockResolvedValue(subTx),
     isCompleted: jest.fn(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
   let database: jest.Mocked<DatabaseStore>;
   let indexer: PgSearchEngineIndexer;
@@ -65,8 +73,55 @@ describe('PgSearchEngineIndexer', () => {
       'my-type',
       documents,
     );
-    expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
+    expect(database.completeInsert).toHaveBeenCalledWith(
+      subTx,
+      'my-type',
+      false,
+    );
+    expect(subTx.commit).toHaveBeenCalled();
     expect(tx.commit).toHaveBeenCalled();
+    expect(subTx.rollback).not.toHaveBeenCalled();
+    expect(tx.rollback).not.toHaveBeenCalled();
+  });
+
+  it('should insert documents that are too long for tsvector', async () => {
+    const documents = [
+      { title: 'Hello World', text: 'Lorem Ipsum', location: 'location-1' },
+      {
+        location: 'location-2',
+        text: 'Hello World',
+        title: 'Dolor sit amet',
+      },
+    ];
+
+    const tsvectorError = new Error('string is too long for tsvector');
+    database.completeInsert.mockRejectedValueOnce(tsvectorError);
+
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
+
+    expect(database.getTransaction).toHaveBeenCalledTimes(1);
+    expect(database.prepareInsert).toHaveBeenCalledTimes(1);
+    expect(database.insertDocuments).toHaveBeenCalledWith(
+      tx,
+      'my-type',
+      documents,
+    );
+    expect(database.completeInsert).toHaveBeenCalledTimes(2);
+    expect(database.completeInsert).toHaveBeenNthCalledWith(
+      1,
+      subTx,
+      'my-type',
+      false,
+    );
+    expect(database.completeInsert).toHaveBeenNthCalledWith(
+      2,
+      subTx,
+      'my-type',
+      true,
+    );
+    expect(subTx.commit).toHaveBeenCalled();
+    expect(tx.commit).toHaveBeenCalled();
+    expect(subTx.rollback).toHaveBeenCalledTimes(1);
     expect(tx.rollback).not.toHaveBeenCalled();
   });
 
@@ -82,7 +137,11 @@ describe('PgSearchEngineIndexer', () => {
     expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
     expect(database.insertDocuments).toHaveBeenCalledTimes(4);
-    expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
+    expect(database.completeInsert).toHaveBeenCalledWith(
+      subTx,
+      'my-type',
+      false,
+    );
   });
 
   it('should rollback transaction if no documents indexed', async () => {

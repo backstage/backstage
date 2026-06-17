@@ -18,9 +18,9 @@ import { overridePackagePathResolution } from '@backstage/backend-plugin-api/tes
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import * as os from 'os';
+import * as os from 'node:os';
 import { LocalPublish } from './local';
-import path from 'path';
+import path from 'node:path';
 import {
   createMockDirectory,
   mockServices,

@@ -31,6 +31,8 @@ import type {
   V1Service,
   V1StatefulSet,
   V1Secret,
+  V1PersistentVolume,
+  V1PersistentVolumeClaim,
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
@@ -129,6 +131,7 @@ export type FetchResponse =
   | PodFetchResponse
   | ServiceFetchResponse
   | ConfigMapFetchResponse
+  | SecretFetchResponse
   | DeploymentFetchResponse
   | LimitRangeFetchResponse
   | ResourceQuotaFetchResponse
@@ -141,7 +144,9 @@ export type FetchResponse =
   | StatefulSetsFetchResponse
   | DaemonSetsFetchResponse
   | PodStatusFetchResponse
-  | SecretsFetchResponse;
+  | SecretsFetchResponse
+  | PersistentVolumeFetchResponse
+  | PersistentVolumeClaimsFetchResponse;
 
 /** @public */
 export interface PodFetchResponse {
@@ -159,6 +164,12 @@ export interface ServiceFetchResponse {
 export interface ConfigMapFetchResponse {
   type: 'configmaps';
   resources: Array<V1ConfigMap>;
+}
+
+/** @public */
+export interface SecretFetchResponse {
+  type: 'secrets';
+  resources: Array<V1Secret>;
 }
 
 /** @public */
@@ -240,6 +251,18 @@ export interface SecretsFetchResponse {
 }
 
 /** @public */
+export interface PersistentVolumeFetchResponse {
+  type: 'persistentvolumes';
+  resources: Array<V1PersistentVolume>;
+}
+
+/** @public */
+export interface PersistentVolumeClaimsFetchResponse {
+  type: 'persistentvolumeclaims';
+  resources: Array<V1PersistentVolumeClaim>;
+}
+
+/** @public */
 export type KubernetesFetchError = StatusError | RawFetchError;
 
 /** @public */
@@ -297,10 +320,13 @@ export interface DeploymentResources {
 export interface GroupedResponses extends DeploymentResources {
   services: V1Service[];
   configMaps: V1ConfigMap[];
+  secrets: V1Secret[];
   ingresses: V1Ingress[];
   jobs: V1Job[];
   cronJobs: V1CronJob[];
   customResources: any[];
   statefulsets: V1StatefulSet[];
   daemonSets: V1DaemonSet[];
+  persistentVolumes: V1PersistentVolume[];
+  persistentVolumeClaims: V1PersistentVolumeClaim[];
 }

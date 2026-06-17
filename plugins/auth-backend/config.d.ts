@@ -45,10 +45,16 @@ export interface Config {
 
     /**
      * Whether to omit the entity ownership references (`ent`) claim from the
-     * identity token. If this is enabled the `ent` claim will only be available
-     * via the user info endpoint and the `UserInfoService`.
+     * identity token.
      *
-     * Defaults to `false`.
+     * If this is disabled an `ent` claim will be included in the token
+     * containing all of the user's ownership refs as returned by the sign in
+     * resolver. This can in extreme cases lead to tokens that risk hitting HTTP
+     * header size limits. Setting it to `false` is therefore discouraged, and
+     * is only provided for backward compatibility reasons.
+     *
+     * Defaults to `true`, which means that the `ent` claim instead is available
+     * via the user info endpoint and the `UserInfoService`.
      */
     omitIdentityTokenOwnershipClaim?: boolean;
 
@@ -99,8 +105,100 @@ export interface Config {
     backstageTokenExpiration?: HumanDuration | string;
 
     /**
+     * Configuration for refresh tokens (offline access)
+     * @visibility backend
+     */
+    experimentalRefreshToken?: {
+      /**
+       * Whether to enable refresh tokens
+       * @default false
+       * @visibility backend
+       */
+      enabled?: boolean;
+      /**
+       * Token lifetime before rotation required
+       * @default '30 days'
+       * @visibility backend
+       */
+      tokenLifetime?: HumanDuration | string;
+      /**
+       * Maximum session lifetime across all rotations
+       * @default '1 year'
+       * @visibility backend
+       */
+      maxRotationLifetime?: HumanDuration | string;
+      /**
+       * Maximum number of refresh tokens per user
+       * @default 20
+       * @visibility backend
+       */
+      maxTokensPerUser?: number;
+      /**
+       * Disables the check that verifies the user's catalog entity still
+       * exists when refreshing a token. This is an escape hatch for
+       * Backstage instances that allow sign-in without a corresponding
+       * catalog user entity. Without the check, refresh tokens for
+       * removed or offboarded users remain valid until they naturally
+       * expire.
+       * @default false
+       * @visibility backend
+       */
+      dangerouslyDisableCatalogPresenceCheck?: boolean;
+    };
+
+    /**
      * Additional app origins to allow for authenticating
      */
     experimentalExtraAllowedOrigins?: string[];
+
+    /**
+     * Configuration for dynamic client registration
+     */
+    experimentalDynamicClientRegistration?: {
+      /**
+       * Whether to enable dynamic client registration
+       * Defaults to false
+       */
+      enabled?: boolean;
+
+      /**
+       * A list of allowed URI patterns to use for redirect URIs during
+       * dynamic client registration.
+       * Defaults to Cursor and loopback addresses (localhost, 127.0.0.1, [::1]).
+       */
+      allowedRedirectUriPatterns?: string[];
+    };
+
+    /**
+     * Configuration for Client ID Metadata Documents (CIMD)
+     *
+     * @see https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
+     */
+    experimentalClientIdMetadataDocuments?: {
+      /**
+       * Whether to enable Client ID Metadata Documents support
+       * Defaults to false
+       */
+      enabled?: boolean;
+
+      /**
+       * A list of allowed URI patterns for client_id URLs.
+       * Uses glob-style pattern matching where `*` matches any characters.
+       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', '{baseUrl}/.well-known/oauth-client/cli.json']`
+       * where `{baseUrl}` is the auth backend's base URL.
+       *
+       * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
+       */
+      allowedClientIdPatterns?: string[];
+
+      /**
+       * A list of allowed URI patterns for redirect URIs.
+       * Uses glob-style pattern matching where `*` matches any characters.
+       * Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
+       *
+       * @example ['http://localhost:*', 'http://127.0.0.1:*\/callback']
+       */
+      allowedRedirectUriPatterns?: string[];
+    };
   };
 }

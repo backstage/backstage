@@ -23,7 +23,7 @@ import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/al
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Permission } from '@backstage/plugin-permission-common';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
 import { readCollatorConfigOptions } from './config';
 import { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';

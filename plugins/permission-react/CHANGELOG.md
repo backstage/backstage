@@ -1,5 +1,166 @@
 # @backstage/plugin-permission-react
 
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.7
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.7-next.0
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/config@1.3.8
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.8-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 53954e1: **BREAKING**: Removed the deprecated `PermissionedRoute` component. Use `RequirePermission` instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.7
+  - @backstage/core-plugin-api@1.12.5
+  - @backstage/plugin-permission-common@0.9.8
+
+## 0.4.42-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.7-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/plugin-permission-common@0.9.8-next.0
+
+## 0.4.42-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-permission-common@0.9.7
+
+## 0.4.41
+
+### Patch Changes
+
+- 5fec07d: Permission checks made in the same tick are now batched into a single call to the permission backend.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/plugin-permission-common@0.9.7
+
+## 0.4.41-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/plugin-permission-common@0.9.6
+
+## 0.4.40
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-permission-common@0.9.6
+
+## 0.4.40-next.1
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.3-next.1
+
+## 0.4.40-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/config@1.3.6
+
+## 0.4.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.4.39-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.4.38
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/config@1.3.6
+
+## 0.4.38-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 0.4.37
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-permission-common@0.9.2
+
+## 0.4.37-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+
 ## 0.4.36
 
 ### Patch Changes

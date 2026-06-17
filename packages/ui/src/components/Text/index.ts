@@ -16,3 +16,4 @@
 
 export * from './Text';
 export * from './types';
+export { TextDefinition } from './definition';

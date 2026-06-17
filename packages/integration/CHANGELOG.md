@@ -1,5 +1,281 @@
 # @backstage/integration
 
+## 2.0.3
+
+### Patch Changes
+
+- a07e6a3: Added the correctly-spelled `AzureBlobStorageIntegration` class export and deprecated the previous typoed `AzureBlobStorageIntergation` export. Existing usage of `AzureBlobStorageIntergation` continues to work; switch to `AzureBlobStorageIntegration` to avoid future removal.
+- b75158b: Adapted Azure-related tests for the Azure SDK upgrade to ESM-style exports. The `AzureBlobStorageUrlReader` now accepts an optional `createContainerClient` dependency for testability without needing to mock the `@azure/storage-blob` module.
+- 241d359: Changed visibility of Bitbucket username as it is not a secret.
+
+## 2.0.3-next.1
+
+### Patch Changes
+
+- b75158b: Adapted Azure-related tests for the Azure SDK upgrade to ESM-style exports. The `AzureBlobStorageUrlReader` now accepts an optional `createContainerClient` dependency for testability without needing to mock the `@azure/storage-blob` module.
+- 241d359: Changed visibility of Bitbucket username as it is not a secret.
+
+## 2.0.3-next.0
+
+### Patch Changes
+
+- a07e6a3: Added the correctly-spelled `AzureBlobStorageIntegration` class export and deprecated the previous typoed `AzureBlobStorageIntergation` export. Existing usage of `AzureBlobStorageIntergation` continues to work; switch to `AzureBlobStorageIntegration` to avoid future removal.
+
+## 2.0.2
+
+### Patch Changes
+
+- 6b112d3: Fixed two issues in the GitLab integration's fetch behavior:
+
+  - The internal fetch wrapper was passing `mode: 'same-origin'` on every request. This had no practical effect server-side, but would have caused cross-origin requests to be rejected when the integration is used from a browser. Requests now use the default fetch mode and work correctly in both browser and Node environments.
+  - When retries are configured, transient network errors (such as dropped connections or DNS hiccups) are now retried using the same `maxRetries` and exponential delay as retryable HTTP status codes. Previously, a thrown fetch error would propagate immediately on the first failure regardless of the retry configuration. Caller-initiated aborts continue to surface immediately without being retried.
+
+- b62781f: Moved `registerMswTestHooks` to test files.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/config@1.3.8
+
+## 2.0.2-next.1
+
+### Patch Changes
+
+- 6b112d3: Fixed two issues in the GitLab integration's fetch behavior:
+
+  - The internal fetch wrapper was passing `mode: 'same-origin'` on every request. This had no practical effect server-side, but would have caused cross-origin requests to be rejected when the integration is used from a browser. Requests now use the default fetch mode and work correctly in both browser and Node environments.
+  - When retries are configured, transient network errors (such as dropped connections or DNS hiccups) are now retried using the same `maxRetries` and exponential delay as retryable HTTP status codes. Previously, a thrown fetch error would propagate immediately on the first failure regardless of the retry configuration. Caller-initiated aborts continue to surface immediately without being retried.
+
+## 2.0.2-next.0
+
+### Patch Changes
+
+- b62781f: Moved `registerMswTestHooks` to test files.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/config@1.3.8-next.0
+
+## 2.0.1
+
+### Patch Changes
+
+- d112499: Fixed `SingleInstanceGithubCredentialsProvider` to return app credentials when `getCredentials` is called with a bare host URL (e.g. `https://github.com`) instead of falling back to a personal access token.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/config@1.3.7
+
+## 2.0.1-next.0
+
+### Patch Changes
+
+- d112499: Fixed `SingleInstanceGithubCredentialsProvider` to return app credentials when `getCredentials` is called with a bare host URL (e.g. `https://github.com`) instead of falling back to a personal access token.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/config@1.3.7-next.0
+
+## 2.0.0
+
+### Major Changes
+
+- 527cf88: **BREAKING** Removed deprecated Azure DevOps, Bitbucket, Gerrit and GitHub code:
+
+  - For Azure DevOps, the long deprecated `token` string and `credential` object have been removed from the `config.d.ts`. Use the `credentials` array object instead.
+  - For Bitbucket, the long deprecated `bitbucket` object has been removed from the `config.d.ts`. Use the `bitbucketCloud` or `bitbucketServer` objects instead.
+  - For Gerrit, the `parseGerritGitilesUrl` function has been removed, use `parseGitilesUrlRef` instead. The `buildGerritGitilesArchiveUrl` function has also been removed, use `buildGerritGitilesArchiveUrlFromLocation` instead.
+  - For GitHub, the `getGitHubRequestOptions` function has been removed.
+
+### Minor Changes
+
+- d933f62: Add configurable throttling and retry mechanism for GitLab integration.
+
+### Patch Changes
+
+- 1513a0b: Fixed a security vulnerability where path traversal sequences in SCM URLs could be used to access unintended API endpoints using server-side integration credentials.
+- 993a598: Fixed Azure integration config schema visibility annotations to use per-field `@visibility secret` instead of `@deepVisibility secret` on parent objects, so that non-secret fields like `clientId`, `tenantId`, `organizations`, and `managedIdentityClientId` are no longer incorrectly marked as secret.
+
+## 2.0.0-next.2
+
+### Patch Changes
+
+- 1513a0b: Fixed a security vulnerability where path traversal sequences in SCM URLs could be used to access unintended API endpoints using server-side integration credentials.
+
+## 2.0.0-next.1
+
+### Major Changes
+
+- 527cf88: **BREAKING** Removed deprecated Azure DevOps, Bitbucket, Gerrit and GitHub code:
+
+  - For Azure DevOps, the long deprecated `token` string and `credential` object have been removed from the `config.d.ts`. Use the `credentials` array object instead.
+  - For Bitbucket, the long deprecated `bitbucket` object has been removed from the `config.d.ts`. Use the `bitbucketCloud` or `bitbucketServer` objects instead.
+  - For Gerrit, the `parseGerritGitilesUrl` function has been removed, use `parseGitilesUrlRef` instead. The `buildGerritGitilesArchiveUrl` function has also been removed, use `buildGerritGitilesArchiveUrlFromLocation` instead.
+  - For GitHub, the `getGitHubRequestOptions` function has been removed.
+
+### Patch Changes
+
+- 993a598: Fixed Azure integration config schema visibility annotations to use per-field `@visibility secret` instead of `@deepVisibility secret` on parent objects, so that non-secret fields like `clientId`, `tenantId`, `organizations`, and `managedIdentityClientId` are no longer incorrectly marked as secret.
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.21.0-next.0
+
+### Minor Changes
+
+- d933f62: Add configurable throttling and retry mechanism for GitLab integration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.20.0
+
+### Minor Changes
+
+- 6999f6d: The AzureUrl class in the @backstage/integration package is now able to process BOTH git branches and git tags. Initially this class only processed git branches and threw an error when non-branch Azure URLs were passed in.
+
+### Patch Changes
+
+- cc6206e: Added support for `{org}.visualstudio.com` domains used by Azure DevOps
+- 7455dae: Use node prefix on native imports
+
+## 1.20.0-next.2
+
+### Patch Changes
+
+- cc6206e: Added support for `{org}.visualstudio.com` domains used by Azure DevOps
+
+## 1.20.0-next.1
+
+### Minor Changes
+
+- 6999f6d: The AzureUrl class in the @backstage/integration package is now able to process BOTH git branches and git tags. Initially this class only processed git branches and threw an error when non-branch Azure URLs were passed in.
+
+## 1.19.3-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.19.2
+
+### Patch Changes
+
+- 3afeab4: Implementing `ScmIntegration` for `GoogleGcs`
+- 9083273: Rollback the lowercase replacing in GitHub integration config
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- 3afeab4: Implementing `ScmIntegration` for `GoogleGcs`
+- 9083273: Rollback the lowercase replacing in GitHub integration config
+
+## 1.19.0
+
+### Minor Changes
+
+- 37fba1d: Added support for Bitbucket Cloud OAuth. This introduces an alternative authentication method using a workspace OAuth consumer, alongside App Passwords (deprecated) and API tokens. OAuth does not require a bot or service account and avoids token expiry issues.
+
+  **BREAKING CHANGES**
+
+  - **@backstage/integration** (`src/bitbucketCloud/core.ts`)
+
+    - `getBitbucketCloudRequestOptions` now returns a `Promise` and **must** be awaited.
+
+  - **@backstage/plugin-scaffolder-backend-module-bitbucket-cloud** (`src/actions/helpers.ts`)
+    - `getBitbucketClient` now returns a `Promise` and **must** be awaited.
+    - `getAuthorizationHeader` now returns a `Promise` and **must** be awaited.
+
+  **OAuth usage example**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - clientId: client-id
+        clientSecret: client-secret
+  ```
+
+### Patch Changes
+
+- a26a322: Added support for using a GitHub App installation to generate tokens for public repository access when the `publicAccess` option is enabled. When all other authentication methods fail (e.g., the app is not installed in that organization), the provider will now use an available installation to generate a token that can be used to access public repositories as read only.
+- fb029b6: Updated luxon types
+- e15fdae: Made the github urls case insensitive.
+
+## 1.18.3-next.1
+
+### Patch Changes
+
+- fb029b6: Updated luxon types
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.18.3-next.0
+
+### Patch Changes
+
+- e15fdae: Made the github urls case insensitive.
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.18.2
+
+### Patch Changes
+
+- fa255f5: Support for Bitbucket Cloud's API token was added as `appPassword` is deprecated (no new creation from September 9, 2025) and will be removed on June 9, 2026.
+
+  API token usage example:
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: user@domain.com
+        token: my-token
+  ```
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6
+
+## 1.18.2-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/errors@1.2.7
+
+## 1.18.1
+
+### Patch Changes
+
+- d772b51: remove host from azure blob storage integration type
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- Updated dependencies
+  - @backstage/config@1.3.5
+
+## 1.18.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
+## 1.18.1-next.0
+
+### Patch Changes
+
+- d772b51: remove host from azure blob storage integration type
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
 ## 1.18.0
 
 ### Minor Changes

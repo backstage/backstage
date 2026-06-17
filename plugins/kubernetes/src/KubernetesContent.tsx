@@ -31,6 +31,8 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { EmptyState, Progress } from '@backstage/core-components';
 import { RequireKubernetesPermissions } from './RequireKubernetesPermissions';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesTranslationRef } from './alpha/translation';
 
 type KubernetesContentProps = {
   entity: Entity;
@@ -46,6 +48,7 @@ export const KubernetesContent = ({
     entity,
     refreshIntervalMs,
   );
+  const { t } = useTranslationRef(kubernetesTranslationRef);
 
   const clusters = kubernetesObjects?.items.map(item => item.cluster) ?? [];
 
@@ -97,7 +100,9 @@ export const KubernetesContent = ({
               />
             </Grid>
             <Grid item>
-              <Typography variant="h3">Your Clusters</Typography>
+              <Typography variant="h3">
+                {t('kubernetesContentPage.title')}
+              </Typography>
             </Grid>
             <Grid item container>
               {kubernetesObjects?.items.length <= 0 && (
@@ -111,8 +116,11 @@ export const KubernetesContent = ({
                   <Grid item xs={8}>
                     <EmptyState
                       missing="data"
-                      title="No Kubernetes resources"
-                      description={`No resources on any known clusters for ${entity.metadata.name}`}
+                      title={t('kubernetesContentPage.emptyState.title')}
+                      description={t(
+                        'kubernetesContentPage.emptyState.description',
+                        { entityName: entity.metadata.name },
+                      )}
                     />
                   </Grid>
                 </Grid>

@@ -15,7 +15,7 @@
  */
 
 import { DetectedError, DetectedErrorsByCluster } from './types';
-import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { groupResponses } from '../util';
 import { detectErrorsInPods } from './pods';
 import { detectErrorsInDeployments } from './deployments';

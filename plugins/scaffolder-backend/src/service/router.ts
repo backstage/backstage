@@ -16,17 +16,19 @@
 
 import {
   AuditorService,
+  AuditorServiceEvent,
   AuthService,
   BackstageCredentials,
   DatabaseService,
   HttpAuthService,
   LifecycleService,
   LoggerService,
+  PermissionsRegistryService,
   PermissionsService,
   resolveSafeChildPath,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { Schema } from 'jsonschema';
+import { validate, ValidatorResult } from 'jsonschema';
 import {
   CompoundEntityRef,
   Entity,
@@ -41,10 +43,9 @@ import { ScmIntegrations } from '@backstage/integration';
 import { EventsService } from '@backstage/plugin-events-node';
 
 import {
-  createConditionAuthorizer,
-  createPermissionIntegrationRouter,
-  createConditionTransformer,
   ConditionTransformer,
+  createConditionAuthorizer,
+  createConditionTransformer,
 } from '@backstage/plugin-permission-node';
 import {
   TaskSpec,
@@ -52,21 +53,19 @@ import {
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  RESOURCE_TYPE_SCAFFOLDER_TASK,
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
-  scaffolderPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  templateManagementPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import {
   TaskBroker,
+  TaskFilters,
   TaskStatus,
   TemplateAction,
   TemplateFilter,
@@ -76,19 +75,21 @@ import {
   AutocompleteHandler,
   CreatedTemplateFilter,
   CreatedTemplateGlobal,
+  scaffolderActionPermissionResourceRef,
+  scaffolderTaskPermissionResourceRef,
+  scaffolderTemplatePermissionResourceRef,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { HumanDuration, JsonObject } from '@backstage/types';
 import express from 'express';
-import { validate } from 'jsonschema';
 import { Duration } from 'luxon';
-import { pathToFileURL } from 'url';
-import { v4 as uuid } from 'uuid';
-import { z } from 'zod';
+import { pathToFileURL } from 'node:url';
+import { randomUUID as uuid } from 'node:crypto';
+import { z } from 'zod/v3';
 import {
   DatabaseTaskStore,
+  DefaultTemplateActionRegistry,
   TaskWorker,
-  TemplateActionRegistry,
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
@@ -115,25 +116,25 @@ import {
 } from '../util/templating';
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 import {
-  ScaffolderPermissionRuleInput,
-  TaskPermissionRuleInput,
-  isTaskPermissionRuleInput,
   ActionPermissionRuleInput,
   isActionPermissionRuleInput,
+  isTaskPermissionRuleInput,
   isTemplatePermissionRuleInput,
+  ScaffolderPermissionRuleInput,
+  TaskPermissionRuleInput,
   TemplatePermissionRuleInput,
 } from './permissions';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 
 import {
   scaffolderActionRules,
-  scaffolderTemplateRules,
   scaffolderTaskRules,
+  scaffolderTemplateRules,
 } from './rules';
-
-import { TaskFilters } from '@backstage/plugin-scaffolder-node';
-import { ActionsService } from '@backstage/backend-plugin-api/alpha';
-import { isPlainObject } from 'lodash';
+import {
+  ActionsService,
+  MetricsService,
+} from '@backstage/backend-plugin-api/alpha';
 
 /**
  * RouterOptions
@@ -160,6 +161,7 @@ export interface RouterOptions {
     | CreatedTemplateGlobal[];
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
+  permissionsRegistry: PermissionsRegistryService;
   permissionRules?: Array<ScaffolderPermissionRuleInput>;
   auth: AuthService;
   httpAuth: HttpAuthService;
@@ -167,6 +169,7 @@ export interface RouterOptions {
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
   actionsRegistry: ActionsService;
+  metrics: MetricsService;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -183,6 +186,49 @@ const readDuration = (
   }
   return defaultValue;
 };
+
+function formatSecretsValidationErrors(result: ValidatorResult) {
+  return result.errors.map(err => {
+    const property = err.property.replace(/^instance/, 'secrets');
+    const secretName = err.argument;
+    const message =
+      err.name === 'required'
+        ? `secrets.${secretName} is required`
+        : `${property} ${err.message}`;
+    return {
+      ...err,
+      property,
+      message,
+      instance: {},
+    };
+  });
+}
+
+async function validateSecrets(options: {
+  template: TemplateEntityV1beta3;
+  secrets: Record<string, unknown>;
+  res: express.Response;
+  auditorEvent?: AuditorServiceEvent;
+}): Promise<boolean> {
+  const { template, secrets, res, auditorEvent } = options;
+  if (!template.spec.secrets?.schema) {
+    return true;
+  }
+
+  const result = validate(secrets, template.spec.secrets.schema);
+  if (result.valid) {
+    return true;
+  }
+
+  await auditorEvent?.fail({
+    error: new InputError('Secrets validation failed'),
+  });
+
+  res.status(400).json({
+    errors: formatSecretsValidationErrors(result),
+  });
+  return false;
+}
 
 /**
  * A method to create a router for the scaffolder backend plugin.
@@ -208,6 +254,7 @@ export async function createRouter(
     additionalTemplateGlobals,
     additionalWorkspaceProviders,
     permissions,
+    permissionsRegistry,
     permissionRules,
     autocompleteHandlers = {},
     events: eventsService,
@@ -215,6 +262,7 @@ export async function createRouter(
     httpAuth,
     auditor,
     actionsRegistry,
+    metrics,
   } = options;
 
   const concurrentTasksLimit =
@@ -272,7 +320,10 @@ export async function createRouter(
     taskBroker = options.taskBroker;
   }
 
-  const actionRegistry = new TemplateActionRegistry();
+  const actionRegistry = new DefaultTemplateActionRegistry(
+    actionsRegistry,
+    logger,
+  );
 
   const templateExtensions = {
     additionalTemplateFilters: convertFiltersToRecord(
@@ -300,52 +351,15 @@ export async function createRouter(
       concurrentTasksLimit,
       permissions,
       gracefulShutdown,
+      metrics,
       ...templateExtensions,
     });
 
     workers.push(worker);
   }
 
-  // TODO(blam): it's a little unfortunate that you have to restart the scaffolder
-  // backend in order to pick these up. We should really just make `ActionsRegistry.get()` async
-  // and then we can move this logic into the there instead.
-  // But we can't make those changes until next major.
-  // Alternatively, we could look at setting up a periodic task that refreshes the actions registry, but
-  // not feeling that it's worth the complexity.
-  const { actions: distributedActions } = await actionsRegistry.list({
-    credentials: await auth.getOwnServiceCredentials(),
-  });
-
   for (const action of actions) {
     actionRegistry.register(action);
-  }
-
-  for (const action of distributedActions) {
-    actionRegistry.register({
-      id: action.id,
-      description: action.description,
-      examples: [],
-      supportsDryRun:
-        action.attributes?.readOnly === true &&
-        action.attributes?.destructive === false,
-      handler: async ctx => {
-        const { output } = await actionsRegistry.invoke({
-          id: action.id,
-          input: ctx.input,
-          credentials: await ctx.getInitiatorCredentials(),
-        });
-
-        if (isPlainObject(output)) {
-          for (const [key, value] of Object.entries(output as JsonObject)) {
-            ctx.output(key as keyof typeof output, value);
-          }
-        }
-      },
-      schema: {
-        input: action.schema.input as Schema,
-        output: action.schema.output as Schema,
-      },
-    });
   }
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
@@ -368,6 +382,8 @@ export async function createRouter(
     auditor,
     workingDirectory,
     permissions,
+    config,
+    metrics,
     ...templateExtensions,
   });
 
@@ -396,35 +412,35 @@ export async function createRouter(
   const taskTransformConditions: ConditionTransformer<TaskFilters> =
     createConditionTransformer(Object.values(taskRules));
 
-  const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    resources: [
-      {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-        permissions: scaffolderTemplatePermissions,
-        rules: templateRules,
-      },
-      {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-        permissions: scaffolderActionPermissions,
-        rules: actionRules,
-      },
-      {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
-        permissions: scaffolderTaskPermissions,
-        rules: taskRules,
-        getResources: async resourceRefs => {
-          return Promise.all(
-            resourceRefs.map(async taskId => {
-              return await taskBroker.get(taskId);
-            }),
-          );
-        },
-      },
-    ],
-    permissions: scaffolderPermissions,
+  permissionsRegistry.addResourceType({
+    resourceRef: scaffolderTemplatePermissionResourceRef,
+    permissions: scaffolderTemplatePermissions,
+    rules: templateRules,
   });
 
-  router.use(permissionIntegrationRouter);
+  permissionsRegistry.addResourceType({
+    resourceRef: scaffolderActionPermissionResourceRef,
+    permissions: scaffolderActionPermissions,
+    rules: actionRules,
+  });
+
+  permissionsRegistry.addResourceType({
+    resourceRef: scaffolderTaskPermissionResourceRef,
+    permissions: scaffolderTaskPermissions,
+    rules: taskRules,
+    getResources: async resourceRefs => {
+      return Promise.all(
+        resourceRefs.map(async taskId => {
+          return await taskBroker.get(taskId);
+        }),
+      );
+    },
+  });
+
+  permissionsRegistry.addPermissions([
+    taskCreatePermission,
+    templateManagementPermission,
+  ]);
 
   router
     .get(
@@ -465,7 +481,8 @@ export async function createRouter(
               description: schema.description as string,
               schema,
             })),
-            EXPERIMENTAL_formDecorators:
+            formDecorators:
+              template.spec.formDecorators ??
               template.spec.EXPERIMENTAL_formDecorators,
           });
         } catch (err) {
@@ -479,16 +496,20 @@ export async function createRouter(
         eventId: 'action-fetch',
         request: req,
       });
+      const credentials = await httpAuth.credentials(req);
 
       try {
-        const actionsList = actionRegistry.list().map(action => {
-          return {
-            id: action.id,
-            description: action.description,
-            examples: action.examples,
-            schema: action.schema,
-          };
-        });
+        const list = await actionRegistry.list({ credentials });
+        const actionsList = Array.from(list.values())
+          .map(action => {
+            return {
+              id: action.id,
+              description: action.description,
+              examples: action.examples,
+              schema: action.schema,
+            };
+          })
+          .sort((a, b) => a.id.localeCompare(b.id));
 
         await auditorEvent?.success();
 
@@ -558,6 +579,16 @@ export async function createRouter(
             res.status(400).json({ errors: result.errors });
             return;
           }
+        }
+
+        const secretsValid = await validateSecrets({
+          template,
+          secrets: req.body.secrets ?? {},
+          res,
+          auditorEvent,
+        });
+        if (!secretsValid) {
+          return;
         }
 
         const baseUrl = getEntityBaseUrl(template);
@@ -780,6 +811,28 @@ export async function createRouter(
           isTaskAuthorized,
         });
 
+        // Validate secrets against template schema if defined
+        if (task.spec.templateInfo?.entityRef) {
+          const templateEntityRef = parseEntityRef(
+            task.spec.templateInfo.entityRef,
+            { defaultKind: 'template' },
+          );
+          const template = await authorizeTemplate(
+            templateEntityRef,
+            credentials,
+          );
+
+          const secretsValid = await validateSecrets({
+            template,
+            secrets: req.body.secrets ?? {},
+            res,
+            auditorEvent,
+          });
+          if (!secretsValid) {
+            return;
+          }
+        }
+
         await auditorEvent?.success();
 
         const { token } = await auth.getPluginRequestToken({
@@ -908,7 +961,8 @@ export async function createRouter(
           isTaskAuthorized,
         });
 
-        const after = Number(req.query.after) || undefined;
+        const after =
+          req.query.after !== undefined ? Number(req.query.after) : undefined;
 
         // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
         const timeout = setTimeout(() => {
@@ -1006,6 +1060,16 @@ export async function createRouter(
             res.status(400).json({ errors: result.errors });
             return;
           }
+        }
+
+        const secretsValid = await validateSecrets({
+          template,
+          secrets: body.secrets ?? {},
+          res,
+          auditorEvent,
+        });
+        if (!secretsValid) {
+          return;
         }
 
         const steps = template.spec.steps.map((step, index) => ({

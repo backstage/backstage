@@ -13,8 +13,8 @@ The Actions Service is a core service that provides a standardized interface for
 
 The Actions Service implements the `ActionsService` interface, which provides two primary methods:
 
-- **`list()`:** Retrieves all available actions with their complete metadata
-- **`invoke()`:** Executes a specific action by ID with provided input data
+- **`list()`:** Retrieves all available actions with their complete metadata, including any declared secrets schema
+- **`invoke()`:** Executes a specific action by ID with provided input data and optional secrets
 
 The service works in conjunction with the [Actions Registry Service](./actions-registry.md), where actions are registered by plugins and then made available for discovery and execution through this service.
 
@@ -30,7 +30,9 @@ This naming convention ensures that action names are globally unique across all 
 
 ## Configuration
 
-The Actions Service can be configured to control which plugins' actions are available:
+### Restricting action sources by plugin
+
+The `pluginSources` configuration limits which plugins are allowed to register actions.
 
 ```yaml
 backend:
@@ -38,6 +40,50 @@ backend:
     pluginSources:
       - catalog
 ```
+
+### Filtering actions
+
+In addition to plugin-level restrictions, the Actions Service supports filtering actions using include and exclude rules. This allows fine-grained control over which actions are exposed or runnable in a Backstage instance.
+
+Actions can be filtered by `id` (using glob patterns) or by their `attributes` (`destructive`, `readOnly`, or `idempotent`).
+
+**How filter rules are evaluated:**
+
+- Within a single rule, `id` and `attributes` are combined with AND logic
+- Multiple rules in the same `include` or `exclude` array are combined with OR logic
+
+#### Include specific actions
+
+```yaml
+backend:
+  actions:
+    filter:
+      include:
+        # Include all catalog actions that are non-destructive
+        - id: 'catalog:*'
+          attributes:
+            destructive: false
+        # OR include all fetch actions from any plugin
+        - id: '*:fetch-*'
+```
+
+#### Exclude specific actions
+
+```yaml
+backend:
+  actions:
+    filter:
+      exclude:
+        # Exclude all delete actions from any plugin
+        - id: '*:delete-*'
+        # OR exclude all destructive actions
+        - attributes:
+            destructive: true
+```
+
+### Permissions
+
+Actions registered with a `visibilityPermission` field are automatically checked against the permissions framework. When listing actions, any actions denied by the active permission policy are filtered out of the results. When invoking a denied action, a `404 Not Found` error is returned. See the [Actions Registry Permissions](./actions-registry.md#permissions) documentation for how to configure permissions on actions.
 
 ## Using the Service
 
@@ -89,11 +135,13 @@ export async function executeAction(
   actionId: string,
   input: JsonObject,
   credentials: BackstageCredentials,
+  secrets?: JsonObject,
 ) {
   try {
     const { output } = await actionsService.invoke({
       id: actionId,
       input,
+      secrets,
       credentials,
     });
 
@@ -125,6 +173,29 @@ async function fetchUserInfo(
   return output;
 }
 ```
+
+## Invoking Actions with Secrets
+
+Some actions declare a `secrets` schema for external credentials they need from the end user. You can discover which actions require secrets by inspecting the `schema.secrets` field in the action metadata returned by `list()`. When invoking an action that requires secrets, pass them alongside the input:
+
+```typescript
+const { actions } = await actionsService.list({ credentials });
+const action = actions.find(a => a.id === 'my-plugin:create-issue');
+
+if (action?.schema.secrets) {
+  // This action needs secrets — collect them from the user first
+  const { output } = await actionsService.invoke({
+    id: action.id,
+    input: { repo: 'backstage/backstage', title: 'My issue' },
+    secrets: { githubToken: collectedToken },
+    credentials,
+  });
+}
+```
+
+If you provide secrets to an action that does not declare a secrets schema, the invocation is rejected with an `InputError`. Similarly, omitting required secrets results in an `InputError`.
+
+For more details on how to declare secrets in an action, see the [Actions Registry Secrets](./actions-registry.md#secrets) documentation.
 
 ## Best Practices
 

@@ -119,6 +119,36 @@ entity:
     defaultNamespace: payment
 ```
 
+### `autoSelect`
+
+Whether to automatically select the highlighted option when the input loses focus. Defaults to `true`.
+
+When set to `false`, users must explicitly select an option from the dropdown by clicking or pressing Enter. This prevents accidental selections when typing to filter options.
+
+- Default behavior with `autoSelect` as `true` (auto-selects on blur)
+
+```yaml
+entity:
+  title: Entity
+  type: string
+  description: Entity of the component
+  ui:field: EntityPicker
+  ui:options:
+    autoSelect: true
+```
+
+- Require explicit selection with `autoSelect` as `false`
+
+```yaml
+entity:
+  title: Entity
+  type: string
+  description: Entity of the component
+  ui:field: EntityPicker
+  ui:options:
+    autoSelect: false
+```
+
 ## MultiEntityPicker
 
 The input props that can be specified under `ui:options` for the `MultiEntityPicker` field extension.
@@ -468,3 +498,59 @@ repoUrl:
 The supported `additionalScopes` values are `gerrit`, `github`, `gitlab`, `bitbucket`, and `azure`.
 
 If you're also using the `RepoUrlPicker` field extension, you should simply duplicate this part from there.
+
+## RepoOwnerPicker
+
+The input props that can be specified under `ui:options` for the `RepoOwnerPicker` field extension.
+
+### `host`
+
+The SCM integration host that owners should be fetched from for autocompletion.
+
+- Fetch owners from `github.com`
+
+```yaml
+repoUrl:
+  title: Repository Owner
+  type: string
+  ui:field: RepoOwnerPicker
+  ui:options:
+    host: github.com
+```
+
+### `excludedOwners`
+
+List of owners that should be excluded from autocompletion.
+
+- Exclude owner `owner_1` from autocompletion
+
+```yaml
+repoUrl:
+  title: Repository Owner
+  type: string
+  ui:field: RepoOwnerPicker
+  ui:options:
+    excludedOwners:
+      - owner_1
+```
+
+### `requestUserCredentials`
+
+If defined will request user credentials to auth against the given SCM platform.
+
+```yaml
+repoUrl:
+  title: Repository Owner
+  type: string
+  ui:field: RepoOwnerPicker
+  ui:options:
+    requestUserCredentials:
+      secretsKey: USER_OAUTH_TOKEN
+      additionalScopes:
+        github:
+          - workflow:write
+```
+
+`secretsKey` is the key used within the template secrets context to store the credential and `additionalScopes` is any additional permission scopes to request.
+
+The supported `additionalScopes` values are `gerrit`, `github`, `gitlab`, `bitbucket`, and `azure`.

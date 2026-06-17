@@ -15,7 +15,7 @@
  */
 
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { HumanDuration } from '@backstage/types';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 
 import { isArray } from 'lodash';
 import { Schema } from 'jsonschema';
@@ -27,6 +27,25 @@ import { Schema } from 'jsonschema';
  */
 export function isTruthy(value: any): boolean {
   return isArray(value) ? value.length > 0 : !!value;
+}
+
+function isPlainObject(item: JsonValue): item is JsonObject {
+  return typeof item === 'object' && item !== null && !Array.isArray(item);
+}
+
+/**
+ * Filters an output array by evaluating the `if` condition on each item,
+ * and strips the `if` field from items that pass. Non-plain-object items
+ * are passed through unchanged.
+ */
+export function filterConditionalItems<T>(items: readonly T[]): T[] {
+  return items.flatMap(item => {
+    if (!isPlainObject(item as JsonValue)) return [item];
+    const obj = item as JsonObject;
+    if ('if' in obj && !isTruthy(obj.if)) return [];
+    const { if: _if, ...rest } = obj;
+    return [rest as T];
+  });
 }
 
 export function generateExampleOutput(schema: Schema): unknown {

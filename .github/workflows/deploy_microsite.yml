@@ -23,86 +23,77 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
-      - name: find latest release
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+      - name: find latest release branch
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         id: find-release
         with:
           script: |
-            const { data } = await github.rest.repos.listTags({
+            const data = await octokit.paginate(github.rest.repos.listBranches, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               per_page: 100,
             })
 
-            const [{tag}] = data
+            const [{branch}] = data
               .map(i => i.name)
-              .filter(tag => tag.match(/^v\d+\.\d+\.\d+$/))
-              .map(tag => ({
-                tag,
-                val: tag
+              .filter(branch => branch.match(/^patch\/v\d+\.\d+\.\d+$/))
+              .map(branch => ({
+                branch,
+                val: branch
+                  .split('/')[1]
                   .slice(1)
                   .split('.')
                   .reduce((val, part) => Number(val) * 1000 + Number(part))
               }))
               .sort((a, b) => b.val - a.val)
 
-            return tag
+            return branch
           result-encoding: string
 
       - name: checkout latest release
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: refs/tags/${{ steps.find-release.outputs.result }}
+          ref: refs/heads/${{ steps.find-release.outputs.result }}
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 20.x
+          node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
+          corepack: true
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:
-          cache-prefix: ${{ runner.os }}-v20.x
-
-      - name: build API reference
-        run: yarn build:api-docs
-
-      - name: upload API reference
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: stable-reference
-          path: docs/reference/
-          if-no-files-found: error
-          retention-days: 1
+          cache-prefix: ${{ runner.os }}-v22.x
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
-        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: .cache/package-docs
           key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
 
-      - name: build API reference (beta)
+      - name: build API reference
         run: yarn backstage-repo-tools package-docs
 
-      - name: upload API reference (beta)
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - name: upload API reference
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: stable-reference-beta
+          name: stable-reference
           path: type-docs/
           if-no-files-found: error
           retention-days: 1
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
       - name: save package-docs cache
-        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         if: always()
         with:
           path: .cache/package-docs
@@ -117,7 +108,7 @@ jobs:
         run: yarn docusaurus gen-api-docs all
 
       - name: upload OpenAPI API docs
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: stable-openapi-docs
           path: docs/**/api/**/*
@@ -135,58 +126,48 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
       - name: checkout master
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 20.x
+          node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
+          corepack: true
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:
-          cache-prefix: ${{ runner.os }}-v20.x
-
-      - name: build API reference
-        run: yarn build:api-docs
-
-      - name: upload API reference
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: next-reference
-          path: docs/reference/
-          if-no-files-found: error
-          retention-days: 1
+          cache-prefix: ${{ runner.os }}-v22.x
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
-        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: .cache/package-docs
           key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-
 
-      - name: build API reference (beta)
+      - name: build API reference
         run: yarn backstage-repo-tools package-docs
 
-      - name: upload API reference (beta)
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - name: upload API reference
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: next-reference-beta
+          name: next-reference
           path: type-docs/
           if-no-files-found: error
           retention-days: 1
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
       - name: save package-docs cache
-        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         if: always()
         with:
           path: .cache/package-docs
@@ -196,7 +177,7 @@ jobs:
         run: yarn build-storybook
 
       - name: Upload Storybook
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: storybook
           path: dist-storybook
@@ -212,7 +193,7 @@ jobs:
         run: yarn docusaurus gen-api-docs all
 
       - name: upload OpenAPI API docs
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: next-openapi-docs
           path: docs/**/api/**/*
@@ -240,42 +221,51 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 20.x
+          node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
+          corepack: true
 
       # Stable docs
       - name: checkout latest release
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: refs/tags/${{ needs.stable.outputs.release }}
+          ref: refs/heads/${{ needs.stable.outputs.release }}
 
       - name: microsite yarn install
         run: yarn install --immutable
         working-directory: microsite
 
-      - name: download stable reference
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: stable-reference
-          path: docs/reference
-
       - name: download stable OpenAPI API docs
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: stable-openapi-docs
           path: docs
 
-      - name: grab lastest releases docs
+      - name: grab latest releases docs
         run: |
           git fetch origin master --depth 1
           git checkout FETCH_HEAD -- docs/releases
+
+      - name: create missing generated file
+        run: |
+          mkdir -p docs/reference
+          cat > docs/reference/index.md <<EOF
+          ---
+          id: 'index'
+          title: 'Package Index'
+          description: 'Index of all Backstage Packages'
+          ---
+
+          Please use [the new API documentation](https://backstage.io/api/stable) for more information.
+
+          EOF
 
       - name: generate stable docs
         run: yarn docusaurus docs:version stable
@@ -286,7 +276,7 @@ jobs:
 
       # Next docs
       - name: checkout master
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           clean: false
 
@@ -294,14 +284,8 @@ jobs:
         run: yarn install --immutable
         working-directory: microsite
 
-      - name: download next reference
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: next-reference
-          path: docs/reference
-
       - name: download next OpenAPI API docs
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: next-openapi-docs
           path: docs
@@ -310,26 +294,26 @@ jobs:
         run: yarn build
         working-directory: microsite
 
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: storybook
           path: microsite/build/storybook
 
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          name: stable-reference-beta
+          name: stable-reference
           path: microsite/build/api/stable/
 
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          name: next-reference-beta
+          name: next-reference
           path: microsite/build/api/next/
 
       - name: Check the build output
         run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next
 
       - name: Deploy both microsite and storybook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8 # v4.7.3
+        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
         with:
           branch: gh-pages
           folder: microsite/build

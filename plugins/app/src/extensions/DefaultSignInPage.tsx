@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SignInPageBlueprint } from '@backstage/frontend-plugin-api';
+import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 import { SignInPage } from '@backstage/core-components';
 
 export const DefaultSignInPage = SignInPageBlueprint.make({

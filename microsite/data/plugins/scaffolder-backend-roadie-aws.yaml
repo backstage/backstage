@@ -8,3 +8,4 @@ documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/pl
 iconUrl: https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg
 npmPackageName: '@roadiehq/scaffolder-backend-module-aws'
 addedDate: '2022-03-07'
+status: active

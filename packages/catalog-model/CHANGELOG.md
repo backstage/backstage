@@ -1,5 +1,71 @@
 # @backstage/catalog-model
 
+## 1.9.0
+
+### Minor Changes
+
+- 3664148: Introduced the `AiResource` catalog entity kind. Entity types, validators, type guards, and the model layer are exported from `@backstage/catalog-model/alpha`. Install `@backstage/plugin-catalog-backend-module-ai-model` in your backend to register the kind with the catalog.
+- be71476: Added `spec.type: 'mcp-server'` as a structured subtype of the `API` kind under `v1alpha1`/`v1beta1`. MCP server entities carry a `spec.remotes` list instead of a string `definition`, for representing Model Context Protocol servers in the catalog. See RFC [#32062](https://github.com/backstage/backstage/issues/32062). New public exports: `McpServerApiEntity`, `McpServerRemote`, `mcpServerApiEntityValidator`, and `isMcpServerApiEntity`. Also adds `addKindVersion` to `CatalogModelLayerBuilder` (alpha) so layers can add new versions or spec types to existing kinds.
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+
+## 1.8.1-next.1
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/types@1.2.2
+
+## 1.8.0
+
+### Minor Changes
+
+- e5fcfcb: Added a new catalog model layer system that allows plugins to declare and extend catalog entity kinds, annotations, labels, tags, and relations using JSON Schema. The new `createCatalogModelLayer` API provides a builder for composing model definitions, and a `compileCatalogModel` function validates and merges them into a unified model. Built-in entity kinds now include model layer definitions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0
+
+## 1.7.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+
+## 1.7.7
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+
+## 1.7.6
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+
+## 1.7.6-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 1.7.5
 
 ### Patch Changes

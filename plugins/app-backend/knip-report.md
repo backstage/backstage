@@ -1,15 +1,14 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (1)
 
-| Name                        | Location     | Severity |
-| :-------------------------- | :----------- | :------- |
-| @backstage/plugin-auth-node | plugins/app-backend/package.json | error    |
-| yn                          | plugins/app-backend/package.json | error    |
+| Name                        | Location          | Severity |
+| :-------------------------- | :---------------- | :------- |
+| @backstage/plugin-auth-node | package.json:62:6 | error    |
 
 ## Unused devDependencies (1)
 
-| Name                       | Location     | Severity |
-| :------------------------- | :----------- | :------- |
-| @backstage/backend-app-api | plugins/app-backend/package.json | error    |
+| Name                       | Location          | Severity |
+| :------------------------- | :---------------- | :------- |
+| @backstage/backend-app-api | package.json:74:6 | error    |
 

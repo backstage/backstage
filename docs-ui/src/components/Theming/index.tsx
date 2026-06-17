@@ -1,18 +1,18 @@
-import { MDXRemote } from 'next-mdx-remote-client/rsc';
+'use client';
+
 import { formattedMDXComponents } from '@/mdx-components';
-import { Component } from '@/utils/changelog';
-import { componentDefinitions } from '../../../../packages/ui/src/utils/componentDefinitions';
 import type { DataAttributeValues } from '../../../../packages/ui/src/types';
 
-export function Theming({ component }: { component: Component }) {
-  const componentDefinition = componentDefinitions[component];
+interface ThemingProps {
+  definition: {
+    classNames: Record<string, string>;
+    dataAttributes?: Record<string, string[]>;
+  };
+}
 
-  if (!componentDefinition) {
-    return null;
-  }
-
-  const classNames = componentDefinition.classNames;
-  const dataAttributes = componentDefinition.dataAttributes;
+export function Theming({ definition }: ThemingProps) {
+  const classNames = definition.classNames;
+  const dataAttributes = definition.dataAttributes;
 
   // Get the first class name
   const firstClassName = Object.values(classNames)[0];
@@ -38,15 +38,28 @@ export function Theming({ component }: { component: Component }) {
     ...Object.values(classNames).slice(1),
   ];
 
+  // Use the same styled components from MDX, with fallbacks to HTML elements
+  const H2 = formattedMDXComponents.h2 || 'h2';
+  const P = formattedMDXComponents.p || 'p';
+  const Ul = formattedMDXComponents.ul || 'ul';
+  const Li = formattedMDXComponents.li || 'li';
+  const Code = formattedMDXComponents.code || 'code';
+
   return (
-    <MDXRemote
-      components={formattedMDXComponents}
-      source={`## Theming
-
-        Our theming system is based on a mix between CSS classes, CSS variables and data attributes. If you want to customise this component, you can use one of these class names below.
-
-        ${classNamesArray.map(selector => `- \`${selector}\``).join('\n')}
-      `}
-    />
+    <div>
+      <H2>Theming</H2>
+      <P>
+        Our theming system is based on a mix between CSS classes, CSS variables
+        and data attributes. If you want to customise this component, you can
+        use one of these class names below.
+      </P>
+      <Ul>
+        {classNamesArray.map((selector, index) => (
+          <Li key={index}>
+            <Code>{selector}</Code>
+          </Li>
+        ))}
+      </Ul>
+    </div>
   );
 }

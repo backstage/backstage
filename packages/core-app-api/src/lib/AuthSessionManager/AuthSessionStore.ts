@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ZodSchema } from 'zod';
+import type { ZodSchema } from 'zod/v3';
 import {
   MutableSessionManager,
   SessionScopesFunc,

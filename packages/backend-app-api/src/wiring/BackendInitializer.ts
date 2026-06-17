@@ -23,9 +23,17 @@ import {
   LifecycleService,
   RootLifecycleService,
   createServiceFactory,
+  ExtensionPointFactoryContext,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
-import { ServiceOrExtensionPoint } from './types';
+import type { ConnectionRegistration } from '@backstage/backend-plugin-api/alpha';
+import {
+  ExtensionPointFactoryMiddleware,
+  ServiceOrExtensionPoint,
+} from './types';
+import {
+  OpaqueExtensionPointFactoryMiddleware,
+  unwrapFeature,
+} from '@internal/backend';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type {
@@ -35,15 +43,20 @@ import type {
 } from '../../../backend-plugin-api/src/wiring/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
-import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
-import {
-  instanceMetadataServiceRef,
-  BackendFeatureMeta,
-} from '@backstage/backend-plugin-api/alpha';
+import { ConflictError, ForwardedError, toError } from '@backstage/errors';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
-import { createInitializationLogger } from './createInitializationLogger';
-import { unwrapFeature } from './helpers';
+import { createInitializationResultCollector } from './createInitializationResultCollector';
+import { deepFreeze } from './helpers';
+import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-plugin-api';
+import { BackendStartupResult } from './types';
+import { BackendStartupError } from './BackendStartupError';
+import { createAllowBootFailurePredicate } from './createAllowBootFailurePredicate';
+import {
+  connectionsServiceRef,
+  type ConnectionsService,
+} from '@backstage/connections';
+import { withDeclaredConnections } from './withDeclaredConnections';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -101,74 +114,149 @@ const instanceRegistry = new (class InstanceRegistry {
   };
 })();
 
-function createInstanceMetadataServiceFactory(
-  registrations: InternalBackendRegistrations[],
-) {
-  const installedFeatures = registrations
-    .map(registration => {
-      if (registration.featureType === 'registrations') {
-        return registration
-          .getRegistrations()
-          .map(feature => {
-            if (feature.type === 'plugin') {
-              return Object.defineProperty(
-                {
-                  type: 'plugin',
-                  pluginId: feature.pluginId,
-                },
-                'toString',
-                {
-                  enumerable: false,
-                  configurable: true,
-                  value: () => `plugin{pluginId=${feature.pluginId}}`,
-                },
-              );
-            } else if (feature.type === 'module') {
-              return Object.defineProperty(
-                {
-                  type: 'module',
-                  pluginId: feature.pluginId,
-                  moduleId: feature.moduleId,
-                },
-                'toString',
-                {
-                  enumerable: false,
-                  configurable: true,
-                  value: () =>
-                    `module{moduleId=${feature.moduleId},pluginId=${feature.pluginId}}`,
-                },
-              );
-            }
-            // Ignore unknown feature types.
-            return undefined;
-          })
-          .filter(Boolean) as BackendFeatureMeta[];
+function callerKey(pluginId: string, moduleId?: string): string {
+  return moduleId ? `${pluginId}\0${moduleId}` : pluginId;
+}
+
+function collectCallerConnectionRegistrations(
+  registrations: ReturnType<InternalBackendRegistrations['getRegistrations']>,
+): Map<string, ConnectionRegistration[]> {
+  const byCaller = new Map<string, ConnectionRegistration[]>();
+
+  for (const registration of registrations) {
+    const declared =
+      'connections' in registration && Array.isArray(registration.connections)
+        ? registration.connections
+        : [];
+    if (declared.length === 0) continue;
+
+    const key =
+      'moduleId' in registration
+        ? callerKey(registration.pluginId, registration.moduleId)
+        : callerKey(registration.pluginId);
+
+    const target =
+      byCaller.get(key) ??
+      (() => {
+        const list: ConnectionRegistration[] = [];
+        byCaller.set(key, list);
+        return list;
+      })();
+
+    for (const decl of declared) {
+      if (!target.some(c => c.type === decl.type)) {
+        target.push({ ...decl });
       }
-      return [];
-    })
-    .flat();
+    }
+  }
+
+  return byCaller;
+}
+
+function createRootInstanceMetadataServiceFactory(
+  rawRegistrations: InternalBackendRegistrations[],
+) {
+  const installedPlugins: Map<string, RootInstanceMetadataServicePluginInfo> =
+    new Map();
+  const registrations = rawRegistrations
+    .filter(registration => registration.featureType === 'registrations')
+    .flatMap(registration => registration.getRegistrations());
+  const plugins = registrations.filter(
+    registration =>
+      registration.type === 'plugin' || registration.type === 'plugin-v1.1',
+  );
+  const modules = registrations.filter(
+    registration =>
+      registration.type === 'module' || registration.type === 'module-v1.1',
+  );
+  for (const plugin of plugins) {
+    const { pluginId } = plugin;
+    if (!installedPlugins.get(pluginId)) {
+      installedPlugins.set(pluginId, {
+        pluginId,
+        modules: [],
+      });
+    }
+  }
+  for (const module of modules) {
+    const { pluginId, moduleId } = module;
+    const installedPlugin = installedPlugins.get(pluginId);
+    if (installedPlugin) {
+      (installedPlugin.modules as Array<{ moduleId: string }>).push({
+        moduleId,
+      });
+    }
+  }
+
   return createServiceFactory({
-    service: instanceMetadataServiceRef,
+    service: coreServices.rootInstanceMetadata,
     deps: {},
-    factory: async () => ({ getInstalledFeatures: () => installedFeatures }),
+    factory: async () => {
+      const readonlyInstalledPlugins = deepFreeze([
+        ...installedPlugins.values(),
+      ]);
+      const instanceMetadata = {
+        getInstalledPlugins: () => Promise.resolve(readonlyInstalledPlugins),
+      };
+
+      return instanceMetadata;
+    },
   });
 }
 
 export class BackendInitializer {
-  #startPromise?: Promise<void>;
+  #startPromise?: Promise<{ result: BackendStartupResult }>;
   #stopPromise?: Promise<void>;
   #registrations = new Array<InternalBackendRegistrations>();
-  #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
+  #extensionPoints = new Map<
+    string,
+    {
+      pluginId: string;
+      factory: (context: ExtensionPointFactoryContext) => unknown;
+    }
+  >();
   #serviceRegistry: ServiceRegistry;
   #registeredFeatures = new Array<Promise<BackendFeature>>();
   #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
+  #extensionPointFactoryMiddleware: ExtensionPointFactoryMiddleware[];
+  #callerConnectionRegistrations = new Map<string, ConnectionRegistration[]>();
 
-  constructor(defaultApiFactories: ServiceFactory[]) {
+  #getConnectionRegistrations(
+    pluginId: string,
+    moduleId?: string,
+  ): ConnectionRegistration[] {
+    if (moduleId) {
+      return (
+        this.#callerConnectionRegistrations.get(
+          callerKey(pluginId, moduleId),
+        ) ?? []
+      );
+    }
+    // Aggregate registrations from the plugin
+    const result: ConnectionRegistration[] = [];
+    for (const [key, registrations] of this.#callerConnectionRegistrations) {
+      if (key === pluginId) {
+        result.push(...registrations);
+      }
+    }
+    return result;
+  }
+
+  #unhandledRejectionHandler?: (reason: Error) => void;
+  #uncaughtExceptionHandler?: (error: Error) => void;
+
+  constructor(
+    defaultApiFactories: ServiceFactory[],
+    extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[],
+  ) {
     this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
+    this.#extensionPointFactoryMiddleware =
+      extensionPointFactoryMiddleware ?? [];
   }
 
   async #getInitDeps(
     deps: { [name: string]: ServiceOrExtensionPoint },
+    resultCollector: ReturnType<typeof createInitializationResultCollector>,
     pluginId: string,
     moduleId?: string,
   ) {
@@ -183,14 +271,44 @@ export class BackendInitializer {
             `Illegal dependency: Module '${moduleId}' for plugin '${pluginId}' attempted to depend on extension point '${ref.id}' for plugin '${ep.pluginId}'. Extension points can only be used within their plugin's scope.`,
           );
         }
-        result.set(name, ep.impl);
+        if (!moduleId) {
+          throw new Error(
+            `Rejected dependency on extension point ${ref.id} from outside of a module`,
+          );
+        }
+        let epImpl = ep.factory({
+          reportModuleStartupFailure: ({ error }) => {
+            resultCollector.amendPluginModuleResult(pluginId, moduleId, error);
+          },
+        });
+        for (const mw of this.#extensionPointFactoryMiddleware) {
+          const internal = OpaqueExtensionPointFactoryMiddleware.toInternal(mw);
+          if (internal.extensionPointId === ref.id) {
+            epImpl = await internal.middleware(epImpl);
+          }
+        }
+        result.set(name, epImpl);
       } else {
         const impl = await this.#serviceRegistry.get(
           ref as ServiceRef<unknown>,
           pluginId,
         );
         if (impl) {
-          result.set(name, impl);
+          if (ref.id === connectionsServiceRef.id) {
+            const registrations = this.#getConnectionRegistrations(
+              pluginId,
+              moduleId,
+            );
+            result.set(
+              name,
+              withDeclaredConnections(
+                impl as ConnectionsService,
+                registrations,
+              ),
+            );
+          } else {
+            result.set(name, impl);
+          }
         } else {
           missingRefs.add(ref);
         }
@@ -231,7 +349,7 @@ export class BackendInitializer {
     }
   }
 
-  async start(): Promise<void> {
+  async start(): Promise<{ result: BackendStartupResult }> {
     if (this.#startPromise) {
       throw new Error('Backend has already started');
     }
@@ -242,10 +360,10 @@ export class BackendInitializer {
     instanceRegistry.register(this);
 
     this.#startPromise = this.#doStart();
-    await this.#startPromise;
+    return await this.#startPromise;
   }
 
-  async #doStart(): Promise<void> {
+  async #doStart(): Promise<{ result: BackendStartupResult }> {
     this.#serviceRegistry.checkForCircularDeps();
 
     for (const feature of this.#registeredFeatures) {
@@ -255,86 +373,76 @@ export class BackendInitializer {
     await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);
 
     this.#serviceRegistry.add(
-      createInstanceMetadataServiceFactory(this.#registrations),
+      createRootInstanceMetadataServiceFactory(this.#registrations),
     );
+
+    // This makes sure that any uncaught errors or unhandled rejections are
+    // caught and logged, rather than terminating the process. We register these
+    // as early as possible while still using the root logger service, the
+    // tradeoff that if there are any unhandled errors as part of the that
+    // instationation, it will cause the process to crash. If there are multiple
+    // backend instances, each instance will log the error, because we can't
+    // determine which instance the error came from.
+    if (process.env.NODE_ENV !== 'test') {
+      const rootLogger = await this.#serviceRegistry.get(
+        coreServices.rootLogger,
+        'root',
+      );
+      this.#unhandledRejectionHandler = (reason: Error) => {
+        rootLogger
+          ?.child({ type: 'unhandledRejection' })
+          ?.error('Unhandled rejection', reason);
+      };
+      this.#uncaughtExceptionHandler = (error: Error) => {
+        rootLogger
+          ?.child({ type: 'uncaughtException' })
+          ?.error('Uncaught exception', error);
+      };
+      process.on('unhandledRejection', this.#unhandledRejectionHandler);
+      process.on('uncaughtException', this.#uncaughtExceptionHandler);
+    }
 
     // Initialize all root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
-
-    const pluginInits = new Map<string, BackendRegisterInit>();
-    const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
-
-    // Enumerate all registrations
-    for (const feature of this.#registrations) {
-      for (const r of feature.getRegistrations()) {
-        const provides = new Set<ExtensionPoint<unknown>>();
-
-        if (r.type === 'plugin' || r.type === 'module') {
-          for (const [extRef, extImpl] of r.extensionPoints) {
-            if (this.#extensionPoints.has(extRef.id)) {
-              throw new Error(
-                `ExtensionPoint with ID '${extRef.id}' is already registered`,
-              );
-            }
-            this.#extensionPoints.set(extRef.id, {
-              impl: extImpl,
-              pluginId: r.pluginId,
-            });
-            provides.add(extRef);
-          }
-        }
-
-        if (r.type === 'plugin') {
-          if (pluginInits.has(r.pluginId)) {
-            throw new Error(`Plugin '${r.pluginId}' is already registered`);
-          }
-          pluginInits.set(r.pluginId, {
-            provides,
-            consumes: new Set(Object.values(r.init.deps)),
-            init: r.init,
-          });
-        } else if (r.type === 'module') {
-          let modules = moduleInits.get(r.pluginId);
-          if (!modules) {
-            modules = new Map();
-            moduleInits.set(r.pluginId, modules);
-          }
-          if (modules.has(r.moduleId)) {
-            throw new Error(
-              `Module '${r.moduleId}' for plugin '${r.pluginId}' is already registered`,
-            );
-          }
-          modules.set(r.moduleId, {
-            provides,
-            consumes: new Set(Object.values(r.init.deps)),
-            init: r.init,
-          });
-        } else {
-          throw new Error(`Invalid registration type '${(r as any).type}'`);
-        }
-      }
-    }
-
-    const allPluginIds = [...pluginInits.keys()];
-
-    const initLogger = createInitializationLogger(
-      allPluginIds,
-      await this.#serviceRegistry.get(coreServices.rootLogger, 'root'),
-    );
 
     const rootConfig = await this.#serviceRegistry.get(
       coreServices.rootConfig,
       'root',
     );
+    const rootLogger = await this.#serviceRegistry.get(
+      coreServices.rootLogger,
+      'root',
+    );
+
+    const allRegistrations = this.#registrations.flatMap(f =>
+      f.getRegistrations(),
+    );
+
+    this.#callerConnectionRegistrations =
+      collectCallerConnectionRegistrations(allRegistrations);
+
+    const allPluginIds = [
+      ...new Set(
+        allRegistrations.flatMap(r =>
+          'pluginId' in r && typeof r.pluginId === 'string' ? [r.pluginId] : [],
+        ),
+      ),
+    ];
+
+    const resultCollector = createInitializationResultCollector({
+      pluginIds: allPluginIds,
+      logger: rootLogger,
+      allowBootFailurePredicate: createAllowBootFailurePredicate(rootConfig),
+    });
+
+    const { pluginInits, moduleInits } = this.#enumerateRegistrations(
+      allRegistrations,
+      resultCollector,
+    );
 
     // All plugins are initialized in parallel
-    const results = await Promise.allSettled(
-      allPluginIds.map(async pluginId => {
-        const isBootFailurePermitted = this.#getPluginBootFailurePredicate(
-          pluginId,
-          rootConfig,
-        );
-
+    await Promise.all(
+      [...pluginInits.keys()].map(async pluginId => {
         try {
           // Initialize all eager services
           await this.#serviceRegistry.initializeEagerServicesWithScope(
@@ -365,37 +473,18 @@ export class BackendInitializer {
             }
             await tree.parallelTopologicalTraversal(
               async ({ moduleId, moduleInit }) => {
-                const isModuleBootFailurePermitted =
-                  this.#getPluginModuleBootFailurePredicate(
-                    pluginId,
-                    moduleId,
-                    rootConfig,
-                  );
-
                 try {
                   const moduleDeps = await this.#getInitDeps(
                     moduleInit.init.deps,
+                    resultCollector,
                     pluginId,
                     moduleId,
                   );
-                  await moduleInit.init.func(moduleDeps).catch(error => {
-                    throw new ForwardedError(
-                      `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
-                      error,
-                    );
-                  });
+                  await moduleInit.init.func(moduleDeps);
+                  resultCollector.onPluginModuleResult(pluginId, moduleId);
                 } catch (error: unknown) {
-                  assertError(error);
-                  if (isModuleBootFailurePermitted) {
-                    initLogger.onPermittedPluginModuleFailure(
-                      pluginId,
-                      moduleId,
-                      error,
-                    );
-                  } else {
-                    initLogger.onPluginModuleFailed(pluginId, moduleId, error);
-                    throw error;
-                  }
+                  const err = toError(error);
+                  resultCollector.onPluginModuleResult(pluginId, moduleId, err);
                 }
               },
             );
@@ -407,67 +496,137 @@ export class BackendInitializer {
           if (pluginInit) {
             const pluginDeps = await this.#getInitDeps(
               pluginInit.init.deps,
+              resultCollector,
               pluginId,
             );
-            await pluginInit.init.func(pluginDeps).catch(error => {
-              throw new ForwardedError(
-                `Plugin '${pluginId}' startup failed`,
-                error,
-              );
-            });
+            await pluginInit.init.func(pluginDeps);
           }
 
-          initLogger.onPluginStarted(pluginId);
+          resultCollector.onPluginResult(pluginId);
 
           // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
           const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
           await lifecycleService.startup();
         } catch (error: unknown) {
-          assertError(error);
-          if (isBootFailurePermitted) {
-            initLogger.onPermittedPluginFailure(pluginId, error);
-          } else {
-            initLogger.onPluginFailed(pluginId, error);
-            throw error;
-          }
+          const err = toError(error);
+          resultCollector.onPluginResult(pluginId, err);
         }
       }),
-    );
+    ).catch(error => {
+      throw new ForwardedError(
+        'Unexpected uncaught backend startup error',
+        error,
+      );
+    });
 
-    const initErrors = results.flatMap(r =>
-      r.status === 'rejected' ? [r.reason] : [],
-    );
-    if (initErrors.length === 1) {
-      throw initErrors[0];
-    } else if (initErrors.length > 1) {
-      // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
-      throw new (AggregateError as any)(initErrors, 'Backend startup failed');
+    const result = resultCollector.finalize();
+    if (result.outcome === 'failure') {
+      throw new BackendStartupError(result);
     }
 
     // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
     const lifecycleService = await this.#getRootLifecycleImpl();
     await lifecycleService.startup();
 
-    initLogger.onAllStarted();
+    return { result };
+  }
 
-    // Once the backend is started, any uncaught errors or unhandled rejections are caught
-    // and logged, in order to avoid crashing the entire backend on local failures.
-    if (process.env.NODE_ENV !== 'test') {
-      const rootLogger = await this.#serviceRegistry.get(
-        coreServices.rootLogger,
-        'root',
-      );
-      process.on('unhandledRejection', (reason: Error) => {
-        rootLogger
-          ?.child({ type: 'unhandledRejection' })
-          ?.error('Unhandled rejection', reason);
-      });
-      process.on('uncaughtException', error => {
-        rootLogger
-          ?.child({ type: 'uncaughtException' })
-          ?.error('Uncaught exception', error);
-      });
+  #enumerateRegistrations(
+    allRegistrations: ReturnType<
+      InternalBackendRegistrations['getRegistrations']
+    >,
+    resultCollector: ReturnType<typeof createInitializationResultCollector>,
+  ): {
+    pluginInits: Map<string, BackendRegisterInit>;
+    moduleInits: Map<string, Map<string, BackendRegisterInit>>;
+  } {
+    const pluginInits = new Map<string, BackendRegisterInit>();
+    const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
+
+    for (const r of allRegistrations) {
+      const addedExtensionPointIds: string[] = [];
+      try {
+        const provides = new Set<ExtensionPoint<unknown>>();
+
+        if (r.type === 'plugin' || r.type === 'module') {
+          // Handle v1 format: Array<readonly [ExtensionPoint<unknown>, unknown]>
+          for (const [extRef, extImpl] of r.extensionPoints) {
+            if (this.#extensionPoints.has(extRef.id)) {
+              throw new Error(
+                `ExtensionPoint with ID '${extRef.id}' is already registered`,
+              );
+            }
+            this.#extensionPoints.set(extRef.id, {
+              pluginId: r.pluginId,
+              factory: () => extImpl,
+            });
+            addedExtensionPointIds.push(extRef.id);
+            provides.add(extRef);
+          }
+        } else if (r.type === 'plugin-v1.1' || r.type === 'module-v1.1') {
+          // Handle v1.1 format: Array<ExtensionPointRegistration>
+          for (const extReg of r.extensionPoints) {
+            if (this.#extensionPoints.has(extReg.extensionPoint.id)) {
+              throw new Error(
+                `ExtensionPoint with ID '${extReg.extensionPoint.id}' is already registered`,
+              );
+            }
+            this.#extensionPoints.set(extReg.extensionPoint.id, {
+              pluginId: r.pluginId,
+              factory: extReg.factory,
+            });
+            addedExtensionPointIds.push(extReg.extensionPoint.id);
+            provides.add(extReg.extensionPoint);
+          }
+        }
+
+        if (r.type === 'plugin' || r.type === 'plugin-v1.1') {
+          if (pluginInits.has(r.pluginId)) {
+            throw new Error(`Plugin '${r.pluginId}' is already registered`);
+          }
+          pluginInits.set(r.pluginId, {
+            provides,
+            consumes: new Set(Object.values(r.init.deps)),
+            init: r.init,
+          });
+        } else if (r.type === 'module' || r.type === 'module-v1.1') {
+          let modules = moduleInits.get(r.pluginId);
+          if (!modules) {
+            modules = new Map();
+            moduleInits.set(r.pluginId, modules);
+          }
+          if (modules.has(r.moduleId)) {
+            throw new Error(
+              `Module '${r.moduleId}' for plugin '${r.pluginId}' is already registered`,
+            );
+          }
+          modules.set(r.moduleId, {
+            provides,
+            consumes: new Set(Object.values(r.init.deps)),
+            init: r.init,
+          });
+        } else {
+          throw new Error(`Invalid registration type '${(r as any).type}'`);
+        }
+      } catch (error: unknown) {
+        const err = toError(error);
+        // Clean up partially registered extension points
+        for (const id of addedExtensionPointIds) {
+          this.#extensionPoints.delete(id);
+        }
+        if ('pluginId' in r && 'moduleId' in r) {
+          resultCollector.onPluginModuleResult(r.pluginId, r.moduleId, err);
+        } else if ('pluginId' in r) {
+          pluginInits.delete(r.pluginId);
+          moduleInits.delete(r.pluginId);
+          resultCollector.onPluginResult(r.pluginId, err);
+        } else {
+          throw err;
+        }
+      }
     }
+
+    return { pluginInits, moduleInits };
   }
 
   // It's fine to call .stop() multiple times, which for example can happen with manual stop + process exit
@@ -500,7 +659,7 @@ export class BackendInitializer {
     const allPlugins = new Set<string>();
     for (const feature of this.#registrations) {
       for (const r of feature.getRegistrations()) {
-        if (r.type === 'plugin') {
+        if (r.type === 'plugin' || r.type === 'plugin-v1.1') {
           allPlugins.add(r.pluginId);
         }
       }
@@ -516,6 +675,16 @@ export class BackendInitializer {
 
     // Once all plugin shutdown hooks are done, run root shutdown hooks.
     await rootLifecycleService.shutdown();
+
+    // Clean up process event listeners to prevent memory leaks and duplicate logging
+    if (this.#unhandledRejectionHandler) {
+      process.off('unhandledRejection', this.#unhandledRejectionHandler);
+      this.#unhandledRejectionHandler = undefined;
+    }
+    if (this.#uncaughtExceptionHandler) {
+      process.off('uncaughtException', this.#uncaughtExceptionHandler);
+      this.#uncaughtExceptionHandler = undefined;
+    }
   }
 
   // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
@@ -655,38 +824,6 @@ export class BackendInitializer {
         await this.#applyBackendFeatureLoaders(newLoaders);
       }
     }
-  }
-
-  #getPluginBootFailurePredicate(pluginId: string, config?: Config): boolean {
-    const defaultStartupBootFailureValue =
-      config?.getOptionalString(
-        'backend.startup.default.onPluginBootFailure',
-      ) ?? 'abort';
-
-    const pluginStartupBootFailureValue =
-      config?.getOptionalString(
-        `backend.startup.plugins.${pluginId}.onPluginBootFailure`,
-      ) ?? defaultStartupBootFailureValue;
-
-    return pluginStartupBootFailureValue === 'continue';
-  }
-
-  #getPluginModuleBootFailurePredicate(
-    pluginId: string,
-    moduleId: string,
-    config?: Config,
-  ): boolean {
-    const defaultStartupBootFailureValue =
-      config?.getOptionalString(
-        'backend.startup.default.onPluginModuleBootFailure',
-      ) ?? 'abort';
-
-    const pluginModuleStartupBootFailureValue =
-      config?.getOptionalString(
-        `backend.startup.plugins.${pluginId}.modules.${moduleId}.onPluginModuleBootFailure`,
-      ) ?? defaultStartupBootFailureValue;
-
-    return pluginModuleStartupBootFailureValue === 'continue';
   }
 }
 

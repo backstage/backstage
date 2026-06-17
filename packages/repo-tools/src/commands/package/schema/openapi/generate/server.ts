@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import chalk from 'chalk';
-import { resolve, dirname, join } from 'path';
+import fs from 'fs-extra';
 import YAML from 'js-yaml';
+import { dirname, join, resolve } from 'node:path';
+import { exec } from '../../../../../lib/exec';
 import {
   OLD_SCHEMA_PATH,
   OPENAPI_IGNORE_FILES,
   OUTPUT_PATH,
   TS_SCHEMA_PATH,
 } from '../../../../../lib/openapi/constants';
-import { paths as cliPaths } from '../../../../../lib/paths';
-import fs from 'fs-extra';
-import { exec } from '../../../../../lib/exec';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { targetPaths } from '@backstage/cli-common';
 import {
+  getOpenApiGeneratorKey,
   getPathToCurrentOpenApiSpec,
   getRelativePathToFile,
   toGeneratorAdditionalProperties,
@@ -37,12 +39,12 @@ async function generateSpecFile() {
   const openapiPath = await getPathToCurrentOpenApiSpec();
   const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
 
-  const tsPath = cliPaths.resolveTarget(TS_SCHEMA_PATH);
+  const tsPath = targetPaths.resolve(TS_SCHEMA_PATH);
 
   const schemaDir = dirname(tsPath);
   await fs.mkdirp(schemaDir);
 
-  const oldTsPath = cliPaths.resolveTarget(OLD_SCHEMA_PATH);
+  const oldTsPath = targetPaths.resolve(OLD_SCHEMA_PATH);
   if (fs.existsSync(oldTsPath)) {
     console.warn(`Removing old schema file at ${oldTsPath}`);
     fs.removeSync(oldTsPath);
@@ -76,9 +78,11 @@ export const createOpenApiRouter = async (
   );
 
   await exec(`yarn backstage-cli package lint`, ['--fix', tsPath, indexFile]);
-  if (await cliPaths.resolveTargetRoot('node_modules/.bin/prettier')) {
+  if (
+    await fs.pathExists(targetPaths.resolveRoot('node_modules/.bin/prettier'))
+  ) {
     await exec(`yarn prettier`, ['--write', tsPath, indexFile], {
-      cwd: cliPaths.targetRoot,
+      cwd: targetPaths.rootDir,
     });
   }
 }
@@ -100,6 +104,7 @@ async function generate(
   const additionalProperties = toGeneratorAdditionalProperties({
     initialValue: serverAdditionalProperties,
   });
+  const generatorKey = await getOpenApiGeneratorKey(resolvedOpenapiPath);
 
   await exec(
     'node',
@@ -118,7 +123,7 @@ async function generate(
         'templates/typescript-backstage-server.yaml',
       ),
       '--generator-key',
-      'v3.0',
+      generatorKey,
       additionalProperties
         ? `--additional-properties=${additionalProperties}`
         : '',
@@ -133,6 +138,14 @@ async function generate(
     },
   );
 
+  // Deduplicate imports in generated files
+  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
+  for (const file of generatedFiles) {
+    if (file.endsWith('.ts')) {
+      deduplicateImports(resolve(resolvedOutputDirectory, file));
+    }
+  }
+
   await exec(
     `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
     [],
@@ -141,7 +154,7 @@ async function generate(
     },
   );
 
-  const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
+  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
   if (prettier) {
     await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
       signal: abortSignal?.signal,
@@ -149,7 +162,12 @@ async function generate(
   }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
+  fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
 
+  fs.rmSync(resolve(resolvedOutputDirectory, 'docs'), {
+    recursive: true,
+    force: true,
+  });
   fs.rmSync(resolve(resolvedOutputDirectory, '.openapi-generator'), {
     recursive: true,
     force: true,

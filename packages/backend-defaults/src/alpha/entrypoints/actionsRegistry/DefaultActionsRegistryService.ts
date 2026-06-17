@@ -16,59 +16,98 @@
 
 import {
   AuthService,
+  BackstageCredentials,
   HttpAuthService,
   LoggerService,
+  PermissionsRegistryService,
+  PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import PromiseRouter from 'express-promise-router';
 import { Router, json } from 'express';
-import { z, AnyZodObject } from 'zod';
+import { z, AnyZodObject } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 import {
   ActionsRegistryActionOptions,
   ActionsRegistryService,
 } from '@backstage/backend-plugin-api/alpha';
-import {
-  ForwardedError,
-  InputError,
-  NotAllowedError,
-  NotFoundError,
-} from '@backstage/errors';
+import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+
+type ActionEntry = [string, ActionsRegistryActionOptions<any, any, any>];
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
-  private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
+  private actions: Map<string, ActionsRegistryActionOptions<any, any, any>> =
     new Map();
 
+  private readonly logger: LoggerService;
+  private readonly httpAuth: HttpAuthService;
+  private readonly auth: AuthService;
+  private readonly metadata: PluginMetadataService;
+  private readonly permissions: PermissionsService;
+  private readonly permissionsRegistry: PermissionsRegistryService;
+
   private constructor(
-    private readonly logger: LoggerService,
-    private readonly httpAuth: HttpAuthService,
-    private readonly auth: AuthService,
-    private readonly metadata: PluginMetadataService,
-  ) {}
+    logger: LoggerService,
+    httpAuth: HttpAuthService,
+    auth: AuthService,
+    metadata: PluginMetadataService,
+    permissions: PermissionsService,
+    permissionsRegistry: PermissionsRegistryService,
+  ) {
+    this.logger = logger;
+    this.httpAuth = httpAuth;
+    this.auth = auth;
+    this.metadata = metadata;
+    this.permissions = permissions;
+    this.permissionsRegistry = permissionsRegistry;
+  }
 
   static create({
     httpAuth,
     logger,
     auth,
     metadata,
+    permissions,
+    permissionsRegistry,
   }: {
     httpAuth: HttpAuthService;
     logger: LoggerService;
     auth: AuthService;
     metadata: PluginMetadataService;
+    permissions: PermissionsService;
+    permissionsRegistry: PermissionsRegistryService;
   }): DefaultActionsRegistryService {
-    return new DefaultActionsRegistryService(logger, httpAuth, auth, metadata);
+    return new DefaultActionsRegistryService(
+      logger,
+      httpAuth,
+      auth,
+      metadata,
+      permissions,
+      permissionsRegistry,
+    );
   }
 
   createRouter(): Router {
     const router = PromiseRouter();
-    router.use(json());
+    router.use('/.backstage/actions/', json());
 
-    router.get('/.backstage/actions/v1/actions', (_, res) => {
+    router.get('/.backstage/actions/v1/actions', async (req, res) => {
+      const credentials = await this.httpAuth.credentials(req);
+      const entries = Array.from(this.actions.entries());
+
+      const allowedActions = await this.filterByPermissions(
+        entries,
+        credentials,
+      );
+
       return res.json({
-        actions: Array.from(this.actions.entries()).map(([id, action]) => ({
+        actions: allowedActions.map(([id, action]) => ({
           id,
-          ...action,
+          name: action.name,
+          title: action.title,
+          description: action.description,
+          pluginId: this.metadata.getId(),
           attributes: {
             // Inspired by the @modelcontextprotocol/sdk defaults for the hints.
             // https://github.com/modelcontextprotocol/typescript-sdk/blob/dd69efa1de8646bb6b195ff8d5f52e13739f4550/src/types.ts#L777-L812
@@ -76,6 +115,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
             idempotent: action.attributes?.idempotent ?? false,
             readOnly: action.attributes?.readOnly ?? false,
           },
+          examples: action.examples,
           schema: {
             input: action.schema?.input
               ? zodToJsonSchema(action.schema.input(z))
@@ -83,24 +123,24 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
             output: action.schema?.output
               ? zodToJsonSchema(action.schema.output(z))
               : zodToJsonSchema(z.object({})),
+            ...(action.schema?.secrets && {
+              secrets: zodToJsonSchema(action.schema.secrets(z)),
+            }),
           },
         })),
       });
     });
 
-    router.post(
-      '/.backstage/actions/v1/actions/:actionId/invoke',
-      async (req, res) => {
+    const invokeHandler =
+      (opts: { wrapped: boolean }) =>
+      async (
+        req: import('express').Request,
+        res: import('express').Response,
+      ) => {
         const credentials = await this.httpAuth.credentials(req);
-        if (this.auth.isPrincipal(credentials, 'user')) {
-          if (!credentials.principal.actor) {
-            throw new NotAllowedError(
-              `Actions must be invoked by a service, not a user`,
-            );
-          }
-        } else if (this.auth.isPrincipal(credentials, 'none')) {
+        if (this.auth.isPrincipal(credentials, 'none')) {
           throw new NotAllowedError(
-            `Actions must be invoked by a service, not an anonymous request`,
+            `Actions must be invoked by an authenticated principal, not an anonymous request`,
           );
         }
 
@@ -110,8 +150,23 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           throw new NotFoundError(`Action "${req.params.actionId}" not found`);
         }
 
+        if (action.visibilityPermission) {
+          const [decision] = await this.permissions.authorize(
+            [{ permission: action.visibilityPermission }],
+            { credentials },
+          );
+          if (decision.result !== AuthorizeResult.ALLOW) {
+            throw new NotFoundError(
+              `Action "${req.params.actionId}" not found`,
+            );
+          }
+        }
+
+        const rawInput = opts.wrapped ? req.body.input : req.body;
+        const rawSecrets = opts.wrapped ? req.body.secrets : undefined;
+
         const input = action.schema?.input
-          ? action.schema.input(z).safeParse(req.body)
+          ? action.schema.input(z).safeParse(rawInput)
           : ({ success: true, data: undefined } as const);
 
         if (!input.success) {
@@ -121,46 +176,113 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           );
         }
 
-        try {
-          const result = await action.action({
-            input: input.data,
-            credentials,
-            logger: this.logger,
-          });
-
-          const output = action.schema?.output
-            ? action.schema.output(z).safeParse(result?.output)
-            : ({ success: true, data: result?.output } as const);
-
-          if (!output.success) {
-            throw new InputError(
-              `Invalid output from action "${req.params.actionId}"`,
-              output.error,
-            );
-          }
-
-          res.json({ output: output.data });
-        } catch (error) {
-          throw new ForwardedError(
-            `Failed execution of action "${req.params.actionId}"`,
-            error,
+        if (action.schema?.secrets && !rawSecrets) {
+          throw new InputError(
+            `Action "${req.params.actionId}" requires secrets but none were provided`,
           );
         }
-      },
+
+        if (!action.schema?.secrets && rawSecrets) {
+          throw new InputError(
+            `Action "${req.params.actionId}" does not accept secrets`,
+          );
+        }
+
+        const secrets = action.schema?.secrets
+          ? action.schema.secrets(z).safeParse(rawSecrets)
+          : ({ success: true, data: undefined } as const);
+
+        if (!secrets.success) {
+          throw new InputError(
+            `Invalid secrets for action "${req.params.actionId}"`,
+            secrets.error,
+          );
+        }
+
+        const result = await action.action({
+          input: input.data,
+          secrets: secrets.data,
+          credentials,
+          logger: this.logger,
+        });
+
+        const output = action.schema?.output
+          ? action.schema.output(z).safeParse(result?.output)
+          : ({ success: true, data: result?.output } as const);
+
+        if (!output.success) {
+          throw new InputError(
+            `Invalid output from action "${req.params.actionId}"`,
+            output.error,
+          );
+        }
+
+        res.json({ output: output.data });
+      };
+
+    // Deprecated: remove v1 invoke route once all callers have migrated to v2
+    router.post(
+      '/.backstage/actions/v1/actions/:actionId/invoke',
+      invokeHandler({ wrapped: false }),
     );
+
+    router.post(
+      '/.backstage/actions/v2/actions/:actionId/invoke',
+      invokeHandler({ wrapped: true }),
+    );
+
     return router;
   }
 
   register<
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
-  >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void {
+    TSecretsSchema extends AnyZodObject | undefined = undefined,
+  >(
+    options: ActionsRegistryActionOptions<
+      TInputSchema,
+      TOutputSchema,
+      TSecretsSchema
+    >,
+  ): void {
     const id = `${this.metadata.getId()}:${options.name}`;
 
     if (this.actions.has(id)) {
       throw new Error(`Action with id "${id}" is already registered`);
     }
 
+    if (options.visibilityPermission) {
+      this.permissionsRegistry.addPermissions([options.visibilityPermission]);
+    }
+
     this.actions.set(id, options);
+  }
+
+  private async filterByPermissions(
+    entries: ActionEntry[],
+    credentials: BackstageCredentials,
+  ): Promise<ActionEntry[]> {
+    const permissionedEntries = entries.filter(
+      ([_, action]) => action.visibilityPermission,
+    );
+
+    if (permissionedEntries.length === 0) {
+      return entries;
+    }
+
+    const decisions = await this.permissions.authorize(
+      permissionedEntries.map(([_, action]) => ({
+        permission: action.visibilityPermission!,
+      })),
+      { credentials },
+    );
+
+    const deniedIds = new Set(
+      permissionedEntries
+        .filter((_, index) => decisions[index].result !== AuthorizeResult.ALLOW)
+        .map(([id]) => id),
+    );
+
+    return entries.filter(([id]) => !deniedIds.has(id));
   }
 }

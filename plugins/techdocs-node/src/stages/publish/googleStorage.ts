@@ -15,7 +15,7 @@
  */
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import {
   File,
   FileExistsResponse,
@@ -24,8 +24,8 @@ import {
 } from '@google-cloud/storage';
 import express from 'express';
 import JSON5 from 'json5';
-import path from 'path';
-import { Readable } from 'stream';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
@@ -149,14 +149,13 @@ export class GoogleGCSPublish implements PublisherBase {
         isAvailable: true,
       };
     } catch (err) {
-      assertError(err);
       this.logger.error(
         `Could not retrieve metadata about the GCS bucket ${this.bucketName}. ` +
           'Make sure the bucket exists. Also make sure that authentication is setup either by explicitly defining ' +
           'techdocs.publisher.googleGcs.credentials in app config or by using environment variables. ' +
           'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
       );
-      this.logger.error(`from GCS client library: ${err.message}`);
+      this.logger.error(`from GCS client library: ${toError(err).message}`);
 
       return { isAvailable: false };
     }
@@ -186,9 +185,10 @@ export class GoogleGCSPublish implements PublisherBase {
       );
       existingFiles = await this.getFilesForFolder(remoteFolder);
     } catch (e) {
-      assertError(e);
       this.logger.error(
-        `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
+        `Unable to list files for Entity ${entity.metadata.name}: ${
+          toError(e).message
+        }`,
       );
     }
 

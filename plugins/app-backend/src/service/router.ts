@@ -24,7 +24,7 @@ import helmet from 'helmet';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import {
   createStaticAssetMiddleware,
   findStaticAssets,
@@ -153,7 +153,11 @@ export async function createRouter(
 
   const publicDistDir = resolvePath(appDistDir, 'public');
 
-  const enablePublicEntryPoint = await fs.pathExists(publicDistDir);
+  const disablePublicEntryPoint = config.getOptionalBoolean(
+    'app.disablePublicEntryPoint',
+  );
+  const enablePublicEntryPoint =
+    !disablePublicEntryPoint && (await fs.pathExists(publicDistDir));
 
   if (enablePublicEntryPoint) {
     logger.info(

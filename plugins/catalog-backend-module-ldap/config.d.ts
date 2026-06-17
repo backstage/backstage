@@ -85,7 +85,7 @@ export interface Config {
               sizeLimit?: number;
               timeLimit?: number;
               derefAliases?: number;
-              typesOnly?: boolean;
+              returnAttributeValues?: boolean;
               paged?:
                 | boolean
                 | {
@@ -165,7 +165,7 @@ export interface Config {
               sizeLimit?: number;
               timeLimit?: number;
               derefAliases?: number;
-              typesOnly?: boolean;
+              returnAttributeValues?: boolean;
               paged?:
                 | boolean
                 | {
@@ -250,7 +250,7 @@ export interface Config {
               sizeLimit?: number;
               timeLimit?: number;
               derefAliases?: number;
-              typesOnly?: boolean;
+              returnAttributeValues?: boolean;
               paged?:
                 | boolean
                 | {
@@ -340,7 +340,7 @@ export interface Config {
               sizeLimit?: number;
               timeLimit?: number;
               derefAliases?: number;
-              typesOnly?: boolean;
+              returnAttributeValues?: boolean;
               paged?:
                 | boolean
                 | {
@@ -500,7 +500,7 @@ export interface Config {
                   sizeLimit?: number;
                   timeLimit?: number;
                   derefAliases?: number;
-                  typesOnly?: boolean;
+                  returnAttributeValues?: boolean;
                   paged?:
                     | boolean
                     | {
@@ -580,7 +580,7 @@ export interface Config {
                   sizeLimit?: number;
                   timeLimit?: number;
                   derefAliases?: number;
-                  typesOnly?: boolean;
+                  returnAttributeValues?: boolean;
                   paged?:
                     | boolean
                     | {
@@ -666,7 +666,7 @@ export interface Config {
                   sizeLimit?: number;
                   timeLimit?: number;
                   derefAliases?: number;
-                  typesOnly?: boolean;
+                  returnAttributeValues?: boolean;
                   paged?:
                     | boolean
                     | {
@@ -756,7 +756,7 @@ export interface Config {
                   sizeLimit?: number;
                   timeLimit?: number;
                   derefAliases?: number;
-                  typesOnly?: boolean;
+                  returnAttributeValues?: boolean;
                   paged?:
                     | boolean
                     | {
@@ -914,7 +914,7 @@ export interface Config {
               sizeLimit?: number;
               timeLimit?: number;
               derefAliases?: number;
-              typesOnly?: boolean;
+              returnAttributeValues?: boolean;
               paged?:
                 | boolean
                 | {
@@ -997,7 +997,7 @@ export interface Config {
               sizeLimit?: number;
               timeLimit?: number;
               derefAliases?: number;
-              typesOnly?: boolean;
+              returnAttributeValues?: boolean;
               paged?:
                 | boolean
                 | {

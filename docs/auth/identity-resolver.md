@@ -4,13 +4,6 @@ title: Sign-in Identities and Resolvers
 description: An introduction to Backstage user identities and sign-in resolvers
 ---
 
-:::info
-This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage
-[version 1.24](../releases/v1.24.0.md). If you are still on the old backend
-system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/auth/identity-resolver--old.md)
-instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
-:::
-
 By default, every Backstage auth provider is configured only for the use-case of
 access delegation. This enables Backstage to request resources and actions from
 external systems on behalf of the user, for example re-triggering a build in CI.
@@ -287,7 +280,7 @@ async signInResolver(info, ctx) {
 If you throw an error in the sign in resolver function, the sign in attempt is
 immediately rejected, and the error details are presented in the user interface.
 
-The `ctx` context [has several useful functions](https://backstage.io/docs/reference/plugin-auth-node.authresolvercontext/)
+The `ctx` context [has several useful functions](https://backstage.io/api/stable/types/_backstage_plugin-auth-node.AuthResolverContext.html)
 for issuing tokens in various ways.
 
 ### Custom Ownership Resolution
@@ -406,50 +399,6 @@ async signInResolver({ profile }, ctx) {
 }
 ```
 
-## Reducing the size of issued tokens
-
-By default the auth backend will issue user identity tokens that include the
-ownership references of the user in the `ent` claim of the JWT payload. This is
-done to make it easier and more efficient for consumers of the token to resolve
-ownership of the user. However, depending on the shape of your organization and
-how you resolve ownership claims, these tokens can grow quite large.
-
-To address this, the auth backend now supports the configuration flag
-`auth.omitIdentityTokenOwnershipClaim` that causes the `ent` claim to be omitted
-from the token. This can be set to `true` in the `app-config.yaml` file.
-
-```yaml title="in app-config.yaml"
-auth:
-  omitIdentityTokenOwnershipClaim: true
-```
-
-When this flag is set, the `ent` claim will no longer be present in the token,
-and consumers of the token will need to call the `/v1/userinfo` endpoint on the
-auth backend to fetch the ownership references of the user. However, there's usually no
-action required for consumers. Clients will still receive the full set
-of claims during authentication, and any plugin backends will already need to
-use the
-[`UserInfoService`](../backend-system/core-services/user-info.md) to
-access the ownership references from user credentials, which already calls the
-user info endpoint if necessary.
-
-When enabling this flag, it is important that any custom sign-in resolvers directly return the result of the sign-in method. For example, the following would not work:
-
-```ts
-const { token } = await ctx.issueToken({
-  claims: { sub: entityRef, ent: [entityRef] },
-});
-return { token }; // WARNING: This will not work
-```
-
-Instead, the sign-in resolver should directly return the result:
-
-```ts
-return ctx.issueToken({
-  claims: { sub: entityRef, ent: [entityRef] },
-});
-```
-
 ##### Using the `dangerouslyAllowSignInWithoutUserInCatalog` Option
 
 Another way to bypass this requirement is to enable the `dangerouslyAllowSignInWithoutUserInCatalog` option for resolvers.
@@ -547,6 +496,6 @@ This error can be caused by the following:
 
 The second common error is: "Failed to sign-in, unable to resolve user identity". Here is what this looks like for the GitHub Auth provider:
 
-![Failed to sign-in, unable to resolve user identity](../assets/auth/github-unable-to-reolve-identity.png)
+![Failed to sign-in, unable to resolve user identity](../assets/auth/github-unable-to-resolve-identity.png)
 
 This error is caused by the Sign-In Resolver you configured being unable to find a matching User in the Catalog. To fix this you need to import User, and Group, data from some source of truth for this data at your Organization. To do this you can use one of the existing Org Data providers like the ones for [Entra ID (Azure AD/MS Graph)](../integrations/azure/org.md), [GitHub](../integrations/github/org.md), [GitLab](../integrations/gitlab/org.md), etc. or if none of those fit your needs you can create a [Custom Entity Provider](../features/software-catalog/external-integrations.md#custom-entity-providers).

@@ -1,5 +1,253 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/backend-test-utils@1.11.4
+  - @backstage/backend-plugin-api@1.9.2
+
+## 0.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4-next.0
+  - @backstage/backend-test-utils@1.11.4-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.3.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.3
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-scaffolder-node@0.13.3
+
+## 0.3.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/backend-test-utils@1.11.3-next.0
+  - @backstage/plugin-scaffolder-node@0.13.3-next.0
+  - @backstage/types@1.2.2
+
+## 0.3.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/backend-test-utils@1.11.2
+  - @backstage/plugin-scaffolder-node@0.13.2
+
+## 0.3.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-test-utils@1.11.2-next.1
+  - @backstage/plugin-scaffolder-node@0.13.1-next.1
+
+## 0.3.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/backend-test-utils@1.11.2-next.0
+  - @backstage/plugin-scaffolder-node@0.13.1-next.0
+  - @backstage/types@1.2.2
+
+## 0.3.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/backend-test-utils@1.11.1
+  - @backstage/plugin-scaffolder-node@0.13.0
+
+## 0.3.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.1-next.2
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-scaffolder-node@0.13.0-next.2
+
+## 0.3.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.1-next.1
+  - @backstage/plugin-scaffolder-node@0.13.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/types@1.2.2
+
+## 0.3.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/backend-test-utils@1.11.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-node@0.12.6-next.0
+
+## 0.3.8
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-scaffolder-node@0.12.5
+
+## 0.3.8-next.1
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-test-utils@1.10.4-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/types@1.2.2
+
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/backend-test-utils@1.10.3
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/backend-test-utils@1.10.3-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.10.2
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 0.3.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.10.2-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-node@0.12.2-next.1
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/backend-test-utils@1.10.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.2-next.0
+  - @backstage/types@1.2.2
+
+## 0.3.5
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.10.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-scaffolder-node@0.12.1
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/backend-test-utils@1.10.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.10.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/types@1.2.2
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/backend-test-utils@1.9.1
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/backend-test-utils@1.9.1-next.1
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-test-utils@1.9.1-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/types@1.2.2
+
 ## 0.3.3
 
 ### Patch Changes

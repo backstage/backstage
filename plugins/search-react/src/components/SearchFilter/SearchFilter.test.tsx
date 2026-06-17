@@ -178,6 +178,7 @@ describe('SearchFilter', () => {
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters: { field: [values[0]] } }),
+          { signal: expect.any(Object) },
         );
       });
 
@@ -186,6 +187,7 @@ describe('SearchFilter', () => {
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters: {} }),
+          { signal: expect.any(Object) },
         );
       });
     });
@@ -217,6 +219,7 @@ describe('SearchFilter', () => {
           expect.objectContaining({
             filters: { ...filters, field: [values[0]] },
           }),
+          { signal: expect.any(Object) },
         );
       });
 
@@ -225,6 +228,7 @@ describe('SearchFilter', () => {
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters }),
+          { signal: expect.any(Object) },
         );
       });
     });
@@ -421,6 +425,7 @@ describe('SearchFilter', () => {
           expect.objectContaining({
             filters: { [name]: values[0] },
           }),
+          { signal: expect.any(AbortSignal) },
         );
       });
 
@@ -437,6 +442,7 @@ describe('SearchFilter', () => {
           expect.objectContaining({
             filters: {},
           }),
+          { signal: expect.any(AbortSignal) },
         );
       });
     });
@@ -479,6 +485,7 @@ describe('SearchFilter', () => {
           expect.objectContaining({
             filters: { ...filters, [name]: values[0] },
           }),
+          { signal: expect.any(AbortSignal) },
         );
       });
 
@@ -493,6 +500,7 @@ describe('SearchFilter', () => {
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters }),
+          { signal: expect.any(AbortSignal) },
         );
       });
     });

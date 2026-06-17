@@ -33,12 +33,34 @@ export interface Config {
      */
     defaultSettings?: {
       channels?: {
+        /**
+         * Channel identifier (e.g., 'Web', 'Email')
+         */
         id: string;
+        /**
+         * Optional flag to enable/disable the channel by default.
+         * If not set, defaults to true for backwards compatibility.
+         * When set to false, the channel uses an opt-in strategy where
+         * origins are disabled by default unless explicitly enabled.
+         */
+        enabled?: boolean;
         origins?: {
+          /**
+           * Origin identifier (e.g., 'plugin:catalog', 'external:jenkins')
+           */
           id: string;
+          /**
+           * Whether notifications from this origin are enabled by default
+           */
           enabled: boolean;
           topics?: {
+            /**
+             * Topic identifier (e.g., 'entity-refresh', 'build-failure')
+             */
             id: string;
+            /**
+             * Whether notifications for this topic are enabled by default
+             */
             enabled: boolean;
           }[];
         }[];

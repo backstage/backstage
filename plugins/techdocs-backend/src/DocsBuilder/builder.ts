@@ -19,7 +19,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { assertError, isError } from '@backstage/errors';
+import { isError, toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   GeneratorBase,
@@ -30,9 +30,9 @@ import {
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
-import { Writable } from 'stream';
+import os from 'node:os';
+import path from 'node:path';
+import { Writable } from 'node:stream';
 import { Logger } from 'winston';
 import { BuildMetadataStorage } from './BuildMetadataStorage';
 import { TechDocsCache } from '../cache';
@@ -225,9 +225,8 @@ export class DocsBuilder {
           // Not a blocker hence no need to await this.
           fs.remove(preparedDir);
         } catch (error) {
-          assertError(error);
           this.logger.debug(
-            `Error removing prepared directory ${error.message}`,
+            `Error removing prepared directory ${toError(error).message}`,
           );
         }
       }
@@ -238,9 +237,8 @@ export class DocsBuilder {
           // Not a blocker hence no need to await this.
           fs.remove(outputDir);
         } catch (error) {
-          assertError(error);
           this.logger.debug(
-            `Error removing generated directory ${error.message}`,
+            `Error removing generated directory ${toError(error).message}`,
           );
         }
       }

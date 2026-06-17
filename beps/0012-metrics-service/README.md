@@ -23,7 +23,6 @@ creation-date: 2025-06-23
   - [Integration with OpenTelemetry Auto-Instrumentation](#integration-with-opentelemetry-auto-instrumentation)
   - [Configuration](#configuration)
   - [Interface](#interface)
-    - [Root Metrics Service](#root-metrics-service)
     - [Plugin Metrics Service](#plugin-metrics-service)
     - [Example](#example)
 - [Release Plan](#release-plan)
@@ -36,7 +35,7 @@ Add a core `MetricsService` to Backstage's framework to provide a unified interf
 
 ## Motivation
 
-While individual plugins may implement their own metrics, there's no standardized approach leading to inconsistent metrics patterns across the ecosystem. For example, both `catalog_entities_count` and `catalog.processed.entities.count` are examples of existing metric patterns. Ideally, these would be standardized to `backstage.plugin.catalog.entities.count` and `backstage.plugin.catalog.entities.processed.total` respectively.
+While individual plugins may implement their own metrics, there's no standardized approach leading to inconsistent metrics patterns across the ecosystem and incompatibility with OpenTelemetry semantic conventions. For example, a plugin implementing MCP functionality might incorrectly namespace metrics as `backstage_mcp_client_duration` when OpenTelemetry semantic conventions explicitly define `mcp.client.operation.duration` as the standard.
 
 By providing a core metrics service:
 
@@ -45,7 +44,7 @@ By providing a core metrics service:
 
 ### Goals
 
-- Plugin-scoped metric namespacing
+- Plugin identification via OpenTelemetry Instrumentation Scope
 - Consistent metrics patterns across all plugins
 - Aligned with OpenTelemetry industry standards
 - Provide a familiar interface as other core services
@@ -124,9 +123,12 @@ The `MetricsService` **complements** rather than duplicates auto-instrumentation
 
 // MetricsService provides (manually):
 const entityMetrics = metricsService.createCounter('entities.processed.total');
-entityMetrics.add(entities.length, { operation: 'refresh', kind: 'Component' });
+entityMetrics.add(entities.length, {
+  operation: 'refresh',
+  'entity.kind': 'Component',
+});
 
-// Metric is now available as `backstage.plugin.catalog.entities.processed.total`
+// Metric is now available as `entities.processed.total`
 ```
 
 ### Configuration
@@ -162,43 +164,21 @@ interface MetricsService {
 }
 ```
 
-#### Root Metrics Service
-
-The `RootMetricsService` is responsible for providing metrics to other root services and creating both plugin-scoped and core-scoped `MetricsService` instances.
-
-```ts
-interface RootMetricsService {
-  // note: no config is provided to the root service.
-  static forRoot(): RootMetricsService;
-  forPlugin(pluginId: string): MetricsService;
-
-  // final implementation will be similar to
-  forService(serviceName: string, scope: 'plugin' | 'core'): MetricsService;
-}
-
-export const rootMetricsServiceFactory = createServiceFactory({
-  // depends on as little as possible so that it can be initialized as early as possible.
-  service: rootMetricsServiceRef,
-  deps: {},
-  factory: () => {
-    return DefaultRootMetricsService.forRoot();
-  },
-});
-```
-
 #### Plugin Metrics Service
 
-Each plugin receives a metrics service that automatically namespaces all metrics to match the naming conventions.
+Each plugin receives a metrics service that automatically configures the Instrumentation Scope to identify the plugin. The scope name follows the pattern `backstage-plugin-{pluginId}`.
 
 ```ts
-const metricsServiceFactory = createServiceFactory({
-  service: metricsServiceRef,
+export const metricsServiceFactory = createServiceFactory({
+  service: coreServices.metrics,
   deps: {
-    rootMetrics: coreServices.rootMetrics,
     pluginMetadata: coreServices.pluginMetadata,
   },
-  factory: ({ rootMetrics, pluginMetadata }) => {
-    return rootMetrics.forPlugin(pluginMetadata.getId());
+  factory: ({ pluginMetadata }) => {
+    const pluginId = pluginMetadata.getId();
+    const scopeName = `backstage-plugin-${pluginId}`;
+
+    return new DefaultMetricsService(scopeName, version, ...);
   },
 });
 ```
@@ -248,3 +228,22 @@ entitiesProcessed.add(100);
 
 - Plugin authors continue to implement their own metrics as they see fit.
 - A combined TelemetryService that provides both metrics and tracing.
+
+### Rejected: Forced Namespace Prefixes
+
+Prepend `backstage.plugin.{pluginId}.` to all metric names. This was the original proposal but conflicts with OpenTelemetry semantic conventions.
+
+**Problems:**
+
+- Makes it impossible to use standard semantic conventions like `mcp.*`, `gen_ai.*`, `http.*`
+- Breaks compatibility with industry-standard observability tooling
+- Prevents cross-service metric aggregation
+- Goes against OpenTelemetry best practices and official guidance
+
+**Example of conflict:**
+
+```ts
+// Plugin wants to emit: mcp.client.operation.duration
+// Framework forces: backstage.plugin.mcp-actions.mcp.client.operation.duration
+// This violates the semantic convention and breaks tooling
+```

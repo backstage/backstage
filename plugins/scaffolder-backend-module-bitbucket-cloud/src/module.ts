@@ -17,10 +17,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import {
-  scaffolderActionsExtensionPoint,
-  scaffolderAutocompleteExtensionPoint,
-} from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderAutocompleteExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { createBitbucketCloudBranchRestrictionAction } from './actions/bitbucketCloudBranchRestriction';
 import {
   createBitbucketPipelinesRunAction,
@@ -29,6 +26,7 @@ import {
 } from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { handleAutocompleteRequest } from './autocomplete/autocomplete';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 
 /**
  * @public

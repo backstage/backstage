@@ -41,8 +41,8 @@ const mockApplyConditions: jest.MockedFunction<
       id: decision.id,
       result:
         (decision.conditions as any).params[0] === 'yes'
-          ? (AuthorizeResult.ALLOW as const)
-          : (AuthorizeResult.DENY as const),
+          ? AuthorizeResult.ALLOW
+          : AuthorizeResult.DENY,
     })),
 );
 
@@ -270,17 +270,6 @@ describe('createRouter', () => {
           },
         },
         {
-          token: mockCredentials.service.token({
-            onBehalfOf: mockCredentials.user(),
-            targetPluginId: 'catalog',
-          }),
-          identity: {
-            type: 'user',
-            userEntityRef: mockCredentials.user().principal.userEntityRef,
-            ownershipEntityRefs: [
-              mockCredentials.user().principal.userEntityRef,
-            ],
-          },
           info: {
             userEntityRef: mockCredentials.user().principal.userEntityRef,
             ownershipEntityRefs: [

@@ -16,11 +16,11 @@
 
 // @ts-check
 
-const path = require('path');
+const path = require('node:path');
 const getPackageMap = require('../lib/getPackages');
 const visitImports = require('../lib/visitImports');
 const minimatch = require('minimatch');
-const { execFileSync } = require('child_process');
+const { execFileSync } = require('node:child_process');
 
 const depFields = /** @type {const} */ ({
   dep: 'dependencies',

@@ -14,16 +14,16 @@ A Backstage App is a monorepo setup that includes everything you need to run Bac
 To create a new Backstage app we recommend using the `@backstage/create-app` command line, and the easiest way to run this package is with `npx`:
 
 :::note
-The create-app CLI requires Node.js Active LTS Release.
+The create-app CLI requires Node.js Active LTS Release, see the [prerequisites documentation](../../getting-started/index.md) for all the details.
 :::
 
 ```sh
-# The command bellow creates a Backstage App inside the current folder.
+# The command below creates a Backstage App inside the current folder.
 # The name of the app-folder is the name that was provided when prompted.
 npx @backstage/create-app@latest
 ```
 
-The created-app is currently templated for legacy frontend system applications, so the app wiring code it creates needs to be migrated, see [the app instance](#the-app-instance) section for an example.
+This will create a Backstage app using the new frontend system which will be further explained in the sections below.
 
 ## The app instance
 
@@ -35,10 +35,12 @@ This is how to create a minimal app:
 import ReactDOM from 'react-dom/client';
 import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import '@backstage/ui/css/styles.css';
 
 // Create your app instance
 const app = createApp({
-  // Features such as plugins can be installed explicitly, but we will explore other options later on
+  // Custom features such as plugins can be installed explicitly, but they are usually
+  // auto-discovered, unless `app.packages` is customized in `app-config.yaml`.
   features: [catalogPlugin],
 });
 
@@ -55,19 +57,17 @@ Note that `createRoot` returns the root element that is rendered by React. The a
 
 Visit the [built-in extensions](#customize-or-override-built-in-extensions) section to see what is installed by default in a Backstage application.
 
+For advanced bootstrap flows that need access to the app tree before the full app is finalized, see [preparing an app in phases](../architecture/10-app.md#preparing-an-app-in-phases).
+
 ## Configure your app
 
 ### Bind external routes
 
 Linking routes from different plugins requires this configuration. You can do this either through a configuration file or by coding, visit [this](https://backstage.io/docs/frontend-system/architecture/routes#binding-external-route-references) page for instructions.
 
-### Enable feature discovery
+### Install plugins
 
-Use this setting to enable experimental feature discovery when building your app with `@backstage/cli`. With this configuration your application tries to discover and install package extensions automatically, check [here](../architecture/10-app.md#feature-discovery) for more details.
-
-:::warning
-Remember that package extensions that are not auto-discovered must be manually added to the application when creating an app. See [features](#install-features-manually) for more details.
-:::
+Plugins are typically installed by adding them as dependencies of your app package and relying on feature discovery to automatically detect them. For details on how this works, including how to manually install plugins or control which packages are discovered, see [Installing Plugins](./05-installing-plugins.md).
 
 ### Configure extensions individually
 
@@ -81,7 +81,7 @@ Previously you would customize the application routes, components, apis, sidebar
 
 ### Install features manually
 
-A manual installation is required if your packages are not discovered automatically, either because you are not using `@backstage/cli` to build your application or because the features are defined in local modules in the app package. In order to manually install a feature, you must import it and pass it to the `createApp` function:
+Most plugins are installed automatically through [feature discovery](./05-installing-plugins.md#feature-discovery). Manual installation is needed if your packages are not discovered automatically, either because you are not using `@backstage/cli` to build your application or because the features are defined in local modules in the app package. In order to manually install a feature, you must import it and pass it to the `createApp` function:
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-defaults';
@@ -101,7 +101,7 @@ You can also pass overrides to the features array, for more details, please read
 
 ### Using an async features loader
 
-In case you need to perform asynchronous operations before passing features to the `createApp` function, define a [feature loader](https://backstage.io/docs/reference/frontend-defaults.createappfeatureloader/) object and pass it to the `features` option:
+In case you need to perform asynchronous operations before passing features to the `createApp` function, define a [feature loader](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.createFrontendFeatureLoader.html) object and pass it to the `features` option:
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-defaults';

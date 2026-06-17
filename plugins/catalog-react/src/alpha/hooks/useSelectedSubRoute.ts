@@ -14,9 +14,25 @@
  * limitations under the License.
  */
 
-import { JSX } from 'react';
-import { SubRoute } from '../types.ts';
+import { JSX, useMemo } from 'react';
+import { SubRoute } from '../types';
 import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
+
+// Normalize a route path so it can be matched correctly:
+//   - strip leading slashes
+//   - if the path already ends with a `*`, keep it as-is so explicit wildcards
+//     like `/*` or `/foo/*` aren't double-suffixed into `*/*` / `foo/*/*`
+//   - otherwise strip trailing slashes and append `/*` for nested matching;
+//     a bare `/` collapses to the empty string so it acts as an index route
+//     rather than a wildcard that would swallow every sub-path
+function normalizeRoutePath(path: string): string {
+  const withoutLeading = path.replace(/^\/+/, '');
+  if (withoutLeading.endsWith('*')) {
+    return withoutLeading;
+  }
+  const trimmed = withoutLeading.replace(/\/+$/, '');
+  return trimmed ? `${trimmed}/*` : '';
+}
 
 /** @alpha */
 export function useSelectedSubRoute(subRoutes: SubRoute[]): {
@@ -26,36 +42,31 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 } {
   const params = useParams();
 
-  const routes = subRoutes.map(({ path, children }) => ({
-    caseSensitive: false,
-    path: `${path}/*`,
-    element: children,
-  }));
-
-  // TODO: remove once react-router updated
-  const sortedRoutes = routes.sort((a, b) =>
-    // remove "/*" symbols from path end before comparing
-    b.path.replace(/\/\*$/, '').localeCompare(a.path.replace(/\/\*$/, '')),
+  const routes = useMemo(
+    () =>
+      subRoutes.map(({ path, children }) => ({
+        caseSensitive: false,
+        path: normalizeRoutePath(path),
+        element: children,
+      })),
+    [subRoutes],
   );
 
-  const element = useRoutes(sortedRoutes) ?? subRoutes[0]?.children;
+  const element = useRoutes(routes) ?? undefined;
 
-  // TODO(Rugvip): Once we only support v6 stable we can always prefix
-  // This avoids having a double / prefix for react-router v6 beta, which in turn breaks
-  // the tab highlighting when using relative paths for the tabs.
   let currentRoute = params['*'] ?? '';
   if (!currentRoute.startsWith('/')) {
     currentRoute = `/${currentRoute}`;
   }
 
-  const [matchedRoute] = matchRoutes(sortedRoutes, currentRoute) ?? [];
+  const [matchedRoute] = matchRoutes(routes, currentRoute) ?? [];
   const foundIndex = matchedRoute
-    ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
-    : 0;
+    ? routes.findIndex(r => r.path === matchedRoute.route.path)
+    : -1;
 
   return {
-    index: foundIndex === -1 ? 0 : foundIndex,
+    index: foundIndex,
     element,
-    route: subRoutes[foundIndex] ?? subRoutes[0],
+    route: subRoutes[foundIndex],
   };
 }

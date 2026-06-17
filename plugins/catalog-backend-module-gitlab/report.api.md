@@ -113,6 +113,7 @@ export type GitlabProviderConfig = {
   userPattern: RegExp;
   groupPattern: RegExp | RegExp[];
   allowInherited?: boolean;
+  useSearch?: boolean;
   relations?: string[];
   orgEnabled?: boolean;
   schedule?: SchedulerServiceTaskScheduleDefinition;

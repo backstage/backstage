@@ -27,7 +27,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
-import { getAuthorizationHeader } from './helpers';
+import { getAuthorizationHeader, getGitAuth } from './helpers';
 import { examples } from './bitbucketCloudPullRequest.examples';
 
 const createPullRequest = async (opts: {
@@ -199,7 +199,6 @@ const getDefaultBranch = async (opts: {
   apiBaseUrl: string;
 }): Promise<string> => {
   const { workspace, repo, authorization, apiBaseUrl } = opts;
-  let response: Response;
 
   const options: RequestInit = {
     method: 'GET',
@@ -209,14 +208,10 @@ const getDefaultBranch = async (opts: {
     },
   };
 
-  try {
-    response = await fetch(
-      `${apiBaseUrl}/repositories/${workspace}/${repo}`,
-      options,
-    );
-  } catch (error) {
-    throw error;
-  }
+  const response = await fetch(
+    `${apiBaseUrl}/repositories/${workspace}/${repo}`,
+    options,
+  );
 
   const { mainbranch } = await response.json();
   const defaultBranch = mainbranch.name;
@@ -317,7 +312,7 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
         );
       }
 
-      const authorization = getAuthorizationHeader(
+      const authorization = await getAuthorizationHeader(
         ctx.input.token ? { token: ctx.input.token } : integrationConfig.config,
       );
 
@@ -358,28 +353,11 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
 
         const remoteUrl = `https://${host}/${workspace}/${repo}.git`;
 
-        let auth;
-
-        if (ctx.input.token) {
-          auth = {
-            username: 'x-token-auth',
-            password: ctx.input.token,
-          };
-        } else {
-          if (
-            !integrationConfig.config.username ||
-            !integrationConfig.config.appPassword
-          ) {
-            throw new Error(
-              'Credentials for Bitbucket Cloud integration required for this action.',
-            );
-          }
-
-          auth = {
-            username: integrationConfig.config.username,
-            password: integrationConfig.config.appPassword,
-          };
-        }
+        const auth = await getGitAuth(
+          ctx.input.token
+            ? { token: ctx.input.token }
+            : integrationConfig.config,
+        );
 
         const gitAuthorInfo = {
           name:

@@ -67,18 +67,20 @@ describe('<ErrorBoundary/>', () => {
     });
 
     expect(error).toEqual([
+      expect.stringContaining('Error: Bomb'),
       expect.objectContaining({
-        detail: new Error('Bomb'),
+        type: 'unhandled-exception',
       }),
+      expect.stringContaining('Error: Bomb'),
       expect.objectContaining({
-        detail: new Error('Bomb'),
+        type: 'unhandled-exception',
       }),
-      expect.stringMatching(
-        /^The above error occurred in the <Bomb> component:/,
+      expect.stringContaining(
+        'The above error occurred in the <Bomb> component:',
       ),
-      expect.stringMatching(/^ErrorBoundary/),
-      expect.stringMatching(/Warning: findDOMNode/), // React warning, unfortunate but currently true
+      expect.stringContaining('ErrorBoundary'),
+      expect.stringContaining('Warning: findDOMNode'), // React warning, unfortunate but currently true
     ]);
-    expect(error.length).toEqual(5);
+    expect(error.length).toEqual(7);
   });
 });

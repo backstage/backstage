@@ -17,12 +17,16 @@
 export {
   type TranslationMessages,
   type TranslationMessagesOptions,
+  createTranslationMessages,
+} from './TranslationMessages';
+export {
   type TranslationResource,
   type TranslationResourceOptions,
+  createTranslationResource,
+} from './TranslationResource';
+export {
   type TranslationRef,
   type TranslationRefOptions,
-  createTranslationMessages,
-  createTranslationResource,
   createTranslationRef,
-  useTranslationRef,
-} from '@backstage/core-plugin-api/alpha';
+} from './TranslationRef';
+export { useTranslationRef } from './useTranslationRef';

@@ -15,6 +15,7 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
+import { VisitInput } from './VisitsStorageApi';
 
 /**
  * @public
@@ -126,9 +127,31 @@ export interface VisitsApi {
    * @param queryParams - optional search query params.
    */
   list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  /**
+   * Transform the pathname before it is considered for any other processing.
+   * @param pathname - the original pathname
+   */
+  transformPathname?(pathname: string): string;
+  /**
+   * Determine whether a visit should be saved.
+   * @param visit - page visit data
+   */
+  canSave?(visit: VisitInput): boolean | Promise<boolean>;
+  /**
+   * Add additional data to the visit before saving.
+   * @param visit - page visit data
+   */
+  enrichVisit?(
+    visit: VisitInput,
+  ): Promise<Record<string, any>> | Record<string, any>;
 }
 
-/** @public */
+/**
+ * API reference for the visits tracking service.
+ * Provides functionality to track and retrieve user page visit history.
+ *
+ * @public
+ */
 export const visitsApiRef = createApiRef<VisitsApi>({
   id: 'homepage.visits',
 });

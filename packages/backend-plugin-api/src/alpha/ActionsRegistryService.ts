@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z, AnyZodObject } from 'zod';
+import { z, AnyZodObject } from 'zod/v3';
+import { BasicPermission } from '@backstage/plugin-permission-common';
 import {
   LoggerService,
   BackstageCredentials,
@@ -22,10 +23,31 @@ import {
 /**
  * @alpha
  */
-export type ActionsRegistryActionContext<TInputSchema extends AnyZodObject> = {
+export type ActionsRegistryActionContext<
+  TInputSchema extends AnyZodObject,
+  TSecretsSchema extends AnyZodObject | undefined = undefined,
+> = {
   input: z.infer<TInputSchema>;
+  secrets: TSecretsSchema extends AnyZodObject
+    ? z.infer<TSecretsSchema>
+    : undefined;
   logger: LoggerService;
   credentials: BackstageCredentials;
+};
+
+/**
+ * An example of how to use an action registered in the actions registry.
+ *
+ * @alpha
+ */
+export type ActionsRegistryActionExample<
+  TInputSchema extends AnyZodObject,
+  TOutputSchema extends AnyZodObject,
+> = {
+  title: string;
+  description?: string;
+  input: z.infer<TInputSchema>;
+  output?: z.infer<TOutputSchema>;
 };
 
 /**
@@ -34,6 +56,7 @@ export type ActionsRegistryActionContext<TInputSchema extends AnyZodObject> = {
 export type ActionsRegistryActionOptions<
   TInputSchema extends AnyZodObject,
   TOutputSchema extends AnyZodObject,
+  TSecretsSchema extends AnyZodObject | undefined = undefined,
 > = {
   name: string;
   title: string;
@@ -41,14 +64,19 @@ export type ActionsRegistryActionOptions<
   schema: {
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
+    secrets?: (
+      zod: typeof z,
+    ) => TSecretsSchema extends AnyZodObject ? TSecretsSchema : never;
   };
+  examples?: Array<ActionsRegistryActionExample<TInputSchema, TOutputSchema>>;
+  visibilityPermission?: BasicPermission;
   attributes?: {
     destructive?: boolean;
     idempotent?: boolean;
     readOnly?: boolean;
   };
   action: (
-    context: ActionsRegistryActionContext<TInputSchema>,
+    context: ActionsRegistryActionContext<TInputSchema, TSecretsSchema>,
   ) => Promise<
     z.infer<TOutputSchema> extends void
       ? void
@@ -63,7 +91,12 @@ export interface ActionsRegistryService {
   register<
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
+    TSecretsSchema extends AnyZodObject | undefined = undefined,
   >(
-    options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>,
+    options: ActionsRegistryActionOptions<
+      TInputSchema,
+      TOutputSchema,
+      TSecretsSchema
+    >,
   ): void;
 }

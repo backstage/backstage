@@ -25,35 +25,68 @@ import {
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
 import {
+  EntityRelationCard,
+  EntityColumnConfig,
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
+import {
   CodeSnippet,
   InfoCard,
   InfoCardVariants,
   Link,
   Progress,
   TableColumn,
+  TableOptions,
   WarningPanel,
 } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
 
+/** @public */
+export interface ConsumingComponentsCardProps {
+  title?: string;
+  columnConfig?: EntityColumnConfig[];
+}
+
 /**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link ConsumingComponentsCardProps} instead.
  * @public
  */
-export const ConsumingComponentsCard = (props: {
+export interface ConsumingComponentsCardLegacyProps {
+  title?: string;
+  /** @deprecated Use `columnConfig` instead. */
   variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
   columns?: TableColumn<ComponentEntity>[];
-}) => {
-  const { variant = 'gridItem', columns = EntityTable.componentEntityColumns } =
-    props;
+  /** @deprecated Use `columnConfig` instead. */
+  tableOptions?: TableOptions;
+}
+
+function isLegacyProps(
+  props: ConsumingComponentsCardProps | ConsumingComponentsCardLegacyProps,
+): props is ConsumingComponentsCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
+}
+
+function ConsumingComponentsCardLegacy(
+  props: ConsumingComponentsCardLegacyProps,
+) {
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  const {
+    variant = 'gridItem',
+    title = t('consumingComponentsCard.title'),
+    columns = EntityTable.componentEntityColumns,
+    tableOptions = {},
+  } = props;
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_API_CONSUMED_BY,
   });
-  const { t } = useTranslationRef(apiDocsTranslationRef);
 
   if (loading) {
     return (
-      <InfoCard variant={variant} title={t('consumingComponentsCard.title')}>
+      <InfoCard variant={variant} title={title}>
         <Progress />
       </InfoCard>
     );
@@ -61,7 +94,7 @@ export const ConsumingComponentsCard = (props: {
 
   if (error || !entities) {
     return (
-      <InfoCard variant={variant} title={t('consumingComponentsCard.title')}>
+      <InfoCard variant={variant} title={title}>
         <WarningPanel
           severity="error"
           title={t('consumingComponentsCard.error.title')}
@@ -73,7 +106,7 @@ export const ConsumingComponentsCard = (props: {
 
   return (
     <EntityTable
-      title={t('consumingComponentsCard.title')}
+      title={title}
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
@@ -88,7 +121,39 @@ export const ConsumingComponentsCard = (props: {
         </div>
       }
       columns={columns}
+      tableOptions={tableOptions}
       entities={entities as ComponentEntity[]}
+    />
+  );
+}
+
+/**
+ * @public
+ */
+export const ConsumingComponentsCard = (
+  props: ConsumingComponentsCardProps | ConsumingComponentsCardLegacyProps,
+) => {
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+
+  if (isLegacyProps(props)) {
+    return <ConsumingComponentsCardLegacy {...props} />;
+  }
+
+  const {
+    title = t('consumingComponentsCard.title'),
+    columnConfig = entityColumnPresets.component.columns,
+  } = props;
+
+  return (
+    <EntityRelationCard
+      title={title}
+      relationType={RELATION_API_CONSUMED_BY}
+      columnConfig={columnConfig}
+      emptyState={{
+        message: t('consumingComponentsCard.emptyContent.title'),
+        helpLink:
+          'https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional',
+      }}
     />
   );
 };

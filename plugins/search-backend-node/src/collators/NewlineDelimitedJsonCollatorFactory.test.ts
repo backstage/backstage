@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ConfigReader } from '@backstage/config';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { NewlineDelimitedJsonCollatorFactory } from './NewlineDelimitedJsonCollatorFactory';
 import { TestPipeline } from '../test-utils';
 import { mockServices } from '@backstage/backend-test-utils';

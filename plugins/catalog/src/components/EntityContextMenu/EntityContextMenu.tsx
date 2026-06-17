@@ -26,7 +26,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { Fragment, SyntheticEvent, useEffect, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
@@ -161,7 +161,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     <>
       <Tooltip title={t('entityContextMenu.moreButtonTitle')} arrow>
         <IconButton
-          aria-label="more"
+          aria-label={t('entityContextMenu.moreButtonAriaLabel')}
           aria-controls="long-menu"
           aria-haspopup="true"
           aria-expanded={!!anchorEl}
@@ -191,7 +191,9 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
             defaultMenuItems
           ) : (
             <EntityContextMenuProvider onMenuClose={onClose}>
-              {contextMenuItems}
+              {contextMenuItems.map((item, index) => (
+                <Fragment key={index}>{item}</Fragment>
+              ))}
             </EntityContextMenuProvider>
           )}
         </MenuList>

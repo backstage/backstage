@@ -28,6 +28,7 @@ import {
   KubernetesFetcher,
   KubernetesServiceLocator,
   KubernetesCredential,
+  kubernetesRouterExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 import {
   HEADER_KUBERNETES_CLUSTER,
@@ -808,5 +809,40 @@ metadata:
     ).rejects.toThrow(
       'Unsupported kubernetes.serviceLocatorMethod "unsupported"',
     );
+  });
+
+  it('custom router', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        minimalValidConfigService,
+        import('@backstage/plugin-kubernetes-backend'),
+        createBackendModule({
+          pluginId: 'kubernetes',
+          moduleId: 'testRouter',
+          register(env) {
+            env.registerInit({
+              deps: { extension: kubernetesRouterExtensionPoint },
+              async init({ extension }) {
+                extension.addRouter(({ getDefault }) => {
+                  const router = getDefault();
+
+                  router.get('/test', (_req, res) => {
+                    res.json({ status: 'ok' });
+                  });
+
+                  return router;
+                });
+              },
+            });
+          },
+        }),
+      ],
+    });
+    app = server;
+
+    const response = await request(app).get('/api/kubernetes/test');
+
+    expect(response.body).toEqual({ status: 'ok' });
+    expect(response.status).toEqual(200);
   });
 });

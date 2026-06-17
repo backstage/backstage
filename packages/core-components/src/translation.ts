@@ -16,7 +16,7 @@
 
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-/** @alpha */
+/** @public */
 export const coreComponentsTranslationRef = createTranslationRef({
   id: 'core-components',
   messages: {
@@ -126,6 +126,14 @@ export const coreComponentsTranslationRef = createTranslationRef({
     proxiedSignInPage: {
       title:
         'You do not appear to be signed in. Please try reloading the browser page.',
+    },
+    logViewer: {
+      downloadBtn: {
+        tooltip: 'Download logs',
+      },
+      searchField: {
+        placeholder: 'Search',
+      },
     },
   },
 });

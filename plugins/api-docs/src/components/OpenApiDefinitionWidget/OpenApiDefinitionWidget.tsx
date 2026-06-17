@@ -43,7 +43,7 @@ export const OpenApiDefinitionWidget = (
     <Suspense fallback={<Progress />}>
       <LazyOpenApiDefinition
         {...props}
-        supportedSubmitMethods={validSubmitMethods}
+        supportedSubmitMethods={validSubmitMethods as any}
       />
     </Suspense>
   );

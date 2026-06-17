@@ -19,7 +19,8 @@ import {
   createBackendModule,
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { WrapperProviders } from './WrapperProviders';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import {
@@ -108,6 +109,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
           logger: coreServices.logger,
           scheduler: coreServices.scheduler,
           events: eventsServiceRef,
+          metrics: metricsServiceRef,
         },
         async init({
           catalog,
@@ -117,6 +119,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
           logger,
           scheduler,
           events,
+          metrics,
         }) {
           const client = await database.getClient();
 
@@ -126,6 +129,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
             client,
             scheduler,
             events,
+            metrics,
           });
 
           for (const entry of addedProviders) {

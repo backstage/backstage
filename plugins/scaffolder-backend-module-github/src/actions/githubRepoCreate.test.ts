@@ -57,6 +57,7 @@ const mockOctokit = {
       createRepoVariable: jest.fn(),
       createOrUpdateRepoSecret: jest.fn(),
       getRepoPublicKey: jest.fn(),
+      setWorkflowAccessToRepository: jest.fn(),
     },
     activity: {
       setRepoSubscription: jest.fn(),
@@ -152,12 +153,7 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
       visibility: 'private',
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -180,13 +176,7 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      custom_properties: undefined,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
       visibility: 'public',
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -210,11 +200,7 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
       visibility: 'private',
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -239,13 +225,8 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      custom_properties: undefined,
       visibility: 'private',
-      has_wiki: undefined,
-      has_projects: undefined,
-      has_issues: undefined,
       homepage: 'https://example.com',
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -270,12 +251,7 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      custom_properties: undefined,
       visibility: 'private',
-      has_wiki: undefined,
-      has_projects: undefined,
-      has_issues: undefined,
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -302,13 +278,8 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      custom_properties: undefined,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
       homepage: 'https://example.com',
       visibility: 'private',
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -332,11 +303,6 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      custom_properties: undefined,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
       visibility: 'private',
       auto_init: true,
     });
@@ -362,11 +328,6 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      custom_properties: undefined,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
       visibility: 'private',
       auto_init: false,
     });
@@ -396,11 +357,6 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -424,11 +380,6 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -453,10 +404,6 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -482,11 +429,7 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_wiki: undefined,
-      has_projects: undefined,
-      has_issues: undefined,
       homepage: 'https://example.com',
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -512,11 +455,7 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_wiki: undefined,
-      has_projects: undefined,
-      has_issues: undefined,
       homepage: 'https://example.com',
-      auto_init: undefined,
     });
 
     // Custom properties on user repos should be ignored
@@ -545,11 +484,7 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
       homepage: 'https://example.com',
-      auto_init: undefined,
     });
 
     await action.handler({
@@ -573,10 +508,6 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_wiki: undefined,
-      has_projects: undefined,
-      has_issues: undefined,
-      homepage: undefined,
       auto_init: true,
     });
 
@@ -601,10 +532,6 @@ describe('github:repo:create', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_wiki: undefined,
-      has_projects: undefined,
-      has_issues: undefined,
-      homepage: undefined,
       auto_init: false,
     });
   });
@@ -966,4 +893,30 @@ describe('github:repo:create', () => {
       ignored: false,
     });
   });
+
+  it.each(['none', 'organization', 'user'])(
+    'should set workflow access level - %s',
+    async expected => {
+      mockOctokit.rest.users.getByUsername.mockResolvedValue({
+        data: { type: 'Organization' },
+      });
+      mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          workflowAccess: expected,
+        },
+      });
+
+      expect(
+        mockOctokit.rest.actions.setWorkflowAccessToRepository,
+      ).toHaveBeenCalledWith({
+        access_level: expected,
+        owner: 'owner',
+        repo: 'repo',
+      });
+    },
+  );
 });

@@ -55,7 +55,7 @@ export const Default = () => (
   <EntityProvider entity={defaultEntity}>
     <Grid container spacing={4}>
       <Grid item xs={12} md={4}>
-        <UserProfileCard variant="gridItem" />
+        <UserProfileCard />
       </Grid>
     </Grid>
   </EntityProvider>
@@ -82,7 +82,7 @@ export const NoImage = () => (
   <EntityProvider entity={noImageEntity}>
     <Grid container spacing={4}>
       <Grid item xs={12} md={4}>
-        <UserProfileCard variant="gridItem" />
+        <UserProfileCard />
       </Grid>
     </Grid>
   </EntityProvider>
@@ -99,6 +99,7 @@ export default {
         },
       }),
   ],
+  tags: ['!manifest'],
 };
 
 const extraDetailsEntity: UserEntity = {
@@ -133,7 +134,7 @@ export const ExtraDetails = () => (
   <EntityProvider entity={extraDetailsEntity}>
     <Grid container spacing={4}>
       <Grid item xs={12} md={4}>
-        <UserProfileCard variant="gridItem" />
+        <UserProfileCard />
       </Grid>
     </Grid>
   </EntityProvider>

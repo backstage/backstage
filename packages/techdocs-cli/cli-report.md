@@ -27,6 +27,7 @@ Usage: techdocs-cli generate|build [options]
 
 Options:
   --defaultPlugin [defaultPlugins...]
+  --disableExternalFonts
   --docker-image <DOCKER_IMAGE>
   --etag <ETAG>
   --legacyCopyReadmeMdToIndexMd
@@ -39,7 +40,7 @@ Options:
   --source-dir <PATH>
   --techdocs-ref <HOST_TYPE:URL>
   -h, --help
-  -v --verbose
+  -v, --verbose
 ```
 
 ### `techdocs-cli migrate`
@@ -62,7 +63,7 @@ Options:
   --removeOriginal
   --storage-name <BUCKET/CONTAINER NAME>
   -h, --help
-  -v --verbose
+  -v, --verbose
 ```
 
 ### `techdocs-cli publish`
@@ -112,7 +113,7 @@ Options:
   -c, --mkdocs-config-file-name <FILENAME>
   -h, --help
   -i, --docker-image <DOCKER_IMAGE>
-  -v --verbose
+  -v, --verbose
 ```
 
 ### `techdocs-cli serve:mkdocs`
@@ -128,5 +129,5 @@ Options:
   -h, --help
   -i, --docker-image <DOCKER_IMAGE>
   -p, --port <PORT>
-  -v --verbose
+  -v, --verbose
 ```

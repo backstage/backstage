@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  assertError,
-  ForwardedError,
-  NotImplementedError,
-} from '@backstage/errors';
+import { ForwardedError, NotImplementedError } from '@backstage/errors';
 import { PackageInfo, PackageManager } from '../PackageManager';
 import { Lockfile } from '../Lockfile';
 import { YarnVersion } from './types';
-import fs from 'fs-extra';
-import { paths, run, execFile, SpawnOptionsPartialEnv } from '../../util';
+import { run, runOutput, RunOptions } from '@backstage/cli-common';
 
 export class Yarn implements PackageManager {
   constructor(private readonly yarnVersion: YarnVersion) {}
@@ -45,16 +40,6 @@ export class Yarn implements PackageManager {
     return 'yarn.lock';
   }
 
-  async getMonorepoPackages() {
-    const rootPackageJsonPath = paths.resolveTargetRoot('package.json');
-    try {
-      const pkg = await fs.readJson(rootPackageJsonPath);
-      return pkg?.workspaces?.packages || [];
-    } catch (error) {
-      return [];
-    }
-  }
-
   async pack(out: string, packageDir: string) {
     const outArg =
       this.yarnVersion.codename === 'classic' ? '--filename' : '--out';
@@ -63,8 +48,8 @@ export class Yarn implements PackageManager {
     });
   }
 
-  async run(args: string[], options?: SpawnOptionsPartialEnv) {
-    await run('yarn', args, options);
+  async run(args: string[], options?: RunOptions) {
+    await run(['yarn', ...args], options).waitForExit();
   }
 
   async fetchPackageInfo(): Promise<PackageInfo> {
@@ -98,8 +83,7 @@ function detectYarnVersion(dir?: string): Promise<YarnVersion> {
 
   const promise = Promise.resolve().then(async () => {
     try {
-      const { stdout } = await execFile('yarn', ['--version'], {
-        shell: true,
+      const stdout = await runOutput(['yarn', '--version'], {
         cwd,
       });
       const versionString = stdout.trim();
@@ -108,10 +92,6 @@ function detectYarnVersion(dir?: string): Promise<YarnVersion> {
         : 'berry';
       return { version: versionString, codename };
     } catch (error) {
-      assertError(error);
-      if ('stderr' in error) {
-        process.stderr.write(error.stderr as Buffer);
-      }
       throw new ForwardedError('Failed to determine yarn version', error);
     }
   });

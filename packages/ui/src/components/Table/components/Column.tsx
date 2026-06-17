@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-import {
-  Column as ReactAriaColumn,
-  type ColumnProps,
-} from 'react-aria-components';
-import { Icon } from '../../Icon';
-import { useStyles } from '../../../hooks/useStyles';
+import { Column as ReactAriaColumn } from 'react-aria-components';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { ColumnDefinition } from '../definition';
+import { ColumnProps } from '../types';
+import { RiArrowUpLine } from '@remixicon/react';
 
-/** @public */
-export const Column = (
-  props: Omit<ColumnProps, 'children'> & { children?: React.ReactNode },
-) => {
-  const { classNames } = useStyles('Table');
+/**
+ * A table column header cell with an optional sort toggle and support for resizable widths.
+ *
+ * @public
+ */
+export const Column = (props: ColumnProps) => {
+  const { ownProps, restProps } = useDefinition(ColumnDefinition, props);
+  const { classes, children } = ownProps;
 
   return (
-    <ReactAriaColumn className={classNames.head} {...props}>
-      {({ allowsSorting, sortDirection }) => (
-        <>
-          {props.children}
+    <ReactAriaColumn className={classes.root} {...restProps}>
+      {({ allowsSorting }) => (
+        <div className={classes.headContent}>
+          <span className={classes.headLabel}>{children}</span>
           {allowsSorting && (
-            <span aria-hidden="true" className={classNames.headSortButton}>
-              {sortDirection === 'ascending' ? (
-                <Icon name="arrow-up" size={16} />
-              ) : (
-                <Icon name="arrow-down" size={16} />
-              )}
+            <span aria-hidden="true" className={classes.headSortButton}>
+              <RiArrowUpLine size={16} />
             </span>
           )}
-        </>
+        </div>
       )}
     </ReactAriaColumn>
   );

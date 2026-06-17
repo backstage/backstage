@@ -17,7 +17,7 @@ Each extensions has a number of different properties that define how it behaves 
 
 The ID of an extension is used to uniquely identity it, and it should ideally be unique across the entire Backstage ecosystem. For each frontend app instance there can only be a single extension for any given ID. Installing multiple extensions with the same ID will either result in an error or one of the extensions will override the others. The ID is also used to reference the extensions from other extensions, in configuration, and in other places such as developer tools and analytics.
 
-When creating an extension you do not provide the ID directly. Instead, you indirectly or directly provide the kind, namespace, and name parts that make up the ID. The kind is always provided by the [extension blueprint](./23-extension-blueprints.md), the only exception is if you use [`createExtension`](#creating-an-extensions) directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
+When creating an extension you do not provide the ID directly. Instead, you indirectly or directly provide the kind, namespace, and name parts that make up the ID. The kind is always provided by the [extension blueprint](./23-extension-blueprints.md), the only exception is if you use [`createExtension`](#creating-an-extension) directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
 
 The extension ID will be constructed using the pattern `[<kind>:][<namespace>][/][<name>]`, where the separating `/` is only present if both a namespace and name are defined.
 
@@ -40,6 +40,43 @@ The attachment point is one of the configurable properties of an extension, and 
 Each extension in the app can be disabled, meaning it will not be instantiated and its parent will effectively not see it in its inputs. When creating an extension you can also specify whether extensions should be disabled by default. This makes it possible to for example install multiple extensions in an app, but only choose to enable one or a few of them depending on the environment.
 
 The ordering of extensions is sometimes very important, as it may for example affect in which order they show up in the UI. When an extension is toggled from disabled to enabled through configuration it resets the ordering of the extension, pushing it to the end of the list. It is generally recommended to leave extensions as disabled by default if their order is important, allowing for the order in which their are enabled in the configuration to determine their order in the app.
+
+### Conditions
+
+Extensions can also be conditionally enabled by providing an `if` predicate. This is available both on `createExtension(...)` directly and when creating extensions from blueprints.
+
+The predicate uses the same `FilterPredicate` syntax as elsewhere in Backstage, but in the frontend system it is evaluated against app-level data such as `featureFlags` and `permissions`. For example, the following page is only installed when the `experimental-features` flag is active:
+
+```tsx
+const examplePage = PageBlueprint.make({
+  params: {
+    path: '/example',
+    loader: () => import('./ExamplePage').then(m => <m.ExamplePage />),
+  },
+  if: { featureFlags: { $contains: 'experimental-features' } },
+});
+```
+
+You can also combine conditions using logical operators such as `$all`, `$any`, and `$not`:
+
+```tsx
+const guardedCard = CardBlueprint.make({
+  params: {
+    title: 'Guarded Card',
+    loader: () => import('./GuardedCard').then(m => <m.GuardedCard />),
+  },
+  if: {
+    $all: [
+      { featureFlags: { $contains: 'experimental-features' } },
+      { permissions: { $contains: 'catalog.entity.create' } },
+    ],
+  },
+});
+```
+
+Conditions are evaluated when the app tree is prepared, not continuously while the app is running. If the underlying feature flags or permissions change, the app needs to be prepared again in order for the extension tree to change, which in practice typically means reloading the app.
+
+If a plugin or module also provides an `if` predicate, it is combined with the extension-level predicate using logical `AND`. See the [plugin `if` option](./15-plugins.md#if-option) and [frontend modules](./25-extension-overrides.md#creating-a-frontend-module) sections for more details.
 
 ### Configuration & configuration schema
 
@@ -174,6 +211,8 @@ const navigationExtension = createExtension({
 
 The input (see [1] above) is an object that we create using `createExtensionInput`. The first argument is the set of extension data that we accept via this input, and works just like the `output` option. The second argument is optional, and it allows us to put constraints on the extensions that are attached to our input. If the `singleton: true` option is set, only a single extension can be attached at a time, and unless the `optional: true` option is set it will also be required that there is exactly one attached extension.
 
+Another option that can be used when creating an extension input is the `internal: true` option, which restricts the input to only accept extensions from the same plugin as the extension defining the input. Extensions from other plugins that attempt to attach to an internal input will be ignored, and a warning will be reported. This is useful when you want to limit extensibility to overrides and modules of your plugin, rather than letting it be open to any plugin.
+
 So how can we now attach the output to the parent extension's input? If we think about a navigation component, like the Sidebar in Backstage, there might be plugins that want to attach a link to their plugin to this navigation component. In this case the plugin only needs to know the extension `id` and the name of the extension `input` to attach the extension `output` returned by the `factory` to the specified extension:
 
 ```tsx
@@ -236,18 +275,18 @@ In addition to being able to access data passed through the input, you also have
 
 ## Extension configuration
 
-With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independent of the plugin & initiated several times. Therefore we created a possibility to configure each extension individually through config. The extension config schema is created using the [`zod`](https://zod.dev/) library, which in addition to TypeScript type checking also provides runtime validation and coercion. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
+With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independent of the plugin & initiated several times. Therefore we created a possibility to configure each extension individually through config. The extension config schema is created using any schema library that implements the [Standard Schema](https://github.com/standard-schema/standard-schema) interface with JSON Schema support, such as [`zod`](https://zod.dev/) v4 (`zod@^4.0.0`). In addition to TypeScript type checking, the schema also provides runtime validation and coercion. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
 
 ```tsx
+import { z } from 'zod';
+
 const navigationExtension = createExtension({
   // ...
   namespace: 'app',
   name: 'nav',
   // [3]: Extension `id` will be `app/nav` following the extension naming pattern
-  config: {
-    schema: {
-      title: z => z.string().default('Sidebar Title'),
-    },
+  configSchema: {
+    title: z.string().default('Sidebar Title'),
   },
   factory({ config }) {
     return [
@@ -282,12 +321,12 @@ In all examples so far we have defined the extension factory as a regular functi
 For example, this is how we could define an extension where its output depends on the configuration:
 
 ```tsx
+import { z } from 'zod';
+
 const exampleExtension = createExtension({
   // ...
-  config: {
-    schema: {
-      disableIcon: z.boolean().default(false),
-    },
+  configSchema: {
+    disableIcon: z.boolean().default(false),
   },
   output: [coreExtensionData.reactElement, iconDataRef.optional()],
   *factory({ config }) {
@@ -335,20 +374,74 @@ const routableExtension = createExtension({
 });
 ```
 
-## Multiple attachment points
+## Sharing extensions across multiple locations
 
-For some cases it can be useful to attach extensions to multiple parents. An example of this are Scaffolder field extensions or TechDocs addons that are consumed by multiple extensions. Specifying multiple attachments is done by providing an array of attachment points to the `attachTo` property of the extension. Keep in mind that this increases the complexity of your extension tree and should only be done when necessary. The following example shows how to attach our example extension to multiple parents:
+If you need to make extensions available in multiple locations throughout your app, use a Utility API that collects the extensions and allows multiple parent extensions to consume them. This pattern provides better separation of concerns and makes data flow more explicit.
+
+See the [Sharing Extensions Across Multiple Locations](./27-sharing-extensions.md) guide for a complete explanation of this pattern with detailed examples.
+
+## Relative attachment points
+
+When creating an extension or an [extension blueprint](./23-extension-blueprints.md) you can specify an attachment point that is relative to the current plugin. This is particularly useful for groups of blueprints that are part of a common hierarchy, with extensions from one blueprint attaching to extensions from the other blueprint. For example, the following pair of extension definitions could be installed multiple times in different plugins, each creating their own hierarchy:
 
 ```tsx
-const extension = createExtension({
-  name: 'my-extension',
-  attachTo: [
-    { id: 'my-first-parent', input: 'content' },
-    { id: 'my-second-parent', input: 'children' }, // The input names do not need to match
-  ],
+// Parent extension with a fixed attachment point
+const parentExtension = createExtension({
+  kind: 'section',
+  attachTo: { id: 'app/some-fixed-extension', input: 'children' },
+  inputs: {
+    content: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+    }),
+  },
+  output: [coreExtensionData.reactElement],
+  factory({ inputs }) {
+    return [
+      coreExtensionData.reactElement(
+        <section>
+          <h1>Section Title</h1>
+          {inputs.content.get(coreExtensionData.reactElement)}
+        </section>,
+      ),
+    ];
+  },
+});
+
+// Child extension with a relative attachment point
+const childExtension = createExtension({
+  kind: 'section-content',
+  attachTo: { relative: { kind: 'section' }, input: 'content' },
   output: [coreExtensionData.reactElement],
   factory() {
-    return [coreExtensionData.reactElement(<div>Hello World</div>)];
+    return [coreExtensionData.reactElement(<p>Section Content</p>)];
   },
 });
 ```
+
+## Extension input references
+
+Building on the relative attachment point concept, you can also reference extension inputs directly via the `inputs` property of an extension definition. This provides a more convenient and type-safe way to attach child extensions, especially when using blueprints that provide a nested hierarchy of extensions.
+
+Extension inputs references are always relative, this means that they can only be used for referencing extensions within the same plugin.
+
+Each extension definition exposes an `inputs` property that contains references to all of its defined inputs. These references can be passed directly to the `attachTo` option when creating child extensions:
+
+```tsx
+const parent = createExtension({
+  inputs: {
+    children: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  // other options...
+});
+
+// Create a child extension that attaches to the parent's input
+const child = createExtension({
+  attachTo: parent.inputs.children, // Direct reference to the input
+  output: [coreExtensionData.reactElement], // Outputs are verified against the parent input
+  // other options...
+});
+```
+
+These references are a type-safe way to attach child extensions, it both ensures that the parent input is present, as well as the child providing the required data for the parent.
+
+Under the hood, input references are resolved in the same way as relative attachment points, using the extension's kind, namespace, and name to construct the final attachment target.

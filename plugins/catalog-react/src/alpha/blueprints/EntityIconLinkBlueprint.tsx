@@ -20,8 +20,12 @@ import {
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 
-import { EntityPredicate } from '../predicates/types';
-import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+import {
+  FilterPredicate,
+  createZodV4FilterPredicateSchema,
+} from '@backstage/filter-predicates';
+
+import { z } from 'zod/v4';
 
 import {
   entityFilterExpressionDataRef,
@@ -50,17 +54,15 @@ export const EntityIconLinkBlueprint = createExtensionBlueprint({
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
   },
-  config: {
-    schema: {
-      label: z => z.string().optional(),
-      title: z => z.string().optional(),
-      filter: z => createEntityPredicateSchema(z).optional(),
-    },
+  configSchema: {
+    label: z.string().optional(),
+    title: z.string().optional(),
+    filter: createZodV4FilterPredicateSchema().optional(),
   },
   *factory(
     params: {
       useProps: () => Omit<IconLinkVerticalProps, 'color'>;
-      filter?: EntityPredicate | ((entity: Entity) => boolean);
+      filter?: FilterPredicate | ((entity: Entity) => boolean);
     },
     { config, node },
   ) {

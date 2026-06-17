@@ -16,3 +16,4 @@
 
 export * from './TextField';
 export * from './types';
+export { TextFieldDefinition } from './definition';

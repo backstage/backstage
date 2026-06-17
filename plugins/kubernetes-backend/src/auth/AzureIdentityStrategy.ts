@@ -36,10 +36,16 @@ export class AzureIdentityStrategy implements AuthenticationStrategy {
   private accessToken: AccessToken = { token: '', expiresOnTimestamp: 0 };
   private newTokenPromise: Promise<string> | undefined;
 
+  private readonly logger: LoggerService;
+  private readonly tokenCredential: TokenCredential;
+
   constructor(
-    private readonly logger: LoggerService,
-    private readonly tokenCredential: TokenCredential = new DefaultAzureCredential(),
-  ) {}
+    logger: LoggerService,
+    tokenCredential: TokenCredential = new DefaultAzureCredential(),
+  ) {
+    this.logger = logger;
+    this.tokenCredential = tokenCredential;
+  }
 
   public async getCredential(): Promise<KubernetesCredential> {
     if (!this.tokenRequiresRefresh()) {

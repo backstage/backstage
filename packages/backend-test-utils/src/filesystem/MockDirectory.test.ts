@@ -15,8 +15,8 @@
  */
 
 import fs from 'fs-extra';
-import os from 'os';
-import { join as joinPath, relative as relativePath } from 'path';
+import os from 'node:os';
+import { join as joinPath, relative as relativePath } from 'node:path';
 import { createMockDirectory, MockDirectory } from './MockDirectory';
 
 describe('createMockDirectory', () => {
@@ -271,14 +271,16 @@ describe('createMockDirectory', () => {
   });
 
   it('should reject non-child paths', () => {
-    const path = mockDir.resolve('/root/a.txt');
-    expect(() => mockDir.setContent({ '/root/a.txt': 'a' })).toThrow(
+    const pathOutside = createMockDirectory().path;
+
+    const path = mockDir.resolve(pathOutside);
+    expect(() => mockDir.setContent({ [pathOutside]: 'a' })).toThrow(
       `Provided path must resolve to a child path of the mock directory, got '${path}'`,
     );
-    expect(() => mockDir.addContent({ '/root/a.txt': 'a' })).toThrow(
+    expect(() => mockDir.addContent({ [pathOutside]: 'a' })).toThrow(
       `Provided path must resolve to a child path of the mock directory, got '${path}'`,
     );
-    expect(() => mockDir.content({ path: '/root/a.txt' })).toThrow(
+    expect(() => mockDir.content({ path: pathOutside })).toThrow(
       `Provided path must resolve to a child path of the mock directory, got '${path}'`,
     );
   });

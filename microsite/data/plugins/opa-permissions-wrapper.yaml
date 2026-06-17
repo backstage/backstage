@@ -8,3 +8,4 @@ documentation: https://github.com/Parsifal-M/backstage-opa-plugins/blob/main/plu
 iconUrl: /img/opapermlogo.png
 npmPackageName: '@parsifal-m/plugin-permission-backend-module-opa-wrapper'
 addedDate: '2024-02-26'
+status: active

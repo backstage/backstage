@@ -20,7 +20,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
 } from '../../routing';
-import { createApiRef } from '@backstage/core-plugin-api';
+import { createApiRef } from '../system';
 
 /**
  * TS magic for handling route parameters.
@@ -65,6 +65,7 @@ export interface RouteResolutionApi {
  *
  * @public
  */
-export const routeResolutionApiRef = createApiRef<RouteResolutionApi>({
+export const routeResolutionApiRef = createApiRef<RouteResolutionApi>().with({
   id: 'core.route-resolution',
+  pluginId: 'app',
 });

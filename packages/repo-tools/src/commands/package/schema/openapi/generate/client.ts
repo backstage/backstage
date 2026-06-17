@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import chalk from 'chalk';
-import { resolve } from 'path';
+import fs from 'fs-extra';
+import { resolve } from 'node:path';
+import { exec } from '../../../../../lib/exec';
 import {
   OPENAPI_IGNORE_FILES,
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
-import { paths as cliPaths } from '../../../../../lib/paths';
-import fs from 'fs-extra';
-import { exec } from '../../../../../lib/exec';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { targetPaths } from '@backstage/cli-common';
 import {
+  getOpenApiGeneratorKey,
   getPathToCurrentOpenApiSpec,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
@@ -35,13 +37,14 @@ async function generate(
   abortSignal?: AbortController,
 ) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
-  const resolvedOutputDirectory = cliPaths.resolveTargetRoot(
+  const resolvedOutputDirectory = targetPaths.resolveRoot(
     outputDirectory,
     OUTPUT_PATH,
   );
   const additionalProperties = toGeneratorAdditionalProperties({
     initialValue: clientAdditionalProperties,
   });
+  const generatorKey = await getOpenApiGeneratorKey(resolvedOpenapiPath);
 
   await fs.emptyDir(resolvedOutputDirectory);
 
@@ -67,7 +70,7 @@ async function generate(
         'templates/typescript-backstage-client.yaml',
       ),
       '--generator-key',
-      'v3.0',
+      generatorKey,
       additionalProperties
         ? `--additional-properties=${additionalProperties}`
         : '',
@@ -86,7 +89,7 @@ async function generate(
 
   await fs.writeFile(
     resolve(parentDirectory, 'index.ts'),
-    `// 
+    `//
     export * from './generated';`,
   );
 
@@ -94,15 +97,28 @@ async function generate(
     signal: abortSignal?.signal,
   });
 
-  const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
-  if (prettier) {
+  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
+  if (await fs.pathExists(prettier)) {
     await exec(`${prettier} --write ${parentDirectory}`, [], {
       signal: abortSignal?.signal,
     });
   }
 
-  fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
+  // Deduplicate imports in generated files
+  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
+  for (const file of generatedFiles) {
+    if (file.endsWith('.ts')) {
+      deduplicateImports(resolve(resolvedOutputDirectory, file));
+    }
+  }
 
+  fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
+  fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
+
+  fs.rmSync(resolve(resolvedOutputDirectory, 'docs'), {
+    recursive: true,
+    force: true,
+  });
   fs.rmSync(resolve(resolvedOutputDirectory, '.openapi-generator'), {
     recursive: true,
     force: true,

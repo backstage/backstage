@@ -16,15 +16,6 @@
 
 export interface Config {
   app?: {
-    experimental?: {
-      /**
-       * @visibility frontend
-       * @deepVisibility frontend
-       * @deprecated This is no longer experimental; use `app.packages` instead.
-       */
-      packages?: 'all' | { include?: string[]; exclude?: string[] };
-    };
-
     /**
      * Controls what packages are loaded by the new frontend system.
      *

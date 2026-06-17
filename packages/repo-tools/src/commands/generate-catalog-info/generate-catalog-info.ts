@@ -16,7 +16,7 @@
 
 import YAML from 'js-yaml';
 import pLimit from 'p-limit';
-import { relative as relativePath, resolve as resolvePath } from 'path';
+import { relative as relativePath, resolve as resolvePath } from 'node:path';
 import { yamlOverwrite } from 'yaml-diff-patch';
 import chalk from 'chalk';
 import { PackageGraph, PackageRole } from '@backstage/cli-node';

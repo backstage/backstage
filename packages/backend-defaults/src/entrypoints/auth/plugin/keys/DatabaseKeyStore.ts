@@ -62,10 +62,13 @@ export class DatabaseKeyStore implements KeyStore {
     return new DatabaseKeyStore(client, logger);
   }
 
-  private constructor(
-    private readonly client: Knex,
-    private readonly logger: LoggerService,
-  ) {}
+  private readonly client: Knex;
+  private readonly logger: LoggerService;
+
+  private constructor(client: Knex, logger: LoggerService) {
+    this.client = client;
+    this.logger = logger;
+  }
 
   async addKey(options: {
     id: string;

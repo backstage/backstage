@@ -19,15 +19,15 @@ import {
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { assertError, serializeError, stringifyError } from '@backstage/errors';
-import { Hash } from 'crypto';
+import { serializeError, stringifyError, toError } from '@backstage/errors';
+import { Hash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
-import { metrics, trace } from '@opentelemetry/api';
+import { trace } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import { CatalogProcessingOrchestrator, EntityProcessingResult } from './types';
-import { Stitcher, stitchingStrategyFromConfig } from '../stitching/types';
+import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { startTaskPipeline } from './TaskPipeline';
 import { Config } from '@backstage/config';
 import {
@@ -36,9 +36,10 @@ import {
   withActiveSpan,
 } from '../util/opentelemetry';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
-import { EventBroker, EventsService } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
 import { LoggerService, SchedulerService } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 const CACHE_TTL = 5;
 
@@ -59,12 +60,11 @@ const stableStringifyArray = (arr: any[]) => {
 // is just one.
 export class DefaultCatalogProcessingEngine {
   private readonly config: Config;
-  private readonly scheduler?: SchedulerService;
+  private readonly scheduler: SchedulerService;
   private readonly logger: LoggerService;
   private readonly knex: Knex;
   private readonly processingDatabase: ProcessingDatabase;
   private readonly orchestrator: CatalogProcessingOrchestrator;
-  private readonly stitcher: Stitcher;
   private readonly createHash: () => Hash;
   private readonly pollingIntervalMs: number;
   private readonly orphanCleanupIntervalMs: number;
@@ -73,18 +73,17 @@ export class DefaultCatalogProcessingEngine {
     errors: Error[];
   }) => Promise<void> | void;
   private readonly tracker: ProgressTracker;
-  private readonly eventBroker?: EventBroker | EventsService;
+  private readonly events: EventsService;
 
   private stopFunc?: () => void;
 
   constructor(options: {
     config: Config;
-    scheduler?: SchedulerService;
+    scheduler: SchedulerService;
     logger: LoggerService;
     knex: Knex;
     processingDatabase: ProcessingDatabase;
     orchestrator: CatalogProcessingOrchestrator;
-    stitcher: Stitcher;
     createHash: () => Hash;
     pollingIntervalMs?: number;
     orphanCleanupIntervalMs?: number;
@@ -93,7 +92,8 @@ export class DefaultCatalogProcessingEngine {
       errors: Error[];
     }) => Promise<void> | void;
     tracker?: ProgressTracker;
-    eventBroker?: EventBroker | EventsService;
+    events: EventsService;
+    metrics: MetricsService;
   }) {
     this.config = options.config;
     this.scheduler = options.scheduler;
@@ -101,13 +101,12 @@ export class DefaultCatalogProcessingEngine {
     this.knex = options.knex;
     this.processingDatabase = options.processingDatabase;
     this.orchestrator = options.orchestrator;
-    this.stitcher = options.stitcher;
     this.createHash = options.createHash;
     this.pollingIntervalMs = options.pollingIntervalMs ?? 1_000;
     this.orphanCleanupIntervalMs = options.orphanCleanupIntervalMs ?? 30_000;
     this.onProcessingError = options.onProcessingError;
-    this.tracker = options.tracker ?? progressTracker();
-    this.eventBroker = options.eventBroker;
+    this.tracker = options.tracker ?? progressTracker(options.metrics);
+    this.events = options.events;
 
     this.stopFunc = undefined;
   }
@@ -140,10 +139,13 @@ export class DefaultCatalogProcessingEngine {
       pollingIntervalMs: this.pollingIntervalMs,
       loadTasks: async count => {
         try {
-          const { items } =
-            await this.processingDatabase.getProcessableEntities(this.knex, {
-              processBatchSize: count,
-            });
+          const { items } = await this.processingDatabase.transaction(
+            async tx => {
+              return this.processingDatabase.getProcessableEntities(tx, {
+                processBatchSize: count,
+              });
+            },
+          );
           return items;
         } catch (error) {
           this.logger.warn('Failed to load processing items', error);
@@ -201,7 +203,7 @@ export class DefaultCatalogProcessingEngine {
             const location =
               unprocessedEntity?.metadata?.annotations?.[ANNOTATION_LOCATION];
             if (result.errors.length) {
-              this.eventBroker?.publish({
+              this.events.publish({
                 topic: CATALOG_ERRORS_TOPIC,
                 eventPayload: {
                   entity: entityRef,
@@ -251,7 +253,7 @@ export class DefaultCatalogProcessingEngine {
             // non-catastrophic things such as due to validation errors, as well as if
             // something fatal happens inside the processing for other reasons. In any
             // case, this means we can't trust that anything in the output is okay. So
-            // just store the errors and trigger a stich so that they become visible to
+            // just store the errors and trigger a stitch so that they become visible to
             // the outside.
             if (!result.ok) {
               // notify the error listener if the entity can not be processed.
@@ -278,7 +280,8 @@ export class DefaultCatalogProcessingEngine {
                 });
               });
 
-              await this.stitcher.stitch({
+              await markForStitching({
+                knex: this.knex,
                 entityRefs: [stringifyEntityRef(unprocessedEntity)],
               });
 
@@ -333,14 +336,14 @@ export class DefaultCatalogProcessingEngine {
               }
             });
 
-            await this.stitcher.stitch({
+            await markForStitching({
+              knex: this.knex,
               entityRefs: setOfThingsToStitch,
             });
 
             track.markSuccessfulWithChanges();
           } catch (error) {
-            assertError(error);
-            track.markFailed(error);
+            track.markFailed(toError(error));
           }
         });
       },
@@ -354,13 +357,10 @@ export class DefaultCatalogProcessingEngine {
       return () => {};
     }
 
-    const stitchingStrategy = stitchingStrategyFromConfig(this.config);
-
     const runOnce = async () => {
       try {
         const n = await deleteOrphanedEntities({
           knex: this.knex,
-          strategy: stitchingStrategy,
         });
         if (n > 0) {
           this.logger.info(`Deleted ${n} orphaned entities`);
@@ -370,31 +370,23 @@ export class DefaultCatalogProcessingEngine {
       }
     };
 
-    if (this.scheduler) {
-      const abortController = new AbortController();
+    const abortController = new AbortController();
+    this.scheduler.scheduleTask({
+      id: 'catalog_orphan_cleanup',
+      frequency: { milliseconds: this.orphanCleanupIntervalMs },
+      timeout: { milliseconds: this.orphanCleanupIntervalMs * 0.8 },
+      fn: runOnce,
+      signal: abortController.signal,
+    });
 
-      this.scheduler.scheduleTask({
-        id: 'catalog_orphan_cleanup',
-        frequency: { milliseconds: this.orphanCleanupIntervalMs },
-        timeout: { milliseconds: this.orphanCleanupIntervalMs * 0.8 },
-        fn: runOnce,
-        signal: abortController.signal,
-      });
-
-      return () => {
-        abortController.abort();
-      };
-    }
-
-    const intervalKey = setInterval(runOnce, this.orphanCleanupIntervalMs);
     return () => {
-      clearInterval(intervalKey);
+      abortController.abort();
     };
   }
 }
 
 // Helps wrap the timing and logging behaviors
-function progressTracker() {
+function progressTracker(metrics: MetricsService) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promProcessedEntities = createCounterMetric({
     name: 'catalog_processed_entities_count',
@@ -416,13 +408,12 @@ function progressTracker() {
     help: 'The amount of delay between being scheduled for processing, and the start of actually being processed, DEPRECATED, use OpenTelemetry metrics instead',
   });
 
-  const meter = metrics.getMeter('default');
-  const processedEntities = meter.createCounter(
+  const processedEntities = metrics.createCounter(
     'catalog.processed.entities.count',
     { description: 'Amount of entities processed' },
   );
 
-  const processingDuration = meter.createHistogram(
+  const processingDuration = metrics.createHistogram(
     'catalog.processing.duration',
     {
       description: 'Time spent executing the full processing flow',
@@ -430,7 +421,7 @@ function progressTracker() {
     },
   );
 
-  const processorsDuration = meter.createHistogram(
+  const processorsDuration = metrics.createHistogram(
     'catalog.processors.duration',
     {
       description: 'Time spent executing catalog processors',
@@ -438,7 +429,7 @@ function progressTracker() {
     },
   );
 
-  const processingQueueDelay = meter.createHistogram(
+  const processingQueueDelay = metrics.createHistogram(
     'catalog.processing.queue.delay',
     {
       description:

@@ -38,15 +38,13 @@ import {
 } from '@backstage/plugin-kubernetes-node';
 
 import type { Request } from 'express';
-import { IncomingHttpHeaders } from 'http';
+import { IncomingHttpHeaders } from 'node:http';
 import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
-
-export const APPLICATION_JSON: string = 'application/json';
 
 /**
  * The header that is used to specify the cluster name.
@@ -297,11 +295,11 @@ export class KubernetesProxy {
     originalHeaders: IncomingHttpHeaders,
   ): KubernetesRequestAuth {
     const obj: KubernetesRequestAuth = {};
-    const headerSplitted = header.split('-');
-    if (headerSplitted.length >= 4) {
-      const framework = headerSplitted[3].toLowerCase();
-      if (headerSplitted.length >= 5) {
-        const provider = headerSplitted.slice(4).join('-').toLowerCase();
+    const headerSplit = header.split('-');
+    if (headerSplit.length >= 4) {
+      const framework = headerSplit[3].toLowerCase();
+      if (headerSplit.length >= 5) {
+        const provider = headerSplit.slice(4).join('-').toLowerCase();
         obj[framework] = { [provider]: originalHeaders[header] };
       } else {
         obj[framework] = originalHeaders[header];

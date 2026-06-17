@@ -285,7 +285,7 @@ describe('rootHttpRouterServiceFactory', () => {
 
     // Immediately start failing the readiness health check
     await request(app).get('/.backstage/health/v1/readiness').expect(503, {
-      message: 'Backend is shuttting down',
+      message: 'Backend is shutting down',
       status: 'error',
     });
 
@@ -301,7 +301,7 @@ describe('rootHttpRouterServiceFactory', () => {
       .expect(200, { status: 'ok' });
 
     await request(app).get('/.backstage/health/v1/readiness').expect(503, {
-      message: 'Backend is shuttting down',
+      message: 'Backend is shutting down',
       status: 'error',
     });
 
@@ -312,7 +312,7 @@ describe('rootHttpRouterServiceFactory', () => {
       .expect(200, { status: 'ok' });
 
     await request(app).get('/.backstage/health/v1/readiness').expect(503, {
-      message: 'Backend is shuttting down',
+      message: 'Backend is shutting down',
       status: 'error',
     });
 
@@ -322,5 +322,66 @@ describe('rootHttpRouterServiceFactory', () => {
         jest.useRealTimers();
       }),
     ).resolves.toBeUndefined();
+  });
+
+  it('should start successfully with server configuration options', async () => {
+    const { app } = await createExpressApp(
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            listen: { port: 0 },
+            server: {
+              headersTimeout: 30000,
+              requestTimeout: '45s',
+              keepAliveTimeout: 'PT1M',
+              timeout: { seconds: 120 },
+              maxHeadersCount: 2000,
+              maxRequestsPerSocket: 100,
+            },
+          },
+        },
+      }),
+    );
+
+    // Verify the server starts and responds to health checks
+    await request(app)
+      .get('/.backstage/health/v1/liveness')
+      .expect(200, { status: 'ok' });
+  });
+
+  it('should start successfully with partial server configuration', async () => {
+    const { app } = await createExpressApp(
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            listen: { port: 0 },
+            server: {
+              headersTimeout: 60000,
+              maxHeadersCount: 1500,
+            },
+          },
+        },
+      }),
+    );
+
+    await request(app)
+      .get('/.backstage/health/v1/liveness')
+      .expect(200, { status: 'ok' });
+  });
+
+  it('should start successfully with no server configuration', async () => {
+    const { app } = await createExpressApp(
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            listen: { port: 0 },
+          },
+        },
+      }),
+    );
+
+    await request(app)
+      .get('/.backstage/health/v1/liveness')
+      .expect(200, { status: 'ok' });
   });
 });

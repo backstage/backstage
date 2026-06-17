@@ -36,6 +36,8 @@ Well written input-enabled extension often have extension creator functions that
 
 Like with other extension types, you replace Utility APIs with your own custom implementation using [extension overrides](../architecture/25-extension-overrides.md).
 
+Note that it is only possible to override a Utility API using a module for the plugin that originally provided the API. Attempting to override an API using a different plugin or module for a different plugin will result in a conflict error.
+
 ```tsx title="in your app"
 /* highlight-add-start */
 import { createFrontendModule } from '@backstage/frontend-plugin-api';

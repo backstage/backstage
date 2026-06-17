@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,20 @@ export * from '../models/ErrorRequest.model';
 export * from '../models/ErrorResponse.model';
 export * from '../models/GetEntitiesByRefsRequest.model';
 export * from '../models/GetLocations200ResponseInner.model';
+export * from '../models/GetLocationsByQueryRequest.model';
 export * from '../models/Location.model';
 export * from '../models/LocationInput.model';
 export * from '../models/LocationSpec.model';
+export * from '../models/LocationsQueryResponse.model';
+export * from '../models/LocationsQueryResponsePageInfo.model';
 export * from '../models/ModelError.model';
 export * from '../models/NullableEntity.model';
+export * from '../models/QueryEntitiesByPredicateRequest.model';
+export * from '../models/QueryEntitiesByPredicateRequestFullTextFilter.model';
+export * from '../models/QueryEntitiesByPredicateRequestOrderByInner.model';
+export * from '../models/QueryEntityFacetsByPredicateRequest.model';
 export * from '../models/RecursivePartialEntity.model';
 export * from '../models/RecursivePartialEntityMeta.model';
-export * from '../models/RecursivePartialEntityMetaAllOf.model';
 export * from '../models/RecursivePartialEntityRelation.model';
 export * from '../models/RefreshEntityRequest.model';
 export * from '../models/ValidateEntity400Response.model';

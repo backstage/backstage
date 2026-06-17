@@ -22,12 +22,17 @@ export {
   type ScaffolderTemplateFormPreviewerClassKey,
 } from './components';
 
-export { scaffolderTranslationRef } from '../translation';
-export * from './api';
+import { scaffolderTranslationRef as _scaffolderTranslationRef } from '../translation';
 
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-scaffolder` instead.
+ */
+export const scaffolderTranslationRef = _scaffolderTranslationRef;
+export * from './api';
 export {
   formFieldsApiRef,
   type ScaffolderFormFieldsApi,
-} from '@backstage/plugin-scaffolder-react/alpha';
+} from './formFieldsApi';
 
 export { default } from './plugin';

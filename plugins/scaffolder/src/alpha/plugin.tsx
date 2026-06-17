@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import {
-  rootRouteRef,
   actionsRouteRef,
   editRouteRef,
   registerComponentRouteRef,
+  rootRouteRef,
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
@@ -28,13 +28,26 @@ import {
   viewTechDocRouteRef,
 } from '../routes';
 import {
+  entityNamePickerFormField,
+  entityPickerFormField,
+  entityTagsPickerFormField,
+  multiEntityPickerFormField,
+  myGroupsPickerFormField,
+  ownedEntityPickerFormField,
+  ownerPickerFormField,
+  repoBranchPickerFormField,
+  repoOwnerPickerFormField,
   repoUrlPickerFormField,
-  scaffolderNavItem,
-  scaffolderPage,
   scaffolderApi,
+  scaffolderPage,
+  scaffolderTemplatesSubPage,
+  scaffolderTasksSubPage,
+  scaffolderActionsSubPage,
+  scaffolderEditorSubPage,
+  scaffolderTemplatingExtensionsSubPage,
 } from './extensions';
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { formFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
+import { formFieldsApi } from './formFieldsApi';
 import { formDecoratorsApi } from './api';
 import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { useScaffolderTemplateIconLinkProps } from './hooks/useScaffolderTemplateIconLinkProps';
@@ -51,8 +64,10 @@ const scaffolderEntityIconLink = EntityIconLinkBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'scaffolder',
+  title: 'Create',
+  icon: <CreateComponentIcon fontSize="inherit" />,
   info: { packageJson: () => import('../../package.json') },
-  routes: convertLegacyRouteRefs({
+  routes: {
     root: rootRouteRef,
     selectedTemplate: selectedTemplateRouteRef,
     ongoingTask: scaffolderTaskRouteRef,
@@ -60,18 +75,31 @@ export default createFrontendPlugin({
     listTasks: scaffolderListTaskRouteRef,
     edit: editRouteRef,
     templatingExtensions: templatingExtensionsRouteRef,
-  }),
-  externalRoutes: convertLegacyRouteRefs({
+  },
+  externalRoutes: {
     registerComponent: registerComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
-  }),
+  },
   extensions: [
     scaffolderApi,
     scaffolderPage,
-    scaffolderNavItem,
+    scaffolderTemplatesSubPage,
+    scaffolderTasksSubPage,
+    scaffolderActionsSubPage,
+    scaffolderEditorSubPage,
+    scaffolderTemplatingExtensionsSubPage,
     scaffolderEntityIconLink,
     formDecoratorsApi,
     formFieldsApi,
     repoUrlPickerFormField,
+    entityNamePickerFormField,
+    entityPickerFormField,
+    ownerPickerFormField,
+    entityTagsPickerFormField,
+    multiEntityPickerFormField,
+    myGroupsPickerFormField,
+    ownedEntityPickerFormField,
+    repoBranchPickerFormField,
+    repoOwnerPickerFormField,
   ],
 });

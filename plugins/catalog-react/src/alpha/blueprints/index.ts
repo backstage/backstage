@@ -22,9 +22,13 @@ export {
 } from './EntityContentLayoutBlueprint';
 export {
   EntityHeaderBlueprint,
-  type EntityContentLayoutHeaderProps,
+  type EntityHeaderBlueprintProps,
 } from './EntityHeaderBlueprint';
-export { defaultEntityContentGroups } from './extensionData';
+export {
+  defaultEntityContentGroups,
+  defaultEntityContentGroupDefinitions,
+  type EntityContentGroupDefinitions,
+} from './extensionData';
 export type { EntityCardType } from './extensionData';
 export {
   EntityContextMenuItemBlueprint,

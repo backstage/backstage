@@ -31,3 +31,4 @@ export type {
   CardConfig,
 } from './extensions';
 export * from './overridableComponents';
+export { homeReactTranslationRef } from './translation';

@@ -39,6 +39,9 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  QueryLocationsInitialRequest,
+  QueryLocationsRequest,
+  QueryLocationsResponse,
   StreamEntitiesRequest,
   ValidateEntityResponse,
 } from '@backstage/catalog-client';
@@ -107,6 +110,16 @@ export interface CatalogService {
     options: CatalogServiceRequestOptions,
   ): Promise<GetLocationsResponse>;
 
+  queryLocations(
+    request: QueryLocationsRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): Promise<QueryLocationsResponse>;
+
+  streamLocations(
+    request: QueryLocationsInitialRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): AsyncIterable<Location[]>;
+
   getLocationById(
     id: string,
     options: CatalogServiceRequestOptions,
@@ -126,6 +139,12 @@ export interface CatalogService {
     id: string,
     options: CatalogServiceRequestOptions,
   ): Promise<void>;
+
+  updateLocation(
+    id: string,
+    location: { type?: string; target: string },
+    options: CatalogServiceRequestOptions,
+  ): Promise<Location>;
 
   getLocationByEntity(
     entityRef: string | CompoundEntityRef,
@@ -254,6 +273,26 @@ class DefaultCatalogService implements CatalogService {
     );
   }
 
+  async queryLocations(
+    request: QueryLocationsRequest,
+    options: CatalogServiceRequestOptions,
+  ): Promise<QueryLocationsResponse> {
+    return this.#catalogApi.queryLocations(
+      request,
+      await this.#getOptions(options),
+    );
+  }
+
+  async *streamLocations(
+    request: QueryLocationsInitialRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): AsyncIterable<Location[]> {
+    yield* this.#catalogApi.streamLocations(
+      request,
+      await this.#getOptions(options),
+    );
+  }
+
   async getLocationById(
     id: string,
     options: CatalogServiceRequestOptions,
@@ -290,6 +329,18 @@ class DefaultCatalogService implements CatalogService {
   ): Promise<void> {
     return this.#catalogApi.removeLocationById(
       id,
+      await this.#getOptions(options),
+    );
+  }
+
+  async updateLocation(
+    id: string,
+    location: { type?: string; target: string },
+    options: CatalogServiceRequestOptions,
+  ): Promise<Location> {
+    return this.#catalogApi.updateLocation(
+      id,
+      location,
       await this.#getOptions(options),
     );
   }

@@ -23,11 +23,13 @@ test('App should render the welcome page', async ({ page }) => {
   await expect(enterButton).toBeVisible();
   await enterButton.click();
 
-  await expect(page.getByText('My Company Catalog')).toBeVisible();
-
-  const supportButton = page.getByTestId('support-button');
-  await expect(supportButton).toBeVisible();
-  await supportButton.click();
-
-  await expect(page.getByText('#backstage')).toBeVisible();
+  // Verify the sidebar navigation is visible after sign-in
+  await expect(
+    page
+      .getByRole('navigation')
+      .getByRole('link', { name: 'Catalog', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'APIs', exact: true }),
+  ).toBeVisible();
 });

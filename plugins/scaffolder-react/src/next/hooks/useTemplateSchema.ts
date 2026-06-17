@@ -60,12 +60,13 @@ export const useTemplateSchema = (
     })
     // Then filter out the properties that are not enabled with feature flag
     .map(step => {
+      // Title is rendered at the top of the page, so let's ignore this from jsonschemaform
+      const { title, ...stepSchema } = step.schema;
+
       const strippedSchema = {
         ...step,
         schema: {
-          ...step.schema,
-          // Title is rendered at the top of the page, so let's ignore this from jsonschemaform
-          title: undefined,
+          ...stepSchema,
         },
       } as ParsedTemplateSchema;
 

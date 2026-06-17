@@ -49,11 +49,19 @@ export class DefaultWorkspaceService implements WorkspaceService {
     return new DefaultWorkspaceService(task, workspaceProvider, config);
   }
 
+  private readonly task: CurrentClaimedTask;
+  private readonly workspaceProvider: WorkspaceProvider;
+  private readonly config?: Config;
+
   private constructor(
-    private readonly task: CurrentClaimedTask,
-    private readonly workspaceProvider: WorkspaceProvider,
-    private readonly config?: Config,
-  ) {}
+    task: CurrentClaimedTask,
+    workspaceProvider: WorkspaceProvider,
+    config?: Config,
+  ) {
+    this.task = task;
+    this.workspaceProvider = workspaceProvider;
+    this.config = config;
+  }
 
   public async serializeWorkspace(options: { path: string }): Promise<void> {
     if (this.isWorkspaceSerializationEnabled()) {

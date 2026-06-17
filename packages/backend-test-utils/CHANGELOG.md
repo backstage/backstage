@@ -1,5 +1,451 @@
 # @backstage/backend-test-utils
 
+## 1.11.4
+
+### Patch Changes
+
+- 2e895ea: Internal refactor.
+- 2d181c0: Increased MySQL connection and pool timeouts to reduce flaky `connect ETIMEDOUT` failures in CI. The test MySQL container now also uses `mysql_native_password` for cheaper connection handshakes and disables binary logging.
+- 06a2035: Updated `MockActionsRegistry` to support the new secrets schema. The mock now validates secrets against the declared schema, rejects missing secrets for actions that require them, and forwards secrets to the action handler.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.3
+  - @backstage/backend-app-api@1.7.1
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-auth-node@0.7.2
+  - @backstage/plugin-events-node@0.4.23
+
+## 1.11.4-next.1
+
+### Patch Changes
+
+- 2d181c0: Increased MySQL connection and pool timeouts to reduce flaky `connect ETIMEDOUT` failures in CI. The test MySQL container now also uses `mysql_native_password` for cheaper connection handshakes and disables binary logging.
+- 06a2035: Updated `MockActionsRegistry` to support the new secrets schema. The mock now validates secrets against the declared schema, rejects missing secrets for actions that require them, and forwards secrets to the action handler.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.3-next.1
+  - @backstage/backend-plugin-api@1.9.2-next.1
+
+## 1.11.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.2-next.0
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/backend-app-api@1.7.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
+## 1.11.3
+
+### Patch Changes
+
+- 7fb12b8: Added a new tracing service mock to be leveraged in tests
+- ada7df7: Fixed `mockCredentials` to include the internal `version: 'v1'` field on all credential objects (`none()`, `user()`, `limitedUser()`, `service()`), and fixed `user()` to encode the user entity ref into the token (matching `user.token(ref)` behavior). This makes mock credentials compatible with `toInternalBackstageCredentials()`, which validates the version field, and ensures that credentials for different users produce different tokens.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- 6209065: Added `context` and `propagation` to the alpha `TracingService`. Plugins can bridge OpenTelemetry context across async boundaries via `tracing.propagation.extract(tracing.context.active(), carrier)` followed by `tracing.context.with(ctx, fn)`, and read propagated baggage via `tracing.propagation.getActiveBaggage()` or `tracing.propagation.getBaggage(ctx)`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/backend-defaults@0.17.1
+  - @backstage/backend-app-api@1.7.0
+  - @backstage/plugin-auth-node@0.7.1
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/config@1.3.8
+  - @backstage/plugin-events-node@0.4.22
+
+## 1.11.3-next.2
+
+### Patch Changes
+
+- 7fb12b8: Added a new tracing service mock to be leveraged in tests
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.1
+  - @backstage/backend-defaults@0.17.1-next.2
+
+## 1.11.3-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.1-next.1
+  - @backstage/plugin-auth-node@0.7.1-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
+## 1.11.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-app-api@1.7.0-next.0
+  - @backstage/backend-defaults@0.17.1-next.0
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/types@1.2.2
+
+## 1.11.2
+
+### Patch Changes
+
+- 4559806: Added support for typed `examples` on actions registered via the actions registry. Action authors can now provide examples with compile-time-checked `input` and `output` values that match their schema definitions.
+- f44c6bd: Deduplicated internal readiness-polling helpers used by the database and cache test infrastructure.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/backend-defaults@0.17.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-auth-node@0.7.0
+  - @backstage/backend-app-api@1.6.1
+  - @backstage/config@1.3.7
+  - @backstage/plugin-events-node@0.4.21
+  - @backstage/plugin-permission-common@0.9.8
+
+## 1.11.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-auth-node@0.7.0-next.2
+  - @backstage/backend-app-api@1.6.1-next.2
+  - @backstage/backend-defaults@0.16.1-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+  - @backstage/plugin-permission-common@0.9.8-next.0
+
+## 1.11.2-next.1
+
+### Patch Changes
+
+- 4559806: Added support for typed `examples` on actions registered via the actions registry. Action authors can now provide examples with compile-time-checked `input` and `output` values that match their schema definitions.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-defaults@0.16.1-next.1
+  - @backstage/plugin-auth-node@0.7.0-next.1
+  - @backstage/backend-app-api@1.6.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
+## 1.11.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.16.1-next.0
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/backend-app-api@1.6.1-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+
+## 1.11.1
+
+### Patch Changes
+
+- dee4283: Added `pluginId` field to `ActionsServiceAction` type, populated from the registering plugin's metadata.
+- 164711a: Added `cancelTask` to `MockSchedulerService` and mock scheduler service factory.
+- 62f0a53: Fixed error forwarding in the actions registry so that known errors like `InputError` and `NotFoundError` thrown by actions preserve their original status codes and messages instead of being wrapped in `ForwardedError` and coerced to 500.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- 1ee5b28: Adds a new metrics service mock to be leveraged in tests
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/backend-defaults@0.16.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-auth-node@0.6.14
+  - @backstage/backend-app-api@1.6.0
+  - @backstage/plugin-events-node@0.4.20
+
+## 1.11.1-next.2
+
+### Patch Changes
+
+- 164711a: Added `cancelTask` to `MockSchedulerService` and mock scheduler service factory.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/backend-defaults@0.16.0-next.2
+  - @backstage/backend-app-api@1.6.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+
+## 1.11.1-next.1
+
+### Patch Changes
+
+- 62f0a53: Fixed error forwarding in the actions registry so that known errors like `InputError` and `NotFoundError` thrown by actions preserve their original status codes and messages instead of being wrapped in `ForwardedError` and coerced to 500.
+- Updated dependencies
+  - @backstage/backend-defaults@0.16.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.1
+  - @backstage/backend-app-api@1.5.1-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-common@0.9.6
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- 1ee5b28: Adds a new metrics service mock to be leveraged in tests
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.3-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/backend-app-api@1.5.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.14-next.0
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-common@0.9.6
+
+## 1.11.0
+
+### Minor Changes
+
+- 42abfb1: Added `createServiceMock`, a public utility for creating `ServiceMock` instances for custom service refs. This allows plugin authors to define mock creators for their own services following the same pattern as the built-in `mockServices` mocks.
+
+### Patch Changes
+
+- f1d29b4: Updated `startTestBackend` to support factory-based extension points (v1.1 format) in addition to the existing direct implementation format.
+- 7455dae: Use node prefix on native imports
+- 68eb322: Added `@types/jest` as an optional peer dependency, since jest types are exposed in the public API surface.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-app-api@1.5.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/backend-defaults@0.15.2
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-events-node@0.4.19
+
+## 1.11.0-next.1
+
+### Minor Changes
+
+- 42abfb1: Added `createServiceMock`, a public utility for creating `ServiceMock` instances for custom service refs. This allows plugin authors to define mock creators for their own services following the same pattern as the built-in `mockServices` mocks.
+
+### Patch Changes
+
+- 68eb322: Added `@types/jest` as an optional peer dependency, since jest types are exposed in the public API surface.
+- Updated dependencies
+  - @backstage/backend-app-api@1.5.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-auth-node@0.6.13-next.1
+  - @backstage/plugin-events-node@0.4.19-next.0
+
+## 1.10.4-next.0
+
+### Patch Changes
+
+- f1d29b4: Updated `startTestBackend` to support factory-based extension points (v1.1 format) in addition to the existing direct implementation format.
+- 7455dae: Use node prefix on native imports
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/backend-app-api@1.5.0-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.3
+
+### Patch Changes
+
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/backend-app-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-permission-common@0.9.4
+
+## 1.10.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/plugin-auth-node@0.6.10
+
+## 1.10.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.10.2
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 8be23a4: Switched `textextensions` dependency for `text-extensions`.
+- 5a737e1: Fix PostgreSQL 18 `TestDatabases` by pinning the data directory
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/backend-plugin-api@1.6.0
+
+## 1.10.2-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 8be23a4: Switched `textextensions` dependency for `text-extensions`.
+- 5a737e1: Fix PostgreSQL 18 `TestDatabases` by pinning the data directory
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/backend-app-api@1.4.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-app-api@1.4.0-next.0
+  - @backstage/backend-defaults@0.14.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.10.0
+
+### Minor Changes
+
+- d57b13b: Added support for Postgres 18 to the available `TestDatabases`.
+
+  Note that the set of _default_ databases to test against for users of the `TestDatabases` class was also updated to include Postgres 14 and 18, instead of 13 and 17. If you need to override this, you can pass in an explicit `ids` argument, for example `ids: ['POSTGRES_17', 'POSTGRES_13', 'SQLITE_3']`.
+
+### Patch Changes
+
+- f3001fd: Tweak some of the mock services to have more precise types
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/backend-app-api@1.3.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config@1.3.6
+
+## 1.10.0-next.2
+
+### Patch Changes
+
+- f3001fd: Tweak some of the mock services to have more precise types
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.2
+
+## 1.10.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/backend-app-api@1.3.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- d57b13b: Added support for Postgres 18 to the available `TestDatabases`.
+
+  Note that the set of _default_ databases to test against for users of the `TestDatabases` class was also updated to include Postgres 14 and 18, instead of 13 and 17. If you need to override this, you can pass in an explicit `ids` argument, for example `ids: ['POSTGRES_17', 'POSTGRES_13', 'SQLITE_3']`.
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/backend-app-api@1.2.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 1.9.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/backend-app-api@1.2.8
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-auth-node@0.6.8
+  - @backstage/plugin-events-node@0.4.16
+  - @backstage/plugin-permission-common@0.9.2
+
+## 1.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/backend-app-api@1.2.8-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/backend-app-api@1.2.7
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 1.9.0
 
 ### Minor Changes

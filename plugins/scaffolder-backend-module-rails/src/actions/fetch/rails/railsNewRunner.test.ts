@@ -27,8 +27,8 @@ jest.mock(
       commandExists(...args),
 );
 
-import path from 'path';
-import { PassThrough } from 'stream';
+import path from 'node:path';
+import { PassThrough } from 'node:stream';
 import { RailsNewRunner } from './railsNewRunner';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ContainerRunner } from './ContainerRunner';

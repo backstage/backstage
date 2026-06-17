@@ -14,51 +14,30 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { CellProfileProps } from '../types';
 import { Text } from '../../Text/Text';
 import { Link } from '../../Link/Link';
-import { Avatar } from '@base-ui-components/react/avatar';
-import { useStyles } from '../../../hooks/useStyles';
+import { Avatar } from '../../Avatar';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { CellProfileDefinition } from '../definition';
 import { Cell as ReactAriaCell } from 'react-aria-components';
 
-/** @public */
+/**
+ * A table cell that renders an avatar image alongside a name, with an optional description and link.
+ *
+ * @public
+ */
 export const CellProfile = (props: CellProfileProps) => {
-  const {
-    className,
-    src,
-    name,
-    href,
-    description,
-    color = 'primary',
-    ...rest
-  } = props;
-  const { classNames } = useStyles('Table');
+  const { ownProps, restProps } = useDefinition(CellProfileDefinition, props);
+  const { classes, src, name, href, description, color } = ownProps;
 
   return (
-    <ReactAriaCell className={clsx(classNames.cell, className)} {...rest}>
-      <div className={classNames.cellContentWrapper}>
-        <div className={classNames.cellIcon}>
-          {src && (
-            <Avatar.Root className={classNames.cellProfileAvatar}>
-              <Avatar.Image
-                src={src}
-                width="20"
-                height="20"
-                className={classNames.cellProfileAvatarImage}
-              />
-              <Avatar.Fallback className={classNames.cellProfileAvatarFallback}>
-                {(name || '')
-                  .split(' ')
-                  .map(word => word[0])
-                  .join('')
-                  .toLocaleUpperCase('en-US')
-                  .slice(0, 1)}
-              </Avatar.Fallback>
-            </Avatar.Root>
-          )}
-        </div>
-        <div className={classNames.cellContent}>
+    <ReactAriaCell className={classes.root} {...restProps}>
+      <div className={classes.cellContentWrapper}>
+        {src && name && (
+          <Avatar src={src} name={name} size="x-small" purpose="decoration" />
+        )}
+        <div className={classes.cellContent}>
           {name && href ? (
             <Link href={href}>{name}</Link>
           ) : (

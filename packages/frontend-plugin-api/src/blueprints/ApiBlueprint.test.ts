@@ -16,11 +16,11 @@
 
 import { createExtensionInput } from '../wiring';
 import { ApiBlueprint } from './ApiBlueprint';
-import { createApiRef } from '@backstage/core-plugin-api';
+import { createApiRef } from '../apis/system';
 
 describe('ApiBlueprint', () => {
   it('should create an extension with sensible defaults', () => {
-    const api = createApiRef<{ foo: string }>({ id: 'test' });
+    const api = createApiRef<{ foo: string }>().with({ id: 'test' });
 
     const extension = ApiBlueprint.make({
       params: defineParams =>
@@ -43,6 +43,7 @@ describe('ApiBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "api",
         "name": "test",
@@ -57,8 +58,8 @@ describe('ApiBlueprint', () => {
   });
 
   it('should properly type the API factory', () => {
-    const fooApi = createApiRef<{ foo: string }>({ id: 'foo' });
-    const barApi = createApiRef<{ bar: string }>({ id: 'bar' });
+    const fooApi = createApiRef<{ foo: string }>().with({ id: 'foo' });
+    const barApi = createApiRef<{ bar: string }>().with({ id: 'bar' });
 
     expect('test').not.toBe('failing without assertions');
 
@@ -152,7 +153,7 @@ describe('ApiBlueprint', () => {
   });
 
   it('should create an extension with custom factory', () => {
-    const api = createApiRef<{ foo: string }>({ id: 'test' });
+    const api = createApiRef<{ foo: string }>().with({ id: 'test' });
     const factory = jest.fn(() => ({ foo: 'bar' }));
 
     const extension = ApiBlueprint.makeWithOverrides({
@@ -182,31 +183,29 @@ describe('ApiBlueprint', () => {
         },
         "configSchema": {
           "parse": [Function],
-          "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "test": {
-                "default": "test",
-                "type": "string",
-              },
-            },
-            "type": "object",
-          },
+          "schema": [Function],
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {
           "test": {
             "$$type": "@backstage/ExtensionInput",
             "config": {
+              "internal": false,
               "optional": false,
               "singleton": false,
+            },
+            "context": {
+              "input": "test",
+              "kind": "api",
+              "name": "test",
             },
             "extensionData": [
               [Function],
             ],
             "replaces": undefined,
+            "withContext": [Function],
           },
         },
         "kind": "api",

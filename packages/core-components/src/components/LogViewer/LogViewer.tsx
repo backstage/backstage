@@ -28,6 +28,10 @@ const RealLogViewer = lazy(() =>
  */
 export interface LogViewerProps {
   /**
+   * Callback function to handle the download log action, and show the download button.
+   */
+  onDownloadLog?: () => void;
+  /**
    * The text of the logs to display.
    *
    * The LogViewer component is optimized for appending content at the end of the text.

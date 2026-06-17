@@ -32,16 +32,18 @@ import {
 
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 
-import { graphql } from '@octokit/graphql';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import {
   GithubEntityProviderConfig,
   readProviderConfigs,
 } from './GithubEntityProviderConfig';
 import {
+  createGraphqlClient,
   getOrganizationRepositories,
   getOrganizationRepository,
   RepositoryResponse,
+  GithubPageSizes,
+  DEFAULT_PAGE_SIZES,
 } from '../lib/github';
 import {
   satisfiesForkFilter,
@@ -187,7 +189,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
           const logger = this.logger.child({
             class: GithubEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
           try {
             await this.refresh(logger);
@@ -247,9 +249,10 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       url: orgUrl,
     });
 
-    return graphql.defaults({
-      baseUrl: this.integration.apiBaseUrl,
+    return createGraphqlClient({
       headers,
+      baseUrl: this.integration.apiBaseUrl!,
+      logger: this.logger,
     });
   }
 
@@ -262,8 +265,19 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     for (const organization of organizations) {
       const client = await this.createGraphqlClient(organization);
 
+      const pageSizes: GithubPageSizes = {
+        ...DEFAULT_PAGE_SIZES,
+        ...this.config.pageSizes,
+      };
+
       const { repositories: repositoriesFromGithub } =
-        await getOrganizationRepositories(client, organization, catalogPath);
+        await getOrganizationRepositories(
+          client,
+          organization,
+          catalogPath,
+          pageSizes,
+          this.config.filters.branch,
+        );
       repositories = repositories.concat(
         repositoriesFromGithub.map(r =>
           this.createRepoFromGithubResponse(r, organization),
@@ -652,6 +666,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         organization,
         repository.name,
         catalogPath,
+        this.config.filters.branch,
       ).then(r =>
         r ? this.createRepoFromGithubResponse(r, organization) : null,
       );

@@ -35,3 +35,13 @@ export const ANNOTATION_GITHUB_USER_LOGIN = 'github.com/user-login';
  * @public
  */
 export const ANNOTATION_GITHUB_TEAM_SLUG = 'github.com/team-slug';
+
+/**
+ * The value of this annotation is the unique identifier for a user on
+ * [GitHub](https://github.com) (either the public one, or a private GitHub
+ * Enterprise installation) that is related to this entity. This is a stable
+ * identifier that persists even if the user changes their login name.
+ *
+ * @public
+ */
+export const ANNOTATION_GITHUB_USER_ID = 'github.com/user-id';

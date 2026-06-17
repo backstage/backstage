@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import path from 'path';
+import path from 'node:path';
 import {
   ScmIntegrationRegistry,
   ScmIntegrations,
@@ -26,12 +26,15 @@ import {
   patchIndexPreBuild,
   runCommand,
   storeEtagMetadata,
+  validateDocsDirectory,
   validateMkdocsYaml,
 } from './helpers';
 
 import {
   patchMkdocsYmlPreBuild,
+  patchMkdocsYmlWithFontDisabled,
   patchMkdocsYmlWithPlugins,
+  sanitizeMkdocsYml,
 } from './mkdocsPatchers';
 import {
   GeneratorBase,
@@ -53,8 +56,10 @@ export class TechdocsGenerator implements GeneratorBase {
   /**
    * The default docker image (and version) used to generate content. Public
    * and static so that techdocs-node consumers can use the same version.
+   *
+   * See {@link https://hub.docker.com/r/spotify/techdocs/tags} for list of available versions.
    */
-  public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.6';
+  public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.8';
   private readonly logger: LoggerService;
   private readonly containerRunner?: TechDocsContainerRunner;
   private readonly options: GeneratorConfig;
@@ -110,6 +115,13 @@ export class TechdocsGenerator implements GeneratorBase {
     // validate the docs_dir first
     const docsDir = await validateMkdocsYaml(inputDir, content);
 
+    // Remove unsupported configuration keys
+    await sanitizeMkdocsYml(
+      mkdocsYmlPath,
+      childLogger,
+      this.options.dangerouslyAllowAdditionalKeys,
+    );
+
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
         mkdocsYmlPath,
@@ -123,6 +135,12 @@ export class TechdocsGenerator implements GeneratorBase {
       await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
     }
 
+    // Validate that no symlinks in the docs directory point outside the input directory
+    // This prevents path traversal attacks where malicious symlinks could leak host files
+    const resolvedDocsDir = path.join(inputDir, docsDir ?? 'docs');
+
+    await validateDocsDirectory(resolvedDocsDir, inputDir);
+
     // patch the list of mkdocs plugins
     const defaultPlugins = this.options.defaultPlugins ?? [];
 
@@ -134,6 +152,9 @@ export class TechdocsGenerator implements GeneratorBase {
     }
 
     await patchMkdocsYmlWithPlugins(mkdocsYmlPath, childLogger, defaultPlugins);
+    if (this.options.disableExternalFonts) {
+      await patchMkdocsYmlWithFontDisabled(mkdocsYmlPath, childLogger);
+    }
 
     // Directories to bind on container
     const mountDirs = {
@@ -244,6 +265,12 @@ export function readGeneratorConfig(
     ),
     defaultPlugins: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.defaultPlugins',
+    ),
+    dangerouslyAllowAdditionalKeys: config.getOptionalStringArray(
+      'techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys',
+    ),
+    disableExternalFonts: config.getOptionalBoolean(
+      'techdocs.generator.mkdocs.disableExternalFonts',
     ),
   };
 }

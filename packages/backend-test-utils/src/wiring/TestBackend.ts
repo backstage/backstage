@@ -26,7 +26,7 @@ import {
 import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
-// Direct internal import to avoid duplication
+import { isPromise, unwrapFeature } from '@internal/backend';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   InternalBackendFeature,
@@ -43,6 +43,8 @@ import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import {
   actionsRegistryServiceMock,
   actionsServiceMock,
+  metricsServiceMock,
+  tracingServiceMock,
 } from '../alpha/services';
 
 /** @public */
@@ -92,6 +94,8 @@ export const defaultServiceFactories = [
   // Alpha services
   actionsRegistryServiceMock.factory(),
   actionsServiceMock.factory(),
+  metricsServiceMock.factory(),
+  tracingServiceMock.factory(),
 ];
 
 /**
@@ -107,9 +111,15 @@ function createPluginsForOrphanModules(features: Array<BackendFeature>) {
     if (isInternalBackendRegistrations(feature)) {
       const registrations = feature.getRegistrations();
       for (const registration of registrations) {
-        if (registration.type === 'plugin') {
+        if (
+          registration.type === 'plugin' ||
+          registration.type === 'plugin-v1.1'
+        ) {
           pluginIds.add(registration.pluginId);
-        } else if (registration.type === 'module') {
+        } else if (
+          registration.type === 'module' ||
+          registration.type === 'module-v1.1'
+        ) {
           modulePluginIds.add(registration.pluginId);
         }
       }
@@ -160,7 +170,7 @@ function createExtensionPointTestModules(
   const extensionPointsByPlugin = new Map<string, string[]>();
 
   for (const registration of registrations) {
-    if (registration.type === 'module') {
+    if (registration.type === 'module' || registration.type === 'module-v1.1') {
       const testDep = Object.values(registration.init.deps).filter(dep =>
         extensionPointsToSort.has(dep.id),
       );
@@ -208,30 +218,6 @@ function createExtensionPointTestModules(
   }
 
   return modules;
-}
-
-function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'then' in value &&
-    typeof value.then === 'function'
-  );
-}
-
-// Same as in the backend-app-api, handles double defaults from dynamic imports
-function unwrapFeature(
-  feature: BackendFeature | { default: BackendFeature },
-): BackendFeature {
-  if ('$$type' in feature) {
-    return feature;
-  }
-
-  if ('default' in feature) {
-    return feature.default;
-  }
-
-  return feature;
 }
 
 const backendInstancesToCleanUp = new Array<Backend>();

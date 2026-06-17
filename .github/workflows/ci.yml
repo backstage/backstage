@@ -2,9 +2,11 @@ name: CI
 on:
   # NOTE: If you change these you must update ci-noop.yml as well
   pull_request:
-    paths-ignore:
-      - 'microsite/**'
-      - 'beps/**'
+    paths:
+      - '**'
+      - '!microsite/**'
+      - 'microsite/data/**'
+      - '!beps/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20.x, 22.x]
+        node-version: [22.x, 24.x]
 
     env:
       CI: true
@@ -28,20 +30,33 @@ jobs:
     name: Install ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      # Store the PR number for the Sync Pull Requests workflow
+      - name: Save PR context
+        if: matrix.node-version == '22.x'
+        run: |
+          mkdir -p ./context
+          echo "${{ github.event.pull_request.number }}" > ./context/pr-number
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: matrix.node-version == '22.x'
+        with:
+          name: pr-context
+          path: context/
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
+          corepack: true
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -55,7 +70,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20.x, 22.x]
+        node-version: [22.x, 24.x]
 
     env:
       CI: true
@@ -64,20 +79,21 @@ jobs:
     name: Verify ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
+          corepack: true
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -121,12 +137,19 @@ jobs:
       - name: verify doc links
         run: node scripts/verify-links.js
 
+      - name: verify plugin directory
+        run: node scripts/verify-plugin-directory.js
       - name: build all packages
         run: yarn backstage-cli repo build --all
 
-        # For now BUI has a custom build script and needs to be built separately
-      - name: build BUI
-        run: yarn --cwd packages/ui build
+        # Build docs-ui to ensure documentation site builds successfully
+      - name: install docs-ui dependencies
+        working-directory: docs-ui
+        run: yarn install
+
+      - name: build docs-ui
+        working-directory: docs-ui
+        run: yarn build
 
       - name: verify type dependencies
         run: yarn lint:type-deps
@@ -144,6 +167,23 @@ jobs:
             exit 1
           fi
 
+  typos:
+    runs-on: ubuntu-latest
+
+    name: Spell Check
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: check for typos
+        uses: crate-ci/typos@631208b7aac2daa8b707f55e7331f9112b0e062d # v1.44.0
+        with:
+          config: typos.toml
+
   # The test job runs all tests as well as any verification step that
   # requires a diff towards master.
   test:
@@ -154,12 +194,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20.x, 22.x]
+        node-version: [22.x, 24.x]
 
     name: Test ${{ matrix.node-version }}
     services:
-      postgres17:
-        image: postgres:17
+      postgres18:
+        image: postgres:18
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -169,8 +209,8 @@ jobs:
           --health-retries 5
         ports:
           - 5432/tcp
-      postgres13:
-        image: postgres:13
+      postgres14:
+        image: postgres:14
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -203,14 +243,14 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=8192 --no-node-snapshot --experimental-vm-modules
+      NODE_OPTIONS: --max-old-space-size=8192 --experimental-vm-modules
       INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
       INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
       INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: fetch master branch
         run: git fetch origin master
 
@@ -220,13 +260,14 @@ jobs:
         run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
+          corepack: true
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -236,7 +277,7 @@ jobs:
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore backstage-cli cache
-        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
@@ -247,20 +288,20 @@ jobs:
         run: yarn prettier:check --cache --cache-location .cache/backstage-cli/.prettier-cache
 
       - name: lint changed packages
-        run: yarn backstage-cli repo lint --since origin/master --successCache --successCacheDir .cache/backstage-cli
+        run: yarn backstage-cli repo lint --since origin/master --success-cache --success-cache-dir .cache/backstage-cli
 
       - name: test changed packages
-        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --since origin/master --successCache --successCacheDir .cache/backstage-cli
+        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --since origin/master --success-cache --success-cache-dir .cache/backstage-cli
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_POSTGRES17_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres17.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres18.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres14.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
           BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
       - name: save backstage-cli cache
-        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         if: always()
         with:
           path: .cache/backstage-cli

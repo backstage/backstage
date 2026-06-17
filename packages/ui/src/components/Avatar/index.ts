@@ -15,4 +15,5 @@
  */
 
 export { Avatar } from './Avatar';
-export type { AvatarProps } from './types';
+export { AvatarDefinition } from './definition';
+export type { AvatarOwnProps, AvatarProps } from './types';

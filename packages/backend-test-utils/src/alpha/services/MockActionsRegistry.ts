@@ -17,9 +17,9 @@ import {
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { z, AnyZodObject } from 'zod';
+import { z, AnyZodObject } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { mockCredentials } from '../../services';
 import {
@@ -65,19 +65,24 @@ import {
 export class MockActionsRegistry
   implements ActionsRegistryService, ActionsService
 {
-  private constructor(private readonly logger: LoggerService) {}
+  private readonly logger: LoggerService;
+
+  private constructor(logger: LoggerService) {
+    this.logger = logger;
+  }
 
   static create(opts: { logger: LoggerService }) {
     return new MockActionsRegistry(opts.logger);
   }
 
-  readonly actions: Map<string, ActionsRegistryActionOptions<any, any>> =
+  readonly actions: Map<string, ActionsRegistryActionOptions<any, any, any>> =
     new Map();
 
   async list(): Promise<{ actions: ActionsServiceAction[] }> {
     return {
       actions: Array.from(this.actions.entries()).map(([id, action]) => ({
         id,
+        pluginId: 'test',
         name: action.name,
         title: action.title,
         description: action.description,
@@ -86,6 +91,7 @@ export class MockActionsRegistry
           idempotent: action.attributes?.idempotent ?? false,
           readOnly: action.attributes?.readOnly ?? false,
         },
+        examples: action.examples,
         schema: {
           input: action.schema?.input
             ? zodToJsonSchema(action.schema.input(z))
@@ -93,6 +99,9 @@ export class MockActionsRegistry
           output: action.schema?.output
             ? zodToJsonSchema(action.schema.output(z))
             : zodToJsonSchema(z.object({})),
+          ...(action.schema?.secrets && {
+            secrets: zodToJsonSchema(action.schema.secrets(z)),
+          }),
         } as ActionsServiceAction['schema'],
       })),
     };
@@ -101,6 +110,7 @@ export class MockActionsRegistry
   async invoke(opts: {
     id: string;
     input?: JsonObject;
+    secrets?: JsonObject;
     credentials?: BackstageCredentials;
   }): Promise<{ output: JsonValue }> {
     const action = this.actions.get(opts.id);
@@ -122,37 +132,59 @@ export class MockActionsRegistry
       throw new InputError(`Invalid input to action "${opts.id}"`, input.error);
     }
 
-    try {
-      const result = await action.action({
-        input: input.data,
-        credentials: opts.credentials ?? mockCredentials.none(),
-        logger: this.logger,
-      });
-
-      const output = action.schema?.output
-        ? action.schema.output(z).safeParse(result?.output)
-        : ({ success: true, data: result?.output } as const);
-
-      if (!output.success) {
-        throw new InputError(
-          `Invalid output from action "${opts.id}"`,
-          output.error,
-        );
-      }
-
-      return { output: output.data };
-    } catch (error) {
-      throw new ForwardedError(
-        `Failed execution of action "${opts.id}"`,
-        error,
+    if (action.schema?.secrets && !opts.secrets) {
+      throw new InputError(
+        `Action "${opts.id}" requires secrets but none were provided`,
       );
     }
+
+    if (!action.schema?.secrets && opts.secrets) {
+      throw new InputError(`Action "${opts.id}" does not accept secrets`);
+    }
+
+    const secrets = action.schema?.secrets
+      ? action.schema.secrets(z).safeParse(opts.secrets)
+      : ({ success: true, data: undefined } as const);
+
+    if (!secrets.success) {
+      throw new InputError(
+        `Invalid secrets for action "${opts.id}"`,
+        secrets.error,
+      );
+    }
+
+    const result = await action.action({
+      input: input.data,
+      secrets: secrets.data,
+      credentials: opts.credentials ?? mockCredentials.none(),
+      logger: this.logger,
+    });
+
+    const output = action.schema?.output
+      ? action.schema.output(z).safeParse(result?.output)
+      : ({ success: true, data: result?.output } as const);
+
+    if (!output.success) {
+      throw new InputError(
+        `Invalid output from action "${opts.id}"`,
+        output.error,
+      );
+    }
+
+    return { output: output.data };
   }
 
   register<
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
-  >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void {
+    TSecretsSchema extends AnyZodObject | undefined = undefined,
+  >(
+    options: ActionsRegistryActionOptions<
+      TInputSchema,
+      TOutputSchema,
+      TSecretsSchema
+    >,
+  ): void {
     // hardcode test: prefix similar to how the default actions registry does it
     // and other places around the testing ecosystem:
     // https://github.com/backstage/backstage/blob/a9219496d5c073aaa0b8caf32ece10455cf65e61/packages/backend-test-utils/src/next/services/mockServices.ts#L321

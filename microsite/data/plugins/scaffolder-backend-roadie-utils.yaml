@@ -8,3 +8,4 @@ documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/pl
 iconUrl: /img/scaffolder-utils-logo.png
 npmPackageName: '@roadiehq/scaffolder-backend-module-utils'
 addedDate: '2022-03-03'
+status: active

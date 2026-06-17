@@ -236,6 +236,7 @@ export function collectLegacyRoutes(
           // todo(blam): why do we not use the inputs here?
           return originalFactory({
             path: normalizeRoutePath(path),
+            noHeader: true,
             routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
             loader: async () =>
               compatWrapper(

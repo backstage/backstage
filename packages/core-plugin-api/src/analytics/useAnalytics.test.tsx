@@ -16,9 +16,12 @@
 
 import { renderHook } from '@testing-library/react';
 import { useAnalytics } from './useAnalytics';
-import { useApi } from '../apis';
+import { useApi } from '@backstage/frontend-plugin-api';
 
-jest.mock('../apis');
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
+  useApi: jest.fn(),
+}));
 
 const mocked = (f: Function) => f as jest.Mock;
 

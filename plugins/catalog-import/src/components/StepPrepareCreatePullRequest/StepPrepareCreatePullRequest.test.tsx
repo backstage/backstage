@@ -15,7 +15,11 @@
  */
 
 import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  defaultEntityPresentation,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   mockApis,
@@ -42,6 +46,17 @@ describe('<StepPrepareCreatePullRequest />', () => {
 
   const catalogApi = catalogApiMock.mock();
 
+  const entityPresentationApi: typeof entityPresentationApiRef.T = {
+    forEntity(entityOrRef, context) {
+      const presentation = defaultEntityPresentation(entityOrRef, context);
+      return {
+        snapshot: presentation,
+        update$: { subscribe: () => ({ unsubscribe: () => {} }) } as any,
+        promise: Promise.resolve(presentation),
+      };
+    },
+  };
+
   const errorApi: jest.Mocked<typeof errorApiRef.T> = {
     error$: jest.fn(),
     post: jest.fn(),
@@ -54,6 +69,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
       apis={[
         [catalogImportApiRef, catalogImportApi],
         [catalogApiRef, catalogApi],
+        [entityPresentationApiRef, entityPresentationApi],
         [errorApiRef, errorApi],
         [configApiRef, configApi],
       ]}

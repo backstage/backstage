@@ -28,6 +28,7 @@ import { InfoCard } from '../../layout/InfoCard';
 export default {
   title: 'Data Display/Status',
   component: StatusOK,
+  tags: ['!manifest'],
 };
 
 const data = [

@@ -35,13 +35,14 @@ import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
 import { AuthDatabase } from '../database/AuthDatabase';
-import { readBackstageTokenExpiration } from './readBackstageTokenExpiration';
+import { readBackstageTokenExpiration } from './readTokenExpiration';
 import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcRouter } from './OidcRouter';
 import { OidcDatabase } from '../database/OidcDatabase';
+import { OfflineAccessService } from './OfflineAccessService';
 
 interface RouterOptions {
   logger: LoggerService;
@@ -54,6 +55,7 @@ interface RouterOptions {
   catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
   httpAuth: HttpAuthService;
+  offlineAccess?: OfflineAccessService;
 }
 
 export async function createRouter(
@@ -85,11 +87,10 @@ export async function createRouter(
     database,
   });
 
-  const omitClaimsFromToken = config.getOptionalBoolean(
-    'auth.omitIdentityTokenOwnershipClaim',
-  )
-    ? ['ent']
-    : [];
+  const omitClaimsFromToken =
+    config.getOptionalBoolean('auth.omitIdentityTokenOwnershipClaim') ?? true
+      ? ['ent']
+      : [];
 
   let tokenIssuer: TokenIssuer;
   if (keyStore instanceof StaticKeyStore) {
@@ -163,6 +164,7 @@ export async function createRouter(
     logger,
     httpAuth,
     config,
+    offlineAccess: options.offlineAccess,
   });
 
   router.use(oidcRouter.getRouter());

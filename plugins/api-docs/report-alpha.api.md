@@ -6,27 +6,34 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
-import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { JSXElementConstructor } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { RouteRef } from '@backstage/frontend-plugin-api';
+import { ReactElement } from 'react';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const apiDocsTranslationRef: TranslationRef<
   'api-docs',
   {
+    readonly 'apiDefinitionCard.error.title': 'Could not fetch the API';
+    readonly 'apiDefinitionCard.rawButtonTitle': 'Raw';
     readonly 'apiDefinitionDialog.closeButtonTitle': 'Close';
     readonly 'apiDefinitionDialog.tabsAriaLabel': 'API definition options';
+    readonly 'apiDefinitionDialog.rawButtonTitle': 'Raw';
     readonly 'apiDefinitionDialog.toggleButtonAriaLabel': 'Toggle API Definition Dialog';
     readonly 'defaultApiExplorerPage.title': 'APIs';
     readonly 'defaultApiExplorerPage.subtitle': '{{orgName}} API Explorer';
@@ -50,7 +57,7 @@ export const apiDocsTranslationRef: TranslationRef<
     readonly 'providingComponentsCard.error.title': 'Could not load components';
     readonly 'providingComponentsCard.title': 'Providers';
     readonly 'providingComponentsCard.emptyContent.title': 'No component provides this API.';
-    readonly apisCardHelpLinkTitle: 'Learn how to change this';
+    readonly apisCardHelpLinkTitle: 'Learn how to change this.';
   }
 >;
 
@@ -60,10 +67,10 @@ const _default: OverridableFrontendPlugin<
     root: RouteRef<undefined>;
   },
   {
-    registerApi: ExternalRouteRef<undefined>;
+    registerApi: ExternalRouteRef<undefined, true>;
   },
   {
-    'api:api-docs/config': ExtensionDefinition<{
+    'api:api-docs/config': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'config';
       config: {};
@@ -78,16 +85,16 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'entity-card:api-docs/consumed-apis': ExtensionDefinition<{
+    'entity-card:api-docs/consumed-apis': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'consumed-apis';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -115,20 +122,20 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
-    'entity-card:api-docs/consuming-components': ExtensionDefinition<{
+    'entity-card:api-docs/consuming-components': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'consuming-components';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -156,20 +163,20 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
-    'entity-card:api-docs/definition': ExtensionDefinition<{
+    'entity-card:api-docs/definition': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'definition';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -197,20 +204,20 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
-    'entity-card:api-docs/has-apis': ExtensionDefinition<{
+    'entity-card:api-docs/has-apis': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'has-apis';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -238,20 +245,20 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
-    'entity-card:api-docs/provided-apis': ExtensionDefinition<{
+    'entity-card:api-docs/provided-apis': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'provided-apis';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -279,20 +286,20 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
-    'entity-card:api-docs/providing-components': ExtensionDefinition<{
+    'entity-card:api-docs/providing-components': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'providing-components';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -320,35 +327,37 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
-    'entity-content:api-docs/apis': ExtensionDefinition<{
+    'entity-content:api-docs/apis': OverridableExtensionDefinition<{
       kind: 'entity-content';
       name: 'apis';
       config: {
         path: string | undefined;
         title: string | undefined;
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         group: string | false | undefined;
+        icon: string | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
+        filter?: FilterPredicate | undefined;
         group?: string | false | undefined;
+        icon?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
             }
           >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -370,6 +379,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            string | ReactElement<any, string | JSXElementConstructor<any>>,
+            'catalog.entity-content-icon',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
@@ -379,36 +395,39 @@ const _default: OverridableFrontendPlugin<
         title: string;
         defaultGroup?: [Error: `Use the 'group' param instead`];
         group?: keyof defaultEntityContentGroups | (string & {});
+        icon?: string | ReactElement;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        routeRef?: RouteRef_2;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'entity-content:api-docs/definition': ExtensionDefinition<{
+    'entity-content:api-docs/definition': OverridableExtensionDefinition<{
       kind: 'entity-content';
       name: 'definition';
       config: {
         path: string | undefined;
         title: string | undefined;
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         group: string | false | undefined;
+        icon: string | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
+        filter?: FilterPredicate | undefined;
         group?: string | false | undefined;
+        icon?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
             }
           >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -430,6 +449,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            string | ReactElement<any, string | JSXElementConstructor<any>>,
+            'catalog.entity-content-icon',
+            {
+              optional: true;
+            }
           >;
       inputs: {};
       params: {
@@ -439,69 +465,88 @@ const _default: OverridableFrontendPlugin<
         title: string;
         defaultGroup?: [Error: `Use the 'group' param instead`];
         group?: keyof defaultEntityContentGroups | (string & {});
+        icon?: string | ReactElement;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        routeRef?: RouteRef_2;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'nav-item:api-docs': ExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      };
-    }>;
-    'page:api-docs': ExtensionDefinition<{
+    'page:api-docs': OverridableExtensionDefinition<{
       config: {
         initiallySelectedFilter: 'all' | 'owned' | 'starred' | undefined;
-      } & {
         path: string | undefined;
+        title: string | undefined;
       };
       configInput: {
         initiallySelectedFilter?: 'all' | 'owned' | 'starred' | undefined;
-      } & {
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
+            string,
+            'core.title',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
             {
               optional: true;
             }
           >;
       inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
+        pages: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef_2<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'core.title',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              IconElement,
+              'core.icon',
+              {
+                optional: true;
+              }
+            >,
           {
-            optional: boolean;
-            singleton: boolean;
+            singleton: false;
+            optional: false;
+            internal: false;
           }
         >;
       };
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        title?: string;
+        icon?: IconElement;
+        loader?: () => Promise<JSX_2.Element>;
+        routeRef?: RouteRef_2;
+        noHeader?: boolean;
       };
     }>;
   }

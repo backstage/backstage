@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject, JsonValue } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**
@@ -22,13 +22,21 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
  */
 export type ActionsServiceAction = {
   id: string;
+  pluginId: string;
   name: string;
   title: string;
   description: string;
   schema: {
     input: JSONSchema7;
     output: JSONSchema7;
+    secrets?: JSONSchema7;
   };
+  examples?: Array<{
+    title: string;
+    description?: string;
+    input: JsonObject;
+    output?: JsonObject;
+  }>;
   attributes: {
     readOnly: boolean;
     destructive: boolean;
@@ -46,6 +54,7 @@ export interface ActionsService {
   invoke(opts: {
     id: string;
     input?: JsonObject;
+    secrets?: JsonObject;
     credentials: BackstageCredentials;
   }): Promise<{ output: JsonValue }>;
 }

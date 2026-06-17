@@ -27,10 +27,13 @@ import {
  * @public
  */
 export class ErrorAlerter implements ErrorApi {
-  constructor(
-    private readonly alertApi: AlertApi,
-    private readonly errorApi: ErrorApi,
-  ) {}
+  private readonly alertApi: AlertApi;
+  private readonly errorApi: ErrorApi;
+
+  constructor(alertApi: AlertApi, errorApi: ErrorApi) {
+    this.alertApi = alertApi;
+    this.errorApi = errorApi;
+  }
 
   post(error: ErrorApiError, context?: ErrorApiErrorContext) {
     if (!context?.hidden) {

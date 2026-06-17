@@ -1,5 +1,268 @@
 # @backstage/app-defaults
 
+## 1.7.9
+
+### Patch Changes
+
+- 74ed625: Provide toastApi for old frontend system
+
+  Fixes 'No implementation available for apiRef{core.toast}' on old frontend system.
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-app-api@1.20.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-permission-react@0.5.2
+
+## 1.7.9-next.1
+
+### Patch Changes
+
+- 74ed625: Provide toastApi for old frontend system
+
+  Fixes 'No implementation available for apiRef{core.toast}' on old frontend system.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/core-app-api@1.20.2-next.0
+  - @backstage/plugin-permission-react@0.5.2-next.0
+
+## 1.7.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+
+## 1.7.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/core-app-api@1.20.1
+  - @backstage/plugin-permission-react@0.5.1
+
+## 1.7.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/core-app-api@1.20.1-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/theme@0.7.3
+  - @backstage/plugin-permission-react@0.5.1-next.0
+
+## 1.7.7
+
+### Patch Changes
+
+- 400aa23: Added `FetchMiddlewares.clarifyFailures()` to the default fetch API middleware stack.
+- Updated dependencies
+  - @backstage/theme@0.7.3
+  - @backstage/core-app-api@1.20.0
+  - @backstage/core-components@0.18.9
+  - @backstage/plugin-permission-react@0.5.0
+  - @backstage/core-plugin-api@1.12.5
+
+## 1.7.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.7.3-next.0
+  - @backstage/core-app-api@1.20.0-next.2
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/plugin-permission-react@0.4.42-next.1
+
+## 1.7.7-next.1
+
+### Patch Changes
+
+- 400aa23: Added `FetchMiddlewares.clarifyFailures()` to the default fetch API middleware stack.
+- Updated dependencies
+  - @backstage/core-app-api@1.20.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+
+## 1.7.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-app-api@1.19.7-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/theme@0.7.2
+  - @backstage/plugin-permission-react@0.4.42-next.0
+
+## 1.7.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/core-app-api@1.19.6
+  - @backstage/plugin-permission-react@0.4.41
+
+## 1.7.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.19.6-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/theme@0.7.2
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
+## 1.7.5
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/core-components@0.18.7
+  - @backstage/core-app-api@1.19.5
+  - @backstage/theme@0.7.2
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-permission-react@0.4.40
+
+## 1.7.5-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.5-next.1
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/plugin-permission-react@0.4.40-next.1
+  - @backstage/theme@0.7.2-next.1
+
+## 1.7.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.7.2-next.0
+  - @backstage/core-components@0.18.7-next.1
+
+## 1.7.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/core-app-api@1.19.4-next.0
+  - @backstage/theme@0.7.1
+  - @backstage/plugin-permission-react@0.4.40-next.0
+
+## 1.7.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5
+
+## 1.7.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 1.7.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.19.3
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+  - @backstage/plugin-permission-react@0.4.39
+
+## 1.7.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.19.3-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-permission-react@0.4.39-next.0
+
+## 1.7.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/core-app-api@1.19.2
+  - @backstage/plugin-permission-react@0.4.38
+
+## 1.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.38-next.0
+  - @backstage/core-app-api@1.19.2-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/theme@0.7.0
+
+## 1.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/theme@0.7.0
+  - @backstage/core-app-api@1.19.1
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-permission-react@0.4.37
+
+## 1.7.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
+## 1.7.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.19.1-next.0
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-permission-react@0.4.37-next.0
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-app-api@1.19.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/theme@0.6.8
+  - @backstage/plugin-permission-react@0.4.36
+
 ## 1.7.0
 
 ### Minor Changes

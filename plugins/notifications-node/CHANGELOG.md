@@ -1,5 +1,237 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+
+## 0.2.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.2.26
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-notifications-common@0.2.3
+
+## 0.2.26-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.3-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+
+## 0.2.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/catalog-client@1.15.0
+  - @backstage/plugin-signals-node@0.2.0
+  - @backstage/plugin-notifications-common@0.2.2
+
+## 0.2.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-client@1.14.1-next.0
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/plugin-notifications-common@0.2.2-next.0
+  - @backstage/plugin-signals-node@0.1.30-next.2
+
+## 0.2.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-signals-node@0.1.30-next.1
+
+## 0.2.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-signals-node@0.1.30-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/plugin-notifications-common@0.2.1
+
+## 0.2.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/plugin-signals-node@0.1.29
+
+## 0.2.24-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/plugin-signals-node@0.1.29-next.1
+
+## 0.2.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-signals-node@0.1.29-next.0
+
+## 0.2.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-signals-node@0.1.29-next.0
+
+## 0.2.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-signals-node@0.1.28
+
+## 0.2.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.2.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/plugin-signals-node@0.1.28-next.0
+
+## 0.2.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-signals-node@0.1.27
+  - @backstage/backend-plugin-api@1.6.0
+
+## 0.2.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-signals-node@0.1.27-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-notifications-common@0.2.0
+
+## 0.2.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-signals-node@0.1.27-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-notifications-common@0.2.0
+
+## 0.2.21
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/catalog-client@1.12.1
+  - @backstage/plugin-signals-node@0.1.26
+
+## 0.2.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.2
+
+## 0.2.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-signals-node@0.1.26-next.1
+
+## 0.2.21-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/plugin-notifications-common@0.1.2-next.0
+  - @backstage/plugin-signals-node@0.1.26-next.0
+
+## 0.2.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-notifications-common@0.1.1
+  - @backstage/plugin-signals-node@0.1.25
+
+## 0.2.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-notifications-common@0.1.1-next.0
+  - @backstage/plugin-signals-node@0.1.25-next.0
+  - @backstage/catalog-client@1.12.0
+
 ## 0.2.19
 
 ### Patch Changes

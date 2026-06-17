@@ -1,5 +1,241 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.4.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-auth-backend@0.29.1
+  - @backstage/plugin-auth-node@0.7.2
+
+## 0.4.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/plugin-auth-backend@0.29.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-auth-backend@0.29.0
+  - @backstage/plugin-auth-node@0.7.1
+
+## 0.4.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/plugin-auth-backend@0.28.1-next.0
+
+## 0.4.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-auth-node@0.7.0
+  - @backstage/plugin-auth-backend@0.28.0
+
+## 0.4.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-auth-node@0.7.0-next.2
+  - @backstage/plugin-auth-backend@0.28.0-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+
+## 0.4.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-auth-node@0.7.0-next.1
+  - @backstage/plugin-auth-backend@0.28.0-next.1
+
+## 0.4.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.28.0-next.0
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/errors@1.2.7
+
+## 0.4.14
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- 634eded: Fixed a foreign key constraint violation when issuing refresh tokens for CIMD clients, and
+  prevented a failed refresh token issuance from failing the entire token exchange.
+  Fixed AWS ALB auth provider incorrectly returning HTTP 500 instead of 401 for JWT validation failures,
+  which caused retry loops and memory pressure under load.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-auth-backend@0.27.2
+  - @backstage/plugin-auth-node@0.6.14
+
+## 0.4.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-auth-backend@0.27.1-next.2
+  - @backstage/plugin-auth-node@0.6.14-next.2
+
+## 0.4.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.27.1-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-auth-node@0.6.14-next.0
+
+## 0.4.13
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.27.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-auth-node@0.6.13
+
+## 0.4.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.27.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-auth-node@0.6.13-next.1
+
+## 0.4.12-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-auth-backend@0.26.1-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/errors@1.2.7
+
+## 0.4.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-auth-backend@0.26.0
+  - @backstage/plugin-auth-node@0.6.11
+
+## 0.4.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.26.0-next.0
+  - @backstage/plugin-auth-node@0.6.10
+
+## 0.4.10
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-auth-backend@0.25.7
+  - @backstage/backend-plugin-api@1.6.0
+
+## 0.4.10-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.25.7-next.1
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.7
+
+## 0.4.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-auth-backend@0.25.7-next.0
+  - @backstage/errors@1.2.7
+
+## 0.4.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-auth-backend@0.25.6
+  - @backstage/plugin-auth-node@0.6.9
+
+## 0.4.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-auth-backend@0.25.6-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+
+## 0.4.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.25.6-next.0
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+
+## 0.4.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-auth-backend@0.25.5
+  - @backstage/plugin-auth-node@0.6.8
+
+## 0.4.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-backend@0.25.5-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+
 ## 0.4.7
 
 ### Patch Changes

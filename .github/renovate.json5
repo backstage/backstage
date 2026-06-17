@@ -18,6 +18,9 @@
     // ignored due to licensing issues. See #10992
     '@elastic/elasticsearch',
     'event-source-polyfill',
+    // These need to stay pinned to match the React/Node versions we support
+    '@types/react',
+    '@types/node',
   ],
   packageRules: [
     {
@@ -34,6 +37,11 @@
       groupName: 'Module-federation monorepo packages',
       rangeStrategy: 'replace',
       matchSourceUrls: ['https://github.com/module-federation/core{/,}**'],
+    },
+    {
+      groupName: 'OpenTelemetry packages',
+      rangeStrategy: 'replace',
+      matchPackageNames: ['/^@opentelemetry\\//'],
     },
     // We update yarn packages manually as it's gzip'd and we don't want to pollute the repository too much.
     {

@@ -29,6 +29,7 @@ import { OwnershipCard } from './OwnershipCard';
 export default {
   title: 'Plugins/Org/Ownership Card',
   component: OwnershipCard,
+  tags: ['!manifest'],
 };
 
 const defaultEntity: GroupEntity = {

@@ -24,7 +24,7 @@ import {
 } from '@backstage/integration';
 import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { UrlReaderPredicateTuple } from './types';
-import path from 'path';
+import path from 'node:path';
 import { NotModifiedError } from '@backstage/errors';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -35,7 +35,7 @@ import {
   S3ServiceException,
 } from '@aws-sdk/client-s3';
 import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
-import fs from 'fs';
+import fs from 'node:fs';
 import { mockServices } from '@backstage/backend-test-utils';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
@@ -125,6 +125,55 @@ describe('parseUrl', () => {
       path: 'a/puppy.jpg',
       bucket: 'my.bucket-3',
       region: 'us-west-2',
+    });
+  });
+
+  it('supports aws formats with custom endpoint hosts', () => {
+    expect(
+      parseUrl(
+        'https://bucket-1.s3.eu-central-1.amazonaws.com/path/to/file.yaml',
+        {
+          host: 'bucket-1.s3.eu-central-1.amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'path/to/file.yaml',
+      bucket: 'bucket-1',
+      region: 'eu-central-1',
+    });
+    expect(
+      parseUrl('https://my-bucket.s3.cn-north-1.amazonaws.com.cn/data.json', {
+        host: 'my-bucket.s3.cn-north-1.amazonaws.com.cn',
+      }),
+    ).toEqual({
+      path: 'data.json',
+      bucket: 'my-bucket',
+      region: 'cn-north-1',
+    });
+    expect(
+      parseUrl(
+        'https://s3.eu-central-1.amazonaws.com/my-bucket/path/to/file.yaml',
+        {
+          host: 's3.eu-central-1.amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'path/to/file.yaml',
+      bucket: 'my-bucket',
+      region: 'eu-central-1',
+    });
+    expect(
+      parseUrl(
+        'https://s3.eu-central-1.amazonaws.com/my-bucket/path/to/file.yaml',
+        {
+          host: 's3.eu-central-1.amazonaws.com',
+          s3ForcePathStyle: true,
+        },
+      ),
+    ).toEqual({
+      path: 'path/to/file.yaml',
+      bucket: 'my-bucket',
+      region: 'eu-central-1',
     });
   });
 

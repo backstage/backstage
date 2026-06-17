@@ -20,5 +20,19 @@
  * @packageDocumentation
  */
 
-export * from './types';
-export * from './permissions';
+export type {
+  ConfigError,
+  ConfigInfo,
+  DevToolsInfo,
+  Endpoint,
+  ExternalDependency,
+  PackageDependency,
+} from './types';
+export { ExternalDependencyStatus } from './types';
+export {
+  devToolsAdministerPermission,
+  devToolsConfigReadPermission,
+  devToolsExternalDependenciesReadPermission,
+  devToolsInfoReadPermission,
+  devToolsPermissions,
+} from './permissions';

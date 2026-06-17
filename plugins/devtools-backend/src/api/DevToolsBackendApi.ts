@@ -28,19 +28,22 @@ import { JsonObject } from '@backstage/types';
 import { findPaths } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
 import ping from 'ping';
-import os from 'os';
+import os from 'node:os';
 import fs from 'fs-extra';
 import { Lockfile } from '../util/Lockfile';
 import { memoize } from 'lodash';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export class DevToolsBackendApi {
-  public constructor(
-    private readonly logger: LoggerService,
-    private readonly config: Config,
-  ) {}
+  private readonly logger: LoggerService;
+  private readonly config: Config;
+
+  public constructor(logger: LoggerService, config: Config) {
+    this.logger = logger;
+    this.config = config;
+  }
 
   public async listExternalDependencyDetails(): Promise<ExternalDependency[]> {
     const result: ExternalDependency[] = [];
@@ -176,7 +179,7 @@ export class DevToolsBackendApi {
       const data = ConfigReader.fromConfigs(sanitizedConfigs).get();
       configInfo.config = data;
     } catch (error) {
-      assertError(error);
+      const err = toError(error);
       // The config is not valid for some reason but we want to be able to see it still
       const config = {
         data: this.config.get() as JsonObject,
@@ -191,10 +194,10 @@ export class DevToolsBackendApi {
       const data = ConfigReader.fromConfigs(sanitizedConfigs).get();
       configInfo.config = data;
       configInfo.error = {
-        name: error.name,
-        message: error.message,
-        messages: error.messages as string[] | undefined,
-        stack: error.stack,
+        name: err.name,
+        message: err.message,
+        messages: err.messages as string[] | undefined,
+        stack: err.stack,
       };
     }
 
@@ -253,15 +256,5 @@ export class DevToolsBackendApi {
     };
 
     return info;
-  }
-}
-
-export function isValidUrl(url: string): boolean {
-  try {
-    // eslint-disable-next-line no-new
-    new URL(url);
-    return true;
-  } catch {
-    return false;
   }
 }

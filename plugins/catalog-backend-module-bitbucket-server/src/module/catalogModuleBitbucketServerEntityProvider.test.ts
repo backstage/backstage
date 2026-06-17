@@ -18,7 +18,7 @@ import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugi
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { catalogModuleBitbucketServerEntityProvider } from './catalogModuleBitbucketServerEntityProvider';
@@ -93,8 +93,13 @@ describe('catalogModuleBitbucketServerEntityProvider', () => {
       'bitbucketServer-provider:default',
     );
     await provider.connect(connection);
-    expect(events.subscribed).toHaveLength(1);
-    expect(events.subscribed[0].id).toEqual('bitbucketServer-provider:default');
+    expect(events.subscribed).toHaveLength(2);
+    expect(events.subscribed.map(s => s.id)).toContain(
+      'bitbucketServer-provider:default',
+    );
+    expect(events.subscribed.map(s => s.id)).toContain(
+      'catalog-bitbucket-server-scm-events-bridge',
+    );
     expect(runner).toHaveBeenCalledTimes(1);
   });
 });

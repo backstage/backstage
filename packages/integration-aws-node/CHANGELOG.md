@@ -1,5 +1,111 @@
 # @backstage/integration-aws-node
 
+## 0.2.0
+
+### Minor Changes
+
+- 8df06ec: Added `webIdentityTokenFile` to `AwsIntegrationAccountConfig` and
+  `AwsIntegrationDefaultAccountConfig`. When set along with a `roleName`,
+  `DefaultAwsCredentialsManager` retrieves credentials by calling
+  `AssumeRoleWithWebIdentity` (via `fromTokenFile`) using the file's
+  contents as the web identity token. The file is re-read on each
+  credential refresh.
+
+  The validator rejects combining `webIdentityTokenFile` with
+  `accessKeyId`/`secretAccessKey`, `profile`, or `externalId`, and
+  rejects setting it without a `roleName`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/config@1.3.8
+
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 8df06ec: Added `webIdentityTokenFile` to `AwsIntegrationAccountConfig` and
+  `AwsIntegrationDefaultAccountConfig`. When set along with a `roleName`,
+  `DefaultAwsCredentialsManager` retrieves credentials by calling
+  `AssumeRoleWithWebIdentity` (via `fromTokenFile`) using the file's
+  contents as the web identity token. The file is re-read on each
+  credential refresh.
+
+  The validator rejects combining `webIdentityTokenFile` with
+  `accessKeyId`/`secretAccessKey`, `profile`, or `externalId`, and
+  rejects setting it without a `roleName`.
+
+## 0.1.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/config@1.3.8-next.0
+
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/config@1.3.7
+
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/config@1.3.7-next.0
+
+## 0.1.20
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+
+## 0.1.20-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 0.1.19
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/errors@1.2.7
+
+## 0.1.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
 ## 0.1.17
 
 ### Patch Changes

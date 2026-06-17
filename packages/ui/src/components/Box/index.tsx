@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 export { Box } from './Box';
+export { BoxDefinition } from './definition';
 export type * from './types';
-export type { BoxOwnProps } from './Box.props';
-export { boxPropDefs } from './Box.props';

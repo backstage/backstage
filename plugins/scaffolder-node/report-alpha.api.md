@@ -4,19 +4,20 @@
 
 ```ts
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import type { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { PermissionResourceRef } from '@backstage/plugin-permission-node';
+import type { SerializedTask } from '@backstage/plugin-scaffolder-node';
 import { TaskBroker } from '@backstage/plugin-scaffolder-node';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import type { TaskFilter } from '@backstage/plugin-scaffolder-node';
+import type { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
-import { z } from 'zod';
+import type { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { z } from 'zod/v3';
 
 // @alpha
-export type AutocompleteHandler = ({
-  resource,
-  token,
-  context,
-}: {
+export type AutocompleteHandler = (input: {
   resource: string;
   token: string;
   context: Record<string, string>;
@@ -124,21 +125,17 @@ export const restoreWorkspace: (opts: {
 }) => Promise<void>;
 
 // @alpha
-export interface ScaffolderActionsExtensionPoint {
-  // (undocumented)
-  addActions(...actions: TemplateAction<any, any, any>[]): void;
-}
-
-// @alpha
-export const scaffolderActionsExtensionPoint: ExtensionPoint<ScaffolderActionsExtensionPoint>;
+export const scaffolderActionPermissionResourceRef: PermissionResourceRef<
+  JsonObject,
+  {},
+  'scaffolder-action',
+  'scaffolder'
+>;
 
 // @alpha
 export interface ScaffolderAutocompleteExtensionPoint {
   // (undocumented)
-  addAutocompleteProvider({
-    id,
-    handler,
-  }: {
+  addAutocompleteProvider(input: {
     id: string;
     handler: AutocompleteHandler;
   }): void;
@@ -147,14 +144,30 @@ export interface ScaffolderAutocompleteExtensionPoint {
 // @alpha
 export const scaffolderAutocompleteExtensionPoint: ExtensionPoint<ScaffolderAutocompleteExtensionPoint>;
 
-// @alpha
+// @alpha @deprecated
 export interface ScaffolderTaskBrokerExtensionPoint {
   // (undocumented)
   setTaskBroker(taskBroker: TaskBroker): void;
 }
 
-// @alpha
+// @alpha @deprecated
 export const scaffolderTaskBrokerExtensionPoint: ExtensionPoint<ScaffolderTaskBrokerExtensionPoint>;
+
+// @alpha
+export const scaffolderTaskPermissionResourceRef: PermissionResourceRef<
+  SerializedTask,
+  TaskFilter,
+  'scaffolder-task',
+  'scaffolder'
+>;
+
+// @alpha
+export const scaffolderTemplatePermissionResourceRef: PermissionResourceRef<
+  TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-template',
+  'scaffolder'
+>;
 
 // @alpha
 export interface ScaffolderTemplatingExtensionPoint {
@@ -227,13 +240,7 @@ export interface WorkspaceProvider {
     targetPath: string;
   }): Promise<void>;
   // (undocumented)
-  serializeWorkspace({
-    path,
-    taskId,
-  }: {
-    path: string;
-    taskId: string;
-  }): Promise<void>;
+  serializeWorkspace(input: { path: string; taskId: string }): Promise<void>;
 }
 
 // @alpha (undocumented)

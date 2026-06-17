@@ -15,8 +15,8 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
-import { PassThrough, Writable } from 'stream';
+import { spawn, SpawnOptionsWithoutStdio } from 'node:child_process';
+import { PassThrough, Writable } from 'node:stream';
 
 /**
  * Options for {@link executeShellCommand}.

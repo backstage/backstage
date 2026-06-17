@@ -1,8 +1,5 @@
 # API Documentation
 
-> Disclaimer:
-> If you are looking for documentation on the experimental new frontend system support, please go [here](./README-alpha.md).
-
 This is an extension for the catalog plugin that provides components to discover and display API entities.
 APIs define the interface between components, see the [system model](https://backstage.io/docs/features/software-catalog/system-model) for details.
 They are defined in machine readable formats and provide a human readable documentation.
@@ -28,77 +25,32 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
 
 > The plugin is already added when using `npx @backstage/create-app` so you can skip these steps.
 
-1. Install the API docs plugin
-
 ```bash
 # From your Backstage root directory
 yarn --cwd packages/app add @backstage/plugin-api-docs
 ```
 
-2. Add the `ApiExplorerPage` extension to the app:
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
-```tsx
-// In packages/app/src/App.tsx
+You can enable entity cards and tabs on the catalog entity page through configuration:
 
-import { ApiExplorerPage } from '@backstage/plugin-api-docs';
-
-<Route path="/api-docs" element={<ApiExplorerPage />} />;
+```yaml
+# app-config.yaml
+app:
+  extensions:
+    - entity-card:api-docs/providing-components:
+        config:
+          filter:
+            kind: api
+    - entity-card:api-docs/consuming-components:
+        config:
+          filter:
+            kind: api
+    - entity-content:api-docs/definition
+    - entity-content:api-docs/apis
 ```
 
-3. Add one of the provided widgets to the EntityPage:
-
-```tsx
-// packages/app/src/components/catalog/EntityPage.tsx
-
-import {
-  EntityAboutCard,
-  EntityApiDefinitionCard,
-  EntityConsumingComponentsCard,
-  EntityProvidingComponentsCard,
-} from '@backstage/plugin-api-docs';
-
-const apiPage = (
-  <EntityLayout>
-    <EntityLayout.Route path="/" title="Overview">
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <EntityAboutCard />
-        </Grid>
-        <Grid container>
-          <Grid item md={12}>
-            <Grid item xs={12} md={6}>
-              <EntityProvidingComponentsCard />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <EntityConsumingComponentsCard />
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/definition" title="Definition">
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <EntityApiDefinitionCard />
-        </Grid>
-      </Grid>
-    </EntityLayout.Route>
-  </EntityLayout>
-);
-
-// ...
-
-export const entityPage = (
-  <EntitySwitch>
-    // ...
-    <EntitySwitch.Case if={isKind('api')} children={apiPage} />
-    // ...
-  </EntitySwitch>
-);
-```
-
-There are other components to discover in [`./src/components`](./src/components) that are also added by the default app.
+For the full list of available extensions and their configuration options, see the [README-alpha.md](./README-alpha.md).
 
 ## Customizations
 
@@ -387,6 +339,103 @@ import { ApiExplorerPage } from '@backstage/plugin-api-docs';
   element={<ApiExplorerPage pagination={{ mode: 'offset', limit: 20 }} />}
 />;
 ```
+
+## Troubleshooting
+
+### "Try it out" sends requests to the wrong host
+
+If the **Try it out** feature in the OpenAPI widget sends requests to your Backstage app's URL instead of the actual API host, the OpenAPI spec is missing a `servers` entry.
+When no `servers` field is present, Swagger UI falls back to `window.location.origin` — the current page's host — as the base URL for all requests.
+
+**Fix**: add a `servers` field to your API entity's `spec.definition`:
+
+```yaml
+# catalog-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: my-api
+spec:
+  type: openapi
+  definition: |
+    openapi: "3.0.0"
+    info:
+      title: My API
+      version: v1
+    servers:
+      - url: https://api.example.com/v1   # ← specify your api base URL
+```
+
+If you cannot modify the spec (e.g. it is generated or fetched from an external source), you can work around this by adding a `requestInterceptor` that rewrites the URL — see [Adding `requestInterceptor` to Swagger UI](#adding-requestinterceptor-to-swagger-ui) above.
+
+## Old Frontend System
+
+If your Backstage app uses the old frontend system, you need to manually wire the plugin into your app as outlined in this section. If you are on the new frontend system, you can skip this.
+
+1. Add the `ApiExplorerPage` extension to the app:
+
+```tsx
+// In packages/app/src/App.tsx
+
+import { ApiExplorerPage } from '@backstage/plugin-api-docs';
+
+<Route path="/api-docs" element={<ApiExplorerPage />} />;
+```
+
+2. Add one of the provided widgets to the EntityPage:
+
+```tsx
+// packages/app/src/components/catalog/EntityPage.tsx
+
+import {
+  EntityAboutCard,
+  EntityApiDefinitionCard,
+  EntityConsumingComponentsCard,
+  EntityProvidingComponentsCard,
+} from '@backstage/plugin-api-docs';
+
+const apiPage = (
+  <EntityLayout>
+    <EntityLayout.Route path="/" title="Overview">
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <EntityAboutCard />
+        </Grid>
+        <Grid container>
+          <Grid item md={12}>
+            <Grid item xs={12} md={6}>
+              <EntityProvidingComponentsCard />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <EntityConsumingComponentsCard />
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/definition" title="Definition">
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntityApiDefinitionCard />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+  </EntityLayout>
+);
+
+// ...
+
+export const entityPage = (
+  <EntitySwitch>
+    // ...
+    <EntitySwitch.Case if={isKind('api')} children={apiPage} />
+    // ...
+  </EntitySwitch>
+);
+```
+
+There are other components to discover in [`./src/components`](./src/components) that are also added by the default app.
 
 ## Links
 

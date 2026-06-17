@@ -39,8 +39,19 @@ import { rootRouteRef } from '../routes';
 import { Entity } from '@backstage/catalog-model';
 import { ReactNode } from 'react';
 
+jest.setTimeout(30_000);
+
+// The entity page extension uses React.lazy (via ExtensionBoundary.lazy) to
+// dynamically import EntityLayout and its large dependency tree. Pre-warming
+// this import ensures Jest's module cache is populated before the first test,
+// so the Suspense fallback resolves quickly instead of waiting for cold module
+// resolution under CI load.
+beforeAll(async () => {
+  await import('./components/EntityLayout');
+});
+
 describe('Entity page', () => {
-  const entityMock = {
+  const entityMock: Entity = {
     metadata: {
       namespace: 'default',
       annotations: {
@@ -108,9 +119,9 @@ describe('Entity page', () => {
     ],
   };
 
-  const mockCatalogApi = catalogApiMock.mock({
-    getEntityByRef: async () => entityMock,
-  });
+  const entityPath = '/catalog/default/component/artist-lookup';
+
+  const mockCatalogApi = catalogApiMock({ entities: [entityMock] });
 
   const mockStarredEntitiesApi = new MockStarredEntitiesApi();
 
@@ -151,50 +162,34 @@ describe('Entity page', () => {
         .add(techdocsEntityContent)
         .add(apidocsEntityContent);
 
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
           },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
+          backend: { baseUrl: 'http://localhost:7000' },
         },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await userEvent.click(
+        await screen.findByRole('tab', { name: /Documentation/ }),
       );
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /Documentation/ }),
-        ).toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByRole('button', { name: /TechDocs/ }),
+      ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
-      await userEvent.click(screen.getByRole('tab', { name: /Documentation/ }));
-
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
-
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      await expect(
+        screen.findByRole('button', { name: /ApiDocs/ }),
+      ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
     it('Should rename a default group', async () => {
@@ -213,48 +208,32 @@ describe('Entity page', () => {
         .add(techdocsEntityContent)
         .add(apidocsEntityContent);
 
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
           },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
+          backend: { baseUrl: 'http://localhost:7000' },
         },
-      );
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
 
-      await waitFor(() =>
-        expect(screen.queryByRole('tab', { name: /Docs/ })).toBeInTheDocument(),
-      );
+      await userEvent.click(await screen.findByRole('tab', { name: /Docs/ }));
 
-      await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
+      await expect(
+        screen.findByRole('button', { name: /TechDocs/ }),
+      ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
-
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      await expect(
+        screen.findByRole('button', { name: /ApiDocs/ }),
+      ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
     it('Should disassociate a content with a default group', async () => {
@@ -268,47 +247,32 @@ describe('Entity page', () => {
           },
         });
 
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
           },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
+          backend: { baseUrl: 'http://localhost:7000' },
         },
-      );
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
 
-      await waitFor(() =>
-        expect(
-          screen.queryByRole('tab', { name: /Documentation/ }),
-        ).not.toBeInTheDocument(),
-      );
-
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /TechDocs/ }),
-        ).toBeInTheDocument(),
-      );
-
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /ApiDocs/ }),
-        ).toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByRole('tab', { name: /TechDocs/ }),
+      ).resolves.toBeInTheDocument();
+      await expect(
+        screen.findByRole('tab', { name: /ApiDocs/ }),
+      ).resolves.toBeInTheDocument();
+      expect(
+        screen.queryByRole('tab', { name: /Documentation/ }),
+      ).not.toBeInTheDocument();
     });
 
     it('Should create a custom group', async () => {
@@ -335,48 +299,32 @@ describe('Entity page', () => {
           },
         });
 
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
           },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
+          backend: { baseUrl: 'http://localhost:7000' },
         },
-      );
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
 
-      await waitFor(() =>
-        expect(screen.getByRole('tab', { name: /Docs/ })).toBeInTheDocument(),
-      );
+      await userEvent.click(await screen.findByRole('tab', { name: /Docs/ }));
 
-      await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
+      await expect(
+        screen.findByRole('button', { name: /TechDocs/ }),
+      ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
-
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      await expect(
+        screen.findByRole('button', { name: /ApiDocs/ }),
+      ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
     it('Should render a single-content groups as a normal tab', async () => {
@@ -391,41 +339,29 @@ describe('Entity page', () => {
           },
         });
 
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
           },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
+          backend: { baseUrl: 'http://localhost:7000' },
         },
-      );
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /Overview/ }),
-        ).toBeInTheDocument(),
-      );
-
-      await waitFor(() =>
-        expect(
-          screen.queryByRole('tab', { name: /Development/ }),
-        ).not.toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByRole('tab', { name: /Overview/ }),
+      ).resolves.toBeInTheDocument();
+      expect(
+        screen.queryByRole('tab', { name: /Development/ }),
+      ).not.toBeInTheDocument();
     });
 
     it('Should render groups first', async () => {
@@ -436,34 +372,200 @@ describe('Entity page', () => {
         .add(apidocsEntityContent)
         .add(overviewEntityContent);
 
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await expect(
+        screen.findByRole('tab', { name: /Documentation/ }),
+      ).resolves.toBeInTheDocument();
+      await expect(
+        screen.findByRole('tab', { name: /Overview/ }),
+      ).resolves.toBeInTheDocument();
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(2);
+      expect(tabs[0]).toHaveTextContent('Documentation');
+      expect(tabs[1]).toHaveTextContent('Overview');
+    });
+
+    it('Should resolve group aliases', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
         {
           config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
-          },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
+            groups: [
+              {
+                docs: { title: 'Docs', aliases: ['documentation'] },
+              },
+            ],
           },
         },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await userEvent.click(await screen.findByRole('tab', { name: /Docs/ }));
+
+      await expect(
+        screen.findByRole('button', { name: /TechDocs/ }),
+      ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
+
+      await expect(
+        screen.findByRole('button', { name: /ApiDocs/ }),
+      ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
+    });
+
+    it('Should sort content by title by default', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await userEvent.click(
+        await screen.findByRole('tab', { name: /Documentation/ }),
       );
 
-      await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(2));
+      const buttons = await screen.findAllByRole('button', {
+        name: /Docs/,
+      });
+      expect(buttons[0]).toHaveTextContent('ApiDocs');
+      expect(buttons[1]).toHaveTextContent('TechDocs');
+    });
 
-      expect(screen.getAllByRole('tab')[0]).toHaveTextContent('Documentation');
-      expect(screen.getAllByRole('tab')[1]).toHaveTextContent('Overview');
+    it('Should preserve natural order when configured', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        {
+          config: {
+            defaultContentOrder: 'natural',
+          },
+        },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await userEvent.click(
+        await screen.findByRole('tab', { name: /Documentation/ }),
+      );
+
+      const buttons = await screen.findAllByRole('button', {
+        name: /Docs/,
+      });
+      expect(buttons[0]).toHaveTextContent('TechDocs');
+      expect(buttons[1]).toHaveTextContent('ApiDocs');
+    });
+
+    it('Should support per-group content order override', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        {
+          config: {
+            defaultContentOrder: 'title',
+            groups: [
+              {
+                documentation: {
+                  title: 'Documentation',
+                  contentOrder: 'natural',
+                },
+              },
+            ],
+          },
+        },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await userEvent.click(
+        await screen.findByRole('tab', { name: /Documentation/ }),
+      );
+
+      const buttons = await screen.findAllByRole('button', {
+        name: /Docs/,
+      });
+      expect(buttons[0]).toHaveTextContent('TechDocs');
+      expect(buttons[1]).toHaveTextContent('ApiDocs');
     });
 
     it('Should render groups on the correct order', async () => {
@@ -486,34 +588,33 @@ describe('Entity page', () => {
           },
         });
 
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
           },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
+          backend: { baseUrl: 'http://localhost:7000' },
         },
-      );
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
 
-      await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(2));
-
-      expect(screen.getAllByRole('tab')[0]).toHaveTextContent('Overview');
-      expect(screen.getAllByRole('tab')[1]).toHaveTextContent('Documentation');
+      await expect(
+        screen.findByRole('tab', { name: /Overview/ }),
+      ).resolves.toBeInTheDocument();
+      await expect(
+        screen.findByRole('tab', { name: /Documentation/ }),
+      ).resolves.toBeInTheDocument();
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(2);
+      expect(tabs[0]).toHaveTextContent('Overview');
+      expect(tabs[1]).toHaveTextContent('Documentation');
     });
   });
 
@@ -523,33 +624,26 @@ describe('Entity page', () => {
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       );
 
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
           },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
+          backend: { baseUrl: 'http://localhost:7000' },
         },
-      );
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
 
-      await waitFor(() =>
-        expect(screen.getByText(/artist-lookup/)).toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByText(/artist-lookup/),
+      ).resolves.toBeInTheDocument();
     });
 
     it('Should render a totally different header element', async () => {
@@ -568,35 +662,26 @@ describe('Entity page', () => {
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       ).add(customEntityHeader);
 
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
           },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
+          backend: { baseUrl: 'http://localhost:7000' },
         },
-      );
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('heading', { name: /Custom header/ }),
-        ).toBeInTheDocument(),
-      );
+      await expect(
+        screen.findByRole('heading', { name: /Custom header/ }),
+      ).resolves.toBeInTheDocument();
     });
 
     it('Should render a custom header component', async () => {
@@ -643,6 +728,8 @@ describe('Entity page', () => {
             '/catalog/:namespace/:kind/:name':
               convertLegacyRouteRef(entityRouteRef),
           },
+          initialRouteEntries: [entityPath],
+          mountPath: '/catalog/:namespace/:kind/:name',
         },
       );
 
@@ -651,6 +738,69 @@ describe('Entity page', () => {
           screen.getByRole('heading', { name: /Custom Component Header/ }),
         ).toBeInTheDocument(),
       );
+    });
+
+    it('Should pass contributed context menu items to a custom header component', async () => {
+      const CustomHeaderComponent = ({
+        contextMenu,
+      }: {
+        contextMenu?: React.ReactNode;
+      }) => (
+        <header>
+          <h1>Header With Menu</h1>
+          {contextMenu}
+        </header>
+      );
+
+      const customEntityHeader = EntityHeaderBlueprint.make({
+        name: 'custom-component-with-menu',
+        params: {
+          componentLoader: async () => CustomHeaderComponent,
+        },
+      });
+
+      const menuItem = EntityContextMenuItemBlueprint.make({
+        name: 'header-menu-item',
+        params: {
+          icon: <span>Menu Icon</span>,
+          useProps: () => ({ title: 'Header Menu Action', onClick: () => {} }),
+        },
+      });
+
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      )
+        .add(customEntityHeader)
+        .add(menuItem);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: { title: 'Custom app' },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      // The custom header is rendered...
+      await waitFor(() =>
+        expect(
+          screen.getByRole('heading', { name: /Header With Menu/ }),
+        ).toBeInTheDocument(),
+      );
+
+      // ...and the contributed context menu item is reachable through the
+      // `contextMenu` prop the custom header renders.
+      await userEvent.click(await screen.findByTestId('menu-button'));
+      await expect(
+        screen.findByText('Header Menu Action'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('Should render headers based on filter function', async () => {
@@ -719,6 +869,8 @@ describe('Entity page', () => {
             '/catalog/:namespace/:kind/:name':
               convertLegacyRouteRef(entityRouteRef),
           },
+          initialRouteEntries: [entityPath],
+          mountPath: '/catalog/:namespace/:kind/:name',
         },
       );
 
@@ -802,6 +954,8 @@ describe('Entity page', () => {
             '/catalog/:namespace/:kind/:name':
               convertLegacyRouteRef(entityRouteRef),
           },
+          initialRouteEntries: [entityPath],
+          mountPath: '/catalog/:namespace/:kind/:name',
         },
       );
 
@@ -885,6 +1039,8 @@ describe('Entity page', () => {
             '/catalog/:namespace/:kind/:name':
               convertLegacyRouteRef(entityRouteRef),
           },
+          initialRouteEntries: [entityPath],
+          mountPath: '/catalog/:namespace/:kind/:name',
         },
       );
 
@@ -967,6 +1123,8 @@ describe('Entity page', () => {
             '/catalog/:namespace/:kind/:name':
               convertLegacyRouteRef(entityRouteRef),
           },
+          initialRouteEntries: [entityPath],
+          mountPath: '/catalog/:namespace/:kind/:name',
         },
       );
 
@@ -1043,6 +1201,8 @@ describe('Entity page', () => {
             '/catalog/:namespace/:kind/:name':
               convertLegacyRouteRef(entityRouteRef),
           },
+          initialRouteEntries: [entityPath],
+          mountPath: '/catalog/:namespace/:kind/:name',
         },
       );
 
@@ -1096,39 +1256,31 @@ describe('Entity page', () => {
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       ).add(menuItem);
 
-      renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
           },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
+          backend: { baseUrl: 'http://localhost:7000' },
         },
-      );
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
       const { disabled } = params.useProps();
 
-      await waitFor(async () => {
-        await userEvent.click(screen.getByTestId('menu-button'));
-        expect(screen.getByText('Test Title')).toBeInTheDocument();
-        expect(screen.getByText('Test Icon')).toBeInTheDocument();
-        const anchor = screen.getByText('Test Title').closest('a');
-        expect(anchor).toHaveAttribute('href', '/somewhere');
-        expect(anchor).toHaveAttribute('aria-disabled', disabled.toString());
-      });
+      await userEvent.click(await screen.findByTestId('menu-button'));
+
+      const title = await screen.findByText('Test Title');
+      await expect(screen.findByText('Test Icon')).resolves.toBeInTheDocument();
+      const anchor = title.closest('a');
+      expect(anchor).toHaveAttribute('href', '/somewhere');
+      expect(anchor).toHaveAttribute('aria-disabled', disabled.toString());
     });
 
     it.each([
@@ -1158,43 +1310,43 @@ describe('Entity page', () => {
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       ).add(menuItem);
 
-      renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, mockCatalogApi],
-            [starredEntitiesApiRef, mockStarredEntitiesApi],
-          ]}
-        >
-          {tester.reactElement()}
-        </TestApiProvider>,
-        {
-          config: {
-            app: {
-              title: 'Custom app',
-            },
-            backend: { baseUrl: 'http://localhost:7000' },
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
           },
-          mountedRoutes: {
-            '/catalog': convertLegacyRouteRef(rootRouteRef),
-            '/catalog/:namespace/:kind/:name':
-              convertLegacyRouteRef(entityRouteRef),
-          },
+          backend: { baseUrl: 'http://localhost:7000' },
         },
-      );
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
 
       const { disabled } = params.useProps();
-      await waitFor(async () => {
-        await userEvent.click(screen.getByTestId('menu-button'));
-        expect(screen.getByText('Test Title')).toBeInTheDocument();
-        expect(screen.getByText('Test Icon')).toBeInTheDocument();
-        const listItem = screen.getByText('Test Title').closest('li');
-        expect(listItem).toHaveAttribute('aria-disabled', disabled.toString());
-        if (!disabled) {
-          await userEvent.click(screen.getByText('Test Title'));
-        }
 
-        expect(onClickMock).toHaveBeenCalledTimes(disabled ? 0 : 1);
-      });
+      await expect(
+        screen.findByText(/artist-lookup/),
+      ).resolves.toBeInTheDocument();
+
+      await userEvent.click(await screen.findByTestId('menu-button'));
+
+      await expect(
+        screen.findByText('Test Title'),
+      ).resolves.toBeInTheDocument();
+
+      await expect(screen.findByText('Test Icon')).resolves.toBeInTheDocument();
+      const listItem = (await screen.findByText('Test Title')).closest('li');
+      expect(listItem).toHaveAttribute('aria-disabled', disabled.toString());
+      if (!disabled) {
+        await userEvent.click(screen.getByText('Test Title'));
+      }
+
+      expect(onClickMock).toHaveBeenCalledTimes(disabled ? 0 : 1);
     });
 
     it.each([
@@ -1249,38 +1401,69 @@ describe('Entity page', () => {
           .add(menuItem)
           .add(filteredMenuItem);
 
-        renderInTestApp(
-          <TestApiProvider
-            apis={[
-              [catalogApiRef, mockCatalogApi],
-              [starredEntitiesApiRef, mockStarredEntitiesApi],
-            ]}
-          >
-            {tester.reactElement()}
-          </TestApiProvider>,
-          {
-            config: {
-              app: {
-                title: 'Custom app',
-              },
-              backend: { baseUrl: 'http://localhost:7000' },
+        await renderInTestApp(tester.reactElement(), {
+          mountPath: '/catalog/:namespace/:kind/:name',
+          initialRouteEntries: [entityPath],
+          config: {
+            app: {
+              title: 'Custom app',
             },
-            mountedRoutes: {
-              '/catalog': convertLegacyRouteRef(rootRouteRef),
-              '/catalog/:namespace/:kind/:name':
-                convertLegacyRouteRef(entityRouteRef),
-            },
+            backend: { baseUrl: 'http://localhost:7000' },
           },
-        );
-
-        await waitFor(async () => {
-          await userEvent.click(screen.getByTestId('menu-button'));
-          expect(screen.getByText('Should Render')).toBeInTheDocument();
-          expect(
-            screen.queryByText('Should Not Render'),
-          ).not.toBeInTheDocument();
+          mountedRoutes: {
+            '/catalog': convertLegacyRouteRef(rootRouteRef),
+            '/catalog/:namespace/:kind/:name':
+              convertLegacyRouteRef(entityRouteRef),
+          },
+          apis: [
+            mockCatalogApi,
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ],
         });
+
+        await userEvent.click(await screen.findByTestId('menu-button'));
+
+        await expect(
+          screen.findByText('Should Render'),
+        ).resolves.toBeInTheDocument();
+        expect(screen.queryByText('Should Not Render')).not.toBeInTheDocument();
       },
     );
+
+    it('Should render the portal element of a context menu item', async () => {
+      const menuItem = EntityContextMenuItemBlueprint.make({
+        name: 'portal-item',
+        params: {
+          icon: <span>Test Icon</span>,
+          useProps: () => ({ title: 'Portal Item', onClick: () => {} }),
+          usePortal: () => <div>Portal Content</div>,
+        },
+      });
+
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      ).add(menuItem);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: { title: 'Custom app' },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      // The portal element is rendered into the page (inside the
+      // AsyncEntityProvider) without having to open the context menu.
+      await expect(
+        screen.findByText('Portal Content'),
+      ).resolves.toBeInTheDocument();
+    });
   });
 });

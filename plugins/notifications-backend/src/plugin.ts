@@ -18,7 +18,9 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createRouter } from './service/router';
+import { createNotificationsActions } from './actions';
 import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import {
   NotificationProcessor,
@@ -89,6 +91,7 @@ export const notificationsPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         catalog: catalogServiceRef,
         scheduler: coreServices.scheduler,
+        actionsRegistry: actionsRegistryServiceRef,
       },
       async init({
         auth,
@@ -101,6 +104,7 @@ export const notificationsPlugin = createBackendPlugin({
         config,
         catalog,
         scheduler,
+        actionsRegistry,
       }) {
         const store = await DatabaseNotificationsStore.create({ database });
 
@@ -130,6 +134,8 @@ export const notificationsPlugin = createBackendPlugin({
           store,
         );
         await cleaner.initTaskRunner();
+
+        createNotificationsActions({ actionsRegistry, auth, store });
       },
     });
   },

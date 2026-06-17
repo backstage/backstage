@@ -27,40 +27,20 @@ export interface Config {
        * @visibility frontend
        */
       host: string;
-      /**
-       * Token used to authenticate requests.
-       * @visibility secret
-       * @deprecated Use `credentials` instead.
-       */
-      token?: string;
-
-      /**
-       * The credential to use for requests.
-       *
-       * If no credential is specified anonymous access is used.
-       *
-       * @deepVisibility secret
-       * @deprecated Use `credentials` instead.
-       */
-      credential?: {
-        clientId?: string;
-        clientSecret?: string;
-        tenantId?: string;
-        personalAccessToken?: string;
-      };
 
       /**
        * The credentials to use for requests. If multiple credentials are specified the first one that matches the organization is used.
        * If no organization matches the first credential without an organization is used.
        *
        * If no credentials are specified at all, either a default credential (for Azure DevOps) or anonymous access (for Azure DevOps Server) is used.
-       * @deepVisibility secret
        */
       credentials?: {
         organizations?: string[];
         clientId?: string;
+        /** @visibility secret */
         clientSecret?: string;
         tenantId?: string;
+        /** @visibility secret */
         personalAccessToken?: string;
         managedIdentityClientId?: string;
       }[];
@@ -105,15 +85,12 @@ export interface Config {
       endpointSuffix?: string;
 
       /**
-       * The host of the target that this matches on, e.g., "blob.core.windows.net".
+       * Optional endpoint URL for custom domain. Uses default if not provided.
        * @visibility frontend
        */
-      host: string;
-
       endpoint?: string;
       /**
        * Optional credential to use for Azure Active Directory authentication.
-       * @deepVisibility secret
        */
       aadCredential?: {
         /**
@@ -128,60 +105,39 @@ export interface Config {
 
         /**
          * The client secret for the Azure AD application.
+         * @visibility secret
          */
         clientSecret: string;
       };
-    }>;
-
-    /**
-     * Integration configuration for Bitbucket
-     * @deprecated replaced by bitbucketCloud and bitbucketServer
-     */
-    bitbucket?: Array<{
-      /**
-       * The hostname of the given Bitbucket instance
-       * @visibility frontend
-       */
-      host: string;
-      /**
-       * Token used to authenticate requests.
-       * @visibility secret
-       */
-      token?: string;
-      /**
-       * The base url for the Bitbucket API, for example https://api.bitbucket.org/2.0
-       * @visibility frontend
-       */
-      apiBaseUrl?: string;
-      /**
-       * The username to use for authenticated requests.
-       * @visibility secret
-       */
-      username?: string;
-      /**
-       * Bitbucket app password used to authenticate requests.
-       * @visibility secret
-       */
-      appPassword?: string;
-      /**
-       * PGP signing key for signing commits.
-       * @visibility secret
-       */
-      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Bitbucket Cloud */
     bitbucketCloud?: Array<{
       /**
        * The username to use for authenticated requests.
+       */
+      username?: string;
+      /**
+       * Token used to authenticate requests.
        * @visibility secret
        */
-      username: string;
+      token?: string;
       /**
        * Bitbucket Cloud app password used to authenticate requests.
        * @visibility secret
+       * @deprecated Use `token` instead.
        */
-      appPassword: string;
+      appPassword?: string;
+      /**
+       * OAuth client ID for Bitbucket Cloud.
+       * @visibility secret
+       */
+      clientId?: string;
+      /**
+       * OAuth client secret for Bitbucket Cloud.
+       * @visibility secret
+       */
+      clientSecret?: string;
       /**
        * PGP signing key for signing commits.
        * @visibility secret
@@ -326,6 +282,10 @@ export interface Config {
          * https://docs.github.com/en/rest/reference/apps#list-installations-for-the-authenticated-app--code-samples
          */
         allowedInstallationOwners?: string[];
+        /**
+         * If true, then an installation token will be issued for access when no other token is available.
+         */
+        publicAccess?: boolean;
       }>;
     }>;
 
@@ -368,6 +328,28 @@ export interface Config {
        * @visibility secret
        */
       commitSigningKey?: string;
+
+      /**
+       * Retry configuration for requests.
+       * @visibility frontend
+       */
+      retry?: {
+        /**
+         * Maximum number of retries for failed requests.
+         * @visibility frontend
+         */
+        maxRetries?: number;
+        /**
+         * HTTP status codes that should trigger a retry.
+         * @visibility frontend
+         */
+        retryStatusCodes?: number[];
+        /**
+         * Maximum number of API requests allowed per minute. Set to -1 to disable rate limiting.
+         * @visibility frontend
+         */
+        maxApiRequestsPerMinute?: number;
+      };
     }>;
 
     /** Integration configuration for Google Cloud Storage */

@@ -15,14 +15,13 @@
  */
 
 export { coreExtensionData } from './coreExtensionData';
+export { createExtension } from './createExtension';
 export {
-  createExtension,
   type ExtensionDefinition,
+  type ExtensionDefinitionAttachTo,
   type ExtensionDefinitionParameters,
-  type ExtensionAttachToSpec,
   type CreateExtensionOptions,
-  type ResolvedExtensionInput,
-  type ResolvedExtensionInputs,
+  type OverridableExtensionDefinition,
 } from './createExtension';
 export {
   createExtensionInput,
@@ -30,14 +29,13 @@ export {
 } from './createExtensionInput';
 export {
   createExtensionDataRef,
-  type AnyExtensionDataRef,
   type ExtensionDataRef,
-  type ExtensionDataRefToValue,
   type ExtensionDataValue,
   type ConfigurableExtensionDataRef,
 } from './createExtensionDataRef';
 export {
   createFrontendPlugin,
+  type CreateFrontendPluginOptions,
   type FrontendPlugin,
   type OverridableFrontendPlugin,
   type PluginOptions,
@@ -54,7 +52,10 @@ export {
   type FrontendFeatureLoader,
   type CreateFrontendFeatureLoaderOptions,
 } from './createFrontendFeatureLoader';
-export { type Extension } from './resolveExtensionDefinition';
+export {
+  type Extension,
+  type ExtensionAttachTo,
+} from './resolveExtensionDefinition';
 export {
   type ExtensionDataContainer,
   type FeatureFlagConfig,

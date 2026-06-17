@@ -29,6 +29,8 @@ import { FrontendPlugin } from './createFrontendPlugin';
 export type FeatureFlagConfig = {
   /** Feature flag name */
   name: string;
+  /** Feature flag description */
+  description?: string;
 };
 
 /** @public */
@@ -60,7 +62,10 @@ export type ExtensionDataContainer<UExtensionData extends ExtensionDataRef> =
       : never;
   };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Moved to {@link @backstage/frontend-app-api#ExtensionFactoryMiddleware}
+ */
 export type ExtensionFactoryMiddleware = (
   originalFactory: (contextOverrides?: {
     config?: JsonObject;
@@ -73,4 +78,6 @@ export type ExtensionFactoryMiddleware = (
 ) => Iterable<ExtensionDataValue<any, any>>;
 
 /** @public  */
-export type FrontendFeature = FrontendPlugin | FrontendModule;
+export type FrontendFeature =
+  | (Omit<FrontendPlugin, 'pluginId'> & { pluginId?: string })
+  | FrontendModule;

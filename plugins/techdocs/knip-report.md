@@ -1,8 +1,8 @@
 # Knip report
 
-## Unused dependencies (1)
+## Unused devDependencies (1)
 
-| Name | Location     | Severity |
-| :-- | :----------- | :------- |
-| jss | plugins/techdocs/package.json | error    |
+| Name             | Location           | Severity |
+| :--------------- | :----------------- | :------- |
+| @types/dompurify | package.json:103:6 | error    |
 

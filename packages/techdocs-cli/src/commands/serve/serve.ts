@@ -15,12 +15,11 @@
  */
 
 import { OptionValues } from 'commander';
-import path from 'path';
+import path from 'node:path';
 import openBrowser from 'react-dev-utils/openBrowser';
-import { findPaths } from '@backstage/cli-common';
+import { findOwnPaths, RunOnOutput } from '@backstage/cli-common';
 import HTTPServer from '../../lib/httpServer';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
-import { LogFunc, waitForSignal } from '../../lib/run';
 import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
@@ -40,8 +39,8 @@ function findPreviewBundlePath(): string {
     // This can be tested by running `yarn pack` and extracting the resulting tarball into a directory.
     // Within the extracted directory, run `npm install --only=prod`.
     // Once that's done you can test the CLI in any directory using `node <tmp-dir>/package <command>`.
-    // eslint-disable-next-line no-restricted-syntax
-    return findPaths(__dirname).resolveOwn('dist/embedded-app');
+    /* eslint-disable-next-line no-restricted-syntax */
+    return findOwnPaths(__dirname).resolve('dist/embedded-app');
   }
 }
 
@@ -83,7 +82,7 @@ export default async function serve(opts: OptionValues) {
   }
 
   let mkdocsServerHasStarted = false;
-  const mkdocsLogFunc: LogFunc = data => {
+  const mkdocsLogFunc: RunOnOutput = data => {
     // Sometimes the lines contain an unnecessary extra new line
     const logLines = data.toString().split('\n');
     const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
@@ -107,14 +106,14 @@ export default async function serve(opts: OptionValues) {
   // https://github.com/mkdocs/mkdocs/issues/879#issuecomment-203536006
   // Had me questioning this whole implementation for half an hour.
   logger.info('Starting mkdocs server.');
-  const mkdocsChildProcess = await runMkdocsServer({
+  const mkdocsChildProcess = runMkdocsServer({
     port: opts.mkdocsPort,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
-    stdoutLogFunc: mkdocsLogFunc,
-    stderrLogFunc: mkdocsLogFunc,
+    onStdout: mkdocsLogFunc,
+    onStderr: mkdocsLogFunc,
     mkdocsConfigFileName: mkdocsYmlPath,
     mkdocsParameterClean: opts.mkdocsParameterClean,
     mkdocsParameterDirtyReload: opts.mkdocsParameterDirtyreload,
@@ -161,7 +160,7 @@ export default async function serve(opts: OptionValues) {
       );
     });
 
-  await waitForSignal([mkdocsChildProcess]);
+  await mkdocsChildProcess.waitForExit();
 
   if (configIsTemporary) {
     process.on('exit', async () => {

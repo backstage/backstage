@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z as zod } from 'zod';
+import { z as zod } from 'zod/v3';
 
 const remoteUrl = (z: typeof zod) =>
   z.string({
@@ -31,6 +31,4 @@ const commitHash = (z: typeof zod) =>
     description: 'The git commit hash of the initial commit',
   });
 
-export { remoteUrl };
-export { repoContentsUrl };
-export { commitHash };
+export { commitHash, remoteUrl, repoContentsUrl };

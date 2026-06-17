@@ -48,6 +48,9 @@ export type GithubEntityProviderConfig = {
   };
   validateLocationsExist: boolean;
   schedule?: SchedulerServiceTaskScheduleDefinition;
+  pageSizes?: {
+    repositories?: number;
+  };
 };
 
 export type GithubTopicFilters = {
@@ -128,6 +131,12 @@ function readProviderConfig(
       )
     : DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE;
 
+  const pageSizes = config.has('pageSizes')
+    ? {
+        repositories: config.getOptionalNumber('pageSizes.repositories'),
+      }
+    : undefined;
+
   return {
     id,
     catalogPath,
@@ -149,6 +158,7 @@ function readProviderConfig(
     },
     schedule,
     validateLocationsExist,
+    pageSizes,
   };
 }
 

@@ -16,30 +16,30 @@
 
 import { TemplateDirectoryAccess, TemplateFileAccess } from './types';
 
-type WritableFileHandle = FileSystemFileHandle & {
-  createWritable(): Promise<{
-    write(data: string | Blob | BufferSource): Promise<void>;
-    close(): Promise<void>;
-  }>;
-};
+function isFileHandle(
+  handle: FileSystemHandle,
+): handle is FileSystemFileHandle {
+  return handle.kind === 'file';
+}
 
-// A nicer type than the one from the TS lib
-export interface IterableDirectoryHandle extends FileSystemDirectoryHandle {
-  values(): AsyncIterable<
-    | ({ kind: 'file' } & WritableFileHandle)
-    | ({ kind: 'directory' } & IterableDirectoryHandle)
-  >;
+function isDirectoryHandle(
+  handle: FileSystemHandle,
+): handle is FileSystemDirectoryHandle {
+  return handle.kind === 'directory';
 }
 
 const showDirectoryPicker = (window as any).showDirectoryPicker as
-  | (() => Promise<IterableDirectoryHandle>)
+  | (() => Promise<FileSystemDirectoryHandle>)
   | undefined;
 
 class WebFileAccess implements TemplateFileAccess {
-  constructor(
-    readonly path: string,
-    private readonly handle: WritableFileHandle,
-  ) {}
+  readonly path: string;
+  private readonly handle: FileSystemFileHandle;
+
+  constructor(path: string, handle: FileSystemFileHandle) {
+    this.path = path;
+    this.handle = handle;
+  }
 
   file(): Promise<File> {
     return this.handle.getFile();
@@ -54,7 +54,11 @@ class WebFileAccess implements TemplateFileAccess {
 
 /** @internal */
 export class WebDirectoryAccess implements TemplateDirectoryAccess {
-  constructor(private readonly handle: IterableDirectoryHandle) {}
+  private readonly handle: FileSystemDirectoryHandle;
+
+  constructor(handle: FileSystemDirectoryHandle) {
+    this.handle = handle;
+  }
 
   async listFiles(): Promise<TemplateFileAccess[]> {
     const content = [];
@@ -65,13 +69,13 @@ export class WebDirectoryAccess implements TemplateDirectoryAccess {
   }
 
   private async *listDirectoryContents(
-    dirHandle: IterableDirectoryHandle,
+    dirHandle: FileSystemDirectoryHandle,
     basePath: string[] = [],
   ): AsyncIterable<TemplateFileAccess> {
     for await (const handle of dirHandle.values()) {
-      if (handle.kind === 'file') {
+      if (isFileHandle(handle)) {
         yield new WebFileAccess([...basePath, handle.name].join('/'), handle);
-      } else if (handle.kind === 'directory') {
+      } else if (isDirectoryHandle(handle)) {
         // Skip git storage directory
         if (handle.name === '.git') {
           continue;
@@ -109,7 +113,7 @@ export class WebFileSystemAccess {
     return Boolean(showDirectoryPicker);
   }
 
-  static fromHandle(handle: IterableDirectoryHandle) {
+  static fromHandle(handle: FileSystemDirectoryHandle) {
     return new WebDirectoryAccess(handle);
   }
 

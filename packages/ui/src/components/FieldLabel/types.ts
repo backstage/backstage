@@ -15,7 +15,7 @@
  */
 
 /** @public */
-export interface FieldLabelProps {
+export type FieldLabelOwnProps = {
   /**
    * The label of the text field
    */
@@ -40,4 +40,21 @@ export interface FieldLabelProps {
    * The id of the text field
    */
   id?: string;
-}
+
+  /**
+   * The id to apply to the description element for aria-describedby
+   */
+  descriptionId?: string;
+
+  /**
+   * The slot name to set on the description's React Aria `<Text>` element.
+   */
+  descriptionSlot?: string;
+
+  className?: string;
+};
+
+/** @public */
+export interface FieldLabelProps
+  extends FieldLabelOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof FieldLabelOwnProps> {}

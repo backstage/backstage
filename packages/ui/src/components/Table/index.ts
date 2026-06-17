@@ -15,18 +15,62 @@
  */
 
 export { Table } from './components/Table';
+export { TableRoot } from './components/TableRoot';
 export { TableHeader } from './components/TableHeader';
 export { TableBody } from './components/TableBody';
 export { Column } from './components/Column';
 export { Row } from './components/Row';
 export { Cell } from './components/Cell';
+export { CellText } from './components/CellText';
 export { CellProfile } from './components/CellProfile';
+export { TableBodySkeleton } from './components/TableBodySkeleton';
 export { useTable } from './hooks/useTable';
 
-export type { CellProps, CellProfileProps } from './types';
 export type {
-  UseTableConfig,
+  CellOwnProps,
+  CellProps,
+  CellTextOwnProps,
+  CellTextProps,
+  CellProfileOwnProps,
+  CellProfileProps,
+  ColumnOwnProps,
+  ColumnProps,
+  RowOwnProps,
+  RowProps,
+  TableBodyOwnProps,
+  TableBodyProps,
+  TableHeaderOwnProps,
+  TableHeaderProps,
+  TableProps,
+  TableRootOwnProps,
+  TableRootProps,
+  TableItem,
+  ColumnConfig,
+  RowConfig,
+  RowRenderFn,
+  TableSelection,
+  SortState,
+  SortDescriptor,
+  NoPagination,
+  PagePagination,
+  TablePaginationType,
+  VirtualizedProp,
+} from './types';
+export type {
+  UseTableOptions,
   UseTableResult,
-  UseTablePagination,
-  UseTablePaginationConfig,
+  UseTableCompleteOptions,
+  UseTableOffsetOptions,
+  UseTableCursorOptions,
+  OffsetParams,
+  OffsetResponse,
+  CursorParams,
+  CursorResponse,
+  FilterState,
+  SearchState,
+  QueryOptions,
+  PaginationOptions,
+  CompletePaginationOptions,
 } from './hooks/types';
+
+export { TableDefinition } from './definition';

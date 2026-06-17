@@ -4,6 +4,12 @@ title: Backend plugins
 description: Creating and Developing Backend plugins
 ---
 
+:::caution Legacy Documentation
+
+This section is part of the legacy plugins documentation. While this page already describes the new backend system patterns, the canonical documentation for building backend plugins has moved to [Building Backend Plugins and Modules](../backend-system/building-plugins-and-modules/01-index.md).
+
+:::
+
 This page describes the process of creating and managing backend plugins in your
 Backstage repository.
 
@@ -38,21 +44,24 @@ cd plugins/carmen-backend
 yarn start
 ```
 
-:::note Note
-
-This documentation assumes you are using the latest version of Backstage and the new backend system. If you are not, please upgrade and migrate your backend using the [Migration Guide](../backend-system/building-backends/08-migrating.md)
-
-:::
-
 This will think for a bit, and then say `Listening on :7007`. In a different
 terminal window, now run
 
 ```sh
-curl localhost:7007/api/carmen/health
+curl localhost:7007/api/carmen/todos
 ```
 
-This should return `{"status":"ok"}`. Success! Press `Ctrl + c` to stop it
-again.
+You should see the following response:
+
+```json
+{
+  "items": []
+}
+```
+
+:::note Note: The route shown here matches the default in the current backend plugin template. If you want a `/health` endpoint for health checks, you can add it to your router yourself.
+
+:::
 
 ## Developing your Backend Plugin
 

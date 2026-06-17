@@ -44,6 +44,7 @@ export default {
         </TestApiProvider>,
       ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {

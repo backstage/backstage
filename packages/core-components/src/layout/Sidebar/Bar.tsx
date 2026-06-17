@@ -97,11 +97,11 @@ const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
   { name: 'BackstageSidebar' },
 );
 
-enum State {
-  Closed,
-  Idle,
-  Open,
-}
+const State = {
+  Closed: 0,
+  Idle: 1,
+  Open: 2,
+} as const;
 
 /** @public */
 export type SidebarProps = {
@@ -144,7 +144,9 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
     theme => theme.breakpoints.down('md'),
     { noSsr: true },
   );
-  const [state, setState] = useState(State.Closed);
+  const [state, setState] = useState<(typeof State)[keyof typeof State]>(
+    State.Closed,
+  );
   const hoverTimerRef = useRef<number>();
   const { isPinned, toggleSidebarPinState } = useSidebarPinState();
 

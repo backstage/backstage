@@ -7,7 +7,7 @@ import { AppConfig } from '@backstage/config';
 import { Config } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { Observable } from '@backstage/types';
 
 // @public
@@ -221,7 +221,7 @@ export interface MutableConfigSourceOptions {
 }
 
 // @public
-export type Parser = ({ contents }: { contents: string }) => Promise<{
+export type Parser = (input: { contents: string }) => Promise<{
   result?: JsonObject;
 }>;
 

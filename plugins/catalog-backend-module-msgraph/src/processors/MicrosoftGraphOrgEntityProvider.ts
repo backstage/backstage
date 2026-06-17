@@ -25,7 +25,7 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import {
   GroupTransformer,
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
@@ -289,17 +289,27 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     return result;
   }
 
-  constructor(
-    private options: {
-      id: string;
-      provider: MicrosoftGraphProviderConfig;
-      logger: LoggerService;
-      userTransformer?: UserTransformer;
-      groupTransformer?: GroupTransformer;
-      organizationTransformer?: OrganizationTransformer;
-      providerConfigTransformer?: ProviderConfigTransformer;
-    },
-  ) {}
+  private options: {
+    id: string;
+    provider: MicrosoftGraphProviderConfig;
+    logger: LoggerService;
+    userTransformer?: UserTransformer;
+    groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
+    providerConfigTransformer?: ProviderConfigTransformer;
+  };
+
+  constructor(options: {
+    id: string;
+    provider: MicrosoftGraphProviderConfig;
+    logger: LoggerService;
+    userTransformer?: UserTransformer;
+    groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
+    providerConfigTransformer?: ProviderConfigTransformer;
+  }) {
+    this.options = options;
+  }
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
@@ -316,7 +326,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
    * Runs one complete ingestion loop. Call this method regularly at some
    * appropriate cadence.
    */
-  async read(options?: { logger?: LoggerService }) {
+  async read(options?: { logger?: LoggerService; signal?: AbortSignal }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -351,10 +361,15 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
         userTransformer: this.options.userTransformer,
         organizationTransformer: this.options.organizationTransformer,
         logger: logger,
+        signal: options?.signal,
       },
     );
 
-    const { markCommitComplete } = markReadComplete({ users, groups });
+    const { markCommitComplete } = markReadComplete({
+      users,
+      groups,
+      tenantId: provider.tenantId,
+    });
 
     await this.connection.applyMutation({
       type: 'full',
@@ -364,7 +379,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       })),
     });
 
-    markCommitComplete();
+    markCommitComplete(groups.length, users.length, provider.tenantId);
   }
 
   private schedule(taskRunner: SchedulerServiceTaskRunner) {
@@ -372,16 +387,22 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       const id = `${this.getProviderName()}:refresh`;
       await taskRunner.run({
         id,
-        fn: async () => {
+        fn: async (abortSignal: AbortSignal) => {
           const logger = this.options.logger.child({
             class: MicrosoftGraphOrgEntityProvider.prototype.constructor.name,
             taskId: id,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {
-            await this.read({ logger });
+            await this.read({ logger, signal: abortSignal });
           } catch (error) {
+            if (error instanceof Error && error.name === 'AbortError') {
+              logger.debug(
+                `${this.getProviderName()} refresh aborted due to shutdown`,
+              );
+              return;
+            }
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
               error,
@@ -400,17 +421,35 @@ function trackProgress(logger: LoggerService) {
 
   logger.info('Reading msgraph users and groups');
 
-  function markReadComplete(read: { users: unknown[]; groups: unknown[] }) {
+  function markReadComplete(read: {
+    users: unknown[];
+    groups: unknown[];
+    tenantId: string;
+  }) {
     summary = `${read.users.length} msgraph users and ${read.groups.length} msgraph groups`;
     const readDuration = ((Date.now() - timestamp) / 1000).toFixed(1);
     timestamp = Date.now();
-    logger.info(`Read ${summary} in ${readDuration} seconds. Committing...`);
+    logger.info(`Read ${summary} in ${readDuration} seconds. Committing...`, {
+      readDuration,
+      tenantId: read.tenantId,
+      usersCount: read.users.length,
+      groupsCount: read.groups.length,
+    });
     return { markCommitComplete };
   }
 
-  function markCommitComplete() {
+  function markCommitComplete(
+    groupsCount: number,
+    usersCount: number,
+    tenantId: string,
+  ) {
     const commitDuration = ((Date.now() - timestamp) / 1000).toFixed(1);
-    logger.info(`Committed ${summary} in ${commitDuration} seconds.`);
+    logger.info(`Committed ${summary} in ${commitDuration} seconds.`, {
+      commitDuration,
+      tenantId,
+      usersCount,
+      groupsCount,
+    });
   }
 
   return { markReadComplete };

@@ -13,37 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi } from '@backstage/core-plugin-api';
-
-import useAsync from 'react-use/esm/useAsync';
-
-import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
-import { parseEntityRef, UserEntity } from '@backstage/catalog-model';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import Typography from '@material-ui/core/Typography';
 
 export const OwnerEntityColumn = ({ entityRef }: { entityRef?: string }) => {
-  const catalogApi = useApi(catalogApiRef);
-
-  const { value, loading, error } = useAsync(
-    () => catalogApi.getEntityByRef(entityRef || ''),
-    [catalogApi, entityRef],
-  );
-
   if (!entityRef) {
-    return <Typography paragraph>Unknown</Typography>;
+    return <Typography>Unknown</Typography>;
   }
 
-  if (loading || error) {
-    return null;
-  }
-
-  return (
-    <EntityRefLink
-      entityRef={parseEntityRef(entityRef)}
-      title={
-        (value as UserEntity)?.spec?.profile?.displayName ??
-        value?.metadata.name
-      }
-    />
-  );
+  return <EntityRefLink entityRef={entityRef} />;
 };

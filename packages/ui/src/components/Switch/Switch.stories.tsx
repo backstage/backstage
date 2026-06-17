@@ -13,27 +13,67 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Switch } from './Switch';
+import { Box } from '../Box';
+import { Flex } from '../Flex';
+import { Text } from '../Text';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Switch',
   component: Switch,
-} satisfies Meta<typeof Switch>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     label: 'Switch',
   },
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     isDisabled: true,
   },
-};
+});
+
+export const AutoBg = meta.story({
+  args: {
+    label: 'Label',
+  },
+  render: args => (
+    <Box bg="neutral" p="4">
+      <Flex direction="column" gap="4">
+        <Text>Neutral 1 container</Text>
+        <Flex gap="4">
+          <Switch {...args} />
+          <Switch {...args} isSelected />
+        </Flex>
+      </Flex>
+      <Box bg="neutral" p="4" mt="4">
+        <Flex direction="column" gap="4">
+          <Text>Neutral 2 container</Text>
+          <Flex gap="4">
+            <Switch {...args} />
+            <Switch {...args} isSelected />
+          </Flex>
+        </Flex>
+        <Box bg="neutral" p="4" mt="4">
+          <Flex direction="column" gap="4">
+            <Text>Neutral 3 container</Text>
+            <Flex gap="4">
+              <Switch {...args} />
+              <Switch {...args} isSelected />
+            </Flex>
+          </Flex>
+        </Box>
+      </Box>
+    </Box>
+  ),
+});
+
+export const AutoBgDisabled = AutoBg.extend({
+  args: {
+    isDisabled: true,
+  },
+});

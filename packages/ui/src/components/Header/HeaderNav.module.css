@@ -1,0 +1,117 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-HeaderNav {
+    position: relative;
+
+    /* CSS custom properties for indicator positioning — set by HeaderNavIndicators */
+    --active-tab-left: 0px;
+    --active-tab-right: 0px;
+    --active-tab-top: 0px;
+    --active-tab-bottom: 0px;
+    --active-tab-width: 0px;
+    --active-tab-height: 0px;
+    --active-tab-opacity: 0;
+    --active-transition-duration: 0s;
+
+    --hovered-tab-left: 0px;
+    --hovered-tab-right: 0px;
+    --hovered-tab-top: 0px;
+    --hovered-tab-bottom: 0px;
+    --hovered-tab-width: 0px;
+    --hovered-tab-height: 0px;
+    --hovered-tab-opacity: 0;
+    --hovered-transition-duration: 0s;
+  }
+
+  .bui-HeaderNavList {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .bui-HeaderNavItem,
+  .bui-HeaderNavGroup {
+    font-family: var(--bui-font-regular);
+    font-size: var(--bui-font-size-3);
+    font-weight: var(--bui-font-weight-regular);
+    color: var(--bui-fg-secondary);
+    height: 36px;
+    display: flex;
+    gap: var(--bui-space-1);
+    align-items: center;
+    padding-inline: var(--bui-space-2);
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    border: none;
+    background: none;
+    outline: none;
+  }
+
+  .bui-HeaderNavItem[aria-current='page'],
+  .bui-HeaderNavGroup[aria-current='page'] {
+    color: var(--bui-fg-primary);
+  }
+
+  .bui-HeaderNavActive {
+    pointer-events: none;
+    position: absolute;
+    bottom: -1px;
+    left: calc(var(--active-tab-left) + var(--bui-space-2));
+    width: calc(var(--active-tab-width) - var(--bui-space-4));
+    height: 1px;
+    background-color: var(--bui-fg-primary);
+    border-radius: 4px;
+    opacity: var(--active-tab-opacity);
+    transition: left var(--active-transition-duration) ease-out,
+      width var(--active-transition-duration) ease-out, opacity 0.15s;
+  }
+
+  .bui-HeaderNavHovered {
+    pointer-events: none;
+    position: absolute;
+    left: var(--hovered-tab-left);
+    top: calc(var(--hovered-tab-top) + 4px);
+    width: var(--hovered-tab-width);
+    height: calc(var(--hovered-tab-height) - 8px);
+    background-color: var(--bui-bg-neutral-2);
+    border-radius: 4px;
+    opacity: var(--hovered-tab-opacity);
+    transition: left var(--hovered-transition-duration) ease-out,
+      top var(--hovered-transition-duration) ease-out,
+      width var(--hovered-transition-duration) ease-out,
+      height var(--hovered-transition-duration) ease-out, opacity 0.15s;
+
+    [data-focus-visible] & {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: -2px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bui-HeaderNavActive,
+    .bui-HeaderNavHovered {
+      transition: none;
+    }
+  }
+}

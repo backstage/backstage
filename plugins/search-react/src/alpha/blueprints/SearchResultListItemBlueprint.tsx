@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { lazy } from 'react';
+import { lazy, JSX } from 'react';
+import { z } from 'zod/v4';
 import {
   createExtensionBlueprint,
   ExtensionBoundary,
@@ -42,6 +43,11 @@ export interface SearchResultListItemBlueprintParams {
    * Defaults to a predicate that returns true, which means it renders all sorts of results.
    */
   predicate?: SearchResultItemExtensionPredicate;
+
+  /**
+   * The icon of the result item.
+   */
+  icon?: JSX.Element;
 }
 
 /**
@@ -54,10 +60,8 @@ export const SearchResultListItemBlueprint = createExtensionBlueprint({
     id: 'page:search',
     input: 'items',
   },
-  config: {
-    schema: {
-      noTrack: z => z.boolean().default(false),
-    },
+  configSchema: {
+    noTrack: z.boolean().default(false),
   },
   output: [searchResultListItemDataRef],
   dataRefs: {
@@ -77,7 +81,7 @@ export const SearchResultListItemBlueprint = createExtensionBlueprint({
             result={props.result}
             noTrack={config.noTrack}
           >
-            <ExtensionComponent {...props} />
+            <ExtensionComponent icon={params.icon} {...props} />
           </SearchResultListItemExtension>
         </ExtensionBoundary>
       ),

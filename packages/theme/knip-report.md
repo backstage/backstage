@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name             | Location     | Severity |
-| :--------------- | :----------- | :------- |
-| react-router-dom | packages/theme/package.json | error    |
+| Name             | Location          | Severity |
+| :--------------- | :---------------- | :------- |
+| react-router-dom | package.json:51:6 | error    |
 

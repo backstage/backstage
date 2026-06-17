@@ -28,10 +28,13 @@ import {
 
 /** @internal */
 export class BackendPluginLifecycleImpl implements LifecycleService {
-  constructor(
-    private readonly logger: LoggerService,
-    private readonly pluginMetadata: PluginMetadataService,
-  ) {}
+  private readonly logger: LoggerService;
+  private readonly pluginMetadata: PluginMetadataService;
+
+  constructor(logger: LoggerService, pluginMetadata: PluginMetadataService) {
+    this.logger = logger;
+    this.pluginMetadata = pluginMetadata;
+  }
 
   #hasStarted = false;
   #hasShutdown = false;

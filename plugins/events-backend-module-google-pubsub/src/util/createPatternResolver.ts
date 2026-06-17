@@ -15,16 +15,20 @@
  */
 
 import { InputError } from '@backstage/errors';
+import { JsonObject, JsonValue } from '@backstage/types';
+import { getJsonValueAtPath } from '@backstage/filter-predicates';
 
 /**
  * Takes a pattern string that may contain `{{ path.to.value }}` placeholders,
- * and returns a function that accepts a context object and returns strings that
+ * and returns a function that accepts an input object and returns strings that
  * have had its placeholders filled in by following the dot separated path of
- * properties accordingly on the context.
+ * properties accordingly on the input.
+ *
+ * @internal
  */
-export function createPatternResolver<TContext extends object = object>(
+export function createPatternResolver(
   pattern: string,
-): (context: TContext) => string {
+): (input: JsonObject) => string {
   // This split results in an array where even elements are static strings
   // between placeholders, and odd elements are the contents inside
   // placeholders.
@@ -35,7 +39,7 @@ export function createPatternResolver<TContext extends object = object>(
   //   ['', 'foo', '-', 'bar', '', 'baz', '.']
   const patternParts = pattern.split(/{{\s*([\w\[\]'"_.-]*)\s*}}/g);
 
-  const resolvers = new Array<(context: TContext) => string>();
+  const resolvers = new Array<(input: JsonObject) => string>();
 
   for (let i = 0; i < patternParts.length; i += 2) {
     const staticPart = patternParts[i];
@@ -46,9 +50,9 @@ export function createPatternResolver<TContext extends object = object>(
     }
 
     if (placeholderPart) {
-      const getter = createGetter<TContext>(placeholderPart);
-      resolvers.push(context => {
-        const value = getter(context);
+      const getter = createGetter(placeholderPart);
+      resolvers.push(input => {
+        const value = getter(input);
         if (typeof value === 'string' || Number.isFinite(value)) {
           return String(value);
         } else if (!value) {
@@ -62,50 +66,61 @@ export function createPatternResolver<TContext extends object = object>(
     }
   }
 
-  return context => resolvers.map(resolver => resolver(context)).join('');
+  return input => resolvers.map(resolver => resolver(input)).join('');
 }
 
-function createGetter<TContext extends object = object>(
+/**
+ * Takes a path string that indexes into an object, and returns a function that
+ * fetches values out of such objects.
+ *
+ * @internal
+ */
+export function createGetter(
   path: string,
-): (context: TContext) => unknown | undefined {
-  // The resulti of the split contains quads:
+): (input: JsonObject) => JsonValue | undefined {
+  // The result of the split contains pairs (with maybe no last element):
   //
-  // - any "regular" part
-  // - pure digits that were within brackets, if applicable
-  // - contents of a single quoted string that was within brackets, if applicable
-  // - contents of a double quoted string that was within brackets, if applicable
+  // - any "regular" dot separated parts, if applicable
+  // - any "exact" match parts within square brackets, if applicable
   //
   // For example, the path:
   //   foo.bar[0].baz["qux.e"]a
+  //
   // will result in:
   //   [
-  //     'foo', undefined, undefined, undefined,
-  //     'bar', '0',       undefined, undefined,
-  //     'baz', undefined, 'qux.e',   undefined,
-  //     'a'
+  //     'foo.bar', '0',
+  //     'baz', 'qux.e',
+  //     'a',
   //   ]
-  // and then the empty elements are stripped away
   const parts = path
-    .split(/\.|\[(?:(\d+)|'([^']+)'|"([^"]+)")\]\.?/g)
+    .split(/\[(?:(\d+)|'([^']+)'|"([^"]+)")\]\.?/g)
     .filter(Boolean);
 
-  return (context: TContext): unknown | undefined => {
-    let current = context;
-    for (const part of parts) {
-      if (typeof current !== 'object' || !current) {
-        return undefined;
+  return input => {
+    let current: JsonValue | undefined = input;
+    for (let i = 0; i < parts.length; i += 2) {
+      const regularPart = parts[i];
+      const exactPart = parts[i + 1];
+
+      if (regularPart) {
+        current = getJsonValueAtPath(current, regularPart);
       }
 
-      if (Array.isArray(current)) {
-        if (!part.match(/^\d+$/)) {
+      if (exactPart) {
+        if (typeof current !== 'object' || !current) {
           return undefined;
+        } else if (Array.isArray(current)) {
+          if (exactPart.match(/^\d+$/)) {
+            current = current[Number(exactPart)];
+          } else {
+            return undefined;
+          }
+        } else {
+          if (!Object.hasOwn(current, exactPart)) {
+            return undefined;
+          }
+          current = current[exactPart];
         }
-        current = (current as any[])[Number(part)];
-      } else {
-        if (!Object.hasOwn(current, part)) {
-          return undefined;
-        }
-        current = (current as any)[part];
       }
     }
 

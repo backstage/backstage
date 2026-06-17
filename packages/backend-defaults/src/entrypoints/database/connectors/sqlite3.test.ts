@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import path from 'path';
+import path from 'node:path';
 import {
   buildSqliteDatabaseConfig,
   createSqliteDatabaseClient,

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-msgraph",
-  "version": "0.8.0",
+  "version": "0.10.3",
   "description": "A Backstage catalog backend module that helps integrate towards Microsoft Graph",
   "backstage": {
     "role": "backend-plugin-module",
@@ -60,14 +60,12 @@
     "@microsoft/microsoft-graph-types": "^2.6.0",
     "lodash": "^4.17.21",
     "p-limit": "^3.0.2",
-    "qs": "^6.9.4",
-    "uuid": "^11.0.0"
+    "qs": "^6.15.2"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/lodash": "^4.14.151",
-    "luxon": "^3.0.0",
     "msw": "^1.0.0"
   },
   "configSchema": "config.d.ts"

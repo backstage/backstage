@@ -15,7 +15,7 @@
  */
 import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
-const EntityNamePickerFieldSchema = makeFieldSchema({
+export const EntityNamePickerFieldSchema = makeFieldSchema({
   output: z => z.string(),
 });
 

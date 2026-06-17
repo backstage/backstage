@@ -19,6 +19,7 @@ import LinkIcon from '@material-ui/icons/Link';
 export default {
   title: 'Core/IconLinkVertical',
   component: IconLinkVertical,
+  tags: ['!manifest'],
 };
 
 export const Primary = (args: IconLinkVerticalProps) => (

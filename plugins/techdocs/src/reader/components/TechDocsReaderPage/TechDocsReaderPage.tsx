@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  Children,
-  ReactElement,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useCallback,
-} from 'react';
-import { useOutlet, useNavigate } from 'react-router-dom';
-import { Page } from '@backstage/core-components';
+import { Children, ReactElement, ReactNode, useMemo } from 'react';
+import { useOutlet } from 'react-router-dom';
+import { Page, Progress } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   TECHDOCS_ADDONS_KEY,
   TECHDOCS_ADDONS_WRAPPER_KEY,
   TechDocsReaderPageProvider,
-  buildTechDocsURL,
 } from '@backstage/plugin-techdocs-react';
-import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
-import useAsync from 'react-use/esm/useAsync';
 import { TechDocsReaderPageRenderFunction } from '../../../types';
 import { TechDocsReaderPageContent } from '../TechDocsReaderPageContent';
 import { TechDocsReaderPageHeader } from '../TechDocsReaderPageHeader';
@@ -41,11 +31,8 @@ import { rootDocsRouteRef } from '../../../routes';
 import {
   getComponentData,
   useRouteRefParams,
-  useApi,
-  useRouteRef,
 } from '@backstage/core-plugin-api';
 import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   createTheme,
   styled,
@@ -53,7 +40,7 @@ import {
   ThemeProvider,
   useTheme,
 } from '@material-ui/core/styles';
-import { Progress } from '@backstage/core-components';
+import { useExternalRedirect } from './useExternalRedirect';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -201,10 +188,6 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
   const outlet = useOutlet();
 
-  const catalogApi = useApi(catalogApiRef);
-  const navigate = useNavigate();
-  const viewTechdocLink = useRouteRef(rootDocsRouteRef);
-
   const memoizedEntityRef = useMemo(
     () => ({
       kind: entityRef.kind,
@@ -214,38 +197,8 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
     [entityRef.kind, entityRef.name, entityRef.namespace],
   );
 
-  const externalEntityTechDocsUrl = useAsync(async () => {
-    try {
-      const catalogEntity = await catalogApi.getEntityByRef(memoizedEntityRef);
-
-      if (
-        catalogEntity?.metadata?.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
-      ) {
-        return buildTechDocsURL(catalogEntity, viewTechdocLink);
-      }
-    } catch (error) {
-      // Ignore error and allow an attempt at loading the current entity's TechDocs when unable to fetch an external entity from the catalog.
-    }
-
-    return undefined;
-  }, [memoizedEntityRef, catalogApi, viewTechdocLink]);
-
-  const handleNavigation = useCallback(
-    (url: string) => {
-      navigate(url, { replace: true });
-    },
-    [navigate],
-  );
-
-  useEffect(() => {
-    if (!externalEntityTechDocsUrl.loading && externalEntityTechDocsUrl.value) {
-      handleNavigation(externalEntityTechDocsUrl.value);
-    }
-  }, [
-    externalEntityTechDocsUrl.loading,
-    externalEntityTechDocsUrl.value,
-    handleNavigation,
-  ]);
+  // Check for external TechDocs redirects and handle navigation
+  const { shouldShowProgress } = useExternalRedirect(memoizedEntityRef);
 
   const page: ReactNode = useMemo(() => {
     if (children) {
@@ -265,7 +218,9 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
     );
   }, [children, outlet]);
 
-  if (externalEntityTechDocsUrl.loading || externalEntityTechDocsUrl.value) {
+  // Show full-page loading spinner when checking for external redirects or about to redirect.
+  // This replaces the entire page content (header, sidebar, and documentation).
+  if (shouldShowProgress) {
     return <Progress />;
   }
 

@@ -41,6 +41,7 @@ export default {
         },
       ),
   ],
+  tags: ['!manifest'],
 };
 
 const useLogoStyles = makeStyles(theme => ({

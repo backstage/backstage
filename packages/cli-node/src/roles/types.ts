@@ -23,6 +23,7 @@ export type PackageRole =
   | 'frontend'
   | 'backend'
   | 'cli'
+  | 'cli-module'
   | 'web-library'
   | 'node-library'
   | 'common-library'

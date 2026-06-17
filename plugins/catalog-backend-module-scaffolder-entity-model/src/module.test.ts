@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { ScaffolderEntitiesProcessor } from './processor';
 import { catalogModuleScaffolderEntityModel } from './module';
 import { startTestBackend } from '@backstage/backend-test-utils';

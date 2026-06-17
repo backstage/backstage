@@ -13,39 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import {
+  actionsRegistryServiceRef,
+  metricsServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 import { Entity, Validators } from '@backstage/catalog-model';
+import { CatalogModelSource } from '@backstage/catalog-model/alpha';
 import { ForwardedError } from '@backstage/errors';
 import {
+  catalogAnalysisExtensionPoint,
+  CatalogLocationsExtensionPoint,
+  catalogLocationsExtensionPoint,
+  catalogProcessingExtensionPoint,
   CatalogProcessor,
   CatalogProcessorParser,
   catalogServiceRef,
-  EntityProvider,
   LocationAnalyzer,
   PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
-  catalogAnalysisExtensionPoint,
-  CatalogLocationsExtensionPoint,
-  catalogLocationsExtensionPoint,
   CatalogModelExtensionPoint,
   catalogModelExtensionPoint,
-  CatalogPermissionExtensionPoint,
-  catalogPermissionExtensionPoint,
-  CatalogPermissionRuleInput,
-  CatalogProcessingExtensionPoint,
-  catalogProcessingExtensionPoint,
+  catalogScmEventsServiceRef,
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
+import { createCatalogActions } from '../actions';
+import { ModelHolder } from '../model/ModelHolder';
+import type { EntityProviderEntry } from '../processing/connectEntityProviders';
 import { CatalogBuilder } from './CatalogBuilder';
-import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { createGetCatalogEntityAction } from '../actions/createGetCatalogEntityAction';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -58,90 +60,6 @@ class CatalogLocationsExtensionPointImpl
 
   get allowedLocationTypes() {
     return this.#locationTypes;
-  }
-}
-
-class CatalogProcessingExtensionPointImpl
-  implements CatalogProcessingExtensionPoint
-{
-  #processors = new Array<CatalogProcessor>();
-  #entityProviders = new Array<EntityProvider>();
-  #placeholderResolvers: Record<string, PlaceholderResolver> = {};
-  #onProcessingErrorHandler?: (event: {
-    unprocessedEntity: Entity;
-    errors: Error[];
-  }) => Promise<void> | void;
-
-  addProcessor(
-    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
-  ): void {
-    this.#processors.push(...processors.flat());
-  }
-
-  addEntityProvider(
-    ...providers: Array<EntityProvider | Array<EntityProvider>>
-  ): void {
-    this.#entityProviders.push(...providers.flat());
-  }
-
-  addPlaceholderResolver(key: string, resolver: PlaceholderResolver) {
-    if (key in this.#placeholderResolvers)
-      throw new Error(
-        `A placeholder resolver for '${key}' has already been set up, please check your config.`,
-      );
-    this.#placeholderResolvers[key] = resolver;
-  }
-
-  setOnProcessingErrorHandler(
-    handler: (event: {
-      unprocessedEntity: Entity;
-      errors: Error[];
-    }) => Promise<void> | void,
-  ) {
-    this.#onProcessingErrorHandler = handler;
-  }
-
-  get processors() {
-    return this.#processors;
-  }
-
-  get entityProviders() {
-    return this.#entityProviders;
-  }
-
-  get placeholderResolvers() {
-    return this.#placeholderResolvers;
-  }
-
-  get onProcessingErrorHandler() {
-    return this.#onProcessingErrorHandler;
-  }
-}
-
-class CatalogPermissionExtensionPointImpl
-  implements CatalogPermissionExtensionPoint
-{
-  #permissions = new Array<Permission>();
-  #permissionRules = new Array<CatalogPermissionRuleInput>();
-
-  addPermissions(...permission: Array<Permission | Array<Permission>>): void {
-    this.#permissions.push(...permission.flat());
-  }
-
-  addPermissionRules(
-    ...rules: Array<
-      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
-    >
-  ): void {
-    this.#permissionRules.push(...rules.flat());
-  }
-
-  get permissions() {
-    return this.#permissions;
-  }
-
-  get permissionRules() {
-    return this.#permissionRules;
   }
 }
 
@@ -170,6 +88,16 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
   get entityDataParser() {
     return this.#entityDataParser;
   }
+
+  #modelSources: CatalogModelSource[] = [];
+
+  addModelSource(source: CatalogModelSource): void {
+    this.#modelSources.push(source);
+  }
+
+  get modelSources() {
+    return this.#modelSources;
+  }
 }
 
 /**
@@ -179,12 +107,43 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
 export const catalogPlugin = createBackendPlugin({
   pluginId: 'catalog',
   register(env) {
-    const processingExtensions = new CatalogProcessingExtensionPointImpl();
-    // plugins depending on this API will be initialized before this plugins init method is executed.
-    env.registerExtensionPoint(
-      catalogProcessingExtensionPoint,
-      processingExtensions,
-    );
+    const processors = new Array<CatalogProcessor>();
+    const entityProviders = new Array<EntityProviderEntry>();
+    const placeholderResolvers: Record<string, PlaceholderResolver> = {};
+    let onProcessingError:
+      | ((event: {
+          unprocessedEntity: Entity;
+          errors: Error[];
+        }) => Promise<void> | void)
+      | undefined = undefined;
+
+    env.registerExtensionPoint({
+      extensionPoint: catalogProcessingExtensionPoint,
+      factory: context => ({
+        addProcessor: (...newProcessors) => {
+          processors.push(...newProcessors.flat());
+        },
+        addEntityProvider: (...providers) => {
+          entityProviders.push(
+            ...providers.flat().map(provider => ({
+              provider,
+              context,
+            })),
+          );
+        },
+        addPlaceholderResolver: (key, resolver) => {
+          if (key in placeholderResolvers) {
+            throw new Error(
+              `A placeholder resolver for '${key}' has already been set up, please check your config.`,
+            );
+          }
+          placeholderResolvers[key] = resolver;
+        },
+        setOnProcessingErrorHandler: handler => {
+          onProcessingError = handler;
+        },
+      }),
+    });
 
     let locationAnalyzerFactory:
       | ((options: {
@@ -209,12 +168,6 @@ export const catalogPlugin = createBackendPlugin({
         scmLocationAnalyzers.push(analyzer);
       },
     });
-
-    const permissionExtensions = new CatalogPermissionExtensionPointImpl();
-    env.registerExtensionPoint(
-      catalogPermissionExtensionPoint,
-      permissionExtensions,
-    );
 
     const modelExtensions = new CatalogModelExtensionPointImpl();
     env.registerExtensionPoint(catalogModelExtensionPoint, modelExtensions);
@@ -242,6 +195,8 @@ export const catalogPlugin = createBackendPlugin({
         events: eventsServiceRef,
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
+        catalogScmEvents: catalogScmEventsServiceRef,
+        metrics: metricsServiceRef,
       },
       async init({
         logger,
@@ -259,9 +214,20 @@ export const catalogPlugin = createBackendPlugin({
         actionsRegistry,
         auditor,
         events,
+        catalogScmEvents,
+        metrics,
       }) {
+        const modelHolder = modelExtensions.modelSources.length
+          ? await ModelHolder.create({
+              sources: modelExtensions.modelSources,
+              logger,
+              lifecycle,
+            })
+          : undefined;
+
         const builder = await CatalogBuilder.create({
           config,
+          modelHolder,
           reader,
           permissions,
           permissionsRegistry,
@@ -271,24 +237,23 @@ export const catalogPlugin = createBackendPlugin({
           auth,
           httpAuth,
           auditor,
+          events,
+          catalogScmEvents,
+          metrics,
         });
 
-        builder.setEventBroker(events);
-
-        if (processingExtensions.onProcessingErrorHandler) {
-          builder.subscribe({
-            onProcessingError: processingExtensions.onProcessingErrorHandler,
-          });
+        if (onProcessingError) {
+          builder.subscribe({ onProcessingError });
         }
-        builder.addProcessor(...processingExtensions.processors);
-        builder.addEntityProvider(...processingExtensions.entityProviders);
+        builder.addProcessor(...processors);
+        builder.addEntityProvider(...entityProviders);
 
         if (modelExtensions.entityDataParser) {
           builder.setEntityDataParser(modelExtensions.entityDataParser);
         }
 
-        Object.entries(processingExtensions.placeholderResolvers).forEach(
-          ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
+        Object.entries(placeholderResolvers).forEach(([key, resolver]) =>
+          builder.setPlaceholderResolver(key, resolver),
         );
         if (locationAnalyzerFactory) {
           const { locationAnalyzer } = await locationAnalyzerFactory({
@@ -300,8 +265,6 @@ export const catalogPlugin = createBackendPlugin({
         } else {
           builder.addLocationAnalyzers(...scmLocationAnalyzers);
         }
-        builder.addPermissions(...permissionExtensions.permissions);
-        builder.addPermissionRules(...permissionExtensions.permissionRules);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 
         if (locationTypeExtensions.allowedLocationTypes) {
@@ -321,9 +284,30 @@ export const catalogPlugin = createBackendPlugin({
 
         httpRouter.use(router);
 
-        createGetCatalogEntityAction({
+        createCatalogActions({
           catalog,
           actionsRegistry,
+          modelHolder,
+          useExperimentalCatalogLayersDescriptions:
+            config.getOptionalBoolean(
+              'catalog.actions.experimentalCatalogLayersDescriptions.enabled',
+            ) ?? false,
+        });
+
+        const scmEventsMessagesCounter = metrics.createCounter<{
+          eventType: string;
+        }>('catalog.events.scm.messages', {
+          description:
+            'Number of SCM event messages received by the catalog backend',
+          unit: 'short',
+        });
+        catalogScmEvents.subscribe({
+          onEvents: async e => {
+            for (const event of e) {
+              const eventType = event.type.split('.')[0];
+              scmEventsMessagesCounter.add(1, { eventType });
+            }
+          },
         });
       },
     });

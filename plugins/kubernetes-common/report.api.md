@@ -5,10 +5,10 @@
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
 import { Entity } from '@backstage/catalog-model';
-import { FetchResponse as FetchResponse_2 } from '@backstage/plugin-kubernetes-common';
+import type { FetchResponse as FetchResponse_2 } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
 import type { JsonValue } from '@backstage/types';
-import { ObjectsByEntityResponse as ObjectsByEntityResponse_2 } from '@backstage/plugin-kubernetes-common';
+import type { ObjectsByEntityResponse as ObjectsByEntityResponse_2 } from '@backstage/plugin-kubernetes-common';
 import type { PodStatus } from '@kubernetes/client-node';
 import type { V1ConfigMap } from '@kubernetes/client-node';
 import type { V1CronJob } from '@kubernetes/client-node';
@@ -17,6 +17,8 @@ import type { V1Deployment } from '@kubernetes/client-node';
 import type { V1Ingress } from '@kubernetes/client-node';
 import type { V1Job } from '@kubernetes/client-node';
 import type { V1LimitRange } from '@kubernetes/client-node';
+import type { V1PersistentVolume } from '@kubernetes/client-node';
+import type { V1PersistentVolumeClaim } from '@kubernetes/client-node';
 import type { V1Pod } from '@kubernetes/client-node';
 import type { V1ReplicaSet } from '@kubernetes/client-node';
 import type { V1ResourceQuota } from '@kubernetes/client-node';
@@ -254,6 +256,7 @@ export type FetchResponse =
   | PodFetchResponse
   | ServiceFetchResponse
   | ConfigMapFetchResponse
+  | SecretFetchResponse
   | DeploymentFetchResponse
   | LimitRangeFetchResponse
   | ResourceQuotaFetchResponse
@@ -266,7 +269,9 @@ export type FetchResponse =
   | StatefulSetsFetchResponse
   | DaemonSetsFetchResponse
   | PodStatusFetchResponse
-  | SecretsFetchResponse;
+  | SecretsFetchResponse
+  | PersistentVolumeFetchResponse
+  | PersistentVolumeClaimsFetchResponse;
 
 // @public (undocumented)
 export interface GroupedResponses extends DeploymentResources {
@@ -282,6 +287,12 @@ export interface GroupedResponses extends DeploymentResources {
   ingresses: V1Ingress[];
   // (undocumented)
   jobs: V1Job[];
+  // (undocumented)
+  persistentVolumeClaims: V1PersistentVolumeClaim[];
+  // (undocumented)
+  persistentVolumes: V1PersistentVolume[];
+  // (undocumented)
+  secrets: V1Secret[];
   // (undocumented)
   services: V1Service[];
   // (undocumented)
@@ -383,6 +394,22 @@ export interface ObjectsByEntityResponse {
 }
 
 // @public (undocumented)
+export interface PersistentVolumeClaimsFetchResponse {
+  // (undocumented)
+  resources: Array<V1PersistentVolumeClaim>;
+  // (undocumented)
+  type: 'persistentvolumeclaims';
+}
+
+// @public (undocumented)
+export interface PersistentVolumeFetchResponse {
+  // (undocumented)
+  resources: Array<V1PersistentVolume>;
+  // (undocumented)
+  type: 'persistentvolumes';
+}
+
+// @public (undocumented)
 export interface PodFetchResponse {
   // (undocumented)
   resources: Array<V1Pod>;
@@ -445,6 +472,14 @@ export interface ResourceRef {
   name: string;
   // (undocumented)
   namespace: string;
+}
+
+// @public (undocumented)
+export interface SecretFetchResponse {
+  // (undocumented)
+  resources: Array<V1Secret>;
+  // (undocumented)
+  type: 'secrets';
 }
 
 // @public (undocumented)

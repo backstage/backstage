@@ -179,7 +179,7 @@ describe('readLdapConfig', () => {
                   timeLimit: 42,
                   sizeLimit: 100,
                   derefAliases: 0,
-                  typesOnly: false,
+                  attributeValues: true,
                 },
                 set: { p: 'v' },
                 map: {
@@ -205,7 +205,7 @@ describe('readLdapConfig', () => {
                   timeLimit: 42,
                   sizeLimit: 100,
                   derefAliases: 1,
-                  typesOnly: true,
+                  attributeValues: false,
                 },
                 set: { p: 'v' },
                 map: {
@@ -247,7 +247,7 @@ describe('readLdapConfig', () => {
               timeLimit: 42,
               sizeLimit: 100,
               derefAliases: 0,
-              typesOnly: false,
+              returnAttributeValues: true,
             },
             set: { p: 'v' },
             map: {
@@ -275,7 +275,7 @@ describe('readLdapConfig', () => {
               timeLimit: 42,
               sizeLimit: 100,
               derefAliases: 1,
-              typesOnly: true,
+              returnAttributeValues: false,
             },
             set: { p: 'v' },
             map: {

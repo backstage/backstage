@@ -17,7 +17,7 @@
 
 const fs = require('fs-extra');
 const { getPackages } = require('@manypkg/get-packages');
-const { resolve: resolvePath, join: joinPath } = require('path');
+const { resolve: resolvePath, join: joinPath } = require('node:path');
 
 /**
  * This script checks that all local package dependencies within the repo
@@ -62,6 +62,7 @@ const roleRules = [
       // TODO(freben): Address these
       '@backstage/frontend-defaults',
       '@backstage/frontend-app-api',
+      '@backstage/frontend-dev-utils',
       '@backstage/frontend-test-utils',
       '@backstage/plugin-api-docs',
       '@backstage/plugin-techdocs-addons-test-utils',

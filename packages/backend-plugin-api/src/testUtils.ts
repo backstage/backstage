@@ -15,7 +15,7 @@
  */
 
 import { packagePathMocks } from './paths';
-import { posix as posixPath, resolve as resolvePath } from 'path';
+import { posix as posixPath, resolve as resolvePath } from 'node:path';
 
 /** @public */
 export interface PackagePathResolutionOverride {

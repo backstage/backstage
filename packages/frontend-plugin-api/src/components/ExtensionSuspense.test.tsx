@@ -31,7 +31,7 @@ describe('ExtensionSuspense', () => {
       ),
     );
 
-    expect(screen.getByTestId('progress')).toBeInTheDocument();
+    expect(screen.getByTestId('core-progress')).toBeInTheDocument();
   });
 
   it('should render the lazy loaded children component', async () => {

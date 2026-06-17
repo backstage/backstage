@@ -48,7 +48,7 @@ describe('EntityContextMenuItemBlueprint', () => {
     },
   ];
 
-  it.each(data)('should return an extension with sane defaults', params => {
+  it.each(data)('should return an extension with sane defaults, %#', params => {
     const extension = EntityContextMenuItemBlueprint.make({
       name: 'test',
       params,
@@ -64,131 +64,11 @@ describe('EntityContextMenuItemBlueprint', () => {
         },
         "configSchema": {
           "parse": [Function],
-          "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "filter": {
-                "anyOf": [
-                  {
-                    "anyOf": [
-                      {
-                        "type": [
-                          "string",
-                          "number",
-                          "boolean",
-                        ],
-                      },
-                      {
-                        "items": {
-                          "$ref": "#/properties/filter/anyOf/0/anyOf/0",
-                        },
-                        "type": "array",
-                      },
-                    ],
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "$all": {
-                        "items": {
-                          "$ref": "#/properties/filter",
-                        },
-                        "type": "array",
-                      },
-                    },
-                    "required": [
-                      "$all",
-                    ],
-                    "type": "object",
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "$any": {
-                        "items": {
-                          "$ref": "#/properties/filter",
-                        },
-                        "type": "array",
-                      },
-                    },
-                    "required": [
-                      "$any",
-                    ],
-                    "type": "object",
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "$not": {
-                        "$ref": "#/properties/filter",
-                      },
-                    },
-                    "required": [
-                      "$not",
-                    ],
-                    "type": "object",
-                  },
-                  {
-                    "additionalProperties": {
-                      "anyOf": [
-                        {
-                          "$ref": "#/properties/filter/anyOf/0",
-                        },
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "$exists": {
-                              "type": "boolean",
-                            },
-                          },
-                          "required": [
-                            "$exists",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "$in": {
-                              "items": {
-                                "$ref": "#/properties/filter/anyOf/0/anyOf/0",
-                              },
-                              "type": "array",
-                            },
-                          },
-                          "required": [
-                            "$in",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "$contains": {
-                              "$ref": "#/properties/filter",
-                            },
-                          },
-                          "required": [
-                            "$contains",
-                          ],
-                          "type": "object",
-                        },
-                      ],
-                    },
-                    "propertyNames": {
-                      "pattern": "^(?!\\$).*$",
-                    },
-                    "type": "object",
-                  },
-                ],
-              },
-            },
-            "type": "object",
-          },
+          "schema": [Function],
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "entity-context-menu-item",
         "name": "test",

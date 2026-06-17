@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { Notification } from '@backstage/plugin-notifications-common';
-import SvgIcon from '@material-ui/core/SvgIcon';
 import { useApp } from '@backstage/core-plugin-api';
 import { SeverityIcon } from './SeverityIcon';
 
@@ -26,8 +25,10 @@ export const NotificationIcon = ({
   const app = useApp();
 
   if (notification.payload.icon) {
-    const Icon = app.getSystemIcon(notification.payload.icon) ?? SvgIcon;
-    return <Icon />;
+    const Icon = app.getSystemIcon(notification.payload.icon);
+    if (Icon) {
+      return <Icon />;
+    }
   }
   return <SeverityIcon severity={notification.payload.severity} />;
 };

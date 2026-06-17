@@ -79,6 +79,41 @@ describe('BitbucketCloudClient', () => {
     expect(results[0].file!.path).toEqual('path/to/file');
   });
 
+  it('searchCode with custom pagelen', async () => {
+    server.use(
+      rest.get(
+        `https://api.bitbucket.org/2.0/workspaces/ws/search/code`,
+        (req, res, ctx) => {
+          const pagelen = req.url.searchParams.get('pagelen');
+          expect(pagelen).toBe('50');
+
+          const response: Models.SearchResultPage = {
+            values: [
+              {
+                content_match_count: 1,
+                file: {
+                  type: 'commit_file',
+                  path: 'path/to/file',
+                },
+              },
+            ],
+          };
+          return res(ctx.json(response));
+        },
+      ),
+    );
+
+    const pagination = client.searchCode('ws', 'query', undefined, 50);
+
+    const results = [];
+    for await (const result of pagination.iterateResults()) {
+      results.push(result);
+    }
+
+    expect(results).toHaveLength(1);
+    expect(results[0].file!.path).toEqual('path/to/file');
+  });
+
   it('listRepositoriesByWorkspace', async () => {
     server.use(
       rest.get(

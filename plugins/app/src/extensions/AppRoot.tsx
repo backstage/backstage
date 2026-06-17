@@ -22,9 +22,7 @@ import {
   JSX,
 } from 'react';
 import {
-  AppRootWrapperBlueprint,
-  RouterBlueprint,
-  SignInPageBlueprint,
+  ExtensionBoundary,
   coreExtensionData,
   discoveryApiRef,
   fetchApiRef,
@@ -32,7 +30,15 @@ import {
   createExtension,
   createExtensionInput,
   routeResolutionApiRef,
+  pluginWrapperApiRef,
+  useAnalytics,
 } from '@backstage/frontend-plugin-api';
+import {
+  AppRootWrapperBlueprint,
+  RouterBlueprint,
+  SignInPageBlueprint,
+} from '@backstage/plugin-app-react';
+import { BUIProvider } from '@backstage/ui';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -59,21 +65,27 @@ export const AppRoot = createExtension({
     router: createExtensionInput([RouterBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
+      internal: true,
     }),
     signInPage: createExtensionInput([SignInPageBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
+      internal: true,
     }),
     children: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
+      optional: true,
     }),
     elements: createExtensionInput([coreExtensionData.reactElement]),
-    wrappers: createExtensionInput([
-      AppRootWrapperBlueprint.dataRefs.component,
-    ]),
+    wrappers: createExtensionInput(
+      [AppRootWrapperBlueprint.dataRefs.component],
+      {
+        internal: true,
+      },
+    ),
   },
   output: [coreExtensionData.reactElement],
-  factory({ inputs, apis }) {
+  factory({ inputs, apis, node }) {
     if (isProtectedApp()) {
       const identityApi = apis.get(identityApiRef);
       if (!identityApi) {
@@ -95,30 +107,38 @@ export const AppRoot = createExtension({
       });
     }
 
-    let content: ReactNode = inputs.children.get(
-      coreExtensionData.reactElement,
-    );
+    let content = inputs.children?.get(coreExtensionData.reactElement);
 
     for (const wrapper of inputs.wrappers) {
       const Component = wrapper.get(AppRootWrapperBlueprint.dataRefs.component);
-      content = <Component>{content}</Component>;
+      if (Component) {
+        content = <Component>{content}</Component>;
+      }
+    }
+
+    const pluginWrapperApi = apis.get(pluginWrapperApiRef);
+    const RootWrapper = pluginWrapperApi?.getRootWrapper();
+    if (RootWrapper) {
+      content = <RootWrapper>{content}</RootWrapper>;
     }
 
     return [
       coreExtensionData.reactElement(
-        <AppRouter
-          SignInPageComponent={inputs.signInPage?.get(
-            SignInPageBlueprint.dataRefs.component,
-          )}
-          RouterComponent={inputs.router?.get(
-            RouterBlueprint.dataRefs.component,
-          )}
-          extraElements={inputs.elements?.map(el =>
-            el.get(coreExtensionData.reactElement),
-          )}
-        >
-          {content}
-        </AppRouter>,
+        <ExtensionBoundary node={node}>
+          <AppRouter
+            SignInPageComponent={inputs.signInPage?.get(
+              SignInPageBlueprint.dataRefs.component,
+            )}
+            RouterComponent={inputs.router?.get(
+              RouterBlueprint.dataRefs.component,
+            )}
+            extraElements={inputs.elements?.map(el =>
+              el.get(coreExtensionData.reactElement),
+            )}
+          >
+            {content}
+          </AppRouter>
+        </ExtensionBoundary>,
       ),
     ];
   },
@@ -189,7 +209,17 @@ export interface AppRouterProps {
 function DefaultRouter(props: PropsWithChildren<{}>) {
   const configApi = useApi(configApiRef);
   const basePath = getBasePath(configApi);
-  return <BrowserRouter basename={basePath}>{props.children}</BrowserRouter>;
+  return (
+    <BrowserRouter
+      basename={basePath}
+      future={{
+        v7_relativeSplatPath: false,
+        v7_startTransition: false,
+      }}
+    >
+      {props.children}
+    </BrowserRouter>
+  );
 }
 
 /**
@@ -225,48 +255,54 @@ export function AppRouter(props: AppRouterProps) {
 
   // If the app hasn't configured a sign-in page, we just continue as guest.
   if (!SignInPageComponent) {
-    appIdentityProxy.setTarget(
-      {
-        getUserId: () => 'guest',
-        getIdToken: async () => undefined,
-        getProfile: () => ({
-          email: 'guest@example.com',
-          displayName: 'Guest',
-        }),
-        getProfileInfo: async () => ({
-          email: 'guest@example.com',
-          displayName: 'Guest',
-        }),
-        getBackstageIdentity: async () => ({
-          type: 'user',
-          userEntityRef: 'user:default/guest',
-          ownershipEntityRefs: ['user:default/guest'],
-        }),
-        getCredentials: async () => ({}),
-        signOut: async () => {},
-      },
-      { signOutTargetUrl: basePath || '/' },
-    );
+    if (!isProtectedApp()) {
+      appIdentityProxy.setTarget(
+        {
+          getUserId: () => 'guest',
+          getIdToken: async () => undefined,
+          getProfile: () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getProfileInfo: async () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getBackstageIdentity: async () => ({
+            type: 'user',
+            userEntityRef: 'user:default/guest',
+            ownershipEntityRefs: ['user:default/guest'],
+          }),
+          getCredentials: async () => ({}),
+          signOut: async () => {},
+        },
+        { signOutTargetUrl: basePath || '/' },
+      );
+    }
 
     return (
       <RouterComponent>
-        {...extraElements}
-        <RouteTracker routeObjects={routeObjects} />
-        {children}
+        <BUIProvider useAnalytics={useAnalytics}>
+          {...extraElements}
+          <RouteTracker routeObjects={routeObjects} />
+          {children}
+        </BUIProvider>
       </RouterComponent>
     );
   }
 
   return (
     <RouterComponent>
-      {...extraElements}
-      <RouteTracker routeObjects={routeObjects} />
-      <SignInPageWrapper
-        component={SignInPageComponent}
-        appIdentityProxy={appIdentityProxy}
-      >
-        {children}
-      </SignInPageWrapper>
+      <BUIProvider useAnalytics={useAnalytics}>
+        {...extraElements}
+        <RouteTracker routeObjects={routeObjects} />
+        <SignInPageWrapper
+          component={SignInPageComponent}
+          appIdentityProxy={appIdentityProxy}
+        >
+          {children}
+        </SignInPageWrapper>
+      </BUIProvider>
     </RouterComponent>
   );
 }

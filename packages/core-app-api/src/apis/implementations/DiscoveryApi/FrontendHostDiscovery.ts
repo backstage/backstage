@@ -71,10 +71,16 @@ export class FrontendHostDiscovery implements DiscoveryApi {
     );
   }
 
+  private readonly endpoints: Map<string, DiscoveryApi>;
+  private readonly defaultEndpoint: DiscoveryApi;
+
   private constructor(
-    private readonly endpoints: Map<string, DiscoveryApi>,
-    private readonly defaultEndpoint: DiscoveryApi,
-  ) {}
+    endpoints: Map<string, DiscoveryApi>,
+    defaultEndpoint: DiscoveryApi,
+  ) {
+    this.endpoints = endpoints;
+    this.defaultEndpoint = defaultEndpoint;
+  }
 
   async getBaseUrl(pluginId: string): Promise<string> {
     const endpoint = this.endpoints.get(pluginId);

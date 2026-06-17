@@ -23,6 +23,7 @@ import { Table, TableColumn, TableFilter } from './Table';
 export default {
   title: 'Data Display/Table',
   component: Table,
+  tags: ['!manifest'],
 };
 
 const useStyles = makeStyles(theme => ({

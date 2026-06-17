@@ -14,24 +14,31 @@
  * limitations under the License.
  */
 
+import preview from '../../../../../.storybook/preview';
 import { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TagGroup, Tag } from '.';
 import type { Selection } from 'react-aria-components';
-import { Flex, Icon, IconNames } from '../../';
+import { Flex } from '../../';
 import { useListData } from 'react-stately';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../provider';
+import {
+  RiAccountCircleLine,
+  RiBugLine,
+  RiEyeLine,
+  RiHeartLine,
+} from '@remixicon/react';
 
 export interface ListItem {
   id: string;
   name: string;
-  icon: IconNames;
+  icon: React.ReactNode;
   isDisabled?: boolean;
 }
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/TagGroup',
-  component: TagGroup<ListItem>,
+  component: TagGroup,
   argTypes: {
     selectionMode: {
       control: { type: 'inline-radio' },
@@ -44,26 +51,30 @@ const meta = {
   decorators: [
     Story => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],
-} satisfies Meta<typeof TagGroup<ListItem>>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const initialList: ListItem[] = [
-  { id: 'banana', name: 'Banana', icon: 'bug' },
-  { id: 'apple', name: 'Apple', icon: 'account-circle', isDisabled: true },
-  { id: 'orange', name: 'Orange', icon: 'eye', isDisabled: true },
-  { id: 'pear', name: 'Pear', icon: 'heart' },
-  { id: 'grape', name: 'Grape', icon: 'bug' },
-  { id: 'pineapple', name: 'Pineapple', icon: 'eye' },
-  { id: 'strawberry', name: 'Strawberry', icon: 'heart' },
+  { id: 'banana', name: 'Banana', icon: <RiBugLine /> },
+  {
+    id: 'apple',
+    name: 'Apple',
+    icon: <RiAccountCircleLine />,
+    isDisabled: true,
+  },
+  { id: 'orange', name: 'Orange', icon: <RiEyeLine />, isDisabled: true },
+  { id: 'pear', name: 'Pear', icon: <RiHeartLine /> },
+  { id: 'grape', name: 'Grape', icon: <RiBugLine /> },
+  { id: 'pineapple', name: 'Pineapple', icon: <RiEyeLine /> },
+  { id: 'strawberry', name: 'Strawberry', icon: <RiHeartLine /> },
 ];
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     'aria-label': 'Tag Group',
   },
@@ -74,33 +85,33 @@ export const Default: Story = {
       ))}
     </TagGroup>
   ),
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex direction="column">
       <TagGroup {...args}>
         {initialList.map(item => (
-          <Tag key={item.id} size="small" icon={<Icon name={item.icon} />}>
+          <Tag key={item.id} size="small" icon={item.icon}>
             {item.name}
           </Tag>
         ))}
       </TagGroup>
       <TagGroup {...args}>
         {initialList.map(item => (
-          <Tag key={item.id} size="medium" icon={<Icon name={item.icon} />}>
+          <Tag key={item.id} size="medium" icon={item.icon}>
             {item.name}
           </Tag>
         ))}
       </TagGroup>
     </Flex>
   ),
-};
+});
 
-export const SelectionModeSingle: Story = {
+export const SelectionModeSingle = meta.story({
   args: {
     selectionMode: 'single',
     'aria-label': 'Tag Group',
@@ -109,19 +120,19 @@ export const SelectionModeSingle: Story = {
     const [selected, setSelected] = useState<Selection>(new Set(['travel']));
 
     return (
-      <TagGroup
+      <TagGroup<ListItem>
+        {...args}
         items={initialList}
         selectedKeys={selected}
         onSelectionChange={setSelected}
-        {...args}
       >
         {item => <Tag>{item.name}</Tag>}
       </TagGroup>
     );
   },
-};
+});
 
-export const SelectionModeMultiple: Story = {
+export const SelectionModeMultiple = meta.story({
   args: {
     selectionMode: 'multiple',
     'aria-label': 'Tag Group',
@@ -132,37 +143,34 @@ export const SelectionModeMultiple: Story = {
     );
 
     return (
-      <TagGroup
+      <TagGroup<ListItem>
+        {...args}
         items={initialList}
         selectedKeys={selected}
         onSelectionChange={setSelected}
-        {...args}
       >
         {item => <Tag>{item.name}</Tag>}
       </TagGroup>
     );
   },
-};
+});
 
-export const WithIcon: Story = {
+export const WithIcon = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <TagGroup {...args}>
       {initialList.map(item => (
-        <Tag
-          key={item.id}
-          icon={item.icon ? <Icon name={item.icon} /> : undefined}
-        >
+        <Tag key={item.id} icon={item.icon ? item.icon : undefined}>
           {item.name}
         </Tag>
       ))}
     </TagGroup>
   ),
-};
+});
 
-export const WithLink: Story = {
+export const WithLink = meta.story({
   render: args => (
     <TagGroup {...args}>
       {initialList.map(item => (
@@ -172,9 +180,9 @@ export const WithLink: Story = {
       ))}
     </TagGroup>
   ),
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   render: args => (
     <TagGroup {...args}>
       {initialList.map(item => (
@@ -184,58 +192,56 @@ export const Disabled: Story = {
       ))}
     </TagGroup>
   ),
-};
+});
 
-export const RemovingTags: Story = {
+export const RemovingTags = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => {
     const [selected, setSelected] = useState<Selection>(new Set(['travel']));
 
-    const list = useListData({
+    const list = useListData<ListItem>({
       initialItems: initialList,
     });
 
     return (
-      <TagGroup
+      <TagGroup<ListItem>
+        {...args}
         items={list.items}
         onRemove={keys => list.remove(...keys)}
         selectedKeys={selected}
         onSelectionChange={setSelected}
-        {...args}
       >
         {item => <Tag>{item.name}</Tag>}
       </TagGroup>
     );
   },
-};
+});
 
-export const WithIconAndRemoveButton: Story = {
+export const WithIconAndRemoveButton = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => {
     const [selected, setSelected] = useState<Selection>(new Set(['travel']));
 
-    const list = useListData({
+    const list = useListData<ListItem>({
       initialItems: initialList,
     });
 
     return (
-      <TagGroup
+      <TagGroup<ListItem>
+        {...args}
         items={list.items}
         onRemove={keys => list.remove(...keys)}
         selectedKeys={selected}
         onSelectionChange={setSelected}
-        {...args}
       >
         {item => (
-          <Tag icon={item.icon ? <Icon name={item.icon} /> : undefined}>
-            {item.name}
-          </Tag>
+          <Tag icon={item.icon ? item.icon : undefined}>{item.name}</Tag>
         )}
       </TagGroup>
     );
   },
-};
+});

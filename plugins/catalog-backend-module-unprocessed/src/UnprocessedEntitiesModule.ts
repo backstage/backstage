@@ -33,7 +33,10 @@ import {
   AuthorizeResult,
   BasicPermission,
 } from '@backstage/plugin-permission-common';
-import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
+import {
+  unprocessedEntitiesDeletePermission,
+  unprocessedEntitiesReadPermission,
+} from '@backstage/plugin-catalog-unprocessed-entities-common';
 import { NotAllowedError } from '@backstage/errors';
 
 /**
@@ -46,12 +49,19 @@ export class UnprocessedEntitiesModule {
 
   private readonly httpAuth: HttpAuthService;
 
+  private readonly database: Knex;
+  private readonly router: Pick<HttpRouterService, 'use'>;
+  private readonly permissions: PermissionsService;
+
   private constructor(
-    private readonly database: Knex,
-    private readonly router: Pick<HttpRouterService, 'use'>,
-    private readonly permissions: PermissionsService,
+    database: Knex,
+    router: Pick<HttpRouterService, 'use'>,
+    permissions: PermissionsService,
     httpAuth: HttpAuthService,
   ) {
+    this.database = database;
+    this.router = router;
+    this.permissions = permissions;
     this.moduleRouter = Router();
     this.router.use(this.moduleRouter);
 
@@ -151,6 +161,14 @@ export class UnprocessedEntitiesModule {
 
     this.moduleRouter
       .get('/entities/unprocessed/failed', async (req, res) => {
+        const authorized = await isRequestAuthorized(
+          req,
+          unprocessedEntitiesReadPermission,
+        );
+        if (!authorized) {
+          throw new NotAllowedError('Unauthorized');
+        }
+
         return res.json(
           await this.unprocessed({
             reason: 'failed',
@@ -160,6 +178,14 @@ export class UnprocessedEntitiesModule {
         );
       })
       .get('/entities/unprocessed/pending', async (req, res) => {
+        const authorized = await isRequestAuthorized(
+          req,
+          unprocessedEntitiesReadPermission,
+        );
+        if (!authorized) {
+          throw new NotAllowedError('Unauthorized');
+        }
+
         return res.json(
           await this.unprocessed({
             reason: 'pending',

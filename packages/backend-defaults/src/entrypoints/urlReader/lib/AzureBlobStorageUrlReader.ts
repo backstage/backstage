@@ -21,12 +21,12 @@ import {
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
-import { ForwardedError, NotModifiedError } from '@backstage/errors';
-import { Readable } from 'stream';
-import { relative } from 'path/posix';
+import { toError, ForwardedError, NotModifiedError } from '@backstage/errors';
+import { Readable } from 'node:stream';
+import { relative } from 'node:path/posix';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
-  AzureBlobStorageIntergation,
+  AzureBlobStorageIntegration,
   AzureCredentialsManager,
   DefaultAzureCredentialsManager,
   ScmIntegrations,
@@ -37,6 +37,7 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 
@@ -84,21 +85,37 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     });
   };
 
-  // private readonly blobServiceClient: BlobServiceClient;
+  private readonly integration: AzureBlobStorageIntegration;
+  private readonly deps: {
+    treeResponseFactory: ReadTreeResponseFactory;
+    createContainerClient: (containerName: string) => Promise<ContainerClient>;
+  };
 
   constructor(
-    private readonly credsManager: AzureCredentialsManager,
-    private readonly integration: AzureBlobStorageIntergation,
-    private readonly deps: {
+    credsManager: AzureCredentialsManager,
+    integration: AzureBlobStorageIntegration,
+    deps: {
       treeResponseFactory: ReadTreeResponseFactory;
+      createContainerClient?: (
+        containerName: string,
+      ) => Promise<ContainerClient>;
     },
-  ) {}
+  ) {
+    this.integration = integration;
+    this.deps = {
+      ...deps,
+      createContainerClient:
+        deps.createContainerClient ??
+        this.#defaultCreateContainerClient.bind(this, credsManager),
+    };
+  }
 
-  private async createContainerClient(
+  async #defaultCreateContainerClient(
+    credsManager: AzureCredentialsManager,
     containerName: string,
   ): Promise<ContainerClient> {
-    const accountName = this.integration.config.accountName; // Use the account name from the integration config
-    const accountKey = this.integration.config.accountKey; // Get the account key if it exists
+    const accountName = this.integration.config.accountName;
+    const accountKey = this.integration.config.accountKey;
 
     if (accountKey && accountName) {
       const creds = new StorageSharedKeyCredential(accountName, accountKey);
@@ -108,10 +125,8 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
       );
       return blobServiceClient.getContainerClient(containerName);
     }
-    // Use the credentials manager to get the correct credentials
-    const credential = await this.credsManager.getCredentials(
-      accountName as string,
-    );
+
+    const credential = await credsManager.getCredentials(accountName as string);
 
     let blobServiceClientUrl: string;
 
@@ -146,7 +161,7 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     try {
       const { path, container } = parseUrl(url);
 
-      const containerClient = await this.createContainerClient(container);
+      const containerClient = await this.deps.createContainerClient(container);
       const blobClient = containerClient.getBlobClient(path);
 
       const getBlobOptions: BlobDownloadOptions = {
@@ -189,14 +204,14 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     try {
       const { path, container } = parseUrl(url);
 
-      const containerClient = await this.createContainerClient(container);
-
+      const containerClient = await this.deps.createContainerClient(container);
       const blobs = containerClient.listBlobsFlat({ prefix: path });
 
       const responses = [];
 
       for await (const blob of blobs) {
         const blobClient = containerClient.getBlobClient(blob.name);
+
         const downloadBlockBlobResponse = await blobClient.download(
           undefined,
           undefined,
@@ -221,8 +236,34 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     }
   }
 
-  async search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('AzureBlobStorageUrlReader does not implement search');
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    const { path } = parseUrl(url);
+
+    if (path.match(/[*?]/)) {
+      throw new Error(
+        'Glob search pattern not implemented for AzureBlobStorageUrlReader',
+      );
+    }
+
+    try {
+      const data = await this.readUrl(url, options);
+
+      return {
+        files: [
+          {
+            url: url,
+            content: data.buffer,
+            lastModifiedAt: data.lastModifiedAt,
+          },
+        ],
+        etag: data.etag ?? '',
+      };
+    } catch (e) {
+      throw toError(e);
+    }
   }
 
   toString() {

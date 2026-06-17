@@ -17,9 +17,10 @@
 import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import {
   DefaultEntityFilters,
-  EntityListContext,
   EntityListContextProps,
 } from '@backstage/plugin-catalog-react';
+import { createVersionedValueMap } from '@backstage/version-bridge';
+import { NewEntityListContext } from '../hooks/useEntityListProvider';
 
 /**
  * Simplifies testing of code that uses the entity list hooks.
@@ -72,18 +73,22 @@ export function MockEntityListContextProvider<
       error: value?.error,
       totalItems:
         value?.totalItems ?? (value?.entities ?? defaultValues.entities).length,
+      totalItemsLoading: value?.totalItemsLoading ?? false,
       limit: value?.limit ?? 20,
       offset: value?.offset,
       setLimit: value?.setLimit ?? (() => {}),
       setOffset: value?.setOffset,
       paginationMode: value?.paginationMode ?? 'none',
+      refresh: value?.refresh ?? (() => {}),
     }),
     [value, defaultValues, filters, updateFilters],
   );
 
   return (
-    <EntityListContext.Provider value={resolvedValue}>
+    <NewEntityListContext.Provider
+      value={createVersionedValueMap({ 1: resolvedValue })}
+    >
       {children}
-    </EntityListContext.Provider>
+    </NewEntityListContext.Provider>
   );
 }

@@ -20,6 +20,7 @@ import { DependencyGraphTypes as Types } from './types';
 export default {
   title: 'Data Display/DependencyGraph',
   component: DependencyGraph,
+  tags: ['!manifest'],
 };
 
 const containerStyle = { width: '100%' };

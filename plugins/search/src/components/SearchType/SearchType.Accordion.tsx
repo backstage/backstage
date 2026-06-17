@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { cloneElement, Fragment, useEffect, useState } from 'react';
+import { cloneElement, Fragment, useEffect, useRef, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { searchApiRef, useSearch } from '@backstage/plugin-search-react';
 import Accordion from '@material-ui/core/Accordion';
@@ -86,6 +86,7 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
   const [expanded, setExpanded] = useState(true);
   const { defaultValue, name, showCounts, types: givenTypes } = props;
   const { t } = useTranslationRef(searchTranslationRef);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const toggleExpanded = () => setExpanded(prevState => !prevState);
   const handleClick = (type: string) => {
@@ -117,18 +118,29 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
     if (!showCounts) {
       return {};
     }
+    // Here we cancel the previous requests before making a new one
+    // All requests are made with a new AbortController signal
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     const counts = await Promise.all(
       definedTypes
         .map(type => type.value)
         .map(async type => {
-          const { numberOfResults } = await searchApi.query({
-            term,
-            types: type ? [type] : [],
-            filters:
-              types.includes(type) || (!types.length && !type) ? filters : {},
-            pageLimit: 0,
-          });
+          const { numberOfResults } = await searchApi.query(
+            {
+              term,
+              types: type ? [type] : [],
+              filters:
+                types.includes(type) || (!types.length && !type) ? filters : {},
+              pageLimit: 0,
+            },
+            { signal: controller.signal },
+          );
 
           return [
             type,
@@ -144,6 +156,14 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
 
     return Object.fromEntries(counts);
   }, [filters, showCounts, term, types]);
+
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return (
     <Box>

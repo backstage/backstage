@@ -1,5 +1,242 @@
 # @backstage/plugin-home-react
 
+## 0.1.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-compat-api@0.5.12
+  - @backstage/core-plugin-api@1.12.7
+
+## 0.1.39-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/core-compat-api@0.5.12-next.1
+  - @backstage/core-plugin-api@1.12.7-next.0
+
+## 0.1.39-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+  - @backstage/core-compat-api@0.5.12-next.0
+
+## 0.1.38
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/core-compat-api@0.5.11
+
+## 0.1.38-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/core-compat-api@0.5.11-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+
+## 0.1.37
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/core-compat-api@0.5.10
+  - @backstage/core-plugin-api@1.12.5
+
+## 0.1.37-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-compat-api@0.5.10-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+
+## 0.1.37-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-compat-api@0.5.10-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+
+## 0.1.36
+
+### Patch Changes
+
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.9
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+
+## 0.1.36-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.9-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/core-components@0.18.8-next.1
+
+## 0.1.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/core-compat-api@0.5.9-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+
+## 0.1.35
+
+### Patch Changes
+
+- 90956a6: Support new frontend system in the homepage plugin
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/core-components@0.18.7
+  - @backstage/core-compat-api@0.5.8
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+
+## 0.1.35-next.1
+
+### Patch Changes
+
+- 90956a6: Support new frontend system in the homepage plugin
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-compat-api@0.5.8-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+
+## 0.1.35-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+
+## 0.1.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+
+## 0.1.34-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.1.33
+
+### Patch Changes
+
+- be21c5c: Updated dependency `@rjsf/utils` to `5.24.13`.
+  Updated dependency `@rjsf/core` to `5.24.13`.
+  Updated dependency `@rjsf/material-ui` to `5.24.13`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.24.13`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.1.33-next.1
+
+### Patch Changes
+
+- be21c5c: Updated dependency `@rjsf/utils` to `5.24.13`.
+  Updated dependency `@rjsf/core` to `5.24.13`.
+  Updated dependency `@rjsf/material-ui` to `5.24.13`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.24.13`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/core-plugin-api@1.12.1-next.0
+
+## 0.1.33-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+
+## 0.1.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+
+## 0.1.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+
+## 0.1.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.1.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+
+## 0.1.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/core-plugin-api@1.11.0
+
 ## 0.1.30
 
 ### Patch Changes

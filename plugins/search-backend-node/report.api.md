@@ -13,13 +13,13 @@ import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { default as lunr_2 } from 'lunr';
 import { Permission } from '@backstage/plugin-permission-common';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { SchedulerServiceTaskFunction } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { SearchQuery } from '@backstage/plugin-search-common';
-import { Transform } from 'stream';
+import { Transform } from 'node:stream';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 
 // @public
 export abstract class BatchSearchEngineIndexer extends Writable {

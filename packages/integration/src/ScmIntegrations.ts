@@ -19,7 +19,6 @@ import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AwsCodeCommitIntegration } from './awsCodeCommit/AwsCodeCommitIntegration';
 import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketCloudIntegration } from './bitbucketCloud/BitbucketCloudIntegration';
-import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import { BitbucketServerIntegration } from './bitbucketServer/BitbucketServerIntegration';
 import { GerritIntegration } from './gerrit/GerritIntegration';
 import { GithubIntegration } from './github/GithubIntegration';
@@ -29,7 +28,8 @@ import { ScmIntegration, ScmIntegrationsGroup } from './types';
 import { ScmIntegrationRegistry } from './registry';
 import { GiteaIntegration } from './gitea';
 import { HarnessIntegration } from './harness/HarnessIntegration';
-import { AzureBlobStorageIntergation } from './azureBlobStorage';
+import { AzureBlobStorageIntegration } from './azureBlobStorage';
+import { GoogleGcsIntegration } from './googleGcs/GoogleGcsIntegration';
 
 /**
  * The set of supported integrations.
@@ -39,18 +39,15 @@ import { AzureBlobStorageIntergation } from './azureBlobStorage';
 export interface IntegrationsByType {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   awsCodeCommit: ScmIntegrationsGroup<AwsCodeCommitIntegration>;
-  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntergation>;
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
-  /**
-   * @deprecated in favor of `bitbucketCloud` and `bitbucketServer`
-   */
-  bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
   bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
   bitbucketServer: ScmIntegrationsGroup<BitbucketServerIntegration>;
   gerrit: ScmIntegrationsGroup<GerritIntegration>;
   github: ScmIntegrationsGroup<GithubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
   gitea: ScmIntegrationsGroup<GiteaIntegration>;
+  googleGcs: ScmIntegrationsGroup<GoogleGcsIntegration>;
   harness: ScmIntegrationsGroup<HarnessIntegration>;
 }
 
@@ -66,15 +63,15 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
     return new ScmIntegrations({
       awsS3: AwsS3Integration.factory({ config }),
       awsCodeCommit: AwsCodeCommitIntegration.factory({ config }),
-      azureBlobStorage: AzureBlobStorageIntergation.factory({ config }),
+      azureBlobStorage: AzureBlobStorageIntegration.factory({ config }),
       azure: AzureIntegration.factory({ config }),
-      bitbucket: BitbucketIntegration.factory({ config }),
       bitbucketCloud: BitbucketCloudIntegration.factory({ config }),
       bitbucketServer: BitbucketServerIntegration.factory({ config }),
       gerrit: GerritIntegration.factory({ config }),
       github: GithubIntegration.factory({ config }),
       gitlab: GitLabIntegration.factory({ config }),
       gitea: GiteaIntegration.factory({ config }),
+      googleGcs: GoogleGcsIntegration.factory({ config }),
       harness: HarnessIntegration.factory({ config }),
     });
   }
@@ -91,19 +88,12 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
     return this.byType.awsCodeCommit;
   }
 
-  get azureBlobStorage(): ScmIntegrationsGroup<AzureBlobStorageIntergation> {
+  get azureBlobStorage(): ScmIntegrationsGroup<AzureBlobStorageIntegration> {
     return this.byType.azureBlobStorage;
   }
 
   get azure(): ScmIntegrationsGroup<AzureIntegration> {
     return this.byType.azure;
-  }
-
-  /**
-   * @deprecated in favor of `bitbucketCloud()` and `bitbucketServer()`
-   */
-  get bitbucket(): ScmIntegrationsGroup<BitbucketIntegration> {
-    return this.byType.bitbucket;
   }
 
   get bitbucketCloud(): ScmIntegrationsGroup<BitbucketCloudIntegration> {
@@ -130,6 +120,10 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
     return this.byType.gitea;
   }
 
+  get googleGcs(): ScmIntegrationsGroup<GoogleGcsIntegration> {
+    return this.byType.googleGcs;
+  }
+
   get harness(): ScmIntegrationsGroup<HarnessIntegration> {
     return this.byType.harness;
   }
@@ -141,19 +135,9 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   }
 
   byUrl(url: string | URL): ScmIntegration | undefined {
-    let candidates = Object.values(this.byType)
+    const candidates = Object.values(this.byType)
       .map(i => i.byUrl(url))
       .filter(Boolean);
-
-    // Do not return deprecated integrations if there are other options
-    if (candidates.length > 1) {
-      const filteredCandidates = candidates.filter(
-        x => !(x instanceof BitbucketIntegration),
-      );
-      if (filteredCandidates.length !== 0) {
-        candidates = filteredCandidates;
-      }
-    }
 
     return candidates[0];
   }

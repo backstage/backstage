@@ -20,6 +20,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 import { devToolsPermissions } from '@backstage/plugin-devtools-common';
+import {
+  devToolsTaskSchedulerReadPermission,
+  devToolsTaskSchedulerCreatePermission,
+} from '@backstage/plugin-devtools-common/alpha';
 
 /**
  * DevTools backend plugin
@@ -61,7 +65,11 @@ export const devtoolsPlugin = createBackendPlugin({
           path: '/health',
           allow: 'unauthenticated',
         });
-        permissionsRegistry.addPermissions(devToolsPermissions);
+        permissionsRegistry.addPermissions([
+          ...devToolsPermissions,
+          devToolsTaskSchedulerReadPermission,
+          devToolsTaskSchedulerCreatePermission,
+        ]);
       },
     });
   },

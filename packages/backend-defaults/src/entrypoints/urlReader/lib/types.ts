@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import {
   UrlReaderService,
   UrlReaderServiceReadTreeResponse,

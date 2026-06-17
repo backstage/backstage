@@ -19,6 +19,7 @@ import { MarkdownContent } from './MarkdownContent';
 export default {
   title: 'Data Display/MarkdownContent',
   component: MarkdownContent,
+  tags: ['!manifest'],
 };
 
 const markdownGithubFlavored =
@@ -44,6 +45,29 @@ const markdownGithubFlavored =
   '\n' +
   '* [ ] to do\n' +
   '* [x] done';
+
+const markdownGithubFlavoredWithHTML =
+  '# GFM with HTML\n' +
+  '\n' +
+  'This is a paragraph with <strong>bold text</strong> and <em>italic text</em>.\n' +
+  '\n' +
+  '<br />\n' +
+  '\n' +
+  'Here is a list:\n' +
+  '\n' +
+  '<ul>\n' +
+  '  <li>First item</li>\n' +
+  '  <li>Second item with <a href="https://example.com">a link</a></li>\n' +
+  '  <li>Third item</li>\n' +
+  '</ul>\n' +
+  '\n' +
+  'And a code block:\n' +
+  '\n' +
+  '<pre><code class="language-js">\n' +
+  'function greet() {\n' +
+  '  console.log("Hello, world!");\n' +
+  '}\n' +
+  '</code></pre>\n';
 
 const markdown =
   '# Choreas Iovis\n' +
@@ -96,7 +120,7 @@ const markdown =
   '\n' +
   'Per quem, nec formosior qui cum Peliden me interea **ornatos**! Te facit\n' +
   'instimulat sequentia in flumina exilium te vulnere, sola. Coetum nec amnes.\n' +
-  'Protinus nam Caras cava, *a* vocantem dicta inevitabile, nata nulla.\n' +
+  'Lumen nova signa at tempori flecta, sed quietum narrata civitas.\n' +
   '\n' +
   '## Piscem Iunoni maius\n' +
   '\n' +
@@ -116,4 +140,8 @@ export const MarkdownContentCommonMark = () => (
 
 export const MarkdownContentGithubFlavoredCommonMark = () => (
   <MarkdownContent content={markdownGithubFlavored} dialect="gfm" />
+);
+
+export const MarkdownContentGithubFlavoredWithHTML = () => (
+  <MarkdownContent content={markdownGithubFlavoredWithHTML} dialect="gfm" />
 );

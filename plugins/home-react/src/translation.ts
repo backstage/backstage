@@ -16,7 +16,10 @@
 import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
 /**
- * @alpha
+ * Translation reference for the home-react plugin.
+ * Contains localized text strings for home page components and widgets.
+ *
+ * @public
  */
 export const homeReactTranslationRef = createTranslationRef({
   id: 'home-react',

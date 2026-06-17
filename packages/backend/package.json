@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.0.42",
+  "version": "0.0.51",
   "backstage": {
     "role": "backend"
   },
@@ -40,7 +40,9 @@
     "@backstage/plugin-auth-backend-module-openshift-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-ai-model": "workspace:^",
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-logs": "workspace:^",
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^",
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
@@ -60,14 +62,15 @@
     "@backstage/plugin-scaffolder-backend-module-notifications": "workspace:^",
     "@backstage/plugin-search-backend": "workspace:^",
     "@backstage/plugin-search-backend-module-catalog": "workspace:^",
+    "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^",
     "@backstage/plugin-search-backend-module-explore": "workspace:^",
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
-    "@opentelemetry/auto-instrumentations-node": "^0.61.0",
-    "@opentelemetry/exporter-prometheus": "^0.54.0",
-    "@opentelemetry/sdk-node": "^0.54.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.71.0",
+    "@opentelemetry/exporter-prometheus": "^0.213.0",
+    "@opentelemetry/sdk-node": "^0.213.0",
     "example-app": "link:../app"
   },
   "devDependencies": {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z as zod } from 'zod';
+import { z as zod } from 'zod/v3';
 import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
 export const createEntityQueryFilterExpressionSchema = (z: typeof zod) =>
@@ -61,6 +61,12 @@ export const EntityPickerFieldSchema = makeFieldSchema({
       )
         .optional()
         .describe('List of key-value filter expression for entities'),
+      autoSelect: z
+        .boolean()
+        .optional()
+        .describe(
+          'Whether to automatically select an option on blur. Defaults to true.',
+        ),
     }),
 });
 

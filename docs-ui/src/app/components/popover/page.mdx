@@ -1,0 +1,74 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { dialogTriggerPropDefs, popoverPropDefs } from './props-definition';
+import {
+  popoverUsageSnippet,
+  defaultSnippet,
+  placementSnippet,
+  hideArrowSnippet,
+} from './snippets';
+import { Default, Placement, HideArrow } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { PopoverDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+export const reactAriaUrls = {
+  dialogTrigger: 'https://react-aria.adobe.com/Modal#dialogtrigger',
+  popover: 'https://react-aria.adobe.com/Popover',
+};
+
+<PageTitle
+  title="Popover"
+  description="A floating panel anchored to a trigger with automatic positioning."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={popoverUsageSnippet} />
+
+## API reference
+
+### DialogTrigger
+
+Wraps the trigger button and popover content.
+
+<PropsTable data={dialogTriggerPropDefs} />
+
+<ReactAriaLink component="DialogTrigger" href={reactAriaUrls.dialogTrigger} />
+
+### Popover
+
+Displays floating content with automatic positioning.
+
+<PropsTable data={popoverPropDefs} />
+
+<ReactAriaLink component="Popover" href={reactAriaUrls.popover} />
+
+## Examples
+
+### Placement
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Placement />}
+  code={placementSnippet}
+/>
+
+### Hidden arrow
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<HideArrow />}
+  code={hideArrowSnippet}
+/>
+
+<Theming definition={PopoverDefinition} />
+
+<ChangelogComponent component="popover" />

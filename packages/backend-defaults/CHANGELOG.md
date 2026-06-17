@@ -1,5 +1,764 @@
 # @backstage/backend-defaults
 
+## 0.17.3
+
+### Patch Changes
+
+- 4f4bcf5: Upgraded `infinispan` from `^0.12.0` to `^0.13.0` to address known vulnerabilities.
+- a07e6a3: Updated `AzureBlobStorageUrlReader` to reference the correctly-named `AzureBlobStorageIntegration` type from `@backstage/integration`. The previously-used `AzureBlobStorageIntergation` is now an alias for the new type and remains a valid argument to the constructor.
+- b75158b: Adapted Azure-related tests for the Azure SDK upgrade to ESM-style exports. The `AzureBlobStorageUrlReader` now accepts an optional `createContainerClient` dependency for testability without needing to mock the `@azure/storage-blob` module.
+- 89a95ca: Fixed the task worker retry loop to respect the abort signal. Previously, when a task worker encountered an unexpected error, the retry loop would continue indefinitely even after the worker was signaled to stop. The retry loop now checks the abort signal before retrying and passes it to the retry delay, allowing the worker to shut down gracefully.
+- def82d4: Fixed the built-in rate limiter throwing a validation error and refusing to start when `backend.rateLimit` is enabled. Requests are now keyed using the address normalization helper from `express-rate-limit`, which is required by newer versions of that library and ensures IPv6 clients are grouped by their address block rather than by individual address.
+- 0211390: Added a new `v2` invoke endpoint (`/.backstage/actions/v2/actions/:id/invoke`) that accepts a wrapped body format `{ input, secrets }` with secrets validation. The existing `v1` invoke endpoint remains unchanged for backward compatibility. Updated `DefaultActionsService` to use the `v2` endpoint. Updated `DefaultActionsRegistryService` to expose secrets schema in the actions list response and validate secrets on invocation.
+- 34f21c3: Fix gitlabUrlReader issue with retrieving the repository archive tree
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+  - @backstage/backend-app-api@1.7.1
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/config-loader@1.10.12
+  - @backstage/plugin-auth-node@0.7.2
+  - @backstage/plugin-events-node@0.4.23
+  - @backstage/plugin-permission-node@0.11.1
+
+## 0.17.3-next.2
+
+### Patch Changes
+
+- 89a95ca: Fixed the task worker retry loop to respect the abort signal. Previously, when a task worker encountered an unexpected error, the retry loop would continue indefinitely even after the worker was signaled to stop. The retry loop now checks the abort signal before retrying and passes it to the retry delay, allowing the worker to shut down gracefully.
+
+## 0.17.3-next.1
+
+### Patch Changes
+
+- b75158b: Adapted Azure-related tests for the Azure SDK upgrade to ESM-style exports. The `AzureBlobStorageUrlReader` now accepts an optional `createContainerClient` dependency for testability without needing to mock the `@azure/storage-blob` module.
+- 0211390: Added a new `v2` invoke endpoint (`/.backstage/actions/v2/actions/:id/invoke`) that accepts a wrapped body format `{ input, secrets }` with secrets validation. The existing `v1` invoke endpoint remains unchanged for backward compatibility. Updated `DefaultActionsService` to use the `v2` endpoint. Updated `DefaultActionsRegistryService` to expose secrets schema in the actions list response and validate secrets on invocation.
+- 34f21c3: Fix gitlabUrlReader issue with retrieving the repository archive tree
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.1
+  - @backstage/backend-plugin-api@1.9.2-next.1
+
+## 0.17.2-next.0
+
+### Patch Changes
+
+- a07e6a3: Updated `AzureBlobStorageUrlReader` to reference the correctly-named `AzureBlobStorageIntegration` type from `@backstage/integration`. The previously-used `AzureBlobStorageIntergation` is now an alias for the new type and remains a valid argument to the constructor.
+- def82d4: Fixed the built-in rate limiter throwing a validation error and refusing to start when `backend.rateLimit` is enabled. Requests are now keyed using the address normalization helper from `express-rate-limit`, which is required by newer versions of that library and ensures IPv6 clients are grouped by their address block rather than by individual address.
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/backend-app-api@1.7.1-next.0
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
+## 0.17.1
+
+### Patch Changes
+
+- 90b572e: Adds an alpha `TracingService` to provide a unified interface for emitting trace spans across Backstage plugins.
+- 97d3bd4: Fixed a race condition in `CachedUserInfoService` where a failed request could incorrectly evict a newer cache entry for the same token. The error handler now verifies the map entry is still the same promise before deleting it.
+- 3595c97: Exported `defaultServiceFactories` to allow use with `createSpecializedBackend` for advanced configuration like `extensionPointFactoryMiddleware`.
+- 89d3248: Fixed scheduler `sleep` firing immediately for durations longer than ~24.8 days, caused by Node.js `setTimeout` overflowing its 32-bit millisecond limit.
+- d00a44b: Fixed Valkey cluster mode to use `iovalkey`'s `Cluster` class instead of
+  `createCluster` from `@keyv/redis`. The previous implementation passed a
+  `@redis/client` `RedisCluster` instance to `@keyv/valkey`, which expects an
+  `iovalkey` `Cluster` instance. This caused the cluster client to not be
+  recognized correctly, as the two libraries have incompatible object models.
+- 2f0519c: Added a new `CachedUserInfoService` decorator that wraps `DefaultUserInfoService` with a 5-second TTL cache and in-flight request coalescing. The decorator is wired in via `userInfoServiceFactory` using a shared root-level cache. Repeated `getUserInfo()` calls for the same user token within the TTL window return the cached result without making an HTTP call to the auth backend. Note that custom `UserInfoService` implementations registered via their own factory will not benefit from this cache automatically.
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- 6209065: Added `context` and `propagation` to the alpha `TracingService`. Plugins can bridge OpenTelemetry context across async boundaries via `tracing.propagation.extract(tracing.context.active(), carrier)` followed by `tracing.context.with(ctx, fn)`, and read propagated baggage via `tracing.propagation.getActiveBaggage()` or `tracing.propagation.getBaggage(ctx)`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/integration-aws-node@0.2.0
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/backend-app-api@1.7.0
+  - @backstage/cli-node@0.3.2
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-auth-node@0.7.1
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/config@1.3.8
+  - @backstage/config-loader@1.10.11
+  - @backstage/plugin-events-node@0.4.22
+
+## 0.17.1-next.2
+
+### Patch Changes
+
+- 90b572e: Adds an alpha `TracingService` to provide a unified interface for emitting trace spans across Backstage plugins.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.9.1-next.1
+
+## 0.17.1-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.2-next.1
+  - @backstage/plugin-auth-node@0.7.1-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
+## 0.17.1-next.0
+
+### Patch Changes
+
+- 3595c97: Exported `defaultServiceFactories` to allow use with `createSpecializedBackend` for advanced configuration like `extensionPointFactoryMiddleware`.
+- 89d3248: Fixed scheduler `sleep` firing immediately for durations longer than ~24.8 days, caused by Node.js `setTimeout` overflowing its 32-bit millisecond limit.
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-app-api@1.7.0-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/cli-node@0.3.2-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/config-loader@1.10.11-next.0
+  - @backstage/integration-aws-node@0.1.22-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/backend-dev-utils@0.1.7
+  - @backstage/types@1.2.2
+
+## 0.17.0
+
+### Minor Changes
+
+- c69e03c: Added support for AWS RDS IAM authentication for PostgreSQL connections. Set `connection.type: rds` along with `host`, `user`, and `region` to use short-lived IAM tokens instead of a static password. Requires the `@aws-sdk/rds-signer` package and an IAM role with `rds-db:connect` permission.
+
+### Patch Changes
+
+- 4559806: Added support for typed `examples` on actions registered via the actions registry. Action authors can now provide examples with compile-time-checked `input` and `output` values that match their schema definitions.
+- 5cd814f: Refactored auditor severity log level mappings to use `zod/v4` with schema-driven defaults and type inference.
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 6e2aaab: Fixed `AwsS3UrlReader` failing to read files from S3 buckets configured with custom endpoint hosts. When an integration was configured with a specific endpoint like `https://bucket-1.s3.eu-central-1.amazonaws.com`, the URL parser incorrectly fell through to the non-AWS code path, always defaulting the region to `us-east-1` instead of extracting it from the hostname.
+- 308c672: `HostDiscovery` now logs a warning when `backend.baseUrl` is set to a localhost address while `NODE_ENV` is `production`, and when `backend.baseUrl` is not a valid URL.
+- 85c5a46: DefaultActionsRegistryService: add json middleware to /.backstage/actions/ routes only
+- 547258f: Refactored the database creation retry loop to avoid an unnecessary delay after the final failed attempt.
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- f14df56: Added experimental support for using `embedded-postgres` as the database for local development. Set `backend.database.client` to `embedded-postgres` in your app config to enable this. The `embedded-postgres` package must be installed as an explicit dependency in your project.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-auth-node@0.7.0
+  - @backstage/backend-app-api@1.6.1
+  - @backstage/cli-node@0.3.1
+  - @backstage/config-loader@1.10.10
+  - @backstage/integration@2.0.1
+  - @backstage/plugin-permission-node@0.10.12
+  - @backstage/config@1.3.7
+  - @backstage/integration-aws-node@0.1.21
+  - @backstage/plugin-events-node@0.4.21
+  - @backstage/plugin-permission-common@0.9.8
+
+## 0.16.1-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 308c672: `HostDiscovery` now logs a warning when `backend.baseUrl` is set to a localhost address while `NODE_ENV` is `production`, and when `backend.baseUrl` is not a valid URL.
+- 85c5a46: DefaultActionsRegistryService: add json middleware to /.backstage/actions/ routes only
+- f14df56: Added experimental support for using `embedded-postgres` as the database for local development. Set `backend.database.client` to `embedded-postgres` in your app config to enable this. The `embedded-postgres` package must be installed as an explicit dependency in your project.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-auth-node@0.7.0-next.2
+  - @backstage/backend-app-api@1.6.1-next.2
+  - @backstage/cli-node@0.3.1-next.1
+  - @backstage/config-loader@1.10.10-next.1
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/integration-aws-node@0.1.21-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+  - @backstage/plugin-permission-common@0.9.8-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.2
+
+## 0.16.1-next.1
+
+### Patch Changes
+
+- 4559806: Added support for typed `examples` on actions registered via the actions registry. Action authors can now provide examples with compile-time-checked `input` and `output` values that match their schema definitions.
+- 5cd814f: Refactored auditor severity log level mappings to use `zod/v4` with schema-driven defaults and type inference.
+- 6e2aaab: Fixed `AwsS3UrlReader` failing to read files from S3 buckets configured with custom endpoint hosts. When an integration was configured with a specific endpoint like `https://bucket-1.s3.eu-central-1.amazonaws.com`, the URL parser incorrectly fell through to the non-AWS code path, always defaulting the region to `us-east-1` instead of extracting it from the hostname.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-auth-node@0.7.0-next.1
+  - @backstage/backend-app-api@1.6.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+  - @backstage/plugin-permission-node@0.10.12-next.1
+
+## 0.16.1-next.0
+
+### Patch Changes
+
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/cli-node@0.3.1-next.0
+  - @backstage/config-loader@1.10.10-next.0
+  - @backstage/backend-app-api@1.6.1-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/backend-dev-utils@0.1.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@2.0.0
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+
+## 0.16.0
+
+### Minor Changes
+
+- 42960f1: The actions registry invoke endpoint now accepts direct user credentials in addition to service principals, enabling CLI and other direct user clients to invoke actions.
+- 0e7d8f9: The scheduler service now uses the metrics service to create metrics, providing plugin-scoped attribution.
+- 527cf88: **BREAKING** Removed deprecated `BitbucketUrlReader`. Use the `BitbucketCloudUrlReader` or the `BitbucketServerUrlReader` instead.
+
+### Patch Changes
+
+- cc8348e: Added permissions integration to the actions registry. Actions registered with a `visibilityPermission` field are now checked against the permissions framework when listing and invoking. Denied actions are filtered from list results, and invoking a denied action returns a `404 Not Found` as if the action does not exist. Permissions are automatically registered with the `PermissionsRegistryService` so they appear in the permission policy system.
+- dee4283: Added `pluginId` field to `ActionsServiceAction` type, populated from the registering plugin's metadata.
+- 015668c: Added `cancelTask` method to the `SchedulerService` interface and implementation, allowing cancellation of currently running scheduled tasks. For global tasks, the database lock is released and a periodic liveness check aborts the running task function. For local tasks, the task's abort signal is triggered directly. A new `POST /.backstage/scheduler/v1/tasks/:id/cancel` endpoint is also available.
+- 638e6c7: chore(deps): bump `yauzl` from 3.2.0 to 3.2.1
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- 62f0a53: Fixed error forwarding in the actions registry so that known errors like `InputError` and `NotFoundError` thrown by actions preserve their original status codes and messages instead of being wrapped in `ForwardedError` and coerced to 500.
+- d933f62: Add configurable throttling and retry mechanism for GitLab integration.
+- b99158a: Fixed `yarn backstage-cli config:check --strict --config app-config.yaml` config validation error by adding
+  an optional `default` type discriminator to PostgreSQL connection configuration,
+  allowing `config:check` to properly validate `default` connection configurations.
+- 1ee5b28: Adds an alpha `MetricsService` to provide a unified interface for metrics instrumentation across Backstage plugins.
+- 5fcbef2: Updated dependency `express-rate-limit` to `^8.0.0`.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/cli-node@0.3.0
+  - @backstage/integration@2.0.0
+  - @backstage/config-loader@1.10.9
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-permission-node@0.10.11
+  - @backstage/plugin-auth-node@0.6.14
+  - @backstage/backend-app-api@1.6.0
+  - @backstage/plugin-events-node@0.4.20
+
+## 0.16.0-next.2
+
+### Patch Changes
+
+- 015668c: Added `cancelTask` method to the `SchedulerService` interface and implementation, allowing cancellation of currently running scheduled tasks. For global tasks, the database lock is released and a periodic liveness check aborts the running task function. For local tasks, the task's abort signal is triggered directly. A new `POST /.backstage/scheduler/v1/tasks/:id/cancel` endpoint is also available.
+- 5fcbef2: Updated dependency `express-rate-limit` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/backend-app-api@1.6.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+  - @backstage/plugin-permission-node@0.10.11-next.1
+
+## 0.16.0-next.1
+
+### Minor Changes
+
+- 0e7d8f9: The scheduler service now uses the metrics service to create metrics, providing plugin-scoped attribution.
+- 527cf88: **BREAKING** Removed deprecated `BitbucketUrlReader`. Use the `BitbucketCloudUrlReader` or the `BitbucketServerUrlReader` instead.
+
+### Patch Changes
+
+- 62f0a53: Fixed error forwarding in the actions registry so that known errors like `InputError` and `NotFoundError` thrown by actions preserve their original status codes and messages instead of being wrapped in `ForwardedError` and coerced to 500.
+- Updated dependencies
+  - @backstage/cli-node@0.2.19-next.1
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.1
+  - @backstage/backend-app-api@1.5.1-next.0
+  - @backstage/backend-dev-utils@0.1.7
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
+## 0.15.3-next.0
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- d933f62: Add configurable throttling and retry mechanism for GitLab integration.
+- b99158a: Fixed `yarn backstage-cli config:check --strict --config app-config.yaml` config validation error by adding
+  an optional `default` type discriminator to PostgreSQL connection configuration,
+  allowing `config:check` to properly validate `default` connection configurations.
+- 1ee5b28: Adds an alpha `MetricsService` to provide a unified interface for metrics instrumentation across Backstage plugins.
+- Updated dependencies
+  - @backstage/cli-node@0.2.19-next.0
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/backend-app-api@1.5.1-next.0
+  - @backstage/backend-dev-utils@0.1.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.14-next.0
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
+## 0.15.2
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 44f5d04: Minor internal restructure of the postgres config loading code
+- 4fc7bf0: Bump to tar v7
+- 5dd683f: `createRateLimitMiddleware` is now exported from `@backstage/backend-defaults/httpRouter`
+- 8dd518a: Support `connection.type: azure` in database client to use Microsoft Entra authentication with Azure database for PostgreSQL
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-app-api@1.5.0
+  - @backstage/integration@1.20.0
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/backend-dev-utils@0.1.7
+  - @backstage/config-loader@1.10.8
+  - @backstage/cli-node@0.2.18
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-events-node@0.4.19
+
+## 0.15.2-next.1
+
+### Patch Changes
+
+- 8dd518a: Support `connection.type: azure` in database client to use Microsoft Entra authentication with Azure database for PostgreSQL
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.15.1-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 44f5d04: Minor internal restructure of the postgres config loading code
+- 4fc7bf0: Bump to tar v7
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.20-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-dev-utils@0.1.7-next.0
+  - @backstage/config-loader@1.10.8-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/cli-node@0.2.17-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/backend-app-api@1.5.0-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.15.0
+
+### Minor Changes
+
+- 6fc00e6: Added action filtering support with glob patterns and attribute constraints.
+
+  The `ActionsService` now supports filtering actions based on configuration. This allows controlling which actions are exposed to consumers like the MCP backend.
+
+  Configuration example:
+
+  ```yaml
+  backend:
+    actions:
+      pluginSources:
+        - catalog
+        - scaffolder
+      filter:
+        include:
+          - id: 'catalog:*'
+            attributes:
+              destructive: false
+          - id: 'scaffolder:*'
+        exclude:
+          - id: '*:delete-*'
+          - attributes:
+              readOnly: false
+  ```
+
+  Filtering logic:
+
+  - `include`: Rules for actions to include. Each rule can specify an `id` glob pattern and/or `attributes` constraints. An action must match at least one rule to be included. If no include rules are specified, all actions are included by default.
+  - `exclude`: Rules for actions to exclude. Takes precedence over include rules.
+  - Each rule combines `id` and `attributes` with AND logic (both must match if specified).
+
+- 27f9061: **BREAKING**: The constructor for `FetchUrlReader` is now private. If you have to construct an instance of it, please use `FetchUrlReader.fromConfig` instead.
+- 27f9061: **BREAKING**: `coreServices.urlReader` now validates that redirect chains are subject to the allow list in `reading.allow` of your app config. If you were relying on redirects that pointed to URLs that were not allowlisted, you will now have to add those to your config as well.
+
+  Example:
+
+  ```diff
+   backend:
+     reading:
+       allow:
+         - host: example.com
+  +      - host: storage-api.example.com
+  ```
+
+### Patch Changes
+
+- 3afeab4: Implementing `readTree` for `GoogleGcsReader`
+- c641c14: Wrap some of the action logic with `resolveSafeChildPath` and improve symlink handling when fetching remote and local files
+- 7126bf2: Fixed a spelling mistake in root health service shutdown response.
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/backend-app-api@1.4.1
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-permission-node@0.10.8
+
+## 0.15.0-next.2
+
+### Minor Changes
+
+- 6fc00e6: Added action filtering support with glob patterns and attribute constraints.
+
+  The `ActionsService` now supports filtering actions based on configuration. This allows controlling which actions are exposed to consumers like the MCP backend.
+
+  Configuration example:
+
+  ```yaml
+  backend:
+    actions:
+      pluginSources:
+        - catalog
+        - scaffolder
+      filter:
+        include:
+          - id: 'catalog:*'
+            attributes:
+              destructive: false
+          - id: 'scaffolder:*'
+        exclude:
+          - id: '*:delete-*'
+          - attributes:
+              readOnly: false
+  ```
+
+  Filtering logic:
+
+  - `include`: Rules for actions to include. Each rule can specify an `id` glob pattern and/or `attributes` constraints. An action must match at least one rule to be included. If no include rules are specified, all actions are included by default.
+  - `exclude`: Rules for actions to exclude. Takes precedence over include rules.
+  - Each rule combines `id` and `attributes` with AND logic (both must match if specified).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-permission-node@0.10.7
+
+## 0.14.1-next.1
+
+### Patch Changes
+
+- 3afeab4: Implementing `readTree` for `GoogleGcsReader`
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
+## 0.14.1-next.0
+
+### Patch Changes
+
+- 7126bf2: Fixed a spelling mistake in root health service shutdown response.
+- Updated dependencies
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/backend-dev-utils@0.1.6
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/cli-node@0.2.16
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.19.0
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+
+## 0.14.0
+
+### Minor Changes
+
+- fa43826: Move `better-sqlite3` from dependencies to peer dependencies
+- 2bc4e02: **BREAKING** The correct configuration options for Valkey are now being used.
+
+  These changes are **required** to `app-config.yaml`:
+
+  ```diff
+  backend:
+    cache:
+      store: valkey
+      connection: ...
+      client:
+  -     namespace: 'my-app'
+  -     keyPrefixSeparator: ':'
+  +     keyPrefix: 'my-app:'
+  -     clearBatchSize: 1000
+  -     useUnlink: false
+  ```
+
+  In comparison to Redis, Valkey requires the full `keyPrefix` including the separator to be specified instead of separate `namespace` and `keyPrefixSeparator` options. Also, Valkey does not support the `clearBatchSize` and `useUnlink` options.
+
+### Patch Changes
+
+- 37fba1d: Added support for Bitbucket Cloud OAuth. This introduces an alternative authentication method using a workspace OAuth consumer, alongside App Passwords (deprecated) and API tokens. OAuth does not require a bot or service account and avoids token expiry issues.
+
+  **BREAKING CHANGES**
+
+  - **@backstage/integration** (`src/bitbucketCloud/core.ts`)
+
+    - `getBitbucketCloudRequestOptions` now returns a `Promise` and **must** be awaited.
+
+  - **@backstage/plugin-scaffolder-backend-module-bitbucket-cloud** (`src/actions/helpers.ts`)
+    - `getBitbucketClient` now returns a `Promise` and **must** be awaited.
+    - `getAuthorizationHeader` now returns a `Promise` and **must** be awaited.
+
+  **OAuth usage example**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - clientId: client-id
+        clientSecret: client-secret
+  ```
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- aa79251: build(deps): bump `node-forge` from 1.3.1 to 1.3.2
+- f96edff: Allow configuration of the `referrerPolicy`
+- fb029b6: Updated luxon types
+- d9759a1: **BREAKING ALPHA**: The old `instanceMetadataService` has been removed from alpha. Please switch over to using the stable `coreServices.rootInstanceMetadata` and related types instead, available from `@backstage/backend-plugin-api`.
+- 847a330: Fix for `jose` types
+- 25b560e: Internal change to support new versions of the `logform` library
+- 2a0c4b0: Adds a new experimental `RootSystemMetadataService` for tracking the collection of Backstage instances that may be deployed at any one time. It currently offers a single API, `getInstalledPlugins` that returns a list of installed plugins based on config you have set up in `discovery.endpoints` as well as the plugins installed on the instance you're calling the API with. It does not handle wildcard values or fallback values. The intention is for this plugin to provide plugin authors with a simple interface to fetch a trustworthy list of all installed plugins.
+- 3016a79: Updated dependency `@types/archiver` to `^7.0.0`.
+- 42db6a6: Don't warn when parsing `storeOptions` for `memory` cache
+- Updated dependencies
+  - @backstage/cli-node@0.2.16
+  - @backstage/integration@1.19.0
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/config-loader@1.10.7
+  - @backstage/backend-dev-utils@0.1.6
+
+## 0.14.0-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- aa79251: build(deps): bump `node-forge` from 1.3.1 to 1.3.2
+- f96edff: Allow configuration of the `referrerPolicy`
+- fb029b6: Updated luxon types
+- 847a330: Fix for `jose` types
+- 25b560e: Internal change to support new versions of the `logform` library
+- 2a0c4b0: Adds a new experimental `RootSystemMetadataService` for tracking the collection of Backstage instances that may be deployed at any one time. It currently offers a single API, `getInstalledPlugins` that returns a list of installed plugins based on config you have set up in `discovery.endpoints` as well as the plugins installed on the instance you're calling the API with. It does not handle wildcard values or fallback values. The intention is for this plugin to provide plugin authors with a simple interface to fetch a trustworthy list of all installed plugins.
+- 3016a79: Updated dependency `@types/archiver` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config-loader@1.10.7-next.1
+  - @backstage/backend-dev-utils@0.1.6-next.0
+  - @backstage/backend-app-api@1.4.0-next.1
+  - @backstage/cli-node@0.2.16-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/types@1.2.2
+
+## 0.14.0-next.0
+
+### Minor Changes
+
+- fa43826: Move `better-sqlite3` from dependencies to peer dependencies
+
+### Patch Changes
+
+- d9759a1: **BREAKING ALPHA**: The old `instanceMetadataService` has been removed from alpha. Please switch over to using the stable `coreServices.rootInstanceMetadata` and related types instead, available from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-app-api@1.4.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/cli-node@0.2.16-next.0
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/config-loader@1.10.7-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.13.1
+
+### Patch Changes
+
+- 9bcfa77: Adjusted the log line wording of task worker starting
+- 91ab2eb: Fix a bug in the Gitlab URL reader where `search` did not handle multiple globs
+- fa255f5: Support for Bitbucket Cloud's API token was added as `appPassword` is deprecated (no new creation from September 9, 2025) and will be removed on June 9, 2026.
+
+  API token usage example:
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: user@domain.com
+        token: my-token
+  ```
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- b2f6a5a: Fix #31348 issue where BitbucketUrlReader ignored provided token and instead always used integration credentials
+- Updated dependencies
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/backend-app-api@1.3.0
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config-loader@1.10.6
+  - @backstage/config@1.3.6
+  - @backstage/cli-node@0.2.15
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/plugin-permission-node@0.10.6
+
+## 0.13.1-next.1
+
+### Patch Changes
+
+- 91ab2eb: Fix a bug in the Gitlab URL reader where `search` did not handle multiple globs
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/backend-app-api@1.3.0-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
+## 0.13.1-next.0
+
+### Patch Changes
+
+- 9bcfa77: Adjusted the log line wording of task worker starting
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- b2f6a5a: Fix #31348 issue where BitbucketUrlReader ignored provided token and instead always used integration credentials
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/backend-app-api@1.2.9-next.0
+  - @backstage/config-loader@1.10.6-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/cli-node@0.2.15-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/integration-aws-node@0.1.19-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.13.0
+
+### Minor Changes
+
+- 2d3e2b2: implement support for direct url for AzureBlobStorageUrlReader search function
+- 8b91238: Adds support for configuring server-level HTTP options through the
+  `app-config.yaml` file under the `backend.server` key. Supported options
+  include `headersTimeout`, `keepAliveTimeout`, `requestTimeout`, `timeout`,
+  `maxHeadersCount`, and `maxRequestsPerSocket`.
+
+  These are passed directly to the underlying Node.js HTTP server.
+  If omitted, Node.js defaults are used.
+
+- 8495b18: Add a new `externalTokenHandlersServiceRef` to allow custom external token validations
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@1.2.8
+  - @backstage/integration@1.18.1
+  - @backstage/config-loader@1.10.5
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/integration-aws-node@0.1.18
+  - @backstage/plugin-auth-node@0.6.8
+  - @backstage/plugin-events-node@0.4.16
+  - @backstage/plugin-permission-node@0.10.5
+
+## 0.13.0-next.2
+
+### Minor Changes
+
+- 8495b18: Add a new `externalTokenHandlersServiceRef` to allow custom external token validations
+
+## 0.13.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.4-next.0
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/integration-aws-node@0.1.18-next.0
+  - @backstage/backend-app-api@1.2.8-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+  - @backstage/cli-node@0.2.14
+
+## 0.13.0-next.0
+
+### Minor Changes
+
+- 2d3e2b2: implement support for direct url for AzureBlobStorageUrlReader search function
+- 8b91238: Adds support for configuring server-level HTTP options through the
+  `app-config.yaml` file under the `backend.server` key. Supported options
+  include `headersTimeout`, `keepAliveTimeout`, `requestTimeout`, `timeout`,
+  `maxHeadersCount`, and `maxRequestsPerSocket`.
+
+  These are passed directly to the underlying Node.js HTTP server.
+  If omitted, Node.js defaults are used.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/backend-app-api@1.2.7
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/cli-node@0.2.14
+  - @backstage/config@1.3.3
+  - @backstage/config-loader@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.17
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.15
+
 ## 0.12.1
 
 ### Patch Changes

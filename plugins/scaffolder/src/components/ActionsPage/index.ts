@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { ActionsPage } from './ActionsPage';
+export { ActionsPage, ActionPageContent } from './ActionsPage';

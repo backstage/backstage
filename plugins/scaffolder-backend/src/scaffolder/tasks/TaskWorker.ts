@@ -15,7 +15,8 @@
  */
 
 import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
-import { assertError, InputError, stringifyError } from '@backstage/errors';
+import type { MetricsService } from '@backstage/backend-plugin-api/alpha';
+import { InputError, stringifyError, toError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -25,10 +26,10 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import PQueue from 'p-queue';
-import { TemplateActionRegistry } from '../actions';
+import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
-import { setTimeout } from 'timers/promises';
+import { setTimeout } from 'node:timers/promises';
 import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
 
@@ -36,8 +37,6 @@ const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
 
 /**
  * TaskWorkerOptions
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
- * @public
  */
 export type TaskWorkerOptions = {
   taskBroker: TaskBroker;
@@ -54,8 +53,6 @@ export type TaskWorkerOptions = {
 
 /**
  * CreateWorkerOptions
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
- * @public
  */
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
@@ -82,12 +79,11 @@ export type CreateWorkerOptions = {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionEvaluator;
   gracefulShutdown?: boolean;
+  metrics: MetricsService;
 };
 
 /**
  * TaskWorker
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
- * @public
  */
 export class TaskWorker {
   private taskQueue: PQueue;
@@ -96,11 +92,16 @@ export class TaskWorker {
   private parameterAuditTransform: ParameterAuditTransform;
   private stopWorkers: boolean;
 
+  private readonly options: TaskWorkerOptions & {
+    parameterAuditTransform: ParameterAuditTransform;
+  };
+
   private constructor(
-    private readonly options: TaskWorkerOptions & {
+    options: TaskWorkerOptions & {
       parameterAuditTransform: ParameterAuditTransform;
     },
   ) {
+    this.options = options;
     this.stopWorkers = false;
     this.logger = options.logger;
     this.auditor = options.auditor;
@@ -124,6 +125,7 @@ export class TaskWorker {
       additionalTemplateGlobals,
       permissions,
       gracefulShutdown,
+      metrics,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -135,6 +137,8 @@ export class TaskWorker {
       additionalTemplateFilters,
       additionalTemplateGlobals,
       permissions,
+      config,
+      metrics,
     });
 
     return new TaskWorker({
@@ -224,12 +228,12 @@ export class TaskWorker {
       await task.complete('completed', { output });
       await auditorEvent?.success();
     } catch (error) {
-      assertError(error);
+      const err = toError(error);
       await auditorEvent?.fail({
-        error,
+        error: err,
       });
       await task.complete('failed', {
-        error: { name: error.name, message: error.message },
+        error: { name: err.name, message: err.message },
       });
     }
   }

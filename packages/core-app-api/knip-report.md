@@ -2,17 +2,17 @@
 
 ## Unused dependencies (1)
 
-| Name    | Location     | Severity |
-| :------ | :----------- | :------- |
-| history | packages/core-app-api/package.json | error    |
+| Name    | Location          | Severity |
+| :------ | :---------------- | :------- |
+| history | package.json:55:6 | error    |
 
 ## Unused devDependencies (5)
 
-| Name                         | Location     | Severity |
-| :--------------------------- | :----------- | :------- |
-| @testing-library/react-hooks | packages/core-app-api/package.json | error    |
-| react-router-dom-stable      | packages/core-app-api/package.json | error    |
-| react-router-dom-beta        | packages/core-app-api/package.json | error    |
-| react-router-stable          | packages/core-app-api/package.json | error    |
-| react-router-beta            | packages/core-app-api/package.json | error    |
+| Name                         | Location          | Severity |
+| :--------------------------- | :---------------- | :------- |
+| @testing-library/react-hooks | package.json:69:6 | error    |
+| react-router-dom-stable      | package.json:79:6 | error    |
+| react-router-dom-beta        | package.json:78:6 | error    |
+| react-router-stable          | package.json:80:6 | error    |
+| react-router-beta            | package.json:76:6 | error    |
 

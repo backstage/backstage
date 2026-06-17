@@ -13,11 +13,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20.x, 22.x]
+        node-version: [22.x, 24.x]
 
     services:
-      postgres17:
-        image: postgres:17
+      postgres18:
+        image: postgres:18
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -27,8 +27,8 @@ jobs:
           --health-retries 5
         ports:
           - 5432/tcp
-      postgres13:
-        image: postgres:13
+      postgres14:
+        image: postgres:14
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -68,15 +68,16 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
+          corepack: true
       - name: yarn install
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -94,7 +95,7 @@ jobs:
         run: yarn backstage-cli config:check --lax
 
       - name: backstage-cli cache
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
@@ -102,7 +103,7 @@ jobs:
             ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-
 
       - name: lint
-        run: yarn backstage-cli repo lint --successCache --successCacheDir .cache/backstage-cli
+        run: yarn backstage-cli repo lint --success-cache --success-cache-dir .cache/backstage-cli
 
       - name: type checking and declarations
         run: yarn tsc:full
@@ -110,30 +111,41 @@ jobs:
       - name: build
         run: yarn backstage-cli repo build --all
 
-        # For now BUI has a custom build script and needs to be built separately
-      - name: build BUI
-        run: yarn --cwd packages/ui build
-
       - name: verify type dependencies
         run: yarn lint:type-deps
 
       - name: test (and upload coverage)
         run: |
-          yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage --successCache --successCacheDir .cache/backstage-cli
+          yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage --success-cache --success-cache-dir .cache/backstage-cli
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_POSTGRES17_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres17.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres18.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres14.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
           BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
 
       - name: Discord notification
         if: ${{ failure() }}
-        uses: Ilshidur/action-discord@d2594079a10f1d6739ee50a2471f0ca57418b554 # 0.4.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: 'Master build failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}'
+          script: |
+            const webhook = process.env.DISCORD_WEBHOOK;
+            if (!webhook) {
+              throw new Error('DISCORD_WEBHOOK secret is not set');
+            }
+            const repo = context.repo.owner + '/' + context.repo.repo;
+            const runId = context.runId;
+            const message = `Master build failed https://github.com/${repo}/actions/runs/${runId}`;
+            const response = await fetch(webhook, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content: message }),
+            });
+            if (!response.ok) {
+              throw new Error(`Discord webhook request failed: ${response.status} ${response.statusText}`);
+            }
 
   # A separate release build that is only run for commits that are the result of merging the "Version Packages" PR
   # We can't re-use the output from the above step, but we'll have a guaranteed node_modules cache and
@@ -147,18 +159,32 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
       # Notify maintainers that a new release is ready to be published
       - name: Discord notification
-        uses: Ilshidur/action-discord@d2594079a10f1d6739ee50a2471f0ca57418b554 # 0.4.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_MAINTAINERS_WEBHOOK }}
         with:
-          args: 'A new release is ready to be [published](https://github.com/backstage/publishing/actions/workflows/publish-main.yml) from {{GITHUB_SHA}}'
+          script: |
+            const webhook = process.env.DISCORD_WEBHOOK;
+            if (!webhook) {
+              throw new Error('DISCORD_MAINTAINERS_WEBHOOK secret is not set');
+            }
+            const sha = context.sha;
+            const message = `A new release is ready to be [published](https://github.com/backstage/publishing/actions/workflows/publish-main.yml) from ${sha}`;
+            const response = await fetch(webhook, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content: message }),
+            });
+            if (!response.ok) {
+              throw new Error(`Discord webhook request failed: ${response.status} ${response.statusText}`);
+            }

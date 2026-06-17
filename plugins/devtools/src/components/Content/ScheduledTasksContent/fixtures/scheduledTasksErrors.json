@@ -1,0 +1,205 @@
+{
+  "tasks": [
+    {
+      "taskId": "cool-provider",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT24H",
+        "timeoutAfterDuration": "PT60M"
+      },
+      "taskState": {
+        "status": "running",
+        "startedAt": "2025-10-31T21:02:36.461+00:00",
+        "timesOutAt": "2025-10-31T22:02:36.461+00:00",
+        "lastRunEndedAt": "2025-10-31T19:57:15.674+00:00",
+        "lastRunError": "{\"name\":\"error\",\"message\":\"insert into \\\"refresh_state\\\" (\\\"entity_id\\\", \\\"entity_ref\\\", \\\"errors\\\", \\\"last_discovery_at\\\", \\\"location_key\\\", \\\"next_update_at\\\", \\\"unprocessed_entity\\\", \\\"unprocessed_hash\\\") values ($1, $2, $3, CURRENT_TIMESTAMP, $4, CURRENT_TIMESTAMP, $5, $6), ($7, $8, $9, CURRENT_TIMESTAMP, $10, CURRENT_TIMESTAMP, $11, $12), ($13, $14, $15, CURRENT_TIMESTAMP, $16, CURRENT_TIMESTAMP, $17, $18), ($19, $20, $21, CURRENT_TIMESTAMP, $22, CURRENT_TIMESTAMP, $23, $24), ($25, $26, $27, CURRENT_TIMESTAMP, $28, CURRENT_TIMESTAMP, $29, $30), ($31, $32, $33, CURRENT_TIMESTAMP, $34, CURRENT_TIMESTAMP, $35, $36), ($37, $38, $39, CURRENT_TIMESTAMP, $40, CURRENT_TIMESTAMP, $41, $42), ($43, $44, $45, CURRENT_TIMESTAMP, $46, CURRENT_TIMESTAMP, $47, $48), ($49, $50, $51, CURRENT_TIMESTAMP, $52, CURRENT_TIMESTAMP, $53, $54), ($55, $56, $57, CURRENT_TIMESTAMP, $58, CURRENT_TIMESTAMP, $59, $60), ($61, $62, $63, CURRENT_TIMESTAMP, $64, CURRENT_TIMESTAMP, $65, $66), ($67, $68, $69, CURRENT_TIMESTAMP, $70, CURRENT_TIMESTAMP, $71, $72), ($73, $74, $75, CURRENT_TIMESTAMP, $76, CURRENT_TIMESTAMP, $77, $78), ($79, $80, $81, CURRENT_TIMESTAMP, $82, CURRENT_TIMESTAMP, $83, $84), ($85, $86, $87, CURRENT_TIMESTAMP, $88, CURRENT_TIMESTAMP, $89, $90), ($91, $92, $93, CURRENT_TIMESTAMP, $94, CURRENT_TIMESTAMP, $95, $96), ($97, $98, $99, CURRENT_TIMESTAMP, $100, CURRENT_TIMESTAMP, $101, $102), ($103, $104, $105, CURRENT_TIMESTAMP, $106, CURRENT_TIMESTAMP, $107, $108), ($109, $110, $111, CURRENT_TIMESTAMP, $112, CURRENT_TIMESTAMP, $113, $114), ($115, $116, $117, CURRENT_TIMESTAMP, $118, CURRENT_TIMESTAMP, $119, $120), ($121, $122, $123, CURRENT_TIMESTAMP, $124, CURRENT_TIMESTAMP, $125, $126), ($127, $128, $129, CURRENT_TIMESTAMP, $130, CURRENT_TIMESTAMP, $131, $132), ($133, $134, $135, CURRENT_TIMESTAMP, $136, CURRENT_TIMESTAMP, $137, $138), ($139, $140, $141, CURRENT_TIMESTAMP, $142, CURRENT_TIMESTAMP, $143, $144), ($145, $146, $147, CURRENT_TIMESTAMP, $148, CURRENT_TIMESTAMP, $149, $150), ($151, $152, $153, CURRENT_TIMESTAMP, $154, CURRENT_TIMESTAMP, $155, $156), ($157, $158, $159, CURRENT_TIMESTAMP, $160, CURRENT_TIMESTAMP, $161, $162), ($163, $164, $165, CURRENT_TIMESTAMP, $166, CURRENT_TIMESTAMP, $167, $168), ($169, $170, $171, CURRENT_TIMESTAMP, $172, CURRENT_TIMESTAMP, $173, $174), ($175, $176, $177, CURRENT_TIMESTAMP, $178, CURRENT_TIMESTAMP, $179, $180), ($181, $182, $183, CURRENT_TIMESTAMP, $184, CURRENT_TIMESTAMP, $185, $186), ($187, $188, $189, CURRENT_TIMESTAMP, $190, CURRENT_TIMESTAMP, $191, $192), ($193, $194, $195, CURRENT_TIMESTAMP, $196, CURRENT_TIMESTAMP, $197, $198), ($199, $200, $201, CURRENT_TIMESTAMP, $202, CURRENT_TIMESTAMP, $203, $204), ($205, $206, $207, CURRENT_TIMESTAMP, $208, CURRENT_TIMESTAMP, $209, $210), ($211, $212, $213, CURRENT_TIMESTAMP, $214, CURRENT_TIMESTAMP, $215, $216), ($217, $218, $219, CURRENT_TIMESTAMP, $220, CURRENT_TIMESTAMP, $221, $222), ($223, $224, $225, CURRENT_TIMESTAMP, $226, CURRENT_TIMESTAMP, $227, $228), ($229, $230, $231, CURRENT_TIMESTAMP, $232, CURRENT_TIMESTAMP, $233, $234), ($235, $236, $237, CURRENT_TIMESTAMP, $238, CURRENT_TIMESTAMP, $239, $240), ($241, $242, $243, CURRENT_TIMESTAMP, $244, CURRENT_TIMESTAMP, $245, $246), ($247, $248, $249, CURRENT_TIMESTAMP, $250, CURRENT_TIMESTAMP, $251, $252), ($253, $254, $255, CURRENT_TIMESTAMP, $256, CURRENT_TIMESTAMP, $257, $258), ($259, $260, $261, CURRENT_TIMESTAMP, $262, CURRENT_TIMESTAMP, $263, $264), ($265, $266, $267, CURRENT_TIMESTAMP, $268, CURRENT_TIMESTAMP, $269, $270), ($271, $272, $273, CURRENT_TIMESTAMP, $274, CURRENT_TIMESTAMP, $275, $276), ($277, $278, $279, CURRENT_TIMESTAMP, $280, CURRENT_TIMESTAMP, $281, $282), ($283, $284, $285, CURRENT_TIMESTAMP, $286, CURRENT_TIMESTAMP, $287, $288), ($289, $290, $291, CURRENT_TIMESTAMP, $292, CURRENT_TIMESTAMP, $293, $294), ($295, $296, $297, CURRENT_TIMESTAMP, $298, CURRENT_TIMESTAMP, $299, $300) - value too long for type character varying(255)\",\"length\":99,\"severity\":\"ERROR\",\"code\":\"22001\",\"file\":\"varchar.c\",\"line\":\"637\",\"routine\":\"varchar\"}"
+      },
+      "workerState": {
+        "status": "running"
+      }
+    },
+    {
+      "taskId": "some-provider",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT24H",
+        "timeoutAfterDuration": "PT24H"
+      },
+      "taskState": {
+        "status": "idle",
+        "startsAt": "2025-11-01T21:02:34.850+00:00",
+        "lastRunEndedAt": "2025-10-31T21:02:35.556+00:00"
+      },
+      "workerState": {
+        "status": "idle"
+      }
+    },
+    {
+      "taskId": "three-provider",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT30M",
+        "timeoutAfterDuration": "PT2M"
+      },
+      "taskState": {
+        "status": "idle",
+        "startsAt": "2025-10-31T21:16:04.145+00:00",
+        "lastRunEndedAt": "2025-10-31T20:46:09.184+00:00",
+        "lastRunError": "{\"name\":\"TypeError\",\"message\":\"String.prototype.replaceAll called with a non-global RegExp argument\"}"
+      },
+      "workerState": {
+        "status": "idle"
+      }
+    },
+    {
+      "taskId": "a-provider",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT60M",
+        "timeoutAfterDuration": "PT24H"
+      },
+      "taskState": {
+        "status": "idle",
+        "startsAt": "2025-10-31T21:16:04.152+00:00",
+        "lastRunEndedAt": "2025-10-31T20:16:08.713+00:00"
+      },
+      "workerState": {
+        "status": "idle"
+      }
+    },
+    {
+      "taskId": "github-provider:provider123:refresh",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT24H",
+        "timeoutAfterDuration": "PT1H"
+      },
+      "taskState": {
+        "status": "idle",
+        "startsAt": "2025-11-01T18:16:04.153+00:00",
+        "lastRunEndedAt": "2025-10-31T18:18:56.176+00:00"
+      },
+      "workerState": {
+        "status": "idle"
+      }
+    },
+    {
+      "taskId": "github-provider:provider123:refresh",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT24H",
+        "timeoutAfterDuration": "PT1H"
+      },
+      "taskState": {
+        "status": "idle",
+        "startsAt": "2025-11-01T18:16:04.156+00:00",
+        "lastRunEndedAt": "2025-10-31T18:16:04.264+00:00"
+      },
+      "workerState": {
+        "status": "idle"
+      }
+    },
+    {
+      "taskId": "github-provider:provider234:refresh",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT24H",
+        "timeoutAfterDuration": "PT1H"
+      },
+      "taskState": {
+        "status": "idle",
+        "startsAt": "2025-11-01T18:16:04.157+00:00",
+        "lastRunEndedAt": "2025-10-31T18:16:08.564+00:00"
+      },
+      "workerState": {
+        "status": "idle"
+      }
+    },
+    {
+      "taskId": "github-provider:provider567:refresh",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT24H",
+        "timeoutAfterDuration": "PT1H"
+      },
+      "taskState": {
+        "status": "idle",
+        "startsAt": "2025-11-01T18:16:04.154+00:00",
+        "lastRunEndedAt": "2025-10-31T18:16:06.978+00:00"
+      },
+      "workerState": {
+        "status": "idle"
+      }
+    },
+    {
+      "taskId": "github-provider:provider910:refresh",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT24H",
+        "timeoutAfterDuration": "PT1H"
+      },
+      "taskState": {
+        "status": "idle",
+        "startsAt": "2025-11-01T18:16:04.160+00:00",
+        "lastRunEndedAt": "2025-10-31T18:16:08.573+00:00"
+      },
+      "workerState": {
+        "status": "idle"
+      }
+    },
+    {
+      "taskId": "github-provider:provider000:refresh",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT24H",
+        "timeoutAfterDuration": "PT1H"
+      },
+      "taskState": {
+        "status": "idle",
+        "startsAt": "2025-11-01T18:16:04.161+00:00",
+        "lastRunEndedAt": "2025-10-31T18:18:54.339+00:00"
+      },
+      "workerState": {
+        "status": "idle"
+      }
+    },
+    {
+      "taskId": "catalog_orphan_cleanup",
+      "pluginId": "catalog",
+      "scope": "global",
+      "settings": {
+        "version": 2,
+        "cadence": "PT30S",
+        "timeoutAfterDuration": "PT24S"
+      },
+      "taskState": {
+        "status": "idle",
+        "startsAt": "2025-10-31T21:06:35.672+00:00",
+        "lastRunEndedAt": "2025-10-31T21:06:09.106+00:00"
+      },
+      "workerState": {
+        "status": "idle"
+      }
+    }
+  ]
+}

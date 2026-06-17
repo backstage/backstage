@@ -23,6 +23,7 @@ import {
   WriteResult,
 } from '@google-cloud/firestore';
 
+import { toError } from '@backstage/errors';
 import { AnyJWK, KeyStore, StoredKey } from './types';
 
 export type FirestoreKeyStoreSettings = Settings & Options;
@@ -49,11 +50,15 @@ export class FirestoreKeyStore implements KeyStore {
     );
   }
 
-  private constructor(
-    private readonly database: Firestore,
-    private readonly path: string,
-    private readonly timeout: number,
-  ) {}
+  private readonly database: Firestore;
+  private readonly path: string;
+  private readonly timeout: number;
+
+  private constructor(database: Firestore, path: string, timeout: number) {
+    this.database = database;
+    this.path = path;
+    this.timeout = timeout;
+  }
 
   static async verifyConnection(
     keyStore: FirestoreKeyStore,
@@ -62,14 +67,11 @@ export class FirestoreKeyStore implements KeyStore {
     try {
       await keyStore.verify();
     } catch (error) {
+      const err = toError(error);
       if (process.env.NODE_ENV !== 'development') {
-        throw new Error(
-          `Failed to connect to database: ${(error as Error).message}`,
-        );
+        throw new Error(`Failed to connect to database: ${err.message}`);
       }
-      logger?.warn(
-        `Failed to connect to database: ${(error as Error).message}`,
-      );
+      logger?.warn(`Failed to connect to database: ${err.message}`);
     }
   }
 

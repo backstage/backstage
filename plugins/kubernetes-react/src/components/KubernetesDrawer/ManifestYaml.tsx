@@ -18,6 +18,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import jsyaml from 'js-yaml';
 import { useState } from 'react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 /**
  * Props of ManifestYaml
@@ -34,6 +36,7 @@ export interface ManifestYamlProps {
  * @public
  */
 export const ManifestYaml = ({ object }: ManifestYamlProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   // Toggle whether the Kubernetes resource managed fields should be shown in
   // the YAML display. This toggle is only available when the YAML is being
   // shown because managed fields are never visible in the structured display.
@@ -47,10 +50,10 @@ export const ManifestYaml = ({ object }: ManifestYamlProps) => {
             onChange={event => {
               setManagedFields(event.target.checked);
             }}
-            name="Managed Fields"
+            name={t('kubernetesDrawer.managedFields')}
           />
         }
-        label="Managed Fields"
+        label={t('kubernetesDrawer.managedFields')}
       />
       <CodeSnippet
         language="yaml"

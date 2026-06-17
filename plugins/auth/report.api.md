@@ -4,9 +4,12 @@
 
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
@@ -17,31 +20,80 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'page:auth': ExtensionDefinition<{
+    'page:auth': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
       config: {
         path: string | undefined;
+        title: string | undefined;
       };
       configInput: {
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            string,
+            'core.title',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
           >;
-      inputs: {};
+      inputs: {
+        pages: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'core.title',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              IconElement,
+              'core.icon',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
-        loader: () => Promise<JSX.Element>;
+        title?: string;
+        icon?: IconElement;
+        loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;
+        noHeader?: boolean;
       };
     }>;
   }

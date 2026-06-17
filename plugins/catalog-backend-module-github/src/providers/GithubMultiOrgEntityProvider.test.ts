@@ -29,8 +29,19 @@ import {
 } from './GithubMultiOrgEntityProvider';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
+import {
+  createRestClient,
+  isGitHubEnterprise,
+  isSuspended,
+} from '../lib/github';
 
 jest.mock('@octokit/graphql');
+jest.mock('../lib/github', () => ({
+  ...jest.requireActual('../lib/github'),
+  createRestClient: jest.fn(),
+  isGitHubEnterprise: jest.fn(),
+  isSuspended: jest.fn(),
+}));
 
 const getAllInstallationsMock = jest.fn();
 jest.mock('@backstage/integration', () => ({
@@ -94,6 +105,7 @@ describe('GithubMultiOrgEntityProvider', () => {
               nodes: [
                 {
                   login: 'a',
+                  id: 'f',
                   name: 'b',
                   bio: 'c',
                   email: 'd',
@@ -101,6 +113,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                 },
                 {
                   login: 'x',
+                  id: 'g',
                   name: 'y',
                   bio: 'z',
                   email: 'w',
@@ -128,7 +141,10 @@ describe('GithubMultiOrgEntityProvider', () => {
                   },
                   members: {
                     pageInfo: { hasNextPage: false },
-                    nodes: [{ login: 'a' }, { login: 'x' }],
+                    nodes: [
+                      { login: 'a', id: 'f' },
+                      { login: 'x', id: 'g' },
+                    ],
                   },
                 },
               ],
@@ -156,6 +172,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                 },
                 {
                   login: 'q',
+                  id: 'h',
                   name: 'r',
                   bio: 's',
                   email: 't',
@@ -183,7 +200,10 @@ describe('GithubMultiOrgEntityProvider', () => {
                   },
                   members: {
                     pageInfo: { hasNextPage: false },
-                    nodes: [{ login: 'a' }, { login: 'q' }],
+                    nodes: [
+                      { login: 'a', id: 'f' },
+                      { login: 'q', id: 'h' },
+                    ],
                   },
                 },
               ],
@@ -203,7 +223,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-        entities: [
+        entities: expect.arrayContaining([
           {
             entity: {
               apiVersion: 'backstage.io/v1alpha1',
@@ -215,6 +235,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/a',
                   'github.com/user-login': 'a',
+                  'github.com/user-id': 'f',
                 },
                 description: 'c',
                 name: 'a',
@@ -241,6 +262,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/x',
                   'github.com/user-login': 'x',
+                  'github.com/user-id': 'g',
                 },
                 description: 'z',
                 name: 'x',
@@ -267,6 +289,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/q',
                   'github.com/user-login': 'q',
+                  'github.com/user-id': 'h',
                 },
                 description: 's',
                 name: 'q',
@@ -340,7 +363,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
             locationKey: 'github-multi-org-provider:my-id',
           },
-        ],
+        ]),
         type: 'full',
       });
     });
@@ -382,6 +405,7 @@ describe('GithubMultiOrgEntityProvider', () => {
               nodes: [
                 {
                   login: 'a',
+                  id: 'f',
                   name: 'b',
                   bio: 'c',
                   email: 'd',
@@ -389,6 +413,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                 },
                 {
                   login: 'x',
+                  id: 'g',
                   name: 'y',
                   bio: 'z',
                   email: 'w',
@@ -416,7 +441,10 @@ describe('GithubMultiOrgEntityProvider', () => {
                   },
                   members: {
                     pageInfo: { hasNextPage: false },
-                    nodes: [{ login: 'a' }, { login: 'x' }],
+                    nodes: [
+                      { login: 'a', id: 'f' },
+                      { login: 'x', id: 'g' },
+                    ],
                   },
                 },
               ],
@@ -444,6 +472,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                 },
                 {
                   login: 'q',
+                  id: 'h',
                   name: 'r',
                   bio: 's',
                   email: 't',
@@ -471,7 +500,10 @@ describe('GithubMultiOrgEntityProvider', () => {
                   },
                   members: {
                     pageInfo: { hasNextPage: false },
-                    nodes: [{ login: 'a' }, { login: 'q' }],
+                    nodes: [
+                      { login: 'a', id: 'f' },
+                      { login: 'q', id: 'h' },
+                    ],
                   },
                 },
               ],
@@ -505,7 +537,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-        entities: [
+        entities: expect.arrayContaining([
           {
             entity: {
               apiVersion: 'backstage.io/v1alpha1',
@@ -517,6 +549,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/a',
                   'github.com/user-login': 'a',
+                  'github.com/user-id': 'f',
                 },
                 description: 'c',
                 name: 'a',
@@ -543,6 +576,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/x',
                   'github.com/user-login': 'x',
+                  'github.com/user-id': 'g',
                 },
                 description: 'z',
                 name: 'x',
@@ -569,6 +603,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/q',
                   'github.com/user-login': 'q',
+                  'github.com/user-id': 'h',
                 },
                 description: 's',
                 name: 'q',
@@ -642,7 +677,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
             locationKey: 'github-multi-org-provider:my-id',
           },
-        ],
+        ]),
         type: 'full',
       });
     });
@@ -656,6 +691,7 @@ describe('GithubMultiOrgEntityProvider', () => {
               nodes: [
                 {
                   login: 'a',
+                  id: 'f',
                   name: 'b',
                   bio: 'c',
                   email: 'd',
@@ -663,6 +699,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                 },
                 {
                   login: 'x',
+                  id: 'g',
                   name: 'y',
                   bio: 'z',
                   email: 'w',
@@ -690,7 +727,10 @@ describe('GithubMultiOrgEntityProvider', () => {
                   },
                   members: {
                     pageInfo: { hasNextPage: false },
-                    nodes: [{ login: 'a' }, { login: 'x' }],
+                    nodes: [
+                      { login: 'a', id: 'f' },
+                      { login: 'x', id: 'g' },
+                    ],
                   },
                 },
               ],
@@ -718,6 +758,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                 },
                 {
                   login: 'q',
+                  id: 'h',
                   name: 'r',
                   bio: 's',
                   email: 't',
@@ -745,7 +786,10 @@ describe('GithubMultiOrgEntityProvider', () => {
                   },
                   members: {
                     pageInfo: { hasNextPage: false },
-                    nodes: [{ login: 'a' }, { login: 'q' }],
+                    nodes: [
+                      { login: 'a', id: 'f' },
+                      { login: 'q', id: 'h' },
+                    ],
                   },
                 },
               ],
@@ -771,7 +815,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       await entityProvider.read();
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-        entities: [
+        entities: expect.arrayContaining([
           {
             entity: {
               apiVersion: 'backstage.io/v1alpha1',
@@ -783,6 +827,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/a',
                   'github.com/user-login': 'a',
+                  'github.com/user-id': 'f',
                 },
                 description: 'c',
                 name: 'a',
@@ -809,6 +854,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/x',
                   'github.com/user-login': 'x',
+                  'github.com/user-id': 'g',
                 },
                 description: 'z',
                 name: 'x',
@@ -835,6 +881,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/q',
                   'github.com/user-login': 'q',
+                  'github.com/user-id': 'h',
                 },
                 description: 's',
                 name: 'q',
@@ -906,7 +953,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
             locationKey: 'github-multi-org-provider:my-id',
           },
-        ],
+        ]),
         type: 'full',
       });
     });
@@ -1099,6 +1146,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                 nodes: [
                   {
                     login: 'a',
+                    id: 'f',
                     name: 'b',
                     bio: 'c',
                     email: 'd',
@@ -1126,7 +1174,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     },
                     members: {
                       pageInfo: { hasNextPage: false },
-                      nodes: [{ login: 'a' }],
+                      nodes: [{ login: 'a', id: 'f' }],
                     },
                   },
                 ],
@@ -1151,7 +1199,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     },
                     members: {
                       pageInfo: { hasNextPage: false },
-                      nodes: [{ login: 'a' }],
+                      nodes: [{ login: 'a', id: 'f' }],
                     },
                   },
                 ],
@@ -1176,7 +1224,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     },
                     members: {
                       pageInfo: { hasNextPage: false },
-                      nodes: [{ login: 'a' }],
+                      nodes: [{ login: 'a', id: 'f' }],
                     },
                   },
                 ],
@@ -1213,6 +1261,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     'backstage.io/managed-by-origin-location':
                       'url:https://github.com/a',
                     'github.com/user-login': 'a',
+                    'github.com/user-id': 'f',
                   },
                   description: 'c',
                   name: 'a',
@@ -1300,7 +1349,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     },
                     members: {
                       pageInfo: { hasNextPage: false },
-                      nodes: [{ login: 'a', name: 'a' }],
+                      nodes: [{ login: 'a', id: 'f', name: 'a' }],
                     },
                   },
                 ],
@@ -1328,6 +1377,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             membership: {
               user: {
                 name: 'a',
+                node_id: 'f',
                 avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
                 email: 'user1@test.com',
                 login: 'a',
@@ -1351,6 +1401,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     'backstage.io/managed-by-origin-location':
                       'url:https://github.com/a',
                     'github.com/user-login': 'a',
+                    'github.com/user-id': 'f',
                   },
                   name: 'a',
                 },
@@ -1398,6 +1449,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             membership: {
               user: {
                 name: 'a',
+                node_id: 'f',
                 avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
                 email: 'user1@test.com',
                 login: 'a',
@@ -1422,6 +1474,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     'backstage.io/managed-by-origin-location':
                       'url:https://github.com/a',
                     'github.com/user-login': 'a',
+                    'github.com/user-id': 'f',
                   },
                   name: 'a',
                 },
@@ -1473,7 +1526,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     },
                     members: {
                       pageInfo: { hasNextPage: false },
-                      nodes: [{ login: 'a', name: 'a' }],
+                      nodes: [{ login: 'a', id: 'f', name: 'a' }],
                     },
                   },
                 ],
@@ -1493,6 +1546,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             membership: {
               user: {
                 name: 'a',
+                node_id: 'f',
                 avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
                 email: 'user1@test.com',
                 login: 'a',
@@ -1516,6 +1570,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     'backstage.io/managed-by-origin-location':
                       'url:https://github.com/a',
                     'github.com/user-login': 'a',
+                    'github.com/user-id': 'f',
                   },
                   name: 'a',
                 },
@@ -1729,7 +1784,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                 },
                 members: {
                   pageInfo: { hasNextPage: false },
-                  nodes: [{ login: 'a', name: 'a' }],
+                  nodes: [{ login: 'a', id: 'f', name: 'a' }],
                 },
               },
             },
@@ -1741,6 +1796,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                 nodes: [
                   {
                     login: 'a',
+                    id: 'f',
                     name: 'b',
                     bio: 'c',
                     email: 'd',
@@ -1748,6 +1804,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                   },
                   {
                     login: 'w',
+                    id: 'i',
                     name: 'x',
                     bio: 'y',
                     email: 'z',
@@ -1774,7 +1831,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     },
                     members: {
                       pageInfo: { hasNextPage: false },
-                      nodes: [{ login: 'a', name: 'a' }],
+                      nodes: [{ login: 'a', id: 'f', name: 'a' }],
                     },
                   },
                 ],
@@ -1798,7 +1855,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     },
                     members: {
                       pageInfo: { hasNextPage: false },
-                      nodes: [{ login: 'a', name: 'a' }],
+                      nodes: [{ login: 'a', id: 'f', name: 'a' }],
                     },
                   },
                 ],
@@ -1847,6 +1904,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     'backstage.io/managed-by-origin-location':
                       'url:https://github.com/a',
                     'github.com/user-login': 'a',
+                    'github.com/user-id': 'f',
                   },
                   name: 'a',
                   description: 'c',
@@ -2110,7 +2168,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                 },
                 members: {
                   pageInfo: { hasNextPage: false },
-                  nodes: [{ login: 'a', name: 'a' }],
+                  nodes: [{ login: 'a', id: 'f', name: 'a' }],
                 },
               },
             },
@@ -2147,7 +2205,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     },
                     members: {
                       pageInfo: { hasNextPage: false },
-                      nodes: [{ login: 'a', name: 'a' }],
+                      nodes: [{ login: 'a', id: 'f', name: 'a' }],
                     },
                   },
                 ],
@@ -2171,7 +2229,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     },
                     members: {
                       pageInfo: { hasNextPage: false },
-                      nodes: [{ login: 'a', name: 'a' }],
+                      nodes: [{ login: 'a', id: 'f', name: 'a' }],
                     },
                   },
                 ],
@@ -2194,6 +2252,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             member: {
               name: 'a',
               login: 'a',
+              node_id: 'f',
               avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
               email: 'user1@test.com',
             },
@@ -2245,6 +2304,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     'backstage.io/managed-by-origin-location':
                       'url:https://github.com/a',
                     'github.com/user-login': 'a',
+                    'github.com/user-id': 'f',
                   },
                   name: 'a',
                 },
@@ -2327,7 +2387,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     },
                     members: {
                       pageInfo: { hasNextPage: false },
-                      nodes: [{ login: 'a', name: 'a' }],
+                      nodes: [{ login: 'a', id: 'f', name: 'a' }],
                     },
                   },
                 ],
@@ -2350,6 +2410,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             member: {
               name: 'a',
               login: 'a',
+              node_id: 'f',
               avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
               email: 'user1@test.com',
             },
@@ -2401,6 +2462,7 @@ describe('GithubMultiOrgEntityProvider', () => {
                     'backstage.io/managed-by-origin-location':
                       'url:https://github.com/a',
                     'github.com/user-login': 'a',
+                    'github.com/user-id': 'f',
                   },
                   name: 'a',
                 },
@@ -2417,6 +2479,147 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           ],
           removed: [],
+        });
+      });
+    });
+
+    describe('suspended user handling', () => {
+      let suspendedEvents: EventsService;
+      let suspendedConnection: EntityProviderConnection;
+
+      beforeEach(async () => {
+        const logger = mockServices.logger.mock();
+        suspendedEvents = DefaultEventsService.create({ logger });
+
+        suspendedConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+
+        const config = new ConfigReader({
+          integrations: {
+            github: [{ host: 'github.com' }],
+          },
+        });
+
+        const mockGetCredentials = jest.fn().mockReturnValue({
+          headers: { token: 'blah' },
+          type: 'app',
+        });
+
+        (createRestClient as jest.Mock).mockReturnValue({});
+        (isGitHubEnterprise as jest.Mock).mockResolvedValue(true);
+        (isSuspended as jest.Mock).mockResolvedValue(true);
+
+        const entityProvider = GithubMultiOrgEntityProvider.fromConfig(config, {
+          events: suspendedEvents,
+          id: 'my-id',
+          githubCredentialsProvider: { getCredentials: mockGetCredentials },
+          githubUrl: 'https://github.com',
+          logger,
+          orgs: ['orgA', 'orgB'],
+          excludeSuspendedUsers: true,
+          experimental_checkForSuspendedUsersWithRest: true,
+          cache: mockServices.cache.mock(),
+        });
+
+        await entityProvider.connect(suspendedConnection);
+      });
+
+      it('should skip adding a suspended user on member_added event', async () => {
+        await suspendedEvents.publish({
+          topic: 'github.organization',
+          eventPayload: {
+            action: 'member_added',
+            organization: { login: 'orgA' },
+            membership: {
+              user: {
+                name: 'a',
+                node_id: 'f',
+                avatar_url: 'https://example.com/avatar',
+                email: 'a@test.com',
+                login: 'a',
+              },
+            },
+          },
+        });
+
+        expect(suspendedConnection.applyMutation).not.toHaveBeenCalled();
+        expect(isSuspended).toHaveBeenCalledWith('a', expect.anything(), {
+          org: 'orgA',
+        });
+      });
+
+      it('should exclude suspended user on membership event', async () => {
+        const mockClient = jest.fn();
+
+        mockClient.mockResolvedValueOnce({
+          organization: {
+            team: {
+              slug: 'team',
+              combinedSlug: 'orgA/team',
+              name: 'Team',
+              description: 'The team',
+              avatarUrl: 'http://example.com/team.jpeg',
+              parentTeam: null,
+              members: {
+                pageInfo: { hasNextPage: false },
+                nodes: [{ login: 'a' }],
+              },
+            },
+          },
+        });
+
+        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+        await suspendedEvents.publish({
+          topic: 'github.membership',
+          eventPayload: {
+            action: 'added',
+            team: {
+              name: 'Team',
+              slug: 'team',
+              description: 'The team',
+              html_url: 'https://github.com/orgs/orgA/teams/team',
+              parent: null,
+            },
+            member: {
+              login: 'a',
+              avatar_url: 'https://example.com/avatar',
+              email: 'a@test.com',
+              name: 'a',
+              node_id: 'f',
+            },
+            organization: { login: 'orgA' },
+          },
+        });
+
+        await new Promise(process.nextTick);
+
+        expect(suspendedConnection.applyMutation).toHaveBeenCalledTimes(1);
+        expect(suspendedConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: [
+            {
+              locationKey: 'github-multi-org-provider:my-id',
+              entity: expect.objectContaining({
+                kind: 'Group',
+                metadata: expect.objectContaining({ name: 'team' }),
+              }),
+            },
+          ],
+          removed: [
+            {
+              locationKey: 'github-multi-org-provider:my-id',
+              entity: expect.objectContaining({
+                kind: 'User',
+                metadata: expect.objectContaining({ name: 'a' }),
+              }),
+            },
+          ],
+        });
+        expect(isSuspended).toHaveBeenCalledWith('a', expect.anything(), {
+          org: 'orgA',
         });
       });
     });

@@ -14,46 +14,14 @@
  * limitations under the License.
  */
 
-const http = require('http');
-const https = require('https');
-
-const errorMessage = 'Network requests are not allowed in tests';
-
-const origHttpAgent = http.globalAgent;
-const origHttpsAgent = https.globalAgent;
-const origFetch = global.fetch;
-const origXMLHttpRequest = global.fetch;
-
-http.globalAgent = new http.Agent({
-  lookup() {
-    throw new Error(errorMessage);
-  },
-});
-
-https.globalAgent = new https.Agent({
-  lookup() {
-    throw new Error(errorMessage);
-  },
-});
-
-if (global.fetch) {
-  global.fetch = async () => {
-    throw new Error(errorMessage);
-  };
+try {
+  module.exports = require('@backstage/cli-module-test-jest/config/jestRejectNetworkRequests');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    throw new Error(
+      '@backstage/cli-module-test-jest is required to use the jest network request rejection. ' +
+        'Please install it as a dependency.',
+    );
+  }
+  throw e;
 }
-
-if (global.XMLHttpRequest) {
-  global.XMLHttpRequest = class {
-    constructor() {
-      throw new Error(errorMessage);
-    }
-  };
-}
-
-// Reset overrides after each suite to make sure we don't pollute the test environment
-afterAll(() => {
-  http.globalAgent = origHttpAgent;
-  https.globalAgent = origHttpsAgent;
-  global.fetch = origFetch;
-  global.XMLHttpRequest = origXMLHttpRequest;
-});

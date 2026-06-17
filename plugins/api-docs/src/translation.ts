@@ -17,15 +17,22 @@
 import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
 /**
- * @alpha
+ * @public
  */
 export const apiDocsTranslationRef = createTranslationRef({
   id: 'api-docs',
   messages: {
+    apiDefinitionCard: {
+      error: {
+        title: 'Could not fetch the API',
+      },
+      rawButtonTitle: 'Raw',
+    },
     apiDefinitionDialog: {
       closeButtonTitle: 'Close',
       tabsAriaLabel: 'API definition options',
       toggleButtonAriaLabel: 'Toggle API Definition Dialog',
+      rawButtonTitle: 'Raw',
     },
     defaultApiExplorerPage: {
       title: 'APIs',
@@ -83,6 +90,6 @@ export const apiDocsTranslationRef = createTranslationRef({
         title: 'No component provides this API.',
       },
     },
-    apisCardHelpLinkTitle: 'Learn how to change this',
+    apisCardHelpLinkTitle: 'Learn how to change this.',
   },
 });

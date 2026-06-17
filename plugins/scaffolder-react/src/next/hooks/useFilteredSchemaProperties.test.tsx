@@ -18,11 +18,10 @@ import { renderHook } from '@testing-library/react';
 import { useFilteredSchemaProperties } from './useFilteredSchemaProperties';
 import { TemplateParameterSchema } from '../../types';
 import { TestApiProvider } from '@backstage/test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 
-const mockFeatureFlagApi = {
-  isActive: jest.fn(),
-};
+const mockFeatureFlagApi = mockApis.featureFlags.mock();
 
 describe('useFilteredSchemaProperties', () => {
   it('should return the same manifest if no feature flag is set', () => {

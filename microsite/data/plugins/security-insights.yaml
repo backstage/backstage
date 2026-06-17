@@ -8,3 +8,4 @@ documentation: https://roadie.io/backstage/plugins/security-insights/?utm_source
 iconUrl: https://roadie.io/images/logos/github.png
 npmPackageName: '@roadiehq/backstage-plugin-security-insights'
 addedDate: '2021-04-20'
+status: active

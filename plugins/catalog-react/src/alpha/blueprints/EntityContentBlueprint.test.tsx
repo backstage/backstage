@@ -48,155 +48,11 @@ describe('EntityContentBlueprint', () => {
         },
         "configSchema": {
           "parse": [Function],
-          "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "filter": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                  },
-                  {
-                    "anyOf": [
-                      {
-                        "anyOf": [
-                          {
-                            "type": [
-                              "string",
-                              "number",
-                              "boolean",
-                            ],
-                          },
-                          {
-                            "items": {
-                              "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
-                            },
-                            "type": "array",
-                          },
-                        ],
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "$all": {
-                            "items": {
-                              "$ref": "#/properties/filter/anyOf/1",
-                            },
-                            "type": "array",
-                          },
-                        },
-                        "required": [
-                          "$all",
-                        ],
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "$any": {
-                            "items": {
-                              "$ref": "#/properties/filter/anyOf/1",
-                            },
-                            "type": "array",
-                          },
-                        },
-                        "required": [
-                          "$any",
-                        ],
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "$not": {
-                            "$ref": "#/properties/filter/anyOf/1",
-                          },
-                        },
-                        "required": [
-                          "$not",
-                        ],
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": {
-                          "anyOf": [
-                            {
-                              "$ref": "#/properties/filter/anyOf/1/anyOf/0",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$exists": {
-                                  "type": "boolean",
-                                },
-                              },
-                              "required": [
-                                "$exists",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$in": {
-                                  "items": {
-                                    "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
-                                  },
-                                  "type": "array",
-                                },
-                              },
-                              "required": [
-                                "$in",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$contains": {
-                                  "$ref": "#/properties/filter/anyOf/1",
-                                },
-                              },
-                              "required": [
-                                "$contains",
-                              ],
-                              "type": "object",
-                            },
-                          ],
-                        },
-                        "propertyNames": {
-                          "pattern": "^(?!\\$).*$",
-                        },
-                        "type": "object",
-                      },
-                    ],
-                  },
-                ],
-              },
-              "group": {
-                "anyOf": [
-                  {
-                    "const": false,
-                    "type": "boolean",
-                  },
-                  {
-                    "type": "string",
-                  },
-                ],
-              },
-              "path": {
-                "type": "string",
-              },
-              "title": {
-                "type": "string",
-              },
-            },
-            "type": "object",
-          },
+          "schema": [Function],
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "entity-content",
         "name": "test",
@@ -237,6 +93,15 @@ describe('EntityContentBlueprint', () => {
               "optional": true,
             },
             "id": "catalog.entity-content-group",
+            "optional": [Function],
+            "toString": [Function],
+          },
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "catalog.entity-content-icon",
             "optional": [Function],
             "toString": [Function],
           },

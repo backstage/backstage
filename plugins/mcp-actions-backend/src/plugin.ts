@@ -25,7 +25,10 @@ import { createSseRouter } from './routers/createSseRouter';
 import {
   actionsRegistryServiceRef,
   actionsServiceRef,
+  metricsServiceRef,
+  tracingServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
+import { parseServerConfigs } from './config';
 
 /**
  * mcpPlugin backend plugin
@@ -46,6 +49,8 @@ export const mcpPlugin = createBackendPlugin({
         rootRouter: coreServices.rootHttpRouter,
         discovery: coreServices.discovery,
         config: coreServices.rootConfig,
+        metrics: metricsServiceRef,
+        tracing: tracingServiceRef,
       },
       async init({
         actions,
@@ -55,37 +60,84 @@ export const mcpPlugin = createBackendPlugin({
         rootRouter,
         discovery,
         config,
+        metrics,
+        tracing,
       }) {
+        const serverConfigs = parseServerConfigs(config);
+        const namespacedToolNames = config.getOptionalBoolean(
+          'mcpActions.namespacedToolNames',
+        );
+        const captureToolPayloads =
+          config.getOptionalBoolean('mcpActions.tracing.capture.toolPayload') ??
+          false;
+
         const mcpService = await McpService.create({
           actions,
-        });
-
-        const sseRouter = createSseRouter({
-          mcpService,
-          httpAuth,
-        });
-
-        const streamableRouter = createStreamableRouter({
-          mcpService,
-          httpAuth,
+          metrics,
           logger,
+          namespacedToolNames,
+          tracingService: tracing,
+          captureToolPayloads,
         });
 
         const router = Router();
         router.use(json());
 
-        router.use('/v1/sse', sseRouter);
-        router.use('/v1', streamableRouter);
+        if (serverConfigs && serverConfigs.size > 0) {
+          for (const [key, serverConfig] of serverConfigs) {
+            const streamableRouter = createStreamableRouter({
+              mcpService,
+              httpAuth,
+              logger,
+              metrics,
+              tracing,
+              serverConfig,
+            });
+
+            router.use(`/v1/${key}`, streamableRouter);
+          }
+        } else {
+          const serverConfig = {
+            name: config.getOptionalString('mcpActions.name') ?? 'backstage',
+            description: config.getOptionalString('mcpActions.description'),
+            includeRules: [],
+            excludeRules: [],
+          };
+
+          const sseRouter = createSseRouter({
+            mcpService,
+            httpAuth,
+            tracing,
+            serverConfig,
+          });
+
+          const streamableRouter = createStreamableRouter({
+            mcpService,
+            httpAuth,
+            logger,
+            metrics,
+            tracing,
+            serverConfig,
+          });
+
+          router.use('/v1/sse', sseRouter);
+          router.use('/v1', streamableRouter);
+        }
 
         httpRouter.use(router);
 
-        if (
+        const oauthEnabled =
           config.getOptionalBoolean(
             'auth.experimentalDynamicClientRegistration.enabled',
-          )
-        ) {
+          ) ||
+          config.getOptionalBoolean(
+            'auth.experimentalClientIdMetadataDocuments.enabled',
+          );
+
+        if (oauthEnabled) {
+          // OAuth Authorization Server Metadata (RFC 8414)
           // This should be replaced with throwing a WWW-Authenticate header, but that doesn't seem to be supported by
-          // many of the MCP client as of yet. So this seems to be the oldest version of the spec thats implemented.
+          // many of the MCP clients as of yet. So this seems to be the oldest version of the spec that's implemented.
           rootRouter.use(
             '/.well-known/oauth-authorization-server',
             async (_, res) => {
@@ -93,10 +145,35 @@ export const mcpPlugin = createBackendPlugin({
               const oidcResponse = await fetch(
                 `${authBaseUrl}/.well-known/openid-configuration`,
               );
-
               res.json(await oidcResponse.json());
             },
           );
+
+          // Protected Resource Metadata (RFC 9728)
+          // https://datatracker.ietf.org/doc/html/rfc9728
+          // This allows MCP clients to discover the authorization server for this resource
+          const serverSuffixes = serverConfigs?.size
+            ? [...serverConfigs.keys()].map(key => `/v1/${key}`)
+            : ['/v1'];
+
+          for (const suffix of serverSuffixes) {
+            const mcpBasePath = `/api/mcp-actions${suffix}`;
+
+            rootRouter.use(
+              `/.well-known/oauth-protected-resource${mcpBasePath}`,
+              async (_req, res) => {
+                const [authBaseUrl, mcpBaseUrl] = await Promise.all([
+                  discovery.getExternalBaseUrl('auth'),
+                  discovery.getExternalBaseUrl('mcp-actions'),
+                ]);
+
+                res.json({
+                  resource: `${mcpBaseUrl}${suffix}`,
+                  authorization_servers: [authBaseUrl],
+                });
+              },
+            );
+          }
         }
       },
     });

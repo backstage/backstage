@@ -15,8 +15,8 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { normalize } from 'path';
-import * as pathsLib from '../../lib/paths';
+import { normalize } from 'node:path';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 
 import { categorizePackageDirs } from './categorizePackageDirs';
 
@@ -51,14 +51,9 @@ jest.mock('./categorizePackageDirs', () => ({
   }),
 }));
 
-const projectPaths = pathsLib.paths;
-
 const mockDir = createMockDirectory();
+overrideTargetPaths(mockDir.path);
 
-jest.spyOn(projectPaths, 'targetRoot', 'get').mockReturnValue(mockDir.path);
-jest
-  .spyOn(projectPaths, 'resolveTargetRoot')
-  .mockImplementation((...path) => mockDir.resolve(...path));
 jest.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
   {
     dir: normalize(mockDir.resolve('packages/package-a')),
@@ -85,30 +80,28 @@ jest.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
 describe('buildApiReports', () => {
   beforeEach(() => {
     mockDir.setContent({
-      [projectPaths.targetRoot]: {
-        'package.json': JSON.stringify({
-          workspaces: { packages: ['packages/*', 'plugins/*'] },
-        }),
-        packages: {
-          'package-a': {
-            'package.json': '{}',
-          },
-          'package-b': {
-            'package.json': '{}',
-          },
-          'package-c': {},
-          'README.md': 'Hello World',
+      'package.json': JSON.stringify({
+        workspaces: { packages: ['packages/*', 'plugins/*'] },
+      }),
+      packages: {
+        'package-a': {
+          'package.json': '{}',
         },
-        plugins: {
-          'plugin-a': {
-            'package.json': '{}',
-          },
-          'plugin-b': {
-            'package.json': '{}',
-          },
-          'plugin-c': {
-            'package.json': '{}',
-          },
+        'package-b': {
+          'package.json': '{}',
+        },
+        'package-c': {},
+        'README.md': 'Hello World',
+      },
+      plugins: {
+        'plugin-a': {
+          'package.json': '{}',
+        },
+        'plugin-b': {
+          'package.json': '{}',
+        },
+        'plugin-c': {
+          'package.json': '{}',
         },
       },
     });

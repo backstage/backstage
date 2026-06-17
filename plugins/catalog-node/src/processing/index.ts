@@ -24,4 +24,4 @@ export type {
   LocationAnalyzer,
   ScmLocationAnalyzer,
 } from './types';
-export { parseEntityYaml } from './parse';
+export { parseEntityYaml, type ParseEntityYamlOptions } from './parse';

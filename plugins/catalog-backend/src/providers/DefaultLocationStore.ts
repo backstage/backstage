@@ -15,9 +15,9 @@
  */
 
 import { Location } from '@backstage/catalog-client';
-import { ConflictError, NotFoundError } from '@backstage/errors';
+import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import {
   DbLocationsRow,
   DbRefreshStateRow,
@@ -28,7 +28,10 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { locationSpecToLocationEntity } from '../util/conversion';
+import {
+  computeLocationEntityRef,
+  locationSpecToLocationEntity,
+} from '../util/conversion';
 import { LocationInput, LocationStore } from '../service/types';
 import {
   ANNOTATION_ORIGIN_LOCATION,
@@ -36,26 +39,59 @@ import {
   parseLocationRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import {
+  CatalogScmEvent,
+  CatalogScmEventsService,
+} from '@backstage/plugin-catalog-node/alpha';
+import { chunk, uniqBy } from 'lodash';
+import parseGitUrl, { type GitUrl } from 'git-url-parse';
+import { ScmEventHandlingConfig } from '../util/readScmEventHandlingConfig';
+import {
+  FilterPredicate,
+  FilterPredicateValue,
+} from '@backstage/filter-predicates';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
+  private readonly db: Knex;
+  private readonly scmEvents: CatalogScmEventsService;
+  private readonly scmEventHandlingConfig: ScmEventHandlingConfig;
 
-  constructor(private readonly db: Knex) {}
+  constructor(
+    db: Knex,
+    scmEvents: CatalogScmEventsService,
+    scmEventHandlingConfig: ScmEventHandlingConfig,
+  ) {
+    this.db = db;
+    this.scmEvents = scmEvents;
+    this.scmEventHandlingConfig = scmEventHandlingConfig;
+  }
 
   getProviderName(): string {
     return 'DefaultLocationStore';
   }
 
-  async createLocation(input: LocationInput): Promise<Location> {
+  async createLocation(
+    input: LocationInput,
+    options?: {
+      onConflict?: 'refresh' | 'reject';
+    },
+  ): Promise<Location> {
+    let existed = false;
+
     const location = await this.db.transaction(async tx => {
       // Attempt to find a previous location matching the input
       const previousLocations = await this.locations(tx);
       // TODO: when location id's are a compilation of input target we can remove this full
       // lookup of locations first and just grab the by that instead.
-      const previousLocation = previousLocations.some(
+      const previousLocation = previousLocations.find(
         l => input.type === l.type && input.target === l.target,
       );
       if (previousLocation) {
+        if (options?.onConflict === 'refresh') {
+          existed = true;
+          return previousLocation;
+        }
         throw new ConflictError(
           `Location ${input.type}:${input.target} already exists`,
         );
@@ -65,24 +101,96 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         id: uuid(),
         type: input.type,
         target: input.target,
+        location_entity_ref: computeLocationEntityRef(input.type, input.target),
       };
 
       await tx<DbLocationsRow>('locations').insert(inner);
 
       return inner;
     });
-    const entity = locationSpecToLocationEntity({ location });
+
+    // Always upsert the entity, even if the location already existed, to
+    // recover from cases where the entity was inadvertently deleted.
+    const entity = locationSpecToLocationEntity({
+      location,
+      locationEntityRef: location.location_entity_ref,
+    });
     await this.connection.applyMutation({
       type: 'delta',
       added: [{ entity, locationKey: getEntityLocationRef(entity) }],
       removed: [],
     });
 
-    return location;
+    if (existed) {
+      // This is the "onConflict refresh" case, where a re-registration safely
+      // tries to recover from a bad state.
+      const entityRef = stringifyEntityRef(entity);
+      await this.db<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: entityRef })
+        .update({
+          next_update_at: this.db.fn.now(),
+          result_hash: '',
+        });
+    }
+
+    return {
+      id: location.id,
+      type: location.type,
+      target: location.target,
+      entityRef: location.location_entity_ref,
+    };
   }
 
   async listLocations(): Promise<Location[]> {
-    return await this.locations();
+    return (await this.locations()).map(
+      ({ id, type, target, location_entity_ref }) => ({
+        id,
+        type,
+        target,
+        entityRef: location_entity_ref,
+      }),
+    );
+  }
+
+  async queryLocations(options: {
+    limit: number;
+    afterId?: string;
+    query?: FilterPredicate;
+  }): Promise<{ items: Location[]; totalItems: number }> {
+    let itemsQuery = this.db<DbLocationsRow>('locations').whereNot(
+      'type',
+      'bootstrap',
+    );
+
+    if (options.query) {
+      itemsQuery = applyLocationFilterToQuery(
+        this.db.client.config.client,
+        itemsQuery,
+        options.query,
+      );
+    }
+
+    const countQuery = itemsQuery.clone().count('*', { as: 'count' });
+
+    itemsQuery = itemsQuery.orderBy('id', 'asc');
+    if (options.afterId !== undefined) {
+      itemsQuery = itemsQuery.where('id', '>', options.afterId);
+    }
+    if (options.limit !== undefined) {
+      itemsQuery = itemsQuery.limit(options.limit);
+    }
+
+    const [items, [{ count }]] = await Promise.all([itemsQuery, countQuery]);
+
+    return {
+      items: items.map(item => ({
+        id: item.id,
+        target: item.target,
+        type: item.type,
+        entityRef: item.location_entity_ref,
+      })),
+      totalItems: Number(count),
+    };
   }
 
   async getLocation(id: string): Promise<Location> {
@@ -93,7 +201,82 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
-    return items[0];
+    const { id: rowId, type, target, location_entity_ref } = items[0];
+    return { id: rowId, type, target, entityRef: location_entity_ref };
+  }
+
+  async updateLocation(id: string, location: LocationInput): Promise<Location> {
+    if (!this.connection) {
+      throw new Error('location store is not initialized');
+    }
+
+    // MySQL doesn't support UPDATE ... RETURNING. MySQL also reports 0 affected
+    // rows when the new values are identical to the old ones, so we can't rely
+    // on the row count to detect existence. Instead we SELECT to check existence
+    // first and then UPDATE inside a transaction.
+    let row: DbLocationsRow | undefined;
+    if (this.db.client.config.client.includes('mysql')) {
+      await this.db.transaction(async tx => {
+        [row] = await tx<DbLocationsRow>('locations').where({ id }).select();
+        if (!row) {
+          return;
+        }
+
+        const [conflict] = await tx<DbLocationsRow>('locations')
+          .where({ type: location.type, target: location.target })
+          .whereNot({ id })
+          .select();
+        if (conflict) {
+          throw new ConflictError(
+            `Location ${location.type}:${location.target} already exists`,
+          );
+        }
+
+        await tx<DbLocationsRow>('locations')
+          .where({ id })
+          .update({ type: location.type, target: location.target });
+        row = { ...row, type: location.type, target: location.target };
+      });
+    } else {
+      await this.db.transaction(async tx => {
+        const [conflict] = await tx<DbLocationsRow>('locations')
+          .where({ type: location.type, target: location.target })
+          .whereNot({ id })
+          .select();
+        if (conflict) {
+          throw new ConflictError(
+            `Location ${location.type}:${location.target} already exists`,
+          );
+        }
+
+        [row] = await tx<DbLocationsRow>('locations')
+          .where({ id })
+          .update({ type: location.type, target: location.target })
+          .returning('*');
+      });
+    }
+
+    if (!row) {
+      throw new NotFoundError(`Found no location with ID ${id}`);
+    }
+
+    const entity = locationSpecToLocationEntity({
+      location: row,
+      locationEntityRef: row.location_entity_ref,
+    });
+
+    await this.connection.applyMutation({
+      type: 'delta',
+      added: [{ entity, locationKey: getEntityLocationRef(entity) }],
+      removed: [],
+    });
+
+    return {
+      id: row.id,
+      type: row.type,
+      target: row.target,
+      entityRef: row.location_entity_ref,
+    };
   }
 
   async deleteLocation(id: string): Promise<void> {
@@ -113,7 +296,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       await tx<DbLocationsRow>('locations').where({ id }).del();
       return location;
     });
-    const entity = locationSpecToLocationEntity({ location: deleted });
+    const entity = locationSpecToLocationEntity({
+      location: deleted,
+      locationEntityRef: deleted.location_entity_ref,
+    });
     await this.connection.applyMutation({
       type: 'delta',
       added: [],
@@ -157,7 +343,12 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       );
     }
 
-    return locationRow;
+    return {
+      id: locationRow.id,
+      type: locationRow.type,
+      target: locationRow.target,
+      entityRef: locationRow.location_entity_ref,
+    };
   }
 
   private get connection(): EntityProviderConnection {
@@ -174,7 +365,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     const locations = await this.locations();
 
     const entities = locations.map(location => {
-      const entity = locationSpecToLocationEntity({ location });
+      const entity = locationSpecToLocationEntity({
+        location,
+        locationEntityRef: location.location_entity_ref,
+      });
       return { entity, locationKey: getEntityLocationRef(entity) };
     });
 
@@ -182,20 +376,525 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       type: 'full',
       entities,
     });
+
+    if (
+      this.scmEventHandlingConfig.unregister ||
+      this.scmEventHandlingConfig.move
+    ) {
+      this.scmEvents.subscribe({ onEvents: this.#onScmEvents.bind(this) });
+    }
   }
 
-  private async locations(dbOrTx: Knex.Transaction | Knex = this.db) {
+  private async locations(
+    dbOrTx: Knex.Transaction | Knex = this.db,
+  ): Promise<DbLocationsRow[]> {
     const locations = await dbOrTx<DbLocationsRow>('locations').select();
     return (
       locations
         // TODO(blam): We should create a mutation to remove this location for everyone
         // eventually when it's all done and dusted
         .filter(({ type }) => type !== 'bootstrap')
-        .map(item => ({
-          id: item.id,
-          target: item.target,
-          type: item.type,
-        }))
     );
   }
+
+  // #region SCM event handling
+
+  async #onScmEvents(events: CatalogScmEvent[]): Promise<void> {
+    const exactLocationsToDelete = new Set<string>();
+    const locationPrefixesToDelete = new Set<string>();
+    const exactLocationsToCreate = new Set<string>();
+    const locationPrefixesToMove = new Map<string, string>();
+
+    for (const event of events) {
+      if (
+        event.type === 'location.deleted' &&
+        this.scmEventHandlingConfig.unregister
+      ) {
+        exactLocationsToDelete.add(event.url);
+      } else if (
+        event.type === 'location.moved' &&
+        this.scmEventHandlingConfig.move
+      ) {
+        // Since Location entities are named after their target URL, these
+        // unfortunately have to be translated into deletion and creation
+        exactLocationsToDelete.add(event.fromUrl);
+        exactLocationsToCreate.add(event.toUrl);
+      } else if (
+        event.type === 'repository.deleted' &&
+        this.scmEventHandlingConfig.unregister
+      ) {
+        locationPrefixesToDelete.add(event.url);
+      } else if (
+        event.type === 'repository.moved' &&
+        this.scmEventHandlingConfig.move
+      ) {
+        // These also have to be handled with deletions and creations
+        locationPrefixesToMove.set(event.fromUrl, event.toUrl);
+      }
+    }
+
+    if (exactLocationsToDelete.size > 0) {
+      const count = await this.#deleteLocationsByExactUrl(
+        exactLocationsToDelete,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'delete',
+      });
+    }
+    if (locationPrefixesToDelete.size > 0) {
+      const count = await this.#deleteLocationsByUrlPrefix(
+        locationPrefixesToDelete,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'delete',
+      });
+    }
+    if (exactLocationsToCreate.size > 0) {
+      const count = await this.#createLocationsByExactUrl(
+        exactLocationsToCreate,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'create',
+      });
+    }
+    if (locationPrefixesToMove.size > 0) {
+      const count = await this.#moveLocationsByUrlPrefix(
+        locationPrefixesToMove,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'move',
+      });
+    }
+  }
+
+  async #createLocationsByExactUrl(urls: Iterable<string>): Promise<number> {
+    let count = 0;
+
+    for (const batch of chunk(Array.from(urls), 100)) {
+      const existingUrls = await this.db<DbLocationsRow>('locations')
+        .where('type', '=', 'url')
+        .whereIn('target', batch)
+        .select()
+        .then(rows => new Set(rows.map(row => row.target)));
+
+      const newLocations = batch
+        .filter(url => !existingUrls.has(url))
+        .map(url => ({
+          id: uuid(),
+          type: 'url',
+          target: url,
+          location_entity_ref: computeLocationEntityRef('url', url),
+        }));
+
+      if (newLocations.length) {
+        await this.db<DbLocationsRow>('locations').insert(newLocations);
+
+        await this.connection.applyMutation({
+          type: 'delta',
+          added: newLocations.map(location => {
+            const entity = locationSpecToLocationEntity({
+              location,
+              locationEntityRef: location.location_entity_ref,
+            });
+            return { entity, locationKey: getEntityLocationRef(entity) };
+          }),
+          removed: [],
+        });
+
+        count += newLocations.length;
+      }
+    }
+
+    return count;
+  }
+
+  async #deleteLocationsByExactUrl(urls: Iterable<string>): Promise<number> {
+    let count = 0;
+
+    for (const batch of chunk(Array.from(urls), 100)) {
+      const rows = await this.db<DbLocationsRow>('locations')
+        .where('type', '=', 'url')
+        .whereIn('target', batch)
+        .select();
+
+      if (rows.length) {
+        await this.db<DbLocationsRow>('locations')
+          .whereIn(
+            'id',
+            rows.map(row => row.id),
+          )
+          .delete();
+
+        await this.connection.applyMutation({
+          type: 'delta',
+          added: [],
+          removed: rows.map(row => ({
+            entity: locationSpecToLocationEntity({
+              location: row,
+              locationEntityRef: row.location_entity_ref,
+            }),
+          })),
+        });
+
+        count += rows.length;
+      }
+    }
+
+    return count;
+  }
+
+  async #deleteLocationsByUrlPrefix(urls: Iterable<string>): Promise<number> {
+    const matches = await this.#findLocationsByPrefixOrExactMatch(urls);
+    if (matches.length) {
+      await this.#deleteLocations(matches.map(l => l.row));
+    }
+
+    return matches.length;
+  }
+
+  async #moveLocationsByUrlPrefix(
+    urlPrefixes: Map<string, string>,
+  ): Promise<number> {
+    let count = 0;
+
+    for (const [fromPrefix, toPrefix] of urlPrefixes) {
+      if (fromPrefix === toPrefix) {
+        continue;
+      }
+
+      if (fromPrefix.match(/[?#]/) || toPrefix.match(/[?#]/)) {
+        // TODO(freben): We can't yet support complex URL locations where e.g.
+        // the path can be anywhere in the URL including in the query or hash
+        // part. The code below currently assumes that we can use simple
+        // substring operations.
+        continue;
+      }
+
+      const matches = await this.#findLocationsByPrefixOrExactMatch([
+        fromPrefix,
+      ]);
+      if (matches.length) {
+        await this.#deleteLocations(matches.map(m => m.row));
+
+        await this.#createLocationsByExactUrl(
+          matches.map(m => {
+            const remainder = m.row.target
+              .slice(fromPrefix.length)
+              .replace(/^\/+/, '');
+            if (!remainder) {
+              return toPrefix;
+            }
+            return `${toPrefix.replace(/\/+$/, '')}/${remainder}`;
+          }),
+        );
+
+        count += matches.length;
+      }
+    }
+
+    return count;
+  }
+
+  async #deleteLocations(rows: DbLocationsRow[]): Promise<void> {
+    // Delete the location table entries (in chunks so as not to overload the
+    // knex query builder)
+    for (const ids of chunk(
+      rows.map(l => l.id),
+      100,
+    )) {
+      await this.db<DbLocationsRow>('locations').whereIn('id', ids).delete();
+    }
+
+    // Delete the corresponding Location kind entities (this is efficiently
+    // chunked internally in the catalog)
+    await this.connection.applyMutation({
+      type: 'delta',
+      added: [],
+      removed: rows.map(l => ({
+        entity: locationSpecToLocationEntity({
+          location: l,
+          locationEntityRef: l.location_entity_ref,
+        }),
+      })),
+    });
+  }
+
+  /**
+   * Given a "base" URL prefix, find all locations that are for paths at or
+   * below it.
+   *
+   * For example, given a base URL prefix of
+   * "https://github.com/backstage/backstage/blob/master/plugins", it will match
+   * locations inside the plugins directory, and nowhere else.
+   */
+  async #findLocationsByPrefixOrExactMatch(
+    urls: Iterable<string>,
+  ): Promise<Array<{ row: DbLocationsRow; parsed: GitUrl }>> {
+    const result = new Array<{ row: DbLocationsRow; parsed: GitUrl }>();
+
+    for (const url of urls) {
+      let base: GitUrl;
+      try {
+        base = parseGitUrl(url);
+      } catch (error) {
+        throw new Error(`Invalid URL prefix, could not parse: ${url}`);
+      }
+
+      if (!base.owner || !base.name) {
+        throw new Error(
+          `Invalid URL prefix, missing owner or repository: ${url}`,
+        );
+      }
+
+      const pathPrefix =
+        base.filepath === '' || base.filepath.endsWith('/')
+          ? base.filepath
+          : `${base.filepath}/`;
+
+      const rows = await this.db<DbLocationsRow>('locations')
+        .where('type', '=', 'url')
+        // Initial rough pruning to not have to go through them all
+        .where('target', 'like', `%${base.owner}%`)
+        .where('target', 'like', `%${base.name}%`)
+        .select();
+
+      result.push(
+        ...rows.flatMap(row => {
+          try {
+            // We do this pretty explicit set of checks because we want to support
+            // providers that have a URL format where the path isn't necessarily at
+            // the end of the URL string (e.g. in the query part). Some of these may
+            // be empty strings etc, but that's fine as long as they parse to the
+            // same thing as above.
+            const candidate = parseGitUrl(row.target);
+
+            if (
+              candidate.protocol === base.protocol &&
+              candidate.resource === base.resource &&
+              candidate.port === base.port &&
+              candidate.organization === base.organization &&
+              candidate.owner === base.owner &&
+              candidate.name === base.name &&
+              // If the base has no ref (for example didn't have the "/blob/master"
+              // part and therefore targeted an entire repository) then we match any
+              // ref below that
+              (!base.ref || candidate.ref === base.ref) &&
+              // Match both on exact equality and any subpath with a slash between
+              (candidate.filepath === base.filepath ||
+                candidate.filepath.startsWith(pathPrefix))
+            ) {
+              return [{ row, parsed: candidate }];
+            }
+            return [];
+          } catch {
+            return [];
+          }
+        }),
+      );
+    }
+
+    return uniqBy(result, entry => entry.row.id);
+  }
+
+  // #endregion
+}
+
+/**
+ * Recursively builds up the SQL expression corresponding to the given filter
+ * predicate.
+ *
+ * @remarks
+ *
+ * Design note: The code prefers to let the SQL engine achieve case
+ * insensitivity. We could attempt to use `.toUpperCase` etc on the client
+ * side, but that would only work for the values being passed in, not the column
+ * side of the expression. If we let the database perform UPPER on both, we know
+ * that they will always be locale consistent etc as well.
+ *
+ * This does come at a runtime cost. However, the data set is typically rather
+ * small in the grand scheme of things, and we can add the proper indices in the
+ * future if needed. At this point I considered it not worth the effort.
+ */
+function applyLocationFilterToQuery(
+  clientType: string,
+  inputQuery: Knex.QueryBuilder,
+  query: FilterPredicate,
+): Knex.QueryBuilder {
+  let result = inputQuery;
+
+  if (!query || typeof query !== 'object' || Array.isArray(query)) {
+    throw new InputError('Invalid filter predicate, expected an object');
+  }
+
+  if ('$all' in query) {
+    // Explicitly handle the empty case to avoid malformed SQL
+    if (query.$all.length === 0) {
+      return result.whereRaw('1 = 0');
+    }
+
+    return result.where(outer => {
+      for (const subQuery of query.$all) {
+        outer.andWhere(inner => {
+          applyLocationFilterToQuery(clientType, inner, subQuery);
+        });
+      }
+    });
+  }
+
+  if ('$any' in query) {
+    // Explicitly handle the empty case to avoid malformed SQL
+    if (query.$any.length === 0) {
+      return result.whereRaw('1 = 0');
+    }
+
+    return result.where(outer => {
+      for (const subQuery of query.$any) {
+        outer.orWhere(inner => {
+          applyLocationFilterToQuery(clientType, inner, subQuery);
+        });
+      }
+    });
+  }
+
+  if ('$not' in query) {
+    return result.whereNot(inner => {
+      applyLocationFilterToQuery(clientType, inner, query.$not);
+    });
+  }
+
+  const entries = Object.entries(query);
+  const keys = entries.map(e => e[0]);
+  if (keys.some(k => k.startsWith('$'))) {
+    throw new InputError(
+      `Invalid filter predicate, unknown logic operator '${keys.join(', ')}'`,
+    );
+  }
+
+  for (const [keyAnyCase, value] of entries) {
+    const key = keyAnyCase.toLocaleLowerCase('en-US');
+    if (!['id', 'type', 'target', 'entityref'].includes(key)) {
+      throw new InputError(
+        `Invalid filter predicate, expected key to be 'id', 'type', 'target', or 'entityRef', got '${keyAnyCase}'`,
+      );
+    }
+
+    // Map the API field name to the underlying column name
+    const column = key === 'entityref' ? 'location_entity_ref' : key;
+    result = applyFilterValueToQuery(clientType, result, column, value);
+  }
+
+  return result;
+}
+
+function applyFilterValueToQuery(
+  clientType: string,
+  result: Knex.QueryBuilder,
+  key: string,
+  value: FilterPredicateValue,
+): Knex.QueryBuilder {
+  // Is it a primitive value?
+  if (['string', 'number', 'boolean'].includes(typeof value)) {
+    if (clientType === 'pg') {
+      return result.whereRaw(`UPPER(??::text) = UPPER(?::text)`, [key, value]);
+    }
+
+    if (clientType.includes('mysql')) {
+      return result.whereRaw(
+        `UPPER(CAST(?? AS CHAR)) = UPPER(CAST(? AS CHAR))`,
+        [key, value],
+      );
+    }
+
+    return result.whereRaw(`UPPER(??) = UPPER(?)`, [key, value]);
+  }
+
+  // Is it a matcher object?
+  if (typeof value === 'object') {
+    if (!value || Array.isArray(value)) {
+      throw new InputError(
+        `Invalid filter predicate, got unknown matcher object '${JSON.stringify(
+          value,
+        )}'`,
+      );
+    }
+
+    // Technically existence checks do not make much sense in the context of
+    // this table at the time of writing (values are always present), but
+    // there's nothing gained by prohibiting it.
+    if ('$exists' in value) {
+      return value.$exists ? result.whereNotNull(key) : result.whereNull(key);
+    }
+
+    if ('$in' in value) {
+      // Explicitly handle the empty case to avoid malformed SQL
+      if (value.$in.length === 0) {
+        return result.whereRaw('1 = 0');
+      }
+
+      // The id is matched with plain equality; it's of UUID type and case
+      // insensitivity does not apply.
+      if (key === 'id') {
+        return result.whereIn(key, value.$in);
+      }
+
+      if (clientType === 'pg') {
+        const rhs = value.$in.map(() => 'UPPER(?::text)').join(', ');
+        return result.whereRaw(`UPPER(??::text) IN (${rhs})`, [
+          key,
+          ...value.$in,
+        ]);
+      }
+
+      if (clientType.includes('mysql')) {
+        const rhs = value.$in.map(() => 'UPPER(CAST(? AS CHAR))').join(', ');
+        return result.whereRaw(`UPPER(CAST(?? AS CHAR)) IN (${rhs})`, [
+          key,
+          ...value.$in,
+        ]);
+      }
+
+      const rhs = value.$in.map(() => 'UPPER(?)').join(', ');
+      return result.whereRaw(`UPPER(??) IN (${rhs})`, [key, ...value.$in]);
+    }
+
+    if ('$hasPrefix' in value) {
+      const escaped = value.$hasPrefix.replace(/([\\%_])/g, '\\$1');
+
+      if (clientType === 'pg') {
+        return result.whereRaw("?? ilike ? escape '\\'", [key, `${escaped}%`]);
+      }
+
+      if (clientType.includes('mysql')) {
+        return result.whereRaw("UPPER(??) like UPPER(?) escape '\\\\'", [
+          key,
+          `${escaped}%`,
+        ]);
+      }
+
+      return result.whereRaw("UPPER(??) like UPPER(?) escape '\\'", [
+        key,
+        `${escaped}%`,
+      ]);
+    }
+
+    // There are no array shaped values for location queries, so we just always
+    // fail here
+    if ('$contains' in value) {
+      return result.whereRaw('1 = 0');
+    }
+
+    throw new InputError(
+      `Invalid filter predicate, got unknown matcher object '${JSON.stringify(
+        value,
+      )}'`,
+    );
+  }
+
+  throw new InputError(
+    `Invalid filter predicate, expected value to be a primitive value or a matcher object, got '${typeof value}'`,
+  );
 }

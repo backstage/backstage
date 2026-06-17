@@ -25,9 +25,12 @@ import {
   EntityCardType,
 } from './extensionData';
 import { JSX } from 'react';
-import { EntityPredicate } from '../predicates/types';
+import {
+  FilterPredicate,
+  createZodV4FilterPredicateSchema,
+} from '@backstage/filter-predicates';
+import { z } from 'zod/v4';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
-import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 import { Entity } from '@backstage/catalog-model';
 
 /** @alpha */
@@ -58,19 +61,18 @@ export const EntityContentLayoutBlueprint = createExtensionBlueprint({
     filterExpression: entityFilterExpressionDataRef,
     component: entityCardLayoutComponentDataRef,
   },
-  config: {
-    schema: {
-      type: z => z.string().optional(),
-      filter: z =>
-        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
-    },
+  configSchema: {
+    type: z.string().optional(),
+    filter: z
+      .union([z.string(), createZodV4FilterPredicateSchema()])
+      .optional(),
   },
   *factory(
     {
       loader,
       filter,
     }: {
-      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      filter?: string | FilterPredicate | ((entity: Entity) => boolean);
       loader: () => Promise<(props: EntityContentLayoutProps) => JSX.Element>;
     },
     { node, config },

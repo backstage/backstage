@@ -17,7 +17,7 @@
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
@@ -97,7 +97,8 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
             : {}),
         };
       },
-      refreshOnCompletion: options.skipRefresh !== true,
+      refreshOnCompletion:
+        options.skipRefresh !== true ? that.indexName : false,
     });
 
     // Safely catch errors thrown by the bulk helper client, e.g. HTTP timeouts

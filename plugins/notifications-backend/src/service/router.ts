@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import express, { Request, Response } from 'express';
-import Router from 'express-promise-router';
+import express, { Request } from 'express';
+import { createOpenApiRouter, EndpointMap } from '../schema/openapi';
+import { internal as openapi } from '@backstage/backend-openapi-utils';
 import {
   normalizeSeverity,
   NotificationGetOptions,
   NotificationsStore,
   TopicGetOptions,
 } from '../database';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import {
   NotificationProcessor,
@@ -45,7 +46,6 @@ import {
   NotificationReadSignal,
   NotificationSettings,
   notificationSeverities,
-  NotificationStatus,
   OriginSetting,
 } from '@backstage/plugin-notifications-common';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
@@ -108,7 +108,7 @@ export async function createRouter(
     recipientResolver ??
     new DefaultNotificationRecipientResolver(auth, catalog);
 
-  const getUser = async (req: Request<unknown>) => {
+  const getUser = async (req: Request<any, any, any, any, any>) => {
     const credentials = await httpAuth.credentials(req, { allow: ['user'] });
     const info = await userInfo.getUserInfo(credentials);
     return info.userEntityRef;
@@ -122,7 +122,7 @@ export async function createRouter(
     topic: any,
     existingOrigin: OriginSetting | undefined,
     defaultOriginSettings: OriginSetting | undefined,
-    defaultEnabled: boolean,
+    channelDefaultEnabled: boolean,
   ) => {
     const existingTopic = existingOrigin?.topics?.find(
       t => t.id.toLowerCase() === topic.topic.toLowerCase(),
@@ -131,11 +131,14 @@ export async function createRouter(
       t => t.id.toLowerCase() === topic.topic.toLowerCase(),
     );
 
+    // If topic has explicit setting, use it
+    // Otherwise check default topic settings from config
+    // Otherwise use channel default (not origin enabled state)
     return {
       id: topic.topic,
       enabled: existingTopic
         ? existingTopic.enabled
-        : defaultTopicSettings?.enabled ?? defaultEnabled,
+        : defaultTopicSettings?.enabled ?? channelDefaultEnabled,
     };
   };
 
@@ -144,6 +147,8 @@ export async function createRouter(
     existingChannel: ChannelSetting | undefined,
     defaultChannelSettings: ChannelSetting | undefined,
     topics: { origin: string; topic: string }[],
+    channelDefaultEnabled: boolean,
+    channelHasExplicitEnabled: boolean,
   ) => {
     const existingOrigin = existingChannel?.origins?.find(
       o => o.id.toLowerCase() === originId.toLowerCase(),
@@ -155,7 +160,7 @@ export async function createRouter(
 
     const defaultEnabled = existingOrigin
       ? existingOrigin.enabled
-      : defaultOriginSettings?.enabled ?? true;
+      : defaultOriginSettings?.enabled ?? channelDefaultEnabled;
 
     return {
       id: originId,
@@ -167,7 +172,7 @@ export async function createRouter(
             t,
             existingOrigin,
             defaultOriginSettings,
-            defaultEnabled,
+            channelHasExplicitEnabled ? channelDefaultEnabled : defaultEnabled,
           ),
         ),
     };
@@ -186,14 +191,29 @@ export async function createRouter(
       c => c.id.toLowerCase() === channelId.toLowerCase(),
     );
 
+    // Determine channel enabled state
+    const channelEnabled =
+      existingChannel?.enabled ?? defaultChannelSettings?.enabled;
+
+    // Use channel's enabled flag as the default for origins if not explicitly set
+    const defaultEnabledForOrigins = channelEnabled ?? true;
+
+    // Check if channel has explicit enabled flag (either from user settings or config)
+    const channelHasExplicitEnabled =
+      existingChannel?.enabled !== undefined ||
+      defaultChannelSettings?.enabled !== undefined;
+
     return {
       id: channelId,
+      enabled: channelEnabled,
       origins: origins.map(originId =>
         getOriginSettings(
           originId,
           existingChannel,
           defaultChannelSettings,
           topics,
+          defaultEnabledForOrigins,
+          channelHasExplicitEnabled,
         ),
       ),
     };
@@ -206,6 +226,27 @@ export async function createRouter(
     const { topics } = await store.getUserNotificationTopics({ user });
     const settings = await store.getNotificationSettings({ user });
     const channels = getNotificationChannels();
+
+    // Merge existing channels/origins/topics with configured settings
+    for (const channel of defaultNotificationSettings?.channels ?? []) {
+      if (!channels.includes(channel.id)) {
+        channels.push(channel.id);
+      }
+
+      for (const origin of channel.origins ?? []) {
+        if (!origins.includes(origin.id)) {
+          origins.push(origin.id);
+        }
+
+        for (const topic of origin.topics ?? []) {
+          if (
+            !topics.some(t => t.origin === origin.id && t.topic === topic.id)
+          ) {
+            topics.push({ origin: origin.id, topic: topic.id });
+          }
+        }
+      }
+    }
 
     return {
       channels: channels.map(channelId =>
@@ -220,7 +261,56 @@ export async function createRouter(
     origin: string;
     topic: string | null;
   }) => {
-    const settings = await getNotificationSettings(opts.user);
+    // Get user's explicit settings from database
+    const userSettings = await store.getNotificationSettings({
+      user: opts.user,
+    });
+
+    // Build a minimal settings object with user settings and config defaults
+    const settings: NotificationSettings = {
+      channels: [
+        {
+          id: opts.channel,
+          enabled: defaultNotificationSettings?.channels?.find(
+            c => c.id.toLowerCase() === opts.channel.toLowerCase(),
+          )?.enabled,
+          origins: [],
+        },
+      ],
+    };
+
+    // Add user's channel if it exists
+    const userChannel = userSettings.channels.find(
+      c => c.id.toLowerCase() === opts.channel.toLowerCase(),
+    );
+    if (userChannel) {
+      settings.channels[0] = {
+        ...settings.channels[0],
+        enabled: userChannel.enabled ?? settings.channels[0].enabled,
+        origins: userChannel.origins ?? [],
+      };
+    }
+
+    // Add config default origins if not in user settings
+    // Only add origins if the channel is enabled (not explicitly disabled)
+    const defaultChannelSettings = defaultNotificationSettings?.channels?.find(
+      c => c.id.toLowerCase() === opts.channel.toLowerCase(),
+    );
+    if (
+      defaultChannelSettings?.origins &&
+      settings.channels[0].enabled !== false
+    ) {
+      for (const defaultOrigin of defaultChannelSettings.origins) {
+        if (
+          !settings.channels[0].origins.some(
+            o => o.id.toLowerCase() === defaultOrigin.id.toLowerCase(),
+          )
+        ) {
+          settings.channels[0].origins.push(defaultOrigin);
+        }
+      }
+    }
+
     return isNotificationsEnabledFor(
       settings,
       opts.channel,
@@ -272,6 +362,15 @@ export async function createRouter(
 
         if (filters.excludedTopics && payload.topic) {
           if (filters.excludedTopics.includes(payload.topic)) {
+            continue;
+          }
+        }
+
+        if (filters.includedTopics) {
+          if (
+            !payload.topic ||
+            !filters.includedTopics.includes(payload.topic)
+          ) {
             continue;
           }
         }
@@ -328,14 +427,16 @@ export async function createRouter(
   ) => {
     const filtered = await filterProcessors(notification);
     for (const processor of filtered) {
-      if (processor.postProcess) {
-        try {
-          await processor.postProcess(notification, opts);
-        } catch (e) {
-          logger.error(
-            `Error while post processing notification with ${processor.getName()}: ${e}`,
-          );
-        }
+      if (!processor.postProcess) {
+        continue;
+      }
+
+      try {
+        await processor.postProcess(notification, opts);
+      } catch (e) {
+        logger.error(
+          `Error while post processing notification with ${processor.getName()}: ${e}`,
+        );
       }
     }
   };
@@ -353,114 +454,112 @@ export async function createRouter(
   };
 
   const appendCommonOptions = (
-    req: Request,
+    req: {
+      query: openapi.StaticQueryParamsSchema<EndpointMap, '/topics', 'get'>;
+    },
     opts: NotificationGetOptions | TopicGetOptions,
   ) => {
     if (req.query.search) {
-      opts.search = req.query.search.toString();
+      opts.search = req.query.search;
     }
     if (req.query.read === 'true') {
       opts.read = true;
     } else if (req.query.read === 'false') {
       opts.read = false;
-      // or keep undefined
     }
 
     if (req.query.saved === 'true') {
       opts.saved = true;
     } else if (req.query.saved === 'false') {
       opts.saved = false;
-      // or keep undefined
     }
     if (req.query.createdAfter) {
-      const sinceEpoch = Date.parse(String(req.query.createdAfter));
+      const sinceEpoch = Date.parse(req.query.createdAfter);
       if (isNaN(sinceEpoch)) {
         throw new InputError('Unexpected date format');
       }
       opts.createdAfter = new Date(sinceEpoch);
     }
     if (req.query.minimumSeverity) {
-      opts.minimumSeverity = normalizeSeverity(
-        req.query.minimumSeverity.toString(),
-      );
+      opts.minimumSeverity = normalizeSeverity(req.query.minimumSeverity);
     }
   };
 
-  // TODO: Move to use OpenAPI router instead
-  const router = Router();
-  router.use(express.json());
+  const router = await createOpenApiRouter();
 
-  const listNotificationsHandler = async (req: Request, res: Response) => {
+  const listNotificationsHandler: openapi.EndpointMapRequestHandler<
+    EndpointMap,
+    '/notifications',
+    'get'
+  > = async (req, res) => {
     const user = await getUser(req);
-    const opts: NotificationGetOptions = {
-      user: user,
-    };
-    if (req.query.offset) {
-      opts.offset = Number.parseInt(req.query.offset.toString(), 10);
+    const opts: NotificationGetOptions = { user };
+    if (req.query.offset !== undefined) {
+      opts.offset = req.query.offset;
     }
-    if (req.query.limit) {
-      opts.limit = Number.parseInt(req.query.limit.toString(), 10);
+    if (req.query.limit !== undefined) {
+      opts.limit = req.query.limit;
     }
-    if (req.query.orderField) {
-      opts.orderField = parseEntityOrderFieldParams(req.query);
+    if (req.query.orderField !== undefined) {
+      opts.orderField = parseEntityOrderFieldParams({
+        orderField: req.query.orderField,
+      });
     }
-
     if (req.query.topic) {
-      opts.topic = req.query.topic.toString();
+      opts.topic = req.query.topic;
     }
-
     appendCommonOptions(req, opts);
 
     const [notifications, totalCount] = await Promise.all([
       store.getNotifications(opts),
       store.getNotificationsCount(opts),
     ]);
-    res.json({
-      totalCount,
-      notifications,
-    });
+    res.json({ totalCount, notifications });
   };
 
-  router.get('/', listNotificationsHandler); // Deprecated endpoint
+  router.get('/', listNotificationsHandler); // Deprecated alias of /notifications
   router.get('/notifications', listNotificationsHandler);
 
-  router.get('/status', async (req: Request<any, NotificationStatus>, res) => {
+  router.get('/status', async (req, res) => {
     const user = await getUser(req);
     const status = await store.getStatus({ user });
     res.json(status);
   });
 
-  router.get(
-    '/settings',
-    async (req: Request<any, NotificationSettings>, res) => {
-      const user = await getUser(req);
-      const response = await getNotificationSettings(user);
-      res.json(response);
-    },
-  );
+  router.get('/settings', async (req, res) => {
+    const user = await getUser(req);
+    const response = await getNotificationSettings(user);
+    res.json(response);
+  });
 
-  router.post(
-    '/settings',
-    async (
-      req: Request<any, NotificationSettings, NotificationSettings>,
-      res,
-    ) => {
-      const user = await getUser(req);
-      const channels = getNotificationChannels();
-      const settings: NotificationSettings = req.body;
-      if (settings.channels.some(c => !channels.includes(c.id))) {
-        throw new InputError('Invalid channel');
-      }
-      await store.saveNotificationSettings({ user, settings });
-      const response = await getNotificationSettings(user);
-      res.json(response);
-    },
-  );
+  router.post('/settings', async (req, res) => {
+    const user = await getUser(req);
+    const channels = getNotificationChannels();
+    const settings: NotificationSettings = req.body;
+    if (settings.channels.some(c => !channels.includes(c.id))) {
+      throw new InputError('Invalid channel');
+    }
+    await store.saveNotificationSettings({ user, settings });
+    const response = await getNotificationSettings(user);
+    res.json(response);
+  });
 
-  const getNotificationHandler = async (req: Request, res: Response) => {
+  router.get('/topics', async (req, res) => {
+    const user = await getUser(req);
+    const opts: TopicGetOptions = { user };
+    appendCommonOptions(req, opts);
+    const topics = await store.getTopics(opts);
+    res.json(topics);
+  });
+
+  const getNotificationHandler: openapi.EndpointMapRequestHandler<
+    EndpointMap,
+    '/notifications/{id}',
+    'get'
+  > = async (req, res) => {
     const user = await getUser(req);
     const opts: NotificationGetOptions = {
-      user: user,
+      user,
       limit: 1,
       ids: [req.params.id],
     };
@@ -471,31 +570,17 @@ export async function createRouter(
     res.json(notifications[0]);
   };
 
-  // Get topics
-  const listTopicsHandler = async (req: Request, res: Response) => {
-    const user = await getUser(req);
-    const opts: TopicGetOptions = {
-      user: user,
-    };
-
-    appendCommonOptions(req, opts);
-
-    const topics = await store.getTopics(opts);
-    res.json(topics);
-  };
-
-  router.get('/topics', listTopicsHandler);
-
-  // Make sure this is the last "GET" handler
-  router.get('/:id', getNotificationHandler); // Deprecated endpoint
+  // Make sure this is the last "GET" handler.
+  router.get('/:id', getNotificationHandler); // Deprecated alias of /notifications/:id
   router.get('/notifications/:id', getNotificationHandler);
 
-  const updateNotificationsHandler = async (req: Request, res: Response) => {
+  const updateNotificationsHandler: openapi.EndpointMapRequestHandler<
+    EndpointMap,
+    '/notifications/update',
+    'post'
+  > = async (req, res) => {
     const user = await getUser(req);
     const { ids, read, saved } = req.body;
-    if (!ids || !Array.isArray(ids)) {
-      throw new InputError();
-    }
 
     if (read === true) {
       await store.markRead({ user, ids });
@@ -508,7 +593,7 @@ export async function createRouter(
         });
       }
     } else if (read === false) {
-      await store.markUnread({ user: user, ids });
+      await store.markUnread({ user, ids });
 
       if (signals) {
         await signals.publish<NotificationReadSignal>({
@@ -520,16 +605,16 @@ export async function createRouter(
     }
 
     if (saved === true) {
-      await store.markSaved({ user: user, ids });
+      await store.markSaved({ user, ids });
     } else if (saved === false) {
-      await store.markUnsaved({ user: user, ids });
+      await store.markUnsaved({ user, ids });
     }
 
-    const notifications = await store.getNotifications({ ids, user: user });
+    const notifications = await store.getNotifications({ ids, user });
     res.json(notifications);
   };
 
-  router.post('/update', updateNotificationsHandler); // Deprecated endpoint
+  router.post('/update', updateNotificationsHandler); // Deprecated alias of /notifications/update
   router.post('/notifications/update', updateNotificationsHandler);
 
   const sendBroadcastNotification = async (
@@ -667,10 +752,11 @@ export async function createRouter(
     return sent.filter(n => n !== undefined);
   };
 
-  const createNotificationHandler = async (
-    req: Request<any, Notification[], NotificationSendOptions>,
-    res: Response,
-  ) => {
+  const createNotificationsHandler: openapi.EndpointMapRequestHandler<
+    EndpointMap,
+    '/notifications',
+    'post'
+  > = async (req, res) => {
     const credentials = await httpAuth.credentials(req, {
       allow: ['service'],
     });
@@ -747,8 +833,8 @@ export async function createRouter(
   };
 
   // Add new notification
-  router.post('/', createNotificationHandler);
-  router.post('/notifications', createNotificationHandler);
+  router.post('/', createNotificationsHandler); // Deprecated alias of /notifications
+  router.post('/notifications', createNotificationsHandler);
 
   return router;
 }

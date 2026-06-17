@@ -42,7 +42,7 @@ describe('pod', () => {
       const result = podStatusToCpuUtil({
         cpu: {
           // ~50m
-          currentUsage: 0.4966115,
+          currentUsage: 0.0496,
           // 50m
           requestTotal: 0.05,
           // 100m

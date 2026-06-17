@@ -89,7 +89,7 @@ backend:
     window: 6s # Time window for rate limiting for single client
     incomingRequestLimit: 100 # Number of requests to accept from one client during time window
     ipAllowList: ['127.0.0.1'] # IPs to bypass rate limiting
-    skipSuccesfulRequests: false # Rate limit successful requests
+    skipSuccessfulRequests: false # Rate limit successful requests
     skipFailedRequests: false # Rate limit failed requests
     plugin:
       # Plugin specific rate limiting
@@ -134,7 +134,13 @@ import {
   createAuthIntegrationRouter,
   createRateLimitMiddleware,
 } from '@backstage/backend-defaults/httpRouter';
-import { createServiceFactory } from '@backstage/backend-plugin-api';
+import PromiseRouter from 'express-promise-router';
+import { Handler } from 'express';
+import {
+  createServiceFactory,
+  coreServices,
+  HttpRouterServiceAuthPolicy,
+} from '@backstage/backend-plugin-api';
 
 const backend = createBackend();
 

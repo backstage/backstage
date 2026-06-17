@@ -23,8 +23,8 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import commandExists from 'command-exists';
 import fs from 'fs-extra';
-import path, { resolve as resolvePath } from 'path';
-import { PassThrough, Writable } from 'stream';
+import path, { resolve as resolvePath } from 'node:path';
+import { PassThrough, Writable } from 'node:stream';
 import {
   createTemplateAction,
   fetchContents,

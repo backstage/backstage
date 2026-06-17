@@ -54,6 +54,7 @@ import { SVGProps } from 'react';
 import { TabProps } from '@material-ui/core/Tab';
 import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { WithStyles } from '@material-ui/core/styles';
 
 // @public
@@ -188,6 +189,7 @@ export interface CodeSnippetProps {
   showCopyCodeButton?: boolean;
   showLineNumbers?: boolean;
   text: string;
+  wrapLongLines?: boolean;
 }
 
 // Warning: (ae-forgotten-export) The symbol "Props_12" needs to be exported by the entry point index.d.ts
@@ -220,6 +222,69 @@ export interface CopyTextButtonProps {
   tooltipDelay?: number;
   tooltipText?: string;
 }
+
+// @public (undocumented)
+export const coreComponentsTranslationRef: TranslationRef<
+  'core-components',
+  {
+    readonly 'table.filter.title': 'Filters';
+    readonly 'table.filter.placeholder': 'All results';
+    readonly 'table.filter.clearAll': 'Clear all';
+    readonly 'table.body.emptyDataSourceMessage': 'No records to display';
+    readonly 'table.header.actions': 'Actions';
+    readonly 'table.toolbar.search': 'Filter';
+    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
+    readonly 'table.pagination.firstTooltip': 'First Page';
+    readonly 'table.pagination.labelRowsSelect': 'rows';
+    readonly 'table.pagination.lastTooltip': 'Last Page';
+    readonly 'table.pagination.nextTooltip': 'Next Page';
+    readonly 'table.pagination.previousTooltip': 'Previous Page';
+    readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
+    readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
+    readonly 'emptyState.missingAnnotation.readMore': 'Read more';
+    readonly 'signIn.title': 'Sign In';
+    readonly 'signIn.loginFailed': 'Login failed';
+    readonly 'signIn.customProvider.title': 'Custom User';
+    readonly 'signIn.customProvider.continue': 'Continue';
+    readonly 'signIn.customProvider.subtitle': 'Enter your own User ID and credentials.\n This selection will not be stored.';
+    readonly 'signIn.customProvider.userId': 'User ID';
+    readonly 'signIn.customProvider.tokenInvalid': 'Token is not a valid OpenID Connect JWT Token';
+    readonly 'signIn.customProvider.idToken': 'ID Token (optional)';
+    readonly 'signIn.guestProvider.title': 'Guest';
+    readonly 'signIn.guestProvider.enter': 'Enter';
+    readonly 'signIn.guestProvider.subtitle': 'Enter as a Guest User.\n You will not have a verified identity, meaning some features might be unavailable.';
+    readonly skipToContent: 'Skip to content';
+    readonly 'copyTextButton.tooltipText': 'Text copied to clipboard';
+    readonly 'simpleStepper.finish': 'Finish';
+    readonly 'simpleStepper.reset': 'Reset';
+    readonly 'simpleStepper.next': 'Next';
+    readonly 'simpleStepper.skip': 'Skip';
+    readonly 'simpleStepper.back': 'Back';
+    readonly 'errorPage.title': 'Looks like someone dropped the mic!';
+    readonly 'errorPage.subtitle': 'ERROR {{status}}: {{statusMessage}}';
+    readonly 'errorPage.goBack': 'Go back';
+    readonly 'errorPage.showMoreDetails': 'Show more details';
+    readonly 'errorPage.showLessDetails': 'Show less details';
+    readonly 'supportConfig.default.title': 'Support Not Configured';
+    readonly 'supportConfig.default.linkTitle': 'Add `app.support` config key';
+    readonly 'errorBoundary.title': 'Please contact {{slackChannel}} for help.';
+    readonly 'oauthRequestDialog.message': 'Sign-in to allow {{appTitle}} access to {{provider}} APIs and identities.';
+    readonly 'oauthRequestDialog.title': 'Login Required';
+    readonly 'oauthRequestDialog.authRedirectTitle': 'This will trigger a http redirect to OAuth Login.';
+    readonly 'oauthRequestDialog.login': 'Log in';
+    readonly 'oauthRequestDialog.rejectAll': 'Reject All';
+    readonly 'supportButton.title': 'Support';
+    readonly 'supportButton.close': 'Close';
+    readonly 'alertDisplay.message_one': '({{ count }} newer message)';
+    readonly 'alertDisplay.message_other': '({{ count }} newer messages)';
+    readonly 'autoLogout.stillTherePrompt.title': 'Logging out due to inactivity';
+    readonly 'autoLogout.stillTherePrompt.buttonText': "Yes! Don't log me out";
+    readonly 'dependencyGraph.fullscreenTooltip': 'Toggle fullscreen';
+    readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';
+    readonly 'logViewer.searchField.placeholder': 'Search';
+    readonly 'logViewer.downloadBtn.tooltip': 'Download logs';
+  }
+>;
 
 // @public
 export function CreateButton(props: CreateButtonProps): JSX_2.Element | null;
@@ -274,6 +339,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   paddingY?: number;
   ranker?: DependencyGraphTypes.Ranker;
   rankMargin?: number;
+  renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EdgeData>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EdgeData>;
   renderNode?: DependencyGraphTypes.RenderNodeFunction<NodeData>;
   showArrowHeads?: boolean;
@@ -282,11 +348,18 @@ export interface DependencyGraphProps<NodeData, EdgeData>
 
 // @public
 export namespace DependencyGraphTypes {
-  export enum Alignment {
-    DOWN_LEFT = 'DL',
-    DOWN_RIGHT = 'DR',
-    UP_LEFT = 'UL',
-    UP_RIGHT = 'UR',
+  // (undocumented)
+  export type Alignment = (typeof Alignment)[keyof typeof Alignment];
+  // (undocumented)
+  export namespace Alignment {
+    // (undocumented)
+    export type DOWN_LEFT = typeof Alignment.DOWN_LEFT;
+    // (undocumented)
+    export type DOWN_RIGHT = typeof Alignment.DOWN_RIGHT;
+    // (undocumented)
+    export type UP_LEFT = typeof Alignment.UP_LEFT;
+    // (undocumented)
+    export type UP_RIGHT = typeof Alignment.UP_RIGHT;
   }
   export type DependencyEdge<T = {}> = T & {
     from: string;
@@ -297,30 +370,96 @@ export namespace DependencyGraphTypes {
   export type DependencyNode<T = {}> = T & {
     id: string;
   };
-  export enum Direction {
-    BOTTOM_TOP = 'BT',
-    LEFT_RIGHT = 'LR',
-    RIGHT_LEFT = 'RL',
-    TOP_BOTTOM = 'TB',
-  }
-  export enum LabelPosition {
+  // (undocumented)
+  export type Direction = (typeof Direction)[keyof typeof Direction];
+  // (undocumented)
+  export namespace Direction {
     // (undocumented)
-    CENTER = 'c',
+    export type BOTTOM_TOP = typeof Direction.BOTTOM_TOP;
     // (undocumented)
-    LEFT = 'l',
+    export type LEFT_RIGHT = typeof Direction.LEFT_RIGHT;
     // (undocumented)
-    RIGHT = 'r',
+    export type RIGHT_LEFT = typeof Direction.RIGHT_LEFT;
+    // (undocumented)
+    export type TOP_BOTTOM = typeof Direction.TOP_BOTTOM;
   }
-  export enum Ranker {
-    LONGEST_PATH = 'longest-path',
-    NETWORK_SIMPLEX = 'network-simplex',
-    TIGHT_TREE = 'tight-tree',
+  // (undocumented)
+  export type LabelPosition =
+    (typeof LabelPosition)[keyof typeof LabelPosition];
+  // (undocumented)
+  export namespace LabelPosition {
+    // (undocumented)
+    export type CENTER = typeof LabelPosition.CENTER;
+    // (undocumented)
+    export type LEFT = typeof LabelPosition.LEFT;
+    // (undocumented)
+    export type RIGHT = typeof LabelPosition.RIGHT;
   }
+  const Direction: {
+    readonly TOP_BOTTOM: 'TB';
+    readonly BOTTOM_TOP: 'BT';
+    readonly LEFT_RIGHT: 'LR';
+    readonly RIGHT_LEFT: 'RL';
+  };
+  // (undocumented)
+  export type Ranker = (typeof Ranker)[keyof typeof Ranker];
+  // (undocumented)
+  export namespace Ranker {
+    // (undocumented)
+    export type LONGEST_PATH = typeof Ranker.LONGEST_PATH;
+    // (undocumented)
+    export type NETWORK_SIMPLEX = typeof Ranker.NETWORK_SIMPLEX;
+    // (undocumented)
+    export type TIGHT_TREE = typeof Ranker.TIGHT_TREE;
+  }
+  const Alignment: {
+    readonly UP_LEFT: 'UL';
+    readonly UP_RIGHT: 'UR';
+    readonly DOWN_LEFT: 'DL';
+    readonly DOWN_RIGHT: 'DR';
+  };
+  export type RenderEdgeFunction<T = {}> = (
+    props: RenderEdgeProps<T>,
+  ) => ReactNode;
+  export type RenderEdgeProps<T = {}> = {
+    edge: T & {
+      points: {
+        x: number;
+        y: number;
+      }[];
+      label?: string;
+      labeloffset?: number;
+      labelpos?: string;
+      width?: number;
+      height?: number;
+      weight?: number;
+      minlen?: number;
+      showArrowHeads?: boolean;
+      from?: string;
+      to?: string;
+      relations?: string[];
+    };
+    id: {
+      v: string;
+      w: string;
+      name?: string | undefined;
+    };
+  };
+  const Ranker: {
+    readonly NETWORK_SIMPLEX: 'network-simplex';
+    readonly TIGHT_TREE: 'tight-tree';
+    readonly LONGEST_PATH: 'longest-path';
+  };
   export type RenderLabelFunction<T = {}> = (
     props: RenderLabelProps<T>,
   ) => ReactNode;
   export type RenderLabelProps<T = unknown> = {
     edge: DependencyEdge<T>;
+  };
+  const LabelPosition: {
+    readonly LEFT: 'l';
+    readonly RIGHT: 'r';
+    readonly CENTER: 'c';
   };
   export type RenderNodeFunction<T = {}> = (
     props: RenderNodeProps<T>,
@@ -437,7 +576,7 @@ export function FeatureCalloutCircular(
 ): JSX_2.Element;
 
 // @public (undocumented)
-export type FiltersContainerClassKey = 'root' | 'title';
+export type FiltersContainerClassKey = 'root' | 'filterControls' | 'title';
 
 // @public
 export function Gauge(props: GaugeProps): JSX_2.Element;
@@ -577,15 +716,7 @@ export type HorizontalScrollGridClassKey =
 export type IconComponentProps = ComponentProps<IconComponent>;
 
 // @public (undocumented)
-export function IconLinkVertical({
-  color,
-  disabled,
-  href,
-  icon,
-  label,
-  onClick,
-  title,
-}: IconLinkVerticalProps): JSX_2.Element;
+export function IconLinkVertical(input: IconLinkVerticalProps): JSX_2.Element;
 
 // @public (undocumented)
 export type IconLinkVerticalClassKey =
@@ -752,6 +883,7 @@ export interface LogViewerProps {
   classes?: {
     root?: string;
   };
+  onDownloadLog?: () => void;
   text: string;
   textWrap?: boolean;
 }
@@ -1415,7 +1547,15 @@ export type TableFilter = {
 // Warning: (ae-missing-release-tag) "TableFiltersClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
+export type TableFiltersClassKey =
+  | 'root'
+  | 'value'
+  | 'header'
+  /**
+   * @deprecated Use `'header'` instead. This was a typo in the original class key.
+   */
+  | 'heder'
+  | 'filters';
 
 // Warning: (ae-missing-release-tag) "TableHeaderClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

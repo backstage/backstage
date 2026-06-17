@@ -30,7 +30,7 @@ export const EmailCardAction = (props: { email: string }) => {
   return (
     <IconButton
       component={Link}
-      aria-label="Email"
+      aria-label={t('entityPeekAheadPopover.emailCardAction.ariaLabel')}
       title={t('entityPeekAheadPopover.emailCardAction.title', {
         email: props.email,
       })}

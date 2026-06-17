@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
+export * from './routing';
+export * from './apis';
 export * from './wiring';

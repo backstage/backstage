@@ -276,50 +276,6 @@ describe('readAzureIntegrationConfig', () => {
     expect(output).toEqual({ host: 'dev.azure.com' });
   });
 
-  it('maps deprecated token to credentials', () => {
-    const output = readAzureIntegrationConfig(
-      buildConfig({
-        host: 'dev.azure.com',
-        token: 't',
-      }),
-    );
-
-    expect(output).toEqual({
-      host: 'dev.azure.com',
-      credentials: [
-        {
-          kind: 'PersonalAccessToken',
-          personalAccessToken: 't',
-        },
-      ],
-    });
-  });
-
-  it('maps deprecated credential to credentials', () => {
-    const output = readAzureIntegrationConfig(
-      buildConfig({
-        host: 'dev.azure.com',
-        credential: {
-          clientId: 'id',
-          clientSecret: 'secret',
-          tenantId: 'tenantId',
-        },
-      }),
-    );
-
-    expect(output).toEqual({
-      host: 'dev.azure.com',
-      credentials: [
-        {
-          kind: 'ClientSecret',
-          clientId: 'id',
-          clientSecret: 'secret',
-          tenantId: 'tenantId',
-        },
-      ],
-    });
-  });
-
   it('rejects config when host is not valid', () => {
     expect(() =>
       readAzureIntegrationConfig(buildConfig({ ...valid, host: 7 })),

@@ -1,5 +1,320 @@
 # @backstage/plugin-signals
 
+## 0.0.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-signals-react@0.0.23
+
+## 0.0.32-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-signals-react@0.0.23-next.0
+
+## 0.0.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+
+## 0.0.31
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-signals-react@0.0.22
+
+## 0.0.31-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+
+## 0.0.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/theme@0.7.3
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-react@0.0.22-next.0
+
+## 0.0.30
+
+### Patch Changes
+
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- d156cf4: Added `title` and `icon` to the new frontend system plugin definition.
+- Updated dependencies
+  - @backstage/theme@0.7.3
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/core-plugin-api@1.12.5
+  - @backstage/plugin-signals-react@0.0.21
+
+## 0.0.30-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.7.3-next.0
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+
+## 0.0.30-next.1
+
+### Patch Changes
+
+- d156cf4: Added `title` and `icon` to the new frontend system plugin definition.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+
+## 0.0.30-next.0
+
+### Patch Changes
+
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/theme@0.7.2
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-react@0.0.21-next.0
+
+## 0.0.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/plugin-signals-react@0.0.20
+
+## 0.0.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/core-components@0.18.8-next.1
+
+## 0.0.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/theme@0.7.2
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-react@0.0.20-next.0
+
+## 0.0.28
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/core-components@0.18.7
+  - @backstage/theme@0.7.2
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-signals-react@0.0.19
+
+## 0.0.28-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/plugin-signals-react@0.0.19-next.1
+  - @backstage/theme@0.7.2-next.1
+
+## 0.0.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.7.2-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 0.0.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/theme@0.7.1
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-react@0.0.19-next.0
+
+## 0.0.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+
+## 0.0.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.0.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+  - @backstage/plugin-signals-react@0.0.18
+
+## 0.0.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-signals-react@0.0.18-next.0
+  - @backstage/types@1.2.2
+
+## 0.0.25
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- f0f006e: Fixes a bug where the `SignalClient` would try to subscribe to the same channel twice after an error, instead of just once.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-signals-react@0.0.17
+
+## 0.0.25-next.1
+
+### Patch Changes
+
+- 71c22f3: Removed/moved unused dependencies
+- f0f006e: Fixes a bug where the `SignalClient` would try to subscribe to the same channel twice after an error, instead of just once.
+- Updated dependencies
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+  - @backstage/core-compat-api@0.5.4-next.0
+
+## 0.0.25-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/theme@0.7.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-react@0.0.17-next.0
+
+## 0.0.24
+
+### Patch Changes
+
+- 7b41d9d: Remove `app-root-element:signals/signals-display` which was not doing anything useful
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/theme@0.7.0
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-signals-react@0.0.16
+
+## 0.0.24-next.3
+
+### Patch Changes
+
+- 7b41d9d: Remove `app-root-element:signals/signals-display` which was not doing anything useful
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
+## 0.0.24-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
+## 0.0.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-signals-react@0.0.16-next.0
+
+## 0.0.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/theme@0.6.8
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-react@0.0.15
+
 ## 0.0.23
 
 ### Patch Changes

@@ -20,7 +20,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import {
   catalogAnalysisExtensionPoint,
   catalogProcessingExtensionPoint,
-} from '@backstage/plugin-catalog-node/alpha';
+} from '@backstage/plugin-catalog-node';
 import { githubCatalogModule } from './githubCatalogModule';
 import { GithubLocationAnalyzer } from '../analyzers/GithubLocationAnalyzer';
 

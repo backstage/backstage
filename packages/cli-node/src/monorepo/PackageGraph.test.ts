@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
 import { Lockfile } from './Lockfile';
 import { GitUtils } from '../git';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 
 const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
 const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');
 
-jest.mock('../util', () => ({
-  paths: {
-    targetRoot: '/',
-    resolveTargetRoot: (...paths: string[]) => resolvePath('/', ...paths),
-  },
-}));
+overrideTargetPaths('/');
 
 const testPackages = [
   {
@@ -226,5 +221,52 @@ c-dep@^2:
       'yarn.lock',
       'origin/master',
     );
+  });
+
+  it('detects packages affected by a removed dependency in the lockfile', async () => {
+    const graph = PackageGraph.fromPackages(testPackages);
+
+    mockListChangedFiles.mockResolvedValueOnce(['yarn.lock']);
+
+    // The old lockfile (at the ref) has b depending on b-dep
+    mockReadFileAtRef.mockResolvedValueOnce(`
+a@^1:
+  version: "1.0.0"
+
+b@^1:
+  version: "1.0.0"
+  dependencies:
+      b-dep: ^1
+
+b-dep@^1:
+  version: "1.0.0"
+  integrity: sha512-old
+
+c@^1:
+  version: "1.0.0"
+`);
+
+    // The current lockfile no longer has b-dep at all
+    jest.spyOn(Lockfile, 'load').mockResolvedValueOnce(
+      Lockfile.parse(`
+a@^1:
+  version: "1.0.0"
+
+b@^1:
+  version: "1.0.0"
+
+c@^1:
+  version: "1.0.0"
+`),
+    );
+
+    await expect(
+      graph
+        .listChangedPackages({
+          ref: 'origin/master',
+          analyzeLockfile: true,
+        })
+        .then(pkgs => pkgs.map(pkg => pkg.name)),
+    ).resolves.toEqual(['b']);
   });
 });

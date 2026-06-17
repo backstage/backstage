@@ -148,7 +148,7 @@ site
 
 # Local configuration files
 *.local.yaml
-!packages/create-app/templates/default-app/app-config.local.yaml
+!packages/create-app/templates/legacy-app/app-config.local.yaml
 
 # Sensitive credentials
 *-credentials.yaml
@@ -187,3 +187,7 @@ tsconfig.typedoc.tmp.json
 
 # Storybook
 dist-storybook/
+
+# Personal allow patterns etc
+.claude/settings.local.json
+.claude/worktrees/

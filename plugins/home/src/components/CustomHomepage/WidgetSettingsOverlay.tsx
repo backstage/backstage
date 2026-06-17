@@ -21,7 +21,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import {
+  alpha,
+  createStyles,
+  makeStyles,
+  Theme,
+} from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { useState } from 'react';
@@ -44,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     settingsOverlay: {
       position: 'absolute',
-      backgroundColor: 'rgba(40, 40, 40, 0.93)',
+      backgroundColor: alpha(theme.palette.background.paper, 0.93),
       width: '100%',
       height: '100%',
       top: 0,
@@ -71,6 +76,16 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
 
   const onClose = () => setSettingsDialogOpen(false);
   const { t } = useTranslationRef(homeTranslationRef);
+
+  // Prefer the corrected key, but fall back to the deprecated typo key so that
+  // existing translation overrides on `editSettingsTooptip` keep working.
+  const editSettingsTooltipText = t(
+    'widgetSettingsOverlay.editSettingsTooltip',
+  );
+  const editSettingsTooltip =
+    editSettingsTooltipText === 'Edit settings'
+      ? t('widgetSettingsOverlay.editSettingsTooptip')
+      : editSettingsTooltipText;
 
   return (
     <div className={styles.settingsOverlay}>
@@ -119,7 +134,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
       >
         {widget.settingsSchema && (
           <Grid item className="overlayGridItem">
-            <Tooltip title={t('widgetSettingsOverlay.editSettingsTooptip')}>
+            <Tooltip title={editSettingsTooltip}>
               <IconButton
                 color="primary"
                 onClick={() => setSettingsDialogOpen(true)}

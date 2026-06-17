@@ -16,11 +16,13 @@
 
 import { useCallback } from 'react';
 import { screen, fireEvent } from '@testing-library/react';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
-  MockAnalyticsApi,
-  TestApiProvider,
-} from '@backstage/frontend-test-utils';
-import { analyticsApiRef, useAnalytics } from '@backstage/frontend-plugin-api';
+  useAnalytics,
+  createRouteRef,
+  createExternalRouteRef,
+  useRouteRef,
+} from '@backstage/frontend-plugin-api';
 import { Routes, Route } from 'react-router-dom';
 import { renderInTestApp } from './renderInTestApp';
 
@@ -47,10 +49,10 @@ describe('renderInTestApp', () => {
       );
     };
 
-    const analyticsApiMock = new MockAnalyticsApi();
+    const analyticsApiMock = mockApis.analytics();
 
     renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analyticsApiMock]]}>
+      <TestApiProvider apis={[analyticsApiMock]}>
         <IndexPage />
       </TestApiProvider>,
     );
@@ -79,5 +81,72 @@ describe('renderInTestApp', () => {
     );
 
     expect(screen.getByText('Second Page')).toBeInTheDocument();
+  });
+
+  it('should support API overrides via options', async () => {
+    const IndexPage = () => {
+      const analyticsApi = useAnalytics();
+      const handleClick = useCallback(() => {
+        analyticsApi.captureEvent('click', 'Test action');
+      }, [analyticsApi]);
+      return (
+        <div>
+          <button onClick={handleClick}>Click me</button>
+        </div>
+      );
+    };
+
+    const analyticsApiMock = mockApis.analytics();
+
+    renderInTestApp(<IndexPage />, {
+      apis: [analyticsApiMock],
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Click me' }));
+
+    expect(analyticsApiMock.getEvents()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          action: 'click',
+          subject: 'Test action',
+        }),
+      ]),
+    );
+  });
+
+  it('should allow mounting route refs', () => {
+    const testRouteRef = createRouteRef({
+      params: ['name'],
+    });
+
+    const LinkComponent = () => {
+      const link = useRouteRef(testRouteRef);
+      return <div>Link: {link?.({ name: 'test-name' }) ?? 'none'}</div>;
+    };
+
+    renderInTestApp(<LinkComponent />, {
+      mountedRoutes: {
+        '/test-path/:name': testRouteRef,
+      },
+    });
+
+    expect(screen.getByText('Link: /test-path/test-name')).toBeInTheDocument();
+  });
+
+  it('should allow mounting external route refs', () => {
+    const externalRef = createExternalRouteRef({ params: ['name'] });
+
+    const ExternalLinkComponent = () => {
+      const link = useRouteRef(externalRef);
+      return <div>Link: {link?.({ name: 'test' }) ?? 'none'}</div>;
+    };
+
+    renderInTestApp(<ExternalLinkComponent />, {
+      mountedRoutes: {
+        '/items/:name': externalRef,
+      },
+    });
+
+    expect(screen.getByText('Link: /items/test')).toBeInTheDocument();
   });
 });

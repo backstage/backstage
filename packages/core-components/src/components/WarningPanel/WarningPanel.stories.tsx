@@ -22,6 +22,7 @@ import { Link } from '../Link';
 export default {
   title: 'Feedback/Warning Panel',
   component: WarningPanel,
+  tags: ['!manifest'],
 };
 
 export const Default = () => (

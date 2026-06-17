@@ -53,3 +53,14 @@ export function getAzureDownloadUrl(url: string): string {
 export function getAzureCommitsUrl(url: string): string {
   return AzureUrl.fromRepoUrl(url).toCommitsUrl();
 }
+
+/**
+ * Given a URL, return true if it contains `.visualstudio.com` and false if it does not
+ * URLs can be in these two formats: `dev.azure.com/{org}` or the legacy `{org}.visualstudio.com`
+ *
+ * @param origin - A URL origin string pointing to an Azure DevOps instance
+ * @public
+ */
+export function isVisualStudioDomain(origin: string): boolean {
+  return origin.endsWith('.visualstudio.com');
+}

@@ -17,26 +17,28 @@
 import {
   ApiHolder,
   AppNode,
-  ExtensionAttachToSpec,
+  ExtensionDefinitionAttachTo,
   ExtensionDataValue,
   ExtensionDataRef,
-  ExtensionDefinition,
+  OverridableExtensionDefinition,
   ExtensionDefinitionParameters,
   ExtensionInput,
   PortableSchema,
-  ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ResolvedExtensionInputs } from '../../../frontend-plugin-api/src/wiring/createExtension';
 import { OpaqueType } from '@internal/opaque';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 export const OpaqueExtensionDefinition = OpaqueType.create<{
-  public: ExtensionDefinition<ExtensionDefinitionParameters>;
+  public: OverridableExtensionDefinition<ExtensionDefinitionParameters>;
   versions:
     | {
         readonly version: 'v1';
         readonly kind?: string;
         readonly namespace?: string;
         readonly name?: string;
-        readonly attachTo: ExtensionAttachToSpec;
+        readonly attachTo: ExtensionDefinitionAttachTo;
         readonly disabled: boolean;
         readonly configSchema?: PortableSchema<any, any>;
         readonly inputs: {
@@ -67,25 +69,18 @@ export const OpaqueExtensionDefinition = OpaqueType.create<{
         readonly kind?: string;
         readonly namespace?: string;
         readonly name?: string;
-        readonly attachTo: ExtensionAttachToSpec;
+        readonly attachTo: ExtensionDefinitionAttachTo;
         readonly disabled: boolean;
+        readonly if?: FilterPredicate;
         readonly configSchema?: PortableSchema<any, any>;
-        readonly inputs: {
-          [inputName in string]: ExtensionInput<
-            ExtensionDataRef,
-            { optional: boolean; singleton: boolean }
-          >;
-        };
+        readonly inputs: { [inputName in string]: ExtensionInput };
         readonly output: Array<ExtensionDataRef>;
         factory(context: {
           node: AppNode;
           apis: ApiHolder;
           config: object;
           inputs: ResolvedExtensionInputs<{
-            [inputName in string]: ExtensionInput<
-              ExtensionDataRef,
-              { optional: boolean; singleton: boolean }
-            >;
+            [inputName in string]: ExtensionInput;
           }>;
         }): Iterable<ExtensionDataValue<any, any>>;
       };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { Command } from 'commander';
 import { exitWithError } from '../lib/errors';
 
@@ -44,24 +44,26 @@ function registerPackageCommand(program: Command) {
 
   openApiCommand
     .command('generate')
+    .description(
+      'Command to generate a client and/or a server stub from an OpenAPI spec.',
+    )
     .option(
       '--client-package [package]',
       'Top-level path to where the client should be generated, ie packages/catalog-client.',
     )
-    .option('--server')
-    .description(
-      'Command to generate a client and/or a server stub from an OpenAPI spec.',
-    )
-    .option('--client-additional-properties [properties]')
-    .description(
+    .option('--server', 'Generate server stub')
+    .option(
+      '--client-additional-properties [properties]',
       'Additional properties that can be passed to @openapitools/openapi-generator-cli',
     )
-    .option('--server-additional-properties [properties]')
-    .description(
+    .option(
+      '--server-additional-properties [properties]',
       'Additional properties that can be passed to @openapitools/openapi-generator-cli',
     )
-    .option('--watch')
-    .description('Watch the OpenAPI spec for changes and regenerate on save.')
+    .option(
+      '--watch',
+      'Watch the OpenAPI spec for changes and regenerate on save.',
+    )
     .action(lazy(() => import('./package/schema/openapi/generate'), 'command'));
 
   openApiCommand
@@ -224,6 +226,7 @@ export function registerCommands(program: Command) {
       'CI run checks that there are no changes to catalog-info.yaml files',
     )
     .description('Create or fix info yaml files for all backstage packages')
+    .allowExcessArguments(true)
     .action(
       lazy(
         () => import('./generate-catalog-info/generate-catalog-info'),
@@ -299,8 +302,7 @@ export function lazy<TModule extends object>(
 
       process.exit(0);
     } catch (error) {
-      assertError(error);
-      exitWithError(error);
+      exitWithError(toError(error));
     }
   };
 }

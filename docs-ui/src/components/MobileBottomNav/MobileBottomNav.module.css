@@ -1,0 +1,205 @@
+/* Mobile Bottom Navigation Island */
+.mobileBottomNav {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  z-index: 300;
+  pointer-events: none;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.island {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 auto;
+  width: 50vw;
+  padding: 8px 12px 8px 12px;
+  border-radius: 32px;
+  pointer-events: auto;
+  background-color: #000;
+}
+
+:global([data-theme-mode='dark']) .island {
+  background-color: #fff;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease-in-out;
+
+  /* White icons on light mode (black island) */
+  color: white;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+:global([data-theme-mode='dark']) .menuButton {
+  /* Black icons on dark mode (white island) */
+  color: black;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.buttonGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 24px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+:global([data-theme-mode='dark']) .buttonGroup {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.buttonGroup button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 20px;
+  transition: background-color 0.2s ease-in-out;
+
+  /* White icons on light mode */
+  color: white;
+
+  &[data-selected] {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+:global([data-theme-mode='dark']) .buttonGroup button {
+  /* Black icons on dark mode */
+  color: black;
+
+  &[data-selected] {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Mobile Menu Bottom Sheet */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background-color: rgba(38, 38, 38, 0.7);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  &[data-entering] {
+    animation: overlayFadeIn 200ms ease-out;
+  }
+
+  &[data-exiting] {
+    animation: overlayFadeOut 200ms ease-in;
+  }
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.modal {
+  width: calc(100% - 48px);
+  max-height: 50vh;
+  background-color: var(--bg);
+  border-radius: 16px;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  margin-bottom: 96px;
+
+  &[data-entering] {
+    animation: slideUp 300ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  &[data-exiting] {
+    animation: slideDown 200ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(8%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(8%);
+  }
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 70vh;
+  outline: none;
+  overflow: hidden;
+}
+
+.menuContent {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+}

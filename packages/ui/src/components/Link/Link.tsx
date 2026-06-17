@@ -14,64 +14,65 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
-import { Link as AriaLink, RouterProvider } from 'react-aria-components';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
+import { forwardRef, useRef } from 'react';
+import { mergeProps, useFocusRing, useLink } from 'react-aria';
 import type { LinkProps } from './types';
-import { useNavigate, useHref } from 'react-router-dom';
-import { isExternalLink } from '../../utils/isExternalLink';
+import { useDefinition } from '../../hooks/useDefinition';
+import { useResolvedHref } from '../../hooks/useResolvedHref';
+import { LinkDefinition } from './definition';
+import { getNodeText } from '../../analytics/getNodeText';
 
-/** @public */
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const navigate = useNavigate();
-  const {
-    className,
-    variant = 'body',
-    weight = 'regular',
-    color = 'primary',
-    truncate,
-    href,
-    ...restProps
-  } = props;
-
-  const { classNames: linkClassNames } = useStyles('Link');
-  const { classNames: textClassNames, dataAttributes: textDataAttributes } =
-    useStyles('Text', {
-      variant,
-      weight,
-      color,
-    });
-
-  const isExternal = isExternalLink(href);
-
-  // If it's an external link, render AriaLink without RouterProvider
-  if (isExternal) {
-    return (
-      <AriaLink
-        ref={ref}
-        className={clsx(textClassNames.root, linkClassNames.root, className)}
-        data-truncate={truncate}
-        href={href}
-        {...textDataAttributes}
-        {...restProps}
-      />
-    );
-  }
-
-  // For internal links, use RouterProvider
-  return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
-      <AriaLink
-        ref={ref}
-        className={clsx(textClassNames.root, linkClassNames.root, className)}
-        data-truncate={truncate}
-        {...textDataAttributes}
-        href={href}
-        {...restProps}
-      />
-    </RouterProvider>
+const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
+    LinkDefinition,
+    props,
   );
+  const { classes, title, children } = ownProps;
+
+  const internalRef = useRef<HTMLAnchorElement>(null);
+  const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
+
+  const { linkProps } = useLink(restProps, linkRef);
+  const { isFocusVisible, focusProps } = useFocusRing();
+  const resolvedHref = useResolvedHref(restProps.href);
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    linkProps.onClick?.(e);
+    const text =
+      restProps['aria-label'] ??
+      getNodeText(children) ??
+      String(restProps.href ?? '');
+    analytics.captureEvent('click', text, {
+      attributes: { to: String(restProps.href ?? '') },
+    });
+  };
+
+  return (
+    <a
+      {...mergeProps(linkProps, focusProps)}
+      {...dataAttributes}
+      {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      href={resolvedHref}
+      ref={linkRef}
+      title={title}
+      className={classes.root}
+      data-focus-visible={isFocusVisible || undefined}
+      onClick={handleClick}
+    >
+      {children}
+    </a>
+  );
+});
+
+LinkInternal.displayName = 'LinkInternal';
+
+/**
+ * A styled anchor element that supports analytics event tracking on click.
+ *
+ * @public
+ */
+export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
+  return <LinkInternal {...props} ref={ref} />;
 });
 
 Link.displayName = 'Link';

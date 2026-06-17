@@ -25,7 +25,7 @@ import IconButton from '@material-ui/core/IconButton';
 import LightIcon from '@material-ui/icons/Brightness7';
 import DarkIcon from '@material-ui/icons/Brightness4';
 
-import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
+import { appThemeApiRef, useApi } from '@backstage/frontend-plugin-api';
 
 import {
   TechDocsReaderPage,
@@ -49,15 +49,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-enum Themes {
-  LIGHT = 'light',
-  DARK = 'dark',
-}
+const Themes = {
+  LIGHT: 'light',
+  DARK: 'dark',
+} as const;
 
 export const TechDocsThemeToggle = () => {
   const appThemeApi = useApi(appThemeApiRef);
   const classes = useStyles();
-  const [theme, setTheme] = useState<Themes>(
+  const [theme, setTheme] = useState<(typeof Themes)[keyof typeof Themes]>(
     appThemeApi.getActiveThemeId() === Themes.DARK ? Themes.DARK : Themes.LIGHT,
   );
 
@@ -93,7 +93,7 @@ export const TechDocsThemeToggle = () => {
   );
 };
 
-const DefaultTechDocsPage = () => {
+export const DefaultTechDocsPage = () => {
   return (
     <TechDocsReaderPage>
       <TechDocsReaderPageHeader />

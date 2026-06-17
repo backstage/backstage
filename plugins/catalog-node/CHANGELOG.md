@@ -1,5 +1,371 @@
 # @backstage/plugin-catalog-node
 
+## 2.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-permission-node@0.11.1
+
+## 2.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/backend-test-utils@1.11.4-next.0
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 2.2.1
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-test-utils@1.11.3
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/catalog-client@1.15.1
+  - @backstage/plugin-catalog-common@1.1.10
+
+## 2.2.1-next.1
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/backend-test-utils@1.11.3-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
+## 2.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/backend-test-utils@1.11.3-next.0
+  - @backstage/catalog-client@1.15.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.10-next.0
+
+## 2.2.0
+
+### Minor Changes
+
+- e5fcfcb: Added `provideStaticCatalogModel` that helps provide a static catalog model at startup.
+- 056e18e: **BREAKING ALPHA**: Removed the deprecated `CatalogPermissionRuleInput`, `CatalogPermissionExtensionPoint`, and `catalogPermissionExtensionPoint` exports. Use `coreServices.permissionsRegistry` directly to register catalog entity permission rules and permissions.
+- c384fff: **BREAKING PRODUCERS**: Added `updateLocation` method to `CatalogService` for updating the type and target of an existing location. Any code that implements `CatalogService` must now provide this method.
+- 7a03196: **BREAKING ALPHA**: Removed the following deprecated exports from `@backstage/plugin-catalog-node/alpha`:
+
+  - `catalogServiceRef` — use `catalogServiceRef` from `@backstage/plugin-catalog-node` instead
+  - `CatalogLocationsExtensionPoint` / `catalogLocationsExtensionPoint` — use the non-alpha equivalents from `@backstage/plugin-catalog-node` instead
+  - `CatalogProcessingExtensionPoint` / `catalogProcessingExtensionPoint` — use the non-alpha equivalents from `@backstage/plugin-catalog-node` instead
+  - `CatalogAnalysisExtensionPoint` / `catalogAnalysisExtensionPoint` — use the non-alpha equivalents from `@backstage/plugin-catalog-node` instead
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/backend-test-utils@1.11.2
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/catalog-client@1.15.0
+  - @backstage/plugin-permission-node@0.10.12
+  - @backstage/plugin-catalog-common@1.1.9
+  - @backstage/plugin-permission-common@0.9.8
+
+## 2.2.0-next.2
+
+### Minor Changes
+
+- 056e18e: **BREAKING ALPHA**: Removed the deprecated `CatalogPermissionRuleInput`, `CatalogPermissionExtensionPoint`, and `catalogPermissionExtensionPoint` exports. Use `coreServices.permissionsRegistry` directly to register catalog entity permission rules and permissions.
+- 7a03196: **BREAKING ALPHA**: Removed the following deprecated exports from `@backstage/plugin-catalog-node/alpha`:
+
+  - `catalogServiceRef` — use `catalogServiceRef` from `@backstage/plugin-catalog-node` instead
+  - `CatalogLocationsExtensionPoint` / `catalogLocationsExtensionPoint` — use the non-alpha equivalents from `@backstage/plugin-catalog-node` instead
+  - `CatalogProcessingExtensionPoint` / `catalogProcessingExtensionPoint` — use the non-alpha equivalents from `@backstage/plugin-catalog-node` instead
+  - `CatalogAnalysisExtensionPoint` / `catalogAnalysisExtensionPoint` — use the non-alpha equivalents from `@backstage/plugin-catalog-node` instead
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/backend-test-utils@1.11.2-next.2
+  - @backstage/catalog-client@1.14.1-next.0
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/plugin-permission-common@0.9.8-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.2
+  - @backstage/plugin-catalog-common@1.1.9-next.0
+
+## 2.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-test-utils@1.11.2-next.1
+  - @backstage/plugin-permission-node@0.10.12-next.1
+
+## 2.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/backend-test-utils@1.11.2-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.7
+
+## 2.1.0
+
+### Minor Changes
+
+- bf71677: Added the ability for SCM events subscribers to mark the fact that they have taken actions based on events, which produces output metrics:
+
+  - `catalog.events.scm.actions` with attribute `action`: Counter for the number of actions actually taken by catalog internals or other subscribers, based on SCM events. The `action` is currently either `create`, `delete`, `refresh`, or `move`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/backend-test-utils@1.11.1
+  - @backstage/catalog-client@1.14.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-permission-node@0.10.11
+  - @backstage/catalog-model@1.7.7
+
+## 2.1.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.1-next.2
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/plugin-permission-node@0.10.11-next.1
+
+## 2.1.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/backend-test-utils@1.11.1-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
+## 2.1.0-next.0
+
+### Minor Changes
+
+- bf71677: Added the ability for SCM events subscribers to mark the fact that they have taken actions based on events, which produces output metrics:
+
+  - `catalog.events.scm.actions` with attribute `action`: Counter for the number of actions actually taken by catalog internals or other subscribers, based on SCM events. The `action` is currently either `create`, `delete`, `refresh`, or `move`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/backend-test-utils@1.11.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
+## 2.0.0
+
+### Minor Changes
+
+- cfd8103: Promoted stable catalog extension points from alpha to main export. The following extension points are now exported from `@backstage/plugin-catalog-node` instead of `@backstage/plugin-catalog-node/alpha`:
+
+  - `catalogLocationsExtensionPoint` and `CatalogLocationsExtensionPoint`
+  - `catalogProcessingExtensionPoint` and `CatalogProcessingExtensionPoint`
+  - `catalogAnalysisExtensionPoint` and `CatalogAnalysisExtensionPoint`
+
+  The old alpha exports for these extension points are now deprecated with `@deprecated` markers pointing to the new stable exports. Please update your imports from `@backstage/plugin-catalog-node/alpha` to `@backstage/plugin-catalog-node`.
+
+  Note: The `catalogModelExtensionPoint`, `catalogPermissionExtensionPoint`, and related types remain in alpha.
+
+- b4e8249: Implemented support for the new `queryLocations` and `streamLocations` that allow paginated/streamed and filtered location queries
+- 34cc520: Introduced the `catalogScmEventsServiceRef`, along with `CatalogScmEventsService` and associated types. These allow communicating a unified set of events, that parts of the catalog can react to.
+
+### Patch Changes
+
+- 42abfb1: Updated `catalogServiceMock.mock` to use `createServiceMock` from `@backstage/backend-test-utils`, replacing the internal copy of `simpleMock`. Added `@backstage/backend-test-utils` as an optional peer dependency.
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 2.0.0-next.1
+
+### Patch Changes
+
+- 42abfb1: Updated `catalogServiceMock.mock` to use `createServiceMock` from `@backstage/backend-test-utils`, replacing the internal copy of `simpleMock`. Added `@backstage/backend-test-utils` as an optional peer dependency.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-permission-node@0.10.10-next.0
+
+## 1.21.0-next.0
+
+### Minor Changes
+
+- cfd8103: Promoted stable catalog extension points from alpha to main export. The following extension points are now exported from `@backstage/plugin-catalog-node` instead of `@backstage/plugin-catalog-node/alpha`:
+
+  - `catalogLocationsExtensionPoint` and `CatalogLocationsExtensionPoint`
+  - `catalogProcessingExtensionPoint` and `CatalogProcessingExtensionPoint`
+  - `catalogAnalysisExtensionPoint` and `CatalogAnalysisExtensionPoint`
+
+  The old alpha exports for these extension points are now deprecated with `@deprecated` markers pointing to the new stable exports. Please update your imports from `@backstage/plugin-catalog-node/alpha` to `@backstage/plugin-catalog-node`.
+
+  Note: The `catalogModelExtensionPoint`, `catalogPermissionExtensionPoint`, and related types remain in alpha.
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+
+## 1.20.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+
+## 1.20.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.20.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.20.0
+
+### Minor Changes
+
+- 9d3ec06: Make YAML merge (<<:) support configurable in the Backstage Catalog instead of always being enabled
+- 8c26af4: Enable YAML merge keys in yamlPlaceholderResolver
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/catalog-model@1.7.6
+  - @backstage/catalog-client@1.12.1
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-node@0.10.6
+
+## 1.20.0-next.1
+
+### Minor Changes
+
+- 9d3ec06: Make YAML merge (<<:) support configurable in the Backstage Catalog instead of always being enabled
+- 8c26af4: Enable YAML merge keys in yamlPlaceholderResolver
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 1.19.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-node@0.10.5
+
+## 1.19.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+  - @backstage/catalog-client@1.12.0
+
 ## 1.19.0
 
 ### Minor Changes

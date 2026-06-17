@@ -56,6 +56,7 @@ const mockOctokit = {
       createRepoVariable: jest.fn(),
       createOrUpdateRepoSecret: jest.fn(),
       getRepoPublicKey: jest.fn(),
+      setWorkflowAccessToRepository: jest.fn(),
     },
   },
   request: jest.fn().mockResolvedValue({}),
@@ -130,13 +131,7 @@ describe('github:repo:create examples', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      custom_properties: undefined,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
       visibility: 'private',
-      auto_init: undefined,
     });
   });
 
@@ -165,12 +160,7 @@ describe('github:repo:create examples', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
       visibility: 'private',
-      auto_init: undefined,
     });
   });
 
@@ -190,7 +180,6 @@ describe('github:repo:create examples', () => {
       name: 'repo',
       org: 'owner',
       private: true,
-      description: undefined,
       delete_branch_on_merge: false,
       allow_squash_merge: true,
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
@@ -199,13 +188,9 @@ describe('github:repo:create examples', () => {
       allow_rebase_merge: true,
       allow_auto_merge: false,
       allow_update_branch: false,
-      custom_properties: undefined,
       visibility: 'private',
       has_issues: false, // disable issues
-      has_projects: undefined,
       has_wiki: false, // disable wiki
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -239,17 +224,11 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
       homepage: 'https://example.com',
-      auto_init: undefined,
     });
   });
 
@@ -283,17 +262,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -327,17 +299,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -371,17 +336,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -415,17 +373,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: false,
       allow_rebase_merge: false,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -459,17 +410,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'pull_request_title',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -503,17 +447,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'blank',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -547,17 +484,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: true,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -591,17 +521,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -635,17 +558,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -679,17 +595,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -723,17 +632,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -767,17 +669,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -811,17 +706,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -855,17 +743,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -899,17 +780,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -943,17 +817,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -987,17 +854,12 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'internal',
-      has_issues: undefined,
       description: 'A repository for project XYZ',
-      has_projects: undefined,
-      has_wiki: undefined,
       homepage: 'https://project-xyz.com',
-      auto_init: undefined,
     });
   });
 
@@ -1031,17 +893,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1075,17 +930,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1119,17 +967,11 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
       has_projects: true,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1163,17 +1005,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: false,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1207,17 +1042,12 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'internal',
       has_issues: false,
-      description: undefined,
       has_projects: false,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1251,17 +1081,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1295,17 +1118,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1339,17 +1155,11 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
       description: 'Repository for project ABC',
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1383,17 +1193,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'public',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1427,17 +1230,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1471,17 +1267,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1515,17 +1304,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1559,17 +1341,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1603,17 +1378,12 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'internal',
-      has_issues: undefined,
       description: 'Internal repository for team collaboration',
-      has_projects: undefined,
-      has_wiki: undefined,
       homepage: 'https://internal.example.com',
-      auto_init: undefined,
     });
   });
 
@@ -1647,17 +1417,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1691,17 +1454,11 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
       has_projects: true,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1735,17 +1492,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1779,17 +1529,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1823,17 +1566,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'internal',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1867,17 +1603,12 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
       description: 'Repository for web application project',
-      has_projects: undefined,
-      has_wiki: undefined,
       homepage: 'https://webapp.example.com',
-      auto_init: undefined,
     });
   });
 
@@ -1911,17 +1642,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'pull_request_description',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: false,
       allow_rebase_merge: false,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1955,17 +1679,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: false,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -1999,17 +1716,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2043,17 +1753,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2087,17 +1790,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'public',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2131,17 +1827,13 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
       has_issues: false,
       description: 'Repository for backend service',
-      has_projects: undefined,
       has_wiki: false,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2175,17 +1867,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2219,17 +1904,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2263,17 +1941,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2307,17 +1978,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: false,
       allow_rebase_merge: true,
       allow_auto_merge: true,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2351,17 +2015,11 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
       homepage: 'https://example.com',
-      auto_init: undefined,
     });
   });
 
@@ -2395,17 +2053,11 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
       description: 'Repository for microservice development',
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2439,17 +2091,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2483,17 +2128,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2527,17 +2165,10 @@ describe('github:repo:create examples', () => {
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_update_branch: false,
-      custom_properties: undefined,
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2569,19 +2200,12 @@ describe('github:repo:create examples', () => {
       delete_branch_on_merge: false,
       allow_squash_merge: true,
       allow_update_branch: false,
-      custom_properties: undefined,
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
-      auto_init: undefined,
     });
   });
 
@@ -2613,19 +2237,43 @@ describe('github:repo:create examples', () => {
       delete_branch_on_merge: false,
       allow_squash_merge: true,
       allow_update_branch: false,
-      custom_properties: undefined,
       squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
       squash_merge_commit_message: 'COMMIT_MESSAGES',
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
       visibility: 'private',
-      has_issues: undefined,
-      description: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
       auto_init: true,
+    });
+  });
+
+  it(`Should ${examples[59].description}`, async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    let input;
+    try {
+      input = yaml.parse(examples[59].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.actions.setWorkflowAccessToRepository,
+    ).toHaveBeenCalledWith({
+      access_level: input.workflowAccess,
+      owner: 'owner',
+      repo: 'repo',
     });
   });
 });

@@ -1,5 +1,132 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.12
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/plugin-permission-common@0.9.9
+
+## 0.9.12-next.1
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
+## 0.9.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/types@1.2.2
+
+## 0.9.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-permission-common@0.9.8
+
+## 0.9.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/plugin-permission-common@0.9.8-next.0
+
+## 0.9.10
+
+### Patch Changes
+
+- ce3639c: Add PersistentVolume and PersistentVolumeClaims Rendering
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.6
+
+## 0.9.10-next.1
+
+### Patch Changes
+
+- ce3639c: Add PersistentVolume and PersistentVolumeClaims Rendering
+
+## 0.9.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/types@1.2.2
+
+## 0.9.9
+
+### Patch Changes
+
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+
+## 0.9.9-next.0
+
+### Patch Changes
+
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+
+## 0.9.8
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/catalog-model@1.7.6
+
+## 0.9.8-next.1
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+
+## 0.9.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 0.9.7
+
+### Patch Changes
+
+- bdd7f95: Make SERVICEACCOUNT_CA_PATH public so it can be imported by external modules.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2
+
+## 0.9.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2-next.0
+
+## 0.9.7-next.0
+
+### Patch Changes
+
+- bdd7f95: Make SERVICEACCOUNT_CA_PATH public so it can be imported by external modules.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 0.9.6
 
 ### Patch Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren } from 'react';
 import Helmet from 'react-helmet';
 
 import Grid from '@material-ui/core/Grid';
@@ -23,29 +23,23 @@ import CodeIcon from '@material-ui/icons/Code';
 
 import {
   TechDocsAddonLocations as locations,
-  useTechDocsAddons,
-  useTechDocsReaderPage,
   TechDocsEntityMetadata,
   TechDocsMetadata,
 } from '@backstage/plugin-techdocs-react';
 import {
-  entityPresentationApiRef,
   EntityRefLink,
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import {
-  RELATION_OWNED_BY,
-  CompoundEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { RELATION_OWNED_BY, CompoundEntityRef } from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
-import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
-
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import capitalize from 'lodash/capitalize';
 
 import { rootRouteRef } from '../../../routes';
-import { useParams } from 'react-router-dom';
+import { techdocsTranslationRef } from '../../../translation';
+import { useTechDocsReaderHeaderData } from '../../../hooks/useTechDocsReaderHeaderData';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
@@ -71,44 +65,29 @@ export const TechDocsReaderPageHeader = (
   props: TechDocsReaderPageHeaderProps,
 ) => {
   const { children } = props;
-  const addons = useTechDocsAddons();
-  const configApi = useApi(configApiRef);
-
-  const entityPresentationApi = useApi(entityPresentationApiRef);
-  const { '*': path = '' } = useParams();
-
+  const { t } = useTranslationRef(techdocsTranslationRef);
   const {
     title,
-    setTitle,
     subtitle,
-    setSubtitle,
     entityRef,
-    metadata: { value: metadata, loading: metadataLoading },
-    entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
-  } = useTechDocsReaderPage();
+    entityMetadata,
+    tabTitle,
+    hidden,
+    showSourceLink,
+    sourceLink,
+    addons,
+  } = useTechDocsReaderHeaderData();
 
-  useEffect(() => {
-    if (!metadata) return;
-    setTitle(metadata.site_name);
-    setSubtitle(() => {
-      let { site_description } = metadata;
-      if (!site_description || site_description === 'None') {
-        site_description = '';
-      }
-      return site_description;
-    });
-  }, [metadata, setTitle, setSubtitle]);
+  const docsRootLink = useRouteRef(rootRouteRef)();
 
-  const appTitle = configApi.getOptional('app.title') || 'Backstage';
+  if (hidden) return null;
 
-  const { locationMetadata, spec } = entityMetadata || {};
+  const { spec } = entityMetadata || {};
   const lifecycle = spec?.lifecycle;
 
   const ownedByRelations = entityMetadata
     ? getEntityRelations(entityMetadata, RELATION_OWNED_BY)
     : [];
-
-  const docsRootLink = useRouteRef(rootRouteRef)();
 
   const labels = (
     <>
@@ -125,7 +104,7 @@ export const TechDocsReaderPageHeader = (
       />
       {ownedByRelations.length > 0 && (
         <HeaderLabel
-          label="Owner"
+          label={t('readerPageHeader.owner')}
           value={
             <EntityRefLinks
               color="inherit"
@@ -136,11 +115,12 @@ export const TechDocsReaderPageHeader = (
         />
       )}
       {lifecycle ? (
-        <HeaderLabel label="Lifecycle" value={String(lifecycle)} />
+        <HeaderLabel
+          label={t('readerPageHeader.lifecycle')}
+          value={String(lifecycle)}
+        />
       ) : null}
-      {locationMetadata &&
-      locationMetadata.type !== 'dir' &&
-      locationMetadata.type !== 'file' ? (
+      {showSourceLink ? (
         <HeaderLabel
           label=""
           value={
@@ -149,40 +129,15 @@ export const TechDocsReaderPageHeader = (
                 <CodeIcon style={{ marginTop: '-25px' }} />
               </Grid>
               <Grid style={{ padding: 0 }} item>
-                Source
+                {t('readerPageHeader.source')}
               </Grid>
             </Grid>
           }
-          url={locationMetadata.target}
+          url={sourceLink}
         />
       ) : null}
     </>
   );
-
-  // If there is no entity or techdocs metadata, there's no reason to show the
-  // header (hides the header on 404 error pages).
-  const noEntMetadata = !entityMetadataLoading && entityMetadata === undefined;
-  const noTdMetadata = !metadataLoading && metadata === undefined;
-  if (noEntMetadata || noTdMetadata) return null;
-
-  const stringEntityRef = stringifyEntityRef(entityRef);
-
-  const entityDisplayName =
-    entityPresentationApi.forEntity(stringEntityRef).snapshot.primaryTitle;
-
-  const removeTrailingSlash = (str: string) => str.replace(/\/$/, '');
-  const normalizeAndSpace = (str: string) =>
-    str.replace(/[-_]/g, ' ').split(' ').map(capitalize).join(' ');
-
-  let techdocsTabTitleItems: string[] = [];
-
-  if (path !== '')
-    techdocsTabTitleItems = removeTrailingSlash(path)
-      .split('/')
-      .map(normalizeAndSpace);
-
-  const tabTitleItems = [entityDisplayName, ...techdocsTabTitleItems, appTitle];
-  const tabTitle = tabTitleItems.join(' | ');
 
   return (
     <Header

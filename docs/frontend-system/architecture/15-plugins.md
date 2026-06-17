@@ -26,6 +26,8 @@ const myPage = PageBlueprint.make({
 
 export default createFrontendPlugin({
   pluginId: 'my-plugin',
+  title: 'My Plugin',
+  icon: MyPluginIcon,
   extensions: [myPage],
 });
 ```
@@ -35,6 +37,30 @@ export default createFrontendPlugin({
 Each plugin needs an ID, which is used to uniquely identify the plugin within an entire Backstage system. The ID does not have to be globally unique across all of the NPM ecosystem, although you generally want to strive for that. It is not possible to install multiple plugins with the same ID in a single Backstage app.
 
 The plugin ID should generally be part of the of the package name and use kebab-case. See both the [frontend naming patterns section](./50-naming-patterns.md), as well as the [package metadata section](../../tooling/package-metadata.md#name) for more information.
+
+### `title` option
+
+The display title of the plugin, used in page headers and navigation. Falls back to the plugin ID if not provided.
+
+```tsx
+export default createFrontendPlugin({
+  pluginId: 'my-plugin',
+  title: 'My Plugin',
+  extensions: [...],
+});
+```
+
+### `icon` option
+
+The display icon of the plugin, used in page headers and navigation. The type is `IconElement` (`JSX.Element | null`) from `@backstage/frontend-plugin-api`. Icons should be exactly 24x24 pixels in size.
+
+```tsx
+export default createFrontendPlugin({
+  pluginId: 'my-plugin',
+  icon: <MyPluginIcon />,
+  extensions: [...],
+});
+```
 
 ### `extensions` option
 
@@ -49,6 +75,20 @@ These are the routes that the plugin exposes to the app. The `routes` option dec
 ### `featureFlags` option
 
 This is a list of feature flag declarations that your plugin provides to the app. This makes sure that the feature flags are correctly registered and can be toggled in the app. To read a feature flag you can use the feature flags [Utility API](../architecture/33-utility-apis.md), accessible via `featureFlagsApiRef`.
+
+### `if` option
+
+The `if` option lets you apply a shared condition to all extensions that are provided by a plugin instance. This is useful when you want to gate an entire plugin behind a feature flag or permission without repeating the same predicate on every individual extension.
+
+```tsx
+export default createFrontendPlugin({
+  pluginId: 'my-plugin',
+  if: { featureFlags: { $contains: 'my-plugin-enabled' } },
+  extensions: [...],
+});
+```
+
+This predicate is applied to every extension from that plugin instance. If any extension already has its own `if` predicate, the two are combined using logical `AND`.
 
 ### `info` option
 
@@ -89,26 +129,20 @@ A plugin might not always behave exactly the way you want. It could be that you 
 
 ```tsx
 import plugin from '@backstage/plugin-catalog';
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import { RiLayoutGridLine } from '@remixicon/react';
 
 export default plugin.withOverrides({
   // These overrides are merged with the original extensions
   extensions: [
-    // Override the catalog nav item to use a custom icon
-    plugin.getExtension('nav-item:catalog').override({
-      factory: origFactory => [
-        NavItemBlueprint.dataRefs.target({
-          ...origFactory().get(NavItemBlueprint.dataRefs.target),
-          icon: CustomCatalogIcon,
+    // Override the catalog index page with a custom icon and implementation
+    plugin.getExtension('page:catalog').override({
+      factory: origFactory =>
+        origFactory({
+          icon: <RiLayoutGridLine />,
+          loader: () =>
+            import('./CustomCatalogIndexPage').then(m => <m.Page />),
         }),
-      ],
-    }),
-    // Override the catalog index page with a completely custom implementation
-    PageBlueprint.make({
-      params: {
-        path: '/catalog',
-        routeRef: plugin.routes.catalogIndex,
-        loader: () => import('./CustomCatalogIndexPage').then(m => <m.Page />),
-      },
     }),
   ],
 });

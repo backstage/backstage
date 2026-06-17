@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { KeyObject } from 'crypto';
-import * as crypto from 'crypto';
+import { KeyObject } from 'node:crypto';
+import * as crypto from 'node:crypto';
 import { JWTHeaderParameters, decodeJwt } from 'jose';
 import NodeCache from 'node-cache';
 import { PassportProfile, ProfileInfo } from '@backstage/plugin-auth-node';

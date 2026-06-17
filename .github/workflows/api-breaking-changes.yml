@@ -14,11 +14,11 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           # Fetch the commit that's merged into the base rather than the target ref
           # This will let us diff only the contents of the PR, without fetching more history
@@ -27,26 +27,28 @@ jobs:
         run: git fetch --depth 1 origin ${{ github.base_ref }}
 
       - name: setup-node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 20.x
+          node-version: 22.x
           registry-url: https://registry.npmjs.org/
+          corepack: true
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:
-          cache-prefix: linux-v20
+          cache-prefix: linux-v22
 
       - name: breaking changes check
         run: |
           yarn backstage-repo-tools repo schema openapi diff --since origin/${{ github.base_ref }} > comment.md
+          echo "<!-- api-breaking-changes-comment -->" >> comment.md
 
       - name: clone artifacts to current directory
         run: |
           cat ${{ github.event_path }} > event.json
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: preview-spec
           path: |

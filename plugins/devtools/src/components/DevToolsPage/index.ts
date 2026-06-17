@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export { DevToolsPage } from './DevToolsPage';
+export {
+  DevToolsPage,
+  type DevToolsPageProps,
+  type DevToolsPageContent,
+} from './DevToolsPage';

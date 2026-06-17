@@ -14,42 +14,35 @@
  * limitations under the License.
  */
 
-import { createElement, forwardRef } from 'react';
-import { ContainerProps } from './types';
-import clsx from 'clsx';
-import { displayPropDefs } from '../../props/display.props';
-import { extractProps } from '../../utils/extractProps';
-import { spacingPropDefs } from '../../props/spacing.props';
-import { useStyles } from '../../hooks/useStyles';
+import { forwardRef } from 'react';
+import type { ContainerProps } from './types';
+import { useDefinition } from '../../hooks/useDefinition';
+import { ContainerDefinition } from './definition';
 
-/** @public */
+/**
+ * A centered layout wrapper that constrains content to a maximum width and provides consistent page-level padding.
+ *
+ * @public
+ */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   (props, ref) => {
-    const { children } = props;
+    const { ownProps, restProps, utilityStyle } = useDefinition(
+      ContainerDefinition,
+      props,
+    );
+    const { classes, children, style } = ownProps;
 
-    const { classNames } = useStyles('Container');
-
-    // Create a subset of spacing props that match the interface
-    const containerSpacingProps = {
-      my: spacingPropDefs.my,
-      mt: spacingPropDefs.mt,
-      mb: spacingPropDefs.mb,
-      py: spacingPropDefs.py,
-      pt: spacingPropDefs.pt,
-      pb: spacingPropDefs.pb,
-    };
-
-    const propDefs = {
-      ...displayPropDefs,
-      ...containerSpacingProps,
-    };
-    const { className, style } = extractProps(props, propDefs);
-
-    return createElement('div', {
-      ref,
-      className: clsx(classNames.root, className),
-      style,
-      children,
-    });
+    return (
+      <div
+        ref={ref}
+        className={classes.root}
+        style={{ ...utilityStyle, ...style }}
+        {...restProps}
+      >
+        {children}
+      </div>
+    );
   },
 );
+
+Container.displayName = 'Container';

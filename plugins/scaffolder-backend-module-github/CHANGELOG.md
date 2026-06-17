@@ -1,5 +1,376 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.10
+
+### Patch Changes
+
+- 464ebc2: Added a fallback for `publish:github` and `github:repo:push` actions that retries via the GitHub GraphQL API when the git push fails with a connection-level error (`ECONNRESET` or `ECONNREFUSED`, checked on both `error.code` and `error.cause.code`). The git smart HTTP protocol sends binary pack data in a POST request which can be blocked by network proxies that perform deep packet inspection. The GraphQL fallback uses standard JSON requests which are not affected.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+
+## 0.9.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/plugin-scaffolder-node@0.13.4-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.9.9
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- a2ee960: Improved Octokit client creation to support retries via @octokit/plugin-retry
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-scaffolder-node@0.13.3
+  - @backstage/config@1.3.8
+
+## 0.9.9-next.0
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.3-next.0
+  - @backstage/types@1.2.2
+
+## 0.9.8
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/plugin-scaffolder-node@0.13.2
+  - @backstage/integration@2.0.1
+  - @backstage/config@1.3.7
+
+## 0.9.8-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/plugin-scaffolder-node@0.13.2-next.2
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+
+## 0.9.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-scaffolder-node@0.13.1-next.1
+
+## 0.9.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.1-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@2.0.0
+  - @backstage/types@1.2.2
+
+## 0.9.7
+
+### Patch Changes
+
+- a761a48: Added optional `returnWorkflowRunDetails` input to `github:actions:dispatch` action. When true, exposes `workflowRunId`, `workflowRunUrl`, and `workflowRunHtmlUrl` as outputs using the GitHub API `return_run_details` parameter.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- b2591f6: Fixed environment `waitTime` description incorrectly asking for milliseconds instead of minutes.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-scaffolder-node@0.13.0
+  - @backstage/integration@2.0.0
+  - @backstage/plugin-catalog-node@2.1.0
+  - @backstage/catalog-model@1.7.7
+
+## 0.9.7-next.2
+
+### Patch Changes
+
+- b2591f6: Fixed environment `waitTime` description incorrectly asking for milliseconds instead of minutes.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+  - @backstage/plugin-scaffolder-node@0.13.0-next.2
+
+## 0.9.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-scaffolder-node@0.13.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.9.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-node@0.12.6-next.0
+
+## 0.9.6
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 82ca951: cleaned up repo creation to make the unique portions explicit
+- 672b972: Updated dependency `libsodium-wrappers` to `^0.8.0`.
+  Updated dependency `@types/libsodium-wrappers` to `^0.8.0`.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-scaffolder-node@0.12.5
+
+## 0.9.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 82ca951: cleaned up repo creation to make the unique portions explicit
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.9.4
+
+### Patch Changes
+
+- bb7088b: Added options to set [workflow access level][access-level] for repositories to `github:repo:create`
+
+  This is useful when creating repositories for GitHub Actions to manage access
+  to the workflows during creation.
+
+  ```diff
+   - action: github:repo:create
+      id: create-repo
+      input:
+        repoUrl: github.com?owner=owner&repo=repo
+        visibility: private
+  +     workflowAccess: organization
+  ```
+
+  [access-level]: https://docs.github.com/en/rest/actions/permissions?apiVersion=2022-11-28#set-the-level-of-access-for-workflows-outside-of-the-repository
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/integration@1.19.2
+
+## 0.9.4-next.1
+
+### Patch Changes
+
+- bb7088b: Added options to set [workflow access level][access-level] for repositories to `github:repo:create`
+
+  This is useful when creating repositories for GitHub Actions to manage access
+  to the workflows during creation.
+
+  ```diff
+   - action: github:repo:create
+      id: create-repo
+      input:
+        repoUrl: github.com?owner=owner&repo=repo
+        visibility: private
+  +     workflowAccess: organization
+  ```
+
+  [access-level]: https://docs.github.com/en/rest/actions/permissions?apiVersion=2022-11-28#set-the-level-of-access-for-workflows-outside-of-the-repository
+
+## 0.9.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
+## 0.9.3
+
+### Patch Changes
+
+- dab3d3f: Added autocompletion resource `owners` for retrieving GitHub repository owners.
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 0.9.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+  - @backstage/plugin-scaffolder-node@0.12.2-next.1
+
+## 0.9.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-scaffolder-node@0.12.1
+
+## 0.9.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+
+## 0.9.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+
+## 0.9.1
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-node@1.19.1
+
+## 0.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- c8aa210: Updating import for the `scaffolderActionsExtensionPoint` to be the main export
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.19.0
+
 ## 0.9.0
 
 ### Minor Changes

@@ -25,7 +25,7 @@ import {
   DocumentCollatorFactory,
   IndexableDocument,
 } from '@backstage/plugin-search-common';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 /**
  * Extended IndexableDocument with explore tool specific properties

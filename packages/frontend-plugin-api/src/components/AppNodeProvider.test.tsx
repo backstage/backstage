@@ -70,12 +70,10 @@ describe('AppNodeProvider', () => {
       ).toThrow('AppNodeContext v1 not available');
     });
     expect(error).toEqual([
-      expect.objectContaining({
-        detail: new Error('AppNodeContext v1 not available'),
-      }),
-      expect.objectContaining({
-        detail: new Error('AppNodeContext v1 not available'),
-      }),
+      expect.stringContaining('Error: AppNodeContext v1 not available'),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining('Error: AppNodeContext v1 not available'),
+      expect.objectContaining({ type: 'unhandled-exception' }),
       expect.stringContaining(
         'The above error occurred in the <TestComponent> component:',
       ),

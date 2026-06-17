@@ -7,7 +7,7 @@ description: General technical questions about Backstage.
 ### What technology does Backstage use?
 
 Backstage is a large scale [TypeScript](https://www.typescriptlang.org/)
-application whose frontend parts use [React](https://react.dev/) and
+framework whose frontend parts use [React](https://react.dev/) and
 [Material UI](https://material-ui.com/), while the backend parts use
 [Node.js](https://nodejs.org/) and the [Express](https://expressjs.com/)
 framework.
@@ -156,11 +156,11 @@ For more information, see our
 [Owners](https://github.com/backstage/backstage/blob/master/OWNERS.md) and
 [Governance](https://github.com/backstage/community/blob/main/GOVERNANCE.md).
 
-### Does Spotify provide a managed version of Backstage?
+### Are there commercial or hosted versions of Backstage available?
 
-No, this is not a service offering. We build the piece of software, and someone
-in your infrastructure team is responsible for
-[deploying](https://backstage.io/docs/deployment) and maintaining it.
+Yes, there are several [commercial partners](https://backstage.io/community)
+that offer hosted versions, enterprise support, and consulting services
+around Backstage.
 
 ### How secure is Backstage?
 

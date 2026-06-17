@@ -64,6 +64,15 @@ export function createHandleAutocompleteRequest(options: {
 
         return { results };
       }
+      case 'owners': {
+        const orgs = await client.paginate(
+          client.rest.orgs.listForAuthenticatedUser,
+        );
+
+        const results = orgs.map(r => ({ id: r.login }));
+
+        return { results };
+      }
       default:
         throw new InputError(`Invalid resource: ${resource}`);
     }

@@ -1,197 +1,184 @@
 interface Page {
   title: string;
   slug: string;
-  status?: 'alpha' | 'beta' | 'stable' | 'deprecated' | 'inProgress';
+  status?: 'alpha' | 'beta' | 'stable' | 'deprecated' | 'inProgress' | 'new';
 }
-
-export const overview: Page[] = [
-  {
-    title: 'Getting Started',
-    slug: '',
-  },
-  {
-    title: 'Installation',
-    slug: 'install',
-  },
-  {
-    title: 'About',
-    slug: 'about',
-  },
-  {
-    title: 'Changelog',
-    slug: 'changelog',
-  },
-];
-
-export const coreConcepts: Page[] = [
-  {
-    title: 'Iconography',
-    slug: 'iconography',
-  },
-  {
-    title: 'Layout',
-    slug: 'layout',
-  },
-  {
-    title: 'Responsive',
-    slug: 'responsive',
-  },
-  {
-    title: 'Theming',
-    slug: 'theming',
-  },
-];
-
-export const layoutComponents: Page[] = [
-  {
-    title: 'Box',
-    slug: 'box',
-    status: 'alpha',
-  },
-  {
-    title: 'Container',
-    slug: 'container',
-    status: 'alpha',
-  },
-  {
-    title: 'Grid',
-    slug: 'grid',
-    status: 'alpha',
-  },
-  {
-    title: 'Flex',
-    slug: 'flex',
-    status: 'alpha',
-  },
-];
 
 export const components: Page[] = [
   {
+    title: 'Accordion',
+    slug: 'accordion',
+  },
+  {
+    title: 'Alert',
+    slug: 'alert',
+  },
+  {
     title: 'Avatar',
     slug: 'avatar',
-    status: 'alpha',
+  },
+  {
+    title: 'Badge',
+    slug: 'badge',
+  },
+  {
+    title: 'Box',
+    slug: 'box',
   },
   {
     title: 'Button',
     slug: 'button',
-    status: 'alpha',
   },
   {
     title: 'ButtonIcon',
     slug: 'button-icon',
-    status: 'alpha',
   },
   {
     title: 'ButtonLink',
     slug: 'button-link',
-    status: 'alpha',
   },
   {
     title: 'Card',
     slug: 'card',
-    status: 'alpha',
   },
   {
     title: 'Checkbox',
     slug: 'checkbox',
-    status: 'alpha',
   },
   {
-    title: 'Collapsible',
-    slug: 'collapsible',
-    status: 'alpha',
+    title: 'CheckboxGroup',
+    slug: 'checkbox-group',
+  },
+  {
+    title: 'Combobox',
+    slug: 'combobox',
+    status: 'new',
+  },
+  {
+    title: 'Container',
+    slug: 'container',
+  },
+  {
+    title: 'DatePicker',
+    slug: 'date-picker',
+  },
+  {
+    title: 'DateRangePicker',
+    slug: 'date-range-picker',
+  },
+  {
+    title: 'Dialog',
+    slug: 'dialog',
+  },
+  {
+    title: 'Flex',
+    slug: 'flex',
+  },
+  {
+    title: 'Grid',
+    slug: 'grid',
+  },
+  {
+    title: 'PluginHeader',
+    slug: 'plugin-header',
   },
   {
     title: 'Header',
     slug: 'header',
-    status: 'alpha',
-  },
-  {
-    title: 'HeaderPage',
-    slug: 'header-page',
-    status: 'alpha',
-  },
-  {
-    title: 'Icon',
-    slug: 'icon',
-    status: 'alpha',
   },
   {
     title: 'Link',
     slug: 'link',
-    status: 'alpha',
+  },
+  {
+    title: 'List',
+    slug: 'list',
   },
   {
     title: 'Menu',
     slug: 'menu',
-    status: 'alpha',
+  },
+  {
+    title: 'NumberField',
+    slug: 'number-field',
+  },
+  {
+    title: 'PasswordField',
+    slug: 'password-field',
+  },
+  {
+    title: 'Popover',
+    slug: 'popover',
   },
   {
     title: 'RadioGroup',
     slug: 'radio-group',
-    status: 'alpha',
+  },
+  {
+    title: 'SearchAutocomplete',
+    slug: 'search-autocomplete',
   },
   {
     title: 'SearchField',
     slug: 'search-field',
-    status: 'alpha',
   },
   {
     title: 'Select',
     slug: 'select',
-    status: 'alpha',
   },
   {
     title: 'Skeleton',
     slug: 'skeleton',
-    status: 'alpha',
+  },
+  {
+    title: 'Slider',
+    slug: 'slider',
   },
   {
     title: 'Switch',
     slug: 'switch',
-    status: 'alpha',
   },
   {
     title: 'Table',
     slug: 'table',
-    status: 'alpha',
   },
   {
     title: 'Tabs',
     slug: 'tabs',
-    status: 'alpha',
   },
   {
     title: 'TagGroup',
     slug: 'tag-group',
-    status: 'alpha',
   },
   {
     title: 'Text',
     slug: 'text',
-    status: 'alpha',
   },
   {
     title: 'TextField',
     slug: 'text-field',
-    status: 'alpha',
+  },
+  {
+    title: 'ToggleButton',
+    slug: 'toggle-button',
+  },
+  {
+    title: 'ToggleButtonGroup',
+    slug: 'toggle-button-group',
   },
   {
     title: 'Tooltip',
     slug: 'tooltip',
-    status: 'alpha',
+  },
+  {
+    title: 'VisuallyHidden',
+    slug: 'visually-hidden',
   },
 ];
 
-export type ScreenSize = {
-  title: string;
-  slug: string;
-  width: number;
-};
-
-export const screenSizes: ScreenSize[] = [
-  { title: 'Mobile', slug: 'mobile', width: 390 },
-  { title: 'Tablet', slug: 'tablet', width: 768 },
-  { title: 'Desktop', slug: 'desktop', width: 1280 },
-  { title: 'Wide', slug: 'wide', width: 1600 },
+export const hooks: Page[] = [
+  {
+    title: 'useBreakpoint',
+    slug: 'use-breakpoint',
+  },
 ];

@@ -45,6 +45,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { MockStarredEntitiesApi, starredEntitiesApiRef } from '../../apis';
 import { DefaultEntityFilters } from '../../hooks';
+import { NewEntityListContext } from '../../hooks/useEntityListProvider';
+import { createVersionedValueMap } from '@backstage/version-bridge';
 
 const mockUser: UserEntity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -692,6 +694,77 @@ describe('<UserListPicker />', () => {
         expect(screen.queryByText('Personal')).toBeNull();
         expect(screen.queryByText('Test Company')).toBeNull();
       });
+    });
+  });
+  describe('when initialFilter is not provided', () => {
+    it('updates filter options automatically when the kind changes', async () => {
+      let setFilters: (f: any) => void = () => {};
+
+      const TestProvider = ({ children }: { children?: React.ReactNode }) => {
+        const [filtersState, _setFiltersState] = require('react').useState({
+          kind: new EntityKindFilter('component', 'Component'),
+        } as any);
+        setFilters = _setFiltersState;
+
+        const updateFilters = (update: any) =>
+          _setFiltersState((prev: any) =>
+            typeof update === 'function'
+              ? update(prev)
+              : { ...prev, ...update },
+          );
+
+        const value = {
+          entities: [],
+          backendEntities: [],
+          updateFilters,
+          filters: filtersState,
+          loading: false,
+          queryParameters: {},
+          error: undefined,
+          totalItems: 0,
+          limit: 20,
+          offset: 0,
+          setLimit: () => {},
+          setOffset: () => {},
+          paginationMode: 'none',
+        } as any;
+
+        return (
+          <NewEntityListContext.Provider
+            value={createVersionedValueMap({ 1: value })}
+          >
+            {children}
+          </NewEntityListContext.Provider>
+        );
+      };
+
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <TestProvider>
+            <UserListPicker />
+          </TestProvider>
+        </ApiProvider>,
+      );
+
+      await waitFor(() =>
+        expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.getAllByRole('menuitem').map(({ textContent }) => textContent),
+        ).toEqual(['Owned 3', 'Starred 2', 'All 10']),
+      );
+
+      require('react').act(() =>
+        setFilters({ kind: new EntityKindFilter('user', 'User') } as any),
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.getAllByRole('menuitem').map(({ textContent }) => textContent),
+        ).toEqual(['Starred 2', 'All 10']),
+      );
     });
   });
 });

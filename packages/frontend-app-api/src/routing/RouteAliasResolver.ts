@@ -16,8 +16,7 @@
 
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { RouteRefsById } from './collectRouteIds';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalRouteRef } from '../../../frontend-plugin-api/src/routing/RouteRef';
+import { OpaqueRouteRef } from '@internal/frontend';
 
 /**
  * @internal
@@ -41,7 +40,7 @@ export function createRouteAliasResolver(
 
     let currentRef = routeRef;
     for (let i = 0; i < 100; i++) {
-      const alias = toInternalRouteRef(currentRef).alias;
+      const alias = OpaqueRouteRef.toInternal(currentRef).alias;
       if (alias) {
         if (pluginId) {
           const [aliasPluginId] = alias.split('.');

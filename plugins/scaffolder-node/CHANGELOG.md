@@ -1,5 +1,398 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.13.4
+
+### Patch Changes
+
+- 3d0ba59: Added retry with exponential back off to `Git.push()`. Scaffolder template actions that create a repository and immediately push to it (e.g., `publish:github`) can encounter transient failures when the repository is not yet fully provisioned. The push is now retried up to 5 times with increasing delays before failing. Authentication and permission errors (401, 403) fail immediately without retrying.
+- Updated dependencies
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-scaffolder-common@2.2.1
+  - @backstage/plugin-permission-node@0.11.1
+
+## 0.13.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-scaffolder-common@2.2.1-next.0
+  - @backstage/backend-test-utils@1.11.4-next.0
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.13.3
+
+### Patch Changes
+
+- 77bee9f: Added optional `status` filter to `ScaffolderService.listTasks`, allowing callers to retrieve tasks matching a specific status.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-test-utils@1.11.3
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/plugin-scaffolder-common@2.2.0
+
+## 0.13.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.3-next.2
+  - @backstage/backend-plugin-api@1.9.1-next.1
+  - @backstage/plugin-scaffolder-common@2.2.0-next.1
+
+## 0.13.3-next.1
+
+### Patch Changes
+
+- 77bee9f: Added optional `status` filter to `ScaffolderService.listTasks`, allowing callers to retrieve tasks matching a specific status.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/backend-test-utils@1.11.3-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
+## 0.13.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/backend-test-utils@1.11.3-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/plugin-scaffolder-common@2.1.1-next.0
+  - @backstage/types@1.2.2
+
+## 0.13.2
+
+### Patch Changes
+
+- 5af48e7: Added `PermissionResourceRef` definitions for scaffolder resource types: `scaffolderTemplatePermissionResourceRef`, `scaffolderActionPermissionResourceRef`, and `scaffolderTaskPermissionResourceRef`. These are exported from `@backstage/plugin-scaffolder-node/alpha`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/backend-test-utils@1.11.2
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-scaffolder-common@2.1.0
+  - @backstage/integration@2.0.1
+  - @backstage/plugin-permission-node@0.10.12
+  - @backstage/plugin-permission-common@0.9.8
+
+## 0.13.2-next.2
+
+### Patch Changes
+
+- 5af48e7: Added `PermissionResourceRef` definitions for scaffolder resource types: `scaffolderTemplatePermissionResourceRef`, `scaffolderActionPermissionResourceRef`, and `scaffolderTaskPermissionResourceRef`. These are exported from `@backstage/plugin-scaffolder-node/alpha`.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/backend-test-utils@1.11.2-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/plugin-permission-common@0.9.8-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.2
+  - @backstage/plugin-scaffolder-common@2.0.1-next.0
+
+## 0.13.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-test-utils@1.11.2-next.1
+
+## 0.13.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/backend-test-utils@1.11.2-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/errors@1.2.7
+  - @backstage/integration@2.0.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-scaffolder-common@2.0.0
+
+## 0.13.0
+
+### Minor Changes
+
+- e27bd4e: **BREAKING** Removed deprecated `bitbucket` integration from being used in the `parseRepoUrl` function. It will use the `bitbucketCloud` or `bitbucketServer` integrations instead.
+
+### Patch Changes
+
+- cd0ecc5: Added `removeFiles` helper function for staging file removals in Git.
+- f598909: Added `scaffolderServiceRef` and `ScaffolderService` interface for backend plugins that need to interact with the scaffolder API using `BackstageCredentials` instead of raw tokens.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/backend-test-utils@1.11.1
+  - @backstage/integration@2.0.0
+  - @backstage/plugin-scaffolder-common@2.0.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/catalog-model@1.7.7
+
+## 0.13.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.1-next.2
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/plugin-scaffolder-common@2.0.0-next.2
+
+## 0.13.0-next.1
+
+### Minor Changes
+
+- e27bd4e: **BREAKING** Removed deprecated `bitbucket` integration from being used in the `parseRepoUrl` function. It will use the `bitbucketCloud` or `bitbucketServer` integrations instead.
+
+### Patch Changes
+
+- f598909: Added `scaffolderServiceRef` and `ScaffolderService` interface for backend plugins that need to interact with the scaffolder API using `BackstageCredentials` instead of raw tokens.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.1-next.1
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-scaffolder-common@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.6
+
+## 0.12.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-scaffolder-common@1.7.7-next.0
+
+## 0.12.5
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Bump to tar v7
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-scaffolder-common@1.7.6
+
+## 0.12.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-scaffolder-common@1.7.6-next.1
+
+## 0.12.4-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Bump to tar v7
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-common@1.7.6-next.0
+
+## 0.12.3
+
+### Patch Changes
+
+- c641c14: Wrap some of the action logic with `resolveSafeChildPath` and improve symlink handling when fetching remote and local files
+- 27f9061: REwrite]
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-scaffolder-common@1.7.5
+
+## 0.12.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-scaffolder-common@1.7.5-next.0
+
+## 0.12.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-common@1.7.4
+
+## 0.12.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-scaffolder-common@1.7.4-next.0
+
+## 0.12.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-scaffolder-common@1.7.4-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.12.1
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-scaffolder-common@1.7.3
+
+## 0.12.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+  - @backstage/plugin-scaffolder-common@1.7.3-next.0
+
+## 0.12.0
+
+### Minor Changes
+
+- 9b81a90: **BREAKING** - Marking optional fields as required in the `TaskBroker`, these can be fixed with a no-op `() => void` if you don't want to implement the functions.
+
+  - `cancel`, `recoverTasks` and `retry` are the required methods on the `TaskBroker` interface.
+
+  **NOTE**: If you're affected by this breaking change, please reach out to us in an issue as we're thinking about completely removing the `TaskBroker` extension point soon and would like to hear your use cases for the upcoming re-architecture of the `scaffolder-backend` plugin.
+
+### Patch Changes
+
+- c8aa210: **BREAKING ALPHA**: We've moved the `scaffolderActionsExtensionPoint` from `/alpha` to the main export.
+
+  ```tsx
+  // before
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  // after
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
+  ```
+
+- 6e2bda7: **DEPRECATION**: We're going to be working on refactoring a lot of the internals of the Scaffolder backend plugin, and with that comes a lot of deprecations and removals for public types that are making these things hard.
+
+  If you're using these types, please reach out to us either on Discord or a GitHub issue with your use cases.
+
+  - `SerializedTask`, `SerializedTaskEvent`, `TaskBroker`, `TaskContext`, `TaskBrokerDispatchOptions`, `TaskBrokerDispatchResult`, `TaskCompletionState`, `TaskEventType`, `TaskFilter`, `TaskFilters`, `TaskStatus` are the types that have now been marked as deprecated, and will be removed in a future release.
+
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-scaffolder-common@1.7.2
+
+## 0.12.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-scaffolder-common@1.7.2-next.1
+
+## 0.12.0-next.0
+
+### Minor Changes
+
+- 9b81a90: **BREAKING** - Marking optional fields as required in the `TaskBroker`, these can be fixed with a no-op `() => void` if you don't want to implement the functions.
+
+  - `cancel`, `recoverTasks` and `retry` are the required methods on the `TaskBroker` interface.
+
+  **NOTE**: If you're affected by this breaking change, please reach out to us in an issue as we're thinking about completely removing the `TaskBroker` extension point soon and would like to hear your use cases for the upcoming re-architecture of the `scaffolder-backend` plugin.
+
+### Patch Changes
+
+- c8aa210: **BREAKING ALPHA**: We've moved the `scaffolderActionsExtensionPoint` from `/alpha` to the main export.
+
+  ```tsx
+  // before
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  // after
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
+  ```
+
+- 6e2bda7: **DEPRECATION**: We're going to be working on refactoring a lot of the internals of the Scaffolder backend plugin, and with that comes a lot of deprecations and removals for public types that are making these things hard.
+
+  If you're using these types, please reach out to us either on Discord or a GitHub issue with your use cases.
+
+  - `SerializedTask`, `SerializedTaskEvent`, `TaskBroker`, `TaskContext`, `TaskBrokerDispatchOptions`, `TaskBrokerDispatchResult`, `TaskCompletionState`, `TaskEventType`, `TaskFilter`, `TaskFilters`, `TaskStatus` are the types that have now been marked as deprecated, and will be removed in a future release.
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-common@1.7.2-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.1
+
 ## 0.11.1
 
 ### Patch Changes

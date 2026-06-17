@@ -131,6 +131,18 @@ export interface Config {
              * (Optional) TaskScheduleDefinition for the refresh.
              */
             schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of repositories to fetch per page when querying repositories.
+               * Default: `25`.
+               */
+              repositories?: number;
+            };
           }
         | {
             [name: string]: {
@@ -209,6 +221,18 @@ export interface Config {
                * (Optional) TaskScheduleDefinition for the refresh.
                */
               schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+
+              /**
+               * (Optional) Page sizes for GitHub GraphQL API queries.
+               * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+               */
+              pageSizes?: {
+                /**
+                 * (Optional) Number of repositories to fetch per page when querying repositories.
+                 * Default: `25`.
+                 */
+                repositories?: number;
+              };
             };
           };
 
@@ -241,9 +265,63 @@ export interface Config {
             orgs?: string[];
 
             /**
+             * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
+             * Default: `false`.
+             */
+            excludeSuspendedUsers?: boolean;
+
+            /**
+             * (Optional) When set to true alongside `excludeSuspendedUsers`, use the GitHub REST API
+             * to check for suspended users instead of the GraphQL `suspendedAt` field.
+             * REST responses are cached using conditional HTTP requests to minimize rate limit usage.
+             * Default: `false`.
+             */
+            experimental_checkForSuspendedUsersWithRest?: boolean;
+
+            /**
+             * (Optional) Configuration for the default user transformer.
+             * These options only apply when using the built-in transformer;
+             * they have no effect if a custom transformer is set via the
+             * extension point.
+             */
+            defaultUserTransformer?: {
+              /**
+               * (Optional) Whether to prefer organization verified domain emails
+               * over the user's public GitHub email when populating user entity profiles.
+               * When enabled, the transformer uses the first verified domain email
+               * (with plus-addressed routing tags stripped) and falls back to the
+               * public email if none are available.
+               * Default: `false`.
+               */
+              useVerifiedEmails?: boolean;
+            };
+
+            /**
              * The refresh schedule to use.
              */
             schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of teams to fetch per page when querying organization teams.
+               * Default: `25`.
+               */
+              teams?: number;
+              /**
+               * (Optional) Number of team members to fetch per page when querying team members.
+               * Default: `50`.
+               */
+              teamMembers?: number;
+              /**
+               * (Optional) Number of organization members to fetch per page when querying org members.
+               * Default: `50`.
+               */
+              organizationMembers?: number;
+            };
           }
         | Array<{
             /**
@@ -270,9 +348,63 @@ export interface Config {
             orgs?: string[];
 
             /**
+             * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
+             * Default: `false`.
+             */
+            excludeSuspendedUsers?: boolean;
+
+            /**
+             * (Optional) When set to true alongside `excludeSuspendedUsers`, use the GitHub REST API
+             * to check for suspended users instead of the GraphQL `suspendedAt` field.
+             * REST responses are cached using conditional HTTP requests to minimize rate limit usage.
+             * Default: `false`.
+             */
+            experimental_checkForSuspendedUsersWithRest?: boolean;
+
+            /**
+             * (Optional) Configuration for the default user transformer.
+             * These options only apply when using the built-in transformer;
+             * they have no effect if a custom transformer is set via the
+             * extension point.
+             */
+            defaultUserTransformer?: {
+              /**
+               * (Optional) Whether to prefer organization verified domain emails
+               * over the user's public GitHub email when populating user entity profiles.
+               * When enabled, the transformer uses the first verified domain email
+               * (with plus-addressed routing tags stripped) and falls back to the
+               * public email if none are available.
+               * Default: `false`.
+               */
+              useVerifiedEmails?: boolean;
+            };
+
+            /**
              * The refresh schedule to use.
              */
             schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of teams to fetch per page when querying organization teams.
+               * Default: `25`.
+               */
+              teams?: number;
+              /**
+               * (Optional) Number of team members to fetch per page when querying team members.
+               * Default: `50`.
+               */
+              teamMembers?: number;
+              /**
+               * (Optional) Number of organization members to fetch per page when querying org members.
+               * Default: `50`.
+               */
+              organizationMembers?: number;
+            };
           }>;
     };
   };

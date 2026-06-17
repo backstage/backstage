@@ -29,7 +29,7 @@ import {
   ListObjectsV2Output,
   S3,
 } from '@aws-sdk/client-s3';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { getEndpointFromInstructions } from '@aws-sdk/middleware-endpoint';
 import {
   AwsCredentialsManager,
@@ -105,13 +105,20 @@ export class AwsS3EntityProvider implements EntityProvider {
     });
   }
 
+  private readonly config: AwsS3Config;
+  private readonly integration: AwsS3Integration;
+  private readonly awsCredentialsManager: AwsCredentialsManager;
+
   private constructor(
-    private readonly config: AwsS3Config,
-    private readonly integration: AwsS3Integration,
-    private readonly awsCredentialsManager: AwsCredentialsManager,
+    config: AwsS3Config,
+    integration: AwsS3Integration,
+    awsCredentialsManager: AwsCredentialsManager,
     logger: LoggerService,
     taskRunner: SchedulerServiceTaskRunner,
   ) {
+    this.config = config;
+    this.integration = integration;
+    this.awsCredentialsManager = awsCredentialsManager;
     this.logger = logger.child({
       target: this.getProviderName(),
     });
@@ -130,7 +137,7 @@ export class AwsS3EntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: AwsS3EntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {
@@ -172,7 +179,7 @@ export class AwsS3EntityProvider implements EntityProvider {
       {
         Bucket: bucketName,
       },
-      ListObjectsV2Command,
+      ListObjectsV2Command as any,
       this.s3.config as unknown as Record<string, unknown>,
     );
     if (endpoint?.url)

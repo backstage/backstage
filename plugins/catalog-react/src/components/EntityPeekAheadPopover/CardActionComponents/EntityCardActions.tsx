@@ -35,7 +35,7 @@ export const EntityCardActions = (props: { entity: Entity }) => {
   return (
     <IconButton
       component={Link}
-      aria-label="Show"
+      aria-label={t('entityPeekAheadPopover.entityCardActionsAriaLabel')}
       title={t('entityPeekAheadPopover.entityCardActionsTitle')}
       to={entityRoute(getCompoundEntityRef(props.entity))}
     >

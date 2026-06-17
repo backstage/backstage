@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { tryRunPrettier } from './tryRunPrettier';
+export { tryRunPrettier, tryRunPrettierAsync } from './tryRunPrettier';
 export { logApiReportInstructions } from './logApiReportInstructions';

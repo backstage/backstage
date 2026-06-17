@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConfigApi } from '@backstage/core-plugin-api';
+import { ConfigApi } from '@backstage/frontend-plugin-api';
 import {
   FrontendFeature,
   FrontendPluginInfo,
@@ -77,7 +77,10 @@ export function createPluginInfoAttacher(
           }),
         });
 
-        const infoWithOverrides = applyInfoOverrides(plugin.id, resolvedInfo);
+        const infoWithOverrides = applyInfoOverrides(
+          plugin.pluginId,
+          resolvedInfo,
+        );
         return normalizePluginInfo(infoWithOverrides);
       }),
     };

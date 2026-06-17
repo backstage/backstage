@@ -17,6 +17,8 @@
 import { useState, useEffect } from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { techdocsTranslationRef } from '../../../translation';
 import { DocsTableRow } from './types';
 import {
   EntityTextFilter,
@@ -27,9 +29,10 @@ import {
  * @internal
  */
 export function OffsetPaginatedDocsTable(props: TableProps<DocsTableRow>) {
-  const { actions, columns, data, isLoading, options } = props;
+  const { actions, columns, data, isLoading, options, title } = props;
   const { updateFilters, setLimit, setOffset, limit, totalItems, offset } =
     useEntityList();
+  const { t } = useTranslationRef(techdocsTranslationRef);
   const [page, setPage] = useState(
     offset && limit ? Math.floor(offset / limit) : 0,
   );
@@ -44,6 +47,7 @@ export function OffsetPaginatedDocsTable(props: TableProps<DocsTableRow>) {
 
   return (
     <Table<DocsTableRow>
+      title={title}
       columns={columns}
       data={data}
       options={{
@@ -68,7 +72,21 @@ export function OffsetPaginatedDocsTable(props: TableProps<DocsTableRow>) {
         setLimit(pageSize);
       }}
       totalCount={totalItems}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
+      localization={{
+        header: {
+          actions: t('table.header.actions'),
+        },
+        toolbar: {
+          searchPlaceholder: t('table.toolbar.searchPlaceholder'),
+        },
+        pagination: {
+          labelDisplayedRows: '',
+          labelRowsSelect: t('table.pagination.labelRowsSelect'),
+        },
+        body: {
+          emptyDataSourceMessage: t('table.body.emptyDataSourceMessage'),
+        },
+      }}
       isLoading={isLoading}
     />
   );

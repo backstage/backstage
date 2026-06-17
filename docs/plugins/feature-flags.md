@@ -4,6 +4,12 @@ title: Feature Flags
 description: Details the process of defining setting and reading a feature flag.
 ---
 
+:::caution Legacy Documentation
+
+This page describes feature flags using the **old frontend system** APIs (`createPlugin` from `@backstage/core-plugin-api` and `createApp` from `@backstage/app-defaults`). For the new frontend system version, see [Feature Flags](../frontend-system/building-plugins/09-feature-flags.md). The `FeatureFlagged` component and `featureFlagsApiRef` work the same way in both systems.
+
+:::
+
 Backstage offers the ability to define feature flags inside a plugin or during application creation. This allows you to restrict parts of your plugin to those individual users who have toggled the feature flag to on.
 
 This page describes the process of defining, setting and reading a feature flag. If you are looking for using feature flags specifically with software templates please see [Writing Templates](https://backstage.io/docs/features/software-templates/writing-templates#remove-sections-or-fields-based-on-feature-flags).
@@ -19,10 +25,17 @@ import { createPlugin } from '@backstage/core-plugin-api';
 
 export const examplePlugin = createPlugin({
   // ...
-  featureFlags: [{ name: 'show-example-feature' }],
+  featureFlags: [
+    {
+      name: 'show-example-feature',
+      description: 'Enables the new beta dashboard view',
+    },
+  ],
   // ...
 });
 ```
+
+Note that the `description` property is optional. If not provided, the default "Registered in {pluginId} plugin" message is shown.
 
 ### In the application
 
@@ -55,7 +68,7 @@ The user's selection is saved in the user's browser local storage. Once a featur
 
 ## FeatureFlagged Component
 
-The easiest way to control content based on the state of a feature flag is to use the [FeatureFlagged](https://backstage.io/docs/reference/core-app-api.featureflagged) component.
+The easiest way to control content based on the state of a feature flag is to use the [FeatureFlagged](https://backstage.io/api/stable/functions/_backstage_core-app-api.FeatureFlagged.html) component.
 
 ```ts
 import { FeatureFlagged } from '@backstage/core-app-api';
@@ -73,7 +86,7 @@ import { FeatureFlagged } from '@backstage/core-app-api';
 
 ## Evaluating Feature Flag State
 
-It is also possible to query a feature flag using the [FeatureFlags Api](https://backstage.io/docs/reference/core-plugin-api.featureflagsapi).
+It is also possible to query a feature flag using the [FeatureFlags Api](https://backstage.io/api/stable/interfaces/_backstage_core-plugin-api.index.FeatureFlagsApi.html).
 
 ```ts
 import { useApi, featureFlagsApiRef } from '@backstage/core-plugin-api';

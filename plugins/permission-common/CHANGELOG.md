@@ -1,5 +1,110 @@
 # @backstage/plugin-permission-common
 
+## 0.9.9
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/config@1.3.8
+
+## 0.9.9-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+
+## 0.9.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/types@1.2.2
+
+## 0.9.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/config@1.3.7
+
+## 0.9.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/config@1.3.7-next.0
+
+## 0.9.7
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+
+## 0.9.6
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.9.4
+
+### Patch Changes
+
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+
+## 0.9.3
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/config@1.3.6
+
+## 0.9.3-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+
+## 0.9.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+
+## 0.9.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
 ## 0.9.1
 
 ### Patch Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { componentDefinitions } from './utils/componentDefinitions';
+import type { CSSProperties } from 'react';
 
 /** @public */
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -74,14 +74,31 @@ export type BorderRadius =
   | 'xl'
   | '2xl';
 
-/** @public */
+/**
+ * Border variants available for UI utility props.
+ *
+ * @public
+ */
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
 
 /** @public */
-export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
+export type Columns =
+  | '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '10'
+  | '11'
+  | '12'
+  | 'auto';
 
 /** @public */
-export interface SpaceProps {
+export interface MarginProps {
   m?: Responsive<Space>;
   mb?: Responsive<Space>;
   ml?: Responsive<Space>;
@@ -89,6 +106,10 @@ export interface SpaceProps {
   mt?: Responsive<Space>;
   mx?: Responsive<Space>;
   my?: Responsive<Space>;
+}
+
+/** @public */
+export interface PaddingProps {
   p?: Responsive<Space>;
   pb?: Responsive<Space>;
   pl?: Responsive<Space>;
@@ -96,6 +117,23 @@ export interface SpaceProps {
   pt?: Responsive<Space>;
   px?: Responsive<Space>;
   py?: Responsive<Space>;
+}
+
+/** @public */
+export interface SpaceProps extends MarginProps, PaddingProps {}
+
+/**
+ * Flex item properties.
+ *
+ * @public
+ */
+export interface FlexItemProps {
+  /** Controls the flex-grow property. Values of `true` or `false` are converted to `1` or `0` respectively. */
+  grow?: Responsive<number | boolean>;
+  /** Controls the flex-shrink property. Values of `true` or `false` are converted to `1` or `0` respectively. */
+  shrink?: Responsive<number | boolean>;
+  /** Controls the flex-basis property. */
+  basis?: Responsive<CSSProperties['flexBasis']>;
 }
 
 /** @public */
@@ -113,64 +151,76 @@ export type TextVariants =
 export type TextColors = 'primary' | 'secondary';
 
 /** @public */
-export type TextColorStatus = 'danger' | 'warning' | 'success';
+export type TextColorStatus = 'danger' | 'warning' | 'success' | 'info';
 
 /** @public */
 export type TextWeights = 'regular' | 'bold';
 
-/** @public */
+/**
+ * Shared utility props supported by layout-oriented UI components.
+ *
+ * @public
+ */
 export interface UtilityProps extends SpaceProps {
+  /** Aligns children on the cross axis in flex and grid layouts. */
   alignItems?: Responsive<AlignItems>;
+  /** Applies a semantic border variant. */
   border?: Responsive<Border>;
+  /** Applies a semantic border radius token. */
   borderRadius?: Responsive<BorderRadius>;
+  /** Sets the ending grid column line. */
   colEnd?: Responsive<Columns | 'auto'>;
+  /** Sets the number of grid columns to span. */
   colSpan?: Responsive<Columns | 'full'>;
+  /** Sets the starting grid column line. */
   colStart?: Responsive<Columns | 'auto'>;
+  /** Sets the number of columns for grid containers. */
   columns?: Responsive<Columns>;
+  /** Controls the CSS display value. */
   display?: Responsive<Display>;
+  /** Controls the direction of flex items. */
   flexDirection?: Responsive<FlexDirection>;
+  /** Controls how flex items wrap. */
   flexWrap?: Responsive<FlexWrap>;
+  /** Sets spacing between children in flex and grid layouts. */
   gap?: Responsive<Space>;
+  /** Aligns children on the main axis in flex and grid layouts. */
   justifyContent?: Responsive<JustifyContent>;
+  /** Sets the number of grid rows to span. */
   rowSpan?: Responsive<Columns | 'full'>;
 }
 
 /**
- * Base type for the component styles structure
+ * Resolved background level stored in context and applied as `data-bg` on DOM elements.
+ * Background type for the neutral bg system.
+ *
+ * Supports neutral levels ('neutral-1' through 'neutral-3') and
+ * intent backgrounds ('danger', 'warning', 'success').
+ *
+ * The 'neutral-4' level is not exposed as a prop value -- it is reserved
+ * for leaf component CSS (e.g. Button on a 'neutral-3' surface).
+ *
+ * This is the resolved/internal representation used by the bg context system.
+ * For the prop type accepted by container components, use `ProviderBg` instead.
+ *
  * @public
  */
-export type ClassNamesMap = Record<string, string>;
+export type ContainerBg =
+  | 'neutral-1'
+  | 'neutral-2'
+  | 'neutral-3'
+  | 'danger'
+  | 'warning'
+  | 'success';
 
 /**
- * Base type for the component styles structure
+ * Background values accepted by provider components (Box, Flex, Grid, Card, etc.).
+ *
+ * - `'neutral'` — automatically increments the neutral level from the parent context,
+ *   capping at the maximum level. This is always incremental; explicit levels cannot
+ *   be set directly.
+ * - `'danger'` | `'warning'` | `'success'` — intent backgrounds used as-is.
+ *
  * @public
  */
-export type DataAttributeValues = readonly (string | number | boolean)[];
-
-/**
- * Base type for the component styles structure
- * @public
- */
-export type DataAttributesMap = Record<string, DataAttributeValues>;
-
-/**
- * Base type for the component styles structure
- * @public
- */
-export interface ComponentDefinition {
-  classNames: ClassNamesMap;
-  dataAttributes?: DataAttributesMap;
-}
-
-/**
- * Type utilities for extracting information from the component styles
- * @public
- */
-export type ComponentDefinitionName = keyof typeof componentDefinitions;
-
-/**
- * Helper type to extract class names for a component
- * @public
- */
-export type ComponentClassNames<T extends ComponentDefinitionName> =
-  (typeof componentDefinitions)[T]['classNames'];
+export type ProviderBg = 'neutral' | 'danger' | 'warning' | 'success';

@@ -35,12 +35,17 @@ import { ElasticSearchCustomIndexTemplate } from './types';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import {
   AwsCredentialProvider,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { ElasticSearchAuthProvider } from '../auth';
+import {
+  createOpenSearchAuthTransport,
+  createElasticSearchAuthTransport,
+} from './ElasticSearchAuthTransport';
 
 export type { ElasticSearchClientOptions };
 
@@ -82,6 +87,19 @@ export type ElasticSearchOptions = {
   aliasPostfix?: string;
   indexPrefix?: string;
   translator?: ElasticSearchQueryTranslator;
+  /**
+   * An optional authentication provider for dynamic authentication.
+   *
+   * @remarks
+   *
+   * When provided, this auth provider will be used to inject authentication
+   * headers into each request to Elasticsearch/OpenSearch. This is useful
+   * for scenarios requiring dynamic tokens (e.g., bearer tokens with rotation).
+   *
+   * The auth provider takes precedence over static authentication configured
+   * in app-config.yaml.
+   */
+  authProvider?: ElasticSearchAuthProvider;
 };
 
 /**
@@ -136,16 +154,29 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   private readonly highlightOptions: ElasticSearchHighlightConfig;
   private readonly queryOptions?: ElasticSearchQueryConfig;
 
+  private readonly elasticSearchClientOptions: ElasticSearchClientOptions;
+  private readonly aliasPostfix: string;
+  private readonly indexPrefix: string;
+  private readonly logger: LoggerService;
+  private readonly batchSize: number;
+  private readonly batchKeyField?: string;
+
   constructor(
-    private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
-    private readonly aliasPostfix: string,
-    private readonly indexPrefix: string,
-    private readonly logger: LoggerService,
-    private readonly batchSize: number,
-    private readonly batchKeyField?: string,
+    elasticSearchClientOptions: ElasticSearchClientOptions,
+    aliasPostfix: string,
+    indexPrefix: string,
+    logger: LoggerService,
+    batchSize: number,
+    batchKeyField?: string,
     highlightOptions?: ElasticSearchHighlightOptions,
     queryOptions?: ElasticSearchQueryConfig,
   ) {
+    this.elasticSearchClientOptions = elasticSearchClientOptions;
+    this.aliasPostfix = aliasPostfix;
+    this.indexPrefix = indexPrefix;
+    this.logger = logger;
+    this.batchSize = batchSize;
+    this.batchKeyField = batchKeyField;
     this.elasticSearchClientWrapper =
       ElasticSearchClientWrapper.fromClientOptions(elasticSearchClientOptions);
     const uuidTag = uuid();
@@ -167,11 +198,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       aliasPostfix = `search`,
       indexPrefix = ``,
       translator,
+      authProvider,
     } = options;
     const credentialProvider = DefaultAwsCredentialsManager.fromConfig(config);
     const clientOptions = await this.createElasticSearchClientOptions(
       await credentialProvider?.getCredentialProvider(),
       config.getConfig('search.elasticsearch'),
+      authProvider,
     );
     if (clientOptions.provider === 'elastic') {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
@@ -491,6 +524,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   private static async createElasticSearchClientOptions(
     credentialProvider: AwsCredentialProvider,
     config?: Config,
+    authProvider?: ElasticSearchAuthProvider,
   ): Promise<ElasticSearchClientOptions> {
     if (!config) {
       throw new Error('No elastic search config found');
@@ -499,16 +533,26 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     const sslConfig = clientOptionsConfig?.getOptionalConfig('ssl');
 
     if (config.getOptionalString('provider') === 'elastic') {
-      const authConfig = config.getConfig('auth');
+      const authConfig = authProvider ? undefined : config.getConfig('auth');
       return {
         provider: 'elastic',
         cloud: {
           id: config.getString('cloudId'),
         },
-        auth: {
-          username: authConfig.getString('username'),
-          password: authConfig.getString('password'),
-        },
+        // When using authProvider, we inject auth via custom Transport, not static auth
+        ...(authConfig
+          ? {
+              auth: {
+                username: authConfig.getString('username'),
+                password: authConfig.getString('password'),
+              },
+            }
+          : {}),
+        ...(authProvider
+          ? {
+              Transport: createElasticSearchAuthTransport(authProvider),
+            }
+          : {}),
         ...(sslConfig
           ? {
               ssl: {
@@ -520,6 +564,12 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       };
     }
     if (config.getOptionalString('provider') === 'aws') {
+      // AWS provider uses SigV4 signing; authProvider is not applicable here
+      if (authProvider) {
+        throw new Error(
+          'Custom auth provider is not supported with AWS provider. AWS uses SigV4 signing.',
+        );
+      }
       const requestSigner = new RequestSigner(config.getString('node'));
       const service =
         config.getOptionalString('service') ?? requestSigner.service;
@@ -547,14 +597,26 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       };
     }
     if (config.getOptionalString('provider') === 'opensearch') {
-      const authConfig = config.getConfig('auth');
+      const authConfig = authProvider
+        ? undefined
+        : config.getOptionalConfig('auth');
       return {
         provider: 'opensearch',
         node: config.getString('node'),
-        auth: {
-          username: authConfig.getString('username'),
-          password: authConfig.getString('password'),
-        },
+        // When using authProvider, we inject auth via custom Transport, not static auth
+        ...(authConfig
+          ? {
+              auth: {
+                username: authConfig.getString('username'),
+                password: authConfig.getString('password'),
+              },
+            }
+          : {}),
+        ...(authProvider
+          ? {
+              Transport: createOpenSearchAuthTransport(authProvider),
+            }
+          : {}),
         ...(sslConfig
           ? {
               ssl: {
@@ -565,7 +627,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
           : {}),
       };
     }
-    const authConfig = config.getOptionalConfig('auth');
+    // Default provider (standard Elasticsearch)
+    const authConfig = authProvider
+      ? undefined
+      : config.getOptionalConfig('auth');
     const auth =
       authConfig &&
       (authConfig.has('apiKey')
@@ -578,7 +643,12 @@ export class ElasticSearchSearchEngine implements SearchEngine {
           });
     return {
       node: config.getString('node'),
-      auth,
+      ...(auth ? { auth } : {}),
+      ...(authProvider
+        ? {
+            Transport: createElasticSearchAuthTransport(authProvider),
+          }
+        : {}),
       ...(sslConfig
         ? {
             ssl: {

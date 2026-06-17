@@ -16,14 +16,14 @@
 
 import { isChildPath, LoggerService } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { assertError, ForwardedError } from '@backstage/errors';
+import { ForwardedError, NotAllowedError, toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { SpawnOptionsWithoutStdio, spawn } from 'child_process';
+import { SpawnOptionsWithoutStdio, spawn } from 'node:child_process';
 import fs from 'fs-extra';
 import gitUrlParse from 'git-url-parse';
 import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
-import path, { resolve as resolvePath } from 'path';
-import { PassThrough, Writable } from 'stream';
+import path, { resolve as resolvePath } from 'node:path';
+import { PassThrough, Writable } from 'node:stream';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
@@ -129,7 +129,13 @@ export const getRepoUrlFromLocationAnnotation = (
 };
 
 class UnknownTag {
-  constructor(public readonly data: any, public readonly type?: string) {}
+  public readonly data: any;
+  public readonly type?: string;
+
+  constructor(data: any, type?: string) {
+    this.data = data;
+    this.type = type;
+  }
 }
 
 export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
@@ -261,6 +267,50 @@ export const getMkdocsYml = async (
 };
 
 /**
+ * Allowlist of MkDocs configuration keys supported by TechDocs.
+ *
+ * @see https://www.mkdocs.org/user-guide/configuration/
+ */
+export const ALLOWED_MKDOCS_KEYS = new Set([
+  // Site information
+  'site_name',
+  'site_url',
+  'site_description',
+  'site_author',
+  // Repository
+  'repo_url',
+  'repo_name',
+  'edit_uri',
+  'edit_uri_template',
+  // Build directories
+  'docs_dir',
+  'site_dir',
+  // Documentation layout
+  'nav',
+  'exclude_docs',
+  'not_in_nav',
+  // Build settings
+  'theme',
+  'plugins',
+  'markdown_extensions',
+  'extra',
+  'extra_css',
+  'extra_templates',
+  // Preview controls
+  'use_directory_urls',
+  'strict',
+  'dev_addr',
+  'watch',
+  // Metadata
+  'copyright',
+  'remote_branch',
+  'remote_name',
+  'validation',
+  // Deprecated
+  'google_analytics',
+]);
+
+/**
  * Validating mkdocs config file for incorrect/insecure values
  * Throws on invalid configs
  *
@@ -282,6 +332,7 @@ export const validateMkdocsYaml = async (
   }
 
   const parsedMkdocsYml: Record<string, any> = mkdocsYml;
+
   if (
     parsedMkdocsYml.docs_dir &&
     !isChildPath(inputDir, resolvePath(inputDir, parsedMkdocsYml.docs_dir))
@@ -292,6 +343,29 @@ export const validateMkdocsYaml = async (
     );
   }
   return parsedMkdocsYml.docs_dir;
+};
+
+/**
+ * Validates that the docs directory doesn't contain symlinks pointing outside
+ * the input directory. This prevents path traversal attacks where malicious
+ * symlinks could be used to read arbitrary files from the host filesystem.
+ *
+ * @param docsDir - The docs directory to validate (absolute path)
+ * @param inputDir - The root input directory that symlinks must stay within
+ */
+export const validateDocsDirectory = async (
+  docsDir: string,
+  inputDir: string,
+): Promise<void> => {
+  const files = await getFileTreeRecursively(docsDir);
+
+  for (const file of files) {
+    if (!isChildPath(inputDir, file)) {
+      throw new NotAllowedError(
+        `Path ${file} is not allowed to refer to a location outside ${inputDir}`,
+      );
+    }
+  }
 };
 
 /**
@@ -322,8 +396,18 @@ export const patchIndexPreBuild = async ({
     path.join(inputDir, 'readme.md'),
   ];
 
+  if (!isChildPath(inputDir, docsPath)) {
+    throw new NotAllowedError(
+      `Target path ${docsPath} is not allowed to refer to a location outside ${inputDir}`,
+    );
+  }
   await fs.ensureDir(docsPath);
   for (const filePath of fallbacks) {
+    if (!isChildPath(inputDir, filePath)) {
+      throw new NotAllowedError(
+        `Source path ${filePath} is not allowed to refer to a location outside ${inputDir}`,
+      );
+    }
     try {
       await fs.copyFile(filePath, indexMdPath);
       return;
@@ -367,8 +451,9 @@ export const createOrUpdateMetadata = async (
   try {
     json = await fs.readJson(techdocsMetadataPath);
   } catch (err) {
-    assertError(err);
-    const message = `Invalid JSON at ${techdocsMetadataPath} with error ${err.message}`;
+    const message = `Invalid JSON at ${techdocsMetadataPath} with error ${
+      toError(err).message
+    }`;
     logger.error(message);
     throw new Error(message);
   }
@@ -382,9 +467,10 @@ export const createOrUpdateMetadata = async (
       file.replace(`${techdocsMetadataDir}${path.sep}`, ''),
     );
   } catch (err) {
-    assertError(err);
     json.files = [];
-    logger.warn(`Unable to add files list to metadata: ${err.message}`);
+    logger.warn(
+      `Unable to add files list to metadata: ${toError(err).message}`,
+    );
   }
 
   await fs.writeJson(techdocsMetadataPath, json);

@@ -120,7 +120,7 @@ An executable or [package](#package) file with all of the necessary information 
 
 1. A centralized, self-service interface providing developers with all the necessary resources, tools, documentation, and information to effectively build, integrate, deploy, and manage software products within an organization.
 
-2. Backstage is a specific example of a developer portal, designed as a centralized system with a user interface and database to streamline development and maintenance of an organization's software projects. It features a robust [Software Catalog](#software-catalog) that centralizes and organizes access to the organization's services, websites, mobile features, libraries, and other software components. Backstage also includes [Software Templates](#software-templates-aka-scaffolder) that simplify the creation of new projects and components.
+2. Backstage is a specific example of a developer portal, designed as a centralized system with a user interface and database to streamline development and maintenance of an organization's software projects. It features a robust [Software Catalog](#software-catalog) that centralizes and organizes access to the organization's services, websites, mobile features, libraries, and other software components. Backstage also includes [Software Templates](#software-templates) that simplify the creation of new projects and components.
 
 Backstage is both a developer portal and a plugin-based framework for creating new custom developer portals.
 
@@ -186,7 +186,7 @@ This standard is a key component of [OpenID Connect](#openid-connect-aka-oidc). 
 
 Classification of an [entity](#entity) in the Backstage Software Catalog, for example _service_, _database_, or _team_. An element of the [kind|namespace|name triplet](#kind-namespace-name-triplet) that is an important concept for uniqueness.
 
-## Kind|namespace|name triplet
+## Kind|namespace|name triplet {#kind-namespace-name-triplet}
 
 The primary reference for [Software Catalog](#software-catalog) entities. It is human-readable and should be unique across your Backstage instance.
 
@@ -353,7 +353,7 @@ A specific type of dynamic access control associated with a [resource](#resource
 
 ## Scaffolder
 
-Another name for [Software Templates](#software-templates-aka-scaffolder). (The term comes from the use of Software Templates as _scaffolds_ for building new components and projects.)
+Another name for [Software Templates](#software-templates). (The term comes from the use of Software Templates as _scaffolds_ for building new components and projects.)
 
 ## Scope
 
@@ -379,7 +379,7 @@ Existing search technology that [Backstage Search](#search) can take advantage o
 
 The Software Catalog is a core feature of Backstage. See [Backstage Software Catalog](https://backstage.io/docs/next/features/software-catalog/) for an overview, the life of an entity in the catalog, how to configure the catalog, its architecture and high-level design, how to configure and customize it, and its API. The overview describes how the catalog works, how to add components to it, how to find software in it, and more.
 
-## Software Templates (aka Scaffolder)
+## Software Templates (aka Scaffolder) {#software-templates}
 
 1. A "skeleton" software project created and managed in the Backstage Software Templates tool.
 

@@ -1,5 +1,392 @@
 # @backstage/plugin-search-backend
 
+## 2.1.3
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-permission-node@0.11.1
+  - @backstage/plugin-search-backend-node@1.4.5
+
+## 2.1.3-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/plugin-search-backend-node@1.4.5-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/backend-openapi-utils@0.6.10-next.0
+
+## 2.1.2
+
+### Patch Changes
+
+- 303954b: Added action for search backend to query search engine using the actions registry
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/plugin-search-backend-node@1.4.4
+  - @backstage/backend-openapi-utils@0.6.9
+  - @backstage/config@1.3.8
+  - @backstage/plugin-search-common@1.2.24
+
+## 2.1.2-next.1
+
+### Patch Changes
+
+- 303954b: Added action for search backend to query search engine using the actions registry
+
+## 2.1.2-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-openapi-utils@0.6.9-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/plugin-search-backend-node@1.4.4-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-search-common@1.2.24-next.0
+
+## 2.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-search-backend-node@1.4.3
+  - @backstage/backend-openapi-utils@0.6.8
+  - @backstage/plugin-permission-node@0.10.12
+  - @backstage/config@1.3.7
+  - @backstage/plugin-permission-common@0.9.8
+  - @backstage/plugin-search-common@1.2.23
+
+## 2.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-search-backend-node@1.4.3-next.2
+  - @backstage/backend-openapi-utils@0.6.8-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-permission-common@0.9.8-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.2
+  - @backstage/plugin-search-common@1.2.23-next.0
+
+## 2.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-openapi-utils@0.6.8-next.1
+  - @backstage/plugin-permission-node@0.10.12-next.1
+  - @backstage/plugin-search-backend-node@1.4.3-next.1
+
+## 2.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.0
+  - @backstage/plugin-search-backend-node@1.4.3-next.0
+  - @backstage/backend-openapi-utils@0.6.8-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-search-common@1.2.22
+
+## 2.1.0
+
+### Minor Changes
+
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-permission-node@0.10.11
+  - @backstage/backend-openapi-utils@0.6.7
+  - @backstage/plugin-search-backend-node@1.4.2
+
+## 2.1.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/backend-openapi-utils@0.6.7-next.1
+  - @backstage/plugin-permission-node@0.10.11-next.1
+  - @backstage/plugin-search-backend-node@1.4.2-next.1
+
+## 2.1.0-next.1
+
+### Minor Changes
+
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.7-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+  - @backstage/plugin-search-backend-node@1.4.2-next.0
+  - @backstage/plugin-search-common@1.2.22
+
+## 2.0.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/backend-openapi-utils@0.6.7-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+  - @backstage/plugin-search-backend-node@1.4.2-next.0
+  - @backstage/plugin-search-common@1.2.22
+
+## 2.0.12
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.6
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-search-backend-node@1.4.1
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+
+## 2.0.12-next.1
+
+### Patch Changes
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-permission-node@0.10.10-next.0
+  - @backstage/plugin-search-backend-node@1.4.1-next.0
+
+## 2.0.11-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.6-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-search-backend-node@1.4.1-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-search-common@1.2.22-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 2.0.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+
+## 2.0.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-search-backend-node@1.4.0
+
+## 2.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.5-next.0
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-search-backend-node@1.4.0
+  - @backstage/plugin-search-common@1.2.21
+
+## 2.0.9
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.0
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+
+## 2.0.9-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/backend-openapi-utils@0.6.4-next.1
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-search-backend-node@1.4.0-next.1
+  - @backstage/plugin-search-common@1.2.21
+
+## 2.0.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.0-next.0
+  - @backstage/backend-defaults@0.14.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/backend-openapi-utils@0.6.4-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-search-common@1.2.21
+
+## 2.0.8
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-search-backend-node@1.3.17
+  - @backstage/config@1.3.6
+  - @backstage/backend-openapi-utils@0.6.3
+  - @backstage/plugin-permission-node@0.10.6
+  - @backstage/plugin-search-common@1.2.21
+
+## 2.0.8-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/backend-openapi-utils@0.6.3-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+  - @backstage/plugin-search-backend-node@1.3.17-next.1
+
+## 2.0.8-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-search-backend-node@1.3.17-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-openapi-utils@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+  - @backstage/plugin-search-common@1.2.21-next.0
+
+## 2.0.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/config@1.3.5
+  - @backstage/backend-openapi-utils@0.6.2
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-node@0.10.5
+  - @backstage/plugin-search-backend-node@1.3.16
+  - @backstage/plugin-search-common@1.2.20
+
+## 2.0.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+  - @backstage/plugin-search-backend-node@1.3.16-next.0
+  - @backstage/backend-openapi-utils@0.6.2-next.0
+  - @backstage/plugin-search-common@1.2.20-next.0
+
+## 2.0.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/plugin-search-backend-node@1.3.15
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-search-common@1.2.19
+
 ## 2.0.6
 
 ### Patch Changes

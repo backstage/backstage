@@ -20,11 +20,11 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
 import fs from 'fs-extra';
-import * as path from 'path';
-import * as url from 'url';
+import * as path from 'node:path';
+import * as url from 'node:url';
 import { isEmpty } from 'lodash';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -100,7 +100,7 @@ const dynamicPluginsSchemasServiceFactoryWithOptions = (
               config,
               logger,
               // eslint-disable-next-line no-restricted-syntax
-              backstageRoot: findPaths(__dirname).targetRoot,
+              backstageRoot: targetPaths.rootDir,
               preferAlpha: true,
             });
 

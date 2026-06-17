@@ -14,26 +14,48 @@
  * limitations under the License.
  */
 
-import type { GapProps } from '../../props/gap-props';
-import type { SpaceProps } from '../../types';
-import type { GridItemOwnProps, GridOwnProps } from './Grid.props';
+import type { ReactNode, CSSProperties, HTMLAttributes } from 'react';
+import type {
+  Space,
+  SpaceProps,
+  Responsive,
+  Columns,
+  ProviderBg,
+  FlexItemProps,
+} from '../../types';
 
 /** @public */
-export interface GridProps extends SpaceProps {
-  children?: React.ReactNode;
+export type GridOwnProps = {
+  children: ReactNode;
   className?: string;
-  columns?: GridOwnProps['columns'];
-  gap?: GapProps['gap'];
-  style?: React.CSSProperties;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+/** @public */
+export interface GridProps
+  extends SpaceProps,
+    FlexItemProps,
+    GridOwnProps,
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+  columns?: Responsive<Columns>;
+  gap?: Responsive<Space>;
 }
 
 /** @public */
-export interface GridItemProps {
-  children?: React.ReactNode;
+export type GridItemOwnProps = {
+  children: ReactNode;
   className?: string;
-  colSpan?: GridItemOwnProps['colSpan'];
-  colEnd?: GridItemOwnProps['colEnd'];
-  colStart?: GridItemOwnProps['colStart'];
-  rowSpan?: GridItemOwnProps['rowSpan'];
-  style?: React.CSSProperties;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+/** @public */
+export interface GridItemProps
+  extends GridItemOwnProps,
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+  colSpan?: Responsive<Columns>;
+  colEnd?: Responsive<Columns>;
+  colStart?: Responsive<Columns>;
+  rowSpan?: Responsive<Columns>;
 }

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-// TODO: Bring useArgs() back when we update Storybook to 9
-// import { useArgs } from 'storybook/preview-api';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TablePagination } from './TablePagination';
+
+const noop = () => {};
 
 const meta = {
   title: 'Backstage UI/TablePagination',
@@ -25,10 +25,10 @@ const meta = {
   argTypes: {
     offset: { control: 'number' },
     pageSize: { control: 'radio', options: [5, 10, 20, 30, 40, 50] },
-    rowCount: { control: 'number' },
-    showPageSizeOptions: { control: 'boolean', defaultValue: true },
-    setOffset: { action: 'setOffset' },
-    setPageSize: { action: 'setPageSize' },
+    totalCount: { control: 'number' },
+    hasNextPage: { control: 'boolean' },
+    hasPreviousPage: { control: 'boolean' },
+    showPageSizeOptions: { control: 'boolean' },
   },
 } satisfies Meta<typeof TablePagination>;
 
@@ -39,21 +39,70 @@ export const Default: Story = {
   args: {
     offset: 0,
     pageSize: 10,
-    rowCount: 100,
+    totalCount: 100,
+    hasNextPage: true,
+    hasPreviousPage: false,
+    onNextPage: noop,
+    onPreviousPage: noop,
+    onPageSizeChange: noop,
+    showPageSizeOptions: true,
   },
-  render: args => {
-    // const [{}, updateArgs] = useArgs();
+};
 
-    return (
-      <TablePagination
-        {...args}
-        // setOffset={value => {
-        //   updateArgs({ offset: value });
-        // }}
-        // setPageSize={value => {
-        //   updateArgs({ pageSize: value });
-        // }}
-      />
-    );
+export const FirstPage: Story = {
+  args: {
+    ...Default.args,
+  },
+};
+
+export const LastPage: Story = {
+  args: {
+    ...Default.args,
+    offset: 90,
+    hasNextPage: false,
+    hasPreviousPage: true,
+  },
+};
+
+export const MiddlePage: Story = {
+  args: {
+    ...Default.args,
+    offset: 40,
+    hasPreviousPage: true,
+  },
+};
+
+export const WithoutPageSizeOptions: Story = {
+  args: {
+    ...Default.args,
+    showPageSizeOptions: false,
+  },
+};
+
+export const CursorPagination: Story = {
+  args: {
+    ...Default.args,
+    offset: undefined,
+  },
+};
+
+export const CustomLabel: Story = {
+  args: {
+    ...Default.args,
+    offset: 20,
+    hasPreviousPage: true,
+    getLabel: ({ offset, pageSize, totalCount }) => {
+      const page = Math.floor((offset ?? 0) / pageSize) + 1;
+      const totalPages = Math.ceil((totalCount ?? 0) / pageSize);
+      return `Page ${page} of ${totalPages}`;
+    },
+  },
+};
+
+export const EmptyState: Story = {
+  args: {
+    ...Default.args,
+    totalCount: 0,
+    hasNextPage: false,
   },
 };

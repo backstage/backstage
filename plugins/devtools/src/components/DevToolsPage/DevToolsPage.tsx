@@ -16,9 +16,26 @@
 
 import { useOutlet } from 'react-router-dom';
 import { DefaultDevToolsPage } from '../DefaultDevToolsPage';
+import { ReactElement } from 'react';
 
-export const DevToolsPage = () => {
+/**
+  @public
+ */
+export interface DevToolsPageProps {
+  contents?: DevToolsPageContent[];
+}
+
+/**
+  @public
+ */
+export interface DevToolsPageContent {
+  title: string;
+  path: string;
+  children: ReactElement;
+}
+
+export const DevToolsPage = ({ contents }: DevToolsPageProps) => {
   const outlet = useOutlet();
 
-  return <>{outlet || <DefaultDevToolsPage />}</>;
+  return <>{outlet || <DefaultDevToolsPage contents={contents} />}</>;
 };

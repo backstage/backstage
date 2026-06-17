@@ -34,7 +34,7 @@ describe('getUsersForEntityRef', () => {
     await expect(
       resolver.resolveNotificationRecipients({
         entityRefs: ['user:foo', 'user:ignored'],
-        excludeEntityRefs: ['user:ignored'],
+        excludedEntityRefs: ['user:ignored'],
       }),
     ).resolves.toEqual({ userEntityRefs: ['user:foo'] });
     expect(catalog.getEntitiesByRefs).not.toHaveBeenCalled();
@@ -87,7 +87,7 @@ describe('getUsersForEntityRef', () => {
     await expect(
       resolver.resolveNotificationRecipients({
         entityRefs: ['group:default/parent_group'],
-        excludeEntityRefs: ['user:default/ignored'],
+        excludedEntityRefs: ['user:default/ignored'],
       }),
     ).resolves.toEqual({
       userEntityRefs: ['user:default/foo', 'user:default/bar'],
@@ -120,7 +120,7 @@ describe('getUsersForEntityRef', () => {
     await expect(
       resolver.resolveNotificationRecipients({
         entityRefs: ['component:default/test_component'],
-        excludeEntityRefs: [],
+        excludedEntityRefs: [],
       }),
     ).resolves.toEqual({ userEntityRefs: ['user:default/foo'] });
   });
@@ -164,7 +164,7 @@ describe('getUsersForEntityRef', () => {
     await expect(
       resolver.resolveNotificationRecipients({
         entityRefs: ['component:default/test_component'],
-        excludeEntityRefs: [],
+        excludedEntityRefs: [],
       }),
     ).resolves.toEqual({ userEntityRefs: ['user:default/foo'] });
   });
@@ -208,7 +208,7 @@ describe('getUsersForEntityRef', () => {
     await expect(
       resolver.resolveNotificationRecipients({
         entityRefs: ['component:default/test_component'],
-        excludeEntityRefs: ['user:default/foo'],
+        excludedEntityRefs: ['user:default/foo'],
       }),
     ).resolves.toEqual({ userEntityRefs: [] });
   });

@@ -18,8 +18,8 @@ import {
   ParsedLocationAnnotation,
 } from '@backstage/plugin-techdocs-node';
 import * as winston from 'winston';
-import { Writable } from 'stream';
-import { stdout } from 'process';
+import { Writable } from 'node:stream';
+import { stdout } from 'node:process';
 
 export const convertTechDocsRefToLocationAnnotation = (
   techdocsRef: string,

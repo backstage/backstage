@@ -16,20 +16,24 @@
 
 import {
   createFrontendPlugin,
+  coreExtensionData,
   discoveryApiRef,
   fetchApiRef,
   ApiBlueprint,
   PageBlueprint,
-  NavItemBlueprint,
+  SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
 import BuildIcon from '@material-ui/icons/Build';
+import { Content } from '@backstage/core-components';
 import { rootRouteRef } from '../routes';
+import {
+  devToolsConfigReadPermission,
+  devToolsInfoReadPermission,
+} from '@backstage/plugin-devtools-common';
+import { devToolsTaskSchedulerReadPermission } from '@backstage/plugin-devtools-common/alpha';
+import { RequirePermission } from '@backstage/plugin-permission-react';
 
 /** @alpha */
 export const devToolsApi = ApiBlueprint.make({
@@ -46,32 +50,103 @@ export const devToolsApi = ApiBlueprint.make({
 });
 
 /** @alpha */
-export const devToolsPage = PageBlueprint.make({
-  params: {
-    path: '/devtools',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
-    loader: () =>
-      import('../components/DevToolsPage').then(m =>
-        compatWrapper(<m.DevToolsPage />),
-      ),
+export const devToolsPage = PageBlueprint.makeWithOverrides({
+  factory(originalFactory, { inputs }) {
+    const pages = [...inputs.pages].sort((left, right) => {
+      const leftPath = left.get(coreExtensionData.routePath);
+      const rightPath = right.get(coreExtensionData.routePath);
+
+      if (leftPath === 'info' && rightPath !== 'info') {
+        return -1;
+      }
+      if (leftPath !== 'info' && rightPath === 'info') {
+        return 1;
+      }
+
+      return 0;
+    });
+
+    return originalFactory(
+      {
+        path: '/devtools',
+        routeRef: rootRouteRef,
+        title: 'DevTools',
+        icon: <BuildIcon fontSize="inherit" />,
+      },
+      {
+        inputs: {
+          pages,
+        },
+      },
+    );
   },
 });
 
 /** @alpha */
-export const devToolsNavItem = NavItemBlueprint.make({
+export const devToolsInfoPage = SubPageBlueprint.make({
+  name: 'info',
   params: {
-    title: 'DevTools',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
-    icon: BuildIcon,
+    path: 'info',
+    title: 'Info',
+    loader: () =>
+      import('../components/Content').then(m => (
+        <Content>
+          <RequirePermission permission={devToolsInfoReadPermission}>
+            <m.InfoContent />
+          </RequirePermission>
+        </Content>
+      )),
+  },
+});
+
+/** @alpha */
+export const devToolsConfigPage = SubPageBlueprint.make({
+  name: 'config',
+  params: {
+    path: 'config',
+    title: 'Config',
+    loader: () =>
+      import('../components/Content').then(m => (
+        <Content>
+          <RequirePermission permission={devToolsConfigReadPermission}>
+            <m.ConfigContent />
+          </RequirePermission>
+        </Content>
+      )),
+  },
+});
+
+/** @alpha */
+export const devToolsScheduledTasksPage = SubPageBlueprint.make({
+  name: 'scheduled-tasks',
+  params: {
+    path: 'scheduled-tasks',
+    title: 'Scheduled Tasks',
+    loader: () =>
+      import('../components/Content').then(m => (
+        <Content>
+          <RequirePermission permission={devToolsTaskSchedulerReadPermission}>
+            <m.ScheduledTasksContent />
+          </RequirePermission>
+        </Content>
+      )),
   },
 });
 
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'devtools',
+  title: 'DevTools',
+  icon: <BuildIcon fontSize="inherit" />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
-    root: convertLegacyRouteRef(rootRouteRef),
+    root: rootRouteRef,
   },
-  extensions: [devToolsApi, devToolsPage, devToolsNavItem],
+  extensions: [
+    devToolsApi,
+    devToolsPage,
+    devToolsInfoPage,
+    devToolsConfigPage,
+    devToolsScheduledTasksPage,
+  ],
 });

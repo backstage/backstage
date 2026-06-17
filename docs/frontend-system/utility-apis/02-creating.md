@@ -36,6 +36,9 @@ export const workApiRef = createApiRef<WorkApi>({
 
 Both of these are properly exported publicly from the package, so that consumers can reach them.
 
+The frontend system infers the owning plugin for an API from the `ApiRef` id, so
+use the pattern `plugin.<plugin-id>.*` to make ownership explicit. This ensures that other plugins can't mistakenly override your API.
+
 ## Providing an extension through your plugin
 
 The plugin itself now wants to provide this API and its default implementation, in the form of an API extension. Doing so means that when users install the Example plugin, an instance of the Work utility API will also be automatically available in their apps - both to the Example plugin itself, and to others. We do this in the main plugin package, not the `-react` package.
@@ -91,11 +94,11 @@ The extension ID of the work API will be the kind `api:` followed by the plugin 
 Here we will describe how to amend a utility API with the capability of having extension config, which is driven by [your app-config](../../conf/writing.md). You do this by giving an extension config schema to your API extension factory function. Let's refactor the example above to also accept configuration, which will require us to use the [override method of the blueprint](../architecture/23-extension-blueprints.md#creating-an-extension-from-a-blueprint-with-overrides).
 
 ```tsx title="in @internal/plugin-example"
+import { z } from 'zod';
+
 const exampleWorkApi = ApiBlueprint.makeWithOverrides({
-  config: {
-    schema: {
-      goSlow: z => z.boolean().default(false),
-    },
+  configSchema: {
+    goSlow: z.boolean().default(false),
   },
   factory(originalFactory, { config }) {
     return originalFactory({

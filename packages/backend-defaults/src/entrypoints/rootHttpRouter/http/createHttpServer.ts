@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import * as http from 'http';
-import * as https from 'https';
-import { RequestListener } from 'http';
+import * as http from 'node:http';
+import * as https from 'node:https';
+import { RequestListener } from 'node:http';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { HttpServerOptions, ExtendedHttpServer } from './types';
 import { getGeneratedCertificate } from './getGeneratedCertificate';

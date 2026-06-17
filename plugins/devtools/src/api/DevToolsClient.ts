@@ -20,7 +20,11 @@ import {
   DevToolsInfo,
   ExternalDependency,
 } from '@backstage/plugin-devtools-common';
-import { ResponseError } from '@backstage/errors';
+import {
+  ScheduledTasks,
+  TriggerScheduledTask,
+} from '@backstage/plugin-devtools-common/alpha';
+import { ResponseError, NotFoundError, ConflictError } from '@backstage/errors';
 import { DevToolsApi } from './DevToolsApi';
 
 export class DevToolsClient implements DevToolsApi {
@@ -40,6 +44,69 @@ export class DevToolsClient implements DevToolsApi {
 
     const configInfo = await this.get<ConfigInfo | undefined>(urlSegment);
     return configInfo;
+  }
+
+  public async getScheduledTasksByPlugin(
+    plugin: string,
+  ): Promise<ScheduledTasks> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl(plugin)}/`;
+    const url = new URL('.backstage/scheduler/v1/tasks', baseUrl);
+
+    const response = await this.fetchApi.fetch(url.toString());
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    const scheduledTasks = await response.json();
+    return {
+      scheduledTasks: scheduledTasks.tasks,
+    };
+  }
+
+  public async triggerScheduledTask(
+    plugin: string,
+    taskId: string,
+  ): Promise<TriggerScheduledTask> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl(plugin)}/`;
+    const url = new URL(
+      `.backstage/scheduler/v1/tasks/${encodeURIComponent(taskId)}/trigger`,
+      baseUrl,
+    );
+
+    const response = await this.fetchApi.fetch(url.toString(), {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return {};
+  }
+
+  public async cancelScheduledTask(
+    plugin: string,
+    taskId: string,
+  ): Promise<void> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl(plugin)}/`;
+    const url = new URL(
+      `.backstage/scheduler/v1/tasks/${encodeURIComponent(taskId)}/cancel`,
+      baseUrl,
+    );
+
+    const response = await this.fetchApi.fetch(url.toString(), {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new NotFoundError(`Task ${taskId} not found`);
+      } else if (response.status === 409) {
+        throw new ConflictError(`Task ${taskId} is not running`);
+      }
+      throw await ResponseError.fromResponse(response);
+    }
   }
 
   public async getExternalDependencies(): Promise<

@@ -1,0 +1,107 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { linkPropDefs } from './props-definition';
+import {
+  linkUsageSnippet,
+  defaultSnippet,
+  externalLinkSnippet,
+  allVariantsSnippet,
+  allColorsSnippet,
+  weightSnippet,
+  standaloneSnippet,
+} from './snippets';
+import {
+  Default,
+  ExternalLink,
+  AllVariants,
+  AllColors,
+  Weight,
+  Standalone,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { LinkDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  link: 'https://react-aria.adobe.com/Link',
+};
+
+<PageTitle
+  title="Link"
+  description="A styled anchor with typography variants, colors, and weights."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={linkUsageSnippet} />
+
+## API reference
+
+<PropsTable data={linkPropDefs} />
+
+<ReactAriaLink component="Link" href={reactAriaUrls.link} />
+
+## Examples
+
+### External link
+
+Use `target="_blank"` to open links in a new tab.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<ExternalLink />}
+  code={externalLinkSnippet}
+  layout="side-by-side"
+/>
+
+### Variants
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<AllVariants />}
+  code={allVariantsSnippet}
+/>
+
+### Colors
+
+Status colors for contextual links.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<AllColors />}
+  code={allColorsSnippet}
+/>
+
+### Weight
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Weight />}
+  code={weightSnippet}
+  layout="side-by-side"
+/>
+
+### Standalone
+
+Use `standalone` to remove the underline by default. The underline will appear on hover.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Standalone />}
+  code={standaloneSnippet}
+  layout="side-by-side"
+/>
+
+<Theming definition={LinkDefinition} />
+
+<ChangelogComponent component="link" />

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { join as joinPath, sep as pathSep } from 'path';
+import { join as joinPath, sep as pathSep } from 'node:path';
 import fs from 'fs-extra';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';

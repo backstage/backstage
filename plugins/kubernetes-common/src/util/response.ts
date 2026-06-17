@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FetchResponse } from '@backstage/plugin-kubernetes-common';
+import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import { GroupedResponses } from '../types';
 
 /** @public */
@@ -40,6 +40,9 @@ export const groupResponses = (
         case 'configmaps':
           prev.configMaps.push(...next.resources);
           break;
+        case 'secrets':
+          prev.secrets.push(...next.resources);
+          break;
         case 'horizontalpodautoscalers':
           prev.horizontalPodAutoscalers.push(...next.resources);
           break;
@@ -61,6 +64,12 @@ export const groupResponses = (
         case 'daemonsets':
           prev.daemonSets.push(...next.resources);
           break;
+        case 'persistentvolumes':
+          prev.persistentVolumes.push(...next.resources);
+          break;
+        case 'persistentvolumeclaims':
+          prev.persistentVolumeClaims.push(...next.resources);
+          break;
         default:
       }
       return prev;
@@ -71,6 +80,7 @@ export const groupResponses = (
       deployments: [],
       services: [],
       configMaps: [],
+      secrets: [],
       horizontalPodAutoscalers: [],
       ingresses: [],
       jobs: [],
@@ -78,6 +88,8 @@ export const groupResponses = (
       customResources: [],
       statefulsets: [],
       daemonSets: [],
+      persistentVolumes: [],
+      persistentVolumeClaims: [],
     } as GroupedResponses,
   );
 };

@@ -1,5 +1,190 @@
 # @backstage/plugin-auth-react
 
+## 0.1.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/core-plugin-api@1.12.7
+
+## 0.1.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/core-plugin-api@1.12.7-next.0
+
+## 0.1.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+
+## 0.1.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/errors@1.3.1
+  - @backstage/core-plugin-api@1.12.6
+
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+
+## 0.1.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/core-components@0.18.9
+  - @backstage/core-plugin-api@1.12.5
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/core-plugin-api@1.12.5-next.2
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/errors@1.2.7
+
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+
+## 0.1.24
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/core-components@0.18.7
+  - @backstage/core-plugin-api@1.12.3
+
+## 0.1.24-next.1
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+
+## 0.1.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/errors@1.2.7
+
+## 0.1.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5
+
+## 0.1.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.1.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.1.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/errors@1.2.7
+
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/errors@1.2.7
+
+## 0.1.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.1.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+
+## 0.1.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+
 ## 0.1.19
 
 ### Patch Changes

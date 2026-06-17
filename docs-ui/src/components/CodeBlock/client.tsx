@@ -1,9 +1,13 @@
 'use client';
 
 import { CodeBlockProps } from '.';
-import { Text } from '@backstage/ui';
 import styles from './styles.module.css';
 import parse from 'html-react-parser';
+
+// Convert markdown-style backticks to HTML code tags
+function parseMarkdownInlineCode(text: string): string {
+  return text.replace(/`([^`]+)`/g, '<code>$1</code>');
+}
 
 export const CodeBlockClient = ({
   out,
@@ -16,7 +20,7 @@ export const CodeBlockClient = ({
     <div className={styles.codeBlock}>
       {title && (
         <div className={styles.title}>
-          <Text variant="body">{title}</Text>
+          {parse(parseMarkdownInlineCode(title))}
         </div>
       )}
       <div className={styles.code}>{parse(out)}</div>

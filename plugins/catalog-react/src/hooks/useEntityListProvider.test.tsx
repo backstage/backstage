@@ -25,7 +25,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-import { mockApis, TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { useMountEffect } from '@react-hookz/web';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
@@ -42,7 +43,13 @@ import {
 } from '../filters';
 import { createDeferred } from '@backstage/types';
 import { EntityListPagination } from '../types';
-import { EntityListProvider, useEntityList } from './useEntityListProvider';
+import {
+  EntityListContextProps,
+  EntityListProvider,
+  NewEntityListContext,
+  useEntityList,
+} from './useEntityListProvider';
+import { createVersionedValueMap } from '@backstage/version-bridge';
 
 const entities: Entity[] = [
   {
@@ -105,7 +112,7 @@ const createWrapper =
             [identityApiRef, mockIdentityApi],
             [storageApiRef, mockApis.storage()],
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-            [alertApiRef, { post: jest.fn() }],
+            [alertApiRef, mockApis.alert()],
             [translationApiRef, mockApis.translation()],
             [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
           ]}
@@ -146,6 +153,7 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -190,6 +198,7 @@ describe('<EntityListProvider />', () => {
       expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
       expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
   });
@@ -211,6 +220,27 @@ describe('<EntityListProvider />', () => {
     expect(result.current.queryParameters).toEqual({
       kind: 'component',
       type: 'service',
+    });
+  });
+
+  it('resolves query param filter values with large arrays', async () => {
+    const largeArray = Array.from({ length: 50 }, (_, i) => `owner-${i}`);
+    const query = qs.stringify({
+      filters: { kind: 'component', owners: largeArray },
+    });
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({
+        location: `/catalog?${query}`,
+        pagination,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.queryParameters).toBeTruthy();
+    });
+    expect(result.current.queryParameters).toEqual({
+      kind: 'component',
+      owners: largeArray,
     });
   });
 
@@ -264,8 +294,49 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
         filter: { kind: 'api', 'spec.type': ['service'] },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
+  });
+
+  it('does not re-fetch when backend filter params are unchanged', async () => {
+    const deferred = createDeferred<GetEntitiesResponse>();
+    mockCatalogApi.getEntities!.mockReturnValueOnce(deferred);
+
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('component', 'component'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+    });
+
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('component', 'Component'),
+      });
+    });
+    act(() => {
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      });
+    });
+
+    await act(async () => {
+      deferred.resolve({ items: entities });
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
   });
 
   it('returns an error on catalogApi failure', async () => {
@@ -320,6 +391,7 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'user' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -341,6 +413,26 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'group' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
+    });
+  });
+
+  it('re-fetches when refresh is called', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      result.current.refresh?.();
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -370,6 +462,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
         filter: { kind: 'api' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
 
@@ -384,6 +477,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(3, {
         filter: { kind: 'system' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
 
@@ -435,17 +529,19 @@ describe('<EntityListProvider pagination />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).not.toHaveBeenCalledTimes(1);
       expect(result.current.entities.length).toBe(1);
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
         limit,
         orderFields,
+        totalItems: 'exclude',
         fullTextFilter: {
           term: '2',
           fields: [
             'metadata.name',
             'metadata.title',
             'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
           ],
         },
       });
@@ -462,11 +558,11 @@ describe('<EntityListProvider pagination />', () => {
     });
 
     expect(result.current.entities.length).toBe(2);
-    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
       limit,
       orderFields,
+      totalItems: 'exclude',
     });
   });
 
@@ -487,8 +583,50 @@ describe('<EntityListProvider pagination />', () => {
     await waitFor(() => {
       expect(result.current.backendEntities.length).toBe(2);
       expect(result.current.entities.length).toBe(1);
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filter: {
+          kind: 'component',
+          'relations.ownedBy': ownershipEntityRefs,
+        },
+        totalItems: 'exclude',
+      }),
+    );
+  });
+
+  it('applies frontend-only filters without refetching', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.filters.kind?.value).toBe('component');
+    });
+
+    // Record the number of list calls (totalItems: 'exclude') after init
+    const listCallsAfterInit = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.totalItems === 'exclude').length;
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.user?.value).toBe('all');
+      expect(result.current.entities.length).toBe(2);
+    });
+    // EntityUserFilter.all() doesn't change the backend filter, so no
+    // additional list call should fire (count effect fires, but not
+    // the list fetch).
+    const listCallsAfterUpdate = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.totalItems === 'exclude').length;
+    expect(listCallsAfterUpdate).toBe(listCallsAfterInit);
   });
 
   it('resolves query param filter values', async () => {
@@ -518,7 +656,6 @@ describe('<EntityListProvider pagination />', () => {
 
     await waitFor(() => {
       expect(result.current.entities.length).toBe(2);
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
 
     act(() =>
@@ -531,8 +668,17 @@ describe('<EntityListProvider pagination />', () => {
       expect(result.current.entities.length).toBe(1);
     });
 
+    // Verify the list call with the owned filter was made
     await waitFor(() => {
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(2);
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: {
+            kind: 'component',
+            'relations.ownedBy': ownershipEntityRefs,
+          },
+          totalItems: 'exclude',
+        }),
+      );
     });
   });
 
@@ -545,7 +691,6 @@ describe('<EntityListProvider pagination />', () => {
       expect(result.current.backendEntities.length).toBeGreaterThan(0);
     });
     expect(result.current.backendEntities.length).toBe(2);
-    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
 
     await act(async () => {
       result.current.updateFilters({
@@ -555,14 +700,92 @@ describe('<EntityListProvider pagination />', () => {
     });
 
     await waitFor(() => {
-      expect(mockCatalogApi.queryEntities).toHaveBeenNthCalledWith(2, {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: { kind: 'api', 'spec.type': ['service'] },
         limit,
         orderFields,
+        totalItems: 'exclude',
       });
     });
+  });
 
-    expect(result.current.totalItems).toBe(10);
+  it('fetches count separately and does not re-count on cursor navigation', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+
+    // The count query uses limit: 0 (without totalItems: 'exclude')
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({ limit: 0 }),
+      );
+    });
+
+    const countCallsBefore = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.limit === 0).length;
+
+    // Navigate to next page via cursor — should NOT re-run the count
+    act(() => {
+      result.current.pageInfo?.next?.();
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cursor: expect.any(String),
+          totalItems: 'exclude',
+        }),
+      );
+    });
+
+    const countCallsAfter = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.limit === 0).length;
+
+    expect(countCallsAfter).toBe(countCallsBefore);
+  });
+
+  it('re-fetches list and count when refresh is called', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({ limit: 0 }),
+      );
+    });
+
+    const listCallsBefore = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.totalItems === 'exclude').length;
+    const countCallsBefore = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.limit === 0).length;
+
+    act(() => {
+      result.current.refresh?.();
+    });
+
+    await waitFor(() => {
+      const listCallsAfter = (
+        mockCatalogApi.queryEntities as jest.Mock
+      ).mock.calls.filter((c: any) => c[0]?.totalItems === 'exclude').length;
+      const countCallsAfter = (
+        mockCatalogApi.queryEntities as jest.Mock
+      ).mock.calls.filter((c: any) => c[0]?.limit === 0).length;
+      expect(listCallsAfter).toBe(listCallsBefore + 1);
+      expect(countCallsAfter).toBe(countCallsBefore + 1);
+    });
   });
 
   it('returns an error on catalogApi failure', async () => {
@@ -575,6 +798,9 @@ describe('<EntityListProvider pagination />', () => {
     });
     expect(result.current.backendEntities.length).toBe(2);
 
+    // The count effect fires first (consuming one rejection), then the
+    // list call fires. Both must reject for the error to surface.
+    mockCatalogApi.queryEntities!.mockRejectedValueOnce('error');
     mockCatalogApi.queryEntities!.mockRejectedValueOnce('error');
     act(() => {
       result.current.updateFilters({
@@ -626,6 +852,7 @@ describe('<EntityListProvider pagination />', () => {
         expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
           cursor: 'nextCursor',
           limit,
+          totalItems: 'exclude',
         });
       });
     });
@@ -650,6 +877,7 @@ describe('<EntityListProvider pagination />', () => {
         expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
           cursor: 'prevCursor',
           limit,
+          totalItems: 'exclude',
         });
       });
     });
@@ -736,18 +964,20 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).not.toHaveBeenCalledTimes(1);
       expect(result.current.entities.length).toBe(1);
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
         limit,
         offset: 0,
         orderFields,
+        totalItems: 'exclude',
         fullTextFilter: {
           term: '2',
           fields: [
             'metadata.name',
             'metadata.title',
             'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
           ],
         },
       });
@@ -764,12 +994,12 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     });
 
     expect(result.current.entities.length).toBe(2);
-    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
       limit,
       offset: 0,
       orderFields,
+      totalItems: 'exclude',
     });
   });
 
@@ -790,8 +1020,50 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     await waitFor(() => {
       expect(result.current.backendEntities.length).toBe(2);
       expect(result.current.entities.length).toBe(1);
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filter: {
+          kind: 'component',
+          'relations.ownedBy': ownershipEntityRefs,
+        },
+        totalItems: 'exclude',
+      }),
+    );
+  });
+
+  it('applies frontend-only filters without refetching', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.filters.kind?.value).toBe('component');
+    });
+
+    // Record the number of list calls (totalItems: 'exclude') after init
+    const listCallsAfterInit = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.totalItems === 'exclude').length;
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.user?.value).toBe('all');
+      expect(result.current.entities.length).toBe(2);
+    });
+    // EntityUserFilter.all() doesn't change the backend filter, so no
+    // additional list call should fire (count effect fires, but not
+    // the list fetch).
+    const listCallsAfterUpdate = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.totalItems === 'exclude').length;
+    expect(listCallsAfterUpdate).toBe(listCallsAfterInit);
   });
 
   it('resolves query param filter values', async () => {
@@ -821,7 +1093,6 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
 
     await waitFor(() => {
       expect(result.current.entities.length).toBe(2);
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
 
     act(() =>
@@ -834,9 +1105,23 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       expect(result.current.entities.length).toBe(1);
     });
 
+    // Verify the list call with the owned filter was made
     await waitFor(() => {
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(2);
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: {
+            kind: 'component',
+            'relations.ownedBy': ownershipEntityRefs,
+          },
+          totalItems: 'exclude',
+        }),
+      );
     });
+
+    // Record list call count before setting the same filter again
+    const listCallsBefore = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.totalItems === 'exclude').length;
 
     act(() =>
       result.current.updateFilters({
@@ -844,11 +1129,16 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       }),
     );
 
-    await expect(() =>
-      waitFor(() => {
-        expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3);
-      }),
-    ).rejects.toThrow();
+    // Wait for any pending effects to settle
+    await waitFor(() => {
+      expect(result.current.entities.length).toBe(1);
+    });
+
+    // Setting the same filter again should not trigger additional list calls
+    const listCallsAfter = (
+      mockCatalogApi.queryEntities as jest.Mock
+    ).mock.calls.filter((c: any) => c[0]?.totalItems === 'exclude').length;
+    expect(listCallsAfter).toBe(listCallsBefore);
   });
 
   it('fetch when limit change', async () => {
@@ -858,18 +1148,20 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
 
     await waitFor(() => {
       expect(result.current.entities.length).toBe(2);
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
 
     act(() => result.current.setLimit(50));
 
+    // setLimit does not change requestedFilters, so no extra count call.
+    // Only the debounced list call fires.
     await waitFor(() => {
-      expect(result.current.entities.length).toBe(2);
-    });
-
-    await waitFor(() => {
-      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(2);
       expect(result.current.limit).toEqual(50);
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          limit: 50,
+          totalItems: 'exclude',
+        }),
+      );
     });
   });
 
@@ -882,7 +1174,6 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       expect(result.current.backendEntities.length).toBeGreaterThan(0);
     });
     expect(result.current.backendEntities.length).toBe(2);
-    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
 
     act(() => {
       result.current.updateFilters({
@@ -892,11 +1183,12 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     });
 
     await waitFor(() => {
-      expect(mockCatalogApi.queryEntities).toHaveBeenNthCalledWith(2, {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: { kind: 'api', 'spec.type': ['service'] },
         limit,
         offset: 0,
         orderFields,
+        totalItems: 'exclude',
       });
     });
   });
@@ -910,7 +1202,6 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       expect(result.current.backendEntities.length).toBeGreaterThan(0);
     });
     expect(result.current.backendEntities.length).toBe(2);
-    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
 
     act(() => {
       result.current.setOffset!(5);
@@ -918,11 +1209,12 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     });
 
     await waitFor(() => {
-      expect(mockCatalogApi.queryEntities).toHaveBeenNthCalledWith(2, {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
         limit,
         offset: 10,
         orderFields,
+        totalItems: 'exclude',
       });
       expect(result.current.offset).toEqual(10);
     });
@@ -938,6 +1230,9 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     });
     expect(result.current.backendEntities.length).toBe(2);
 
+    // The count effect fires first (consuming one rejection), then the
+    // list call fires. Both must reject for the error to surface.
+    mockCatalogApi.queryEntities!.mockRejectedValueOnce('error');
     mockCatalogApi.queryEntities!.mockRejectedValueOnce('error');
     act(() => {
       result.current.updateFilters({
@@ -993,5 +1288,63 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
         filter: { kind: 'group' },
       }),
     );
+  });
+});
+
+describe('versioned context', () => {
+  it('should work explicitly with new versioned contexts', () => {
+    const value: EntityListContextProps<any> = {
+      filters: {},
+      entities: [],
+      backendEntities: [],
+      updateFilters: jest.fn(),
+      queryParameters: {},
+      loading: true,
+      totalItemsLoading: false,
+      limit: 277,
+      setLimit: jest.fn(),
+      setOffset: jest.fn(),
+      paginationMode: 'none',
+      refresh: jest.fn(),
+    };
+
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: ({ children }) => {
+        const InitialFiltersWrapper = (f: PropsWithChildren<{}>) => {
+          const { updateFilters } = useEntityList();
+          useMountEffect(() => {
+            updateFilters({
+              kind: new EntityKindFilter('component', 'Component'),
+            });
+          });
+          return <>{f.children}</>;
+        };
+
+        return (
+          <MemoryRouter initialEntries={['/catalog']}>
+            <TestApiProvider
+              apis={[
+                [configApiRef, mockApis.config()],
+                [catalogApiRef, mockCatalogApi],
+                [identityApiRef, mockIdentityApi],
+                [storageApiRef, mockApis.storage()],
+                [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+                [alertApiRef, { post: jest.fn() }],
+                [translationApiRef, mockApis.translation()],
+                [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+              ]}
+            >
+              <NewEntityListContext.Provider
+                value={createVersionedValueMap({ 1: value })}
+              >
+                <InitialFiltersWrapper>{children}</InitialFiltersWrapper>
+              </NewEntityListContext.Provider>
+            </TestApiProvider>
+          </MemoryRouter>
+        );
+      },
+    });
+
+    expect(result.current.limit).toBe(277);
   });
 });

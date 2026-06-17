@@ -15,26 +15,31 @@
  */
 import { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
+import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
 import {
   SubRoute,
   useSelectedSubRoute,
+  EntityContentGroupDefinitions,
 } from '@backstage/plugin-catalog-react/alpha';
 
 type EntityTabsProps = {
   routes: SubRoute[];
+  groupDefinitions: EntityContentGroupDefinitions;
+  defaultContentOrder?: 'title' | 'natural';
+  showIcons?: boolean;
 };
 
 export function EntityTabs(props: EntityTabsProps) {
-  const { routes } = props;
+  const { routes, groupDefinitions, defaultContentOrder, showIcons } = props;
 
   const { index, route, element } = useSelectedSubRoute(routes);
 
   const tabs = useMemo(
     () =>
-      routes.map(t => {
-        const { path, title, group } = t;
+      routes.map(r => {
+        const { path, title, group, icon } = r;
         let to = path;
         // Remove trailing /*
         to = to.replace(/\/\*$/, '');
@@ -45,6 +50,7 @@ export function EntityTabs(props: EntityTabsProps) {
           id: path,
           path: to,
           label: title,
+          icon,
         };
       }),
     [routes],
@@ -52,10 +58,16 @@ export function EntityTabs(props: EntityTabsProps) {
 
   return (
     <>
-      <EntityTabsList tabs={tabs} selectedIndex={index} />
+      <EntityTabsList
+        tabs={tabs}
+        selectedIndex={index}
+        showIcons={showIcons}
+        groupDefinitions={groupDefinitions}
+        defaultContentOrder={defaultContentOrder}
+      />
       <EntityTabsPanel>
         <Helmet title={route?.title} />
-        {element}
+        {element ?? <NotFoundErrorPage />}
       </EntityTabsPanel>
     </>
   );

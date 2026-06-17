@@ -19,29 +19,32 @@ import {
   RadioGroup as AriaRadioGroup,
   Radio as AriaRadio,
 } from 'react-aria-components';
-import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
+import { RadioGroupDefinition, RadioDefinition } from './definition';
 
 import type { RadioGroupProps, RadioProps } from './types';
 
-/** @public */
+/**
+ * A group of radio buttons for selecting a single option from a set, with an integrated label, description, and error display.
+ *
+ * @public
+ */
 export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
   (props, ref) => {
+    const { ownProps, restProps } = useDefinition(RadioGroupDefinition, props);
     const {
-      className,
+      classes,
       label,
       secondaryLabel,
       description,
       isRequired,
-      'aria-label': ariaLabel,
-      'aria-labelledby': ariaLabelledBy,
       children,
-      ...rest
-    } = props;
+    } = ownProps;
 
-    const { classNames } = useStyles('RadioGroup');
+    const ariaLabel = restProps['aria-label'];
+    const ariaLabelledBy = restProps['aria-labelledby'];
 
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -56,19 +59,14 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
       secondaryLabel || (isRequired ? 'Required' : null);
 
     return (
-      <AriaRadioGroup
-        className={clsx(classNames.root, className)}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        {...rest}
-        ref={ref}
-      >
+      <AriaRadioGroup className={classes.root} {...restProps} ref={ref}>
         <FieldLabel
           label={label}
           secondaryLabel={secondaryLabelText}
           description={description}
+          descriptionSlot="description"
         />
-        <div className={classNames.content}>{children}</div>
+        <div className={classes.content}>{children}</div>
         <FieldError />
       </AriaRadioGroup>
     );
@@ -77,19 +75,17 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
 
 RadioGroup.displayName = 'RadioGroup';
 
-/** @public */
+/**
+ * A single radio button for use within a RadioGroup.
+ *
+ * @public
+ */
 export const Radio = forwardRef<HTMLLabelElement, RadioProps>((props, ref) => {
-  const { className, ...rest } = props;
-
-  const { classNames } = useStyles('RadioGroup');
+  const { ownProps, restProps } = useDefinition(RadioDefinition, props);
 
   return (
-    <AriaRadio
-      className={clsx(classNames.radio, className)}
-      {...rest}
-      ref={ref}
-    />
+    <AriaRadio className={ownProps.classes.root} {...restProps} ref={ref} />
   );
 });
 
-RadioGroup.displayName = 'RadioGroup';
+Radio.displayName = 'Radio';

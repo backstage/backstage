@@ -18,6 +18,8 @@ export {
   createExtensionTester,
   type ExtensionTester,
   type ExtensionQuery,
+  type ExtensionSnapshotNode,
 } from './createExtensionTester';
 
 export { renderInTestApp, type TestAppOptions } from './renderInTestApp';
+export { renderTestApp, type RenderTestAppOptions } from './renderTestApp';

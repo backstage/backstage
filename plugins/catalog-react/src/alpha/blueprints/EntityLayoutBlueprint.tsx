@@ -19,26 +19,28 @@ import {
   createExtensionDataRef,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
-import { EntityPredicate } from '../predicates';
+import {
+  FilterPredicate,
+  createZodV4FilterPredicateSchema,
+} from '@backstage/filter-predicates';
 import { Entity } from '@backstage/catalog-model';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
-import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 import {
   entityFilterExpressionDataRef,
   entityFilterFunctionDataRef,
   entityLayoutOrderRef,
+  EntityContentGroupDefinitions,
 } from './extensionData';
+import { SubRoute } from '../types';
 import { JSX } from 'react';
 
 /** @alpha */
 export interface EntityLayoutBlueprintProps {
-  groupedRoutes: Array<{
-    path: string;
-    title: string;
-    group: string;
-    children: JSX.Element;
-  }>;
+  groupedRoutes: Array<SubRoute>;
   header: JSX.Element;
+  groupDefinitions: EntityContentGroupDefinitions;
+  defaultContentOrder?: 'title' | 'natural';
+  showNavItemIcons?: boolean;
 }
 
 const entityLayoutComponentDataRef = createExtensionDataRef<
@@ -56,10 +58,8 @@ export const EntityLayoutBlueprint = createExtensionBlueprint({
     order: entityLayoutOrderRef,
     component: entityLayoutComponentDataRef,
   },
-  config: {
-    schema: {
-      filter: z => createEntityPredicateSchema(z).optional(),
-    },
+  configSchema: {
+    filter: createZodV4FilterPredicateSchema().optional(),
   },
   output: [
     entityFilterFunctionDataRef.optional(),
@@ -70,7 +70,7 @@ export const EntityLayoutBlueprint = createExtensionBlueprint({
   *factory(
     params: {
       loader: () => Promise<(props: EntityLayoutBlueprintProps) => JSX.Element>;
-      filter?: EntityPredicate | ((entity: Entity) => boolean);
+      filter?: FilterPredicate | ((entity: Entity) => boolean);
       order?: number;
     },
     { node, config },

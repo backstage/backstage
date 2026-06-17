@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
   }
 
   .bui-border-base {
-    border-color: var(--bui-border);
+    border-color: var(--bui-border-2);
     border-width: 1px;
     border-style: solid;
   }
@@ -34,12 +34,6 @@
   .bui-border-none {
     border-color: transparent;
     border-width: 0;
-  }
-
-  .bui-border-selected {
-    border-color: var(--bui-border-pressed);
-    border-width: 1px;
-    border-style: solid;
   }
 
   .bui-border-warning {

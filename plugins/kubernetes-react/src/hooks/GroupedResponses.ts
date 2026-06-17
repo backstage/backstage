@@ -28,10 +28,13 @@ export const GroupedResponsesContext = createContext<GroupedResponses>({
   daemonSets: [],
   services: [],
   configMaps: [],
+  secrets: [],
   horizontalPodAutoscalers: [],
   ingresses: [],
   jobs: [],
   cronJobs: [],
   customResources: [],
   statefulsets: [],
+  persistentVolumes: [],
+  persistentVolumeClaims: [],
 });

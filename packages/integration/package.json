@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration",
-  "version": "1.18.0",
+  "version": "2.0.3",
   "description": "Helpers for managing integrations towards external systems",
   "backstage": {
     "role": "common-library"
@@ -46,12 +46,13 @@
     "cross-fetch": "^4.0.0",
     "git-url-parse": "^15.0.0",
     "lodash": "^4.17.21",
-    "luxon": "^3.0.0"
+    "luxon": "^3.0.0",
+    "p-throttle": "^4.1.1"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
-    "@types/luxon": "^3.0.0",
     "msw": "^1.0.0"
   },
   "configSchema": "config.d.ts"

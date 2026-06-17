@@ -221,4 +221,40 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Initializes a GitLab repository with a custom project title that differs from the repository slug.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=my-project-slug&owner=group_name',
+            settings: {
+              name: 'My Project Title',
+            },
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Initializes a GitLab repository and adds a specific user as project owner.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            ownerUsername: 'john.doe',
+          },
+        },
+      ],
+    }),
+  },
 ];

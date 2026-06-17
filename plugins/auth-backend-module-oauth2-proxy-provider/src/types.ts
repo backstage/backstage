@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IncomingHttpHeaders } from 'http';
+import { IncomingHttpHeaders } from 'node:http';
 
 /**
  * JWT header extraction result, containing the raw value and the parsed JWT

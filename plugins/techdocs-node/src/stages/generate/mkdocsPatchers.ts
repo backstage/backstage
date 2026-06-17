@@ -16,16 +16,32 @@
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { getRepoUrlFromLocationAnnotation, MKDOCS_SCHEMA } from './helpers';
-import { assertError } from '@backstage/errors';
+import {
+  ALLOWED_MKDOCS_KEYS,
+  getRepoUrlFromLocationAnnotation,
+  MKDOCS_SCHEMA,
+} from './helpers';
+import { toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
+
+const MATERIAL_THEME = 'material';
+
+type MkDocsThemeObject = {
+  name?: string;
+  font?: boolean;
+};
+
+function isThemeObject(theme: unknown): theme is MkDocsThemeObject {
+  return typeof theme === 'object' && theme !== null && !Array.isArray(theme);
+}
 
 type MkDocsObject = {
   plugins?: string[];
   docs_dir: string;
   repo_url?: string;
   edit_uri?: string;
+  theme?: MkDocsThemeObject;
 };
 
 const patchMkdocsFile = async (
@@ -41,9 +57,10 @@ const patchMkdocsFile = async (
   try {
     mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
   } catch (error) {
-    assertError(error);
     logger.warn(
-      `Could not read MkDocs YAML config file ${mkdocsYmlPath} before running the generator: ${error.message}`,
+      `Could not read MkDocs YAML config file ${mkdocsYmlPath} before running the generator: ${
+        toError(error).message
+      }`,
     );
     return;
   }
@@ -58,9 +75,10 @@ const patchMkdocsFile = async (
       throw new Error('Bad YAML format.');
     }
   } catch (error) {
-    assertError(error);
     logger.warn(
-      `Error in parsing YAML at ${mkdocsYmlPath} before running the generator. ${error.message}`,
+      `Error in parsing YAML at ${mkdocsYmlPath} before running the generator. ${
+        toError(error).message
+      }`,
     );
     return;
   }
@@ -76,9 +94,10 @@ const patchMkdocsFile = async (
       );
     }
   } catch (error) {
-    assertError(error);
     logger.warn(
-      `Could not write to ${mkdocsYmlPath} after updating it before running the generator. ${error.message}`,
+      `Could not write to ${mkdocsYmlPath} after updating it before running the generator. ${
+        toError(error).message
+      }`,
     );
     return;
   }
@@ -178,5 +197,107 @@ export const patchMkdocsYmlWithPlugins = async (
     });
 
     return changesMade;
+  });
+};
+
+/**
+ * Disable external font download for the material theme.
+ * @param mkdocsYmlPath - Absolute path to mkdocs.yml or equivalent of a docs site
+ * @param logger
+ */
+export const patchMkdocsYmlWithFontDisabled = async (
+  mkdocsYmlPath: string,
+  logger: LoggerService,
+) => {
+  await patchMkdocsFile(mkdocsYmlPath, logger, mkdocsYml => {
+    if (!('theme' in mkdocsYml)) {
+      // No theme section exists, create it with font disabled
+      mkdocsYml.theme = {
+        name: MATERIAL_THEME,
+        font: false,
+      };
+      return true;
+    }
+
+    const theme = mkdocsYml.theme;
+    if (isThemeObject(theme)) {
+      // Theme section exists. Only modify it when the configured theme is Material
+      if (theme.name === MATERIAL_THEME && !('font' in theme)) {
+        theme.font = false;
+        return true;
+      }
+      if (theme.name !== MATERIAL_THEME) {
+        logger.debug(
+          'mkdocs.yml theme is not "material"; skipping font disabling patch',
+        );
+      }
+    }
+
+    return false;
+  });
+};
+
+/**
+ * Sanitize mkdocs.yml by keeping only allowed configuration keys.
+ *
+ * TechDocs only supports a subset of MkDocs configuration options.
+ * This function reconstructs the config with only allowed keys,
+ * discarding everything else. This approach ensures that any unknown
+ * or potentially dangerous configuration options are not passed to MkDocs.
+ *
+ * The file is always rewritten to ensure YAML features like merge keys
+ * and anchors are resolved into plain configuration.
+ *
+ * @param mkdocsYmlPath - Absolute path to mkdocs.yml or equivalent of a docs site
+ * @param logger - A logger instance
+ * @param additionalAllowedKeys - Optional array of additional keys to allow beyond the default allowlist
+ */
+export const sanitizeMkdocsYml = async (
+  mkdocsYmlPath: string,
+  logger: LoggerService,
+  additionalAllowedKeys?: string[],
+) => {
+  await patchMkdocsFile(mkdocsYmlPath, logger, mkdocsYml => {
+    // Combine default allowed keys with additional keys
+    const allowedKeys = new Set(ALLOWED_MKDOCS_KEYS);
+    if (additionalAllowedKeys && additionalAllowedKeys.length > 0) {
+      logger.warn(
+        `DANGEROUS: Allowing additional MkDocs configuration keys beyond the default safe allowlist: ${additionalAllowedKeys.join(
+          ', ',
+        )}. This may introduce security vulnerabilities. Only use in trusted environments.`,
+      );
+      additionalAllowedKeys.forEach(key => allowedKeys.add(key));
+    }
+
+    // Identify keys that will be removed for logging
+    const removedKeys = Object.keys(mkdocsYml).filter(
+      key => !allowedKeys.has(key),
+    );
+
+    if (removedKeys.length > 0) {
+      logger.warn(
+        `Removed the following unsupported configuration keys from mkdocs.yml: ${removedKeys.join(
+          ', ',
+        )}. ` +
+          `TechDocs only supports a subset of MkDocs configuration options.`,
+      );
+    }
+
+    // Build a new object with only allowed keys
+    const sanitized: Record<string, unknown> = {};
+    for (const key of allowedKeys) {
+      if (key in mkdocsYml) {
+        sanitized[key] = (mkdocsYml as Record<string, unknown>)[key];
+      }
+    }
+
+    // Clear the original object and copy sanitized values back
+    for (const key of Object.keys(mkdocsYml)) {
+      delete (mkdocsYml as Record<string, unknown>)[key];
+    }
+    Object.assign(mkdocsYml, sanitized);
+
+    // Always rewrite to ensure clean YAML output (resolves merge keys, anchors, etc.)
+    return true;
   });
 };

@@ -1,47 +1,182 @@
 # @backstage/backend-dynamic-feature-service
 
-This package adds experimental support for **dynamic backend features (plugins and modules)**, according to the content of the proposal in [RFC 18390](https://github.com/backstage/backstage/issues/18390)
+This package provides experimental support for **dynamic backend features (plugins and modules)** in Backstage, allowing you to load plugins at runtime from a separate directory without including them in your main application's package.json.
 
-## Testing the backend dynamic plugins feature
+## Purpose
 
-In order to test the dynamic backend plugins feature provided by this package, example applications, as well as example dynamic plugins have been provided in provided in the [showcase repository](https://github.com/janus-idp/dynamic-backend-plugins-showcase), and instructions are provided in the [related Readme](https://github.com/janus-idp/dynamic-backend-plugins-showcase#readme).
+This enables:
+
+- **Plugin distribution**: Distributing plugins as standalone artifacts
+- **Runtime flexibility**: Adding or updating plugins without rebuilding the entire application
+- **Isolation**: Keeping plugin-specific dependencies separate from core application dependencies
+- **Modular deployments**: Different environments can load different sets of plugins
+
+**Important:** This service handles loading only - packaging and distribution are separate concerns with multiple approaches available (see Packaging Approaches section).
+
+## Related Packages
+
+- **`@backstage/frontend-dynamic-feature-loader`**: Companion package for loading dynamic frontend plugins. This is **only** supported in the New Frontend System. For more details, checkout the [README](../frontend-dynamic-feature-loader/README.md).
 
 ## How it works
 
-The dynamic plugin manager is a service that scans a configured root directory (`dynamicPlugins.rootDirectory` in the app config) for dynamic plugin packages, and loads them dynamically.
+### Core Architecture
 
-In the `backend` application, it can be enabled by adding the `backend-dynamic-feature-service` as a dependency in the `package.json` and the following lines in the `src/index.ts` file:
+The service consists of several key components:
 
-```ts
-const backend = createBackend();
-+
-+ backend.add(dynamicPluginsFeatureLoader) // provides features loaded by dynamic plugins
-+
+1. **Plugin Scanner**: Scans a configured directory (`dynamicPlugins.rootDirectory`) for plugin packages
+2. **Module Loader**: Loads plugin modules
+3. **Feature Loader**: Integrates loaded plugins into the Backstage backend system
+4. **Frontend Asset Server**: Serves frontend plugin assets (JavaScript, CSS, manifests) over HTTP for dynamic frontend plugins
+
+### Loading Process
+
+1. **Discovery**: The scanner identifies valid plugin packages in the dynamic plugins root directory
+2. **Validation**: Each package is validated for required fields (`main`, `backstage.role`)
+3. **Loading**: The module loader loads the plugin code
+4. **Integration**: Plugins are registered as Backstage features and made available to the backend
+
+## Usage
+
+### Basic Setup
+
+Add the service to your backend application:
+
+1. **Install the package**:
+
+```bash
+yarn add @backstage/backend-dynamic-feature-service
 ```
 
-### About the expected dynamic plugin structure
+2. **Add one line to your backend**:
 
-Due to some limitations of the current backstage codebase, the plugins need to be completed and repackaged to by used as dynamic plugins:
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+import { dynamicPluginsFeatureLoader } from '@backstage/backend-dynamic-feature-service';
 
-1. they must provide a named entry point (`dynamicPluginInstaller`) of a specific type (`BackendDynamicPluginInstaller`), as can be found in the `src/dynamic` sub-folder of each dynamic plugin example provided in the [showcase repository](https://github.com/janus-idp/dynamic-backend-plugins-showcase).
-2. they would have a modified `package.json` file in which dependencies are updated to share `@backstage` dependencies with the main application.
-3. they may embed some dependency whose code is then merged with the plugin code.
+const backend = createBackend();
+// Add this line to enable dynamic plugin support:
+backend.add(dynamicPluginsFeatureLoader);
+// ... your other plugins
+backend.start();
+```
 
-Points 2 and 3 can be done by the `export-dynamic-plugin` CLI command used to perform the repackaging
+### Configuration
 
-### About the `export-dynamic-plugin` command
+Configure the dynamic plugins directory in your `app-config.yaml`:
 
-The `export-dynamic-plugin` CLI command, used the dynamic plugin examples provided in the [showcase repository](https://github.com/janus-idp/dynamic-backend-plugins-showcase), is part of the `@janus-idp/cli` package, and can be used to help packaging the dynamic plugins according to the constraints mentioned above, in order to allow straightforward testing of the dynamic plugins feature.
+```yaml
+dynamicPlugins:
+  rootDirectory: dynamic-plugins-root
+```
 
-However the `backend-dynamic-feature-service` experimental package does **not** depend on the use of this additional CLI command, and in future steps of this backend dynamic plugin work, the use of such a dedicated command might not even be necessary.
+## Dynamic Plugin Packaging
 
-### About the support of the legacy backend system
+### Package Structure Requirements
 
-The backend dynamic plugins feature clearly targets the new backend system.
-However some level of compatibility is provided with current backstage codebase, which still uses the legacy backend system, in order to allow testing and exploring dynamic backend plugin support on the widest range of contexts and installations.
-However, this is temporary and will be removed once the next backend is ready to be used and has completely replaced the old one.
-This is why the API related to the old backend is already marked as deprecated.
+Before exploring specific packaging approaches, it's important to understand what constitutes a valid dynamic plugin package. Dynamic plugins follow the basic rules of Node.js packages, including:
 
-### Future work
+**Package contents:**
 
-The current implementation of the dynamic plugin manager is a first step towards the final implementation of the dynamic features loading, which will be completed / simplified in future steps, as the status of the backstage codebase allows it.
+- **package.json**: Package metadata and configuration
+- **JavaScript files**: Either loadable by the Node.js CommonJS module loaders for backend plugins, or RSPack/webpack assets for frontend plugins
+- **Configuration schema** (optional): JSON schema file (typically `dist/.config-schema.json`) for plugin configuration validation
+- **Private dependencies** (optional): Embedded `node_modules` folder containing private dependencies for backend plugins
+
+**Required package.json fields:**
+
+- `name`: Package identifier
+- `version`: Package version
+- `main`: Entry point to the plugin's JavaScript code
+- `backstage.role`: Must be set to `"backend-plugin"` or `"backend-plugin-module"`
+
+### Packaging Approaches
+
+Since this service only handles loading, you would choose a packaging approach based on your plugin's dependencies:
+
+### 1. Simple npm pack
+
+**When to use:** Plugin only uses dependencies that are already provided by the main Backstage application.
+
+**How to use:**
+
+```bash
+cd my-backstage-plugin
+yarn pack
+# Results in: package.tgz
+
+# Extract to dynamic plugins directory
+mkdir -p /path/to/dynamic-plugins-root/my-backstage-plugin
+tar -xzf package.tgz -C /path/to/dynamic-plugins-root/my-backstage-plugin --strip-components=1
+```
+
+**Why this works:** The plugin can resolve all its dependencies from the main application's `node_modules`.
+
+**Reality:** Most plugins have private dependencies not available in the main application, so this approach has limited applicability.
+
+### 2. Manual packaging with dependency installation
+
+**When to use:** Plugin has private dependencies not available in the main Backstage application.
+
+**How to use:**
+
+```bash
+# Package the plugin
+cd my-backstage-plugin
+yarn pack
+
+# Extract and install dependencies
+mkdir -p /path/to/dynamic-plugins-root/my-backstage-plugin
+tar -xzf package.tgz -C /path/to/dynamic-plugin-root/my-backstage-plugin --strip-components=1
+cp yarn.lock /path/to/dynamic-plugin-root/my-backstage-plugin
+cd /path/to/dynamic-plugins-root/my-backstage-plugin
+yarn install  # Installs all the plugin's dependencies
+```
+
+**Why this works:** Each plugin gets its own `node_modules` directory with all its dependencies.
+
+**Example scenario:** Plugin needs `axios@1.4.0` which isn't available in the main application.
+
+### 3. Dedicated bundling CLI command
+
+**When to use:**
+
+- When you want to produce self-contained dynamic plugin packages that can be directly extracted and loaded without any post-action,
+- especially when your plugin depends on other packages in the same monorepo.
+
+**How to use:**
+
+The [`backstage-cli package bundle`](../cli/cli-report.md) command automates the required steps. Run it from within a plugin directory:
+
+```bash
+cd my-backstage-plugin
+yarn backstage-cli package bundle --output-destination /path/to/dynamic-plugins-root
+# Creates a self-contained bundle in the /path/to/dynamic-plugins-root/my-backstage-plugin/ sub-folder
+```
+
+**Batch bundling:** When bundling many plugins from the same monorepo, use `--pre-packed-dir` to avoid redundant work:
+
+```bash
+# First, build a shared dist workspace
+backstage-cli build-workspace dist-workspace --alwaysPack ...plugin-packages
+
+# Then bundle each plugin using the pre-packed output
+cd plugins/my-backstage-plugin
+backstage-cli package bundle --pre-packed-dir ../../dist-workspace
+```
+
+See the full list of options in the [CLI reference](../cli/cli-report.md).
+
+**What the command does:**
+
+1. **Builds the plugin** — Produces CJS output for the backend plugin and its transitively-required monorepo packages (`*-node` or `*-common`)
+2. **Packs local packages** — Resolves `workspace:^` and `backstage:^` dependencies on both the main plugin package and its transitively-required monorepo packages (`*-node` or `*-common`)
+3. **Installs private dependencies** — Seeds a lockfile from the plugin source monorepo and prunes it, then installs a private `node_modules` containing all required dependencies
+4. **Collects configuration schemas** — Gathers plugin config schemas and writes them to `dist/.config-schema.json` so they are available for validation at load time
+
+**Benefits:**
+
+- Self-contained packages with all necessary dependencies
+- No post-installation steps required (extract and run)
+- Consistent dependency structure across all dynamic plugins
+- Automatic configuration schema collection
+- Production-ready distribution format

@@ -15,24 +15,22 @@
  */
 
 import { forwardRef } from 'react';
-import {
-  FieldError as AriaFieldError,
-  type FieldErrorProps,
-} from 'react-aria-components';
-import clsx from 'clsx';
+import { FieldError as AriaFieldError } from 'react-aria-components';
+import type { FieldErrorProps } from './types';
+import { useDefinition } from '../../hooks/useDefinition';
+import { FieldErrorDefinition } from './definition';
 
-/** @public */
+/**
+ * Displays a validation error message associated with a form field.
+ *
+ * @public
+ */
 export const FieldError = forwardRef<HTMLDivElement, FieldErrorProps>(
   (props: FieldErrorProps, ref) => {
-    const { className, ...rest } = props;
+    const { ownProps, restProps } = useDefinition(FieldErrorDefinition, props);
+    const { classes } = ownProps;
 
-    return (
-      <AriaFieldError
-        className={clsx('bui-FieldError', className)}
-        ref={ref}
-        {...rest}
-      />
-    );
+    return <AriaFieldError className={classes.root} ref={ref} {...restProps} />;
   },
 );
 

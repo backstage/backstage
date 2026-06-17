@@ -9,7 +9,7 @@ on:
     paths:
       - '.github/workflows/verify_chromatic.yml'
       - '.storybook/**'
-      - 'packages/ui/src/**'
+      - 'packages/ui/**'
       - '**/*.stories.tsx'
 
 jobs:
@@ -19,28 +19,29 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [20.x]
+        node-version: [22.x]
 
     name: Chromatic
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 0 # Required to retrieve git history
+          fetch-depth: 10000 # Required to retrieve git history
 
       - name: Use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
+          corepack: true
 
       - name: Install dependencies
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -48,7 +49,8 @@ jobs:
         run: yarn build-storybook:chromatic
 
       - name: Run Chromatic
-        uses: chromaui/action@latest
+        id: chromatic
+        uses: chromaui/action@7aca53e7aa87489020a97f633c1e7e82c12e5973 # latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
@@ -56,3 +58,36 @@ jobs:
           projectToken: chpt_dab72dc0f97d55b
           storybookBuildDir: dist-storybook
           onlyChanged: true
+          externals: |
+            packages/ui/**/*.css
+            packages/ui/css/**
+            packages/ui/src/**/*.css
+
+      - name: Prepare Chromatic Message
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        id: prepareMessage
+        run: |
+          if [ "${{ steps.chromatic.outputs.changeCount }}" = "0" ] || [ -z "${{ steps.chromatic.outputs.changeCount }}" ]; then
+            echo "changesText=No visual changes detected - [**View build in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})" >> $GITHUB_OUTPUT
+          else
+            echo "changesText=**${{ steps.chromatic.outputs.changeCount }}** visual changes are waiting for review - [**Review changes in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Post Chromatic Results to Job Summary
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
+        run: |
+          echo "## 🎨 Visual Testing with Chromatic" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ${{ steps.prepareMessage.outputs.changesText }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **${{ steps.chromatic.outputs.specCount}}** stories for **${{ steps.chromatic.outputs.componentCount}}** Components - [**Preview changes in Storybook**](${{ steps.chromatic.outputs.storybookUrl }})" >> $GITHUB_STEP_SUMMARY
+
+      - name: Post Chromatic Link in PR Comment
+        if: github.event_name == 'pull_request' && steps.chromatic.outputs.url && github.event.pull_request.head.repo.full_name == github.repository
+        uses: mshick/add-pr-comment@8e4927817251f1ff60c001f04568532b38e0b4a0 # v3
+        with:
+          message: |
+            ## 🎨 Visual Testing with Chromatic
+
+            - ${{ steps.prepareMessage.outputs.changesText }}
+            - **${{ steps.chromatic.outputs.specCount}}** stories for **${{ steps.chromatic.outputs.componentCount}}** Components - [**Preview changes in Storybook**](${{ steps.chromatic.outputs.storybookUrl }})
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

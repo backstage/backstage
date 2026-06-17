@@ -147,7 +147,7 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
       expect(fromTokenCredential).toHaveBeenCalledTimes(1);
 
       expect(fromTokenCredential).toHaveBeenCalledWith(
-        new DefaultAzureCredential(),
+        expect.any(MockedDefaultAzureCredential),
       );
     });
 
@@ -170,7 +170,7 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
       expect(fromTokenCredential).toHaveBeenCalledTimes(2);
 
       expect(fromTokenCredential).toHaveBeenCalledWith(
-        new DefaultAzureCredential(),
+        expect.any(MockedDefaultAzureCredential),
       );
     });
 
@@ -443,6 +443,26 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
             expect(credentials).toBeUndefined();
           });
         });
+      });
+    });
+    describe('Azure DevOps (visualstudio.com)', () => {
+      it('Should return a token when a credential with the same organization is specified', async () => {
+        const provider = buildProvider([
+          {
+            host: 'org1.visualstudio.com',
+            credentials: [
+              {
+                personalAccessToken: 'pat',
+              },
+            ],
+          },
+        ]);
+
+        const credentials = provider.getCredentials({
+          url: 'https://org1.visualstudio.com/project1',
+        });
+
+        expect(credentials).toBeDefined();
       });
     });
   });

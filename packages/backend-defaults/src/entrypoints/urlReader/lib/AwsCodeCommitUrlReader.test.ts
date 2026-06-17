@@ -19,7 +19,7 @@ import { JsonObject } from '@backstage/types';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { AwsCodeCommitUrlReader, parseUrl } from './AwsCodeCommitUrlReader';
 import { UrlReaderPredicateTuple } from './types';
-import path from 'path';
+import path from 'node:path';
 import { NotModifiedError } from '@backstage/errors';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -27,7 +27,7 @@ import {
   GetFileCommand,
   GetFolderCommand,
 } from '@aws-sdk/client-codecommit';
-import fs from 'fs';
+import fs from 'node:fs';
 import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import {
   AwsCodeCommitIntegration,

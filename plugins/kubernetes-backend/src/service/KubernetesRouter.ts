@@ -41,6 +41,7 @@ import {
   KubernetesClustersSupplier,
   KubernetesFetcher,
   KubernetesObjectsProvider,
+  KubernetesRouterFactory,
   KubernetesServiceLocator,
 } from '@backstage/plugin-kubernetes-node';
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
@@ -62,6 +63,7 @@ export interface KubernetesEnvironment {
   clusterSupplier: KubernetesClustersSupplier;
   serviceLocator: KubernetesServiceLocator;
   objectsProvider: KubernetesObjectsProvider;
+  customRouter?: KubernetesRouterFactory;
 }
 
 export class KubernetesRouter {
@@ -69,7 +71,11 @@ export class KubernetesRouter {
     return new KubernetesRouter(env);
   }
 
-  constructor(protected readonly env: KubernetesEnvironment) {}
+  protected readonly env: KubernetesEnvironment;
+
+  constructor(env: KubernetesEnvironment) {
+    this.env = env;
+  }
 
   public async getRouter() {
     const {
@@ -82,6 +88,7 @@ export class KubernetesRouter {
       catalog,
       discovery,
       httpAuth,
+      customRouter,
     } = this.env;
 
     logger.info('Initializing Kubernetes backend');
@@ -104,14 +111,31 @@ export class KubernetesRouter {
       authStrategyMap,
     );
 
-    return this.buildRouter(
-      objectsProvider,
-      clusterSupplier,
-      catalog,
-      proxy,
-      permissions,
-      httpAuth,
-      authStrategyMap,
+    return (
+      customRouter?.({
+        getDefault: () =>
+          this.buildDefaultRouter(
+            objectsProvider,
+            clusterSupplier,
+            catalog,
+            proxy,
+            permissions,
+            httpAuth,
+            authStrategyMap,
+          ),
+        objectsProvider,
+        clusterSupplier,
+        authStrategyMap,
+      }) ??
+      this.buildDefaultRouter(
+        objectsProvider,
+        clusterSupplier,
+        catalog,
+        proxy,
+        permissions,
+        httpAuth,
+        authStrategyMap,
+      )
     );
   }
 
@@ -134,7 +158,7 @@ export class KubernetesRouter {
     });
   }
 
-  private buildRouter(
+  private buildDefaultRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
     catalog: CatalogService,

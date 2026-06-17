@@ -28,7 +28,10 @@ import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
 const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 const ALLOWED_LOCATION_TYPES = ['url'];
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `@backstage-community/plugin-catalog-backend-module-codeowners` instead, this will be removed in a future release
+ */
 export class CodeOwnersProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: LoggerService;

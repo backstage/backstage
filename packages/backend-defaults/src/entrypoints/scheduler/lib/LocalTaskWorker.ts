@@ -29,6 +29,7 @@ import { delegateAbortController, serializeError, sleep } from './util';
  */
 export class LocalTaskWorker {
   private abortWait: AbortController | undefined;
+  private taskAbortController: AbortController | undefined;
   #taskState: Exclude<TaskApiTasksResponse['taskState'], null> = {
     status: 'idle',
   };
@@ -36,15 +37,23 @@ export class LocalTaskWorker {
     status: 'idle',
   };
 
+  private readonly taskId: string;
+  private readonly fn: SchedulerServiceTaskFunction;
+  private readonly logger: LoggerService;
+
   constructor(
-    private readonly taskId: string,
-    private readonly fn: SchedulerServiceTaskFunction,
-    private readonly logger: LoggerService,
-  ) {}
+    taskId: string,
+    fn: SchedulerServiceTaskFunction,
+    logger: LoggerService,
+  ) {
+    this.taskId = taskId;
+    this.fn = fn;
+    this.logger = logger;
+  }
 
   start(settings: TaskSettingsV2, options: { signal: AbortSignal }) {
     this.logger.info(
-      `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
+      `Registered scheduled task: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
 
     (async () => {
@@ -68,11 +77,14 @@ export class LocalTaskWorker {
           attemptNum = 0;
           break;
         } catch (e) {
+          if (options.signal.aborted) {
+            break;
+          }
           attemptNum += 1;
           this.logger.warn(
             `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
           );
-          await sleep(Duration.fromObject({ seconds: 1 }));
+          await sleep(Duration.fromObject({ seconds: 1 }), options.signal);
         }
       }
     })();
@@ -83,6 +95,13 @@ export class LocalTaskWorker {
       throw new ConflictError(`Task ${this.taskId} is currently running`);
     }
     this.abortWait.abort();
+  }
+
+  cancel(): void {
+    if (!this.taskAbortController) {
+      throw new ConflictError(`Task ${this.taskId} is not running`);
+    }
+    this.taskAbortController.abort();
   }
 
   taskState(): TaskApiTasksResponse['taskState'] {
@@ -126,10 +145,10 @@ export class LocalTaskWorker {
   ): Promise<void> {
     // Abort the task execution either if the worker is stopped, or if the
     // task timeout is hit
-    const taskAbortController = delegateAbortController(signal);
+    this.taskAbortController = delegateAbortController(signal);
     const timeoutDuration = Duration.fromISO(settings.timeoutAfterDuration);
     const timeoutHandle = setTimeout(() => {
-      taskAbortController.abort();
+      this.taskAbortController?.abort();
     }, timeoutDuration.as('milliseconds'));
 
     this.#taskState = {
@@ -144,7 +163,7 @@ export class LocalTaskWorker {
     };
 
     try {
-      await this.fn(taskAbortController.signal);
+      await this.fn(this.taskAbortController.signal);
       this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
       this.#taskState.lastRunError = undefined;
     } catch (e) {
@@ -154,7 +173,8 @@ export class LocalTaskWorker {
 
     // release resources
     clearTimeout(timeoutHandle);
-    taskAbortController.abort();
+    this.taskAbortController.abort();
+    this.taskAbortController = undefined;
   }
 
   /**

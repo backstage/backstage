@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
+import assert from 'node:assert';
 import { valid as semverValid } from 'semver';
 import { ppath, xfs } from '@yarnpkg/fslib';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';

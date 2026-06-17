@@ -8,7 +8,7 @@ See our [Release & Versioning Policy](https://backstage.io/docs/overview/version
 
 Please report sensitive security issues via Spotify's [bug-bounty program](https://hackerone.com/spotify) rather than GitHub.
 
-If you have questions about a potential vulnerability, please reach out on Discord by asking for a maintainer in the `#support` channel, or via direct message to a maintainer.
+If you have questions about a potential vulnerability, please reach out on Discord by asking for a maintainer in the `#security` channel, or via direct message to a maintainer.
 
 ## Remediation and Notification Process
 

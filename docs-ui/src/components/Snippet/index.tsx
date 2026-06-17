@@ -9,6 +9,7 @@ interface SnippetProps {
   py?: number;
   open?: boolean;
   height?: string | number;
+  layout?: 'stacked' | 'side-by-side';
 }
 
 export const Snippet = ({
@@ -19,6 +20,7 @@ export const Snippet = ({
   py = 2,
   open = false,
   height = 'auto',
+  layout = 'stacked',
 }: SnippetProps) => {
   return (
     <SnippetClient
@@ -29,6 +31,7 @@ export const Snippet = ({
       py={py}
       open={open}
       height={height}
+      layout={layout}
     />
   );
 };

@@ -14,48 +14,49 @@
  * limitations under the License.
  */
 
-import { createElement, forwardRef } from 'react';
-import { gapPropDefs } from '../../props/gap-props';
-import { extractProps } from '../../utils/extractProps';
-import { gridItemPropDefs, gridPropDefs } from './Grid.props';
-import clsx from 'clsx';
+import { forwardRef } from 'react';
 import type { GridItemProps, GridProps } from './types';
-import { spacingPropDefs } from '../../props/spacing.props';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
+import { GridDefinition, GridItemDefinition } from './definition';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const propDefs = {
-    ...gapPropDefs,
-    ...gridPropDefs,
-    ...spacingPropDefs,
-  };
+  const { ownProps, dataAttributes, utilityStyle, restProps } = useDefinition(
+    GridDefinition,
+    { columns: 'auto', gap: '4', ...props },
+  );
+  const { classes, childrenWithBgProvider } = ownProps;
 
-  const { classNames } = useStyles('Grid');
-
-  const { className, style } = extractProps(props, propDefs);
-
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.root, className),
-    style,
-    children: props.children,
-  });
+  return (
+    <div
+      ref={ref}
+      className={classes.root}
+      style={{ ...utilityStyle, ...ownProps.style }}
+      {...dataAttributes}
+      {...restProps}
+    >
+      {childrenWithBgProvider}
+    </div>
+  );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const propDefs = {
-    ...gridItemPropDefs,
-  };
+  const { ownProps, dataAttributes, utilityStyle, restProps } = useDefinition(
+    GridItemDefinition,
+    props,
+  );
+  const { classes, childrenWithBgProvider } = ownProps;
 
-  const { classNames } = useStyles('Grid');
-  const { className, style } = extractProps(props, propDefs);
-
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.item, className),
-    style,
-    children: props.children,
-  });
+  return (
+    <div
+      ref={ref}
+      className={classes.root}
+      style={{ ...utilityStyle, ...ownProps.style }}
+      {...dataAttributes}
+      {...restProps}
+    >
+      {childrenWithBgProvider}
+    </div>
+  );
 });
 
 /** @public */

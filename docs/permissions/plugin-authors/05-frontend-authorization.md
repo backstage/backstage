@@ -79,7 +79,7 @@ function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
 }
 ```
 
-Here we are using the [`usePermission` hook](https://backstage.io/docs/reference/plugin-permission-react.usepermission) to communicate with the permission policy and receive a decision on whether this user is authorized to create a todo list item.
+Here we are using the [`usePermission` hook](https://backstage.io/api/stable/functions/_backstage_plugin-permission-react.usePermission.html) to communicate with the permission policy and receive a decision on whether this user is authorized to create a todo list item.
 
 It's really that simple! Let's change our policy to test the disabled button:
 
@@ -98,7 +98,7 @@ And now you should see that you are not able to create a todo item from the fron
 
 ## Using `RequirePermission`
 
-Providing a disabled state can be a helpful signal to users, but there may be cases where hiding the element is preferred. For such cases, you can use the provided [`RequirePermission` component](https://backstage.io/docs/reference/plugin-permission-react.requirepermission):
+Providing a disabled state can be a helpful signal to users, but there may be cases where hiding the element is preferred. For such cases, you can use the provided [`RequirePermission` component](https://backstage.io/api/stable/functions/_backstage_plugin-permission-react.RequirePermission.html):
 
 ```tsx title="plugins/todo-list/src/components/TodoListPage/TodoListPage.tsx"
 import {

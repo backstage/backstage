@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/backstage/blob/master/plugins/scaffo
 iconUrl: /img/rails-icon.png
 npmPackageName: '@backstage/plugin-scaffolder-backend-module-rails'
 addedDate: '2021-06-24'
+status: active

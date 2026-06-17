@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
+import { OpaqueFrontendPlugin } from '@internal/frontend';
 import {
-  OpaqueExtensionDefinition,
-  OpaqueFrontendPlugin,
-} from '@internal/frontend';
-import { ExtensionDefinition } from './createExtension';
+  ExtensionDefinition,
+  OverridableExtensionDefinition,
+} from './createExtension';
 import {
-  Extension,
   resolveExtensionDefinition,
+  resolveExtensionDefinitions,
 } from './resolveExtensionDefinition';
 import { FeatureFlagConfig } from './types';
 import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
 import { JsonObject } from '@backstage/types';
+import { IconElement } from '../icons/types';
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
+import { ID_PATTERN } from './constants';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * Information about the plugin.
@@ -104,9 +107,26 @@ export interface OverridableFrontendPlugin<
     [id in string]: ExtensionDefinition;
   },
 > extends FrontendPlugin<TRoutes, TExternalRoutes> {
-  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
+  getExtension<TId extends keyof TExtensionMap>(
+    id: TId,
+  ): OverridableExtensionDefinition<TExtensionMap[TId]['T']>;
   withOverrides(options: {
-    extensions: Array<ExtensionDefinition>;
+    extensions?: Array<ExtensionDefinition>;
+
+    /**
+     * Overrides the shared condition that applies to all extensions in the plugin.
+     */
+    if?: FilterPredicate;
+
+    /**
+     * Overrides the display title of the plugin.
+     */
+    title?: string;
+
+    /**
+     * Overrides the display icon of the plugin.
+     */
+    icon?: IconElement;
 
     /**
      * Overrides the original info loaders of the plugin one by one.
@@ -125,7 +145,25 @@ export interface FrontendPlugin<
   },
 > {
   readonly $$type: '@backstage/FrontendPlugin';
+  /**
+   * The plugin ID.
+   */
+  readonly pluginId: string;
+  /**
+   * Deprecated alias for `pluginId`.
+   *
+   * @deprecated Use `pluginId` instead.
+   */
   readonly id: string;
+  /**
+   * The display title of the plugin, used in page headers and navigation.
+   * Falls back to the plugin ID if not provided.
+   */
+  readonly title?: string;
+  /**
+   * The display icon of the plugin, used in page headers and navigation.
+   */
+  readonly icon?: IconElement;
   readonly routes: TRoutes;
   readonly externalRoutes: TExternalRoutes;
 
@@ -135,20 +173,45 @@ export interface FrontendPlugin<
   info(): Promise<FrontendPluginInfo>;
 }
 
-/** @public */
-export interface PluginOptions<
+/**
+ * Options for {@link createFrontendPlugin}.
+ *
+ * @public
+ */
+export interface CreateFrontendPluginOptions<
   TId extends string,
   TRoutes extends { [name in string]: RouteRef | SubRouteRef },
   TExternalRoutes extends { [name in string]: ExternalRouteRef },
   TExtensions extends readonly ExtensionDefinition[],
 > {
   pluginId: TId;
+  /**
+   * The display title of the plugin, used in page headers and navigation.
+   * Falls back to the plugin ID if not provided.
+   */
+  title?: string;
+  /**
+   * The display icon of the plugin, used in page headers and navigation.
+   */
+  icon?: IconElement;
   routes?: TRoutes;
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
   featureFlags?: FeatureFlagConfig[];
+  if?: FilterPredicate;
   info?: FrontendPluginInfoOptions;
 }
+
+/**
+ * @deprecated Use {@link CreateFrontendPluginOptions} instead.
+ * @public
+ */
+export type PluginOptions<
+  TId extends string,
+  TRoutes extends { [name in string]: RouteRef | SubRouteRef },
+  TExternalRoutes extends { [name in string]: ExternalRouteRef },
+  TExtensions extends readonly ExtensionDefinition[],
+> = CreateFrontendPluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>;
 
 /**
  * Creates a new plugin that can be installed in a Backstage app.
@@ -186,7 +249,12 @@ export function createFrontendPlugin<
   TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {},
   TExternalRoutes extends { [name in string]: ExternalRouteRef } = {},
 >(
-  options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
+  options: CreateFrontendPluginOptions<
+    TId,
+    TRoutes,
+    TExternalRoutes,
+    TExtensions
+  >,
 ): OverridableFrontendPlugin<
   TRoutes,
   TExternalRoutes,
@@ -194,42 +262,30 @@ export function createFrontendPlugin<
 > {
   const pluginId = options.pluginId;
 
-  const extensions = new Array<Extension<any>>();
-  const extensionDefinitionsById = new Map<
-    string,
-    typeof OpaqueExtensionDefinition.TInternal
-  >();
+  if (!ID_PATTERN.test(pluginId)) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `WARNING: The pluginId '${pluginId}' will be invalid soon, please change it to match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
+  }
 
-  for (const def of options.extensions ?? []) {
-    const internal = OpaqueExtensionDefinition.toInternal(def);
-    const ext = resolveExtensionDefinition(def, { namespace: pluginId });
-    extensions.push(ext);
-    extensionDefinitionsById.set(ext.id, {
-      ...internal,
+  const { extensions, extensionDefinitionsById } = resolveExtensionDefinitions(
+    options.extensions ?? [],
+    {
       namespace: pluginId,
-    });
-  }
-
-  if (extensions.length !== extensionDefinitionsById.size) {
-    const extensionIds = extensions.map(e => e.id);
-    const duplicates = Array.from(
-      new Set(
-        extensionIds.filter((id, index) => extensionIds.indexOf(id) !== index),
-      ),
-    );
-    // TODO(Rugvip): This could provide some more information about the kind + name of the extensions
-    throw new Error(
-      `Plugin '${pluginId}' provided duplicate extensions: ${duplicates.join(
-        ', ',
-      )}`,
-    );
-  }
+      featureType: 'Plugin',
+    },
+  );
 
   return OpaqueFrontendPlugin.createInstance('v1', {
+    pluginId,
     id: pluginId,
+    title: options.title,
+    icon: options.icon,
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],
+    if: options.if,
     extensions: extensions,
     infoOptions: options.info,
 
@@ -252,8 +308,13 @@ export function createFrontendPlugin<
       return `Plugin{id=${pluginId}}`;
     },
     withOverrides(overrides) {
+      let ifPredicate = options.if;
+      if ('if' in overrides) {
+        ifPredicate = overrides.if;
+      }
+      const overrideExtensions = overrides.extensions ?? [];
       const overriddenExtensionIds = new Set(
-        overrides.extensions.map(
+        overrideExtensions.map(
           e => resolveExtensionDefinition(e, { namespace: pluginId }).id,
         ),
       );
@@ -266,7 +327,10 @@ export function createFrontendPlugin<
       return createFrontendPlugin({
         ...options,
         pluginId,
-        extensions: [...nonOverriddenExtensions, ...overrides.extensions],
+        if: ifPredicate,
+        title: overrides.title ?? options.title,
+        icon: overrides.icon ?? options.icon,
+        extensions: [...nonOverriddenExtensions, ...overrideExtensions],
         info: {
           ...options.info,
           ...overrides.info,

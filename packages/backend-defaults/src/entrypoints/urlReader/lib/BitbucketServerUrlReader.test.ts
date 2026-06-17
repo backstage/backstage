@@ -26,7 +26,7 @@ import {
 import fs from 'fs-extra';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import path from 'path';
+import path from 'node:path';
 import { NotModifiedError } from '@backstage/errors';
 import { BitbucketServerUrlReader } from './BitbucketServerUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
@@ -71,7 +71,7 @@ describe('BitbucketServerUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.tgz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -157,7 +157,7 @@ describe('BitbucketServerUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.tgz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -216,7 +216,7 @@ describe('BitbucketServerUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.tgz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(

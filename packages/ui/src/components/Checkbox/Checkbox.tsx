@@ -14,55 +14,56 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
-import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
-import { Icon } from '../..';
+import { forwardRef, useEffect } from 'react';
+import { Checkbox as RACheckbox } from 'react-aria-components';
 import type { CheckboxProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
-import clsx from 'clsx';
+import { useDefinition } from '../../hooks/useDefinition';
+import { CheckboxDefinition } from './definition';
+import { RiCheckLine, RiSubtractLine } from '@remixicon/react';
 
-/** @public */
-export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
+/**
+ * A form checkbox input with support for indeterminate state and accessible labeling.
+ *
+ * @public
+ */
+export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
   (props, ref) => {
-    const {
-      label,
-      checked,
-      onChange,
-      disabled,
-      required,
-      className,
-      name,
-      value,
-      style,
-    } = props;
-
-    const { classNames } = useStyles('Checkbox');
-
-    const checkboxElement = (
-      <CheckboxPrimitive.Root
-        ref={ref}
-        className={clsx(classNames.root, className)}
-        checked={checked}
-        onCheckedChange={onChange}
-        disabled={disabled}
-        required={required}
-        name={name}
-        value={value}
-        style={style}
-      >
-        <CheckboxPrimitive.Indicator className={classNames.indicator}>
-          <Icon name="check" size={12} />
-        </CheckboxPrimitive.Indicator>
-      </CheckboxPrimitive.Root>
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      CheckboxDefinition,
+      props,
     );
+    const { classes, children } = ownProps;
+    const ariaLabel = restProps['aria-label'];
+    const ariaLabelledBy = restProps['aria-labelledby'];
 
-    return label ? (
-      <label className={classNames.label}>
-        {checkboxElement}
-        {label}
-      </label>
-    ) : (
-      checkboxElement
+    useEffect(() => {
+      if (!children && !ariaLabel && !ariaLabelledBy) {
+        console.warn(
+          'Checkbox requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [children, ariaLabel, ariaLabelledBy]);
+
+    return (
+      <RACheckbox
+        ref={ref}
+        className={classes.root}
+        {...dataAttributes}
+        {...restProps}
+      >
+        {({ isIndeterminate }) => (
+          <>
+            <div className={classes.indicator} aria-hidden="true">
+              {isIndeterminate ? (
+                <RiSubtractLine size={12} />
+              ) : (
+                <RiCheckLine size={12} />
+              )}
+            </div>
+            {children != null && <div>{children}</div>}
+          </>
+        )}
+      </RACheckbox>
     );
   },
 );

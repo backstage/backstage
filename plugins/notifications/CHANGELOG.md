@@ -1,5 +1,356 @@
 # @backstage/plugin-notifications
 
+## 0.5.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-signals-react@0.0.23
+
+## 0.5.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/ui@0.15.1-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-signals-react@0.0.23-next.0
+
+## 0.5.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+
+## 0.5.17
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- e2d9831: Tightened React Aria dependency version ranges from `^` to `~` to prevent unintended minor version upgrades.
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- 03311e3: The notification description used in the notifications table is now a swappable component, so that apps can replace its rendering with a custom implementation.
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/errors@1.3.1
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-notifications-common@0.2.3
+  - @backstage/plugin-signals-react@0.0.22
+
+## 0.5.17-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- 03311e3: The notification description used in the notifications table is now a swappable component, so that apps can replace its rendering with a custom implementation.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+
+## 0.5.17-next.0
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- e2d9831: Tightened React Aria dependency version ranges from `^` to `~` to prevent unintended minor version upgrades.
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/plugin-notifications-common@0.2.3-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/theme@0.7.3
+  - @backstage/plugin-signals-react@0.0.22-next.0
+
+## 0.5.16
+
+### Patch Changes
+
+- 19a2a03: Migrated notifications plugin to use backstage UI
+- d156cf4: Added `title` and `icon` to the new frontend system plugin definition.
+- Updated dependencies
+  - @backstage/ui@0.14.0
+  - @backstage/errors@1.3.0
+  - @backstage/theme@0.7.3
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/core-plugin-api@1.12.5
+  - @backstage/plugin-notifications-common@0.2.2
+  - @backstage/plugin-signals-react@0.0.21
+
+## 0.5.16-next.2
+
+### Patch Changes
+
+- 19a2a03: Migrated notifications plugin to use backstage UI
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/theme@0.7.3-next.0
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+  - @backstage/plugin-notifications-common@0.2.2-next.0
+
+## 0.5.16-next.1
+
+### Patch Changes
+
+- d156cf4: Added `title` and `icon` to the new frontend system plugin definition.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+
+## 0.5.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.2
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-signals-react@0.0.21-next.0
+
+## 0.5.15
+
+### Patch Changes
+
+- aa29b50: New frontend system pages now use the default plugin header together with `HeaderPage` instead of the legacy core page header pattern.
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+- Updated dependencies
+  - @backstage/ui@0.13.0
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/plugin-signals-react@0.0.20
+
+## 0.5.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/core-components@0.18.8-next.1
+
+## 0.5.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.2
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-signals-react@0.0.20-next.0
+
+## 0.5.14
+
+### Patch Changes
+
+- 8005286: Added `renderItem` prop to `NotificationsSidebarItem` component, allowing custom UI rendering while retaining all built-in notification logic (unread count, snackbar, signals, web notifications).
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/core-components@0.18.7
+  - @backstage/theme@0.7.2
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-signals-react@0.0.19
+
+## 0.5.14-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/plugin-signals-react@0.0.19-next.1
+  - @backstage/theme@0.7.2-next.1
+
+## 0.5.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.7.2-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 0.5.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.1
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/plugin-signals-react@0.0.19-next.0
+
+## 0.5.13
+
+### Patch Changes
+
+- 4452d15: Added i18n support.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+
+## 0.5.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.5.12
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- 53347cc: Move long notification descriptions behind `Show more/less` button.
+
+  This improves readability of the notifications list by preventing long descriptions from taking up too much space
+  or rendering very small scrollable areas.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+  - @backstage/plugin-signals-react@0.0.18
+
+## 0.5.12-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-signals-react@0.0.18-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-notifications-common@0.2.0
+
+## 0.5.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-signals-react@0.0.17
+
+## 0.5.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.0-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
+## 0.5.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.0
+  - @backstage/plugin-notifications-common@0.1.2-next.0
+  - @backstage/plugin-signals-react@0.0.17-next.0
+
+## 0.5.10
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/theme@0.7.0
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-notifications-common@0.1.1
+  - @backstage/plugin-signals-react@0.0.16
+
+## 0.5.10-next.3
+
+### Patch Changes
+
+- f5e0963: Removed unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+  - @backstage/frontend-plugin-api@0.12.1-next.2
+
+## 0.5.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
+## 0.5.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-notifications-common@0.1.1-next.0
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-signals-react@0.0.16-next.0
+
+## 0.5.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.1.0
+  - @backstage/plugin-signals-react@0.0.15
+
 ## 0.5.9
 
 ### Patch Changes

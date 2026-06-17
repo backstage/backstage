@@ -1,0 +1,18 @@
+import { {{providerClass}} } from './{{providerClass}}';
+import { mockServices } from '@backstage/backend-test-utils';
+
+describe('{{providerClass}}', () => {
+  it('should read entities from the target', async () => {
+    const logger = mockServices.logger.mock();
+    const provider = new {{providerClass}}({
+      id: 'test',
+      target: 'https://example.com',
+      logger: mockServices.logger.mock(),
+      taskRunner: { run: jest.fn() },
+    });
+
+    const entities = await provider.read({ logger });
+
+    expect(entities).toEqual([]);
+  });
+})

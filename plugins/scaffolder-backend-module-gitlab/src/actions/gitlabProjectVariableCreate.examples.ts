@@ -157,4 +157,24 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Create a GitLab project variable that is masked and hidden.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createVariable',
+          action: 'gitlab:projectVariable:create',
+          name: 'Create GitLab Project Variable',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '999',
+            key: 'SECRET_TOKEN',
+            value: 'super-secret-token',
+            variableType: 'env_var',
+            maskedAndHidden: true,
+          },
+        },
+      ],
+    }),
+  },
 ];

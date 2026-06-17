@@ -1,5 +1,189 @@
 # @backstage/frontend-dynamic-feature-loader
 
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+
+## 0.1.12
+
+### Patch Changes
+
+- 41070b8: Upgraded `@module-federation/enhanced`, `@module-federation/runtime`, and `@module-federation/sdk` from `^0.21.6` to `^2.3.3` to address known vulnerabilities.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/module-federation-common@0.1.4
+  - @backstage/config@1.3.8
+
+## 0.1.12-next.0
+
+### Patch Changes
+
+- 41070b8: Upgraded `@module-federation/enhanced`, `@module-federation/runtime`, and `@module-federation/sdk` from `^0.21.6` to `^2.3.3` to address known vulnerabilities.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/module-federation-common@0.1.4-next.0
+  - @backstage/config@1.3.8-next.0
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/config@1.3.7
+  - @backstage/module-federation-common@0.1.3
+
+## 0.1.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.7-next.0
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+  - @backstage/module-federation-common@0.1.3-next.0
+
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/module-federation-common@0.1.2
+
+## 0.1.10
+
+### Patch Changes
+
+- e8ba654: Update the README of the `frontend-dynamic-feature-loader` package to mention the new `backstage-cli package bundle` command.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/module-federation-common@0.1.2
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/module-federation-common@0.1.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/module-federation-common@0.1.0
+
+## 0.1.9
+
+### Patch Changes
+
+- fdbd404: Updated module federation integration to use `@module-federation/enhanced/runtime` `createInstance` API and the new `loadModuleFederationHostShared` from `@backstage/module-federation-common` for loading shared dependencies. Also added support for passing a pre-created `ModuleFederation` instance via the `moduleFederation.instance` option.
+- fdbd404: Updated `@module-federation/enhanced`, `@module-federation/runtime`, and `@module-federation/sdk` dependencies from `^0.9.0` to `^0.21.6`.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/module-federation-common@0.1.0
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/config@1.3.6
+
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/config@1.3.6
+
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/config@1.3.6
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/config@1.3.5
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/config@1.3.3
+
 ## 0.1.5
 
 ### Patch Changes

@@ -50,8 +50,6 @@ type TaskState = {
 };
 /**
  * TaskManager
- * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
- * @public
  */
 export class TaskManager implements TaskContext {
   private isDone = false;
@@ -86,15 +84,29 @@ export class TaskManager implements TaskContext {
     return agent;
   }
 
+  private readonly task: CurrentClaimedTask;
+  private readonly storage: TaskStore;
+  private readonly signal: AbortSignal;
+  private readonly logger: LoggerService;
+  private readonly workspaceService: WorkspaceService;
+  private readonly auth?: AuthService;
+
   // Runs heartbeat internally
   private constructor(
-    private readonly task: CurrentClaimedTask,
-    private readonly storage: TaskStore,
-    private readonly signal: AbortSignal,
-    private readonly logger: LoggerService,
-    private readonly workspaceService: WorkspaceService,
-    private readonly auth?: AuthService,
-  ) {}
+    task: CurrentClaimedTask,
+    storage: TaskStore,
+    signal: AbortSignal,
+    logger: LoggerService,
+    workspaceService: WorkspaceService,
+    auth?: AuthService,
+  ) {
+    this.task = task;
+    this.storage = storage;
+    this.signal = signal;
+    this.logger = logger;
+    this.workspaceService = workspaceService;
+    this.auth = auth;
+  }
 
   get taskId() {
     return this.task.taskId;
@@ -251,17 +263,31 @@ export interface CurrentClaimedTask {
 }
 
 export class StorageTaskBroker implements TaskBroker {
+  private readonly storage: TaskStore;
+  private readonly logger: LoggerService;
+  private readonly config?: Config;
+  private readonly auth?: AuthService;
+  private readonly additionalWorkspaceProviders?: Record<
+    string,
+    WorkspaceProvider
+  >;
+  private readonly auditor?: AuditorService;
+
   constructor(
-    private readonly storage: TaskStore,
-    private readonly logger: LoggerService,
-    private readonly config?: Config,
-    private readonly auth?: AuthService,
-    private readonly additionalWorkspaceProviders?: Record<
-      string,
-      WorkspaceProvider
-    >,
-    private readonly auditor?: AuditorService,
-  ) {}
+    storage: TaskStore,
+    logger: LoggerService,
+    config?: Config,
+    auth?: AuthService,
+    additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
+    auditor?: AuditorService,
+  ) {
+    this.storage = storage;
+    this.logger = logger;
+    this.config = config;
+    this.auth = auth;
+    this.additionalWorkspaceProviders = additionalWorkspaceProviders;
+    this.auditor = auditor;
+  }
 
   async list(options?: {
     createdBy?: string;
@@ -488,7 +514,7 @@ export class StorageTaskBroker implements TaskBroker {
     });
   }
 
-  async retry?(options: {
+  async retry(options: {
     secrets?: TaskSecrets;
     taskId: string;
   }): Promise<void> {

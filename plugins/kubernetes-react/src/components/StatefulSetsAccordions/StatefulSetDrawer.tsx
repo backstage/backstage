@@ -21,6 +21,8 @@ import { renderCondition } from '../../utils/pod';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Chip from '@material-ui/core/Chip';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 export const StatefulSetDrawer = ({
   statefulset,
@@ -29,6 +31,7 @@ export const StatefulSetDrawer = ({
   statefulset: V1StatefulSet;
   expanded?: boolean;
 }) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const namespace = statefulset.metadata?.namespace;
   return (
     <KubernetesStructuredMetadataTableDrawer
@@ -72,7 +75,7 @@ export const StatefulSetDrawer = ({
         </Grid>
         {namespace && (
           <Grid item>
-            <Chip size="small" label={`namespace: ${namespace}`} />
+            <Chip size="small" label={`${t('namespace.label')} ${namespace}`} />
           </Grid>
         )}
       </Grid>

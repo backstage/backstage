@@ -14,42 +14,50 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
 import { Link as RALink } from 'react-aria-components';
 import type { ButtonLinkProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
+import { ButtonLinkDefinition } from './definition';
+import { getNodeText } from '../../analytics/getNodeText';
 
-/** @public */
+/**
+ * A button-styled anchor element for navigation, supporting optional start and end icon slots and analytics event tracking.
+ *
+ * @public
+ */
 export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
-    const {
-      size = 'small',
-      variant = 'primary',
-      iconStart,
-      iconEnd,
-      children,
-      className,
-      ...rest
-    } = props;
+    const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
+      ButtonLinkDefinition,
+      props,
+    );
+    const { classes, iconStart, iconEnd, children } = ownProps;
 
-    const { classNames, dataAttributes } = useStyles('Button', {
-      size,
-      variant,
-    });
-
-    const { classNames: classNamesButtonLink } = useStyles('ButtonLink');
+    const handlePress: typeof restProps.onPress = e => {
+      restProps.onPress?.(e);
+      const text =
+        restProps['aria-label'] ??
+        getNodeText(children) ??
+        String(restProps.href ?? '');
+      analytics.captureEvent('click', text, {
+        attributes: { to: String(restProps.href ?? '') },
+      });
+    };
 
     return (
       <RALink
-        className={clsx(classNames.root, classNamesButtonLink.root, className)}
+        className={classes.root}
         ref={ref}
         {...dataAttributes}
-        {...rest}
+        {...restProps}
+        onPress={handlePress}
       >
-        {iconStart}
-        {children}
-        {iconEnd}
+        <span className={classes.content}>
+          {iconStart}
+          {children}
+          {iconEnd}
+        </span>
       </RALink>
     );
   },

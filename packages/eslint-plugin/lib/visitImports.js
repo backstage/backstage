@@ -16,7 +16,7 @@
 
 // @ts-check
 
-const { builtinModules } = require('module');
+const { builtinModules } = require('node:module');
 const getPackages = require('./getPackages');
 
 /**
@@ -111,7 +111,7 @@ function getImportInfo(node) {
   return {
     path: pathNode.value,
     node: pathNode,
-    kind: anyNode.importKind ?? 'value',
+    kind: anyNode.importKind ?? anyNode.exportKind ?? 'value',
   };
 }
 

@@ -59,6 +59,11 @@ export interface Config {
              * (Optional) TaskScheduleDefinition for the discovery.
              */
             schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+            /**
+             * (Optional) Number of results to fetch per page from Bitbucket API. Default to 100.
+             * @visibility frontend
+             */
+            pagelen?: number;
           }
         | {
             [name: string]: {
@@ -92,6 +97,11 @@ export interface Config {
                * (Optional) TaskScheduleDefinition for the discovery.
                */
               schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+              /**
+               * (Optional) Number of results to fetch per page from Bitbucket API. Default to 100.
+               * @visibility frontend
+               */
+              pagelen?: number;
             };
           };
     };

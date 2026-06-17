@@ -1,5 +1,353 @@
 # @backstage/plugin-techdocs-node
 
+## 1.15.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+
+## 1.15.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 1.15.0
+
+### Minor Changes
+
+- 5ef8d16: Add support for disabling external font downloads via app-config option `techdocs.generator.mkdocs.disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- 6ce8462: Fixed bug causing `--legacyCopyReadmeMdToIndexMd` option to fail if docs directory is not present
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/integration-aws-node@0.2.0
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/integration@2.0.2
+  - @backstage/config@1.3.8
+  - @backstage/plugin-search-common@1.2.24
+
+## 1.15.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.9.1-next.1
+
+## 1.15.0-next.1
+
+### Minor Changes
+
+- 5ef8d16: Add support for disabling external font downloads via app-config option `techdocs.generator.mkdocs.disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- 6ce8462: Fixed bug causing `--legacyCopyReadmeMdToIndexMd` option to fail if docs directory is not present
+- Updated dependencies
+  - @backstage/integration@2.0.2-next.1
+
+## 1.14.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/integration-aws-node@0.1.22-next.0
+  - @backstage/plugin-search-common@1.2.24-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.14.5
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/integration@2.0.1
+  - @backstage/config@1.3.7
+  - @backstage/integration-aws-node@0.1.21
+  - @backstage/plugin-search-common@1.2.23
+
+## 1.14.5-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/integration-aws-node@0.1.21-next.0
+  - @backstage/plugin-search-common@1.2.23-next.0
+
+## 1.14.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+
+## 1.14.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@2.0.0
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.14.4
+
+### Patch Changes
+
+- cb7c6b1: Added `techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys` configuration option to explicitly bypass MkDocs configuration key restrictions. This enables support for additional MkDocs configuration keys beyond the default safe allow list, such as the `hooks` key which some MkDocs plugins require.
+- e96f6d9: Removed `INHERIT` from the `ALLOWED_MKDOCS_KEYS` set to address a security concern with MkDocs configuration inheritance.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/integration@2.0.0
+  - @backstage/catalog-model@1.7.7
+
+## 1.14.4-next.2
+
+### Patch Changes
+
+- e96f6d9: Removed `INHERIT` from the `ALLOWED_MKDOCS_KEYS` set to address a security concern with MkDocs configuration inheritance.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+
+## 1.14.3-next.1
+
+### Patch Changes
+
+- cb7c6b1: Added `techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys` configuration option to explicitly bypass MkDocs configuration key restrictions. This enables support for additional MkDocs configuration keys beyond the default safe allow list, such as the `hooks` key which some MkDocs plugins require.
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.14.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.14.2
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 3c455d4: Some security fixes
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-search-common@1.2.22
+
+## 1.14.2-next.1
+
+### Patch Changes
+
+- 3c455d4: Some security fixes
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 1.14.1-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.20-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-search-common@1.2.22-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.14.0
+
+### Minor Changes
+
+- 63c459c: **BREAKING:** It's now possible to use the credentials from the `integrations.awsS3` config to authenticate with AWS S3. The new priority is:
+
+  1. `aws.accounts`
+  2. `techdocs.publisher.awsS3.credentials`
+  3. `integrations.awsS3`
+  4. Default credential chain
+
+  In case of multiple `integrations.awsS3` are present, the target integration is determined by the `accessKeyId` in `techdocs.publisher.awsS3.credentials` if provided. Otherwise, the default credential chain is used.
+
+  This means that depending on your setup, this feature may break your existing setup.
+  In general:
+
+  - if you are configuring `aws.accounts`, no action is required
+  - if you are configuring `techdocs.publisher.awsS3.credentials`, no action is required
+  - if you are configuring multiple integrations under `integrations.awsS3`, no action is required
+  - if you are configuring a single integration under `integrations.awsS3`, make sure that the integration has access to the bucket you are using for TechDocs
+
+### Patch Changes
+
+- f0951aa: Updated the `defaultDockerImage` to reflect the latest TechDocs Container version of v1.2.8
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+
+## 1.13.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
+## 1.13.10
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 703f8c0: There was an issue in the uploading of large size files to the AWS S3. We have modified the logic by adding retry along with multipart uploading functionality.
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+
+## 1.13.10-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 703f8c0: There was an issue in the uploading of large size files to the AWS S3. We have modified the logic by adding retry along with multipart uploading functionality.
+- Updated dependencies
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/plugin-search-common@1.2.21
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.13.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-search-common@1.2.21
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.13.9
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/plugin-search-common@1.2.21
+
+## 1.13.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 1.13.9-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/integration-aws-node@0.1.19-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-search-common@1.2.21-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.13.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/integration-aws-node@0.1.18
+  - @backstage/plugin-search-common@1.2.20
+
+## 1.13.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/integration-aws-node@0.1.18-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-search-common@1.2.20-next.0
+
+## 1.13.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.17
+  - @backstage/plugin-search-common@1.2.19
+  - @backstage/plugin-techdocs-common@0.1.1
+
 ## 1.13.7
 
 ### Patch Changes

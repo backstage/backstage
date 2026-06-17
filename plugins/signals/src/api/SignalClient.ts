@@ -16,7 +16,6 @@
 import { SignalApi, SignalSubscriber } from '@backstage/plugin-signals-react';
 import { JsonObject } from '@backstage/types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-import { v4 as uuid } from 'uuid';
 
 type Subscription = {
   channel: string;
@@ -55,18 +54,28 @@ export class SignalClient implements SignalApi {
     );
   }
 
+  private identity: IdentityApi;
+  private discoveryApi: DiscoveryApi;
+  private connectTimeout: number;
+  private reconnectTimeout: number;
+
   private constructor(
-    private identity: IdentityApi,
-    private discoveryApi: DiscoveryApi,
-    private connectTimeout: number,
-    private reconnectTimeout: number,
-  ) {}
+    identity: IdentityApi,
+    discoveryApi: DiscoveryApi,
+    connectTimeout: number,
+    reconnectTimeout: number,
+  ) {
+    this.identity = identity;
+    this.discoveryApi = discoveryApi;
+    this.connectTimeout = connectTimeout;
+    this.reconnectTimeout = reconnectTimeout;
+  }
 
   subscribe<TMessage extends JsonObject = JsonObject>(
     channel: string,
     onMessage: (message: TMessage) => void,
   ): SignalSubscriber {
-    const subscriptionId = uuid();
+    const subscriptionId = globalThis.crypto.randomUUID();
     const exists = [...this.subscriptions.values()].find(
       sub => sub.channel === channel,
     );
@@ -166,7 +175,10 @@ export class SignalClient implements SignalApi {
     };
 
     this.ws.onerror = () => {
-      this.reconnect();
+      if (this.ws) {
+        this.ws.close();
+      }
+      this.ws = null;
     };
 
     this.ws.onclose = (ev: CloseEvent) => {

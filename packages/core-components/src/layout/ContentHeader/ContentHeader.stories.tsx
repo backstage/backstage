@@ -20,6 +20,7 @@ import { ContentHeader } from '../ContentHeader';
 export default {
   title: 'Layout/ContentHeader',
   component: ContentHeader,
+  tags: ['!manifest'],
 };
 
 type ContentHeaderProps = {

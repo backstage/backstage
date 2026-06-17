@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApiProvider } from '@backstage/core-app-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { GroupListPicker } from '../GroupListPicker';
 import { GroupEntity } from '@backstage/catalog-model';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const mockGroups: GroupEntity[] = [
@@ -64,7 +63,9 @@ const apis = TestApiRegistry.from([catalogApiRef, mockCatalogApi]);
 
 describe('<GroupListPicker />', () => {
   it('can choose a group', async () => {
-    const { getByText, getByTestId } = render(
+    const user = userEvent.setup();
+
+    const { findByText, getByTestId } = await renderInTestApp(
       <ApiProvider apis={apis}>
         <GroupListPicker
           placeholder="Search"
@@ -74,14 +75,13 @@ describe('<GroupListPicker />', () => {
       </ApiProvider>,
     );
 
-    await userEvent.click(getByTestId('group-list-picker-button'));
-    const input = getByTestId('group-list-picker-input').querySelector('input');
-    await userEvent.type(input as HTMLElement, 'GR');
+    await user.click(getByTestId('group-list-picker-button'));
 
-    await waitFor(async () => {
-      expect(getByText('Group A')).toBeInTheDocument();
-      await userEvent.click(getByText('Group A'));
-      expect(getByText('Group A')).toBeInTheDocument();
-    });
+    const input = getByTestId('group-list-picker-input').querySelector('input');
+    await user.type(input as HTMLElement, 'GR');
+
+    await user.click(await findByText('Group A'));
+
+    await expect(findByText('Group A')).resolves.toBeInTheDocument();
   });
 });

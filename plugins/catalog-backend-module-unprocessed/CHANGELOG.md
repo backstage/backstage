@@ -1,5 +1,274 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.6.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-auth-node@0.7.2
+  - @backstage/plugin-catalog-node@2.2.2
+
+## 0.6.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.6.12
+
+### Patch Changes
+
+- fa06df6: Added permission authorization checks to the unprocessed entities read endpoints for pending and failed entities.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/plugin-auth-node@0.7.1
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.16
+
+## 0.6.12-next.1
+
+### Patch Changes
+
+- fa06df6: Added permission authorization checks to the unprocessed entities read endpoints for pending and failed entities.
+- Updated dependencies
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.16-next.1
+
+## 0.6.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.15-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+
+## 0.6.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-auth-node@0.7.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.14
+  - @backstage/plugin-permission-common@0.9.8
+
+## 0.6.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-auth-node@0.7.0-next.2
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.14-next.0
+  - @backstage/plugin-permission-common@0.9.8-next.0
+
+## 0.6.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-auth-node@0.7.0-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+
+## 0.6.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.13
+  - @backstage/plugin-permission-common@0.9.7
+
+## 0.6.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-catalog-node@2.1.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/catalog-model@1.7.7
+  - @backstage/plugin-auth-node@0.6.14
+
+## 0.6.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+
+## 0.6.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-auth-node@0.6.14-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.13
+  - @backstage/plugin-permission-common@0.9.6
+
+## 0.6.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.13
+
+## 0.6.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-auth-node@0.6.13-next.1
+
+## 0.6.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.13-next.0
+
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.12
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 0.6.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.12-next.0
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.6.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.12-next.0
+
+## 0.6.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.11
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.6.6
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.11
+
+## 0.6.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.11-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 0.6.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-auth-node@0.6.8
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.10
+  - @backstage/plugin-permission-common@0.9.2
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.10-next.0
+
 ## 0.6.4
 
 ### Patch Changes

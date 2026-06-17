@@ -20,6 +20,8 @@ import { IconComponent } from '@backstage/core-plugin-api';
 
 export function EntityIcon({
   icon,
+  width,
+  height,
   ...props
 }: {
   icon: IconComponent | undefined;
@@ -30,5 +32,12 @@ export function EntityIcon({
   className?: string;
 }) {
   const Icon = (icon as OverridableComponent<SvgIconTypeMap>) ?? SvgIcon;
-  return <Icon {...props} />;
+  return (
+    <Icon
+      style={{ width, height, fontSize: height }}
+      width={width}
+      height={height}
+      {...props}
+    />
+  );
 }

@@ -251,6 +251,46 @@ browser when viewing that user.
 This annotation can be used on a [User entity](descriptor-format.md#kind-user)
 to note that it originated from that user on GitHub.
 
+### github.com/user-id
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    github.com/user-id: '123456'
+```
+
+The value of this annotation is the numeric user ID that identifies a user on
+[GitHub](https://github.com) (either the public one, or a private GitHub
+Enterprise installation) that is related to this entity. Unlike the username,
+which can be changed by the user, the user ID is immutable.
+
+This annotation can be used on a [User entity](descriptor-format.md#kind-user)
+to note that it originated from that user on GitHub. It enables the
+`userIdMatchingUserEntityAnnotation` sign-in resolver to match users by their
+GitHub user ID during authentication.
+
+### gitlab.com/user-id
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    gitlab.com/user-id: '123456'
+```
+
+The value of this annotation is the numeric user ID that identifies a user on
+[GitLab](https://gitlab.com) (either the public one, or a private GitLab
+installation) that is related to this entity. For self-hosted GitLab instances,
+the annotation key will be `{integration-host}/user-id` where
+`{integration-host}` is the hostname of your GitLab instance. Unlike the
+username, which can be changed, the user ID is immutable.
+
+This annotation can be used on a [User entity](descriptor-format.md#kind-user)
+to note that it originated from that user on GitLab. It enables the
+`userIdMatchingUserEntityAnnotation` sign-in resolver to match users by their
+GitLab user ID during authentication.
+
 ### gocd.org/pipelines
 
 ```yaml
@@ -422,7 +462,7 @@ migrating away from them.
 ### backstage.io/github-actions-id
 
 This annotation was used for a while to enable the GitHub Actions feature. This
-is now instead using the [github.com/project-slug](#github-com-project-slug)
+is now instead using the [github.com/project-slug](#githubcomproject-slug)
 annotation, with the same value format.
 
 ### backstage.io/definition-at-location

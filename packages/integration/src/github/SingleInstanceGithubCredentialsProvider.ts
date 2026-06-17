@@ -100,6 +100,7 @@ class GithubAppManager {
   private readonly baseAuthConfig: { appId: number; privateKey: string };
   private readonly cache = new Cache();
   private readonly allowedInstallationOwners: string[] | undefined; // undefined allows all installations
+  public readonly publicAccess: boolean;
 
   constructor(config: GithubAppConfig, baseUrl?: string) {
     this.allowedInstallationOwners = config.allowedInstallationOwners?.map(
@@ -116,12 +117,24 @@ class GithubAppManager {
       authStrategy: createAppAuth,
       auth: this.baseAuthConfig,
     });
+    this.publicAccess = config.publicAccess ?? false;
   }
 
   async getInstallationCredentials(
-    owner: string,
+    owner?: string,
     repo?: string,
   ): Promise<{ accessToken: string | undefined }> {
+    // No owner means a bare host URL (e.g. https://github.com) — return an
+    // app-level JWT rather than an installation token.
+    if (!owner) {
+      const auth = createAppAuth({
+        appId: this.baseAuthConfig.appId,
+        privateKey: this.baseAuthConfig.privateKey,
+      });
+      const { token } = await auth({ type: 'app' });
+      return { accessToken: token };
+    }
+
     if (this.allowedInstallationOwners) {
       if (
         !this.allowedInstallationOwners?.includes(
@@ -170,6 +183,30 @@ class GithubAppManager {
     });
   }
 
+  async getPublicInstallationToken(): Promise<{ accessToken: string }> {
+    const [installation] = await this.getInstallations();
+
+    if (!installation) {
+      throw new Error(`No installation found for public app`);
+    }
+
+    return this.cache.getOrCreateToken(
+      `public:${installation.id}`,
+      undefined,
+      async () => {
+        const result = await this.appClient.apps.createInstallationAccessToken({
+          installation_id: installation.id,
+          headers: HEADERS,
+        });
+
+        return {
+          token: result.data.token,
+          expiresAt: DateTime.fromISO(result.data.expires_at),
+        };
+      },
+    );
+  }
+
   getInstallations(): Promise<
     RestEndpointMethodTypes['apps']['listInstallations']['response']['data']
   > {
@@ -185,12 +222,14 @@ class GithubAppManager {
         inst.account.login?.toLocaleLowerCase('en-US') ===
           owner.toLocaleLowerCase('en-US'),
     );
+
     if (installation) {
       return {
         installationId: installation.id,
         suspended: Boolean(installation.suspended_by),
       };
     }
+
     const notFoundError = new Error(
       `No app installation found for ${owner} in ${this.baseAuthConfig.appId}`,
     );
@@ -228,7 +267,10 @@ export class GithubAppCredentialsMux {
     return installs.flat();
   }
 
-  async getAppToken(owner: string, repo?: string): Promise<string | undefined> {
+  async getAppToken(
+    owner?: string,
+    repo?: string,
+  ): Promise<string | undefined> {
     if (this.apps.length === 0) {
       return undefined;
     }
@@ -245,8 +287,24 @@ export class GithubAppCredentialsMux {
     const result = results.find(
       resultItem => resultItem.credentials?.accessToken,
     );
+
     if (result) {
       return result.credentials!.accessToken;
+    }
+
+    // If there was no token returned, then let's find a public access app and use an installation to get a token.
+    const publicAccessApp = this.apps.find(app => app.publicAccess);
+    if (publicAccessApp) {
+      const publicResult = await publicAccessApp
+        .getPublicInstallationToken()
+        .then(
+          credentials => ({ credentials, error: undefined }),
+          error => ({ credentials: undefined, error }),
+        );
+
+      if (publicResult.credentials?.accessToken) {
+        return publicResult.credentials.accessToken;
+      }
     }
 
     const errors = results.map(r => r.error);
@@ -279,10 +337,16 @@ export class SingleInstanceGithubCredentialsProvider
     );
   };
 
+  private readonly githubAppCredentialsMux: GithubAppCredentialsMux;
+  private readonly token?: string;
+
   private constructor(
-    private readonly githubAppCredentialsMux: GithubAppCredentialsMux,
-    private readonly token?: string,
-  ) {}
+    githubAppCredentialsMux: GithubAppCredentialsMux,
+    token?: string,
+  ) {
+    this.githubAppCredentialsMux = githubAppCredentialsMux;
+    this.token = token;
+  }
 
   /**
    * Returns {@link GithubCredentials} for a given URL.

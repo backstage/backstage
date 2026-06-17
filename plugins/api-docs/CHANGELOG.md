@@ -1,5 +1,470 @@
 # @backstage/plugin-api-docs
 
+## 0.14.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.6
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-permission-react@0.5.2
+
+## 0.14.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/ui@0.15.1-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-catalog@2.0.6-next.1
+  - @backstage/plugin-catalog-react@3.0.1-next.1
+  - @backstage/plugin-permission-react@0.5.2-next.0
+
+## 0.14.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.0.1-next.0
+  - @backstage/plugin-catalog@2.0.6-next.0
+  - @backstage/core-components@0.18.11-next.0
+
+## 0.14.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- 44d77e9: Removed separate nav item extensions. Sidebar entries are now provided via `title` and `icon` on each plugin's page extension.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/plugin-catalog@2.0.5
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-catalog-react@3.0.0
+  - @backstage/plugin-catalog-common@1.1.10
+  - @backstage/plugin-permission-react@0.5.1
+
+## 0.14.1-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+  - @backstage/plugin-catalog-react@2.1.5-next.1
+
+## 0.14.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/plugin-catalog-react@2.1.5-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/plugin-catalog@2.0.5-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/plugin-catalog-common@1.1.10-next.0
+  - @backstage/plugin-permission-react@0.5.1-next.0
+
+## 0.14.0
+
+### Minor Changes
+
+- b871d4e: Use Entity Presentation API for entity display in api-docs plugin
+
+### Patch Changes
+
+- da17844: Update readme to add instructions for custom api base URL
+- Updated dependencies
+  - @backstage/ui@0.14.0
+  - @backstage/plugin-catalog@2.0.2
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-react@2.1.2
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/plugin-permission-react@0.5.0
+  - @backstage/core-plugin-api@1.12.5
+  - @backstage/plugin-catalog-common@1.1.9
+
+## 0.13.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/plugin-catalog@2.0.2-next.2
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+  - @backstage/plugin-catalog-common@1.1.9-next.0
+  - @backstage/plugin-permission-react@0.4.42-next.1
+
+## 0.13.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+  - @backstage/plugin-catalog@2.0.2-next.1
+
+## 0.13.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.2-next.0
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/plugin-catalog-react@2.1.1-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-react@0.4.42-next.0
+
+## 0.13.5
+
+### Patch Changes
+
+- 9c9d425: Fixed invisible text in parameter input fields when using dark mode in OpenAPI definition pages
+- 538c985: Updated installation documentation to use feature discovery as the default.
+- 30e08df: Added default entity content groups for the API docs entity content tabs. The API definition tab defaults to the `documentation` group and the APIs tab defaults to the `development` group.
+- c548a0f: Migrated entity table cards (`ConsumedApisCard`, `ProvidedApisCard`, `HasApisCard`, `ConsumingComponentsCard`, `ProvidingComponentsCard`) to use BUI when no legacy props are passed. The old `variant`, `columns`, and `tableOptions` props are deprecated but still supported — passing any of them triggers the legacy MUI-based rendering. The new `columnConfig` prop accepts `EntityColumnConfig[]` for BUI-based rendering.
+- aa29b50: New frontend system pages now use the default plugin header together with `HeaderPage` instead of the legacy core page header pattern.
+- 3f36ce1: Updated alpha plugin icons to follow the new frontend icon sizing rules when rendered in plugin and navigation surfaces.
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+- ca277ef: Updated dependency `graphiql` to `3.9.0` to address security vulnerability in `markdown-it` package.
+  Updated dependency `@graphiql/react` to `0.29.0` to match the version used by `graphiql`.
+  Moved dependency `graphql-config` to `devDependencies` as it is needed only for types.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.0
+  - @backstage/ui@0.13.0
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/plugin-catalog@2.0.0
+  - @backstage/plugin-permission-react@0.4.41
+  - @backstage/catalog-model@1.7.7
+
+## 0.13.5-next.2
+
+### Patch Changes
+
+- ca277ef: Updated dependency `graphiql` to `3.9.0` to address security vulnerability in `markdown-it` package.
+  Updated dependency `@graphiql/react` to `0.29.0` to match the version used by `graphiql`.
+  Moved dependency `graphql-config` to `devDependencies` as it is needed only for types.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/core-components@0.18.8-next.1
+  - @backstage/plugin-catalog@2.0.0-next.2
+
+## 0.13.5-next.1
+
+### Patch Changes
+
+- 30e08df: Added default entity content groups for the API docs entity content tabs. The API definition tab defaults to the `documentation` group and the APIs tab defaults to the `development` group.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.34.0-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
+## 0.13.5-next.0
+
+### Patch Changes
+
+- 9c9d425: Fixed invisible text in parameter input fields when using dark mode in OpenAPI definition pages
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/plugin-catalog@1.33.1-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
+## 0.13.4
+
+### Patch Changes
+
+- ac9bead: Added `@backstage/frontend-test-utils` dev dependency.
+- 7455dae: Use node prefix on native imports
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 491a06c: Add the ability to show icons for the tabs on the entity page (new frontend)
+- 4183614: Updated usage of deprecated APIs in the new frontend system.
+- 018ca87: Added `title` and `icon` to the plugin definition for the new frontend system.
+- 629c3ec: Add `tableOptions` and `title` to Components cards of APIs
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/plugin-catalog@1.33.0
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-permission-react@0.4.40
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 0.13.4-next.2
+
+### Patch Changes
+
+- ac9bead: Added `@backstage/frontend-test-utils` dev dependency.
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 491a06c: Add the ability to show icons for the tabs on the entity page (new frontend)
+- 4183614: Updated usage of deprecated APIs in the new frontend system.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/plugin-catalog@1.33.0-next.2
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/plugin-permission-react@0.4.40-next.1
+
+## 0.13.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/plugin-catalog@1.33.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 0.13.4-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-catalog@1.32.3-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+  - @backstage/plugin-permission-react@0.4.40-next.0
+
+## 0.13.3
+
+### Patch Changes
+
+- 0216090: Updated dependency `@types/swagger-ui-react` to `^5.0.0`.
+- abeba2b: Fix types with new bumped dependency
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/plugin-catalog@1.32.2
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+
+## 0.13.3-next.2
+
+### Patch Changes
+
+- 0216090: Updated dependency `@types/swagger-ui-react` to `^5.0.0`.
+- abeba2b: Fix types with new bumped dependency
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.2-next.2
+
+## 0.13.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/plugin-catalog@1.32.2-next.1
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+
+## 0.13.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.2-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.13.2
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.1
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/plugin-permission-react@0.4.39
+
+## 0.13.2-next.1
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.1-next.1
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.2
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-react@0.4.39-next.0
+
+## 0.13.2-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-react@1.21.4-next.0
+  - @backstage/plugin-catalog@1.32.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-permission-react@0.4.39-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.13.1
+
+### Patch Changes
+
+- 7c281a5: Add i18n support for Raw tab title and an error message
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/plugin-catalog@1.32.0
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-permission-react@0.4.38
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.13.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.0-next.1
+  - @backstage/plugin-catalog-react@1.21.3-next.1
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+  - @backstage/core-compat-api@0.5.4-next.0
+
+## 0.13.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.38-next.0
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/plugin-catalog@1.31.5-next.0
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+
+## 0.13.0
+
+### Minor Changes
+
+- b8a381e: Remove explicit dependency on `isomorphic-form-data`.
+
+  This explicit dependency was added to address [an issue](https://github.com/swagger-api/swagger-ui/issues/7436) in the
+  dependency `swagger-ui-react`. That [issue has since been resolved](https://github.com/swagger-api/swagger-ui/issues/7436#issuecomment-889792304),
+  and `isomorphic-form-data` no longer needs to be declared.
+
+  Additionally, this changeset updates the `swagger-ui-react` dependency to version `5.19.0` or higher, which includes
+  [compatibility](https://github.com/swagger-api/swagger-ui?tab=readme-ov-file#compatibility) with the latest versions of
+  the OpenAPI specification.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/plugin-catalog@1.31.4
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-permission-react@0.4.37
+
+## 0.13.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-permission-react@0.4.37-next.0
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/plugin-catalog@1.31.4-next.1
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+
+## 0.13.0-next.0
+
+### Minor Changes
+
+- b8a381e: Remove explicit dependency on `isomorphic-form-data`.
+
+  This explicit dependency was added to address [an issue](https://github.com/swagger-api/swagger-ui/issues/7436) in the
+  dependency `swagger-ui-react`. That [issue has since been resolved](https://github.com/swagger-api/swagger-ui/issues/7436#issuecomment-889792304),
+  and `isomorphic-form-data` no longer needs to be declared.
+
+  Additionally, this changeset updates the `swagger-ui-react` dependency to version `5.19.0` or higher, which includes
+  [compatibility](https://github.com/swagger-api/swagger-ui?tab=readme-ov-file#compatibility) with the latest versions of
+  the OpenAPI specification.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/plugin-catalog@1.31.4-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+
 ## 0.12.11
 
 ### Patch Changes

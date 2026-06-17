@@ -35,12 +35,12 @@ import {
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
-  assertError,
+  toError,
   AuthenticationError,
   NotFoundError,
   NotModifiedError,
 } from '@backstage/errors';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { parseLastModified } from './util';
 import parseGitUrl from 'git-url-parse';
 
@@ -62,12 +62,20 @@ export class GiteaUrlReader implements UrlReaderService {
       });
   };
 
+  private readonly integration: GiteaIntegration;
+  private readonly deps: {
+    treeResponseFactory: ReadTreeResponseFactory;
+  };
+
   constructor(
-    private readonly integration: GiteaIntegration,
-    private readonly deps: {
+    integration: GiteaIntegration,
+    deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
-  ) {}
+  ) {
+    this.integration = integration;
+    this.deps = deps;
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -181,8 +189,8 @@ export class GiteaUrlReader implements UrlReaderService {
         ],
         etag: data.etag ?? '',
       };
-    } catch (error) {
-      assertError(error);
+    } catch (e) {
+      const error = toError(e);
       if (error.name === 'NotFoundError') {
         return {
           files: [],

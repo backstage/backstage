@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 
 /**
  * Handles the running of containers.
