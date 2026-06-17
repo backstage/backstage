@@ -504,41 +504,45 @@ export type EntityContextMenuClassKey = 'button';
 
 // @public (undocumented)
 export const EntityDependencyOfComponentsCard: (
-  props: DependencyOfComponentsCardProps,
+  props:
+    | DependencyOfComponentsCardProps
+    | DependencyOfComponentsCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityDependsOnComponentsCard: (
-  props: DependsOnComponentsCardProps,
+  props: DependsOnComponentsCardProps | DependsOnComponentsCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityDependsOnResourcesCard: (
-  props: DependsOnResourcesCardProps,
+  props: DependsOnResourcesCardProps | DependsOnResourcesCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityHasComponentsCard: (
-  props: HasComponentsCardProps,
+  props: HasComponentsCardProps | HasComponentsCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityHasResourcesCard: (
-  props: HasResourcesCardProps,
+  props: HasResourcesCardProps | HasResourcesCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityHasSubcomponentsCard: (
-  props: HasSubcomponentsCardProps,
+  props: HasSubcomponentsCardProps | HasSubcomponentsCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityHasSubdomainsCard: (
-  props: HasSubdomainsCardProps,
+  props: HasSubdomainsCardProps | HasSubdomainsCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
-export const EntityHasSystemsCard: (props: HasSystemsCardProps) => JSX.Element;
+export const EntityHasSystemsCard: (
+  props: HasSystemsCardProps | HasSystemsCardLegacyProps,
+) => JSX.Element;
 
 // @public (undocumented)
 export const EntityLabelsCard: (props: EntityLabelsCardProps) => JSX_2.Element;
