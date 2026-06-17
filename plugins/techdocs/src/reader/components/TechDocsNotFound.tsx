@@ -18,7 +18,6 @@ import { useEffect } from 'react';
 import { useApp, useAnalytics } from '@backstage/core-plugin-api';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 import { useLocation } from 'react-router-dom';
-import { techdocsTranslationRef } from '../../translation';
 
 export const TechDocsNotFound = () => {
   const app = useApp();
