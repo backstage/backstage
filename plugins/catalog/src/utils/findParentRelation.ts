@@ -19,7 +19,7 @@ import { EntityRelation } from '@backstage/catalog-model';
 export function findParentRelation(
   entityRelations: EntityRelation[] = [],
   relationTypes: string[] = [],
-) {
+): EntityRelation | null {
   for (const type of relationTypes) {
     const foundRelation = entityRelations.find(
       relation => relation.type === type,

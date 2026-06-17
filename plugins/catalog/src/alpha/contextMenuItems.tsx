@@ -89,9 +89,15 @@ export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
           () => setSearchParams({}),
           [setSearchParams],
         );
+        // The portal is rendered as soon as the menu item is contributed, which
+        // can happen before the entity has finished loading. Don't render the
+        // dialog until the entity is available to avoid passing `undefined`.
+        if (!entity) {
+          return null;
+        }
         return (
           <InspectEntityDialog
-            entity={entity!}
+            entity={entity}
             initialTab={
               (selectedInspectEntityDialogTab as ComponentProps<
                 typeof InspectEntityDialog

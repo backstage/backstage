@@ -33,9 +33,10 @@ export function headerProps(
     }`,
     headerType: (() => {
       let t = kind.toLocaleLowerCase('en-US');
-      if (entity && entity.spec && 'type' in entity.spec) {
+      const specType = entity?.spec?.type;
+      if (typeof specType === 'string' && specType.length > 0) {
         t += ' — ';
-        t += (entity.spec as { type: string }).type.toLocaleLowerCase('en-US');
+        t += specType.toLocaleLowerCase('en-US');
       }
       return t;
     })(),

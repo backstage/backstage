@@ -62,14 +62,13 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
       <Tooltip title={t('entityContextMenu.moreButtonTitle')} arrow>
         <IconButton
           aria-label={t('entityContextMenu.moreButtonAriaLabel')}
-          aria-controls="long-menu"
           aria-haspopup="true"
-          aria-expanded={!!anchorEl}
-          role="button"
+          aria-expanded={Boolean(anchorEl)}
+          aria-controls={anchorEl ? 'entity-context-menu' : undefined}
           onClick={onOpen}
           data-testid="menu-button"
           className={classes.button}
-          id="long-menu"
+          id="entity-context-menu-button"
         >
           <MoreVert />
         </IconButton>
@@ -80,12 +79,15 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
         anchorEl={anchorEl}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        aria-labelledby="long-menu"
         PaperProps={{
           style: { minWidth: 200 },
         }}
       >
-        <MenuList autoFocusItem={Boolean(anchorEl)}>
+        <MenuList
+          id="entity-context-menu"
+          autoFocusItem={Boolean(anchorEl)}
+          aria-labelledby="entity-context-menu-button"
+        >
           <EntityContextMenuProvider onMenuClose={onClose}>
             {contextMenuItems}
           </EntityContextMenuProvider>
