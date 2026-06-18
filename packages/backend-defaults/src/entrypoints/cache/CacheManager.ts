@@ -26,6 +26,9 @@ import {
   CacheManagerOptions,
   ttlToMilliseconds,
   CacheStoreOptions,
+  CacheStoreConnection,
+  CacheStoreConfiguration,
+  RedisCacheStoreConfiguration,
   RedisCacheStoreOptions,
   InfinispanClientBehaviorOptions,
   InfinispanServerConfig,
@@ -38,7 +41,7 @@ import {
   InfinispanClientCacheInterface,
   InfinispanKeyvStore,
 } from './providers/infinispan/InfinispanKeyvStore';
-import type { KeyvRedisOptions } from '@keyv/redis';
+import type { KeyvRedisOptions, RedisClusterOptions } from '@keyv/redis';
 import type KeyvRedisClass from '@keyv/redis';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
@@ -65,7 +68,7 @@ export class CacheManager {
 
   private readonly logger?: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
-  private readonly connection: string;
+  private readonly connection: CacheStoreConnection;
   private readonly errorHandler: CacheManagerOptions['onError'];
   private readonly defaultTtl?: number;
   private readonly storeOptions?: CacheStoreOptions;
@@ -86,8 +89,7 @@ export class CacheManager {
     // with an in-memory cache client.
     const store = config.getOptionalString('backend.cache.store') || 'memory';
     const defaultTtlConfig = config.getOptional('backend.cache.defaultTtl');
-    const connectionString =
-      config.getOptionalString('backend.cache.connection') || '';
+    const connection = CacheManager.parseConnection(config);
     const logger = options.logger?.child({
       type: 'cacheManager',
     });
@@ -110,16 +112,41 @@ export class CacheManager {
     }
 
     // Read store-specific options from config
-    const storeOptions = CacheManager.parseStoreOptions(store, config, logger);
+    const storeOptions = CacheManager.parseStoreOptions(
+      store,
+      connection,
+      config,
+      logger,
+    );
 
     return new CacheManager(
       store,
-      connectionString,
+      connection,
       options.onError,
       logger,
       defaultTtl,
       storeOptions,
     );
+  }
+
+  /**
+   * Parse the connection config, which can be either a plain URL string
+   * or an object with connection options (e.g. `{ url, pingInterval }`)
+   * passed through to the underlying store client.
+   *
+   * @param config - The configuration service
+   * @return The parsed connection config, either a string or an object depending on how it was configured
+   */
+  private static parseConnection(
+    config: RootConfigService,
+  ): CacheStoreConnection {
+    const raw = config.getOptional('backend.cache.connection');
+
+    if (typeof raw === 'object' && raw !== null) {
+      return raw as Record<string, unknown>;
+    }
+
+    return config.getOptionalString('backend.cache.connection') ?? '';
   }
 
   /**
@@ -132,6 +159,7 @@ export class CacheManager {
    */
   private static parseStoreOptions(
     store: string,
+    connection: CacheStoreConnection,
     config: RootConfigService,
     logger?: LoggerService,
   ): CacheStoreOptions | undefined {
@@ -143,17 +171,22 @@ export class CacheManager {
       );
     }
 
+    const parseOptions: CacheStoreConfiguration = {
+      storeConfigPath,
+      config,
+      logger,
+    };
+
     switch (store) {
       case 'redis':
-        return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+        return CacheManager.parseRedisOptions({
+          ...parseOptions,
+          connection,
+        });
       case 'valkey':
-        return CacheManager.parseValkeyOptions(storeConfigPath, config, logger);
+        return CacheManager.parseValkeyOptions(parseOptions);
       case 'infinispan':
-        return InfinispanOptionsMapper.parseInfinispanOptions(
-          storeConfigPath,
-          config,
-          logger,
-        );
+        return InfinispanOptionsMapper.parseInfinispanOptions(parseOptions);
       default:
         return undefined;
     }
@@ -162,11 +195,12 @@ export class CacheManager {
   /**
    * Parse Redis-specific options from configuration.
    */
-  private static parseRedisOptions(
-    storeConfigPath: string,
-    config: RootConfigService,
-    logger?: LoggerService,
-  ): RedisCacheStoreOptions {
+  private static parseRedisOptions({
+    storeConfigPath,
+    connection,
+    config,
+    logger,
+  }: RedisCacheStoreConfiguration): RedisCacheStoreOptions {
     const redisOptions: RedisCacheStoreOptions = {
       type: 'redis',
     };
@@ -185,19 +219,6 @@ export class CacheManager {
       ),
     };
 
-    const pingIntervalConfig = redisConfig.getOptional('client.pingInterval');
-    if (pingIntervalConfig !== undefined) {
-      if (typeof pingIntervalConfig === 'number') {
-        redisOptions.pingInterval = pingIntervalConfig;
-      } else {
-        redisOptions.pingInterval = durationToMilliseconds(
-          readDurationFromConfig(redisConfig, {
-            key: 'client.pingInterval',
-          }),
-        );
-      }
-    }
-
     if (redisConfig.has('cluster')) {
       const clusterConfig = redisConfig.getConfig('cluster');
 
@@ -208,9 +229,18 @@ export class CacheManager {
         return redisOptions;
       }
 
+      // When connection is an object, merge its properties into cluster
+      // defaults so every node inherits those options (e.g. pingInterval).
+      let defaults: RedisClusterOptions['defaults'] =
+        clusterConfig.getOptional('defaults');
+
+      if (typeof connection === 'object') {
+        defaults = { ...defaults, ...connection };
+      }
+
       redisOptions.cluster = {
         rootNodes: clusterConfig.get('rootNodes'),
-        defaults: clusterConfig.getOptional('defaults'),
+        defaults,
         minimizeConnections: clusterConfig.getOptionalBoolean(
           'minimizeConnections',
         ),
@@ -227,11 +257,11 @@ export class CacheManager {
   /**
    * Parse Valkey-specific options from configuration.
    */
-  private static parseValkeyOptions(
-    storeConfigPath: string,
-    config: RootConfigService,
-    logger?: LoggerService,
-  ): ValkeyCacheStoreOptions {
+  private static parseValkeyOptions({
+    storeConfigPath,
+    config,
+    logger,
+  }: CacheStoreConfiguration): ValkeyCacheStoreOptions {
     const valkeyOptions: ValkeyCacheStoreOptions = {
       type: 'valkey',
     };
@@ -304,7 +334,7 @@ export class CacheManager {
   /** @internal */
   constructor(
     store: string,
-    connectionString: string,
+    connection: CacheStoreConnection,
     errorHandler: CacheManagerOptions['onError'],
     logger?: LoggerService,
     defaultTtl?: number,
@@ -315,7 +345,7 @@ export class CacheManager {
     }
     this.logger = logger;
     this.store = store as keyof CacheManager['storeFactories'];
-    this.connection = connectionString;
+    this.connection = connection;
     this.errorHandler = errorHandler;
     this.defaultTtl = defaultTtl;
     this.storeOptions = storeOptions;
@@ -360,25 +390,12 @@ export class CacheManager {
           keyPrefixSeparator: ':',
         };
         if (this.storeOptions?.cluster) {
-          // Create a Redis cluster, merging pingInterval into defaults if configured
-          const clusterOpts = { ...this.storeOptions.cluster };
-          if (this.storeOptions.pingInterval) {
-            clusterOpts.defaults = {
-              ...clusterOpts.defaults,
-              pingInterval: this.storeOptions.pingInterval,
-            };
-          }
-          const cluster = createCluster(clusterOpts);
+          // Create a Redis cluster
+          const cluster = createCluster(this.storeOptions.cluster);
           stores[pluginId] = new KeyvRedis(cluster, redisOptions);
         } else {
           // Create a regular Redis connection
-          const connectionOptions = this.storeOptions?.pingInterval
-            ? {
-                url: this.connection,
-                pingInterval: this.storeOptions.pingInterval,
-              }
-            : this.connection;
-          stores[pluginId] = new KeyvRedis(connectionOptions, redisOptions);
+          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
         }
 
         // Always provide an error handler to avoid stopping the process

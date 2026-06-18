@@ -2,4 +2,4 @@
 '@backstage/backend-defaults': patch
 ---
 
-Added a `pingInterval` config option for the Redis cache store to keep connections alive in environments where idle connections are silently dropped. Works with both standalone and clustered Redis. Fixes https://github.com/backstage/backstage/issues/31813, https://github.com/backstage/backstage/issues/31742.
+The `connection` config option for the Redis cache store now accepts either a string URL or an object with additional connection options that are passed directly to the underlying client. This allows configuring options like `pingInterval` without needing dedicated config fields. For clustered Redis, the connection object properties are merged into cluster defaults. Fixes https://github.com/backstage/backstage/issues/31813, https://github.com/backstage/backstage/issues/31742.

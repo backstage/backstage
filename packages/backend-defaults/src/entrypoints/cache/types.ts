@@ -14,11 +14,42 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { RedisClusterOptions, KeyvRedisOptions } from '@keyv/redis';
 import { KeyvValkeyOptions } from '@keyv/valkey';
 import { ClusterNode, ClusterOptions } from 'iovalkey';
+
+/**
+ * A cache store connection, either a URL string or an object with
+ * connection options passed through to the underlying client.
+ *
+ * @public
+ */
+export type CacheStoreConnection = string | Record<string, unknown>;
+
+/**
+ * Common options passed to store-specific config parsers.
+ *
+ * @public
+ */
+export type CacheStoreConfiguration = {
+  storeConfigPath: string;
+  config: RootConfigService;
+  logger?: LoggerService;
+};
+
+/**
+ * Parse options for the Redis cache store
+ *
+ * @public
+ */
+export type RedisCacheStoreConfiguration = CacheStoreConfiguration & {
+  connection: CacheStoreConnection;
+};
 
 /**
  * Options for Redis cache store.
@@ -29,7 +60,6 @@ export type RedisCacheStoreOptions = {
   type: 'redis';
   client?: KeyvRedisOptions;
   cluster?: RedisClusterOptions;
-  pingInterval?: number;
 };
 
 /**

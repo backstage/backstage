@@ -784,10 +784,23 @@ export interface Config {
       | {
           store: 'redis';
           /**
-           * A redis connection string in the form `redis://user:pass@host:port`.
+           * A redis connection string in the form `redis://user:pass@host:port`,
+           * or an object with connection options passed directly to the underlying
+           * client (e.g. `{ url: 'redis://localhost:6379', pingInterval: 60000 }`).
            * @visibility secret
            */
-          connection: string;
+          connection:
+            | string
+            | {
+                /**
+                 * The Redis connection URL.
+                 */
+                url: string;
+                /**
+                 * Other connection settings
+                 */
+                [key: string]: unknown;
+              };
           /** An optional default TTL (in milliseconds, if given as a number). */
           defaultTtl?: number | HumanDuration | string;
           redis?: {
@@ -817,12 +830,6 @@ export interface Config {
                * Defaults to `false`.
                */
               noNamespaceAffectsAll?: boolean;
-              /**
-               * Send `PING` command at interval. Supports a number in milliseconds
-               * or a human duration string like '10s'. Useful for environments
-               * with idle connection timeouts.
-               */
-              pingInterval?: number | HumanDuration | string;
             };
             /**
              * An optional Redis cluster configuration.

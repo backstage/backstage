@@ -511,18 +511,16 @@ describe('CacheManager store options', () => {
     });
   });
 
-  it('passes pingInterval to Redis client in non-clustered mode', () => {
+  it('passes connection object directly to Redis client in non-clustered mode', () => {
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
         data: {
           backend: {
             cache: {
               store: 'redis',
-              connection: 'redis://localhost:6379',
-              redis: {
-                client: {
-                  pingInterval: 15000,
-                },
+              connection: {
+                url: 'redis://localhost:6379',
+                pingInterval: 15000,
               },
             },
           },
@@ -540,7 +538,7 @@ describe('CacheManager store options', () => {
     );
   });
 
-  it('merges pingInterval into cluster defaults when configured', () => {
+  it('merges connection object into cluster defaults when configured', () => {
     const clusterInstance = { fake: 'cluster' };
     (createCluster as jest.Mock).mockReturnValue(clusterInstance);
 
@@ -550,11 +548,11 @@ describe('CacheManager store options', () => {
           backend: {
             cache: {
               store: 'redis',
-              connection: 'redis://localhost:6379',
+              connection: {
+                url: 'redis://localhost:6379',
+                pingInterval: 10000,
+              },
               redis: {
-                client: {
-                  pingInterval: 10000,
-                },
                 cluster: {
                   rootNodes: [{ url: 'redis://localhost:6379' }],
                   defaults: { password: 'secret' },
@@ -572,6 +570,7 @@ describe('CacheManager store options', () => {
         rootNodes: [{ url: 'redis://localhost:6379' }],
         defaults: expect.objectContaining({
           password: 'secret',
+          url: 'redis://localhost:6379',
           pingInterval: 10000,
         }),
       }),

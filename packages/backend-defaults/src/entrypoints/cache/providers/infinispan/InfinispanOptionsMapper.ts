@@ -15,10 +15,7 @@
  */
 
 import {
-  LoggerService,
-  RootConfigService,
-} from '@backstage/backend-plugin-api';
-import {
+  CacheStoreConfiguration,
   DataFormatOptions,
   InfinispanAuthOptions,
   InfinispanCacheStoreOptions,
@@ -33,16 +30,14 @@ export class InfinispanOptionsMapper {
   /**
    * Parses Infinispan options from the provided configuration path.
    *
-   * @param storeConfigPath - The configuration path for the Infinispan store.
-   * @param config - The root configuration service to retrieve the Infinispan configuration.
-   * @param logger - An optional logger service for logging errors and warnings.
+   * @param options - Common store parse options.
    * @returns Parsed Infinispan cache store options.
    */
-  public static parseInfinispanOptions(
-    storeConfigPath: string,
-    config: RootConfigService,
-    logger?: LoggerService,
-  ): InfinispanCacheStoreOptions {
+  public static parseInfinispanOptions({
+    storeConfigPath,
+    config,
+    logger,
+  }: CacheStoreConfiguration): InfinispanCacheStoreOptions {
     const infinispanConfig = config.getConfig(storeConfigPath);
     const parsedOptions: Partial<InfinispanCacheStoreOptions> = {
       type: 'infinispan',
