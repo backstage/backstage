@@ -15,8 +15,13 @@
  */
 
 import { useApi } from '@backstage/core-plugin-api';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  EntityFilter,
+  useEntityList,
+} from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
+import { useMemo } from 'react';
 
 /**
  * Fetch and return all available kinds.
@@ -27,18 +32,40 @@ export function useAllKinds(): {
   allKinds: Map<string, string>;
 } {
   const catalogApi = useApi(catalogApiRef);
+  const { filters } = useEntityList();
+
+  const filterString = useMemo(() => {
+    const activeFilters = Object.keys(filters)
+      .filter(k => k !== 'kind')
+      .map(k => filters[k as keyof typeof filters] as EntityFilter | undefined)
+      .filter(Boolean) as EntityFilter[];
+
+    const condensed = activeFilters.reduce<
+      Record<string, string | symbol | (string | symbol)[]>
+    >((acc, filter) => {
+      return { ...acc, ...(filter.getCatalogFilters?.() || {}) };
+    }, {});
+
+    if (Object.keys(condensed).length === 0) {
+      return undefined;
+    }
+    return JSON.stringify(condensed);
+  }, [filters]);
 
   const {
     error,
     loading,
     value: allKinds,
   } = useAsync(async () => {
-    const { facets } = await catalogApi.getEntityFacets({ facets: ['kind'] });
+    const { facets } = await catalogApi.getEntityFacets({
+      facets: ['kind'],
+      filter: filterString ? JSON.parse(filterString) : undefined,
+    });
     const kindFacets = (facets.kind ?? []).map(f => f.value);
     return new Map(
       kindFacets.map(kind => [kind.toLocaleLowerCase('en-US'), kind]),
     );
-  }, [catalogApi]);
+  }, [catalogApi, filterString]);
 
   return { loading, error, allKinds: allKinds ?? new Map() };
 }

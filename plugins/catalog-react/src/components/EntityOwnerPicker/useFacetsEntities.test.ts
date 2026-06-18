@@ -16,7 +16,10 @@
 
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFacetsEntities } from './useFacetsEntities';
-import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import {
+  catalogApiMock,
+  MockEntityListContextProvider,
+} from '@backstage/plugin-catalog-react/testUtils';
 
 const mockCatalogApi = catalogApiMock.mock();
 
@@ -38,7 +41,9 @@ describe('useFacetsEntities', () => {
 
   it(`should return empty items when facets are loading`, () => {
     mockCatalogApi.getEntityFacets.mockReturnValue(new Promise(() => {}));
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper: MockEntityListContextProvider,
+    });
     expect(result.current[0]).toEqual({ value: { items: [] }, loading: true });
   });
 
@@ -47,7 +52,9 @@ describe('useFacetsEntities', () => {
       facets: { 'metadata.tags': [{ value: 'tag', count: 1 }] },
     });
     mockCatalogApi.getEntitiesByRefs.mockResolvedValueOnce({ items: [] });
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper: MockEntityListContextProvider,
+    });
     result.current[1]({ text: '' });
     await waitFor(() => {
       expect(result.current[0]).toEqual({
@@ -63,7 +70,9 @@ describe('useFacetsEntities', () => {
       facetsFromEntityRefs(entityRefs),
     );
 
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper: MockEntityListContextProvider,
+    });
 
     result.current[1]({ text: '' });
     await waitFor(() => {
@@ -102,7 +111,9 @@ describe('useFacetsEntities', () => {
       facetsFromEntityRefs(entityRefs),
     );
 
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper: MockEntityListContextProvider,
+    });
 
     result.current[1]({ text: '' });
     await waitFor(() => {
@@ -173,7 +184,9 @@ describe('useFacetsEntities', () => {
       facetsFromEntityRefs(entityRefs),
     );
 
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper: MockEntityListContextProvider,
+    });
 
     result.current[1]({ text: '' }, { limit: 2 });
     await waitFor(() => {
@@ -283,7 +296,9 @@ describe('useFacetsEntities', () => {
       facetsFromEntityRefs(entityRefs),
     );
 
-    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }), {
+      wrapper: MockEntityListContextProvider,
+    });
 
     result.current[1]({ text: 'der  ' });
 

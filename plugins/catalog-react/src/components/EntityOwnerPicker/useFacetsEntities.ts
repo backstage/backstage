@@ -16,8 +16,11 @@
 import { useApi } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { useEntityList } from '../../hooks/useEntityListProvider';
+import { EntityFilter } from '../../types';
+import { reduceCatalogFilters } from '../../utils/filters';
 
 type FacetsCursor = {
   start: number;
@@ -43,15 +46,32 @@ type FacetsInitialRequest = {
  */
 export function useFacetsEntities({ enabled }: { enabled: boolean }) {
   const catalogApi = useApi(catalogApiRef);
+  const { filters } = useEntityList();
 
-  const [facetsPromise] = useState(async () => {
+  const filterString = useMemo(() => {
+    const activeFilters = Object.keys(filters)
+      .filter(k => k !== 'owners')
+      .map(k => filters[k as keyof typeof filters] as EntityFilter | undefined)
+      .filter(Boolean) as EntityFilter[];
+
+    const condensed = reduceCatalogFilters(activeFilters).filter;
+    if (Object.keys(condensed).length === 0) {
+      return undefined;
+    }
+    return JSON.stringify(condensed);
+  }, [filters]);
+
+  const facetsPromise = useMemo(async () => {
     if (!enabled) {
       return [];
     }
     const facet = 'relations.ownedBy';
 
     return catalogApi
-      .getEntityFacets({ facets: [facet] })
+      .getEntityFacets({
+        facets: [facet],
+        filter: filterString ? JSON.parse(filterString) : undefined,
+      })
       .then(response =>
         response.facets[facet]
           .map(e => e.value)
@@ -74,7 +94,7 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
           ),
       )
       .catch(() => []);
-  });
+  }, [catalogApi, enabled, filterString]);
 
   return useAsyncFn<
     (

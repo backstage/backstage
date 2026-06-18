@@ -535,6 +535,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     );
     expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
       facets: ['relations.ownedBy'],
+      filter: undefined,
     });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: undefined,

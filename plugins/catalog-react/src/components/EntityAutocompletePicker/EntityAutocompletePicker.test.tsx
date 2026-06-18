@@ -87,7 +87,7 @@ describe('<EntityAutocompletePicker/>', () => {
     // should have called catalog backend without any filters applied
     expect(catalogApi.getEntityFacets).toHaveBeenCalledWith({
       facets: ['spec.options'],
-      filter: {},
+      filter: undefined,
     });
 
     fireEvent.click(screen.getByTestId('options-picker-expand'));
@@ -331,7 +331,7 @@ describe('<EntityAutocompletePicker/>', () => {
     expect(screen.queryByText('option2')).not.toBeInTheDocument();
   });
 
-  it('filters available values by kind as default', async () => {
+  it('filters available values by all active filters by default', async () => {
     const mockCatalogApi = makeMockCatalogApi();
     render(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
@@ -340,6 +340,7 @@ describe('<EntityAutocompletePicker/>', () => {
             filters: {
               kind: new EntityKindFilter('component', 'Component'),
               type: new EntityTypeFilter(['service']),
+              options: new EntityOptionFilter(['ignored']),
             },
           }}
         >
@@ -358,6 +359,7 @@ describe('<EntityAutocompletePicker/>', () => {
         facets: ['spec.options'],
         filter: {
           kind: 'component',
+          'spec.type': ['service'],
         },
       }),
     );

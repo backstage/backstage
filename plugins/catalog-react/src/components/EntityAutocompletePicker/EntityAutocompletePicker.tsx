@@ -27,7 +27,7 @@ import {
   useEntityList,
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
-import { reduceBackendCatalogFilters } from '../../utils/filters';
+import { reduceCatalogFilters } from '../../utils/filters';
 import { CatalogAutocomplete } from '../CatalogAutocomplete';
 import { AutocompleteRenderOptionState } from '@material-ui/lab/Autocomplete';
 import { isEqual } from 'lodash';
@@ -89,7 +89,7 @@ export function EntityAutocompletePicker<
     Filter,
     InputProps,
     initialSelectedOptions = [],
-    filtersForAvailableValues = ['kind'],
+    filtersForAvailableValues,
     hidden,
     getOptionLabel,
     renderOption,
@@ -103,22 +103,37 @@ export function EntityAutocompletePicker<
   } = useEntityList<T>();
 
   const catalogApi = useApi(catalogApiRef);
-  const availableValuesFilters = filtersForAvailableValues.map(
-    f => filters[f] as EntityFilter | undefined,
-  );
+  const filterString = useMemo(() => {
+    const activeFilters = filtersForAvailableValues
+      ? filtersForAvailableValues.map(
+          f => filters[f] as EntityFilter | undefined,
+        )
+      : Object.keys(filters)
+          .filter(k => k !== name)
+          .map(k => filters[k as keyof T] as EntityFilter | undefined);
+
+    const condensed = reduceCatalogFilters(
+      activeFilters.filter(Boolean) as EntityFilter[],
+    ).filter;
+
+    if (Object.keys(condensed).length === 0) {
+      return undefined;
+    }
+
+    return JSON.stringify(condensed);
+  }, [filters, filtersForAvailableValues, name]);
+
   const { value: availableValues } = useAsync(async () => {
     const facet = path;
     const { facets } = await catalogApi.getEntityFacets({
       facets: [facet],
-      filter: reduceBackendCatalogFilters(
-        availableValuesFilters.filter(Boolean) as EntityFilter[],
-      ),
+      filter: filterString ? JSON.parse(filterString) : undefined,
     });
 
     return Object.fromEntries(
       facets[facet].map(({ value, count }) => [value, count]),
     );
-  }, [...availableValuesFilters]);
+  }, [catalogApi, path, filterString]);
 
   const queryParameters = useMemo(
     () => [queryParameter].flat().filter(Boolean) as string[],
