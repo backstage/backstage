@@ -29,6 +29,11 @@
       "name": "onboard-to-openapi-server",
       "description": "Use this skill when the user wants to migrate an existing Backstage backend plugin's hand-written Express router to the typed OpenAPI tooling. Optionally, can also add typed client generation and migrate router tests to the OpenAPI test wrapper.",
       "files": ["SKILL.md"]
+    },
+    {
+      "name": "catalog-db-performance",
+      "description": "Run the catalog query performance battery against a database replica and compare to the previous baseline. Use when making changes to catalog database queries, indexes, or schema.",
+      "files": ["SKILL.md"]
     }
   ]
 }
