@@ -656,13 +656,13 @@ describe.each(databases.eachSupportedId())(
             id: expect.anything(),
             source_key: 'lols',
             source_entity_ref: null,
-            target_entity_ref: 'component:default/b',
+            target_entity_ref: 'component:default/a',
           },
           {
             id: expect.anything(),
             source_key: 'lols',
             source_entity_ref: null,
-            target_entity_ref: 'component:default/a',
+            target_entity_ref: 'component:default/b',
           },
         ]);
       });
