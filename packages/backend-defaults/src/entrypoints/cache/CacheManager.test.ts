@@ -581,6 +581,61 @@ describe('CacheManager store options', () => {
     );
   });
 
+  it('rejects connection object without a url', () => {
+    expect(() =>
+      CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store: 'redis',
+                connection: { pingInterval: 15000 },
+              },
+            },
+          },
+        }),
+      ),
+    ).toThrow(
+      "backend.cache.connection object must include a non-empty 'url' string",
+    );
+  });
+
+  it('rejects connection object with empty url', () => {
+    expect(() =>
+      CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store: 'redis',
+                connection: { url: '' },
+              },
+            },
+          },
+        }),
+      ),
+    ).toThrow(
+      "backend.cache.connection object must include a non-empty 'url' string",
+    );
+  });
+
+  it('rejects connection as an array', () => {
+    expect(() =>
+      CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store: 'redis',
+                connection: ['redis://localhost:6379'],
+              },
+            },
+          },
+        }),
+      ),
+    ).toThrow('backend.cache.connection must be a string or object');
+  });
+
   describe('Namespace construction', () => {
     it('returns pluginId when no store options are provided', () => {
       const result = (CacheManager as any).constructNamespace(

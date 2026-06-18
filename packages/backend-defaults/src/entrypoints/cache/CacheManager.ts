@@ -142,8 +142,20 @@ export class CacheManager {
   ): CacheStoreConnection {
     const raw = config.getOptional('backend.cache.connection');
 
-    if (typeof raw === 'object' && raw !== null) {
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      const url = (raw as { url?: unknown }).url;
+      if (typeof url !== 'string' || url.length === 0) {
+        throw new Error(
+          "backend.cache.connection object must include a non-empty 'url' string",
+        );
+      }
       return raw as Record<string, unknown>;
+    }
+
+    if (raw !== undefined && typeof raw !== 'string') {
+      throw new Error(
+        `backend.cache.connection must be a string or object, got ${typeof raw}`,
+      );
     }
 
     return config.getOptionalString('backend.cache.connection') ?? '';
