@@ -122,7 +122,7 @@ describe('Mcp Backend', () => {
           required: ['name'],
           type: 'object',
         },
-        name: 'local.make-greeting',
+        name: 'local_make_greeting',
       },
     ]);
   });
@@ -165,7 +165,7 @@ describe('Mcp Backend', () => {
           required: ['name'],
           type: 'object',
         },
-        name: 'local.make-greeting',
+        name: 'local_make_greeting',
       },
     ]);
   });
@@ -269,7 +269,7 @@ describe('Mcp Backend', () => {
         ListToolsResultSchema,
       );
       expect(catalogResult.tools).toHaveLength(1);
-      expect(catalogResult.tools[0].name).toBe('catalog-actions.get-entity');
+      expect(catalogResult.tools[0].name).toBe('catalog_actions_get_entity');
 
       const scaffolderClient = new Client({ name: 'test', version: '1.0' });
       const scaffolderTransport = new StreamableHTTPClientTransport(
@@ -282,7 +282,7 @@ describe('Mcp Backend', () => {
       );
       expect(scaffolderResult.tools).toHaveLength(1);
       expect(scaffolderResult.tools[0].name).toBe(
-        'scaffolder-actions.create-app',
+        'scaffolder_actions_create_app',
       );
     });
   });

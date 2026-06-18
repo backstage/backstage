@@ -340,10 +340,13 @@ export class McpService {
   }
 
   private getToolName(action: ActionsServiceAction): string {
-    if (this.namespacedToolNames) {
-      return `${action.pluginId}.${action.name}`;
-    }
-    return action.name;
+    const rawName = this.namespacedToolNames
+      ? `${action.pluginId}.${action.name}`
+      : action.name;
+    // MCP tool names must only contain alphanumeric characters and
+    // underscores, so replace any other character (e.g. "." and "-") with an
+    // underscore.
+    return rawName.replace(/[^a-zA-Z0-9_]/g, '_');
   }
 
   private matchesRule(action: ActionsServiceAction, rule: FilterRule): boolean {
