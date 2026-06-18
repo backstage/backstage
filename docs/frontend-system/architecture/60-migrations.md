@@ -17,7 +17,7 @@ This guide is intended for app and plugin authors who have already migrated thei
 
 The `config.schema` option for `createExtension` and `createExtensionBlueprint` is now deprecated in favor of a new top-level `configSchema` option. The new option accepts direct schema values from any [Standard Schema](https://github.com/standard-schema/standard-schema) compatible library with JSON Schema support, rather than requiring factory functions. The `createSchemaFromZod` helper has also been removed.
 
-The `configSchema` option requires schemas that implement the Standard Schema interface with JSON Schema support. This means you need to use [zod v4](https://zod.dev/) or the `zod/v4` subpath export from the zod v3 package (v3.25+). Direct zod v3 schemas are **not** supported by the new `configSchema` option — they are only supported through the deprecated `config.schema` callback format.
+The `configSchema` option requires schemas that implement the Standard Schema interface with JSON Schema support. This means you need to use [zod v4](https://zod.dev/) (`zod@^4.0.0`). Note that the `zod/v4` subpath export from the zod v3 package does **not** work — while it exposes the Zod v4 API surface, the resulting schema objects do not support JSON Schema conversion, which `configSchema` requires. Direct zod v3 schemas are also **not** supported by the new `configSchema` option — they are only supported through the deprecated `config.schema` callback format.
 
 For example, an extension previously declared like this:
 
@@ -36,13 +36,10 @@ createExtension({
 });
 ```
 
-Should now look like this, using zod v4 or the `zod/v4` subpath:
+Should now look like this, using [zod v4](https://zod.dev/) (`zod@^4.0.0`):
 
 ```tsx
-// Either import from zod v4 directly:
 import { z } from 'zod';
-// Or use the v4 subpath from the zod v3 package:
-// import { z } from 'zod/v4';
 
 createExtension({
   // ...

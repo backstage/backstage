@@ -1,0 +1,23 @@
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { {{ extensionComponent }} } from './{{ extensionName }}';
+
+describe('{{ extensionComponent }}', () => {
+  it('should render the field and handle changes', async () => {
+    const onChange = jest.fn();
+
+    render(
+      <{{ extensionComponent }}
+        onChange={onChange}
+        rawErrors={[]}
+        required={false}
+        formData=""
+      />,
+    );
+
+    const input = screen.getByRole('textbox');
+    await userEvent.type(input, 'test');
+
+    expect(onChange).toHaveBeenCalled();
+  });
+});

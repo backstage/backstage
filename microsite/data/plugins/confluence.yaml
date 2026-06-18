@@ -1,0 +1,10 @@
+---
+title: Confluence
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Search
+description: Integrates Confluence document retrieval into the Backstage search engine.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/confluence/plugins/confluence/README.md
+npmPackageName: '@backstage-community/plugin-confluence'
+addedDate: '2026-02-21'
+status: active

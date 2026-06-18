@@ -18,7 +18,7 @@ import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { SignalPayload } from '@backstage/plugin-signals-node';
 import crypto from 'node:crypto';
 import { RawData, WebSocket } from 'ws';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { JsonObject } from '@backstage/types';
 import {
   BackstageUserInfo,

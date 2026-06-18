@@ -76,6 +76,7 @@ describe('read microsoft graph', () => {
       id: 'userid',
       displayName: 'User Name',
       mail: 'user.name@example.com',
+      accountEnabled: true,
     };
   }
   async function* getExampleGroups() {
@@ -136,6 +137,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledWith(
         {
           filter: 'accountEnabled eq true',
+          select: expect.arrayContaining(['accountEnabled']),
           top: 999,
         },
         undefined,
@@ -185,6 +187,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledWith(
         {
           filter: 'accountEnabled eq true',
+          select: expect.arrayContaining(['accountEnabled']),
           top: 999,
         },
         'advanced',
@@ -230,6 +233,7 @@ describe('read microsoft graph', () => {
         {
           expand: 'manager',
           filter: 'accountEnabled eq true',
+          select: expect.arrayContaining(['accountEnabled']),
           top: 999,
         },
         undefined,
@@ -279,6 +283,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledWith(
         {
           filter: 'accountEnabled eq true',
+          select: expect.arrayContaining(['accountEnabled']),
           top: 999,
         },
         undefined,
@@ -289,6 +294,99 @@ describe('read microsoft graph', () => {
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
         'userid',
         120,
+      );
+    });
+
+    it('should skip disabled users', async () => {
+      client.getUsers.mockImplementation(async function* () {
+        yield {
+          id: 'enabled',
+          displayName: 'Enabled',
+          mail: 'enabled@example.com',
+          accountEnabled: true,
+        };
+        yield {
+          id: 'disabled',
+          displayName: 'Disabled',
+          mail: 'disabled@example.com',
+          accountEnabled: false,
+        };
+        yield {
+          id: 'unset',
+          displayName: 'Unset',
+          mail: 'unset@example.com',
+        };
+      });
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(undefined);
+
+      const { users } = await readMicrosoftGraphUsers(client, {
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(users.map(u => u.metadata.name)).toEqual([
+        'enabled_example.com',
+        'unset_example.com',
+      ]);
+    });
+
+    it('should request default fields including accountEnabled when userSelect is not configured', async () => {
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(undefined);
+
+      await readMicrosoftGraphUsers(client, {
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(client.getUsers).toHaveBeenCalledWith(
+        { select: expect.arrayContaining(['accountEnabled']), top: 999 },
+        undefined,
+        undefined,
+        undefined,
+      );
+    });
+
+    it('should add accountEnabled to select when userSelect is configured', async () => {
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(undefined);
+
+      await readMicrosoftGraphUsers(client, {
+        userSelect: ['id', 'displayName', 'mail'],
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          select: ['id', 'displayName', 'mail', 'accountEnabled'],
+          top: 999,
+        },
+        undefined,
+        undefined,
+        undefined,
+      );
+    });
+
+    it('should use default fields when userSelect is an empty array', async () => {
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(undefined);
+
+      await readMicrosoftGraphUsers(client, {
+        userSelect: [],
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          select: expect.arrayContaining([
+            'displayName',
+            'mail',
+            'userPrincipalName',
+            'accountEnabled',
+          ]),
+          top: 999,
+        },
+        undefined,
+        undefined,
+        undefined,
       );
     });
   });
@@ -342,7 +440,7 @@ describe('read microsoft graph', () => {
       expect(client.getGroupUserMembers).toHaveBeenCalledTimes(1);
       expect(client.getGroupUserMembers).toHaveBeenCalledWith(
         'groupid',
-        { top: 999 },
+        { select: expect.arrayContaining(['accountEnabled']), top: 999 },
         undefined,
         undefined,
       );
@@ -351,6 +449,105 @@ describe('read microsoft graph', () => {
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
         'userid',
         120,
+      );
+    });
+
+    it('should skip disabled users fetched via group membership', async () => {
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupUserMembers.mockImplementation(async function* () {
+        yield {
+          id: 'enabled-user',
+          displayName: 'Enabled User',
+          mail: 'enabled@example.com',
+          accountEnabled: true,
+        };
+        yield {
+          id: 'disabled-user',
+          displayName: 'Disabled User',
+          mail: 'disabled@example.com',
+          accountEnabled: false,
+        };
+        yield {
+          id: 'unset-user',
+          displayName: 'Unset User',
+          mail: 'unset@example.com',
+        };
+      });
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(undefined);
+
+      const { users } = await readMicrosoftGraphUsersInGroups(client, {
+        userGroupMemberFilter: 'securityEnabled eq true',
+        logger: mockServices.logger.mock(),
+      });
+
+      const names = users.map(u => u.metadata.name);
+      expect(names).toEqual(['enabled_example.com', 'unset_example.com']);
+    });
+
+    it('should include accountEnabled in select when userSelect is set', async () => {
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupUserMembers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(undefined);
+
+      await readMicrosoftGraphUsersInGroups(client, {
+        userGroupMemberFilter: 'securityEnabled eq true',
+        userSelect: ['id', 'displayName', 'mail'],
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(client.getGroupUserMembers).toHaveBeenCalledWith(
+        'groupid',
+        {
+          select: ['id', 'displayName', 'mail', 'accountEnabled'],
+          top: 999,
+        },
+        undefined,
+        undefined,
+      );
+    });
+
+    it('should request default fields including accountEnabled when userSelect is not configured', async () => {
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupUserMembers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(undefined);
+
+      await readMicrosoftGraphUsersInGroups(client, {
+        userGroupMemberFilter: 'securityEnabled eq true',
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(client.getGroupUserMembers).toHaveBeenCalledWith(
+        'groupid',
+        { select: expect.arrayContaining(['accountEnabled']), top: 999 },
+        undefined,
+        undefined,
+      );
+    });
+
+    it('should use default fields when userSelect is an empty array', async () => {
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupUserMembers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(undefined);
+
+      await readMicrosoftGraphUsersInGroups(client, {
+        userGroupMemberFilter: 'securityEnabled eq true',
+        userSelect: [],
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(client.getGroupUserMembers).toHaveBeenCalledWith(
+        'groupid',
+        {
+          select: expect.arrayContaining([
+            'displayName',
+            'mail',
+            'userPrincipalName',
+            'accountEnabled',
+          ]),
+          top: 999,
+        },
+        undefined,
+        undefined,
       );
     });
 
@@ -403,7 +600,7 @@ describe('read microsoft graph', () => {
       expect(client.getGroupUserMembers).toHaveBeenCalledTimes(1);
       expect(client.getGroupUserMembers).toHaveBeenCalledWith(
         'groupid',
-        { top: 999 },
+        { select: expect.arrayContaining(['accountEnabled']), top: 999 },
         'advanced',
         undefined,
       );
@@ -463,6 +660,7 @@ describe('read microsoft graph', () => {
         'groupid',
         {
           expand: 'manager',
+          select: expect.arrayContaining(['accountEnabled']),
           top: 999,
         },
         undefined,
@@ -1232,6 +1430,7 @@ describe('read microsoft graph', () => {
     async function* getExampleUsersEmail() {
       yield {
         mail: 'user.name@example.com',
+        accountEnabled: true,
       };
     }
 
@@ -1265,6 +1464,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledWith(
         {
           filter: undefined,
+          select: expect.arrayContaining(['accountEnabled']),
           top: 999,
         },
         undefined,
@@ -1309,6 +1509,7 @@ describe('read microsoft graph', () => {
         {
           expand: 'manager',
           filter: 'accountEnabled eq true',
+          select: expect.arrayContaining(['accountEnabled']),
           top: 999,
         },
         undefined,
@@ -1351,6 +1552,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledTimes(1);
       expect(client.getUsers).toHaveBeenCalledWith(
         {
+          select: expect.arrayContaining(['accountEnabled']),
           top: 999,
         },
         undefined,
@@ -1390,7 +1592,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledTimes(1);
       expect(client.getUsers).toHaveBeenCalledWith(
         {
-          select: ['mail'],
+          select: ['mail', 'id', 'accountEnabled'],
           top: 999,
         },
         undefined,
@@ -1460,6 +1662,7 @@ describe('read microsoft graph', () => {
             id: `userid-${i}`,
             displayName: 'User Name',
             mail: 'user.name@example.com',
+            accountEnabled: true,
           };
         }
       }
@@ -1482,6 +1685,7 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toHaveBeenCalledTimes(1);
       expect(client.getUsers).toHaveBeenCalledWith(
         {
+          select: expect.arrayContaining(['accountEnabled']),
           top: 999,
         },
         undefined,

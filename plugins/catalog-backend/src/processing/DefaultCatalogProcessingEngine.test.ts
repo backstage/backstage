@@ -20,10 +20,16 @@ import waitForExpect from 'wait-for-expect';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { CatalogProcessingOrchestrator } from './types';
-import { Stitcher } from '../stitching/types';
 import { ConfigReader } from '@backstage/config';
 import { mockServices } from '@backstage/backend-test-utils';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
+
+jest.mock('../database/operations/stitcher/markForStitching', () => ({
+  markForStitching: jest.fn().mockResolvedValue(undefined),
+}));
+const { markForStitching } = jest.requireMock(
+  '../database/operations/stitcher/markForStitching',
+) as { markForStitching: jest.Mock };
 
 describe('DefaultCatalogProcessingEngine', () => {
   const db = {
@@ -37,9 +43,6 @@ describe('DefaultCatalogProcessingEngine', () => {
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
     process: jest.fn(),
   };
-  const stitcher = {
-    stitch: jest.fn(),
-  } as unknown as jest.Mocked<Stitcher>;
   const hash = {
     update: () => hash,
     digest: jest.fn(),
@@ -69,7 +72,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
-      stitcher: stitcher,
       createHash: () => hash,
       scheduler: mockServices.scheduler(),
       events: mockServices.events.mock(),
@@ -139,7 +141,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
-      stitcher: stitcher,
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       events: mockServices.events.mock(),
@@ -225,7 +226,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
-      stitcher: stitcher,
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       events: mockServices.events.mock(),
@@ -305,7 +305,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
-      stitcher: stitcher,
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       events: mockServices.events.mock(),
@@ -367,7 +366,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
-      stitcher: stitcher,
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       pollingIntervalMs: 100,
@@ -467,12 +465,12 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(stitcher.stitch).toHaveBeenCalledTimes(2);
+      expect(markForStitching).toHaveBeenCalledTimes(2);
     });
-    expect([...stitcher.stitch.mock.calls[0][0].entityRefs!]).toEqual(
+    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1', 'k:ns/other2']),
     );
-    expect([...stitcher.stitch.mock.calls[1][0].entityRefs!]).toEqual(
+    expect([...markForStitching.mock.calls[1][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1', 'k:ns/other3']),
     );
     await engine.stop();
@@ -485,7 +483,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
-      stitcher: stitcher,
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       pollingIntervalMs: 100,
@@ -572,15 +569,15 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(stitcher.stitch).toHaveBeenCalledTimes(2);
+      expect(markForStitching).toHaveBeenCalledTimes(2);
     });
-    expect([...stitcher.stitch.mock.calls[0][0].entityRefs!]).toEqual(
+    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1']),
     );
     // As a result of switching the relationship for source other1 to
     // a new target entity, the other1 relationship source must be
     // restitched.
-    expect([...stitcher.stitch.mock.calls[1][0].entityRefs!]).toEqual(
+    expect([...markForStitching.mock.calls[1][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1']),
     );
     await engine.stop();
@@ -593,7 +590,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
-      stitcher: stitcher,
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       pollingIntervalMs: 100,
@@ -664,9 +660,9 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(stitcher.stitch).toHaveBeenCalledTimes(1);
+      expect(markForStitching).toHaveBeenCalledTimes(1);
     });
-    expect([...stitcher.stitch.mock.calls[0][0].entityRefs!]).toEqual(
+    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me']),
     );
     await engine.stop();
@@ -679,7 +675,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
-      stitcher: stitcher,
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       pollingIntervalMs: 100,
@@ -755,9 +750,9 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(stitcher.stitch).toHaveBeenCalledTimes(1);
+      expect(markForStitching).toHaveBeenCalledTimes(1);
     });
-    expect([...stitcher.stitch.mock.calls[0][0].entityRefs!]).toEqual(
+    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other2']),
     );
     await engine.stop();
@@ -770,7 +765,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
-      stitcher: stitcher,
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       pollingIntervalMs: 100,
@@ -836,9 +830,9 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(stitcher.stitch).toHaveBeenCalledTimes(1);
+      expect(markForStitching).toHaveBeenCalledTimes(1);
     });
-    expect([...stitcher.stitch.mock.calls[0][0].entityRefs!]).toEqual(
+    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other2']),
     );
     await engine.stop();

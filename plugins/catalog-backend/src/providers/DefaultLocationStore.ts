@@ -17,7 +17,7 @@
 import { Location } from '@backstage/catalog-client';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import {
   DbLocationsRow,
   DbRefreshStateRow,

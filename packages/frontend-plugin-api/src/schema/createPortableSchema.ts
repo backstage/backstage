@@ -172,9 +172,10 @@ function resolveField(key: string, schema: unknown): ResolvedField {
   if (isZodV3Type(schema)) {
     throw new Error(
       `Config schema for field '${key}' uses a Zod v3 schema, which is ` +
-        `not supported by the \`configSchema\` option. Either use ` +
-        `\`import { z } from 'zod/v4'\` from the zod v3 package, or ` +
-        `upgrade to zod v4.`,
+        `not supported by the \`configSchema\` option. Upgrade to the ` +
+        `\`zod\` v4 package (\`zod@^4.0.0\`). Note that the \`zod/v4\` ` +
+        `subpath export from the zod v3 package is also not supported, ` +
+        `as it does not include JSON Schema conversion.`,
     );
   }
   if (isStandardSchema(schema)) {
@@ -350,8 +351,7 @@ export function warnConfigSchemaPropDeprecation(callSite: string) {
   console.warn(
     `DEPRECATION WARNING: The \`config.schema\` option for extension config is deprecated. ` +
       `Use the \`configSchema\` option instead with Standard Schema values, for example ` +
-      `\`configSchema: { title: z.string() }\` using zod v4 ` +
-      `(or \`import { z } from 'zod/v4'\` from the zod v3 package). ` +
-      `Declared at ${callSite}`,
+      `\`configSchema: { title: z.string() }\` using the \`zod\` v4 package ` +
+      `(\`zod@^4.0.0\`). Declared at ${callSite}`,
   );
 }

@@ -393,7 +393,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       // Merge the dependency graph from the other lockfile into this one in
       // order to be able to detect removals accurately.
       {
-        const otherGraph = thisLockfile.createSimplifiedDependencyGraph();
+        const otherGraph = otherLockfile.createSimplifiedDependencyGraph();
         for (const [name, dependencies] of otherGraph) {
           const node = graph.get(name);
           if (node) {

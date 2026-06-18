@@ -25,7 +25,7 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import {
   GroupTransformer,
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
@@ -391,7 +391,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
           const logger = this.options.logger.child({
             class: MicrosoftGraphOrgEntityProvider.prototype.constructor.name,
             taskId: id,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

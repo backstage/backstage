@@ -1,5 +1,46 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.3.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+
+## 0.3.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-scaffolder-node@0.13.4-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.3.23
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-scaffolder-node@0.13.3
+
+## 0.3.23-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.3-next.0
+  - @backstage/types@1.2.2
+
 ## 0.3.22
 
 ### Patch Changes

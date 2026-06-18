@@ -1,0 +1,18 @@
+apiVersion: backstage.io/v1alpha1
+kind: AiResource
+metadata:
+  name: frontend-design
+  description: Skill for creating production-grade frontend interfaces using the internal design system
+spec:
+  type: skill
+  lifecycle: production
+  owner: team-a
+  system: artist-engagement-portal
+  disciplines:
+    - web
+  categories:
+    - framework
+    - design-system
+  agents:
+    - claude-code
+    - copilot

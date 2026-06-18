@@ -62,6 +62,12 @@ export const WithLongText = Default.extend({
   ],
 });
 
+export const Invalid = Default.extend({
+  args: {
+    isInvalid: true,
+  },
+});
+
 export const AllVariants = meta.story({
   ...Default.input,
   render: () => (
@@ -75,6 +81,13 @@ export const AllVariants = meta.story({
       </Checkbox>
       <Checkbox isIndeterminate isDisabled>
         Indeterminate & Disabled
+      </Checkbox>
+      <Checkbox isInvalid>Invalid</Checkbox>
+      <Checkbox isInvalid isSelected>
+        Invalid & Checked
+      </Checkbox>
+      <Checkbox isInvalid isIndeterminate>
+        Invalid & Indeterminate
       </Checkbox>
     </Flex>
   ),

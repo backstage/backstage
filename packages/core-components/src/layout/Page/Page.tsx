@@ -59,7 +59,12 @@ export function Page(props: Props) {
         page: baseTheme.getPageTheme({ themeId }),
       })}
     >
-      <main className={classNames(classes.root, className)}>{children}</main>
+      <main
+        className={classNames(classes.root, className)}
+        data-backstage-core-page=""
+      >
+        {children}
+      </main>
     </ThemeProvider>
   );
 }

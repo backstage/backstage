@@ -1,0 +1,201 @@
+name: Sync Patch Cleanup
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch: {}
+
+concurrency:
+  group: sync-patch-cleanup
+  cancel-in-progress: true
+
+jobs:
+  sync-patch-cleanup:
+    name: Sync Patch Cleanup
+    runs-on: ubuntu-latest
+    if: github.repository == 'backstage/backstage'
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 20000
+          fetch-tags: true
+          ref: master
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email noreply@backstage.io
+          git config --global user.name 'GitHub patch cleanup workflow'
+
+      - name: Find released patch files
+        id: find-released
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const fs = require('fs').promises;
+            const path = require('path');
+            const { execSync } = require('child_process');
+
+            const patchesDir = path.join(process.cwd(), '.patches');
+            let files = [];
+            try {
+              files = await fs.readdir(patchesDir);
+            } catch (error) {
+              console.log('No .patches directory found');
+              core.setOutput('has_released', 'false');
+              return;
+            }
+
+            const patchFiles = files.filter(f => /^pr-\d+\.txt$/.test(f));
+            if (patchFiles.length === 0) {
+              console.log('No patch files found');
+              core.setOutput('has_released', 'false');
+              return;
+            }
+
+            // Get stable release tags only (exclude next, rc, beta, alpha, etc.)
+            const releaseTags = execSync('git tag -l "v*.*.*" --sort=-v:refname')
+              .toString()
+              .trim()
+              .split('\n')
+              .filter(t => t && /^v\d+\.\d+\.\d+$/.test(t));
+
+            if (releaseTags.length === 0) {
+              console.log('No stable release tags found');
+              core.setOutput('has_released', 'false');
+              return;
+            }
+
+            const released = [];
+            for (const file of patchFiles) {
+              // Check if the patch file exists in any release tag's tree.
+              // The patch workflow copies pr-*.txt files into the patch branch,
+              // so if the file is present at a release tag, it was consumed.
+              const wasConsumed = releaseTags.some(tag => {
+                try {
+                  execSync(`git cat-file -e ${tag}:.patches/${file}`, {
+                    stdio: 'ignore',
+                  });
+                  return true;
+                } catch {
+                  return false;
+                }
+              });
+
+              if (wasConsumed) {
+                console.log(`${file} — found in a release tag, marking for cleanup`);
+                released.push(file);
+              } else {
+                console.log(`${file} — not yet released, keeping`);
+              }
+            }
+
+            if (released.length === 0) {
+              console.log('No released patch files to clean up');
+              core.setOutput('has_released', 'false');
+              return;
+            }
+
+            core.setOutput('has_released', 'true');
+            core.setOutput('files', JSON.stringify(released));
+
+      - name: Create cleanup branch
+        if: steps.find-released.outputs.has_released == 'true'
+        env:
+          FILES: ${{ steps.find-released.outputs.files }}
+        run: |
+          BRANCH="automation/patch-cleanup"
+          git checkout -B "$BRANCH" master
+
+          for file in $(echo "$FILES" | jq -r '.[]'); do
+            git rm ".patches/$file"
+          done
+
+          git commit --signoff -m "chore: clean up released patch files"
+          git push origin "$BRANCH" --force
+
+      - name: Create or update PR
+        if: steps.find-released.outputs.has_released == 'true'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          FILES: ${{ steps.find-released.outputs.files }}
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const branchName = 'automation/patch-cleanup';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const files = JSON.parse(process.env.FILES);
+
+            const fileList = files.map(f => `- ${f}`).join('\n');
+            const body = `Removes patch files that have already been included in a release.\n\n${fileList}`;
+
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              head: `${owner}:${branchName}`,
+              state: 'open',
+            });
+
+            if (pulls.length > 0) {
+              console.log(`Updating PR #${pulls[0].number}`);
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: pulls[0].number,
+                body,
+              });
+            } else {
+              const { data: pr } = await github.rest.pulls.create({
+                owner,
+                repo,
+                title: 'chore: clean up released patch files',
+                body,
+                head: branchName,
+                base: 'master',
+              });
+              console.log(`Created PR #${pr.number}`);
+            }
+
+      - name: Close PR if nothing to clean
+        if: steps.find-released.outputs.has_released == 'false'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const branchName = 'automation/patch-cleanup';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              head: `${owner}:${branchName}`,
+              state: 'open',
+            });
+
+            if (pulls.length > 0) {
+              console.log(`Closing PR #${pulls[0].number} — no more files to clean`);
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: pulls[0].number,
+                state: 'closed',
+              });
+            }
+
+            try {
+              await github.rest.git.deleteRef({ owner, repo, ref: `heads/${branchName}` });
+            } catch (error) {
+              if (error.status !== 422) throw error;
+            }

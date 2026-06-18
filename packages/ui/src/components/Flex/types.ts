@@ -15,7 +15,13 @@
  */
 
 import type { ReactNode, CSSProperties } from 'react';
-import type { Responsive, Space, SpaceProps, ProviderBg } from '../../types';
+import type {
+  Responsive,
+  Space,
+  SpaceProps,
+  ProviderBg,
+  FlexItemProps,
+} from '../../types';
 
 /** @public */
 export type FlexOwnProps = {
@@ -28,6 +34,7 @@ export type FlexOwnProps = {
 /** @public */
 export interface FlexProps
   extends SpaceProps,
+    FlexItemProps,
     FlexOwnProps,
     Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
   gap?: Responsive<Space>;

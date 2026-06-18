@@ -16,7 +16,7 @@
 
 import { randomBytes } from 'node:crypto';
 import knexFactory, { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import yn from 'yn';
 import { waitForReady } from '../util/waitForReady';
 import { Engine, LARGER_POOL_CONFIG, TestDatabaseProperties } from './types';
@@ -56,6 +56,10 @@ export async function startMysqlContainer(image: string): Promise<{
     .withExposedPorts(3306)
     .withEnvironment({ MYSQL_ROOT_PASSWORD: password })
     .withTmpFs({ '/var/lib/mysql': 'rw' })
+    .withCommand([
+      '--default-authentication-plugin=mysql_native_password',
+      '--skip-log-bin',
+    ])
     .start();
 
   const host = container.getHost();
@@ -176,6 +180,7 @@ export class MysqlEngine implements Engine {
         connection: {
           ...this.#connection,
           database: databaseName,
+          connectTimeout: 30_000,
         },
         ...LARGER_POOL_CONFIG,
       });

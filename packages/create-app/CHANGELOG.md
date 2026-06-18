@@ -1,5 +1,72 @@
 # @backstage/create-app
 
+## 0.8.4
+
+### Patch Changes
+
+- 68db890: Bumped create-app version.
+- e7e4ef0: Bumped create-app version.
+- 6344c54: Newly scaffolded apps now use Yarn 4.13.0 (up from 4.4.1) and enable Yarn's `npmMinimalAgeGate: 3d` setting, which refuses to install npm packages published less than three days ago as a defense against supply-chain attacks. Backstage's own packages are exempted via `npmPreapprovedPackages: ['@backstage/*']` so newly released Backstage versions remain installable without delay.
+
+  Existing apps are unaffected. To opt in, add the `npmMinimalAgeGate` and `npmPreapprovedPackages` settings to your own `.yarnrc.yml` and upgrade Yarn to 4.13 or later.
+
+## 0.8.4-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.4-next.1
+
+### Patch Changes
+
+- 6344c54: Newly scaffolded apps now use Yarn 4.13.0 (up from 4.4.1) and enable Yarn's `npmMinimalAgeGate: 3d` setting, which refuses to install npm packages published less than three days ago as a defense against supply-chain attacks. Backstage's own packages are exempted via `npmPreapprovedPackages: ['@backstage/*']` so newly released Backstage versions remain installable without delay.
+
+  Existing apps are unaffected. To opt in, add the `npmMinimalAgeGate` and `npmPreapprovedPackages` settings to your own `.yarnrc.yml` and upgrade Yarn to 4.13 or later.
+
+## 0.8.4-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.3
+
+### Patch Changes
+
+- 7295193: Bumped create-app version.
+- b0bc1e5: Bumped create-app version.
+- 14e2056: Pinned the Jest version range in app templates to `~30.2.0` to prevent automatic upgrades to Jest 30.4.x, which requires Node.js v24.9+ and breaks tests on Node 22.
+- 927c003: Replaced internal error utilities with shared ones from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.2
+
+## 0.8.3-next.3
+
+### Patch Changes
+
+- 14e2056: Pinned the Jest version range in app templates to `~30.2.0` to prevent automatic upgrades to Jest 30.4.x, which requires Node.js v24.9+ and breaks tests on Node 22.
+
+## 0.8.3-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.3-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.3-next.0
+
+### Patch Changes
+
+- 927c003: Replaced internal error utilities with shared ones from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.2-next.0
+
 ## 0.8.2
 
 ### Patch Changes

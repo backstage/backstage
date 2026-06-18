@@ -33,7 +33,10 @@ import {
   AuthorizeResult,
   BasicPermission,
 } from '@backstage/plugin-permission-common';
-import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
+import {
+  unprocessedEntitiesDeletePermission,
+  unprocessedEntitiesReadPermission,
+} from '@backstage/plugin-catalog-unprocessed-entities-common';
 import { NotAllowedError } from '@backstage/errors';
 
 /**
@@ -158,6 +161,14 @@ export class UnprocessedEntitiesModule {
 
     this.moduleRouter
       .get('/entities/unprocessed/failed', async (req, res) => {
+        const authorized = await isRequestAuthorized(
+          req,
+          unprocessedEntitiesReadPermission,
+        );
+        if (!authorized) {
+          throw new NotAllowedError('Unauthorized');
+        }
+
         return res.json(
           await this.unprocessed({
             reason: 'failed',
@@ -167,6 +178,14 @@ export class UnprocessedEntitiesModule {
         );
       })
       .get('/entities/unprocessed/pending', async (req, res) => {
+        const authorized = await isRequestAuthorized(
+          req,
+          unprocessedEntitiesReadPermission,
+        );
+        if (!authorized) {
+          throw new NotAllowedError('Unauthorized');
+        }
+
         return res.json(
           await this.unprocessed({
             reason: 'pending',

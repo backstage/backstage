@@ -53,6 +53,27 @@ describe('ProxiedSignInIdentity', () => {
         new Date(new Date(Date.now() + DEFAULTS.defaultTokenExpiryMillis)),
       );
     });
+
+    it('handles a token with a url-safe base64 encoded payload', async () => {
+      const exp = 1641216199;
+      const [header, _b, signature] = validBackstageToken.split('.');
+      // The `note` value is chosen so that the standard base64 encoding of the
+      // payload contains url-unsafe characters, which a real-world JWT encodes
+      // using the base64url alphabet ('-' and '_') without padding.
+      const standardBase64 = window.btoa(
+        JSON.stringify({ exp, note: '???>>>' }),
+      );
+      expect(standardBase64).toMatch(/[+/]/);
+      const urlSafePayload = standardBase64
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+      const token = `${header}.${urlSafePayload}.${signature}`;
+
+      expect(tokenToExpiry(token)).toEqual(
+        new Date(exp * 1000 - DEFAULTS.tokenExpiryMarginMillis),
+      );
+    });
   });
 
   describe('ProxiedSignInIdentity', () => {

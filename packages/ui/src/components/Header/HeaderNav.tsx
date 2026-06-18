@@ -72,7 +72,6 @@ function HeaderNavLink(props: HeaderNavLinkProps) {
           ).current = el;
           registerRef(id, el);
         }}
-        href={href}
         className={ownProps.classes.root}
         aria-current={active ? 'page' : undefined}
         onClick={handleClick}

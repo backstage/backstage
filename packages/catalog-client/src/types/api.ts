@@ -488,6 +488,15 @@ export type QueryEntitiesInitialRequest = {
     term: string;
     fields?: string[];
   };
+  /**
+   * Controls whether the response's `totalItems` field is computed.
+   *
+   * `'include'` (default) — compute it. `'exclude'` — skip the count entirely;
+   * the response `totalItems` will be `0`. Useful for cursor-paginated UIs
+   * that only display the count cosmetically. Additional values may be added
+   * in the future.
+   */
+  totalItems?: 'include' | 'exclude';
 };
 
 /**

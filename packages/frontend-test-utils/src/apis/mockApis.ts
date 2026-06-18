@@ -54,7 +54,7 @@ import { MockStorageApi } from './StorageApi';
 import { MockPermissionApi } from './PermissionApi';
 import { MockTranslationApi } from './TranslationApi';
 import {
-  mockWithApiFactory,
+  attachMockApiFactory,
   type MockWithApiFactory,
 } from './MockWithApiFactory';
 import { createApiMock } from './createApiMock';
@@ -104,7 +104,7 @@ export namespace mockApis {
    */
   export function alert(): MockWithApiFactory<MockAlertApi> {
     const instance = new MockAlertApi();
-    return mockWithApiFactory(
+    return attachMockApiFactory(
       alertApiRef,
       instance,
     ) as MockWithApiFactory<MockAlertApi>;
@@ -146,7 +146,7 @@ export namespace mockApis {
     initialStates?: Record<string, FeatureFlagState>;
   }): MockWithApiFactory<MockFeatureFlagsApi> {
     const instance = new MockFeatureFlagsApi(options);
-    return mockWithApiFactory(
+    return attachMockApiFactory(
       featureFlagsApiRef,
       instance,
     ) as MockWithApiFactory<MockFeatureFlagsApi>;
@@ -181,7 +181,7 @@ export namespace mockApis {
   export function analytics(): MockAnalyticsApi &
     MockWithApiFactory<AnalyticsApi> {
     const instance = new MockAnalyticsApi();
-    return mockWithApiFactory(analyticsApiRef, instance) as MockAnalyticsApi &
+    return attachMockApiFactory(analyticsApiRef, instance) as MockAnalyticsApi &
       MockWithApiFactory<AnalyticsApi>;
   }
 
@@ -205,7 +205,7 @@ export namespace mockApis {
   export function translation(): MockTranslationApi &
     MockWithApiFactory<TranslationApi> {
     const instance = MockTranslationApi.create();
-    return mockWithApiFactory(
+    return attachMockApiFactory(
       translationApiRef,
       instance,
     ) as MockTranslationApi & MockWithApiFactory<TranslationApi>;
@@ -237,7 +237,7 @@ export namespace mockApis {
     data?: JsonObject;
   }): MockConfigApi & MockWithApiFactory<ConfigApi> {
     const instance = new MockConfigApi({ data: options?.data ?? {} });
-    return mockWithApiFactory(configApiRef, instance) as MockConfigApi &
+    return attachMockApiFactory(configApiRef, instance) as MockConfigApi &
       MockWithApiFactory<ConfigApi>;
   }
 
@@ -281,7 +281,7 @@ export namespace mockApis {
         return `${baseUrl}/api/${pluginId}`;
       },
     };
-    return mockWithApiFactory(discoveryApiRef, instance) as DiscoveryApi &
+    return attachMockApiFactory(discoveryApiRef, instance) as DiscoveryApi &
       MockWithApiFactory<DiscoveryApi>;
   }
 
@@ -329,7 +329,7 @@ export namespace mockApis {
       },
       async signOut() {},
     };
-    return mockWithApiFactory(identityApiRef, instance) as IdentityApi &
+    return attachMockApiFactory(identityApiRef, instance) as IdentityApi &
       MockWithApiFactory<IdentityApi>;
   }
 
@@ -366,8 +366,10 @@ export namespace mockApis {
         ? authorizeInput
         : () => authorizeInput ?? AuthorizeResult.ALLOW;
     const instance = new MockPermissionApi(handler);
-    return mockWithApiFactory(permissionApiRef, instance) as MockPermissionApi &
-      MockWithApiFactory<PermissionApi>;
+    return attachMockApiFactory(
+      permissionApiRef,
+      instance,
+    ) as MockPermissionApi & MockWithApiFactory<PermissionApi>;
   }
 
   /**
@@ -390,7 +392,7 @@ export namespace mockApis {
     data?: JsonObject;
   }): MockStorageApi & MockWithApiFactory<StorageApi> {
     const instance = MockStorageApi.create(options?.data);
-    return mockWithApiFactory(storageApiRef, instance) as MockStorageApi &
+    return attachMockApiFactory(storageApiRef, instance) as MockStorageApi &
       MockWithApiFactory<StorageApi>;
   }
 
@@ -418,7 +420,7 @@ export namespace mockApis {
     collect?: boolean;
   }): MockErrorApi & MockWithApiFactory<ErrorApi> {
     const instance = new MockErrorApi(options);
-    return mockWithApiFactory(errorApiRef, instance) as MockErrorApi &
+    return attachMockApiFactory(errorApiRef, instance) as MockErrorApi &
       MockWithApiFactory<ErrorApi>;
   }
 
@@ -443,7 +445,7 @@ export namespace mockApis {
     options?: MockFetchApiOptions,
   ): MockFetchApi & MockWithApiFactory<FetchApi> {
     const instance = new MockFetchApi(options);
-    return mockWithApiFactory(fetchApiRef, instance) as MockFetchApi &
+    return attachMockApiFactory(fetchApiRef, instance) as MockFetchApi &
       MockWithApiFactory<FetchApi>;
   }
 

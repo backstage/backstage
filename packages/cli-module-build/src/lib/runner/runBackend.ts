@@ -20,12 +20,8 @@ import { ctrlc } from 'ctrlc-windows';
 import { IpcServer, ServerDataStore } from '../ipc';
 import debounce from 'lodash/debounce';
 import { fileURLToPath } from 'node:url';
-import {
-  isAbsolute as isAbsolutePath,
-  resolve as resolvePath,
-} from 'node:path';
+import { isAbsolute as isAbsolutePath } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
-import { ConfigSources } from '@backstage/config-loader';
 
 import spawn from 'cross-spawn';
 import { startEmbeddedDb } from './startEmbeddedDb';
@@ -66,18 +62,14 @@ export async function runBackend(options: RunBackendOptions) {
 
   const extraEnv: Record<string, string> = {};
 
-  let embeddedDb: Awaited<ReturnType<typeof startEmbeddedDb>> | undefined;
-
-  const dbClient = await readDatabaseClient(
-    options.configPaths,
-    options.targetDir,
-  );
-  if (dbClient === 'embedded-postgres') {
-    embeddedDb = await startEmbeddedDb();
-    extraEnv.APP_CONFIG_backend_database = JSON.stringify({
-      client: 'pg',
-      connection: embeddedDb.connection,
-    });
+  const embeddedDb = await startEmbeddedDb({
+    configPaths: options.configPaths,
+    targetDir: options.targetDir,
+  });
+  if (embeddedDb) {
+    extraEnv.APP_CONFIG_backend_database = JSON.stringify(
+      embeddedDb.configOverride,
+    );
   }
 
   let exiting = false;
@@ -219,27 +211,4 @@ export async function runBackend(options: RunBackendOptions) {
   });
 
   return () => exitPromise;
-}
-
-async function readDatabaseClient(
-  configPaths?: string[],
-  targetDir?: string,
-): Promise<string | undefined> {
-  const rootDir = targetPaths.rootDir;
-  const configBaseDir = targetDir ?? rootDir;
-  const source = ConfigSources.default({
-    rootDir,
-    allowMissingDefaultConfig: true,
-    argv: (configPaths ?? []).flatMap(p => [
-      '--config',
-      isAbsolutePath(p) ? p : resolvePath(configBaseDir, p),
-    ]),
-  });
-
-  const config = await ConfigSources.toConfig(source);
-  try {
-    return config.getOptionalString('backend.database.client');
-  } finally {
-    config.close();
-  }
 }

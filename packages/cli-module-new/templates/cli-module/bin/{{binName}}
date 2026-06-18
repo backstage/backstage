@@ -26,7 +26,7 @@ if (isLocal) {
   require('@backstage/cli-node/config/nodeTransform.cjs');
 }
 
-const { runCliModule } = require('@backstage/cli-node');
+const { runCli } = require('@backstage/cli-node');
 const cliModule = require(isLocal ? '../src/index' : '..').default;
 const pkg = require('../package.json');
-runCliModule({ module: cliModule, name: pkg.name, version: pkg.version });
+runCli({ modules: [cliModule], name: pkg.name, version: pkg.version });

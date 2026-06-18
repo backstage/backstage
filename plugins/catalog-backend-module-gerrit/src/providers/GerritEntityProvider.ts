@@ -29,7 +29,7 @@ import {
   parseGerritJsonResponse,
   ScmIntegrations,
 } from '@backstage/integration';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import pLimit from 'p-limit';
 
 import { readGerritConfigs } from './config';
@@ -128,7 +128,7 @@ export class GerritEntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: GerritEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

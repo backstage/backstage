@@ -43,7 +43,7 @@ import { ButtonDefinition } from './definition';
  *   variant="primary"
  *   size="medium"
  *   iconStart={<IconComponent />}
- *   loading={isSubmitting}
+ *   isPending={isSubmitting}
  * >
  *   Submit
  * </Button>
@@ -55,15 +55,23 @@ export const Button = forwardRef(
   (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(
       ButtonDefinition,
-      props,
+      // Merge deprecated `loading` into `isPending` so data attributes and
+      // internal logic only need to check a single prop.
+      {
+        ...props,
+        isPending:
+          props.isPending || props.loading
+            ? true
+            : props.isPending ?? props.loading,
+      },
     );
-    const { classes, iconStart, iconEnd, loading, children } = ownProps;
+    const { classes, iconStart, iconEnd, isPending, children } = ownProps;
 
     return (
       <RAButton
         className={classes.root}
         ref={ref}
-        isPending={loading}
+        isPending={isPending}
         {...dataAttributes}
         {...restProps}
       >

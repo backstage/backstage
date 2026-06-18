@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-react",
-  "version": "2.1.2",
+  "version": "3.1.0",
   "description": "A frontend library that helps other Backstage plugins interact with the catalog",
   "backstage": {
     "role": "web-library",
@@ -79,15 +79,15 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
-    "@remixicon/react": "^4.6.0",
+    "@remixicon/react": ">=4.6.0 <4.9.0",
     "classnames": "^2.2.6",
     "lodash": "^4.17.21",
     "material-ui-popup-state": "^5.3.6",
-    "qs": "^6.9.4",
+    "qs": "^6.15.2",
     "react-use": "^17.2.4",
     "yaml": "^2.0.0",
     "zen-observable": "^0.10.0",
-    "zod": "^3.25.76 || ^4.0.0"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

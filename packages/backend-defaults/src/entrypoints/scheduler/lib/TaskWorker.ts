@@ -19,7 +19,7 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
 import {
   TaskSettingsV2,
@@ -104,11 +104,14 @@ export class TaskWorker {
           attemptNum = 0;
           break;
         } catch (e) {
+          if (options.signal.aborted) {
+            break;
+          }
           attemptNum += 1;
           this.logger.warn(
             `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
           );
-          await sleep(Duration.fromObject({ seconds: 1 }));
+          await sleep(Duration.fromObject({ seconds: 1 }), options.signal);
         }
       }
     })();

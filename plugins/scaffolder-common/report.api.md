@@ -7,7 +7,7 @@ import { Entity } from '@backstage/catalog-model';
 import type { EntityMeta } from '@backstage/catalog-model';
 import type { JsonArray } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { KindValidator } from '@backstage/catalog-model';
 import { Observable } from '@backstage/types';
@@ -415,6 +415,10 @@ export interface TemplateEntityV1beta3 extends Entity {
     type: string;
     presentation?: TemplatePresentationV1beta3;
     EXPERIMENTAL_recovery?: TemplateRecoveryV1beta3;
+    formDecorators?: {
+      id: string;
+      input?: JsonObject;
+    }[];
     EXPERIMENTAL_formDecorators?: {
       id: string;
       input?: JsonObject;
@@ -481,6 +485,10 @@ export type TemplateParameterSchema = {
     description?: string;
     schema: JsonObject;
   }>;
+  formDecorators?: {
+    id: string;
+    input?: JsonObject;
+  }[];
   EXPERIMENTAL_formDecorators?: {
     id: string;
     input?: JsonObject;

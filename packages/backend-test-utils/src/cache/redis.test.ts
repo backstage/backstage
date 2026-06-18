@@ -16,7 +16,7 @@
 
 import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
 import { startRedisContainer } from './redis';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 
 const itIfDocker = isDockerDisabledForTests() ? it.skip : it;
 

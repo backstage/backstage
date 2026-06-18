@@ -1,5 +1,44 @@
 # @backstage/plugin-events-backend-module-google-pubsub
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-events-node@0.4.23
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/filter-predicates@0.1.3
+  - @backstage/config@1.3.8
+  - @backstage/plugin-events-node@0.4.22
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/filter-predicates@0.1.3-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+  - @backstage/types@1.2.2
+
 ## 0.2.2
 
 ### Patch Changes

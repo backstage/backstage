@@ -25,11 +25,23 @@ import { toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
+const MATERIAL_THEME = 'material';
+
+type MkDocsThemeObject = {
+  name?: string;
+  font?: boolean;
+};
+
+function isThemeObject(theme: unknown): theme is MkDocsThemeObject {
+  return typeof theme === 'object' && theme !== null && !Array.isArray(theme);
+}
+
 type MkDocsObject = {
   plugins?: string[];
   docs_dir: string;
   repo_url?: string;
   edit_uri?: string;
+  theme?: MkDocsThemeObject;
 };
 
 const patchMkdocsFile = async (
@@ -185,6 +197,43 @@ export const patchMkdocsYmlWithPlugins = async (
     });
 
     return changesMade;
+  });
+};
+
+/**
+ * Disable external font download for the material theme.
+ * @param mkdocsYmlPath - Absolute path to mkdocs.yml or equivalent of a docs site
+ * @param logger
+ */
+export const patchMkdocsYmlWithFontDisabled = async (
+  mkdocsYmlPath: string,
+  logger: LoggerService,
+) => {
+  await patchMkdocsFile(mkdocsYmlPath, logger, mkdocsYml => {
+    if (!('theme' in mkdocsYml)) {
+      // No theme section exists, create it with font disabled
+      mkdocsYml.theme = {
+        name: MATERIAL_THEME,
+        font: false,
+      };
+      return true;
+    }
+
+    const theme = mkdocsYml.theme;
+    if (isThemeObject(theme)) {
+      // Theme section exists. Only modify it when the configured theme is Material
+      if (theme.name === MATERIAL_THEME && !('font' in theme)) {
+        theme.font = false;
+        return true;
+      }
+      if (theme.name !== MATERIAL_THEME) {
+        logger.debug(
+          'mkdocs.yml theme is not "material"; skipping font disabling patch',
+        );
+      }
+    }
+
+    return false;
   });
 };
 

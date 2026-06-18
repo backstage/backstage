@@ -36,7 +36,10 @@ const highlightOptions: PgSearchHighlightOptions = {
   fragmentDelimiter: ' ... ',
 };
 
-jest.mock('uuid', () => ({ v4: () => 'tag' }));
+jest.mock('node:crypto', () => ({
+  ...jest.requireActual('node:crypto'),
+  randomUUID: () => 'tag',
+}));
 
 jest.mock('./PgSearchEngineIndexer', () => ({
   PgSearchEngineIndexer: jest

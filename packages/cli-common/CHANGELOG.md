@@ -1,5 +1,19 @@
 # @backstage/cli-common
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+
 ## 0.2.1
 
 ### Patch Changes

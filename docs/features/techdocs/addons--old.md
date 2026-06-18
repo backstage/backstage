@@ -5,7 +5,7 @@ description: How to find, use, or create TechDocs Addons.
 ---
 
 :::info
-This documentation is written for [the old frontend system](./getting-started.md#adding-techdocs-frontend-plugin). If you are on the [new frontend system](../../frontend-system/index.md) you may want to read [its own article](./addons.md) instead.
+This documentation is written for [the old frontend system](./getting-started--old.md#adding-techdocs-frontend-plugin). If you are on the [new frontend system](../../frontend-system/index.md) you may want to read [its own article](./addons.md) instead.
 :::
 
 ## Concepts

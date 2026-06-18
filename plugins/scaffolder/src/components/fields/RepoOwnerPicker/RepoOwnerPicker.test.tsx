@@ -29,6 +29,7 @@ import {
   scaffolderApiRef,
   useTemplateSecrets,
   ScaffolderRJSFField,
+  ScaffolderApi,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { RepoOwnerPicker } from './RepoOwnerPicker';
@@ -36,6 +37,10 @@ import { RepoOwnerPicker } from './RepoOwnerPicker';
 describe('RepoOwnerPicker', () => {
   const mockIntegrationsApi: Partial<ScmIntegrationsApi> = {
     byHost: () => ({ type: 'github' }),
+  };
+
+  const mockIntegrationsApiGitLab: Partial<ScmIntegrationsApi> = {
+    byHost: () => ({ type: 'gitlab' }),
   };
 
   let mockScmAuthApi: Partial<ScmAuthApi>;
@@ -303,6 +308,206 @@ describe('RepoOwnerPicker', () => {
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledTimes(0);
 
       expect(getByText('abc123')).toBeInTheDocument();
+    });
+  });
+
+  describe('requestUserCredentialsGitLab', () => {
+    it('should call the scmAuthApi with the correct params', async () => {
+      const secretsKey = 'testKey';
+
+      const SecretsComponent = () => {
+        const { secrets } = useTemplateSecrets();
+        const secret = secrets[secretsKey];
+        return secret ? <div>{secret}</div> : null;
+      };
+
+      const { getByText } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApiGitLab],
+            [scmAuthApiRef, mockScmAuthApi],
+            [scaffolderApiRef, {}],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              validator={validator}
+              schema={{ type: 'string' }}
+              uiSchema={{
+                'ui:field': 'RepoOwnerPicker',
+                'ui:options': {
+                  host: 'gitlab.com',
+                  requestUserCredentials: {
+                    secretsKey,
+                    additionalScopes: { gitlab: ['workflow'] },
+                  },
+                },
+              }}
+              fields={{
+                RepoOwnerPicker: RepoOwnerPicker as ScaffolderRJSFField<string>,
+              }}
+            />
+            <SecretsComponent />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      await act(async () => {
+        // need to wait for the debounce to finish
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+
+      expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
+        url: 'https://gitlab.com',
+        additionalScope: {
+          repoWrite: true,
+          customScopes: {
+            gitlab: ['workflow'],
+          },
+        },
+      });
+
+      expect(getByText('abc123')).toBeInTheDocument();
+    });
+
+    it('should call the scmAuthApi with the correct params if workspace is nested', async () => {
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApiGitLab],
+            [scmAuthApiRef, mockScmAuthApi],
+            [scaffolderApiRef, {}],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              validator={validator}
+              schema={{ type: 'string' }}
+              uiSchema={{
+                'ui:field': 'RepoOwnerPicker',
+                'ui:options': {
+                  host: 'gitlab.com',
+                  requestUserCredentials: {
+                    secretsKey: 'testKey',
+                  },
+                },
+              }}
+              fields={{
+                RepoOwnerPicker: RepoOwnerPicker as ScaffolderRJSFField<string>,
+              }}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      await act(async () => {
+        // need to wait for the debounce to finish
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+
+      expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
+        url: 'https://gitlab.com',
+        additionalScope: {
+          repoWrite: true,
+        },
+      });
+    });
+
+    it('should not call the scmAuthApi if secret is available in the state', async () => {
+      const secretsKey = 'testKey';
+
+      const SecretsComponent = () => {
+        const { secrets } = useTemplateSecrets();
+        const secret = secrets[secretsKey];
+        return secret ? <div>{secret}</div> : null;
+      };
+
+      const { getByText } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApiGitLab],
+            [scmAuthApiRef, mockScmAuthApi],
+            [scaffolderApiRef, {}],
+          ]}
+        >
+          <SecretsContextProvider initialSecrets={{ [secretsKey]: 'abc123' }}>
+            <Form
+              validator={validator}
+              schema={{ type: 'string' }}
+              uiSchema={{
+                'ui:field': 'RepoOwnerPicker',
+                'ui:options': {
+                  host: 'gitlab.com',
+                  requestUserCredentials: {
+                    secretsKey,
+                    additionalScopes: { gitlab: ['workflow'] },
+                  },
+                },
+              }}
+              fields={{
+                RepoOwnerPicker: RepoOwnerPicker as ScaffolderRJSFField<string>,
+              }}
+            />
+            <SecretsComponent />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      await act(async () => {
+        // need to wait for the debounce to finish
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+
+      // as we already have a secret in the state, getCredentials should not be called again.
+      expect(mockScmAuthApi.getCredentials).toHaveBeenCalledTimes(0);
+
+      expect(getByText('abc123')).toBeInTheDocument();
+    });
+
+    it('should route to GitLabRepoOwnerPicker and call autocomplete with gitlab provider and groups resource', async () => {
+      const secretsKey = 'testKey';
+      const mockScaffolderApi: Partial<ScaffolderApi> = {
+        autocomplete: jest.fn().mockResolvedValue({ results: [] }),
+      };
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApiGitLab],
+            [scmAuthApiRef, mockScmAuthApi],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider initialSecrets={{ [secretsKey]: 'abc123' }}>
+            <Form
+              validator={validator}
+              schema={{ type: 'string' }}
+              uiSchema={{
+                'ui:field': 'RepoOwnerPicker',
+                'ui:options': {
+                  host: 'gitlab.com',
+                  requestUserCredentials: { secretsKey },
+                },
+              }}
+              fields={{
+                RepoOwnerPicker: RepoOwnerPicker as ScaffolderRJSFField<string>,
+              }}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      await act(async () => {
+        // wait for both the RepoOwnerPicker and GitLabRepoOwnerPicker debounces
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+
+      expect(mockScaffolderApi.autocomplete).toHaveBeenCalledWith({
+        token: 'abc123',
+        resource: 'groups',
+        provider: 'gitlab',
+        context: { host: 'gitlab.com' },
+      });
     });
   });
 });

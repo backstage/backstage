@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-new",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -38,7 +38,7 @@
     "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
     "chalk": "^4.0.0",
-    "cleye": "^2.3.0",
+    "cleye": "^2.6.0",
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.3",
     "inquirer": "^8.2.0",
@@ -48,7 +48,7 @@
     "semver": "^7.5.3",
     "yaml": "^2.0.0",
     "zod": "^3.25.76",
-    "zod-validation-error": "^4.0.2"
+    "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

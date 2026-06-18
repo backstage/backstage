@@ -6,7 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogModelLayer } from '@backstage/catalog-model/alpha';
 import { CatalogModelSource } from '@backstage/catalog-model/alpha';
-import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
+import type { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
 import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';

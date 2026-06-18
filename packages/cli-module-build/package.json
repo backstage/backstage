@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-build",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -61,7 +61,7 @@
     "buffer": "^6.0.3",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
-    "cleye": "^2.3.0",
+    "cleye": "^2.6.0",
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
     "ctrlc-windows": "^2.1.0",
@@ -108,7 +108,7 @@
     "@types/lodash": "^4.14.151",
     "@types/npm-packlist": "^3.0.0",
     "@types/shell-quote": "^1.7.5",
-    "embedded-postgres": "18.3.0-beta.16"
+    "embedded-postgres": "18.3.0-beta.17"
   },
   "peerDependencies": {
     "embedded-postgres": "^18.3.0-beta.16"

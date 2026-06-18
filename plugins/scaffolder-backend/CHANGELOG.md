@@ -1,5 +1,120 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.0.1
+
+### Patch Changes
+
+- 063fc34: Restored user-supplied task secrets in scaffolder dry-run executions. The previous security fix that stripped secrets from dry-run also removed task secrets passed in the dry-run request body, which broke integration test setups that rely on user-supplied secrets. Environment secrets (server-configured) remain stripped during dry-run; only task secrets supplied by the caller are now forwarded to actions.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-scaffolder-common@2.2.1
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-events-node@0.4.23
+  - @backstage/plugin-permission-node@0.11.1
+
+## 4.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/plugin-scaffolder-common@2.2.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.4-next.0
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+  - @backstage/backend-openapi-utils@0.6.10-next.0
+
+## 4.0.0
+
+### Minor Changes
+
+- 77bee9f: Updated the `list-scaffolder-tasks` action to support the new "status" filter parameter, allowing the action to return tasks matching a specific status.
+- 07e08be: Added `always()` and `failure()` status check functions for scaffolder steps. These functions can be used in the if field of a step to control execution after failures. `always()` ensures a step runs regardless of previous step outcomes, while `failure()` runs a step only when a previous step has failed.
+- 8006acf: The template parameter schema response now exposes a `formDecorators` field
+  instead of `EXPERIMENTAL_formDecorators`. Templates that still declare
+  `spec.EXPERIMENTAL_formDecorators` are read transparently and surfaced under
+  the new field.
+
+### Patch Changes
+
+- c78b3b6: Add explicit memory management to SecureTemplater usage
+- 1ecc3ca: Fixed spelling mistakes in internal code
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-scaffolder-node@0.13.3
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/plugin-scaffolder-common@2.2.0
+  - @backstage/backend-openapi-utils@0.6.9
+  - @backstage/config@1.3.8
+  - @backstage/plugin-events-node@0.4.22
+
+## 4.0.0-next.2
+
+### Major Changes
+
+- c78b3b6: Add explicit memory management to SecureTemplater usage
+
+### Minor Changes
+
+- 8006acf: The template parameter schema response now exposes a `formDecorators` field
+  instead of `EXPERIMENTAL_formDecorators`. Templates that still declare
+  `spec.EXPERIMENTAL_formDecorators` are read transparently and surfaced under
+  the new field.
+
+### Patch Changes
+
+- 1ecc3ca: Fixed spelling mistakes in internal code
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.1
+  - @backstage/plugin-scaffolder-common@2.2.0-next.1
+  - @backstage/plugin-scaffolder-node@0.13.3-next.2
+
+## 3.5.0-next.1
+
+### Minor Changes
+
+- 77bee9f: Updated the `list-scaffolder-tasks` action to support the new "status" filter parameter, allowing the action to return tasks matching a specific status.
+- 07e08be: Added `always()` and `failure()` status check functions for scaffolder steps. These functions can be used in the if field of a step to control execution after failures. `always()` ensures a step runs regardless of previous step outcomes, while `failure()` runs a step only when a previous step has failed.
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/plugin-catalog-node@2.2.1-next.1
+  - @backstage/plugin-scaffolder-node@0.13.3-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
+## 3.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-openapi-utils@0.6.9-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/plugin-scaffolder-common@2.1.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.3-next.0
+  - @backstage/types@1.2.2
+
 ## 3.4.0
 
 ### Minor Changes

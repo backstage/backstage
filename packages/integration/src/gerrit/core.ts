@@ -209,11 +209,8 @@ export function buildGerritGitilesArchiveUrlFromLocation(
  * be used.
  *
  * @param config - A Gerrit provider config.
- * @public
  */
-export function getAuthenticationPrefix(
-  config: GerritIntegrationConfig,
-): string {
+function getAuthenticationPrefix(config: GerritIntegrationConfig): string {
   return config.password ? '/a/' : '/';
 }
 

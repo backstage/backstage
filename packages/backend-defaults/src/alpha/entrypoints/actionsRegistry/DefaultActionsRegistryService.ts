@@ -34,10 +34,10 @@ import {
 import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-type ActionEntry = [string, ActionsRegistryActionOptions<any, any>];
+type ActionEntry = [string, ActionsRegistryActionOptions<any, any, any>];
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
-  private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
+  private actions: Map<string, ActionsRegistryActionOptions<any, any, any>> =
     new Map();
 
   private readonly logger: LoggerService;
@@ -123,14 +123,20 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
             output: action.schema?.output
               ? zodToJsonSchema(action.schema.output(z))
               : zodToJsonSchema(z.object({})),
+            ...(action.schema?.secrets && {
+              secrets: zodToJsonSchema(action.schema.secrets(z)),
+            }),
           },
         })),
       });
     });
 
-    router.post(
-      '/.backstage/actions/v1/actions/:actionId/invoke',
-      async (req, res) => {
+    const invokeHandler =
+      (opts: { wrapped: boolean }) =>
+      async (
+        req: import('express').Request,
+        res: import('express').Response,
+      ) => {
         const credentials = await this.httpAuth.credentials(req);
         if (this.auth.isPrincipal(credentials, 'none')) {
           throw new NotAllowedError(
@@ -156,8 +162,11 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           }
         }
 
+        const rawInput = opts.wrapped ? req.body.input : req.body;
+        const rawSecrets = opts.wrapped ? req.body.secrets : undefined;
+
         const input = action.schema?.input
-          ? action.schema.input(z).safeParse(req.body)
+          ? action.schema.input(z).safeParse(rawInput)
           : ({ success: true, data: undefined } as const);
 
         if (!input.success) {
@@ -167,8 +176,32 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           );
         }
 
+        if (action.schema?.secrets && !rawSecrets) {
+          throw new InputError(
+            `Action "${req.params.actionId}" requires secrets but none were provided`,
+          );
+        }
+
+        if (!action.schema?.secrets && rawSecrets) {
+          throw new InputError(
+            `Action "${req.params.actionId}" does not accept secrets`,
+          );
+        }
+
+        const secrets = action.schema?.secrets
+          ? action.schema.secrets(z).safeParse(rawSecrets)
+          : ({ success: true, data: undefined } as const);
+
+        if (!secrets.success) {
+          throw new InputError(
+            `Invalid secrets for action "${req.params.actionId}"`,
+            secrets.error,
+          );
+        }
+
         const result = await action.action({
           input: input.data,
+          secrets: secrets.data,
           credentials,
           logger: this.logger,
         });
@@ -185,15 +218,33 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
         }
 
         res.json({ output: output.data });
-      },
+      };
+
+    // Deprecated: remove v1 invoke route once all callers have migrated to v2
+    router.post(
+      '/.backstage/actions/v1/actions/:actionId/invoke',
+      invokeHandler({ wrapped: false }),
     );
+
+    router.post(
+      '/.backstage/actions/v2/actions/:actionId/invoke',
+      invokeHandler({ wrapped: true }),
+    );
+
     return router;
   }
 
   register<
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
-  >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void {
+    TSecretsSchema extends AnyZodObject | undefined = undefined,
+  >(
+    options: ActionsRegistryActionOptions<
+      TInputSchema,
+      TOutputSchema,
+      TSecretsSchema
+    >,
+  ): void {
     const id = `${this.metadata.getId()}:${options.name}`;
 
     if (this.actions.has(id)) {

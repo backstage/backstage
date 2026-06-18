@@ -71,6 +71,11 @@ export function registerCommands(program: Command) {
       false,
     )
     .option(
+      '--disableExternalFonts',
+      'Disable external font downloads by default by setting theme.font: false in mkdocs.yml when not already configured. Useful for air-gapped environments where Google fonts cannot be accessed.',
+      false,
+    )
+    .option(
       '--defaultPlugin [defaultPlugins...]',
       'Plugins which should be added automatically to the mkdocs.yaml file',
       [],

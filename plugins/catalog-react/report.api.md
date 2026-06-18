@@ -6,6 +6,7 @@
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api';
 import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
+import { AutocompleteRenderOptionState } from '@material-ui/lab/Autocomplete';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
@@ -204,8 +205,8 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'inspectEntityDialog.overviewPage.labels': 'Labels';
     readonly 'inspectEntityDialog.overviewPage.status.title': 'Status';
     readonly 'inspectEntityDialog.overviewPage.identity.title': 'Identity';
-    readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
     readonly 'inspectEntityDialog.overviewPage.tags': 'Tags';
+    readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
     readonly 'inspectEntityDialog.overviewPage.relation.title': 'Relations';
     readonly 'inspectEntityDialog.overviewPage.copyAriaLabel': 'Copy {{label}}';
     readonly 'inspectEntityDialog.overviewPage.copiedStatus': 'Copied';
@@ -244,8 +245,8 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.description': 'Description';
     readonly 'entityTableColumnTitle.system': 'System';
     readonly 'entityTableColumnTitle.namespace': 'Namespace';
-    readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.tags': 'Tags';
+    readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.owner': 'Owner';
     readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
     readonly 'entityTableColumnTitle.targets': 'Targets';
@@ -346,6 +347,11 @@ export type EntityAutocompletePickerProps<
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
   hidden?: boolean;
+  getOptionLabel?: (option: string) => string;
+  renderOption?: (
+    option: string,
+    state: AutocompleteRenderOptionState,
+  ) => ReactNode;
 };
 
 // @public
@@ -466,11 +472,13 @@ export type EntityListContextProps<
     prev?: () => void;
   };
   totalItems?: number;
+  totalItemsLoading: boolean;
   limit: number;
   offset?: number;
   setLimit: (limit: number) => void;
   setOffset?: (offset: number) => void;
   paginationMode: PaginationMode;
+  refresh?: () => void;
 };
 
 // @public (undocumented)

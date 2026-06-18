@@ -23,6 +23,8 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Close from '@material-ui/icons/Close';
 import { useState } from 'react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { techdocsTranslationRef } from '../../translation';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,8 +56,9 @@ export const TechDocsBuildLogsDrawerContent = ({
   onClose: () => void;
 }) => {
   const classes = useDrawerStyles();
+  const { t } = useTranslationRef(techdocsTranslationRef);
   const logText =
-    buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n');
+    buildLog.length === 0 ? t('buildLogs.waitingForLogs') : buildLog.join('\n');
   return (
     <Grid
       container
@@ -72,10 +75,10 @@ export const TechDocsBuildLogsDrawerContent = ({
         spacing={0}
         wrap="nowrap"
       >
-        <Typography variant="h5">Build Details</Typography>
+        <Typography variant="h5">{t('buildLogs.title')}</Typography>
         <IconButton
           key="dismiss"
-          title="Close the drawer"
+          title={t('buildLogs.closeDrawer')}
           onClick={onClose}
           color="inherit"
         >
@@ -92,11 +95,12 @@ export const TechDocsBuildLogsDrawerContent = ({
 export const TechDocsBuildLogs = ({ buildLog }: { buildLog: string[] }) => {
   const classes = useDrawerStyles();
   const [open, setOpen] = useState(false);
+  const { t } = useTranslationRef(techdocsTranslationRef);
 
   return (
     <>
       <Button color="inherit" onClick={() => setOpen(true)}>
-        Show Build Logs
+        {t('buildLogs.showBuildLogs')}
       </Button>
       <Drawer
         classes={{ paper: classes.paper }}

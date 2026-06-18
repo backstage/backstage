@@ -1,5 +1,48 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.3.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-backend-module-github@0.13.3
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-events-node@0.4.23
+
+## 0.3.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-github@0.13.3-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
+## 0.3.22
+
+### Patch Changes
+
+- d745f1c: Added experimental support for checking suspended users via the GitHub REST API instead of the GraphQL `suspendedAt` field. Enable by setting both `excludeSuspendedUsers: true` and `experimental_checkForSuspendedUsersWithRest: true` in the provider config. When enabled, responses are cached using conditional HTTP requests to minimize REST API rate limit usage.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-backend-module-github@0.13.2
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/config@1.3.8
+  - @backstage/plugin-events-node@0.4.22
+
+## 0.3.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-catalog-backend-module-github@0.13.2-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+
 ## 0.3.21
 
 ### Patch Changes

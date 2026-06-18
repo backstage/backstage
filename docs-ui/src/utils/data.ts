@@ -50,8 +50,21 @@ export const components: Page[] = [
     slug: 'checkbox-group',
   },
   {
+    title: 'Combobox',
+    slug: 'combobox',
+    status: 'new',
+  },
+  {
     title: 'Container',
     slug: 'container',
+  },
+  {
+    title: 'DatePicker',
+    slug: 'date-picker',
+  },
+  {
+    title: 'DateRangePicker',
+    slug: 'date-range-picker',
   },
   {
     title: 'Dialog',
@@ -84,6 +97,10 @@ export const components: Page[] = [
   {
     title: 'Menu',
     slug: 'menu',
+  },
+  {
+    title: 'NumberField',
+    slug: 'number-field',
   },
   {
     title: 'PasswordField',

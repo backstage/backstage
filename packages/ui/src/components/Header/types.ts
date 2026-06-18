@@ -53,6 +53,48 @@ export interface HeaderNavTabGroup {
 export type HeaderNavTabItem = HeaderNavTab | HeaderNavTabGroup;
 
 /**
+ * Represents a tag item in the header.
+ *
+ * @public
+ */
+export interface HeaderTag {
+  label: string;
+  href?: string;
+}
+
+/**
+ * Represents a metadata key-value pair in the header.
+ *
+ * @public
+ */
+export interface HeaderMetadataItem {
+  label: string;
+  value: React.ReactNode;
+}
+
+/**
+ * Represents a user in the HeaderMetadataUsers component.
+ *
+ * @public
+ */
+export interface HeaderMetadataUser {
+  name: string;
+  src?: string;
+  href?: string;
+}
+
+/**
+ * Represents a status item in the HeaderMetadataStatus component.
+ *
+ * @public
+ */
+export interface HeaderMetadataStatusProps {
+  label: string;
+  color: 'danger' | 'warning' | 'success' | 'info';
+  href?: string;
+}
+
+/**
  * Own props for the Header component.
  *
  * @public
@@ -62,8 +104,23 @@ export interface HeaderOwnProps {
   customActions?: React.ReactNode;
   tabs?: HeaderNavTabItem[];
   activeTabId?: string | null;
+  /**
+   * @deprecated The breadcrumbs prop will be removed in a future release.
+   */
   breadcrumbs?: HeaderBreadcrumb[];
+  /**
+   * Markdown string rendered below the title. Only inline links are supported.
+   * Bold, italic, and block-level markdown are not rendered.
+   */
+  description?: string;
+  tags?: HeaderTag[];
+  metadata?: HeaderMetadataItem[];
   className?: string;
+  /**
+   * Makes the title-and-actions row stick to the top of its nearest scroll
+   * container while the rest of the header content scrolls away.
+   */
+  sticky?: boolean;
 }
 
 /**

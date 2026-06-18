@@ -92,9 +92,10 @@ describe('createConfigSchema', () => {
     it('should reject a direct zod v3 schema', () => {
       expect(() => createConfigSchema({ name: zodV3.string() as any })).toThrow(
         "Config schema for field 'name' uses a Zod v3 schema, which is " +
-          'not supported by the `configSchema` option. Either use ' +
-          "`import { z } from 'zod/v4'` from the zod v3 package, or " +
-          'upgrade to zod v4.',
+          'not supported by the `configSchema` option. Upgrade to the ' +
+          '`zod` v4 package (`zod@^4.0.0`). Note that the `zod/v4` ' +
+          'subpath export from the zod v3 package is also not supported, ' +
+          'as it does not include JSON Schema conversion.',
       );
     });
   });

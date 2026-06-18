@@ -37,7 +37,7 @@ export interface BackstageSignInResult {
 
   /**
    * Identity information to pass to the client rather than using the
-   * information that's embeeded in the token.
+   * information that's embedded in the token.
    */
   identity?: BackstageUserIdentity;
 }

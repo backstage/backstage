@@ -207,6 +207,30 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
     });
   });
 
+  it('stops retrying when the abort signal is triggered', async () => {
+    const controller = new AbortController();
+    const fn = jest.fn().mockRejectedValue(new Error('always fails'));
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      initialDelayDuration: undefined,
+      cadence: '* * * * * *',
+      timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
+    };
+    const checkFrequency = Duration.fromObject({ milliseconds: 50 });
+    const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
+    worker.start(settings, { signal: controller.signal });
+
+    await waitForExpect(() => {
+      expect(fn).toHaveBeenCalled();
+    });
+
+    const callsBeforeAbort = fn.mock.calls.length;
+    controller.abort();
+
+    await new Promise(r => setTimeout(r, 500));
+    expect(fn.mock.calls.length).toBe(callsBeforeAbort);
+  });
+
   it('does not clobber ticket lock when stolen', async () => {
     const fn = jest.fn(
       async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
@@ -328,8 +352,9 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
     expect(fn1).toHaveBeenCalledTimes(0);
     await new Promise(resolve => setTimeout(resolve, 250));
     expect(fn1).toHaveBeenCalledTimes(0);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    expect(fn1.mock.calls.length).toBeGreaterThan(0);
+    await waitForExpect(() => {
+      expect(fn1).toHaveBeenCalled();
+    });
 
     // Start a second worker and make sure it waits but the first worker still works along
     const fn2 = jest.fn();

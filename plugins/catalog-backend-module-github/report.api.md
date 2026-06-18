@@ -6,6 +6,7 @@
 import { AnalyzeOptions } from '@backstage/plugin-catalog-node';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -158,6 +159,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     alwaysUseDefaultNamespace?: boolean;
     pageSizes?: Partial<GithubPageSizes>;
     excludeSuspendedUsers?: boolean;
+    cache?: CacheService;
+    experimental_checkForSuspendedUsersWithRest?: boolean;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -172,8 +175,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 // @public
 export interface GithubMultiOrgEntityProviderOptions {
   alwaysUseDefaultNamespace?: boolean;
+  cache?: CacheService;
   events?: EventsService;
   excludeSuspendedUsers?: boolean;
+  experimental_checkForSuspendedUsersWithRest?: boolean;
   githubCredentialsProvider?: GithubCredentialsProvider;
   githubUrl: string;
   id: string;
@@ -237,6 +242,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
     teamTransformer?: TeamTransformer;
     pageSizes?: Partial<GithubPageSizes>;
     excludeSuspendedUsers?: boolean;
+    cache?: CacheService;
+    experimental_checkForSuspendedUsersWithRest?: boolean;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -253,8 +260,10 @@ export type GitHubOrgEntityProviderOptions = GithubOrgEntityProviderOptions;
 
 // @public
 export interface GithubOrgEntityProviderOptions {
+  cache?: CacheService;
   events?: EventsService;
   excludeSuspendedUsers?: boolean;
+  experimental_checkForSuspendedUsersWithRest?: boolean;
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
   logger: LoggerService;

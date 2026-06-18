@@ -7,7 +7,7 @@ import { AppConfig } from '@backstage/config';
 import { Config } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { Observable } from '@backstage/types';
 
 // @public

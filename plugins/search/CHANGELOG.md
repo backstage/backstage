@@ -1,5 +1,75 @@
 # @backstage/plugin-search
 
+## 1.7.5
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/plugin-search-react@1.11.5
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+
+## 1.7.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/ui@0.15.1-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.1
+  - @backstage/plugin-search-react@1.11.5-next.1
+
+## 1.7.5-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.0.1-next.0
+  - @backstage/core-components@0.18.11-next.0
+  - @backstage/plugin-search-react@1.11.5-next.0
+
+## 1.7.4
+
+### Patch Changes
+
+- 44d77e9: Removed separate nav item extensions. Sidebar entries are now provided via `title` and `icon` on each plugin's page extension.
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 085133f: The `zod` dependency has been bumped from `^3.25.76 || ^4.0.0` to `^4.0.0`, since `configSchema` requires the full Zod v4 package for JSON Schema support.
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/ui@0.15.0
+  - @backstage/errors@1.3.1
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-catalog-react@3.0.0
+  - @backstage/plugin-search-react@1.11.4
+  - @backstage/plugin-search-common@1.2.24
+
+## 1.7.4-next.0
+
+### Patch Changes
+
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 085133f: The `zod` dependency has been bumped from `^3.25.76 || ^4.0.0` to `^4.0.0`, since `configSchema` requires the full Zod v4 package for JSON Schema support.
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-catalog-react@2.1.5-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/plugin-search-react@1.11.4-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-search-common@1.2.24-next.0
+
 ## 1.7.1
 
 ### Patch Changes

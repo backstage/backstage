@@ -1,5 +1,66 @@
 # @backstage/plugin-signals
 
+## 0.0.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-signals-react@0.0.23
+
+## 0.0.32-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-signals-react@0.0.23-next.0
+
+## 0.0.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+
+## 0.0.31
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/plugin-signals-react@0.0.22
+
+## 0.0.31-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+
+## 0.0.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/theme@0.7.3
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-react@0.0.22-next.0
+
 ## 0.0.30
 
 ### Patch Changes

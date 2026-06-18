@@ -1,5 +1,64 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.37
+
+### Patch Changes
+
+- 9095f69: Added a default export to the `/alpha` entrypoint that bundles all contributed TechDocs addon modules using `createFrontendFeatureLoader`. This allows the package to be loaded as a single feature in setups that discover frontend modules through their default export, such as dynamic plugin loaders.
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/integration@2.0.3
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/integration-react@1.2.19
+  - @backstage/plugin-techdocs-react@1.3.12
+
+## 1.1.37-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.1
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-techdocs-react@1.3.12-next.1
+  - @backstage/integration-react@1.2.19-next.1
+
+## 1.1.37-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/integration-react@1.2.19-next.0
+  - @backstage/plugin-techdocs-react@1.3.12-next.0
+
+## 1.1.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/core-plugin-api@1.12.6
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-techdocs-react@1.3.11
+  - @backstage/integration-react@1.2.18
+
+## 1.1.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/plugin-techdocs-react@1.3.11-next.0
+  - @backstage/integration-react@1.2.18-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+
 ## 1.1.35
 
 ### Patch Changes

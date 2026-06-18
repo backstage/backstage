@@ -1,5 +1,72 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-techdocs-node@1.15.1
+
+## 2.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/plugin-techdocs-node@1.15.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 2.2.0
+
+### Minor Changes
+
+- 5ef8d16: Add support for disabling external font downloads via app-config option `techdocs.generator.mkdocs.disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-techdocs-node@1.15.0
+  - @backstage/catalog-client@1.15.1
+  - @backstage/config@1.3.8
+
+## 2.2.0-next.1
+
+### Minor Changes
+
+- 5ef8d16: Add support for disabling external font downloads via app-config option `techdocs.generator.mkdocs.disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.2-next.1
+  - @backstage/plugin-techdocs-node@1.15.0-next.1
+
+## 2.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-client@1.15.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/plugin-techdocs-node@1.14.6-next.0
+  - @backstage/types@1.2.2
+
 ## 2.1.7
 
 ### Patch Changes

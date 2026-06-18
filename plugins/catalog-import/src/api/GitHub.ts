@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  GithubIntegrationConfig,
-  ScmIntegrationRegistry,
-} from '@backstage/integration';
-import parseGitUrl from 'git-url-parse';
+import { GithubIntegrationConfig } from '@backstage/integration';
 import { ScmAuthApi } from '@backstage/integration-react';
 import { Octokit } from '@octokit/rest';
 import { getBranchName, getCatalogFilename } from '../components/helpers';
@@ -34,22 +30,6 @@ export interface GitHubOptions {
   repositoryUrl: string;
   githubIntegrationConfig: GithubIntegrationConfig;
 }
-export const getGithubIntegrationConfig = (
-  scmIntegrationsApi: ScmIntegrationRegistry,
-  location: string,
-) => {
-  const integration = scmIntegrationsApi.github.byUrl(location);
-  if (!integration) {
-    return undefined;
-  }
-
-  const { name: repo, owner } = parseGitUrl(location);
-  return {
-    repo,
-    owner,
-    githubIntegrationConfig: integration.config,
-  };
-};
 
 export async function submitGitHubPrToRepo(
   options: GitHubOptions,

@@ -1,5 +1,130 @@
 # @backstage/backend-defaults
 
+## 0.17.3
+
+### Patch Changes
+
+- 4f4bcf5: Upgraded `infinispan` from `^0.12.0` to `^0.13.0` to address known vulnerabilities.
+- a07e6a3: Updated `AzureBlobStorageUrlReader` to reference the correctly-named `AzureBlobStorageIntegration` type from `@backstage/integration`. The previously-used `AzureBlobStorageIntergation` is now an alias for the new type and remains a valid argument to the constructor.
+- b75158b: Adapted Azure-related tests for the Azure SDK upgrade to ESM-style exports. The `AzureBlobStorageUrlReader` now accepts an optional `createContainerClient` dependency for testability without needing to mock the `@azure/storage-blob` module.
+- 89a95ca: Fixed the task worker retry loop to respect the abort signal. Previously, when a task worker encountered an unexpected error, the retry loop would continue indefinitely even after the worker was signaled to stop. The retry loop now checks the abort signal before retrying and passes it to the retry delay, allowing the worker to shut down gracefully.
+- def82d4: Fixed the built-in rate limiter throwing a validation error and refusing to start when `backend.rateLimit` is enabled. Requests are now keyed using the address normalization helper from `express-rate-limit`, which is required by newer versions of that library and ensures IPv6 clients are grouped by their address block rather than by individual address.
+- 0211390: Added a new `v2` invoke endpoint (`/.backstage/actions/v2/actions/:id/invoke`) that accepts a wrapped body format `{ input, secrets }` with secrets validation. The existing `v1` invoke endpoint remains unchanged for backward compatibility. Updated `DefaultActionsService` to use the `v2` endpoint. Updated `DefaultActionsRegistryService` to expose secrets schema in the actions list response and validate secrets on invocation.
+- 34f21c3: Fix gitlabUrlReader issue with retrieving the repository archive tree
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+  - @backstage/backend-app-api@1.7.1
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/config-loader@1.10.12
+  - @backstage/plugin-auth-node@0.7.2
+  - @backstage/plugin-events-node@0.4.23
+  - @backstage/plugin-permission-node@0.11.1
+
+## 0.17.3-next.2
+
+### Patch Changes
+
+- 89a95ca: Fixed the task worker retry loop to respect the abort signal. Previously, when a task worker encountered an unexpected error, the retry loop would continue indefinitely even after the worker was signaled to stop. The retry loop now checks the abort signal before retrying and passes it to the retry delay, allowing the worker to shut down gracefully.
+
+## 0.17.3-next.1
+
+### Patch Changes
+
+- b75158b: Adapted Azure-related tests for the Azure SDK upgrade to ESM-style exports. The `AzureBlobStorageUrlReader` now accepts an optional `createContainerClient` dependency for testability without needing to mock the `@azure/storage-blob` module.
+- 0211390: Added a new `v2` invoke endpoint (`/.backstage/actions/v2/actions/:id/invoke`) that accepts a wrapped body format `{ input, secrets }` with secrets validation. The existing `v1` invoke endpoint remains unchanged for backward compatibility. Updated `DefaultActionsService` to use the `v2` endpoint. Updated `DefaultActionsRegistryService` to expose secrets schema in the actions list response and validate secrets on invocation.
+- 34f21c3: Fix gitlabUrlReader issue with retrieving the repository archive tree
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.1
+  - @backstage/backend-plugin-api@1.9.2-next.1
+
+## 0.17.2-next.0
+
+### Patch Changes
+
+- a07e6a3: Updated `AzureBlobStorageUrlReader` to reference the correctly-named `AzureBlobStorageIntegration` type from `@backstage/integration`. The previously-used `AzureBlobStorageIntergation` is now an alias for the new type and remains a valid argument to the constructor.
+- def82d4: Fixed the built-in rate limiter throwing a validation error and refusing to start when `backend.rateLimit` is enabled. Requests are now keyed using the address normalization helper from `express-rate-limit`, which is required by newer versions of that library and ensures IPv6 clients are grouped by their address block rather than by individual address.
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.0
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/backend-app-api@1.7.1-next.0
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-events-node@0.4.23-next.0
+
+## 0.17.1
+
+### Patch Changes
+
+- 90b572e: Adds an alpha `TracingService` to provide a unified interface for emitting trace spans across Backstage plugins.
+- 97d3bd4: Fixed a race condition in `CachedUserInfoService` where a failed request could incorrectly evict a newer cache entry for the same token. The error handler now verifies the map entry is still the same promise before deleting it.
+- 3595c97: Exported `defaultServiceFactories` to allow use with `createSpecializedBackend` for advanced configuration like `extensionPointFactoryMiddleware`.
+- 89d3248: Fixed scheduler `sleep` firing immediately for durations longer than ~24.8 days, caused by Node.js `setTimeout` overflowing its 32-bit millisecond limit.
+- d00a44b: Fixed Valkey cluster mode to use `iovalkey`'s `Cluster` class instead of
+  `createCluster` from `@keyv/redis`. The previous implementation passed a
+  `@redis/client` `RedisCluster` instance to `@keyv/valkey`, which expects an
+  `iovalkey` `Cluster` instance. This caused the cluster client to not be
+  recognized correctly, as the two libraries have incompatible object models.
+- 2f0519c: Added a new `CachedUserInfoService` decorator that wraps `DefaultUserInfoService` with a 5-second TTL cache and in-flight request coalescing. The decorator is wired in via `userInfoServiceFactory` using a shared root-level cache. Repeated `getUserInfo()` calls for the same user token within the TTL window return the cached result without making an HTTP call to the auth backend. Note that custom `UserInfoService` implementations registered via their own factory will not benefit from this cache automatically.
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- 6209065: Added `context` and `propagation` to the alpha `TracingService`. Plugins can bridge OpenTelemetry context across async boundaries via `tracing.propagation.extract(tracing.context.active(), carrier)` followed by `tracing.context.with(ctx, fn)`, and read propagated baggage via `tracing.propagation.getActiveBaggage()` or `tracing.propagation.getBaggage(ctx)`.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/integration-aws-node@0.2.0
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/backend-app-api@1.7.0
+  - @backstage/cli-node@0.3.2
+  - @backstage/integration@2.0.2
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-auth-node@0.7.1
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/config@1.3.8
+  - @backstage/config-loader@1.10.11
+  - @backstage/plugin-events-node@0.4.22
+
+## 0.17.1-next.2
+
+### Patch Changes
+
+- 90b572e: Adds an alpha `TracingService` to provide a unified interface for emitting trace spans across Backstage plugins.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.9.1-next.1
+
+## 0.17.1-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.2-next.1
+  - @backstage/plugin-auth-node@0.7.1-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
+## 0.17.1-next.0
+
+### Patch Changes
+
+- 3595c97: Exported `defaultServiceFactories` to allow use with `createSpecializedBackend` for advanced configuration like `extensionPointFactoryMiddleware`.
+- 89d3248: Fixed scheduler `sleep` firing immediately for durations longer than ~24.8 days, caused by Node.js `setTimeout` overflowing its 32-bit millisecond limit.
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-app-api@1.7.0-next.0
+  - @backstage/integration@2.0.2-next.0
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/cli-node@0.3.2-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/config-loader@1.10.11-next.0
+  - @backstage/integration-aws-node@0.1.22-next.0
+  - @backstage/plugin-events-node@0.4.22-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/backend-dev-utils@0.1.7
+  - @backstage/types@1.2.2
+
 ## 0.17.0
 
 ### Minor Changes
