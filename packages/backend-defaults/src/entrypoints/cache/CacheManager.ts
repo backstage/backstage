@@ -42,7 +42,6 @@ import {
   InfinispanKeyvStore,
 } from './providers/infinispan/InfinispanKeyvStore';
 import type { KeyvRedisOptions, RedisClusterOptions } from '@keyv/redis';
-import type KeyvRedisClass from '@keyv/redis';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
 
@@ -386,10 +385,10 @@ export class CacheManager {
   }
 
   private createRedisStoreFactory(): StoreFactory {
-    const KeyvRedis = require('@keyv/redis').default as typeof KeyvRedisClass;
-    const { createCluster } =
-      require('@keyv/redis') as typeof import('@keyv/redis');
-    const stores: Record<string, KeyvRedisClass<unknown>> = {};
+    const keyvRedis = require('@keyv/redis') as typeof import('@keyv/redis');
+    const KeyvRedis = keyvRedis.default;
+    const { createCluster } = keyvRedis;
+    const stores: Record<string, InstanceType<typeof KeyvRedis>> = {};
 
     return (pluginId, defaultTtl) => {
       if (this.storeOptions?.type !== 'redis') {
