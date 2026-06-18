@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {
+import type {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { HumanDuration, durationToMilliseconds } from '@backstage/types';
-import { RedisClusterOptions, KeyvRedisOptions } from '@keyv/redis';
-import { KeyvValkeyOptions } from '@keyv/valkey';
-import { ClusterNode, ClusterOptions } from 'iovalkey';
+import { durationToMilliseconds, type HumanDuration } from '@backstage/types';
+import type { RedisClusterOptions, KeyvRedisOptions } from '@keyv/redis';
+import type { KeyvValkeyOptions } from '@keyv/valkey';
+import type { ClusterNode, ClusterOptions } from 'iovalkey';
 
 /**
  * A cache store connection, either a URL string or an object with
