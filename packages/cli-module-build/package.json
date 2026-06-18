@@ -97,7 +97,7 @@
     "ts-morph": "^24.0.0",
     "util": "^0.12.3",
     "webpack": "~5.105.0",
-    "webpack-dev-server": "^5.0.0",
+    "webpack-dev-server": "^5.2.5",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0"
   },
