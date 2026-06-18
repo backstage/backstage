@@ -95,9 +95,21 @@ export class DefaultProviderDatabase implements ProviderDatabase {
       );
     }
 
-    // Track entity refs that this provider successfully claimed, so we can
-    // sync refs in one pass at the end.
+    // Track entity refs that this provider should own, so we can sync refs
+    // in one pass at the end. For full operations the complete desired set is
+    // known upfront. For delta operations we seed with all existing refs so
+    // the sync preserves them — only the newly added/removed refs change it.
     const claimedRefs = new Array<string>();
+    if (options.type === 'full') {
+      claimedRefs.push(
+        ...options.items.map(item => stringifyEntityRef(item.entity)),
+      );
+    } else {
+      const existingRefs = await tx('refresh_state_references')
+        .where({ source_key: options.sourceKey })
+        .select('target_entity_ref');
+      claimedRefs.push(...existingRefs.map(r => r.target_entity_ref));
+    }
 
     if (toAdd.length) {
       // The reason for this chunking, rather than just massively batch
@@ -166,6 +178,16 @@ export class DefaultProviderDatabase implements ProviderDatabase {
           }
           if (ok) {
             claimedRefs.push(entityRef);
+            // When a locationKey is set, this may be a takeover of an entity
+            // that was previously owned by another source. Remove any stale
+            // refs from other sourceKeys so orphan detection works correctly.
+            if (locationKey) {
+              await tx('refresh_state_references')
+                .where('target_entity_ref', entityRef)
+                .andWhereNot('source_key', options.sourceKey)
+                .whereNotNull('source_key')
+                .delete();
+            }
           } else {
             const conflictingKey = await checkLocationKeyConflict({
               tx,
