@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">53 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/53 infos</a><span class="filter-pill ok" aria-disabled="true">535 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><span class="filter-pill ok" aria-disabled="true">543 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.7s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -15348,14 +15348,191 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="TextAreaField">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> TextAreaField</h2>
+      <div class="badges">
+        <label for="c-46-backstage-ui-textareafield-props" class="badge ok as-toggle">7 prop types</label>
+        
+        <label for="c-46-backstage-ui-textareafield-stories" class="badge ok as-toggle">8 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./packages/ui/src/components/TextAreaField/TextAreaField.stories.tsx">backstage-ui-textareafield · ./packages/ui/src/components/TextAreaField/TextAreaField.stories.tsx</div>
+    
+    <div class="hint">A multi-line text input with an integrated label and inline error display.</div>
+    <div class="kv"><span class="chip">public:  </span></div>
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-46-backstage-ui-textareafield-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-46-backstage-ui-textareafield-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">7 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/TextAreaField/TextAreaField.tsx::TextAreaField</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>className?: string
+
+description?: FieldLabelProps[&#39;description&#39;]
+
+label?: FieldLabelProps[&#39;label&#39;]
+
+/**
+ * Text to display in the text area when it has no value
+ */
+placeholder?: string
+
+/**
+ * The number of visible text lines, controlling the initial and minimum height
+ * @defaultValue 3
+ */
+rows?: number
+
+secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]
+
+/**
+ * The size of the text area field
+ * @defaultValue &#39;small&#39;
+ */
+size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#39;small&#39; | &#39;medium&#39;&gt;&gt;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Flex, TextAreaField } from "@backstage/ui";
+import { Form } from "react-aria-components";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;TextAreaField
+    name=&quot;message&quot;
+    placeholder=&quot;Enter a message&quot;
+    style={{
+      maxWidth: &#39;300px&#39;,
+    }} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Label</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithLabel = () =&gt; &lt;TextAreaField label=&quot;Message&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Description</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDescription = () =&gt; &lt;TextAreaField description=&quot;Share as much detail as you like.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Required</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Required = () =&gt; &lt;TextAreaField isRequired /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Disabled = () =&gt; &lt;TextAreaField isDisabled /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Sizes = () =&gt; &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot; style={{ maxWidth: &#39;300px&#39; }}&gt;
+    &lt;TextAreaField size=&quot;small&quot; label=&quot;Small&quot; /&gt;
+    &lt;TextAreaField size=&quot;medium&quot; label=&quot;Medium&quot; /&gt;
+&lt;/Flex&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Scrolling</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Scrolling = () =&gt; &lt;TextAreaField
+    rows={3}
+    defaultValue={Array.from(
+      { length: 12 },
+      (_, i) =&gt; `Line ${i + 1}: this content scrolls within a fixed height.`,
+    ).join(&#39;\n&#39;)} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Show Error</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ShowError = () =&gt; &lt;Form validationErrors={{ message: &#39;Message is required&#39; }}&gt;
+    &lt;TextAreaField /&gt;
+&lt;/Form&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="TextField">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-46-backstage-ui-textfield-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-47-backstage-ui-textfield-props" class="badge ok as-toggle">8 prop types</label>
         
-        <label for="c-46-backstage-ui-textfield-stories" class="badge ok as-toggle">13 stories</label>
+        <label for="c-47-backstage-ui-textfield-stories" class="badge ok as-toggle">13 stories</label>
         
         
       </div>
@@ -15369,10 +15546,10 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-46-backstage-ui-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-47-backstage-ui-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-46-backstage-ui-textfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-47-backstage-ui-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -15632,9 +15809,9 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToastContainer</h2>
       <div class="badges">
-        <label for="c-47-app-toast-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-48-app-toast-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-47-app-toast-stories" class="badge ok as-toggle">11 stories</label>
+        <label for="c-48-app-toast-stories" class="badge ok as-toggle">11 stories</label>
         
         
       </div>
@@ -15648,10 +15825,10 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-47-app-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-48-app-toast-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-47-app-toast-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-48-app-toast-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -16165,9 +16342,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleButton</h2>
       <div class="badges">
-        <label for="c-48-backstage-ui-togglebutton-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-49-backstage-ui-togglebutton-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-48-backstage-ui-togglebutton-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-49-backstage-ui-togglebutton-stories" class="badge ok as-toggle">10 stories</label>
         
         
       </div>
@@ -16181,10 +16358,10 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-48-backstage-ui-togglebutton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-49-backstage-ui-togglebutton-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-48-backstage-ui-togglebutton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-49-backstage-ui-togglebutton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -16529,9 +16706,9 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleButtonGroup</h2>
       <div class="badges">
-        <label for="c-49-backstage-ui-togglebuttongroup-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-50-backstage-ui-togglebuttongroup-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-49-backstage-ui-togglebuttongroup-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-50-backstage-ui-togglebuttongroup-stories" class="badge ok as-toggle">10 stories</label>
         
         
       </div>
@@ -16545,10 +16722,10 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-49-backstage-ui-togglebuttongroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-50-backstage-ui-togglebuttongroup-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-49-backstage-ui-togglebuttongroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-50-backstage-ui-togglebuttongroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -16822,7 +16999,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
       <div class="badges">
         
         
-        <label for="c-50-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-51-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
         
         
       </div>
@@ -16836,7 +17013,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-50-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-51-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
   
@@ -16989,9 +17166,9 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> visual</h2>
       <div class="badges">
-        <label for="c-51-backstage-ui-table-visual-props" class="badge ok as-toggle">14 prop types</label>
+        <label for="c-52-backstage-ui-table-visual-props" class="badge ok as-toggle">14 prop types</label>
         
-        <label for="c-51-backstage-ui-table-visual-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-52-backstage-ui-table-visual-stories" class="badge ok as-toggle">10 stories</label>
         
         
       </div>
@@ -17005,10 +17182,10 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-51-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-52-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-51-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-52-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -17568,9 +17745,9 @@ virtualized?: | boolean
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-52-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-53-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-52-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-53-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
         
         
       </div>
@@ -17584,10 +17761,10 @@ virtualized?: | boolean
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-52-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-53-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-52-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-53-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
