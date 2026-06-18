@@ -135,7 +135,7 @@ export class CacheManager {
    * passed through to the underlying store client.
    *
    * @param config - The configuration service
-   * @return The parsed connection config, either a string or an object depending on how it was configured
+   * @returns The parsed connection config, either a string or an object depending on how it was configured
    */
   private static parseConnection(
     config: RootConfigService,
