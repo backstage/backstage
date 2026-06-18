@@ -527,25 +527,25 @@ const _default: OverridableFrontendPlugin<
     'sub-page:scaffolder/templates': OverridableExtensionDefinition<{
       config: {
         enableBackstageUi: boolean;
-        filter: FilterPredicate | undefined;
         groups:
           | {
               title: string;
               filter: FilterPredicate;
             }[]
           | undefined;
+        templateFilter: FilterPredicate | undefined;
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
         enableBackstageUi?: boolean | undefined;
-        filter?: FilterPredicate | undefined;
         groups?:
           | {
               title: string;
               filter: FilterPredicate;
             }[]
           | undefined;
+        templateFilter?: FilterPredicate | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };

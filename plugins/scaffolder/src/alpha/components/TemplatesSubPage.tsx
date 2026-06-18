@@ -66,11 +66,11 @@ import {
 } from '@backstage/plugin-techdocs-common';
 
 function TemplateListContent({
-  filter,
   groups: configuredGroups,
+  templateFilter,
 }: {
-  filter?: (entity: TemplateEntityV1beta3) => boolean;
   groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
 }) {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
@@ -161,7 +161,7 @@ function TemplateListContent({
           <CatalogFilterLayout.Content>
             <TemplateGroups
               groups={groups}
-              templateFilter={filter}
+              templateFilter={templateFilter}
               onTemplateSelected={onTemplateSelected}
               additionalLinksForEntity={additionalLinksForEntity}
             />
@@ -181,8 +181,8 @@ function TemplateListContent({
 export function TemplatesSubPage(props: {
   formFields?: Array<FormField>;
   formProps?: FormProps;
-  filter?: (entity: TemplateEntityV1beta3) => boolean;
   groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
 }) {
   const customFieldExtensions = useCustomFieldExtensions(undefined);
   const customLayouts = useCustomLayouts(undefined);
@@ -204,7 +204,10 @@ export function TemplatesSubPage(props: {
       <Route
         index
         element={
-          <TemplateListContent filter={props.filter} groups={props.groups} />
+          <TemplateListContent
+            groups={props.groups}
+            templateFilter={props.templateFilter}
+          />
         }
       />
       <Route
