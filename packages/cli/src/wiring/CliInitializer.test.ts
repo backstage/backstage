@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { CliModule } from '@backstage/cli-node';
 import { CliInitializer } from './CliInitializer';
 import { createCliModule } from './factory';
 
@@ -270,7 +271,7 @@ describe('CliInitializer', () => {
     expect(process.exit).toHaveBeenCalledWith(0);
   });
 
-  it('should silently override array-sourced module with conflicting individual module while keeping siblings', async () => {
+  it('should override individual aggregate commands while keeping the other commands', async () => {
     expect.assertions(3);
     process.argv = ['node', 'cli', 'test'];
     const initializer = new CliInitializer();
@@ -288,37 +289,32 @@ describe('CliInitializer', () => {
         }),
     });
 
-    const conflictingArrayModule = createCliModule({
-      packageJson: { name: '@backstage/array-conflict' },
-      init: async reg =>
+    const aggregateModule = createCliModule({
+      packageJson: { name: '@backstage/aggregate' },
+      init: async reg => {
         reg.addCommand({
           path: ['test'],
-          description: 'array test (should be skipped)',
+          description: 'aggregate test (should be overridden)',
           execute: () => Promise.resolve(),
-        }),
-    });
-
-    const nonConflictingArrayModule = createCliModule({
-      packageJson: { name: '@backstage/array-sibling' },
-      init: async reg =>
+        });
         reg.addCommand({
           path: ['other'],
           description: 'other command',
           execute: () => Promise.resolve(),
-        }),
+        });
+      },
     });
 
     initializer.add(individualModule);
-    initializer.add([conflictingArrayModule, nonConflictingArrayModule]);
+    initializer.add([aggregateModule]);
 
     await initializer.run();
     expect(process.exit).toHaveBeenCalledWith(0);
 
-    // Verify the sibling command is available by running it
     process.argv = ['node', 'cli', 'other'];
     const initializer2 = new CliInitializer();
     initializer2.add(individualModule);
-    initializer2.add([conflictingArrayModule, nonConflictingArrayModule]);
+    initializer2.add([aggregateModule]);
     await initializer2.run();
     expect(process.exit).toHaveBeenCalledTimes(2);
   });
@@ -383,6 +379,18 @@ describe('CliInitializer', () => {
 
     await expect(initializer.run()).rejects.toThrow(
       'Command "shared" from "@backstage/array-b" conflicts with an existing command from "@backstage/array-a"',
+    );
+  });
+
+  it('should identify malformed installed module exports', async () => {
+    const initializer = new CliInitializer();
+    initializer.add(
+      Promise.resolve({ default: {} as CliModule }),
+      '@example/broken-module',
+    );
+
+    await expect(initializer.run()).rejects.toThrow(
+      'Invalid CLI module export from "@example/broken-module": expected a module created with createCliModule',
     );
   });
 });

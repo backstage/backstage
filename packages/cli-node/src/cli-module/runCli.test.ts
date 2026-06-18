@@ -16,6 +16,7 @@
 
 import { createCliModule } from './createCliModule';
 import { runCli } from './runCli';
+import { runCliModule } from './runCliModule';
 
 const originalArgv = process.argv;
 const originalUnhandledRejectionListeners = new Set(
@@ -76,6 +77,75 @@ describe('runCli', () => {
 
     expect(process.exit).toHaveBeenCalledWith(0);
     expect(process.exit).toHaveBeenCalledTimes(1);
+  });
+
+  it('runs a single module through the standalone helper', async () => {
+    expect.assertions(2);
+    process.argv = ['node', 'cli', 'info'];
+    const cliModule = createCliModule({
+      packageJson: { name: '@example/info' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['info'],
+          description: 'Show information',
+          execute: async ({ args }) => {
+            expect(args).toEqual([]);
+          },
+        });
+      },
+    });
+
+    await runCliModule({ module: cliModule, name: '@example/info' });
+
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
+  it('overrides aggregate commands at command granularity', async () => {
+    expect.assertions(4);
+    const aggregateCommand = jest.fn();
+    const individualCommand = jest.fn();
+    const otherCommand = jest.fn();
+    const aggregateModule = createCliModule({
+      packageJson: { name: '@example/aggregate' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['test'],
+          description: 'Aggregate test command',
+          execute: aggregateCommand,
+        });
+        reg.addCommand({
+          path: ['other'],
+          description: 'Other aggregate command',
+          execute: otherCommand,
+        });
+      },
+    });
+    const individualModule = createCliModule({
+      packageJson: { name: '@example/individual' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['test'],
+          description: 'Individual test command',
+          execute: individualCommand,
+        });
+      },
+    });
+
+    process.argv = ['node', 'cli', 'test'];
+    await runCli({
+      modules: [[aggregateModule], individualModule],
+      name: 'example-cli',
+    });
+    process.argv = ['node', 'cli', 'other'];
+    await runCli({
+      modules: [[aggregateModule], individualModule],
+      name: 'example-cli',
+    });
+
+    expect(individualCommand).toHaveBeenCalledTimes(1);
+    expect(aggregateCommand).not.toHaveBeenCalled();
+    expect(otherCommand).toHaveBeenCalledTimes(1);
+    expect(process.exit).toHaveBeenCalledTimes(2);
   });
 
   it('forwards help flags to leaf commands', async () => {

@@ -15,54 +15,176 @@
  */
 
 import { targetPaths } from '@backstage/cli-common';
-import { PackageRoles } from '@backstage/cli-node';
 import fs from 'node:fs';
-import { resolve as resolvePath } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, resolve as resolvePath } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-/**
- * Scans the target project root's package.json for dependencies that are CLI
- * modules (packages with `backstage.role === 'cli-module'`).
- *
- * Returns the resolved entry point paths of discovered CLI module packages,
- * or an empty array if none are found or the project root cannot be read.
- * The paths are resolved relative to the project root to ensure they can be
- * imported regardless of where the CLI code itself is located.
- */
-export function discoverCliModules(): string[] {
-  const rootDir = targetPaths.rootDir;
-  const pkgJsonPath = resolvePath(rootDir, 'package.json');
+export interface DiscoveredCliModule {
+  name: string;
+  path: string;
+}
 
-  let projectPkg: {
+function isBackstageCliModulePackage(name: string): boolean {
+  return (
+    name === '@backstage/cli-defaults' ||
+    name.startsWith('@backstage/cli-module-')
+  );
+}
+
+function formatError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function findPackageJsonPath(
+  dependencyName: string,
+  modulePath: string,
+): string | undefined {
+  let directory = dirname(modulePath);
+  for (;;) {
+    const candidatePath = resolvePath(directory, 'package.json');
+    if (fs.existsSync(candidatePath)) {
+      try {
+        const candidatePackage = JSON.parse(
+          fs.readFileSync(candidatePath, 'utf8'),
+        );
+        if (candidatePackage.name === dependencyName) {
+          return candidatePath;
+        }
+      } catch {
+        return candidatePath;
+      }
+    }
+
+    const parentDirectory = dirname(directory);
+    if (parentDirectory === directory) {
+      return undefined;
+    }
+    directory = parentDirectory;
+  }
+}
+
+/**
+ * Discovers CLI modules from the target repository's direct dependencies.
+ */
+export function discoverCliModules(): DiscoveredCliModule[] {
+  const rootDir = targetPaths.rootDir;
+  const packageJsonPath = resolvePath(rootDir, 'package.json');
+
+  let projectPackage: {
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
   };
   try {
-    projectPkg = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-  } catch {
-    return [];
+    projectPackage = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  } catch (error) {
+    throw new Error(
+      `Failed to read the target repository package.json at "${packageJsonPath}": ${formatError(
+        error,
+      )}`,
+    );
   }
 
-  const allDeps = {
-    ...projectPkg.dependencies,
-    ...projectPkg.devDependencies,
-  };
+  const dependencyNames = Object.keys({
+    ...projectPackage.dependencies,
+    ...projectPackage.devDependencies,
+  }).sort();
+  const targetRequire = createRequire(packageJsonPath);
+  const modules: DiscoveredCliModule[] = [];
 
-  const modules: string[] = [];
-
-  for (const depName of Object.keys(allDeps)) {
+  for (const dependencyName of dependencyNames) {
+    const isKnownCliModule = isBackstageCliModulePackage(dependencyName);
+    let dependencyPackageJsonPath: string | undefined;
+    let modulePath: string | undefined;
     try {
-      const depPkgPath = require.resolve(`${depName}/package.json`, {
-        paths: [rootDir],
-      });
-      const depPkg = JSON.parse(fs.readFileSync(depPkgPath, 'utf8'));
-      if (PackageRoles.getRoleFromPackage(depPkg) === 'cli-module') {
-        const resolvedPath = require.resolve(depName, { paths: [rootDir] });
-        modules.push(pathToFileURL(resolvedPath).href);
+      dependencyPackageJsonPath = targetRequire.resolve(
+        `${dependencyName}/package.json`,
+      );
+    } catch (error) {
+      const directPackageJsonPath = resolvePath(
+        rootDir,
+        'node_modules',
+        dependencyName,
+        'package.json',
+      );
+      if (fs.existsSync(directPackageJsonPath)) {
+        dependencyPackageJsonPath = directPackageJsonPath;
+      } else {
+        try {
+          modulePath = targetRequire.resolve(dependencyName);
+          dependencyPackageJsonPath = findPackageJsonPath(
+            dependencyName,
+            modulePath,
+          );
+        } catch {
+          // The actionable error for known module package names is reported below.
+        }
       }
-    } catch {
-      // Skip packages that can't be resolved or read
+
+      if (!dependencyPackageJsonPath && isKnownCliModule) {
+        throw new Error(
+          `Failed to resolve installed CLI module "${dependencyName}" from the target repository. ` +
+            `Run your package manager's install command and verify the dependency can be resolved. ` +
+            `Reason: ${formatError(error)}`,
+        );
+      }
+      if (!dependencyPackageJsonPath) {
+        continue;
+      }
     }
+
+    let dependencyPackage: {
+      backstage?: { role?: string };
+    };
+    try {
+      dependencyPackage = JSON.parse(
+        fs.readFileSync(dependencyPackageJsonPath, 'utf8'),
+      );
+    } catch (error) {
+      if (isKnownCliModule) {
+        throw new Error(
+          `Failed to read installed CLI module "${dependencyName}": ${formatError(
+            error,
+          )}`,
+        );
+      }
+      continue;
+    }
+
+    const role = dependencyPackage.backstage?.role;
+    if (role !== 'cli-module') {
+      if (isKnownCliModule) {
+        throw new Error(
+          `Installed CLI module "${dependencyName}" is malformed: its package.json must declare ` +
+            `"backstage.role" as "cli-module".`,
+        );
+      }
+      continue;
+    }
+
+    if (!modulePath) {
+      try {
+        modulePath = targetRequire.resolve(dependencyName);
+      } catch (error) {
+        throw new Error(
+          `Failed to resolve the entry point of installed CLI module "${dependencyName}" ` +
+            `from the target repository: ${formatError(error)}`,
+        );
+      }
+    }
+
+    modules.push({
+      name: dependencyName,
+      path: pathToFileURL(modulePath).href,
+    });
+  }
+
+  if (modules.length === 0) {
+    throw new Error(
+      `No CLI modules are installed in the target repository. Add ` +
+        `"@backstage/cli-defaults" as a devDependency, or install selected ` +
+        `"@backstage/cli-module-*" packages.`,
+    );
   }
 
   return modules;

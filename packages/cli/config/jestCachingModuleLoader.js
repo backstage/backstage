@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-try {
-  module.exports = require('@backstage/cli-module-test-jest/config/jestCachingModuleLoader');
-} catch (e) {
-  if (e.code === 'MODULE_NOT_FOUND') {
-    throw new Error(
-      '@backstage/cli-module-test-jest is required to use the jest caching module loader. ' +
-        'Please install it as a dependency.',
-    );
-  }
-  throw e;
-}
+const { requirePackagePath } = require('./resolvePackagePath.cjs');
+
+module.exports = requirePackagePath(
+  '@backstage/cli-module-test-jest/config/jestCachingModuleLoader',
+  '@backstage/cli-module-test-jest',
+  '@backstage/cli/config/jestCachingModuleLoader',
+);

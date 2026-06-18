@@ -43,9 +43,6 @@
   },
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
-    "@backstage/cli-defaults": "workspace:^",
-    "@backstage/cli-module-build": "workspace:^",
-    "@backstage/cli-module-test-jest": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@backstage/eslint-plugin": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",

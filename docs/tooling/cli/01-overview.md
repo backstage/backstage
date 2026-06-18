@@ -37,3 +37,54 @@ The Backstage CLI intentionally does not provide many hooks for overriding or
 customizing the build process. This is to allow for evolution of the CLI without
 having to take a wide API surface into account. This allows us to iterate and
 improve the tooling, as well as to more easily keep the system up to date.
+
+## Install CLI command modules
+
+The `@backstage/cli` package is the CLI host and does not include commands. A
+repository must install its command modules as direct dependencies in the root
+`package.json`. The `@backstage/create-app` templates install
+`@backstage/cli-defaults`, which is the convenience aggregate containing the
+standard Backstage commands:
+
+```json title="package.json"
+{
+  "devDependencies": {
+    "@backstage/cli": "backstage:^",
+    "@backstage/cli-defaults": "backstage:^"
+  }
+}
+```
+
+To select commands individually, omit `@backstage/cli-defaults` and install the
+relevant `@backstage/cli-module-*` packages instead:
+
+```json title="package.json"
+{
+  "devDependencies": {
+    "@backstage/cli": "backstage:^",
+    "@backstage/cli-module-build": "backstage:^",
+    "@backstage/cli-module-lint": "backstage:^",
+    "@backstage/cli-module-test-jest": "backstage:^"
+  }
+}
+```
+
+You can also install an individual module alongside `@backstage/cli-defaults`
+to replace commands from the aggregate. Overrides apply to exact command paths,
+so the aggregate continues to provide its unrelated commands. The CLI reports
+conflicts between individually installed modules instead of selecting one based
+on dependency order.
+
+When upgrading an existing repository, add either `@backstage/cli-defaults` or
+the selected individual modules before updating `@backstage/cli`. The CLI no
+longer falls back to modules from its own dependency tree.
+
+### Legacy configuration forwarding paths
+
+Compatibility paths such as `@backstage/cli/config/jest` and
+`@backstage/cli/config/webpack-public-path` continue to forward to their owning
+modules. If your repository uses one of these paths directly, install the owner
+as a direct root dependency: `@backstage/cli-module-test-jest` for Jest paths or
+`@backstage/cli-module-build` for the Webpack public path. The forwarding shim
+resolves the owner from the target repository and reports an error when it is
+missing.

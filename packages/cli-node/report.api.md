@@ -132,6 +132,9 @@ export interface CliModule {
 }
 
 // @public
+export type CliModuleFeature = CliModule | ReadonlyArray<CliModule>;
+
+// @public
 export type ConcurrentTasksOptions<TItem> = {
   concurrencyFactor?: number;
   items: Iterable<TItem>;
@@ -270,7 +273,7 @@ export class PackageRoles {
 
 // @public
 export function runCli(options: {
-  modules: ReadonlyArray<CliModule>;
+  modules: ReadonlyArray<CliModuleFeature>;
   name: string;
   version?: string;
 }): Promise<void>;

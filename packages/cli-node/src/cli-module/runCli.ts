@@ -26,7 +26,7 @@ import chalk from 'chalk';
 import { cli, command } from 'cleye';
 import type { Renderers } from 'cleye';
 import { CommandGraph } from './CommandGraph';
-import type { CliCommand, CliModule } from './types';
+import type { CliCommand, CliModule, CliModuleFeature } from './types';
 
 interface HelpNode {
   id?: string;
@@ -280,8 +280,12 @@ function hasVersionFlag(args: string[]): boolean {
  * @public
  */
 export async function runCli(options: {
-  /** The CLI modules whose commands are included in the program. */
-  modules: ReadonlyArray<CliModule>;
+  /**
+   * The CLI modules whose commands are included in the program. Arrays are
+   * treated as aggregates whose commands can be overridden by individually
+   * provided modules.
+   */
+  modules: ReadonlyArray<CliModuleFeature>;
   /** The program name shown in help output and usage strings. */
   name: string;
   /** The version string shown when `--version` is passed. */
@@ -290,17 +294,19 @@ export async function runCli(options: {
   const { modules, name, version } = options;
   const graph = new CommandGraph();
 
-  for (const module of modules) {
-    if (!OpaqueCliModule.isType(module)) {
-      throw new Error(
-        `Invalid CLI module: expected a module created with createCliModule`,
-      );
-    }
+  const aggregateModules = modules.flatMap(moduleOrModules =>
+    Array.isArray(moduleOrModules) ? moduleOrModules : [],
+  );
+  const individualModules = modules.filter(
+    (moduleOrModules): moduleOrModules is CliModule =>
+      !Array.isArray(moduleOrModules),
+  );
 
-    for (const commandToAdd of await OpaqueCliModule.toInternal(module)
-      .commands) {
-      graph.add(commandToAdd, module);
-    }
+  for (const module of aggregateModules) {
+    await addModuleToGraph(graph, module, { overridable: true });
+  }
+  for (const module of individualModules) {
+    await addModuleToGraph(graph, module, { override: true });
   }
 
   if (
@@ -322,4 +328,21 @@ export async function runCli(options: {
     programName: name,
     version,
   });
+}
+
+async function addModuleToGraph(
+  graph: CommandGraph,
+  module: CliModule,
+  options: { overridable?: boolean; override?: boolean },
+): Promise<void> {
+  if (!OpaqueCliModule.isType(module)) {
+    throw new Error(
+      `Invalid CLI module: expected a module created with createCliModule`,
+    );
+  }
+
+  for (const commandToAdd of await OpaqueCliModule.toInternal(module)
+    .commands) {
+    graph.add(commandToAdd, module, options);
+  }
 }

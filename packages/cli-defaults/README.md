@@ -1,11 +1,18 @@
 # @backstage/cli-defaults
 
-The default set of CLI modules for the Backstage CLI. Installing this single package provides all standard CLI commands without needing to list each module individually.
+The default set of CLI modules for the Backstage CLI. Install this package as a
+direct dependency in the root of your repository to provide all standard CLI
+commands without listing each module individually:
+
+```sh
+yarn add --dev @backstage/cli-defaults
+```
 
 ## Included Modules
 
 | Module                                                             | Description                              |
 | :----------------------------------------------------------------- | :--------------------------------------- |
+| [`@backstage/cli-module-actions`](../cli-module-actions)           | Action discovery commands                |
 | [`@backstage/cli-module-auth`](../cli-module-auth)                 | Authentication commands                  |
 | [`@backstage/cli-module-build`](../cli-module-build)               | Build, start, and packaging commands     |
 | [`@backstage/cli-module-config`](../cli-module-config)             | Configuration inspection commands        |
@@ -18,7 +25,10 @@ The default set of CLI modules for the Backstage CLI. Installing this single pac
 | [`@backstage/cli-module-test-jest`](../cli-module-test-jest)       | Jest-based testing commands              |
 | [`@backstage/cli-module-translations`](../cli-module-translations) | Translation management commands          |
 
-For fine-grained control over which CLI commands are available, you can install individual modules instead.
+For fine-grained control over which CLI commands are available, you can install
+individual modules instead. You can also install an individual module alongside
+this package to replace its command at the exact command path while retaining
+the other default commands.
 
 ## Documentation
 

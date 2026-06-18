@@ -16,7 +16,7 @@
 
 import { OpaqueCliModule } from '@internal/cli';
 import { runCli } from '@backstage/cli-node';
-import type { CliModule } from '@backstage/cli-node';
+import type { CliModule, CliModuleFeature } from '@backstage/cli-node';
 import { version } from './version';
 import { isPromise } from 'node:util/types';
 
@@ -25,82 +25,45 @@ type UninitializedFeature =
   | CliModule[]
   | Promise<{ default: CliModule | CliModule[] }>;
 
-interface TaggedFeature {
-  feature: CliModule;
-  /**
-   * Whether this module was sourced from an array (e.g. cli-defaults).
-   * Array-sourced modules are silently skipped when any of their commands
-   * overlap with an individually-added module, allowing explicit module
-   * additions to take precedence without causing conflicts.
-   */
-  fromArray: boolean;
-}
-
 export class CliInitializer {
-  #uninitiazedFeatures: Promise<TaggedFeature[]>[] = [];
+  #uninitiazedFeatures: Promise<CliModuleFeature>[] = [];
 
-  add(feature: UninitializedFeature) {
+  add(feature: UninitializedFeature, source?: string) {
     if (isPromise(feature)) {
       this.#uninitiazedFeatures.push(
-        feature.then(f => {
-          const unwrapped = unwrapFeature(f.default);
-          if (Array.isArray(unwrapped)) {
-            return unwrapped.map(m => ({ feature: m, fromArray: true }));
-          }
-          return [{ feature: unwrapped, fromArray: false }];
-        }),
-      );
-    } else if (Array.isArray(feature)) {
-      this.#uninitiazedFeatures.push(
-        Promise.resolve(feature.map(m => ({ feature: m, fromArray: true }))),
+        feature.then(f => validateFeature(unwrapFeature(f.default), source)),
       );
     } else {
       this.#uninitiazedFeatures.push(
-        Promise.resolve([{ feature, fromArray: false }]),
+        Promise.resolve(validateFeature(feature, source)),
       );
     }
-  }
-
-  async #doInit(): Promise<CliModule[]> {
-    const resolvedGroups = await Promise.all(this.#uninitiazedFeatures);
-    const allFeatures = resolvedGroups.flat();
-
-    // Collect command paths from individually-added modules
-    const individualPaths = new Set<string>();
-    for (const { feature, fromArray } of allFeatures) {
-      if (!fromArray && OpaqueCliModule.isType(feature)) {
-        const cmds = await OpaqueCliModule.toInternal(feature).commands;
-        for (const cmd of cmds) {
-          individualPaths.add(cmd.path.join(' '));
-        }
-      }
-    }
-
-    const modules: CliModule[] = [];
-    for (const { feature, fromArray } of allFeatures) {
-      if (!OpaqueCliModule.isType(feature)) {
-        throw new Error(`Unsupported feature type: ${(feature as any).$$type}`);
-      }
-
-      if (fromArray) {
-        const cmds = await OpaqueCliModule.toInternal(feature).commands;
-        if (cmds.some(cmd => individualPaths.has(cmd.path.join(' ')))) {
-          continue;
-        }
-      }
-      modules.push(feature);
-    }
-
-    return modules;
   }
 
   /**
    * Actually parse argv and pass it to the command.
    */
   async run() {
-    const modules = await this.#doInit();
+    const modules = await Promise.all(this.#uninitiazedFeatures);
     await runCli({ modules, name: 'backstage-cli', version });
   }
+}
+
+function validateFeature(
+  feature: CliModuleFeature,
+  source?: string,
+): CliModuleFeature {
+  const modules = Array.isArray(feature) ? feature : [feature];
+  for (const module of modules) {
+    if (!OpaqueCliModule.isType(module)) {
+      throw new Error(
+        source
+          ? `Invalid CLI module export from "${source}": expected a module created with createCliModule`
+          : `Invalid CLI module: expected a module created with createCliModule`,
+      );
+    }
+  }
+  return feature;
 }
 
 /** @internal */

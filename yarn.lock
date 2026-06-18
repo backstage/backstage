@@ -2437,7 +2437,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-defaults@workspace:*, @backstage/cli-defaults@workspace:^, @backstage/cli-defaults@workspace:packages/cli-defaults":
+"@backstage/cli-defaults@workspace:*, @backstage/cli-defaults@workspace:packages/cli-defaults":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-defaults@workspace:packages/cli-defaults"
   dependencies:
@@ -2831,9 +2831,6 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/cli-common": "workspace:^"
-    "@backstage/cli-defaults": "workspace:^"
-    "@backstage/cli-module-build": "workspace:^"
-    "@backstage/cli-module-test-jest": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"

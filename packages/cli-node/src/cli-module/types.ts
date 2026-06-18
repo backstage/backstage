@@ -116,3 +116,13 @@ export interface CliCommand {
 export interface CliModule {
   readonly $$type: '@backstage/CliModule';
 }
+
+/**
+ * A CLI module or an aggregate of CLI modules.
+ *
+ * Commands from individually provided modules override matching commands from
+ * aggregates. Conflicts between modules at the same level are rejected.
+ *
+ * @public
+ */
+export type CliModuleFeature = CliModule | ReadonlyArray<CliModule>;

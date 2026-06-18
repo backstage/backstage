@@ -4,8 +4,9 @@ title: Commands
 description: Descriptions of all commands available in the CLI.
 ---
 
-This page lists all commands provided by the Backstage CLI, what they're for,
-and where to use them.
+This page lists the commands provided by `@backstage/cli-defaults`, what they're
+for, and where to use them. The `@backstage/cli` host only exposes commands from
+the [CLI modules installed in your repository](./01-overview.md#install-cli-command-modules).
 
 ## help
 

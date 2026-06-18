@@ -300,6 +300,14 @@ describe('tasks', () => {
       await expect(
         fs.readFile('templatedApp/catalog-info.yaml', 'utf-8'),
       ).resolves.toContain('name: SuperCoolBackstageInstance');
+      await expect(
+        fs.readJson('templatedApp/package.json'),
+      ).resolves.toMatchObject({
+        devDependencies: {
+          '@backstage/cli': '^1.0.0',
+          '@backstage/cli-defaults': '^1.0.0',
+        },
+      });
       // backend dependencies include `sqlite3` from `context.SQLite`
       await expect(
         fs.readFile('templatedApp/packages/backend/package.json', 'utf-8'),

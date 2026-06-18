@@ -18,31 +18,30 @@ import chalk from 'chalk';
 import { CliInitializer } from './wiring/CliInitializer';
 import { discoverCliModules } from './wiring/discoverCliModules';
 
-(async () => {
+async function main() {
   const initializer = new CliInitializer();
 
   const discoveredModules = discoverCliModules();
 
-  if (discoveredModules.length > 0) {
-    for (const resolvedPath of discoveredModules) {
-      initializer.add(import(resolvedPath));
-    }
-  } else {
-    // No CLI modules found in the project root; fall back to the built-in
-    // set while printing a deprecation warning.
-    console.error(
-      chalk.yellow(
-        `No CLI modules found in the project root dependencies. ` +
-          `Falling back to the built-in set of modules.\n` +
-          `This fallback will be removed in a future release. ` +
-          `Please add @backstage/cli-defaults as a devDependency ` +
-          `in your root package.json, or install individual ` +
-          `@backstage/cli-module-* packages for fine-grained control.\n`,
-      ),
+  for (const discoveredModule of discoveredModules) {
+    initializer.add(
+      import(discoveredModule.path).catch(error => {
+        throw new Error(
+          `Failed to load installed CLI module "${discoveredModule.name}": ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          { cause: error },
+        );
+      }),
+      discoveredModule.name,
     );
-
-    initializer.add(import('@backstage/cli-defaults'));
   }
 
   await initializer.run();
-})();
+}
+
+main().catch(error => {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(chalk.red(message));
+  process.exitCode = 1;
+});

@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-try {
-  require('@backstage/cli-module-build/config/webpack-public-path');
-} catch (e) {
-  if (e.code === 'MODULE_NOT_FOUND') {
-    throw new Error(
-      '@backstage/cli-module-build is required to use the webpack public path configuration. ' +
-        'Please install it as a dependency.',
-    );
-  }
-  throw e;
-}
+const { requirePackagePath } = require('./resolvePackagePath.cjs');
+
+requirePackagePath(
+  '@backstage/cli-module-build/config/webpack-public-path',
+  '@backstage/cli-module-build',
+  '@backstage/cli/config/webpack-public-path',
+);
