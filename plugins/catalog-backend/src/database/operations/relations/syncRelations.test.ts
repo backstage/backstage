@@ -19,7 +19,7 @@ import { Knex } from 'knex';
 import { randomUUID } from 'node:crypto';
 import { applyDatabaseMigrations } from '../../migrations';
 import { DbRelationsRow, DbRefreshStateRow } from '../../tables';
-import { syncRelations, SyncRelationsResult } from './syncRelations';
+import { syncRelations } from './syncRelations';
 
 jest.setTimeout(60_000);
 

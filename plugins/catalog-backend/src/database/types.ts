@@ -21,7 +21,6 @@ import {
   EntityRelationSpec,
   DeferredEntity,
 } from '@backstage/plugin-catalog-node';
-import { DbRelationsRow } from './tables';
 import { SyncRelationsResult } from './operations/relations/syncRelations';
 import { RefreshKeyData } from '../processing/types';
 import { Knex } from 'knex';

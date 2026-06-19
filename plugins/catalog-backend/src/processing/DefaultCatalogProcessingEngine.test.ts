@@ -103,7 +103,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       });
     db.listParents.mockResolvedValue({ entityRefs: [] });
     db.updateProcessedEntity.mockResolvedValue({
-      previous: { relations: [] },
+      relationsChange: { deleted: [], inserted: [] },
     });
 
     await engine.start();
@@ -173,7 +173,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       });
     db.listParents.mockResolvedValue({ entityRefs: [] });
     db.updateProcessedEntity.mockImplementation(async () => ({
-      previous: { relations: [] },
+      relationsChange: { deleted: [], inserted: [] },
     }));
 
     await engine.start();
@@ -241,7 +241,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       })
       .mockResolvedValue({ items: [] });
     db.updateProcessedEntity.mockImplementation(async () => ({
-      previous: { relations: [] },
+      relationsChange: { deleted: [], inserted: [] },
     }));
 
     await engine.start();
@@ -322,7 +322,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       .mockResolvedValue({ items: [] });
     db.listParents.mockResolvedValue({ entityRefs: [] });
     db.updateProcessedEntity.mockImplementation(async () => ({
-      previous: { relations: [] },
+      relationsChange: { deleted: [], inserted: [] },
     }));
 
     await waitForExpect(() => {
@@ -400,21 +400,35 @@ describe('DefaultCatalogProcessingEngine', () => {
       });
     db.updateProcessedEntity
       .mockImplementationOnce(async () => ({
-        previous: { relations: [] },
-      }))
-      .mockImplementationOnce(async () => ({
-        previous: {
-          relations: [
+        relationsChange: {
+          deleted: [],
+          inserted: [
             {
-              originating_entity_id: '',
-              type: 't',
               source_entity_ref: 'k:ns/other1',
+              type: 't',
               target_entity_ref: 'k:ns/me',
             },
             {
-              originating_entity_id: '',
-              type: 't',
               source_entity_ref: 'k:ns/other2',
+              type: 't',
+              target_entity_ref: 'k:ns/me',
+            },
+          ],
+        },
+      }))
+      .mockImplementationOnce(async () => ({
+        relationsChange: {
+          deleted: [
+            {
+              source_entity_ref: 'k:ns/other1',
+              type: 't',
+              target_entity_ref: 'k:ns/me',
+            },
+          ],
+          inserted: [
+            {
+              source_entity_ref: 'k:ns/other3',
+              type: 't',
               target_entity_ref: 'k:ns/me',
             },
           ],
@@ -517,16 +531,31 @@ describe('DefaultCatalogProcessingEngine', () => {
       });
     db.updateProcessedEntity
       .mockImplementationOnce(async () => ({
-        previous: { relations: [] },
+        relationsChange: {
+          deleted: [],
+          inserted: [
+            {
+              source_entity_ref: 'k:ns/other1',
+              type: 't',
+              target_entity_ref: 'k:ns/me',
+            },
+          ],
+        },
       }))
       .mockImplementationOnce(async () => ({
-        previous: {
-          relations: [
+        relationsChange: {
+          deleted: [
             {
-              originating_entity_id: '',
-              type: 't',
               source_entity_ref: 'k:ns/other1',
+              type: 't',
               target_entity_ref: 'k:ns/me',
+            },
+          ],
+          inserted: [
+            {
+              source_entity_ref: 'k:ns/other1',
+              type: 't',
+              target_entity_ref: 'k:ns/newtarget',
             },
           ],
         },
@@ -619,22 +648,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       items: [processableEntity],
     });
     db.updateProcessedEntity.mockImplementationOnce(async () => ({
-      previous: {
-        relations: [
-          {
-            originating_entity_id: '',
-            type: 't',
-            source_entity_ref: 'k:ns/other1',
-            target_entity_ref: 'k:ns/me',
-          },
-          {
-            originating_entity_id: '',
-            type: 't',
-            source_entity_ref: 'k:ns/other2',
-            target_entity_ref: 'k:ns/me',
-          },
-        ],
-      },
+      relationsChange: { deleted: [], inserted: [] },
     }));
 
     orchestrator.process.mockResolvedValueOnce({
@@ -704,18 +718,12 @@ describe('DefaultCatalogProcessingEngine', () => {
       items: [processableEntity],
     });
     db.updateProcessedEntity.mockImplementationOnce(async () => ({
-      previous: {
-        relations: [
+      relationsChange: {
+        deleted: [],
+        inserted: [
           {
-            originating_entity_id: '',
-            type: 't',
-            source_entity_ref: 'k:ns/other1',
-            target_entity_ref: 'k:ns/me',
-          },
-          {
-            originating_entity_id: '',
-            type: 't',
             source_entity_ref: 'k:ns/other2',
+            type: 'u',
             target_entity_ref: 'k:ns/me',
           },
         ],
@@ -794,21 +802,15 @@ describe('DefaultCatalogProcessingEngine', () => {
       items: [processableEntity],
     });
     db.updateProcessedEntity.mockImplementationOnce(async () => ({
-      previous: {
-        relations: [
+      relationsChange: {
+        deleted: [
           {
-            originating_entity_id: '',
-            type: 't',
-            source_entity_ref: 'k:ns/other1',
-            target_entity_ref: 'k:ns/me',
-          },
-          {
-            originating_entity_id: '',
-            type: 't',
             source_entity_ref: 'k:ns/other2',
+            type: 't',
             target_entity_ref: 'k:ns/me',
           },
         ],
+        inserted: [],
       },
     }));
 
