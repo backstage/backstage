@@ -20,7 +20,6 @@ import {
   PublisherBase,
   PublishRequest,
   PublishResponse,
-  ReadinessResponse,
   TechDocsMetadata,
 } from './types';
 import { Entity } from '@backstage/catalog-model';
@@ -61,6 +60,18 @@ describe('MultiPublisher', () => {
       pub1.getReadiness.mockResolvedValue({ isAvailable: true });
       const pub2 = createMockPublisher();
       pub2.getReadiness.mockResolvedValue({ isAvailable: false });
+
+      const multi = new MultiPublisher([pub1, pub2]);
+      const result = await multi.getReadiness();
+
+      expect(result.isAvailable).toBe(false);
+    });
+
+    it('returns isAvailable false when any publisher rejects its readiness check', async () => {
+      const pub1 = createMockPublisher();
+      pub1.getReadiness.mockResolvedValue({ isAvailable: true });
+      const pub2 = createMockPublisher();
+      pub2.getReadiness.mockRejectedValue(new Error('Connection failed'));
 
       const multi = new MultiPublisher([pub1, pub2]);
       const result = await multi.getReadiness();

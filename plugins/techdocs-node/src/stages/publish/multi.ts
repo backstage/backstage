@@ -46,11 +46,13 @@ export class MultiPublisher implements PublisherBase {
   }
 
   async getReadiness(): Promise<ReadinessResponse> {
-    const responses = await Promise.all(
+    const responses = await Promise.allSettled(
       this.publishers.map(p => p.getReadiness()),
     );
     return {
-      isAvailable: responses.every(r => r.isAvailable),
+      isAvailable: responses.every(
+        r => r.status === 'fulfilled' && r.value.isAvailable,
+      ),
     };
   }
 
