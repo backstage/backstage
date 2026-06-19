@@ -15,9 +15,11 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
+import { connectionsServiceFactory } from '@backstage/connections';
 
 const backend = createBackend();
 
+backend.add(connectionsServiceFactory);
 backend.add(import('../src'));
 backend.add(import('@backstage/plugin-auth-backend-module-google-provider'));
 

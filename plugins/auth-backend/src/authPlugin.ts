@@ -25,6 +25,7 @@ import {
   authProvidersExtensionPoint,
 } from '@backstage/plugin-auth-node';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { connectionsServiceRef } from '@backstage/connections';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { createAuthActions } from './actions';
 import { createRouter } from './service/router';
@@ -71,6 +72,7 @@ export const authPlugin = createBackendPlugin({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         lifecycle: coreServices.lifecycle,
+        connections: connectionsServiceRef,
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
         userInfo: coreServices.userInfo,

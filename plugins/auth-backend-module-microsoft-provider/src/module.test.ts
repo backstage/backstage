@@ -16,6 +16,7 @@
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import authPlugin from '@backstage/plugin-auth-backend';
+import { connectionsServiceFactory } from '@backstage/connections';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
 import request from 'supertest';
 import { authModuleMicrosoftProvider } from './module';
@@ -25,6 +26,7 @@ describe('authModuleMicrosoftProvider', () => {
     const { server } = await startTestBackend({
       features: [
         authPlugin,
+        connectionsServiceFactory,
         authModuleMicrosoftProvider,
         mockServices.rootConfig.factory({
           data: {
@@ -83,6 +85,7 @@ describe('authModuleMicrosoftProvider', () => {
     const { server } = await startTestBackend({
       features: [
         authPlugin,
+        connectionsServiceFactory,
         authModuleMicrosoftProvider,
         mockServices.rootConfig.factory({
           data: {
@@ -143,6 +146,7 @@ describe('authModuleMicrosoftProvider', () => {
     const { server } = await startTestBackend({
       features: [
         authPlugin,
+        connectionsServiceFactory,
         authModuleMicrosoftProvider,
         mockServices.rootConfig.factory({
           data: {

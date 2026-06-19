@@ -16,6 +16,7 @@
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import authPlugin from '@backstage/plugin-auth-backend';
+import { connectionsServiceFactory } from '@backstage/connections';
 import { authModuleAzureEasyAuthProvider } from './module';
 
 const rootConfig = mockServices.rootConfig.factory({
@@ -35,7 +36,12 @@ const rootConfig = mockServices.rootConfig.factory({
   },
 });
 
-const features = [authPlugin, authModuleAzureEasyAuthProvider, rootConfig];
+const features = [
+  authPlugin,
+  connectionsServiceFactory,
+  authModuleAzureEasyAuthProvider,
+  rootConfig,
+];
 
 describe('authModuleAzureEasyAuthProvider', () => {
   const env = process.env;

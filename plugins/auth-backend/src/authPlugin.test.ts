@@ -19,12 +19,14 @@ import request from 'supertest';
 import { authPlugin } from './authPlugin';
 import authModuleGuestProvider from '@backstage/plugin-auth-backend-module-guest-provider';
 import { authServiceFactory } from '@backstage/backend-defaults/auth';
+import { connectionsServiceFactory } from '@backstage/connections';
 
 describe('authPlugin', () => {
   it('should provide an OpenID configuration', async () => {
     const { server } = await startTestBackend({
       features: [
         authPlugin,
+        connectionsServiceFactory,
         mockServices.rootConfig.factory({
           data: {
             app: {
@@ -70,6 +72,7 @@ describe('authPlugin', () => {
       const { server } = await startTestBackend({
         features: [
           authPlugin,
+          connectionsServiceFactory,
           authModuleGuestProvider,
           authServiceFactory,
           mockServices.rootConfig.factory({
@@ -119,6 +122,7 @@ describe('authPlugin', () => {
       const { server } = await startTestBackend({
         features: [
           authPlugin,
+          connectionsServiceFactory,
           authModuleGuestProvider,
           authServiceFactory,
           mockServices.rootConfig.factory({

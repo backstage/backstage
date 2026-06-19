@@ -16,6 +16,7 @@
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import authPlugin from '@backstage/plugin-auth-backend';
+import { connectionsServiceFactory } from '@backstage/connections';
 import { authModuleAuth0Provider } from './module';
 import request from 'supertest';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
@@ -25,6 +26,7 @@ describe('authModuleAuth0Provider', () => {
     const { server } = await startTestBackend({
       features: [
         authPlugin,
+        connectionsServiceFactory,
         authModuleAuth0Provider,
         mockServices.rootConfig.factory({
           data: {
@@ -92,6 +94,7 @@ describe('authModuleAuth0Provider', () => {
     const { server } = await startTestBackend({
       features: [
         authPlugin,
+        connectionsServiceFactory,
         authModuleAuth0Provider,
         mockServices.rootConfig.factory({
           data: {
@@ -141,6 +144,7 @@ describe('authModuleAuth0Provider', () => {
     const { server } = await startTestBackend({
       features: [
         authPlugin,
+        connectionsServiceFactory,
         authModuleAuth0Provider,
         mockServices.rootConfig.factory({
           data: {
@@ -185,6 +189,7 @@ describe('authModuleAuth0Provider', () => {
     const { server } = await startTestBackend({
       features: [
         authPlugin,
+        connectionsServiceFactory,
         authModuleAuth0Provider,
         mockServices.rootConfig.factory({
           data: {
@@ -229,6 +234,7 @@ describe('authModuleAuth0Provider', () => {
     const { server } = await startTestBackend({
       features: [
         authPlugin,
+        connectionsServiceFactory,
         authModuleAuth0Provider,
         mockServices.rootConfig.factory({
           data: {

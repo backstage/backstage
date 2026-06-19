@@ -15,6 +15,7 @@
  */
 
 import authPlugin from '@backstage/plugin-auth-backend';
+import { connectionsServiceFactory } from '@backstage/connections';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { authModuleBitbucketServerProvider } from './module';
@@ -25,6 +26,7 @@ describe('authModuleBitbucketServerProvider', () => {
     const { server } = await startTestBackend({
       features: [
         authPlugin,
+        connectionsServiceFactory,
         authModuleBitbucketServerProvider,
         mockServices.rootConfig.factory({
           data: {

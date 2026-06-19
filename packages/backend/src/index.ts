@@ -20,8 +20,11 @@ import {
   coreServices,
   createBackendFeatureLoader,
 } from '@backstage/backend-plugin-api';
+import { connectionsServiceFactory } from '@backstage/connections';
 
 const backend = createBackend();
+
+backend.add(connectionsServiceFactory);
 
 // An example of how to group together and load multiple features. You can also
 // access root-scoped services by adding `deps`.
