@@ -18,6 +18,7 @@
     "directory": "plugins/catalog-module-stars"
   },
   "license": "Apache-2.0",
+  "sideEffects": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
