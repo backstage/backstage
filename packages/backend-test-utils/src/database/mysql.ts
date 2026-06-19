@@ -62,9 +62,9 @@ export async function startMysqlContainer(image: string): Promise<{
     .withEnvironment({ MYSQL_ROOT_PASSWORD: password })
     .withTmpFs({ '/var/lib/mysql': 'rw' })
     .withCommand([
-      '--default-authentication-plugin=mysql_native_password',
       '--skip-log-bin',
       '--max-connections=200',
+      '--mysql-native-password=ON',
     ])
     .start();
 
