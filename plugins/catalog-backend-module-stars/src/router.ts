@@ -62,8 +62,7 @@ export async function createRouter(
   });
 
   router.get('/count/:entityRef', async (req, res) => {
-    // Note: getStarCount could potentially be available to service tokens
-    // but we enforce user tokens for simplicity as per requirements.
+    // Public endpoint: aggregate star counts do not require authentication.
     const { entityRef } = req.params;
     const count = await database.getStarCount(entityRef);
     res.json({ count });

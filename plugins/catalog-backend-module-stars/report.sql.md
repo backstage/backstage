@@ -4,10 +4,10 @@
 
 ## Table `starred_entities`
 
-| Column       | Type   | Nullable | Max Length | Default |
-| ------------ | ------ | -------- | ---------- | ------- |
-| `entity_ref` | `text` | false    | -          | -       |
-| `user_ref`   | `text` | false    | -          | -       |
+| Column       | Type                | Nullable | Max Length | Default |
+| ------------ | ------------------- | -------- | ---------- | ------- |
+| `entity_ref` | `character varying` | false    | 255        | -       |
+| `user_ref`   | `character varying` | false    | 255        | -       |
 
 ### Indices
 

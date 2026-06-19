@@ -21,6 +21,7 @@ import {
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
+import { ResponseError } from '@backstage/errors';
 import { CatalogStarsApi } from './CatalogStarsApi';
 
 /**
@@ -84,7 +85,7 @@ export class DatabaseStarredEntitiesApi
 
       const response = await fetch(`${baseUrl}/starred-entities`, { headers });
       if (!response.ok) {
-        throw new Error(`Failed to fetch stars, status ${response.status}`);
+        throw await ResponseError.fromResponse(response);
       }
 
       const data = await response.json();
@@ -125,7 +126,7 @@ export class DatabaseStarredEntitiesApi
       );
 
       if (!response.ok) {
-        throw new Error(`Failed to unstar entity, status ${response.status}`);
+        throw await ResponseError.fromResponse(response);
       }
 
       this.starredEntities.delete(entityRef);
@@ -139,7 +140,7 @@ export class DatabaseStarredEntitiesApi
       );
 
       if (!response.ok) {
-        throw new Error(`Failed to star entity, status ${response.status}`);
+        throw await ResponseError.fromResponse(response);
       }
 
       this.starredEntities.add(entityRef);
@@ -167,7 +168,7 @@ export class DatabaseStarredEntitiesApi
       { headers },
     );
     if (!response.ok) {
-      throw new Error(`Failed to get star count, status ${response.status}`);
+      throw await ResponseError.fromResponse(response);
     }
 
     const data = await response.json();

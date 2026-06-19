@@ -57,7 +57,7 @@ describe('DatabaseStarredEntitiesApi', () => {
     });
 
     // Wait for the initialization promise
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await (api as any).initializationPromise;
 
     expect(mockFetch).toHaveBeenCalledWith(`${mockBaseUrl}/starred-entities`, {
       headers: { Authorization: 'Bearer fake-token' },
@@ -67,7 +67,7 @@ describe('DatabaseStarredEntitiesApi', () => {
     const next = jest.fn();
 
     const sub = observable.subscribe({ next });
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await Promise.resolve();
     expect(next).toHaveBeenCalledWith(new Set(['component:default/comp1']));
 
     sub.unsubscribe();
@@ -85,11 +85,11 @@ describe('DatabaseStarredEntitiesApi', () => {
       identityApi: mockIdentityApi,
     });
 
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await (api as any).initializationPromise;
 
     const next = jest.fn();
     const sub = api.starredEntitie$().subscribe({ next });
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await Promise.resolve();
     expect(next).toHaveBeenCalledWith(new Set());
 
     // Mock successful PUT
@@ -143,6 +143,8 @@ describe('DatabaseStarredEntitiesApi', () => {
       fetchApi: mockFetchApi,
       identityApi: mockIdentityApi,
     });
+
+    await (api as any).initializationPromise;
 
     // count fetch
     mockFetch.mockResolvedValueOnce({
