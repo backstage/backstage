@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-stars
+  title: '@backstage/plugin-catalog-backend-module-stars'
+  description: >-
+    A backend module for the catalog plugin that provides database-backed
+    starred entities.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

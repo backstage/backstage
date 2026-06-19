@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-module-stars
+  title: '@backstage/plugin-catalog-module-stars'
+  description: >-
+    An opt-in frontend module for the catalog plugin that provides a
+    database-backed StarredEntitiesApi implementation.
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin-module
+  owner: maintainers

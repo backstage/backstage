@@ -4767,6 +4767,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-stars@workspace:plugins/catalog-backend-module-stars":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-stars@workspace:plugins/catalog-backend-module-stars"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@types/supertest": "npm:^7.2.0"
+    express: "npm:^4.17.1"
+    express-promise-router: "npm:^4.1.0"
+    knex: "npm:^3.0.0"
+    supertest: "npm:^7.2.2"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-unprocessed@workspace:^, @backstage/plugin-catalog-backend-module-unprocessed@workspace:plugins/catalog-backend-module-unprocessed":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-unprocessed@workspace:plugins/catalog-backend-module-unprocessed"
@@ -4953,6 +4969,19 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-catalog-module-stars@workspace:plugins/catalog-module-stars":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-module-stars@workspace:plugins/catalog-module-stars"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/types": "workspace:^"
+    zen-observable: "npm:^0.8.15"
   languageName: unknown
   linkType: soft
 
@@ -18611,10 +18640,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cookiejar@npm:*":
-  version: 2.1.1
-  resolution: "@types/cookiejar@npm:2.1.1"
-  checksum: 10/5e658b7bef59a0a35fde6ad08932d4b581684ba0e53f977fb54bf7d26bc83abf7d27d930f0af51eef1fe383477e53d217b7bba7c848439b10b998eb7572ce22d
+"@types/cookiejar@npm:^2.1.5":
+  version: 2.1.5
+  resolution: "@types/cookiejar@npm:2.1.5"
+  checksum: 10/04d5990e87b6387532d15a87d9ec9b2eb783039291193863751dcfd7fc723a3b3aa30ce4c06b03975cba58632e933772f1ff031af23eaa3ac7f94e71afa6e073
   languageName: node
   linkType: hard
 
@@ -19277,6 +19306,13 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10/babf1a388524e2008cb116ca4665dfcebfb3349d33a3fac4b096b93c29ba19e39a56f343a3474c38cff2fa9ccf9e6d7adf5d77edeeeb85d3bd0f0cd22c0bf0fa
+  languageName: node
+  linkType: hard
+
+"@types/methods@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "@types/methods@npm:1.1.4"
+  checksum: 10/ad2a7178486f2fd167750f3eb920ab032a947ff2e26f55c86670a6038632d790b46f52e5b6ead5823f1e53fc68028f1e9ddd15cfead7903e04517c88debd72b1
   languageName: node
   linkType: hard
 
@@ -19992,13 +20028,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/superagent@npm:*":
-  version: 4.1.7
-  resolution: "@types/superagent@npm:4.1.7"
+"@types/superagent@npm:*, @types/superagent@npm:^8.1.0":
+  version: 8.1.10
+  resolution: "@types/superagent@npm:8.1.10"
   dependencies:
-    "@types/cookiejar": "npm:*"
+    "@types/cookiejar": "npm:^2.1.5"
+    "@types/methods": "npm:^1.1.4"
     "@types/node": "npm:*"
-  checksum: 10/5fc296fb0cb9bc2cf76e582a06e65c8fb05750f3d4dc2be24e9f7d4871cf324dd447ee43990aa7fb78e1fb2f3b0e6ef88facc319091f6a14a355b2c7c3d1ce00
+    form-data: "npm:^4.0.0"
+  checksum: 10/43465b8442adc9a0596535e8c249fc5d6e1790963cbda63c8c48cfdde0e5cc02e725f8d6f54ce71d535c337aa2403dd26d705e91994e9543894d12fcc52a0b6a
   languageName: node
   linkType: hard
 
@@ -20008,6 +20046,16 @@ __metadata:
   dependencies:
     "@types/superagent": "npm:*"
   checksum: 10/2fc998ea698e0467cdbe3bea0ebce2027ea3a45a13e51a6cecb0435f44b486faecf99c34d8702d2d7fe033e6e09fdd2b374af52ecc8d0c69a1deec66b8c0dd52
+  languageName: node
+  linkType: hard
+
+"@types/supertest@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "@types/supertest@npm:7.2.0"
+  dependencies:
+    "@types/methods": "npm:^1.1.4"
+    "@types/superagent": "npm:^8.1.0"
+  checksum: 10/5a322e29b81033e90ac50ab315d49559b21809ee39b5681ab7386819463e30d68e29c63c946023a1c353e7f13fb3f20d64dcb89d3d8a0fff569450501aff786c
   languageName: node
   linkType: hard
 
@@ -28658,7 +28706,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.14.0, express@npm:^4.21.0, express@npm:^4.22.0, express@npm:^4.22.1":
+"express@npm:^4.14.0, express@npm:^4.17.1, express@npm:^4.21.0, express@npm:^4.22.0, express@npm:^4.22.1":
   version: 4.22.2
   resolution: "express@npm:4.22.2"
   dependencies:
@@ -44981,7 +45029,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supertest@npm:^7.0.0, supertest@npm:^7.1.0":
+"supertest@npm:^7.0.0, supertest@npm:^7.1.0, supertest@npm:^7.2.2":
   version: 7.2.2
   resolution: "supertest@npm:7.2.2"
   dependencies:
@@ -48507,6 +48555,13 @@ __metadata:
   version: 0.10.0
   resolution: "zen-observable@npm:0.10.0"
   checksum: 10/dc960a8e1f4e1277f1eaf79adcbd01e35b9be9fa0abb0595aab3485b0c2d8e57ace79fd08b8cddd83aeb0779ec7d9c0cfca696ac344bfd8f35ac69f3e75faaff
+  languageName: node
+  linkType: hard
+
+"zen-observable@npm:^0.8.15":
+  version: 0.8.15
+  resolution: "zen-observable@npm:0.8.15"
+  checksum: 10/30eac3f4055d33f446b4cd075d3543da347c2c8e68fbc35c3f5a19fb43be67c6ed27ee136bc8f8933efa547be7ce04957809ad00ee7f1b00a964f199ae6fb514
   languageName: node
   linkType: hard
 

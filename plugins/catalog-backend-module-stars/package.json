@@ -1,0 +1,49 @@
+{
+  "name": "@backstage/plugin-catalog-backend-module-stars",
+  "version": "0.1.0",
+  "description": "A backend module for the catalog plugin that provides database-backed starred entities.",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-stars"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "migrations/**/*.{js,d.ts}"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "knex": "^3.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/supertest": "^7.2.0",
+    "supertest": "^7.2.2"
+  }
+}
