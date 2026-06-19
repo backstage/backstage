@@ -20,6 +20,7 @@ import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { GoogleGCSPublish } from './googleStorage';
 import { LocalPublish } from './local';
 import { OpenStackSwiftPublish } from './openStackSwift';
+import { MultiPublisher } from './multi';
 import {
   PublisherFactory,
   PublisherBase,
@@ -59,6 +60,41 @@ export class Publisher implements PublisherBuilder {
     return publisher;
   }
 
+  private static async createPublisher(
+    publisherType: Exclude<PublisherType, 'multi'>,
+    config: Config,
+    options: PublisherFactory,
+  ): Promise<PublisherBase> {
+    const { logger, discovery } = options;
+
+    switch (publisherType) {
+      case 'googleGcs':
+        logger.info('Creating Google Storage Bucket publisher for TechDocs');
+        return GoogleGCSPublish.fromConfig(
+          config,
+          logger,
+          options.publisherSettings?.googleGcs,
+        );
+      case 'awsS3':
+        logger.info('Creating AWS S3 Bucket publisher for TechDocs');
+        return await AwsS3Publish.fromConfig(config, logger);
+      case 'azureBlobStorage':
+        logger.info(
+          'Creating Azure Blob Storage Container publisher for TechDocs',
+        );
+        return AzureBlobStoragePublish.fromConfig(config, logger);
+      case 'openStackSwift':
+        logger.info(
+          'Creating OpenStack Swift Container publisher for TechDocs',
+        );
+        return OpenStackSwiftPublish.fromConfig(config, logger);
+      case 'local':
+      default:
+        logger.info('Creating Local publisher for TechDocs');
+        return LocalPublish.fromConfig(config, logger, discovery);
+    }
+  }
+
   /**
    * Returns a instance of TechDocs publisher
    * @param config - A Backstage configuration
@@ -68,7 +104,7 @@ export class Publisher implements PublisherBuilder {
     config: Config,
     options: PublisherFactory,
   ): Promise<PublisherBase> {
-    const { logger, discovery, customPublisher } = options;
+    const { logger, customPublisher } = options;
 
     const publishers = new Publisher();
 
@@ -81,56 +117,39 @@ export class Publisher implements PublisherBuilder {
       'techdocs.publisher.type',
     ) ?? 'local') as PublisherType;
 
-    switch (publisherType) {
-      case 'googleGcs':
-        logger.info('Creating Google Storage Bucket publisher for TechDocs');
-        publishers.register(
-          publisherType,
-          GoogleGCSPublish.fromConfig(
+    if (publisherType === 'multi') {
+      logger.info('Creating Multi publisher for TechDocs');
+      const publisherTypes =
+        config.getOptionalStringArray('techdocs.publisher.multi.publishers') ??
+        [];
+
+      if (publisherTypes.length === 0) {
+        throw new Error(
+          'Multi publisher requires at least one publisher in techdocs.publisher.multi.publishers configuration',
+        );
+      }
+
+      const innerPublishers = await Promise.all(
+        publisherTypes.map(async pType => {
+          if (pType === 'multi') {
+            throw new Error('Nested multi publishers are not supported');
+          }
+          return await Publisher.createPublisher(
+            pType as Exclude<PublisherType, 'multi'>,
             config,
-            logger,
-            options.publisherSettings?.googleGcs,
-          ),
-        );
-        break;
-      case 'awsS3':
-        logger.info('Creating AWS S3 Bucket publisher for TechDocs');
-        publishers.register(
-          publisherType,
-          await AwsS3Publish.fromConfig(config, logger),
-        );
-        break;
-      case 'azureBlobStorage':
-        logger.info(
-          'Creating Azure Blob Storage Container publisher for TechDocs',
-        );
-        publishers.register(
-          publisherType,
-          AzureBlobStoragePublish.fromConfig(config, logger),
-        );
-        break;
-      case 'openStackSwift':
-        logger.info(
-          'Creating OpenStack Swift Container publisher for TechDocs',
-        );
-        publishers.register(
-          publisherType,
-          OpenStackSwiftPublish.fromConfig(config, logger),
-        );
-        break;
-      case 'local':
-        logger.info('Creating Local publisher for TechDocs');
-        publishers.register(
-          publisherType,
-          LocalPublish.fromConfig(config, logger, discovery),
-        );
-        break;
-      default:
-        logger.info('Creating Local publisher for TechDocs');
-        publishers.register(
-          publisherType,
-          LocalPublish.fromConfig(config, logger, discovery),
-        );
+            options,
+          );
+        }),
+      );
+
+      publishers.register(publisherType, new MultiPublisher(innerPublishers));
+    } else {
+      const publisher = await Publisher.createPublisher(
+        publisherType as Exclude<PublisherType, 'multi'>,
+        config,
+        options,
+      );
+      publishers.register(publisherType, publisher);
     }
 
     return publishers.get(config);

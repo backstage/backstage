@@ -47,7 +47,8 @@ export type PublisherType =
   | 'googleGcs'
   | 'awsS3'
   | 'azureBlobStorage'
-  | 'openStackSwift';
+  | 'openStackSwift'
+  | 'multi';
 
 /**
  * Request publish definition

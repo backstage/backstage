@@ -92,6 +92,24 @@ export interface Config {
      */
     publisher?:
       | {
+          type: 'multi';
+          /**
+           * Required when 'type' is set to multi
+           */
+          multi?: {
+            /**
+             * List of publishers to use. The first is treated as primary.
+             */
+            publishers: Array<
+              | 'local'
+              | 'googleGcs'
+              | 'awsS3'
+              | 'azureBlobStorage'
+              | 'openStackSwift'
+            >;
+          };
+        }
+      | {
           type: 'local';
 
           /**

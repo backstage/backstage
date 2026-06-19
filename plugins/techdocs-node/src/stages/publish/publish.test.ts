@@ -21,6 +21,7 @@ import { GoogleGCSPublish } from './googleStorage';
 import { AwsS3Publish } from './awsS3';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { OpenStackSwiftPublish } from './openStackSwift';
+import { MultiPublisher } from './multi';
 import { mockServices } from '@backstage/backend-test-utils';
 import { PublisherBase } from './types';
 
@@ -196,5 +197,62 @@ describe('Publisher', () => {
     });
 
     expect(publisher).toBe(customPublisher);
+  });
+
+  it('should create multi publisher from config', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        publisher: {
+          type: 'multi',
+          multi: {
+            publishers: ['local', 'googleGcs'],
+          },
+          googleGcs: {
+            credentials: '{}',
+            bucketName: 'bucketName',
+          },
+        },
+      },
+    });
+
+    const publisher = await Publisher.fromConfig(mockConfig, {
+      logger,
+      discovery,
+    });
+    expect(publisher).toBeInstanceOf(MultiPublisher);
+  });
+
+  it('throws if multi publisher has no publishers configured', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        publisher: {
+          type: 'multi',
+          multi: {
+            publishers: [],
+          },
+        },
+      },
+    });
+
+    await expect(
+      Publisher.fromConfig(mockConfig, { logger, discovery }),
+    ).rejects.toThrow(/Multi publisher requires at least one publisher/);
+  });
+
+  it('throws if nested multi publishers are configured', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        publisher: {
+          type: 'multi',
+          multi: {
+            publishers: ['multi', 'local'],
+          },
+        },
+      },
+    });
+
+    await expect(
+      Publisher.fromConfig(mockConfig, { logger, discovery }),
+    ).rejects.toThrow(/Nested multi publishers are not supported/);
   });
 });
