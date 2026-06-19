@@ -48,7 +48,7 @@ export async function startPostgresContainer(image: string): Promise<{
   stopContainer: () => Promise<void>;
 }> {
   const user = 'postgres';
-  const password = uuid();
+  const password = 'backstage-test';
 
   // Lazy-load to avoid side-effect of importing testcontainers
   const { GenericContainer } =
@@ -62,14 +62,13 @@ export async function startPostgresContainer(image: string): Promise<{
       POSTGRES_PASSWORD: password,
     })
     .withTmpFs({ '/var/lib/postgresql/data': 'rw' })
+    .withReuse()
     .start();
 
   const host = container.getHost();
   const port = container.getMappedPort(5432);
   const connection = { host, port, user, password };
-  const stopContainer = async () => {
-    await container.stop({ timeout: 10_000 });
-  };
+  const stopContainer = async () => {};
 
   await waitForPostgresReady(connection);
 
