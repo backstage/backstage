@@ -16,7 +16,7 @@
 
 import { TestDatabases } from './TestDatabases';
 
-jest.setTimeout(60_000);
+jest.setTimeout(120_000);
 
 const dbs = TestDatabases.create();
 

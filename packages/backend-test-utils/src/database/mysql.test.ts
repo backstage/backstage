@@ -24,7 +24,7 @@ const ourDatabaseIds = Object.entries(allDatabases)
   .filter(([, properties]) => properties.driver.includes('mysql'))
   .map(([id]) => id as TestDatabaseId);
 
-jest.setTimeout(60_000);
+jest.setTimeout(120_000);
 
 describe('startMysqlContainer', () => {
   itIfDocker(

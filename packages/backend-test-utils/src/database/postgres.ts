@@ -30,10 +30,14 @@ async function waitForPostgresReady(
     pool: { min: 0, max: 1 },
   });
   try {
-    await waitForReady(async () => {
-      const result = await knex.select(knex.raw('version()'));
-      return Array.isArray(result) && Boolean(result[0]?.version);
-    }, 'the database');
+    await waitForReady(
+      async () => {
+        const result = await knex.select(knex.raw('version()'));
+        return Array.isArray(result) && Boolean(result[0]?.version);
+      },
+      'the database',
+      60_000,
+    );
   } finally {
     await knex.destroy();
   }
