@@ -77,6 +77,8 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
+    "@backstage/cli-module-build": "workspace:^",
+    "@backstage/cli-module-test-jest": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-components": "workspace:^",

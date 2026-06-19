@@ -78,12 +78,3 @@ instead of selecting one based on dependency order.
 When upgrading an existing repository, add either `@backstage/cli-defaults` or
 the selected individual modules before updating `@backstage/cli`. The CLI no
 longer falls back to modules from its own dependency tree.
-
-### Legacy configuration forwarding paths
-
-Compatibility paths such as `@backstage/cli/config/jest` and
-`@backstage/cli/config/webpack-public-path` continue to forward to their owning
-modules. If your repository uses one of these paths directly, install the owner
-directly, or install `@backstage/cli-defaults`. The forwarding shim resolves the
-owner from the explicitly installed module tree and reports an error when it is
-missing.

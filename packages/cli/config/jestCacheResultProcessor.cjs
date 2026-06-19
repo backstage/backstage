@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-const { requirePackagePath } = require('./resolvePackagePath.cjs');
-
-module.exports = requirePackagePath(
-  '@backstage/cli-module-test-jest/config/jestCacheResultProcessor.cjs',
-  '@backstage/cli-module-test-jest',
-  '@backstage/cli/config/jestCacheResultProcessor.cjs',
-);
+try {
+  module.exports = require('@backstage/cli-module-test-jest/config/jestCacheResultProcessor.cjs');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    throw new Error(
+      '@backstage/cli-module-test-jest is required to use the jest cache result processor. ' +
+        'Please install it as a dependency.',
+    );
+  }
+  throw e;
+}

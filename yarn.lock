@@ -2831,6 +2831,8 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-module-build": "workspace:^"
+    "@backstage/cli-module-test-jest": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"

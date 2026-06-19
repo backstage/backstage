@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-const { requirePackagePath } = require('../resolvePackagePath.cjs');
-
-module.exports = requirePackagePath(
-  '@backstage/cli-module-test-jest/config/jest-environment-jsdom',
-  '@backstage/cli-module-test-jest',
-  '@backstage/cli/config/jest-environment-jsdom',
-);
+try {
+  module.exports = require('@backstage/cli-module-test-jest/config/jest-environment-jsdom');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    throw new Error(
+      '@backstage/cli-module-test-jest is required to use the jest JSDOM environment. ' +
+        'Please install it as a dependency.',
+    );
+  }
+  throw e;
+}
