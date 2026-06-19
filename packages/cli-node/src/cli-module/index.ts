@@ -17,9 +17,4 @@
 export { createCliModule } from './createCliModule';
 export { runCli } from './runCli';
 export { runCliModule } from './runCliModule';
-export type {
-  CliCommand,
-  CliCommandContext,
-  CliModule,
-  CliModuleFeature,
-} from './types';
+export type { CliCommand, CliCommandContext, CliModule } from './types';

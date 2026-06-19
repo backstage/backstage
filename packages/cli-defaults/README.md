@@ -27,8 +27,8 @@ yarn add --dev @backstage/cli-defaults
 
 For fine-grained control over which CLI commands are available, you can install
 individual modules instead. You can also install an individual module alongside
-this package to replace its command at the exact command path while retaining
-the other default commands.
+this package. If any command overlaps, the individually installed module
+replaces the entire conflicting module from this aggregate.
 
 ## Documentation
 

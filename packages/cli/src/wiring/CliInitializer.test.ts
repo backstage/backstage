@@ -271,8 +271,8 @@ describe('CliInitializer', () => {
     expect(process.exit).toHaveBeenCalledWith(0);
   });
 
-  it('should override individual aggregate commands while keeping the other commands', async () => {
-    expect.assertions(3);
+  it('should override array-sourced modules with conflicting individual modules while keeping siblings', async () => {
+    expect.assertions(5);
     process.argv = ['node', 'cli', 'test'];
     const initializer = new CliInitializer();
 
@@ -289,24 +289,34 @@ describe('CliInitializer', () => {
         }),
     });
 
-    const aggregateModule = createCliModule({
-      packageJson: { name: '@backstage/aggregate' },
+    const conflictingArrayModule = createCliModule({
+      packageJson: { name: '@backstage/array-conflict' },
       init: async reg => {
         reg.addCommand({
           path: ['test'],
-          description: 'aggregate test (should be overridden)',
+          description: 'array test (should be skipped)',
           execute: () => Promise.resolve(),
         });
         reg.addCommand({
-          path: ['other'],
-          description: 'other command',
+          path: ['removed'],
+          description: 'removed with the conflicting module',
           execute: () => Promise.resolve(),
         });
       },
     });
 
+    const nonConflictingArrayModule = createCliModule({
+      packageJson: { name: '@backstage/array-sibling' },
+      init: async reg =>
+        reg.addCommand({
+          path: ['other'],
+          description: 'other command',
+          execute: () => Promise.resolve(),
+        }),
+    });
+
     initializer.add(individualModule);
-    initializer.add([aggregateModule]);
+    initializer.add([conflictingArrayModule, nonConflictingArrayModule]);
 
     await initializer.run();
     expect(process.exit).toHaveBeenCalledWith(0);
@@ -314,9 +324,19 @@ describe('CliInitializer', () => {
     process.argv = ['node', 'cli', 'other'];
     const initializer2 = new CliInitializer();
     initializer2.add(individualModule);
-    initializer2.add([aggregateModule]);
+    initializer2.add([conflictingArrayModule, nonConflictingArrayModule]);
     await initializer2.run();
     expect(process.exit).toHaveBeenCalledTimes(2);
+
+    process.argv = ['node', 'cli', '--help'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const initializer3 = new CliInitializer();
+    initializer3.add(individualModule);
+    initializer3.add([conflictingArrayModule, nonConflictingArrayModule]);
+    await initializer3.run();
+    const helpOutput = logSpy.mock.calls.flat().join('\n');
+    expect(helpOutput).not.toContain('removed');
+    expect(helpOutput).toContain('other');
   });
 
   it('should error with package names when two individual modules conflict', async () => {

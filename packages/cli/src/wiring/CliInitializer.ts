@@ -16,7 +16,7 @@
 
 import { OpaqueCliModule } from '@internal/cli';
 import { runCli } from '@backstage/cli-node';
-import type { CliModule, CliModuleFeature } from '@backstage/cli-node';
+import type { CliModule } from '@backstage/cli-node';
 import { version } from './version';
 import { isPromise } from 'node:util/types';
 
@@ -25,36 +25,71 @@ type UninitializedFeature =
   | CliModule[]
   | Promise<{ default: CliModule | CliModule[] }>;
 
+interface TaggedFeature {
+  feature: CliModule;
+  fromArray: boolean;
+}
+
 export class CliInitializer {
-  #uninitiazedFeatures: Promise<CliModuleFeature>[] = [];
+  #uninitiazedFeatures: Promise<TaggedFeature[]>[] = [];
 
   add(feature: UninitializedFeature, source?: string) {
     if (isPromise(feature)) {
       this.#uninitiazedFeatures.push(
-        feature.then(f => validateFeature(unwrapFeature(f.default), source)),
+        feature.then(f => tagFeature(unwrapFeature(f.default), source)),
       );
     } else {
       this.#uninitiazedFeatures.push(
-        Promise.resolve(validateFeature(feature, source)),
+        Promise.resolve(tagFeature(feature, source)),
       );
     }
+  }
+
+  async #doInit(): Promise<CliModule[]> {
+    const resolvedGroups = await Promise.all(this.#uninitiazedFeatures);
+    const allFeatures = resolvedGroups.flat();
+
+    const individualPaths = new Set<string>();
+    for (const { feature, fromArray } of allFeatures) {
+      if (!fromArray) {
+        const commands = await OpaqueCliModule.toInternal(feature).commands;
+        for (const command of commands) {
+          individualPaths.add(command.path.join(' '));
+        }
+      }
+    }
+
+    const modules: CliModule[] = [];
+    for (const { feature, fromArray } of allFeatures) {
+      if (fromArray) {
+        const commands = await OpaqueCliModule.toInternal(feature).commands;
+        if (
+          commands.some(command => individualPaths.has(command.path.join(' ')))
+        ) {
+          continue;
+        }
+      }
+      modules.push(feature);
+    }
+
+    return modules;
   }
 
   /**
    * Actually parse argv and pass it to the command.
    */
   async run() {
-    const modules = await Promise.all(this.#uninitiazedFeatures);
+    const modules = await this.#doInit();
     await runCli({ modules, name: 'backstage-cli', version });
   }
 }
 
-function validateFeature(
-  feature: CliModuleFeature,
+function tagFeature(
+  feature: CliModule | CliModule[],
   source?: string,
-): CliModuleFeature {
+): TaggedFeature[] {
   const modules = Array.isArray(feature) ? feature : [feature];
-  for (const module of modules) {
+  return modules.map(module => {
     if (!OpaqueCliModule.isType(module)) {
       throw new Error(
         source
@@ -62,8 +97,8 @@ function validateFeature(
           : `Invalid CLI module: expected a module created with createCliModule`,
       );
     }
-  }
-  return feature;
+    return { feature: module, fromArray: Array.isArray(feature) };
+  });
 }
 
 /** @internal */

@@ -24,17 +24,12 @@ import type { CliCommand, CliModule } from './types';
 
 export class CommandGraph {
   readonly #roots: CommandNode[] = [];
-  readonly #overridableNodes = new WeakSet<CommandNode>();
 
   get roots(): ReadonlyArray<CommandNode> {
     return this.#roots;
   }
 
-  add(
-    command: CliCommand,
-    module: CliModule,
-    options?: { overridable?: boolean; override?: boolean },
-  ): void {
+  add(command: CliCommand, module: CliModule): void {
     const { path } = command;
     let current = this.#roots;
 
@@ -62,40 +57,20 @@ export class CommandGraph {
     }
 
     const name = path[path.length - 1];
-    const existingIndex = current.findIndex(node => getNodeName(node) === name);
-    const existing = current[existingIndex];
+    const existing = current.find(node => getNodeName(node) === name);
     if (existing) {
-      if (
-        options?.override &&
-        OpaqueCommandLeafNode.isType(existing) &&
-        this.#overridableNodes.has(existing)
-      ) {
-        current.splice(
-          existingIndex,
-          1,
-          OpaqueCommandLeafNode.createInstance('v1', {
-            name,
-            command,
-            module,
-          }),
-        );
-        return;
-      }
-
       throw new Error(
         formatConflictError(path, module, findNodeModule(existing)),
       );
     }
 
-    const node = OpaqueCommandLeafNode.createInstance('v1', {
-      name,
-      command,
-      module,
-    });
-    current.push(node);
-    if (options?.overridable) {
-      this.#overridableNodes.add(node);
-    }
+    current.push(
+      OpaqueCommandLeafNode.createInstance('v1', {
+        name,
+        command,
+        module,
+      }),
+    );
   }
 }
 

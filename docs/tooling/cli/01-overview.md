@@ -70,10 +70,10 @@ relevant `@backstage/cli-module-*` packages instead:
 ```
 
 You can also install an individual module alongside `@backstage/cli-defaults`
-to replace commands from the aggregate. Overrides apply to exact command paths,
-so the aggregate continues to provide its unrelated commands. The CLI reports
-conflicts between individually installed modules instead of selecting one based
-on dependency order.
+to replace a module from the aggregate. If any command overlaps, the CLI skips
+the entire conflicting aggregate module, while other aggregate modules remain
+available. The CLI reports conflicts between individually installed modules
+instead of selecting one based on dependency order.
 
 When upgrading an existing repository, add either `@backstage/cli-defaults` or
 the selected individual modules before updating `@backstage/cli`. The CLI no
