@@ -17,7 +17,6 @@
 import { randomBytes } from 'node:crypto';
 import knexFactory, { Knex } from 'knex';
 import { parse as parsePgConnectionString } from 'pg-connection-string';
-import { randomUUID as uuid } from 'node:crypto';
 import { waitForReady } from '../util/waitForReady';
 import { Engine, TEST_POOL_CONFIG, TestDatabaseProperties } from './types';
 
