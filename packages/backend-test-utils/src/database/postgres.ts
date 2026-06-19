@@ -156,21 +156,20 @@ export class PostgresEngine implements Engine {
       }
     }
 
+    let adminConnection: Knex | undefined;
     try {
-      const adminConnection = this.#connectAdmin();
-      try {
-        for (const databaseName of this.#databaseNames) {
-          try {
-            await adminConnection.raw('DROP DATABASE ??', [databaseName]);
-          } catch {
-            // Best-effort — the database may already be gone
-          }
+      adminConnection = this.#connectAdmin();
+      for (const databaseName of this.#databaseNames) {
+        try {
+          await adminConnection.raw('DROP DATABASE ??', [databaseName]);
+        } catch {
+          // Best-effort — the database may already be gone
         }
-      } finally {
-        await adminConnection.destroy();
       }
     } catch {
       // Best-effort — the container may already be stopped
+    } finally {
+      await adminConnection?.destroy().catch(() => {});
     }
 
     try {
