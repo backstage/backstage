@@ -84,7 +84,6 @@ longer falls back to modules from its own dependency tree.
 Compatibility paths such as `@backstage/cli/config/jest` and
 `@backstage/cli/config/webpack-public-path` continue to forward to their owning
 modules. If your repository uses one of these paths directly, install the owner
-as a direct root dependency: `@backstage/cli-module-test-jest` for Jest paths or
-`@backstage/cli-module-build` for the Webpack public path. The forwarding shim
-resolves the owner from the target repository and reports an error when it is
+directly, or install `@backstage/cli-defaults`. The forwarding shim resolves the
+owner from the explicitly installed module tree and reports an error when it is
 missing.

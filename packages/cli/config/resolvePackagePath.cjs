@@ -19,6 +19,13 @@ const { createRequire } = require('node:module');
 const path = require('node:path');
 const { targetPaths } = require('@backstage/cli-common');
 
+function hasDependency(targetPackage, packageName) {
+  return Boolean(
+    targetPackage.dependencies?.[packageName] ??
+      targetPackage.devDependencies?.[packageName],
+  );
+}
+
 function resolvePackagePath(request, packageName, legacyPath) {
   const packageJsonPath = path.resolve(targetPaths.rootDir, 'package.json');
   let targetPackage;
@@ -31,23 +38,47 @@ function resolvePackagePath(request, packageName, legacyPath) {
     );
   }
 
-  const isDirectDependency = Boolean(
-    targetPackage.dependencies?.[packageName] ??
-      targetPackage.devDependencies?.[packageName],
-  );
-  if (!isDirectDependency) {
-    throw new Error(
-      `The legacy "${legacyPath}" path requires "${packageName}" to be installed ` +
-        `directly in the target repository. Add it to dependencies or devDependencies ` +
-        `in the root package.json.`,
-    );
+  const targetRequire = createRequire(packageJsonPath);
+  let packageRequire = targetRequire;
+  if (!hasDependency(targetPackage, packageName)) {
+    if (!hasDependency(targetPackage, '@backstage/cli-defaults')) {
+      throw new Error(
+        `The legacy "${legacyPath}" path requires "${packageName}" or ` +
+          `"@backstage/cli-defaults" to be installed directly in the target repository. ` +
+          `Add one of them to dependencies or devDependencies in the root package.json.`,
+      );
+    }
+
+    let defaultsPackageJsonPath;
+    let defaultsPackage;
+    try {
+      defaultsPackageJsonPath = targetRequire.resolve(
+        '@backstage/cli-defaults/package.json',
+      );
+      defaultsPackage = JSON.parse(
+        fs.readFileSync(defaultsPackageJsonPath, 'utf8'),
+      );
+    } catch (error) {
+      throw new Error(
+        `Failed to resolve explicitly installed package "@backstage/cli-defaults" from the target repository. ` +
+          `Run your package manager's install command and verify the dependency can be resolved.`,
+        { cause: error },
+      );
+    }
+    if (!hasDependency(defaultsPackage, packageName)) {
+      throw new Error(
+        `The legacy "${legacyPath}" path requires "${packageName}", which is not included in ` +
+          `the installed "@backstage/cli-defaults" package. Install "${packageName}" directly instead.`,
+      );
+    }
+    packageRequire = createRequire(defaultsPackageJsonPath);
   }
 
   try {
-    return createRequire(packageJsonPath).resolve(request);
+    return packageRequire.resolve(request);
   } catch (error) {
     throw new Error(
-      `Failed to resolve explicitly installed package "${packageName}" from the target repository. ` +
+      `Failed to resolve package "${packageName}" from the CLI modules installed in the target repository. ` +
         `Run your package manager's install command and verify the dependency can be resolved.`,
       { cause: error },
     );
