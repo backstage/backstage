@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-test-utils': minor
+'@backstage/backend-test-utils': patch
 ---
 
-**BREAKING**: The `MYSQL_8` test database now uses MySQL 8.4 (the current LTS release) instead of the floating `mysql:8` Docker tag which had moved to 8.4.x. The `--default-authentication-plugin` startup flag has been replaced with `--mysql-native-password=ON` which is the 8.4+ equivalent. If you rely on the `TestDatabases` facility with MySQL, your tests will now run against MySQL 8.4 and you may need to update any custom MySQL connection strings or Docker image overrides accordingly. The connection pool size has also been reduced from 50 to 5 per test database, and idle/stale connections are now reaped automatically.
+The MySQL test database image has been pinned from the floating `mysql:8` tag to `mysql:8.4`, fixing container startup failures caused by a removed configuration flag in newer MySQL 8.4.x releases. The connection pool has been reduced and idle connections are now reaped automatically, improving stability under CI load.
