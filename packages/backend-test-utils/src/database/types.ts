@@ -115,7 +115,7 @@ export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
     MYSQL_8: {
       name: 'MySQL 8.x',
       driver: 'mysql2',
-      dockerImageName: getDockerImageForName('mysql:8'),
+      dockerImageName: getDockerImageForName('mysql:8.4'),
       connectionStringEnvironmentVariableName:
         'BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING',
     },
