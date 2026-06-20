@@ -53,21 +53,31 @@ export async function startPostgresContainer(image: string): Promise<{
   const { GenericContainer } =
     require('testcontainers') as typeof import('testcontainers');
 
-  const container = await new GenericContainer(image)
+  const builder = new GenericContainer(image)
     .withExposedPorts(5432)
     .withEnvironment({
-      // Since postgres 18, the default directory changed - so we pin it here
       PGDATA: '/var/lib/postgresql/data',
       POSTGRES_PASSWORD: password,
     })
-    .withTmpFs({ '/var/lib/postgresql/data': 'rw' })
-    .withReuse()
-    .start();
+    .withTmpFs({ '/var/lib/postgresql/data': 'rw' });
+
+  let container;
+  let reused = false;
+  try {
+    container = await builder.withReuse().start();
+    reused = true;
+  } catch {
+    container = await builder.start();
+  }
 
   const host = container.getHost();
   const port = container.getMappedPort(5432);
   const connection = { host, port, user, password };
-  const stopContainer = async () => {};
+  const stopContainer = reused
+    ? async () => {}
+    : async () => {
+        await container.stop({ timeout: 10_000 });
+      };
 
   await waitForPostgresReady(connection);
 
