@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import DOMPurify from 'dompurify';
 import { FC, PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
 
@@ -142,6 +143,37 @@ describe('Transformers > Html > Sanitizer Custom Elements', () => {
 
     expect(elements).toHaveLength(1);
     expect(elements[0].hasAttribute('dominant-baseline')).toBe(true);
+  });
+
+  it('does not inherit hooks registered on the global DOMPurify singleton', async () => {
+    // Regression test for https://github.com/backstage/backstage/issues/34037
+    //
+    // Swagger UI (and similar plugins) register a global `afterSanitizeAttributes` hook on
+    // the DOMPurify singleton that mutates elements — e.g. setting `opacity: 0` — which
+    // previously bled into TechDocs sanitization because we were using the shared singleton.
+    // The fix creates a fresh, isolated DOMPurify instance per sanitizer call so that
+    // hooks from other plugins cannot pollute it.
+
+    // Simulate a Swagger UI-style hook that sets opacity: 0 on every anchor element.
+    DOMPurify.addHook('afterSanitizeAttributes', node => {
+      if (node.tagName === 'A') {
+        (node as HTMLElement).style.opacity = '0';
+      }
+    });
+
+    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
+    const dirtyDom = document.createElement('html');
+    dirtyDom.innerHTML = `<body><a href="https://example.com">Example</a></body>`;
+
+    const cleanDom = await result.current(dirtyDom);
+    const anchor = cleanDom.querySelector<HTMLAnchorElement>('a');
+
+    // The globally-registered hook must NOT have touched the TechDocs output.
+    expect(anchor).not.toBeNull();
+    expect(anchor!.style.opacity).not.toBe('0');
+
+    // Cleanup: remove the hook we added so other tests are unaffected.
+    DOMPurify.removeHook('afterSanitizeAttributes');
   });
 
   it('removes javascript: hrefs while preserving link text', async () => {

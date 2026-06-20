@@ -48,17 +48,20 @@ export const useSanitizerTransformer = (): Transformer => {
     async (dom: Element) => {
       const hosts = config?.getOptionalStringArray('allowedIframeHosts');
 
-      DOMPurify.addHook('beforeSanitizeElements', removeUnsafeLinks);
+      // eslint-disable-next-line new-cap
+      const purify = DOMPurify();
+
+      purify.addHook('beforeSanitizeElements', removeUnsafeLinks);
       const tags = ['link', 'meta'];
 
       if (hosts) {
         tags.push('iframe');
-        DOMPurify.addHook('beforeSanitizeElements', removeUnsafeIframes(hosts));
+        purify.addHook('beforeSanitizeElements', removeUnsafeIframes(hosts));
       }
 
-      DOMPurify.addHook('uponSanitizeElement', removeUnsafeMetaTags);
+      purify.addHook('uponSanitizeElement', removeUnsafeMetaTags);
 
-      DOMPurify.addHook('uponSanitizeAttribute', removeRestrictedAttributes);
+      purify.addHook('uponSanitizeAttribute', removeRestrictedAttributes);
 
       const tagNameCheck = config?.getOptionalString(
         'allowedCustomElementTagNameRegExp',
@@ -97,7 +100,7 @@ export const useSanitizerTransformer = (): Transformer => {
       );
 
       // using outerHTML as we want to preserve the html tag attributes (lang)
-      return DOMPurify.sanitize(dom.outerHTML, {
+      return purify.sanitize(dom.outerHTML, {
         ADD_TAGS: tags,
         FORBID_TAGS: ['style'],
         ADD_ATTR: ['http-equiv', 'content', 'dominant-baseline'],
