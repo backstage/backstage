@@ -58,10 +58,7 @@ export async function startMysqlContainer(image: string): Promise<{
   const { GenericContainer } =
     require('testcontainers') as typeof import('testcontainers');
 
-  // withReuse() lets multiple Jest workers share one container instead
-  // of each starting their own. MySQL uses ~640 MB per container so
-  // parallel workers quickly exhaust memory, causing "Connection lost".
-  const container = await new GenericContainer(image)
+  const builder = new GenericContainer(image)
     .withExposedPorts(3306)
     .withEnvironment({ MYSQL_ROOT_PASSWORD: password })
     .withTmpFs({ '/var/lib/mysql': 'rw' })
@@ -69,16 +66,28 @@ export async function startMysqlContainer(image: string): Promise<{
       '--skip-log-bin',
       '--max-connections=200',
       '--mysql-native-password=ON',
-    ])
-    .withReuse()
-    .start();
+    ]);
+
+  // Try to reuse a running container so parallel Jest workers share one
+  // instance instead of each starting their own (~640 MB per container).
+  // Falls back to a dedicated container if reuse is not available.
+  let container;
+  let reused = false;
+  try {
+    container = await builder.withReuse().start();
+    reused = true;
+  } catch {
+    container = await builder.start();
+  }
 
   const host = container.getHost();
   const port = container.getMappedPort(3306);
   const connection = { host, port, user, password };
-  // Don't stop reused containers — other workers may still be using them.
-  // The container will be cleaned up by testcontainers' reaper (ryuk).
-  const stopContainer = async () => {};
+  const stopContainer = reused
+    ? async () => {}
+    : async () => {
+        await container.stop({ timeout: 10_000 });
+      };
 
   await waitForMysqlReady(connection);
 
