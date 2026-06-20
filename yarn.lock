@@ -5524,7 +5524,7 @@ __metadata:
     "@types/express": "npm:^4.17.6"
     eventsource: "npm:^4.0.0"
     express: "npm:^4.22.0"
-    http-proxy-middleware: "npm:^3.0.3"
+    http-proxy-middleware: "npm:^3.0.7"
     wait-for-expect: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
@@ -31336,9 +31336,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy-middleware@npm:*, http-proxy-middleware@npm:^3.0.3":
-  version: 3.0.5
-  resolution: "http-proxy-middleware@npm:3.0.5"
+"http-proxy-middleware@npm:*, http-proxy-middleware@npm:^3.0.7":
+  version: 3.0.7
+  resolution: "http-proxy-middleware@npm:3.0.7"
   dependencies:
     "@types/http-proxy": "npm:^1.17.15"
     debug: "npm:^4.3.6"
@@ -31346,7 +31346,7 @@ __metadata:
     is-glob: "npm:^4.0.3"
     is-plain-object: "npm:^5.0.0"
     micromatch: "npm:^4.0.8"
-  checksum: 10/83c1956be6451a5f4a2f3c7b3d84085dbd47e1efb5bb684c1ed668a6606c18c7c07be823b0dbba1326955b64cf88de2672492940b0b48d140215fbdb06105c9a
+  checksum: 10/a44135de721e55517b0fca596855e1e4da92b5fdad247425b4253a345fface37b2a800fcfe37dc28863e9021d8c56cf9cb33ebd20d63c9eca6918a46b39082d4
   languageName: node
   linkType: hard
 
