@@ -61,19 +61,13 @@ export async function startPostgresContainer(image: string): Promise<{
     })
     .withTmpFs({ '/var/lib/postgresql/data': 'rw' });
 
-  let container;
-  let reused = false;
-  try {
-    container = await builder.withReuse().start();
-    reused = true;
-  } catch {
-    container = await builder.start();
-  }
+  const reuse = process.env.TESTCONTAINERS_REUSE_ENABLE !== 'false';
+  const container = await (reuse ? builder.withReuse() : builder).start();
 
   const host = container.getHost();
   const port = container.getMappedPort(5432);
   const connection = { host, port, user, password };
-  const stopContainer = reused
+  const stopContainer = reuse
     ? async () => {}
     : async () => {
         await container.stop({ timeout: 10_000 });
