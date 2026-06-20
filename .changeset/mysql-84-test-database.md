@@ -2,4 +2,4 @@
 '@backstage/backend-test-utils': patch
 ---
 
-The MySQL test database image has been pinned from the floating `mysql:8` tag to `mysql:8.4`, fixing container startup failures caused by a removed configuration flag in newer MySQL 8.4.x releases. The connection pool has been reduced and idle connections are now reaped automatically, improving stability under CI load.
+Fixed MySQL test database failures by pinning the Docker image from the floating `mysql:8` tag to `mysql:8.4` and replacing a startup flag that was removed in MySQL 8.4. Parallel Jest workers now share a single database container via container reuse (disable with `TESTCONTAINERS_REUSE_ENABLE=false`), reducing memory pressure from ~640 MB per worker to a single shared instance. The connection pool has been reduced and idle connections are now reaped automatically.

@@ -17,7 +17,6 @@
 import { randomBytes } from 'node:crypto';
 import knexFactory, { Knex } from 'knex';
 import { parse as parsePgConnectionString } from 'pg-connection-string';
-import { randomUUID as uuid } from 'node:crypto';
 import { waitForReady } from '../util/waitForReady';
 import { Engine, TEST_POOL_CONFIG, TestDatabaseProperties } from './types';
 
@@ -48,28 +47,32 @@ export async function startPostgresContainer(image: string): Promise<{
   stopContainer: () => Promise<void>;
 }> {
   const user = 'postgres';
-  const password = uuid();
+  const password = 'backstage-test';
 
   // Lazy-load to avoid side-effect of importing testcontainers
   const { GenericContainer } =
     require('testcontainers') as typeof import('testcontainers');
 
-  const container = await new GenericContainer(image)
+  const builder = new GenericContainer(image)
     .withExposedPorts(5432)
     .withEnvironment({
       // Since postgres 18, the default directory changed - so we pin it here
       PGDATA: '/var/lib/postgresql/data',
       POSTGRES_PASSWORD: password,
     })
-    .withTmpFs({ '/var/lib/postgresql/data': 'rw' })
-    .start();
+    .withTmpFs({ '/var/lib/postgresql/data': 'rw' });
+
+  const reuse = process.env.TESTCONTAINERS_REUSE_ENABLE !== 'false';
+  const container = await (reuse ? builder.withReuse() : builder).start();
 
   const host = container.getHost();
   const port = container.getMappedPort(5432);
   const connection = { host, port, user, password };
-  const stopContainer = async () => {
-    await container.stop({ timeout: 10_000 });
-  };
+  const stopContainer = reuse
+    ? async () => {}
+    : async () => {
+        await container.stop({ timeout: 10_000 });
+      };
 
   await waitForPostgresReady(connection);
 

@@ -16,7 +16,6 @@
 
 import { randomBytes } from 'node:crypto';
 import knexFactory, { Knex } from 'knex';
-import { randomUUID as uuid } from 'node:crypto';
 import yn from 'yn';
 import { waitForReady } from '../util/waitForReady';
 import { Engine, TEST_POOL_CONFIG, TestDatabaseProperties } from './types';
@@ -51,13 +50,13 @@ export async function startMysqlContainer(image: string): Promise<{
   stopContainer: () => Promise<void>;
 }> {
   const user = 'root';
-  const password = uuid();
+  const password = 'backstage-test';
 
   // Lazy-load to avoid side-effect of importing testcontainers
   const { GenericContainer } =
     require('testcontainers') as typeof import('testcontainers');
 
-  const container = await new GenericContainer(image)
+  const builder = new GenericContainer(image)
     .withExposedPorts(3306)
     .withEnvironment({ MYSQL_ROOT_PASSWORD: password })
     .withTmpFs({ '/var/lib/mysql': 'rw' })
@@ -65,15 +64,23 @@ export async function startMysqlContainer(image: string): Promise<{
       '--skip-log-bin',
       '--max-connections=200',
       '--mysql-native-password=ON',
-    ])
-    .start();
+    ]);
+
+  // Reuse lets parallel Jest workers share one container instead of each
+  // starting their own (~640 MB per container). Mirrors testcontainers'
+  // own check: enabled unless TESTCONTAINERS_REUSE_ENABLE is "false".
+  // Deterministic password ensures all workers produce the same config hash.
+  const reuse = process.env.TESTCONTAINERS_REUSE_ENABLE !== 'false';
+  const container = await (reuse ? builder.withReuse() : builder).start();
 
   const host = container.getHost();
   const port = container.getMappedPort(3306);
   const connection = { host, port, user, password };
-  const stopContainer = async () => {
-    await container.stop({ timeout: 10_000 });
-  };
+  const stopContainer = reuse
+    ? async () => {}
+    : async () => {
+        await container.stop({ timeout: 10_000 });
+      };
 
   await waitForMysqlReady(connection);
 
