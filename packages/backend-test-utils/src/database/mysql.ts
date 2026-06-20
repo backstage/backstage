@@ -68,22 +68,16 @@ export async function startMysqlContainer(image: string): Promise<{
       '--mysql-native-password=ON',
     ]);
 
-  // Try to reuse a running container so parallel Jest workers share one
-  // instance instead of each starting their own (~640 MB per container).
-  // Falls back to a dedicated container if reuse is not available.
-  let container;
-  let reused = false;
-  try {
-    container = await builder.withReuse().start();
-    reused = true;
-  } catch {
-    container = await builder.start();
-  }
+  // Reuse lets parallel Jest workers share one container instead of each
+  // starting their own (~640 MB per container). Enabled by default in
+  // testcontainers unless TESTCONTAINERS_REUSE_ENABLE=false.
+  const reuse = process.env.TESTCONTAINERS_REUSE_ENABLE !== 'false';
+  const container = await (reuse ? builder.withReuse() : builder).start();
 
   const host = container.getHost();
   const port = container.getMappedPort(3306);
   const connection = { host, port, user, password };
-  const stopContainer = reused
+  const stopContainer = reuse
     ? async () => {}
     : async () => {
         await container.stop({ timeout: 10_000 });
