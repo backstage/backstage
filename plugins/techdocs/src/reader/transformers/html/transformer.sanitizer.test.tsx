@@ -161,19 +161,23 @@ describe('Transformers > Html > Sanitizer Custom Elements', () => {
       }
     });
 
-    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
-    const dirtyDom = document.createElement('html');
-    dirtyDom.innerHTML = `<body><a href="https://example.com">Example</a></body>`;
+    try {
+      const { result } = renderHook(() => useSanitizerTransformer(), {
+        wrapper,
+      });
+      const dirtyDom = document.createElement('html');
+      dirtyDom.innerHTML = `<body><a href="https://example.com">Example</a></body>`;
 
-    const cleanDom = await result.current(dirtyDom);
-    const anchor = cleanDom.querySelector<HTMLAnchorElement>('a');
+      const cleanDom = await result.current(dirtyDom);
+      const anchor = cleanDom.querySelector<HTMLAnchorElement>('a');
 
-    // The globally-registered hook must NOT have touched the TechDocs output.
-    expect(anchor).not.toBeNull();
-    expect(anchor!.style.opacity).not.toBe('0');
-
-    // Cleanup: remove the hook we added so other tests are unaffected.
-    DOMPurify.removeHook('afterSanitizeAttributes');
+      // The globally-registered hook must NOT have touched the TechDocs output.
+      expect(anchor).not.toBeNull();
+      expect(anchor!.style.opacity).not.toBe('0');
+    } finally {
+      // Cleanup: remove the hook we added so other tests are unaffected.
+      DOMPurify.removeHook('afterSanitizeAttributes');
+    }
   });
 
   it('removes javascript: hrefs while preserving link text', async () => {
