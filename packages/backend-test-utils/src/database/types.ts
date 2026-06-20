@@ -132,7 +132,7 @@ export const TEST_POOL_CONFIG = {
     acquireTimeoutMillis: 30_000,
     createTimeoutMillis: 30_000,
     destroyTimeoutMillis: 5_000,
-    idleTimeoutMillis: 30_000,
+    idleTimeoutMillis: 5_000,
     reapIntervalMillis: 1_000,
   },
 };

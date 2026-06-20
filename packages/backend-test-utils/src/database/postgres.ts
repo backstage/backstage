@@ -60,7 +60,8 @@ export async function startPostgresContainer(image: string): Promise<{
       PGDATA: '/var/lib/postgresql/data',
       POSTGRES_PASSWORD: password,
     })
-    .withTmpFs({ '/var/lib/postgresql/data': 'rw' });
+    .withTmpFs({ '/var/lib/postgresql/data': 'rw' })
+    .withCommand(['-c', 'max_connections=1000']);
 
   const reuse = process.env.TESTCONTAINERS_REUSE_ENABLE !== 'false';
   const container = await (reuse ? builder.withReuse() : builder).start();
