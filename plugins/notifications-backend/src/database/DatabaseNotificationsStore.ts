@@ -53,6 +53,7 @@ const NOTIFICATION_COLUMNS = [
   'user',
   'read',
   'saved',
+  'metadata',
 ];
 
 type NotificationRowType = {
@@ -70,6 +71,7 @@ type NotificationRowType = {
   read: Date | null;
   saved: Date | null;
   icon: string | null;
+  metadata: string | null;
 };
 
 type BroadcastRowType = {
@@ -83,6 +85,7 @@ type BroadcastRowType = {
   created: Date;
   updated: Date | null;
   icon: string | null;
+  metadata: string | null;
 };
 
 type BroadcastUserStatusRowType = {
@@ -167,6 +170,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         severity: row.severity,
         scope: row.scope,
         icon: row.icon,
+        metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
       },
     }));
   };
@@ -230,6 +234,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       icon: notification.payload.icon,
       saved: notification.saved,
       read: notification.read,
+      metadata: notification.payload.metadata
+        ? JSON.stringify(notification.payload.metadata)
+        : null,
     };
   };
 
@@ -245,6 +252,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       severity: normalizeSeverity(notification.payload?.severity),
       icon: notification.payload.icon,
       scope: notification.payload?.scope,
+      metadata: notification.payload.metadata
+        ? JSON.stringify(notification.payload.metadata)
+        : null,
     };
   };
 

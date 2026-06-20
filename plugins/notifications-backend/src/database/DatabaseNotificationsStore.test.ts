@@ -69,6 +69,7 @@ const testNotification1: Notification = {
     link: '/catalog',
     severity: 'critical',
     icon: 'docs',
+    metadata: { customId: 'abc-123' },
   },
 };
 const testNotification2: Notification = {
@@ -82,6 +83,7 @@ const testNotification2: Notification = {
     link: '/catalog',
     severity: 'normal',
     scope: 'scaffolder-1234',
+    metadata: { broadcastGroup: 'all' },
   },
 };
 const testNotification3: Notification = {
@@ -209,6 +211,22 @@ describe.each(databases.eachSupportedId())(
         expect(notification?.payload?.link).toBe('/catalog');
         expect(notification?.payload?.severity).toBe('critical');
         expect(notification?.payload?.icon).toBe('docs');
+        expect(notification?.payload?.metadata).toEqual({
+          customId: 'abc-123',
+        });
+      });
+    });
+
+    describe('saveBroadcast', () => {
+      it('should store a broadcast', async () => {
+        await storage.saveBroadcast(testNotification2);
+        const notification = await storage.getNotification({ id: id2 });
+        expect(notification?.id).toBe(id2);
+        expect(notification?.payload?.title).toBe('Notification 2');
+        expect(notification?.payload?.topic).toBe('gh-topic');
+        expect(notification?.payload?.metadata).toEqual({
+          broadcastGroup: 'all',
+        });
       });
     });
 
