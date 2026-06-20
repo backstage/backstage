@@ -62,7 +62,7 @@ export async function startMysqlContainer(image: string): Promise<{
     .withTmpFs({ '/var/lib/mysql': 'rw' })
     .withCommand([
       '--skip-log-bin',
-      '--max-connections=200',
+      '--max-connections=1000',
       '--mysql-native-password=ON',
     ]);
 
