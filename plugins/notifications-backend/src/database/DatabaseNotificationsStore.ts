@@ -170,11 +170,16 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         severity: row.severity,
         scope: row.scope,
         icon: row.icon,
-        metadata: row.metadata
-          ? typeof row.metadata === 'string'
-            ? JSON.parse(row.metadata)
-            : row.metadata
-          : undefined,
+        metadata: (() => {
+          if (!row.metadata) {
+            return undefined;
+          }
+
+          if (typeof row.metadata === 'string') {
+            return JSON.parse(row.metadata);
+          }
+          return row.metadata;
+        })(),
       },
     }));
   };
