@@ -170,7 +170,11 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         severity: row.severity,
         scope: row.scope,
         icon: row.icon,
-        metadata: row.metadata ? (typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata) : undefined,
+        metadata: row.metadata
+          ? typeof row.metadata === 'string'
+            ? JSON.parse(row.metadata)
+            : row.metadata
+          : undefined,
       },
     }));
   };
@@ -232,7 +236,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
       icon: notification.payload.icon,
-      metadata: notification.payload?.metadata ? JSON.stringify(notification.payload.metadata) : null,
+      metadata: notification.payload?.metadata
+        ? JSON.stringify(notification.payload.metadata)
+        : null,
       saved: notification.saved,
       read: notification.read,
     };
@@ -250,7 +256,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       severity: normalizeSeverity(notification.payload?.severity),
       icon: notification.payload.icon,
       scope: notification.payload?.scope,
-      metadata: notification.payload?.metadata ? JSON.stringify(notification.payload.metadata) : null,
+      metadata: notification.payload?.metadata
+        ? JSON.stringify(notification.payload.metadata)
+        : null,
     };
   };
 
