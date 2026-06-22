@@ -570,9 +570,13 @@ describe('CacheManager store options', () => {
         rootNodes: [{ url: 'redis://localhost:6379' }],
         defaults: expect.objectContaining({
           password: 'secret',
-          url: 'redis://localhost:6379',
           pingInterval: 10000,
         }),
+      }),
+    );
+    expect(createCluster).toHaveBeenCalledWith(
+      expect.objectContaining({
+        defaults: expect.not.objectContaining({ url: expect.anything() }),
       }),
     );
     expect(KeyvRedis).toHaveBeenCalledWith(
@@ -635,6 +639,31 @@ describe('CacheManager store options', () => {
       ),
     ).toThrow('backend.cache.connection must be a string or object');
   });
+
+  it.each(['valkey', 'memcache', 'memory'])(
+    'rejects connection object for non-redis store %s',
+    store => {
+      expect(() =>
+        CacheManager.fromConfig(
+          mockServices.rootConfig({
+            data: {
+              backend: {
+                cache: {
+                  store,
+                  connection: {
+                    url: 'redis://localhost:6379',
+                    pingInterval: 15000,
+                  },
+                },
+              },
+            },
+          }),
+        ),
+      ).toThrow(
+        "backend.cache.connection object form is only supported when backend.cache.store is 'redis'",
+      );
+    },
+  );
 
   describe('Namespace construction', () => {
     it('returns pluginId when no store options are provided', () => {

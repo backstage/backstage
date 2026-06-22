@@ -140,14 +140,22 @@ export class CacheManager {
     config: RootConfigService,
   ): CacheStoreConnection {
     const raw = config.getOptional('backend.cache.connection');
+    const store = config.getOptionalString('backend.cache.store') || 'memory';
 
     if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      if (store !== 'redis') {
+        throw new Error(
+          "backend.cache.connection object form is only supported when backend.cache.store is 'redis'",
+        );
+      }
+
       const url = (raw as { url?: unknown }).url;
       if (typeof url !== 'string' || url.length === 0) {
         throw new Error(
           "backend.cache.connection object must include a non-empty 'url' string",
         );
       }
+
       return raw as Record<string, unknown>;
     }
 
@@ -246,7 +254,11 @@ export class CacheManager {
         clusterConfig.getOptional('defaults');
 
       if (typeof connection === 'object') {
-        defaults = { ...defaults, ...connection };
+        const { url: _url, ...connectionDefaults } = connection as Record<
+          string,
+          unknown
+        >;
+        defaults = { ...defaults, ...connectionDefaults };
       }
 
       redisOptions.cluster = {

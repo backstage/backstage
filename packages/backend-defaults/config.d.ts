@@ -787,6 +787,7 @@ export interface Config {
            * A redis connection string in the form `redis://user:pass@host:port`,
            * or an object with connection options passed directly to the underlying
            * client (e.g. `{ url: 'redis://localhost:6379', pingInterval: 60000 }`).
+           * The object form is only supported for the Redis store.
            * @visibility secret
            */
           connection:

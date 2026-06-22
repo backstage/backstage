@@ -36,7 +36,8 @@ backend:
     store: redis
     # Connection can be a simple URL string:
     connection: redis://localhost:6379
-    # Or an object with additional options passed to the underlying client:
+    # Or an object with additional options passed to the underlying client
+    # (only supported for the Redis store):
     # connection:
     #   url: redis://localhost:6379
     #   pingInterval: 60000
