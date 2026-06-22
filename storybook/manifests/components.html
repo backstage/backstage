@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><span class="filter-pill ok" aria-disabled="true">543 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><span class="filter-pill ok" aria-disabled="true">549 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.5s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.7s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -10667,9 +10667,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PluginHeader</h2>
       <div class="badges">
-        <label for="c-32-backstage-ui-pluginheader-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-32-backstage-ui-pluginheader-props" class="badge ok as-toggle">8 prop types</label>
         
-        <label for="c-32-backstage-ui-pluginheader-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-32-backstage-ui-pluginheader-stories" class="badge ok as-toggle">16 stories</label>
         
         
       </div>
@@ -10696,11 +10696,13 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">7 prop types</span>
+              <span class="badge ok">8 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/PluginHeader/PluginHeader.tsx::PluginHeader</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>className?: string
+            <pre><code>breadcrumbs?: PluginHeaderBreadcrumbEntry[]
+
+className?: string
 
 customActions?: React.ReactNode
 
@@ -11016,6 +11018,135 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
 &lt;/MemoryRouter&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Breadcrumbs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBreadcrumbs = () =&gt; &lt;PluginHeader
+    title=&quot;Service Details&quot;
+    breadcrumbs={[
+      { label: &#39;Home&#39;, href: &#39;/&#39; },
+      { label: &#39;Services&#39;, href: &#39;/services&#39; },
+      { label: &#39;my-service&#39;, href: &#39;/services/my-service&#39; },
+    ]} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Breadcrumbs With Long Segments</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBreadcrumbsWithLongSegments = () =&gt; &lt;PluginHeader
+    title=&quot;Service Details&quot;
+    breadcrumbs={[
+      { label: &#39;Home&#39;, href: &#39;/&#39; },
+      { label: &#39;Services&#39;, href: &#39;/services&#39; },
+      {
+        label: &#39;Page with a very long title that should truncate&#39;,
+        href: &#39;/services/long&#39;,
+      },
+      {
+        label: &#39;Service Details&#39;,
+        href: &#39;/services/long/another&#39;,
+      },
+    ]} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Breadcrumbs With More Than Five Segments</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBreadcrumbsWithMoreThanFiveSegments = () =&gt; &lt;PluginHeader
+    title=&quot;Introduction&quot;
+    breadcrumbs={[
+      { label: &#39;Home&#39;, href: &#39;/&#39; },
+      { label: &#39;Docs&#39;, href: &#39;/docs&#39; },
+      { label: &#39;Guides&#39;, href: &#39;/docs/guides&#39; },
+      { label: &#39;Setup&#39;, href: &#39;/docs/guides/setup&#39; },
+      { label: &#39;Introduction&#39;, href: &#39;/docs/guides/setup/introduction&#39; },
+    ]} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Breadcrumbs And Tabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBreadcrumbsAndTabs = () =&gt; &lt;PluginHeader
+    title=&quot;Service Details&quot;
+    breadcrumbs={[
+      { label: &#39;Home&#39;, href: &#39;/&#39; },
+      { label: &#39;Services&#39;, href: &#39;/services&#39; },
+      { label: &#39;my-service&#39;, href: &#39;/services/my-service&#39; },
+    ]}
+    tabs={tabs} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Breadcrumbs And Custom Actions</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBreadcrumbsAndCustomActions = () =&gt; &lt;PluginHeader
+    title=&quot;Service Details&quot;
+    breadcrumbs={[
+      { label: &#39;Home&#39;, href: &#39;/&#39; },
+      { label: &#39;Services&#39;, href: &#39;/services&#39; },
+      { label: &#39;my-service&#39;, href: &#39;/services/my-service&#39; },
+    ]}
+    customActions={
+      &lt;&gt;
+        &lt;ButtonIcon variant=&quot;secondary&quot; icon={&lt;RiHeartLine /&gt;} /&gt;
+        &lt;MenuTrigger&gt;
+          &lt;ButtonIcon variant=&quot;secondary&quot; icon={&lt;RiMore2Line /&gt;} /&gt;
+          &lt;Menu placement=&quot;bottom end&quot;&gt;
+            {menuItems.map(option =&gt; (
+              &lt;MenuItem
+                key={option.value}
+                onAction={option.onClick}
+                href={option.href}
+              &gt;
+                {option.label}
+              &lt;/MenuItem&gt;
+            ))}
+          &lt;/Menu&gt;
+        &lt;/MenuTrigger&gt;
+      &lt;/&gt;
+    } /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Breadcrumbs And All Options</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBreadcrumbsAndAllOptions = () =&gt; &lt;PluginHeader
+    tabs={tabs}
+    breadcrumbs={[
+      { label: &#39;Home&#39;, href: &#39;/&#39; },
+      { label: &#39;Docs&#39;, href: &#39;/docs&#39; },
+      { label: &#39;Guides&#39;, href: &#39;/docs/guides&#39; },
+      {
+        label:
+          &#39;Setup page with a very long title that should truncate at some point&#39;,
+        href: &#39;/docs/guides/setup&#39;,
+      },
+      {
+        label:
+          &#39;Introduction with a very long title that should truncate at some point&#39;,
+        href: &#39;/docs/guides/setup/introduction&#39;,
+      },
+    ]} /&gt;;</code></pre>
             </div>
         </div>
     
