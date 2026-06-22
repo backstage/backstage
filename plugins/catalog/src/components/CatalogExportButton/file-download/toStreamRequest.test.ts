@@ -28,6 +28,39 @@ describe('toStreamRequest', () => {
 
       expect(result).toBeUndefined();
     });
+
+    it('does not crash when filters contain undefined values', () => {
+      const filters: DefaultEntityFilters = {
+        kind: undefined,
+        type: undefined,
+        text: undefined,
+        order: undefined,
+      };
+      expect(() => toStreamRequest(filters)).not.toThrow();
+      expect(toStreamRequest(filters)).toBeUndefined();
+    });
+
+    it('handles mix of undefined and valid filters', () => {
+      const textFilter = new EntityTextFilter('search term');
+      const filters: DefaultEntityFilters = {
+        kind: undefined,
+        text: textFilter,
+        order: undefined,
+      };
+      const result = toStreamRequest(filters);
+      expect(result).toEqual({
+        fullTextFilter: {
+          term: 'search term',
+          fields: [
+            'metadata.name',
+            'metadata.title',
+            'spec.profile.displayName',
+            'spec.target',
+            'spec.targets',
+          ],
+        },
+      });
+    });
   });
 
   describe('with backend filters', () => {
