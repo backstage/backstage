@@ -15,7 +15,6 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import { useEffect, useState } from 'react';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 
@@ -197,19 +196,10 @@ export const OpenApiDefinition = ({
 }: OpenApiDefinitionProps) => {
   const classes = useStyles();
 
-  // Due to a bug in the swagger-ui-react component, the component needs
-  // to be created without content first.
-  const [def, setDef] = useState('');
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDef(definition), 0);
-    return () => clearTimeout(timer);
-  }, [definition, setDef]);
-
   return (
     <div className={classes.root}>
       <SwaggerUI
-        spec={def}
+        spec={definition}
         url=""
         deepLinking
         oauth2RedirectUrl={`${window.location.protocol}//${window.location.host}/oauth2-redirect.html`}
