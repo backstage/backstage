@@ -104,7 +104,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const entityListContext = useEntityList();
 
   const {
-    loading,
+    pending,
     error,
     entities,
     filters,
@@ -121,7 +121,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   if (entities.length > 0) {
     hasHadData.current = true;
   }
-  const isLoading = loading && !hasHadData.current;
+  const isLoading = pending && !hasHadData.current;
 
   const tableColumns = useMemo(
     () =>
@@ -211,10 +211,10 @@ export const CatalogTable = (props: CatalogTableProps) => {
   // Show the count as long as we have one. Hide it only when new rows
   // have arrived but the count hasn't caught up yet — at that point
   // the old count would be wrong for the new data.
-  const countIsStale = !loading && totalItemsLoading;
+  const countIsStale = !pending && totalItemsLoading;
   const currentCount =
     typeof totalItems === 'number' && !countIsStale ? ` (${totalItems})` : '';
-  const somethingIsLoading = loading || totalItemsLoading;
+  const somethingIsLoading = pending || totalItemsLoading;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(
     filters.user?.value ?? t('catalogTable.allFilters'),

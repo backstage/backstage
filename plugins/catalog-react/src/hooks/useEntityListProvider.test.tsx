@@ -436,6 +436,115 @@ describe('<EntityListProvider />', () => {
     });
   });
 
+  it('sets pending to false during a refresh-triggered fetch', async () => {
+    const deferred = createDeferred<GetEntitiesResponse>();
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.pending).toBe(false);
+    });
+
+    mockCatalogApi.getEntities!.mockReturnValueOnce(deferred);
+
+    act(() => {
+      result.current.refresh?.();
+    });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(true);
+    });
+    expect(result.current.pending).toBe(false);
+
+    await act(async () => {
+      deferred.resolve({ items: entities });
+    });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.pending).toBe(false);
+    });
+  });
+
+  it('sets pending to true during a filter-triggered fetch', async () => {
+    const deferred = createDeferred<GetEntitiesResponse>();
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+
+    mockCatalogApi.getEntities!.mockReturnValueOnce(deferred);
+
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(true);
+    });
+    expect(result.current.pending).toBe(true);
+
+    await act(async () => {
+      deferred.resolve({ items: [] });
+    });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.pending).toBe(false);
+    });
+  });
+
+  it('resets pending after a failed refresh so the next filter change is pending', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+
+    mockCatalogApi.getEntities!.mockRejectedValueOnce(new Error('boom'));
+
+    act(() => {
+      result.current.refresh?.();
+    });
+
+    await waitFor(() => {
+      expect(result.current.error).toBeDefined();
+    });
+    expect(result.current.pending).toBe(false);
+
+    const deferred = createDeferred<GetEntitiesResponse>();
+    mockCatalogApi.getEntities!.mockReturnValueOnce(deferred);
+
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(true);
+    });
+    expect(result.current.pending).toBe(true);
+
+    await act(async () => {
+      deferred.resolve({ items: [] });
+    });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.pending).toBe(false);
+    });
+  });
+
   it('uses the last applied filter even if an earlier request finishes later', async () => {
     const { result } = renderHook(() => useEntityList(), {
       wrapper: createWrapper({ pagination }),
@@ -1300,6 +1409,7 @@ describe('versioned context', () => {
       updateFilters: jest.fn(),
       queryParameters: {},
       loading: true,
+      pending: true,
       totalItemsLoading: false,
       limit: 277,
       setLimit: jest.fn(),

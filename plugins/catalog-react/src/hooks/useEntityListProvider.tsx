@@ -129,6 +129,16 @@ export type EntityListContextProps<
   paginationMode: PaginationMode;
 
   /**
+   * Whether the provider is loading a new data set (as opposed to
+   * revalidating the current one).  `true` on the initial load and
+   * after filter/pagination changes; `false` during background
+   * refreshes triggered by {@link EntityListContextProps.refresh}.
+   * Falls back to {@link EntityListContextProps.loading} when the
+   * provider implementation doesn't distinguish the two.
+   */
+  pending: boolean;
+
+  /**
    * Trigger refresh of entities and entity totals.
    */
   refresh?: () => void;
@@ -240,6 +250,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>();
   const [refreshToken, setRefreshToken] = useState(0);
+  const staleRefreshRef = useRef(false);
 
   // Tracks the params of the last API call so identical requests are
   // skipped even when requestedFilters changes (e.g. a label change
@@ -332,10 +343,12 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     try {
       const result = await doFetch();
       if (gen === fetchGenRef.current) {
+        staleRefreshRef.current = false;
         setBackendState(result);
       }
     } catch (e) {
       if (gen === fetchGenRef.current) {
+        staleRefreshRef.current = false;
         // Clear the ref so the same params can be retried, and so
         // a response discarded due to a concurrent request (gen mismatch)
         // doesn't permanently block fetching those params again.
@@ -464,6 +477,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   );
 
   const triggerRefresh = useCallback(() => {
+    staleRefreshRef.current = true;
     // Clear the ref to allow refetching with the same params.
     lastFetchParamsRef.current = undefined;
     setRefreshToken(t => t + 1);
@@ -490,6 +504,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       updateFilters,
       queryParameters,
       loading,
+      pending: loading && !staleRefreshRef.current,
       error,
       pageInfo,
       totalItems:
