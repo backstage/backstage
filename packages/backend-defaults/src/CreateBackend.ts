@@ -16,6 +16,7 @@
 
 import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { connectionsServiceFactory } from '@backstage/connections';
 import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 import { authServiceFactory } from '@backstage/backend-defaults/auth';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
@@ -49,6 +50,7 @@ export const defaultServiceFactories: ServiceFactory[] = [
   auditorServiceFactory,
   authServiceFactory,
   cacheServiceFactory,
+  connectionsServiceFactory,
   rootConfigServiceFactory,
   databaseServiceFactory,
   discoveryServiceFactory,

@@ -2154,6 +2154,7 @@ __metadata:
     "@backstage/cli-node": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
+    "@backstage/connections": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/integration-aws-node": "workspace:^"
