@@ -62,13 +62,14 @@ The Kubernetes API sends the following event types, all of which are supported:
 | `ADDED`    | A resource was created or already exists at watch start.        |
 | `MODIFIED` | A resource was updated.                                         |
 | `DELETED`  | A resource was removed.                                         |
-| `BOOKMARK` | A checkpoint for the current resource version (no object data). |
+| `BOOKMARK` | A checkpoint for the current resource version (minimal object). |
 | `ERROR`    | An error occurred, such as an expired resource version.         |
 
-All event types except `ERROR` include the full Kubernetes object in the
-`object` field and the resource version in the `resourceVersion` field. `ERROR`
-events contain a structured `KubernetesFetchError` with an `errorType` and
-`statusCode`.
+`ADDED`, `MODIFIED`, and `DELETED` events include the full Kubernetes object in
+the `object` field and the resource version in the `resourceVersion` field.
+`BOOKMARK` events include a minimal object (typically just
+`metadata.resourceVersion`). `ERROR` events contain a structured
+`KubernetesFetchError` with an `errorType` and `statusCode`.
 
 ## Watch options
 

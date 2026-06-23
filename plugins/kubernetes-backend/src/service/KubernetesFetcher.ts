@@ -207,15 +207,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
     if (signal?.aborted) return;
 
-    // Build resource path
-    const encode = (s: string) => encodeURIComponent(s);
-    let resourcePath = group
-      ? `/apis/${encode(group)}/${encode(apiVersion)}`
-      : `/api/${encode(apiVersion)}`;
-    if (namespace) {
-      resourcePath += `/namespaces/${encode(namespace)}`;
-    }
-    resourcePath += `/${encode(plural)}`;
+    const resourcePath = this.buildResourcePath(
+      group,
+      apiVersion,
+      plural,
+      namespace,
+    );
 
     // Get auth setup
     let url: URL;
@@ -308,11 +305,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     try {
       for await (const line of stream) {
         if (signal?.aborted) return;
-        if (!line) continue;
+        const trimmed = String(line).trim();
+        if (!trimmed) continue;
 
         let data;
         try {
-          data = JSON.parse(line);
+          data = JSON.parse(trimmed);
         } catch (err) {
           this.logger.warn(`Failed to parse watch event: ${err}`);
           continue;
