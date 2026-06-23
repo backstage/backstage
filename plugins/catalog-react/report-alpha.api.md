@@ -461,6 +461,13 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
+      >
+    | ExtensionDataRef<
+        JSX_2.Element,
+        'catalog.entity-context-menu-item.portal',
+        {
+          optional: true;
+        }
       >;
   inputs: {};
   config: {
@@ -475,12 +482,18 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
       'catalog.entity-filter-function',
       {}
     >;
+    portalElement: ConfigurableExtensionDataRef<
+      JSX_2.Element,
+      'catalog.entity-context-menu-item.portal',
+      {}
+    >;
   };
 }>;
 
 // @alpha (undocumented)
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
+  usePortal?: () => ReactNode;
   icon: JSX_2.Element;
   filter?: FilterPredicate | ((entity: Entity) => boolean);
 };
@@ -531,9 +544,17 @@ export interface EntityDataTableProps {
 export const EntityHeaderBlueprint: ExtensionBlueprint<{
   kind: 'entity-header';
   params: {
-    loader: () => Promise<JSX.Element>;
     filter?: FilterPredicate | ((entity: Entity) => boolean);
-  };
+  } & (
+    | {
+        loader: () => Promise<JSX_2.Element>;
+      }
+    | {
+        componentLoader: () => Promise<
+          (props: EntityHeaderBlueprintProps) => JSX_2.Element
+        >;
+      }
+  );
   output:
     | ExtensionDataRef<
         (entity: Entity) => boolean,
@@ -552,6 +573,13 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
     | ExtensionDataRef<
         JSX_2.Element,
         'core.reactElement',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        (props: EntityHeaderBlueprintProps) => JSX_2.Element,
+        'catalog.entity-header.component',
         {
           optional: true;
         }
@@ -574,8 +602,19 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
       'core.reactElement',
       {}
     >;
+    component: ConfigurableExtensionDataRef<
+      (props: EntityHeaderBlueprintProps) => JSX_2.Element,
+      'catalog.entity-header.component',
+      {}
+    >;
   };
 }>;
+
+// @alpha (undocumented)
+export interface EntityHeaderBlueprintProps {
+  // (undocumented)
+  contextMenu?: JSX_2.Element;
+}
 
 // @alpha (undocumented)
 export const EntityIconLinkBlueprint: ExtensionBlueprint<{
@@ -633,6 +672,70 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
     >;
   };
 }>;
+
+// @alpha (undocumented)
+export const EntityLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'entity-layout';
+  params: {
+    loader: () => Promise<(props: EntityLayoutBlueprintProps) => JSX_2.Element>;
+    filter?: FilterPredicate | ((entity: Entity) => boolean);
+  };
+  output:
+    | ExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        (props: EntityLayoutBlueprintProps) => JSX_2.Element,
+        'catalog.entity-layout.component',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {
+    filter: FilterPredicate | undefined;
+  };
+  configInput: {
+    filter?: FilterPredicate | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    component: ConfigurableExtensionDataRef<
+      (props: EntityLayoutBlueprintProps) => JSX_2.Element,
+      'catalog.entity-layout.component',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export interface EntityLayoutBlueprintProps {
+  // (undocumented)
+  defaultContentOrder?: 'title' | 'natural';
+  // (undocumented)
+  groupDefinitions: EntityContentGroupDefinitions;
+  // (undocumented)
+  groupedRoutes: Array<SubRoute>;
+  // (undocumented)
+  header: JSX_2.Element;
+  // (undocumented)
+  showNavItemIcons?: boolean;
+}
 
 // @public (undocumented)
 export function EntityRelationCard(
@@ -698,6 +801,15 @@ export type EntityTableColumnTitleProps = {
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
+// @alpha (undocumented)
+export type SubRoute = {
+  group?: string;
+  path: string;
+  title: string;
+  icon?: string | ReactElement;
+  children: JSX_2.Element;
+};
+
 // @alpha
 export function useEntityPermission(
   permission: ResourcePermission<'catalog-entity'>,
@@ -708,17 +820,24 @@ export function useEntityPermission(
 };
 
 // @alpha (undocumented)
-export type UseProps = () =>
+export type UseProps = () => {
+  title: ReactNode;
+  disabled?: boolean;
+} & (
   | {
-      title: ReactNode;
       href: string;
-      disabled?: boolean;
     }
   | {
-      title: ReactNode;
       onClick: () => void | Promise<void>;
-      disabled?: boolean;
-    };
+    }
+);
+
+// @alpha (undocumented)
+export function useSelectedSubRoute(subRoutes: SubRoute[]): {
+  index: number;
+  route?: SubRoute;
+  element?: JSX_2.Element;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

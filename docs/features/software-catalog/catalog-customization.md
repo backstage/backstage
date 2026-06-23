@@ -507,6 +507,169 @@ filter:
         $in: [group:default/admins, group:default/viewers]
 ```
 
+### Entity context menu items
+
+You can add custom items to the entity header context menu using the `EntityContextMenuItemBlueprint` from `@backstage/plugin-catalog-react/alpha`. This is part of the new frontend system and lets you contribute actions to the entity page menu.
+
+Basic examples:
+
+```tsx
+import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+const myCustomHref = EntityContextMenuItemBlueprint.make({
+  name: 'example-href',
+  params: {
+    icon: <span>🔗</span>,
+    useProps: () => ({
+      title: 'Open Example',
+      href: '/example-path',
+      disabled: false,
+      // component: 'a', // optional
+    }),
+  },
+});
+
+const myCustomOnClick = EntityContextMenuItemBlueprint.make({
+  name: 'example-click',
+  params: {
+    icon: <span>⚡</span>,
+    useProps: () => ({
+      title: 'Do Something',
+      onClick: () => window.alert('Hello world!'),
+      disabled: false,
+    }),
+  },
+});
+```
+
+Filtering which entities see a menu item:
+
+- In code, use the `filter` param with either a predicate function `(entity) => boolean` or an entity predicate query object.
+- In `app-config.yaml`, you can configure `filter` using an entity predicate query only.
+
+Examples:
+
+```tsx
+// Predicate function
+EntityContextMenuItemBlueprint.make({
+  name: 'services-only',
+  params: {
+    icon: <span>🛠️</span>,
+    useProps: () => ({ title: 'Service Action', onClick: () => {} }),
+    filter: entity =>
+      entity.kind.toLowerCase() === 'component' &&
+      entity.spec?.type === 'service',
+  },
+});
+```
+
+```yaml
+# app-config.yaml
+app:
+  extensions:
+    # Example: limit to website or service components
+    - entity-context-menu-item:catalog/inspect-entity:
+        config:
+          filter:
+            $all:
+              - kind: component
+                spec.type: { $in: [service, website] }
+```
+
+### Customize the entity page header
+
+You can fully replace the entity page header using the EntityHeaderBlueprint from `@backstage/plugin-catalog-react/alpha`. There are two ways to provide your header:
+
+- `componentLoader`: Provide a React component that receives a `contextMenu` prop that you can place in your header UI.
+- `loader`: Provide a pre-rendered element if you don't need the `contextMenu` prop.
+
+Example using a component and preserving the context menu:
+
+```tsx
+import {
+  EntityHeaderBlueprint,
+  type EntityHeaderBlueprintProps,
+} from '@backstage/plugin-catalog-react/alpha';
+
+const MyEntityHeader = ({ contextMenu }: EntityHeaderBlueprintProps) => {
+  return (
+    <header>
+      <h1>My Custom Header</h1>
+      {contextMenu}
+    </header>
+  );
+};
+
+export const myCustomHeader = EntityHeaderBlueprint.make({
+  name: 'my-custom-header',
+  params: {
+    componentLoader: async () => MyEntityHeader,
+    // Optional: only show for services
+    filter: { kind: 'component', 'spec.type': 'service' },
+  },
+});
+```
+
+Notes:
+
+- If you use `loader` instead of `componentLoader` you will not receive the `contextMenu` prop. Use `componentLoader` whenever you want to keep the menu button and contributed menu items.
+- You can register multiple headers and select which one applies using `filter`. A header with a `filter` takes precedence over a generic one; otherwise the first matching header in registration order is used. Ordering can be controlled in `app-config.yaml` like any other extension.
+
+### Customize the entire entity layout
+
+To override the whole entity page layout, provide a custom layout component via the `EntityLayoutBlueprint`. Your component receives the following props:
+
+- `header`: the header element that was selected (either the default or your overridden header). You should render it near the top.
+- `groupedRoutes`: an array of route descriptors, each with a `path`, `title`, `children`, and optional `group` and `icon`. You are responsible for rendering navigation and routing for these.
+- `groupDefinitions`, `defaultContentOrder`, and `showNavItemIcons`: the resolved group configuration (see [Configure groups, titles, and icons](#configure-groups-titles-and-icons)). Use these if you want to reproduce the default grouping behavior.
+
+Minimal example that renders a simple link bar and the selected content:
+
+```tsx
+import {
+  EntityLayoutBlueprint,
+  type EntityLayoutBlueprintProps,
+  useSelectedSubRoute,
+} from '@backstage/plugin-catalog-react/alpha';
+import { Page, Content, Link } from '@backstage/core-components';
+
+const MyEntityLayout = ({
+  header,
+  groupedRoutes,
+}: EntityLayoutBlueprintProps) => {
+  const { element } = useSelectedSubRoute(groupedRoutes);
+  return (
+    <Page themeId="default">
+      {header}
+      <Content>
+        <nav style={{ marginBottom: 16, display: 'flex', gap: 16 }}>
+          {groupedRoutes.map(r => (
+            <Link key={r.path} to={r.path.replace(/^\//, '')}>
+              {r.title}
+            </Link>
+          ))}
+        </nav>
+        {element}
+      </Content>
+    </Page>
+  );
+};
+
+export const myCustomEntityLayout = EntityLayoutBlueprint.make({
+  name: 'my-custom-entity-layout',
+  params: {
+    loader: async () => MyEntityLayout,
+    // Optional: make this layout only apply to specific entities
+    filter: { kind: 'component' },
+  },
+});
+```
+
+Tips:
+
+- You can create different layouts for different entity types using `filter`. A layout with a `filter` takes precedence over a generic one; ties keep their registration order, which can be ordered via `app-config.yaml` like any other extension.
+- If you want something close to the default behavior but with a small tweak (e.g., a banner above the tabs), implement your layout by re-creating the bits you need, or start from the minimal example above and add your own navigation.
+
 ### Configure groups, titles, and icons
 
 You can define and customize the tab groups that appear on the entity page, as well as enable icons for both groups and individual tabs.

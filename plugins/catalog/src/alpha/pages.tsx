@@ -32,12 +32,18 @@ import {
   EntityContentBlueprint,
   EntityContextMenuItemBlueprint,
   EntityHeaderBlueprint,
+  EntityLayoutBlueprint,
   EntityContentGroupDefinitions,
+  SubRoute,
 } from '@backstage/plugin-catalog-react/alpha';
 import CategoryIcon from '@material-ui/icons/Category';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
+import { EntityHeader } from './components/EntityHeader';
+import sortBy from 'lodash/sortBy';
+import { Fragment, useMemo } from 'react';
+import { EntityContextMenu } from './components/EntityContextMenu';
 import type { CatalogExportSettings } from '../components/CatalogExportButton';
 
 const catalogExportConfigDataRef = createExtensionDataRef<{
@@ -154,6 +160,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   inputs: {
     headers: createExtensionInput([
       EntityHeaderBlueprint.dataRefs.element.optional(),
+      EntityHeaderBlueprint.dataRefs.component.optional(),
       EntityHeaderBlueprint.dataRefs.filterFunction.optional(),
     ]),
     contents: createExtensionInput([
@@ -169,6 +176,11 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
     contextMenuItems: createExtensionInput([
       coreExtensionData.reactElement,
       EntityContextMenuItemBlueprint.dataRefs.filterFunction.optional(),
+      EntityContextMenuItemBlueprint.dataRefs.portalElement.optional(),
+    ]),
+    layouts: createExtensionInput([
+      EntityLayoutBlueprint.dataRefs.component,
+      EntityLayoutBlueprint.dataRefs.filterFunction.optional(),
     ]),
   },
   configSchema: {
@@ -207,25 +219,28 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         const { EntityLayout } = await import('./components/EntityLayout');
 
         const menuItems = inputs.contextMenuItems.map(item => ({
+          id: item.node.spec.id,
           element: item.get(coreExtensionData.reactElement),
+          portalElement: item.get(
+            EntityContextMenuItemBlueprint.dataRefs.portalElement,
+          ),
           filter:
             item.get(EntityContextMenuItemBlueprint.dataRefs.filterFunction) ??
             (() => true),
         }));
 
-        // Get available headers, sorted by if they have a filter function or not.
-        // TODO(blam): we should really have priority or some specificity here which can be used to sort the headers.
-        // That can be done with embedding the priority in the dataRef alongside the filter function.
-        const headers = inputs.headers
-          .map(header => ({
+        // Get available headers, sorted so that more specific (filtered)
+        // headers win over generic ones. Headers are otherwise kept in their
+        // registration order, which can be controlled via `app-config.yaml`
+        // like any other extension.
+        const headers = sortBy(
+          inputs.headers.map(header => ({
             element: header.get(EntityHeaderBlueprint.dataRefs.element),
+            component: header.get(EntityHeaderBlueprint.dataRefs.component),
             filter: header.get(EntityHeaderBlueprint.dataRefs.filterFunction),
-          }))
-          .sort((a, b) => {
-            if (a.filter && !b.filter) return -1;
-            if (!a.filter && b.filter) return 1;
-            return 0;
-          });
+          })),
+          ({ filter }) => (filter ? 0 : 1),
+        );
 
         const groupDefinitions =
           config.groups?.reduce(
@@ -233,46 +248,85 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             {} as EntityContentGroupDefinitions,
           ) ?? defaultEntityContentGroupDefinitions;
 
+        // Layouts follow the same selection rules as headers: a filtered
+        // (more specific) layout wins over a generic one, and ties keep their
+        // registration order, which can be ordered via `app-config.yaml`.
+        const layouts = sortBy(
+          inputs.layouts.map(layout => ({
+            component: layout.get(EntityLayoutBlueprint.dataRefs.component),
+            filter: layout.get(EntityLayoutBlueprint.dataRefs.filterFunction),
+          })),
+          ({ filter }) => (filter ? 0 : 1),
+        );
+
         const Component = () => {
           const entityFromUrl = useEntityFromUrl();
           const { entity } = entityFromUrl;
           const filteredMenuItems = entity
-            ? menuItems.filter(i => i.filter(entity)).map(i => i.element)
+            ? menuItems.filter(i => i.filter(entity))
             : [];
+          const contextMenuItems = filteredMenuItems.map(i => i.element);
+          const contextMenuPortals = filteredMenuItems.flatMap(item =>
+            item.portalElement
+              ? [<Fragment key={item.id}>{item.portalElement}</Fragment>]
+              : [],
+          );
 
-          const header = headers.find(
-            h => !h.filter || h.filter(entity!),
-          )?.element;
+          const { component: HeaderComponent, element: headerElement } =
+            headers.find(h => !h.filter || (entity && h.filter(entity))) ?? {};
+
+          const contextMenu = contextMenuItems.length ? (
+            <EntityContextMenu contextMenuItems={contextMenuItems} />
+          ) : undefined;
+
+          const header = HeaderComponent ? (
+            <HeaderComponent contextMenu={contextMenu} />
+          ) : (
+            headerElement ?? <EntityHeader contextMenu={contextMenu} />
+          );
+
+          const Layout =
+            layouts.find(l => !l.filter || (entity && l.filter(entity)))
+              ?.component ?? EntityLayout;
+
+          const groupedRoutes = useMemo(
+            () =>
+              inputs.contents.flatMap(output => {
+                const filterFn = buildFilterFn(
+                  output.get(EntityContentBlueprint.dataRefs.filterFunction),
+                  output.get(EntityContentBlueprint.dataRefs.filterExpression),
+                );
+
+                if (!entity || (filterFn && !filterFn(entity))) {
+                  return [];
+                }
+                return [
+                  {
+                    group: output.get(EntityContentBlueprint.dataRefs.group),
+                    path: output.get(coreExtensionData.routePath),
+                    title: output.get(EntityContentBlueprint.dataRefs.title),
+                    icon: output.get(EntityContentBlueprint.dataRefs.icon),
+                    children: output.get(coreExtensionData.reactElement),
+                  } satisfies SubRoute,
+                ];
+              }),
+            // `inputs.contents` (and the data each output carries) is provided
+            // once when the extension is wired up and is a stable outer-scope
+            // value for the lifetime of this component, so `entity` is the only
+            // reactive dependency here.
+            [entity],
+          );
 
           return (
             <AsyncEntityProvider {...entityFromUrl}>
-              <EntityLayout
+              {contextMenuPortals}
+              <Layout
                 header={header}
-                contextMenuItems={filteredMenuItems}
+                groupedRoutes={groupedRoutes}
                 groupDefinitions={groupDefinitions}
                 defaultContentOrder={config.defaultContentOrder}
                 showNavItemIcons={config.showNavItemIcons}
-              >
-                {inputs.contents.map(output => (
-                  <EntityLayout.Route
-                    group={output.get(EntityContentBlueprint.dataRefs.group)}
-                    key={output.get(coreExtensionData.routePath)}
-                    path={output.get(coreExtensionData.routePath)}
-                    title={output.get(EntityContentBlueprint.dataRefs.title)}
-                    icon={output.get(EntityContentBlueprint.dataRefs.icon)}
-                    if={buildFilterFn(
-                      output.get(
-                        EntityContentBlueprint.dataRefs.filterFunction,
-                      ),
-                      output.get(
-                        EntityContentBlueprint.dataRefs.filterExpression,
-                      ),
-                    )}
-                  >
-                    {output.get(coreExtensionData.reactElement)}
-                  </EntityLayout.Route>
-                ))}
-              </EntityLayout>
+              />
             </AsyncEntityProvider>
           );
         };

@@ -15,7 +15,6 @@
  */
 
 import {
-  coreExtensionData,
   createExtensionBlueprint,
   createExtensionDataRef,
   ExtensionBoundary,
@@ -29,28 +28,33 @@ import { resolveEntityFilterData } from './resolveEntityFilterData';
 import {
   entityFilterExpressionDataRef,
   entityFilterFunctionDataRef,
+  EntityContentGroupDefinitions,
 } from './extensionData';
+import { SubRoute } from '../types';
 import { JSX } from 'react';
 
 /** @alpha */
-export interface EntityHeaderBlueprintProps {
-  contextMenu?: JSX.Element;
+export interface EntityLayoutBlueprintProps {
+  groupedRoutes: Array<SubRoute>;
+  header: JSX.Element;
+  groupDefinitions: EntityContentGroupDefinitions;
+  defaultContentOrder?: 'title' | 'natural';
+  showNavItemIcons?: boolean;
 }
 
-const entityLayoutHeaderComponentDataRef = createExtensionDataRef<
-  (props: EntityHeaderBlueprintProps) => JSX.Element
+const entityLayoutComponentDataRef = createExtensionDataRef<
+  (props: EntityLayoutBlueprintProps) => JSX.Element
 >().with({
-  id: 'catalog.entity-header.component',
+  id: 'catalog.entity-layout.component',
 });
 
 /** @alpha */
-export const EntityHeaderBlueprint = createExtensionBlueprint({
-  kind: 'entity-header',
-  attachTo: { id: 'page:catalog/entity', input: 'headers' },
+export const EntityLayoutBlueprint = createExtensionBlueprint({
+  kind: 'entity-layout',
+  attachTo: { id: 'page:catalog/entity', input: 'layouts' },
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
-    element: coreExtensionData.reactElement,
-    component: entityLayoutHeaderComponentDataRef,
+    component: entityLayoutComponentDataRef,
   },
   configSchema: {
     filter: createZodV4FilterPredicateSchema().optional(),
@@ -58,35 +62,22 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
   output: [
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
-    coreExtensionData.reactElement.optional(),
-    entityLayoutHeaderComponentDataRef.optional(),
+    entityLayoutComponentDataRef.optional(),
   ],
   *factory(
     params: {
+      loader: () => Promise<(props: EntityLayoutBlueprintProps) => JSX.Element>;
       filter?: FilterPredicate | ((entity: Entity) => boolean);
-    } & (
-      | {
-          loader: () => Promise<JSX.Element>;
-        }
-      | {
-          componentLoader: () => Promise<
-            (props: EntityHeaderBlueprintProps) => JSX.Element
-          >;
-        }
-    ),
+    },
     { node, config },
   ) {
-    const { filter } = params;
+    const { filter, loader } = params;
 
     yield* resolveEntityFilterData(filter, config, node);
 
-    if ('componentLoader' in params) {
-      yield entityLayoutHeaderComponentDataRef(
-        ExtensionBoundary.lazyComponent(node, params.componentLoader),
-      );
-    } else if ('loader' in params) {
-      yield coreExtensionData.reactElement(
-        ExtensionBoundary.lazy(node, params.loader),
+    if (loader) {
+      yield entityLayoutComponentDataRef(
+        ExtensionBoundary.lazyComponent(node, loader),
       );
     }
   },

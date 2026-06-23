@@ -13,73 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReactElement, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
 import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
-import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
-
-type SubRoute = {
-  group?: string;
-  path: string;
-  title: string;
-  icon?: string | ReactElement;
-  children: JSX.Element;
-};
-
-// Normalize a route path so it can be matched correctly:
-//   - strip leading slashes
-//   - if the path already ends with a `*`, keep it as-is so explicit wildcards
-//     like `/*` or `/foo/*` aren't double-suffixed into `*/*` / `foo/*/*`
-//   - otherwise strip trailing slashes and append `/*` for nested matching;
-//     a bare `/` collapses to the empty string so it acts as an index route
-//     rather than a wildcard that would swallow every sub-path
-function normalizeRoutePath(path: string): string {
-  const withoutLeading = path.replace(/^\/+/, '');
-  if (withoutLeading.endsWith('*')) {
-    return withoutLeading;
-  }
-  const trimmed = withoutLeading.replace(/\/+$/, '');
-  return trimmed ? `${trimmed}/*` : '';
-}
-
-export function useSelectedSubRoute(subRoutes: SubRoute[]): {
-  index: number;
-  route?: SubRoute;
-  element?: JSX.Element;
-} {
-  const params = useParams();
-
-  const routes = useMemo(
-    () =>
-      subRoutes.map(({ path, children }) => ({
-        caseSensitive: false,
-        path: normalizeRoutePath(path),
-        element: children,
-      })),
-    [subRoutes],
-  );
-
-  const element = useRoutes(routes) ?? undefined;
-
-  let currentRoute = params['*'] ?? '';
-  if (!currentRoute.startsWith('/')) {
-    currentRoute = `/${currentRoute}`;
-  }
-
-  const [matchedRoute] = matchRoutes(routes, currentRoute) ?? [];
-  const foundIndex = matchedRoute
-    ? routes.findIndex(r => r.path === matchedRoute.route.path)
-    : -1;
-
-  return {
-    index: foundIndex,
-    element,
-    route: subRoutes[foundIndex],
-  };
-}
+import {
+  SubRoute,
+  useSelectedSubRoute,
+  EntityContentGroupDefinitions,
+} from '@backstage/plugin-catalog-react/alpha';
 
 type EntityTabsProps = {
   routes: SubRoute[];

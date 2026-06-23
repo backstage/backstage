@@ -20,7 +20,10 @@ export {
   EntityContentLayoutBlueprint,
   type EntityContentLayoutProps,
 } from './EntityContentLayoutBlueprint';
-export { EntityHeaderBlueprint } from './EntityHeaderBlueprint';
+export {
+  EntityHeaderBlueprint,
+  type EntityHeaderBlueprintProps,
+} from './EntityHeaderBlueprint';
 export {
   defaultEntityContentGroups,
   defaultEntityContentGroupDefinitions,
@@ -33,3 +36,7 @@ export {
   type UseProps,
 } from './EntityContextMenuItemBlueprint';
 export { EntityIconLinkBlueprint } from './EntityIconLinkBlueprint';
+export {
+  EntityLayoutBlueprint,
+  type EntityLayoutBlueprintProps,
+} from './EntityLayoutBlueprint';
