@@ -242,6 +242,47 @@ describe('RepoUrlPicker', () => {
       expect(getByText('test title')).toBeInTheDocument();
       expect(getByText('test description')).toBeInTheDocument();
     });
+
+    it.each([
+      { type: 'bitbucketCloud', host: 'bitbucket.org', hasWorkspaces: true },
+      {
+        type: 'bitbucketServer',
+        host: 'bitbucket.mycompany.com',
+        hasWorkspaces: false,
+      },
+    ])(
+      'should render BitbucketRepoPicker when host resolves to $type',
+      async ({ type, host, hasWorkspaces }) => {
+        const mockIntegrationsApiBitbucket: Partial<ScmIntegrationsApi> = {
+          byHost: () => ({ type }),
+        };
+
+        const { findByText, queryByText } = await renderInTestApp(
+          <TestApiProvider
+            apis={[
+              [scmIntegrationsApiRef, mockIntegrationsApiBitbucket],
+              [scmAuthApiRef, {}],
+              [scaffolderApiRef, mockScaffolderApi],
+            ]}
+          >
+            <SecretsContextProvider>
+              <Form
+                validator={validator}
+                schema={{ type: 'string' }}
+                uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
+                fields={{
+                  RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+                }}
+                formData={host}
+              />
+            </SecretsContextProvider>
+          </TestApiProvider>,
+        );
+
+        expect(await findByText('Projects')).toBeInTheDocument();
+        expect(!!queryByText('Workspaces')).toBe(hasWorkspaces);
+      },
+    );
   });
 
   describe('requestUserCredentials', () => {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { z } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { FieldSchema as FieldSchemaType } from '@backstage/plugin-scaffolder-react';

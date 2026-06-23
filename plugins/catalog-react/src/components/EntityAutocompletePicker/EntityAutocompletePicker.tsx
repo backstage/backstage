@@ -17,7 +17,7 @@
 import Box from '@material-ui/core/Box';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
-import { useEffect, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
@@ -29,6 +29,7 @@ import {
 import { EntityFilter } from '../../types';
 import { reduceBackendCatalogFilters } from '../../utils/filters';
 import { CatalogAutocomplete } from '../CatalogAutocomplete';
+import { AutocompleteRenderOptionState } from '@material-ui/lab/Autocomplete';
 import { isEqual } from 'lodash';
 
 /** @public */
@@ -54,6 +55,11 @@ export type EntityAutocompletePickerProps<
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
   hidden?: boolean;
+  getOptionLabel?: (option: string) => string;
+  renderOption?: (
+    option: string,
+    state: AutocompleteRenderOptionState,
+  ) => ReactNode;
 };
 
 /** @public */
@@ -85,6 +91,8 @@ export function EntityAutocompletePicker<
     initialSelectedOptions = [],
     filtersForAvailableValues = ['kind'],
     hidden,
+    getOptionLabel,
+    renderOption,
   } = props;
   const classes = useStyles();
 
@@ -178,14 +186,18 @@ export function EntityAutocompletePicker<
         onChange={(_event: object, options: string[]) =>
           setSelectedOptions(options)
         }
-        renderOption={(option, { selected }) => (
-          <EntityAutocompletePickerOption
-            selected={selected}
-            value={option}
-            availableOptions={availableValues}
-            showCounts={!!showCounts}
-          />
-        )}
+        {...(getOptionLabel && { getOptionLabel })}
+        renderOption={
+          renderOption ??
+          ((option, { selected }) => (
+            <EntityAutocompletePickerOption
+              selected={selected}
+              value={option}
+              availableOptions={availableValues}
+              showCounts={!!showCounts}
+            />
+          ))
+        }
       />
     </Box>
   );

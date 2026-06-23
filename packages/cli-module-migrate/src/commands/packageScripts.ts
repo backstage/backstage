@@ -25,7 +25,7 @@ const configArgPattern = /--config[=\s][^\s$]+/;
 const noStartRoles: PackageRole[] = ['cli', 'cli-module', 'common-library'];
 
 export default async ({ args, info }: CliCommandContext) => {
-  cli({ help: info, booleanFlagNegation: true }, undefined, args);
+  cli({ name: info.usage, booleanFlagNegation: true }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 
   await Promise.all(

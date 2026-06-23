@@ -16,7 +16,7 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { UiSchema, UIOptionsType, FieldValidation } from '@rjsf/utils';
 import { ScaffolderRJSFFieldProps } from './rjsf';
 

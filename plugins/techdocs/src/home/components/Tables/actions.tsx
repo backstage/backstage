@@ -17,6 +17,12 @@
 import ShareIcon from '@material-ui/icons/Share';
 import { DocsTableRow } from './types';
 import { FavoriteToggleIcon } from '@backstage/core-components';
+import type { TranslationFunction } from '@backstage/core-plugin-api/alpha';
+import type { techdocsTranslationRef } from '../../../translation';
+
+type InternalTranslationFunctionType = TranslationFunction<
+  typeof techdocsTranslationRef extends { T: infer T } ? T : never
+>;
 
 /**
  * Not directly exported, but through DocsTable.actions and EntityListDocsTable.actions
@@ -24,11 +30,16 @@ import { FavoriteToggleIcon } from '@backstage/core-components';
  * @public
  */
 export const actionFactories = {
-  createCopyDocsUrlAction(copyToClipboard: Function) {
+  createCopyDocsUrlAction(
+    copyToClipboard: Function,
+    t?: InternalTranslationFunctionType,
+  ) {
     return (row: DocsTableRow) => {
       return {
         icon: () => <ShareIcon fontSize="small" />,
-        tooltip: 'Click to copy documentation link to clipboard',
+        tooltip:
+          t?.('table.actions.copyDocsUrl', {}) ??
+          'Click to copy documentation link to clipboard',
         onClick: () =>
           copyToClipboard(`${window.location.origin}${row.resolved.docsUrl}`),
       };
@@ -37,14 +48,19 @@ export const actionFactories = {
   createStarEntityAction(
     isStarredEntity: Function,
     toggleStarredEntity: Function,
+    t?: InternalTranslationFunctionType,
   ) {
     return (row: DocsTableRow) => {
       const entity = row.entity;
       const isStarred = isStarredEntity(entity);
+      const tooltip = isStarred
+        ? t?.('table.actions.removeFromFavorites', {}) ??
+          'Remove from favorites'
+        : t?.('table.actions.addToFavorites', {}) ?? 'Add to favorites';
       return {
         cellStyle: { paddingLeft: '1em' },
         icon: () => <FavoriteToggleIcon isFavorite={isStarred} />,
-        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
+        tooltip,
         onClick: () => toggleStarredEntity(entity),
       };
     };

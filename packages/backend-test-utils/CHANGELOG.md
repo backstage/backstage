@@ -1,5 +1,31 @@
 # @backstage/backend-test-utils
 
+## 1.11.5-next.0
+
+### Patch Changes
+
+- 41c56b3: Fixed MySQL test database failures by pinning the Docker image from the floating `mysql:8` tag to `mysql:8.4` and replacing a startup flag that was removed in MySQL 8.4. Connection pool reduced from 50 to 5 per test database, idle connections are now reaped after 5 seconds, and container connection limits raised to 1000 for both MySQL and Postgres to handle parallel Jest workers on high-core machines.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.4-next.0
+  - @backstage/plugin-auth-node@0.7.3-next.0
+  - @backstage/backend-app-api@1.7.2-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-events-node@0.4.24-next.0
+
+## 1.11.4
+
+### Patch Changes
+
+- 2e895ea: Internal refactor.
+- 2d181c0: Increased MySQL connection and pool timeouts to reduce flaky `connect ETIMEDOUT` failures in CI. The test MySQL container now also uses `mysql_native_password` for cheaper connection handshakes and disables binary logging.
+- 06a2035: Updated `MockActionsRegistry` to support the new secrets schema. The mock now validates secrets against the declared schema, rejects missing secrets for actions that require them, and forwards secrets to the action handler.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.3
+  - @backstage/backend-app-api@1.7.1
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-auth-node@0.7.2
+  - @backstage/plugin-events-node@0.4.23
+
 ## 1.11.4-next.1
 
 ### Patch Changes

@@ -51,60 +51,36 @@ import { relative } from 'node:path/posix';
 export const DEFAULT_REGION = 'us-east-1';
 
 /**
- * Path style URLs: https://s3.(region).amazonaws.com/(bucket)/(key)
- * The region can also be on the old form: https://s3-(region).amazonaws.com/(bucket)/(key)
- * Virtual hosted style URLs: https://(bucket).s3.(region).amazonaws.com/(key)
- * See https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html#path-style-access
+ * Standard AWS S3 URLs:
+ *   Path style:           https://s3.(region).amazonaws.com/(bucket)/(key)
+ *   Path style (old):     https://s3-(region).amazonaws.com/(bucket)/(key)
+ *   Virtual hosted style: https://(bucket).s3.(region).amazonaws.com/(key)
+ *
+ * AWS PrivateLink (VPC endpoint) S3 URLs:
+ *   https://(bucket).bucket.(vpce-id).s3.(region).vpce.amazonaws.com/(key)
+ *
+ * Both forms may have an optional .cn suffix for China regions.
+ *
+ * See https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html
+ * See https://docs.aws.amazon.com/AmazonS3/latest/userguide/privatelink-interface-endpoints.html
  */
+
+const STANDARD_AWS_HOST_RE =
+  /^(?:(?<bucket>[a-z0-9.-]+)\.)?s3(?:[.-](?<region>[a-z0-9-]+))?\.amazonaws\.com(?:\.cn)?$/;
+
+const VPC_ENDPOINT_HOST_RE =
+  /^(?<bucket>[a-z0-9.-]+)\.bucket\.(?<vpceId>vpce-[a-z0-9-]+)\.s3[.-](?<region>[a-z0-9-]+)\.vpce\.amazonaws\.com(?:\.cn)?$/;
+
 export function parseUrl(
   url: string,
   config: AwsS3IntegrationConfig,
 ): { path: string; bucket: string; region: string } {
   const parsedUrl = new URL(url);
-
-  /**
-   * Removes the leading '/' from the pathname to be processed
-   * as a parameter by AWS S3 SDK getObject method.
-   */
   const pathname = parsedUrl.pathname.substring(1);
   const host = parsedUrl.host;
 
-  // Treat Amazon hosted separately because it has special region logic
-  if (
-    config.host === 'amazonaws.com' ||
-    config.host === 'amazonaws.com.cn' ||
-    config.host.endsWith('.amazonaws.com') ||
-    config.host.endsWith('.amazonaws.com.cn')
-  ) {
-    const match = host.match(
-      /^(?:([a-z0-9.-]+)\.)?s3(?:[.-]([a-z0-9-]+))?\.amazonaws\.com(\.cn)?$/,
-    );
-    if (!match) {
-      throw new Error(`Invalid AWS S3 URL ${url}`);
-    }
-
-    const [, hostBucket, hostRegion] = match;
-
-    if (config.s3ForcePathStyle || !hostBucket) {
-      const slashIndex = pathname.indexOf('/');
-      if (slashIndex < 0) {
-        throw new Error(
-          `Invalid path-style AWS S3 URL ${url}, does not contain bucket in the path`,
-        );
-      }
-
-      return {
-        path: pathname.substring(slashIndex + 1),
-        bucket: pathname.substring(0, slashIndex),
-        region: hostRegion ?? DEFAULT_REGION,
-      };
-    }
-
-    return {
-      path: pathname,
-      bucket: hostBucket,
-      region: hostRegion ?? DEFAULT_REGION,
-    };
+  if (isAmazonHost(config.host)) {
+    return parseAmazonUrl(url, host, pathname, config);
   }
 
   const usePathStyle =
@@ -129,6 +105,65 @@ export function parseUrl(
     path: pathname,
     bucket: host.substring(0, host.length - config.host.length - 1),
     region: DEFAULT_REGION,
+  };
+}
+
+function isAmazonHost(host: string): boolean {
+  return (
+    host === 'amazonaws.com' ||
+    host === 'amazonaws.com.cn' ||
+    host.endsWith('.amazonaws.com') ||
+    host.endsWith('.amazonaws.com.cn')
+  );
+}
+
+function parseAmazonUrl(
+  url: string,
+  host: string,
+  pathname: string,
+  config: AwsS3IntegrationConfig,
+): { path: string; bucket: string; region: string } {
+  // Try VPC PrivateLink format first (more specific pattern)
+  const vpcMatch = host.match(VPC_ENDPOINT_HOST_RE);
+  if (vpcMatch?.groups) {
+    if (config.s3ForcePathStyle) {
+      throw new Error(
+        `Invalid AWS S3 URL ${url} - path style access is not supported for VPC endpoint URLs`,
+      );
+    }
+    return {
+      path: pathname,
+      bucket: vpcMatch.groups.bucket,
+      region: vpcMatch.groups.region,
+    };
+  }
+
+  // Try standard AWS S3 format
+  const stdMatch = host.match(STANDARD_AWS_HOST_RE);
+  if (!stdMatch?.groups) {
+    throw new Error(`Invalid AWS S3 URL ${url}`);
+  }
+
+  const { bucket: hostBucket, region: hostRegion } = stdMatch.groups;
+
+  if (config.s3ForcePathStyle || !hostBucket) {
+    const slashIndex = pathname.indexOf('/');
+    if (slashIndex < 0) {
+      throw new Error(
+        `Invalid path-style AWS S3 URL ${url}, does not contain bucket in the path`,
+      );
+    }
+    return {
+      path: pathname.substring(slashIndex + 1),
+      bucket: pathname.substring(0, slashIndex),
+      region: hostRegion ?? DEFAULT_REGION,
+    };
+  }
+
+  return {
+    path: pathname,
+    bucket: hostBucket,
+    region: hostRegion ?? DEFAULT_REGION,
   };
 }
 

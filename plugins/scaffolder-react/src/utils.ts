@@ -15,7 +15,7 @@
  */
 
 import zodToJsonSchema from 'zod-to-json-schema';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { z } from 'zod/v3';
 import {
   CustomFieldExtensionSchema,

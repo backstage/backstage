@@ -8,6 +8,8 @@ import {
   SelectionExample,
   RowActionsExample,
   EmptyStateExample,
+  ColumnWidthsWithFrExample,
+  ColumnWidthsWithConstraintsExample,
   CombinedExample,
   CustomRowExample,
   PrimitivesExample,
@@ -40,6 +42,8 @@ import {
   tableEmptyStateSnippet,
   tableOffsetPaginationSnippet,
   tableCursorPaginationSnippet,
+  tableColumnWidthsWithFrSnippet,
+  tableColumnWidthsWithConstraintsSnippet,
   tableCombinedSnippet,
   tableCustomRowSnippet,
   tablePrimitivesSnippet,
@@ -183,6 +187,25 @@ You can also disable specific rows from being clicked using `getIsDisabled`:
 When the table has no data to display, provide an `emptyState` to show a helpful message instead of an empty table body. Consider providing different messages depending on context - an empty search result is different from a table with no data at all.
 
 <Snippet preview={<EmptyStateExample />} code={tableEmptyStateSnippet} />
+
+### Column Widths with `fr`
+
+Control column widths using `fr` units with `width` for proportional, responsive sizing.
+Columns with larger `fr` values take more space — for example, a `3fr` column is three times wider than a `1fr` column.
+
+<Snippet
+  preview={<ColumnWidthsWithFrExample />}
+  code={tableColumnWidthsWithFrSnippet}
+/>
+
+#### With Constraints
+
+Use `defaultWidth` with `fr` units for the initial proportional layout, then add `minWidth` and `maxWidth` in pixels to prevent columns from becoming too narrow or too wide when the table is resized.
+
+<Snippet
+  preview={<ColumnWidthsWithConstraintsExample />}
+  code={tableColumnWidthsWithConstraintsSnippet}
+/>
 
 ## Server-Side Data
 

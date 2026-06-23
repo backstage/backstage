@@ -1,5 +1,24 @@
 # @backstage/plugin-signals-backend
 
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-events-node@0.4.24-next.0
+  - @backstage/plugin-signals-node@0.2.3-next.0
+
+## 0.3.16
+
+### Patch Changes
+
+- 998664c: chore(deps): Bump `ws` from 8.20.0 to 8.20.1
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-events-node@0.4.23
+  - @backstage/plugin-signals-node@0.2.2
+
 ## 0.3.16-next.0
 
 ### Patch Changes

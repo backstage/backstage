@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { render, within } from '@testing-library/react';
+import { render, within, waitFor } from '@testing-library/react';
 import { startCase } from 'lodash';
 import { StructuredMetadataTable } from './StructuredMetadataTable';
 
@@ -133,9 +133,11 @@ describe('<StructuredMetadataTable />', () => {
       expect(rendered.queryByText(/^Test B/)).toBeInTheDocument();
       expect(rendered.queryByText(/^Test D/)).toBeInTheDocument();
 
-      // nested content is displayed as yaml, so not affected by formatting
-      expect(rendered.queryByText(/^testC/)).toBeInTheDocument();
-      expect(rendered.queryByText(/testE: stuff/)).toBeInTheDocument();
+      // nested content is displayed as yaml via lazy-loaded CodeSnippet
+      await waitFor(() => {
+        expect(rendered.queryByText(/^testC/)).toBeInTheDocument();
+        expect(rendered.queryByText(/testE: stuff/)).toBeInTheDocument();
+      });
     });
 
     it('should be possible to disable it', async () => {
@@ -174,9 +176,11 @@ describe('<StructuredMetadataTable />', () => {
       expect(rendered.queryByText(/^tEsTb/)).toBeInTheDocument();
       expect(rendered.queryByText(/^tEsTd/)).toBeInTheDocument();
 
-      // nested content is displayed as yaml, so not affected by formatting
-      expect(rendered.queryByText(/^testC/)).toBeInTheDocument();
-      expect(rendered.queryByText(/^testE/)).toBeInTheDocument();
+      // nested content is displayed as yaml via lazy-loaded CodeSnippet
+      await waitFor(() => {
+        expect(rendered.queryByText(/^testC/)).toBeInTheDocument();
+        expect(rendered.queryByText(/^testE/)).toBeInTheDocument();
+      });
     });
   });
 });

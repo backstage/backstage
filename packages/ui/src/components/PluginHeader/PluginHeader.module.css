@@ -25,6 +25,9 @@
     --bui-plugin-header-toolbar-tabs-padding-bottom: var(--bui-space-1);
     --bui-plugin-header-background-color: transparent;
     --bui-plugin-header-padding-top: var(--bui-space-4);
+    --bui-plugin-header-breadcrumbs-gap: var(--bui-space-3);
+    --bui-plugin-header-breadcrumbs-max-width: 165px;
+    --bui-plugin-header-breadcrumbs-current-max-width: none;
 
     margin-bottom: var(--bui-plugin-header-margin-bottom);
     padding-inline: var(--bui-space-5);
@@ -75,6 +78,8 @@
     flex-direction: row;
     align-items: center;
     gap: var(--bui-space-2);
+    min-width: 0;
+    padding: var(--bui-space-1) 0;
   }
 
   .bui-PluginHeaderToolbarName {
@@ -82,9 +87,73 @@
     flex-direction: row;
     align-items: center;
     gap: var(--bui-space-2);
-    font-size: var(--bui-font-size-3);
-    font-weight: var(--bui-font-weight-regular);
+    margin: 0;
+    min-width: 0;
+  }
+
+  .bui-PluginHeaderToolbarName:not(:has(.bui-PluginHeaderBreadcrumbs)) {
     flex-shrink: 0;
+  }
+
+  .bui-PluginHeaderBreadcrumbs {
+    min-width: 0;
+  }
+
+  .bui-PluginHeaderBreadcrumbs ol {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--bui-plugin-header-breadcrumbs-gap);
+    min-width: 0;
+  }
+
+  .bui-PluginHeaderBreadcrumbs ol li {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--bui-plugin-header-breadcrumbs-gap);
+    max-width: var(--bui-plugin-header-breadcrumbs-max-width);
+
+    & svg {
+      flex-shrink: 0;
+    }
+
+    &[data-current] {
+      flex: 1;
+      min-width: 0;
+      max-width: var(--bui-plugin-header-breadcrumbs-current-max-width);
+    }
+
+    & a[data-focus-visible] {
+      border-radius: var(--bui-radius-1);
+      outline: 2px solid var(--bui-ring);
+      outline-offset: 2px;
+    }
+  }
+
+  .bui-PluginHeaderBreadcrumbsEllipsis {
+    all: unset;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    line-height: 1;
+    letter-spacing: 0.1em;
+
+    &[data-hovered] {
+      text-decoration-line: underline;
+      text-decoration-style: solid;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+      text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+    }
+
+    &[data-focus-visible] {
+      border-radius: var(--bui-radius-1);
+      outline: 2px solid var(--bui-ring);
+      outline-offset: 2px;
+    }
   }
 
   .bui-PluginHeader .bui-PluginHeaderToolbarIcon {

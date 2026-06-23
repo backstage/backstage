@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  useState,
-  useCallback,
-  useEffect,
-  ComponentProps,
-  ReactNode,
-} from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useCallback, ComponentProps, ReactNode } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 
 import { Header, Breadcrumbs } from '@backstage/core-components';
-import {
-  useApi,
-  useRouteRef,
-  useRouteRefParams,
-} from '@backstage/core-plugin-api';
+import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 
 import {
@@ -47,14 +37,15 @@ import {
   catalogApiRef,
   EntityRefLink,
   InspectEntityDialog,
-  UnregisterEntityDialog,
   EntityDisplayName,
   FavoriteEntity,
 } from '@backstage/plugin-catalog-react';
 
 import { EntityLabels } from '../EntityLabels';
-import { EntityContextMenu } from '../../../components/EntityContextMenu';
-import { rootRouteRef, unregisterRedirectRouteRef } from '../../../routes';
+import {
+  EntityContextMenu,
+  type EntityContextMenuItemDataWithNode,
+} from '../EntityContextMenu';
 
 function headerProps(
   paramKind: string | undefined,
@@ -173,12 +164,7 @@ export function EntityHeader(props: {
     Icon: IconComponent;
     onClick: () => void;
   }[];
-  // NOTE(blam): Intentionally not exported at this point, since it's part of
-  // unstable context menu option, eg: disable the unregister entity menu
-  UNSTABLE_contextMenuOptions?: {
-    disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
-  };
-  contextMenuItems?: React.JSX.Element[];
+  contextMenuItems?: EntityContextMenuItemDataWithNode[];
   /**
    * An array of relation types used to determine the parent entities in the hierarchy.
    * These relations are prioritized in the order provided, allowing for flexible
@@ -195,7 +181,6 @@ export function EntityHeader(props: {
 }) {
   const {
     UNSTABLE_extraContextMenuItems,
-    UNSTABLE_contextMenuOptions,
     contextMenuItems,
     parentEntityRelations,
     title,
@@ -210,52 +195,11 @@ export function EntityHeader(props: {
     entity,
   );
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  const catalogRoute = useRouteRef(rootRouteRef);
-  const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
-
-  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-
-  const openUnregisterEntityDialog = useCallback(
-    () => setConfirmationDialogOpen(true),
-    [setConfirmationDialogOpen],
-  );
-
-  const closeUnregisterEntityDialog = useCallback(
-    () => setConfirmationDialogOpen(false),
-    [setConfirmationDialogOpen],
-  );
-
-  const cleanUpAfterUnregisterConfirmation = useCallback(async () => {
-    setConfirmationDialogOpen(false);
-    navigate(
-      unregisterRedirectRoute ? unregisterRedirectRoute() : catalogRoute(),
-    );
-  }, [
-    navigate,
-    catalogRoute,
-    unregisterRedirectRoute,
-    setConfirmationDialogOpen,
-  ]);
-
-  // Make sure to close the dialog if the user clicks links in it that navigate
-  // to another entity.
-  useEffect(() => {
-    setConfirmationDialogOpen(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedInspectEntityDialogTab = searchParams.get('inspect');
 
   const setInspectEntityDialogTab = useCallback(
     (newTab: string) => setSearchParams(`inspect=${newTab}`),
-    [setSearchParams],
-  );
-
-  const openInspectEntityDialog = useCallback(
-    () => setSearchParams('inspect'),
     [setSearchParams],
   );
 
@@ -282,10 +226,7 @@ export function EntityHeader(props: {
           <EntityLabels entity={entity} />
           <EntityContextMenu
             UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
-            UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
             contextMenuItems={contextMenuItems}
-            onInspectEntity={openInspectEntityDialog}
-            onUnregisterEntity={openUnregisterEntityDialog}
           />
           <InspectEntityDialog
             entity={entity!}
@@ -297,12 +238,6 @@ export function EntityHeader(props: {
             open={inspectDialogOpen}
             onClose={closeInspectEntityDialog}
             onSelect={setInspectEntityDialogTab}
-          />
-          <UnregisterEntityDialog
-            entity={entity!}
-            open={confirmationDialogOpen}
-            onClose={closeUnregisterEntityDialog}
-            onConfirm={cleanUpAfterUnregisterConfirmation}
           />
         </>
       )}

@@ -177,6 +177,65 @@ describe('parseUrl', () => {
     });
   });
 
+  it('supports AWS PrivateLink for Amazon S3 formats', () => {
+    expect(
+      parseUrl(
+        'https://my.bucket-3.bucket.vpce-12345678901234567-foobar.s3.eu-central-1.vpce.amazonaws.com/a/puppy.jpg',
+        {
+          host: 'amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'eu-central-1',
+    });
+
+    expect(
+      parseUrl(
+        'https://my-bucket.bucket.vpce-abc123-xyz.s3.cn-north-1.vpce.amazonaws.com.cn/data.json',
+        {
+          host: 'amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'data.json',
+      bucket: 'my-bucket',
+      region: 'cn-north-1',
+    });
+
+    expect(() =>
+      parseUrl(
+        'https://my.bucket-3.bucket.vpce-12345678901234567-foobar.s3.eu-central-1.vpce.amazonaws.com/a/puppy.jpg',
+        {
+          host: 'amazonaws.com',
+          s3ForcePathStyle: true,
+        },
+      ),
+    ).toThrow('path style access is not supported for VPC endpoint URLs');
+  });
+
+  it('rejects invalid AWS URLs', () => {
+    expect(() =>
+      parseUrl('https://not-valid-s3.amazonaws.com/bucket/key', {
+        host: 'amazonaws.com',
+      }),
+    ).toThrow('Invalid AWS S3 URL');
+
+    expect(() =>
+      parseUrl('https://s3.amazonaws.com/bucket-only-no-key', {
+        host: 'amazonaws.com',
+      }),
+    ).toThrow('does not contain bucket in the path');
+
+    expect(() =>
+      parseUrl(
+        'https://bucket.vpce-12345678901234567-foobar.s3.eu-central-1.vpce.amazonaws.com/key',
+        { host: 'amazonaws.com' },
+      ),
+    ).toThrow('Invalid AWS S3 URL');
+  });
+
   it('supports all non-aws formats', () => {
     expect(
       parseUrl('https://my-host.com/my.bucket-3/a/puppy.jpg', {

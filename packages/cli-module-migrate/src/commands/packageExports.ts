@@ -18,7 +18,7 @@ import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 export default async ({ args, info }: CliCommandContext) => {
-  cli({ help: info, booleanFlagNegation: true }, undefined, args);
+  cli({ name: info.usage, booleanFlagNegation: true }, undefined, args);
   throw new Error(
     'The `migrate package-exports` command has been removed, use `repo fix` instead.',
   );

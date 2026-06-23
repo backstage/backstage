@@ -16,11 +16,19 @@
 
 import preview from '../../../../../.storybook/preview';
 import { Combobox } from './Combobox';
+import {
+  ComboboxItem,
+  ComboboxItemProfile,
+  ComboboxItemText,
+} from './ComboboxItem';
 import { Flex } from '../Flex';
 import { Box } from '../Box';
 import { Text } from '../Text';
 import { Form } from 'react-aria-components';
-import { RiCloudLine } from '@remixicon/react';
+import { RiCheckLine, RiCloudLine } from '@remixicon/react';
+import { useAsyncList } from '@backstage/ui';
+import { useState } from 'react';
+import { expect, screen, waitFor } from 'storybook/test';
 
 const meta = preview.meta({
   title: 'Backstage UI/Combobox',
@@ -31,51 +39,51 @@ const meta = preview.meta({
 });
 
 const fontOptions = [
-  { value: 'sans', label: 'Sans-serif' },
-  { value: 'serif', label: 'Serif' },
-  { value: 'mono', label: 'Monospace' },
-  { value: 'cursive', label: 'Cursive' },
+  { id: 'sans', label: 'Sans-serif' },
+  { id: 'serif', label: 'Serif' },
+  { id: 'mono', label: 'Monospace' },
+  { id: 'cursive', label: 'Cursive' },
 ];
 
 const countries = [
-  { value: 'us', label: 'United States' },
-  { value: 'ca', label: 'Canada' },
-  { value: 'mx', label: 'Mexico' },
-  { value: 'uk', label: 'United Kingdom' },
-  { value: 'fr', label: 'France' },
-  { value: 'de', label: 'Germany' },
-  { value: 'it', label: 'Italy' },
-  { value: 'es', label: 'Spain' },
-  { value: 'jp', label: 'Japan' },
-  { value: 'cn', label: 'China' },
-  { value: 'in', label: 'India' },
-  { value: 'br', label: 'Brazil' },
-  { value: 'au', label: 'Australia' },
+  { id: 'us', label: 'United States' },
+  { id: 'ca', label: 'Canada' },
+  { id: 'mx', label: 'Mexico' },
+  { id: 'uk', label: 'United Kingdom' },
+  { id: 'fr', label: 'France' },
+  { id: 'de', label: 'Germany' },
+  { id: 'it', label: 'Italy' },
+  { id: 'es', label: 'Spain' },
+  { id: 'jp', label: 'Japan' },
+  { id: 'cn', label: 'China' },
+  { id: 'in', label: 'India' },
+  { id: 'br', label: 'Brazil' },
+  { id: 'au', label: 'Australia' },
 ];
 
 const sectionedOptions = [
   {
     title: 'Serif Fonts',
     options: [
-      { value: 'times', label: 'Times New Roman' },
-      { value: 'georgia', label: 'Georgia' },
-      { value: 'garamond', label: 'Garamond' },
+      { id: 'times', label: 'Times New Roman' },
+      { id: 'georgia', label: 'Georgia' },
+      { id: 'garamond', label: 'Garamond' },
     ],
   },
   {
     title: 'Sans-Serif Fonts',
     options: [
-      { value: 'arial', label: 'Arial' },
-      { value: 'helvetica', label: 'Helvetica' },
-      { value: 'verdana', label: 'Verdana' },
+      { id: 'arial', label: 'Arial' },
+      { id: 'helvetica', label: 'Helvetica' },
+      { id: 'verdana', label: 'Verdana' },
     ],
   },
   {
     title: 'Monospace Fonts',
     options: [
-      { value: 'courier', label: 'Courier New' },
-      { value: 'consolas', label: 'Consolas' },
-      { value: 'fira', label: 'Fira Code' },
+      { id: 'courier', label: 'Courier New' },
+      { id: 'consolas', label: 'Consolas' },
+      { id: 'fira', label: 'Fira Code' },
     ],
   },
 ];
@@ -86,6 +94,16 @@ export const Default = meta.story({
     options: fontOptions,
     placeholder: 'Pick a font',
     name: 'font',
+  },
+});
+
+export const WithClientSearch = meta.story({
+  args: {
+    label: 'Country',
+    options: countries,
+    placeholder: 'Search countries',
+    search: true,
+    name: 'country',
   },
 });
 
@@ -113,6 +131,385 @@ export const AllowsCustomValue = meta.story({
     allowsCustomValue: true,
     name: 'country',
   },
+});
+
+function ComboboxItemTypesColumn({ size }: { size: 'small' | 'medium' }) {
+  return (
+    <Flex direction="column" gap="4" style={{ width: 280 }}>
+      <Text as="div" weight="bold">
+        {size === 'small' ? 'Small' : 'Medium'}
+      </Text>
+      <Combobox
+        size={size}
+        label="Title items"
+        placeholder="Select a status"
+        style={{ width: '100%' }}
+      >
+        <ComboboxItemText id="active" title="Active" />
+        <ComboboxItemText id="inactive" title="Inactive" />
+      </Combobox>
+      <Combobox
+        size={size}
+        label="Icon and title items"
+        placeholder="Select a deployment target"
+        style={{ width: '100%' }}
+      >
+        <ComboboxItemText
+          id="cloud"
+          title="Cloud"
+          leadingIcon={<RiCloudLine />}
+        />
+        <ComboboxItemText
+          id="private-cloud"
+          title="Private cloud"
+          leadingIcon={<RiCloudLine />}
+        />
+      </Combobox>
+      <Combobox
+        size={size}
+        label="Title and description items"
+        placeholder="Select a release channel"
+        style={{ width: '100%' }}
+      >
+        <ComboboxItemText
+          id="stable"
+          title="Stable"
+          description="Recommended for production workloads"
+        />
+        <ComboboxItemText
+          id="beta"
+          title="Beta"
+          description="Preview upcoming features"
+        />
+      </Combobox>
+      <Combobox
+        size={size}
+        label="Icon, title, and description items"
+        placeholder="Select a deployment target"
+        style={{ width: '100%' }}
+      >
+        <ComboboxItemText
+          id="production-cloud"
+          title="Production cloud"
+          description="Runs production workloads"
+          leadingIcon={<RiCloudLine />}
+        />
+        <ComboboxItemText
+          id="staging-cloud"
+          title="Staging cloud"
+          description="Runs pre-production workloads"
+          leadingIcon={<RiCloudLine />}
+        />
+      </Combobox>
+      <Combobox
+        size={size}
+        label="Profile items"
+        placeholder="Select an owner"
+        style={{ width: '100%' }}
+      >
+        <ComboboxItemProfile
+          id="ada"
+          name="Ada Lovelace"
+          src="https://avatars.githubusercontent.com/u/1540635?v=4"
+        />
+        <ComboboxItemProfile id="grace" name="Grace Hopper" />
+      </Combobox>
+      <Combobox
+        size={size}
+        label="Custom items"
+        placeholder="Select a custom item"
+        style={{ width: '100%' }}
+      >
+        <ComboboxItem id="nightly" textValue="Nightly builds">
+          {({ isSelected }) => (
+            <Flex align="center" justify="between" gap="2">
+              <Box style={{ flex: 1 }}>
+                <Text as="div" weight="bold">
+                  Nightly builds
+                </Text>
+                <Text as="div" variant="body-small" color="secondary">
+                  Updated every night
+                </Text>
+              </Box>
+              {isSelected && <RiCheckLine aria-label="Selected" />}
+            </Flex>
+          )}
+        </ComboboxItem>
+        <ComboboxItem id="canary" textValue="Canary builds">
+          {({ isSelected }) => (
+            <Flex align="center" justify="between" gap="2">
+              <Box style={{ flex: 1 }}>
+                <Text as="div" weight="bold">
+                  Canary builds
+                </Text>
+                <Text as="div" variant="body-small" color="secondary">
+                  Updated after every merge
+                </Text>
+              </Box>
+              {isSelected && <RiCheckLine aria-label="Selected" />}
+            </Flex>
+          )}
+        </ComboboxItem>
+      </Combobox>
+    </Flex>
+  );
+}
+
+export const ItemTypes = meta.story({
+  render: () => (
+    <Flex align="start" gap="6">
+      <ComboboxItemTypesColumn size="small" />
+      <ComboboxItemTypesColumn size="medium" />
+    </Flex>
+  ),
+});
+
+const owners = [
+  {
+    id: 'ada',
+    name: 'Ada Lovelace',
+    src: 'https://avatars.githubusercontent.com/u/1540635?v=4',
+  },
+  { id: 'grace', name: 'Grace Hopper' },
+  { id: 'margaret', name: 'Margaret Hamilton' },
+];
+
+export const WithProfiles = meta.story({
+  render: () => (
+    <Combobox label="Owner" placeholder="Select an owner" items={owners}>
+      {owner => <ComboboxItemProfile name={owner.name} src={owner.src} />}
+    </Combobox>
+  ),
+});
+
+type ServerOwner = {
+  id: string;
+  textValue: string;
+  name: string;
+  role: string;
+};
+
+const serverOwners: ServerOwner[] = [
+  { id: 'ada', name: 'Ada Lovelace', role: 'Software Engineer' },
+  { id: 'grace', name: 'Grace Hopper', role: 'Computer Scientist' },
+  { id: 'margaret', name: 'Margaret Hamilton', role: 'Software Engineer' },
+  { id: 'katherine', name: 'Katherine Johnson', role: 'Mathematician' },
+  { id: 'annie', name: 'Annie Easley', role: 'Computer Scientist' },
+  { id: 'mary', name: 'Mary Jackson', role: 'Aerospace Engineer' },
+  { id: 'dorothy', name: 'Dorothy Vaughan', role: 'Mathematician' },
+  { id: 'radia', name: 'Radia Perlman', role: 'Network Engineer' },
+  { id: 'barbara', name: 'Barbara Liskov', role: 'Computer Scientist' },
+  { id: 'frances', name: 'Frances Allen', role: 'Computer Scientist' },
+  { id: 'evelyn', name: 'Evelyn Boyd Granville', role: 'Mathematician' },
+  {
+    id: 'mary-keller',
+    name: 'Mary Kenneth Keller',
+    role: 'Computer Scientist',
+  },
+  { id: 'hedy', name: 'Hedy Lamarr', role: 'Inventor' },
+  { id: 'joan', name: 'Joan Clarke', role: 'Cryptanalyst' },
+  { id: 'mary-ross', name: 'Mary Golda Ross', role: 'Aerospace Engineer' },
+  { id: 'ellen', name: 'Ellen Ochoa', role: 'Aerospace Engineer' },
+  { id: 'rebecca', name: 'Rebecca Lee Crumpler', role: 'Physician' },
+  { id: 'chiyome', name: 'Chiyome Fukino', role: 'Physician' },
+  { id: 'susan', name: 'Susan Kare', role: 'Designer' },
+  { id: 'mary-coombs', name: 'Mary Coombs', role: 'Programmer' },
+].map(owner => ({ ...owner, textValue: owner.name }));
+
+const serverOptions = serverOwners.map(owner => ({
+  id: owner.id,
+  label: owner.name,
+}));
+
+const paginatedServerOptions = Array.from({ length: 200 }, (_, index) => ({
+  id: `owner-${index + 1}`,
+  label: `Owner ${String(index + 1).padStart(3, '0')}`,
+}));
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const serverDelay = 1_500;
+const serverPageSize = 5;
+const paginationServerDelay = 100;
+const paginationServerPageSize = 10;
+
+function readCount(element: HTMLElement) {
+  return Number(element.textContent);
+}
+
+async function waitForRequestCountToStabilize(element: HTMLElement) {
+  let previousCount = readCount(element);
+  let stableChecks = 0;
+
+  for (let index = 0; index < 20; index++) {
+    await wait(250);
+    const currentCount = readCount(element);
+
+    if (currentCount === previousCount) {
+      stableChecks += 1;
+      if (stableChecks === 3) {
+        return currentCount;
+      }
+    } else {
+      previousCount = currentCount;
+      stableChecks = 0;
+    }
+  }
+
+  throw new Error('Request count did not stabilize');
+}
+
+function ServerBackedCombobox() {
+  const [requestCount, setRequestCount] = useState(0);
+  const list = useAsyncList({
+    async load({ cursor, filterText }) {
+      setRequestCount(count => count + 1);
+      await wait(paginationServerDelay);
+
+      const query = filterText.toLocaleLowerCase();
+      const filteredOptions = paginatedServerOptions.filter(option =>
+        option.label.toLocaleLowerCase().includes(query),
+      );
+      const startIndex = cursor ? Number(cursor) : 0;
+      const endIndex = startIndex + paginationServerPageSize;
+
+      return {
+        items: filteredOptions.slice(startIndex, endIndex),
+        cursor:
+          endIndex < filteredOptions.length ? String(endIndex) : undefined,
+      };
+    },
+  });
+
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+      }}
+    >
+      <div>
+        <div>
+          Requests:{' '}
+          <output aria-label="Combobox request count">{requestCount}</output>
+        </div>
+        <div>
+          Results:{' '}
+          <output aria-label="Combobox result count">
+            {list.items.length}
+          </output>
+        </div>
+        <Combobox
+          label="Owner"
+          placeholder="Search owners"
+          options={list}
+          search={{ mode: 'server' }}
+          style={{ width: 300 }}
+        />
+      </div>
+    </div>
+  );
+}
+
+export const ServerBackedOptions = meta.story({
+  render: () => <ServerBackedCombobox />,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  play: async ({ canvas, userEvent }) => {
+    const requestCount = canvas.getByLabelText('Combobox request count');
+    const resultCount = canvas.getByLabelText('Combobox result count');
+
+    await waitFor(() =>
+      expect(readCount(resultCount)).toBe(paginationServerPageSize),
+    );
+    await userEvent.click(canvas.getByRole('button'));
+
+    const listbox = await screen.findByRole('listbox');
+    const scrollElement = listbox.closest('.bui-PopoverContent');
+
+    expect(scrollElement).toBeTruthy();
+    expect(window.getComputedStyle(listbox).maxHeight).toBe('none');
+
+    await waitFor(
+      () =>
+        expect(scrollElement!.scrollHeight).toBeGreaterThan(
+          scrollElement!.clientHeight,
+        ),
+      { timeout: 5_000 },
+    );
+
+    const stabilizedRequestCount = await waitForRequestCountToStabilize(
+      requestCount,
+    );
+
+    expect(stabilizedRequestCount).toBeLessThan(
+      paginatedServerOptions.length / paginationServerPageSize,
+    );
+    expect(readCount(resultCount)).toBeLessThan(paginatedServerOptions.length);
+
+    listbox.focus();
+    await userEvent.keyboard('{End}');
+    const bottomScrollTop =
+      scrollElement!.scrollHeight - scrollElement!.clientHeight;
+    scrollElement!.scrollTop = bottomScrollTop;
+    await waitFor(() =>
+      expect(scrollElement!.scrollTop).toBeGreaterThanOrEqual(
+        bottomScrollTop - 1,
+      ),
+    );
+
+    await waitFor(
+      () =>
+        expect(readCount(requestCount)).toBeGreaterThan(stabilizedRequestCount),
+      { timeout: 5_000 },
+    );
+  },
+});
+
+function ServerBackedCustomCombobox() {
+  const list = useAsyncList<ServerOwner>({
+    async load({ cursor, filterText }) {
+      await wait(serverDelay);
+
+      const query = filterText.toLocaleLowerCase();
+      const filteredOwners = serverOwners.filter(owner =>
+        `${owner.name} ${owner.role}`.toLocaleLowerCase().includes(query),
+      );
+      const startIndex = cursor ? Number(cursor) : 0;
+      const endIndex = startIndex + serverPageSize;
+
+      return {
+        items: filteredOwners.slice(startIndex, endIndex),
+        cursor: endIndex < filteredOwners.length ? String(endIndex) : undefined,
+      };
+    },
+  });
+
+  return (
+    <Combobox
+      label="Owner"
+      placeholder="Search names and roles"
+      items={list}
+      search={{ mode: 'server' }}
+      style={{ width: 300 }}
+    >
+      {owner => (
+        <ComboboxItem textValue={owner.textValue}>
+          <Text as="div" weight="bold">
+            {owner.name}
+          </Text>
+          <Text as="div" variant="body-small" color="secondary">
+            {owner.role}
+          </Text>
+        </ComboboxItem>
+      )}
+    </Combobox>
+  );
+}
+
+export const ServerBackedCustomItems = meta.story({
+  render: () => <ServerBackedCustomCombobox />,
 });
 
 export const Sizes = meta.story({
@@ -200,17 +597,17 @@ export const WithLongNames = meta.story({
     label: 'Document Template',
     options: [
       {
-        value: 'annual-report-2024',
+        id: 'annual-report-2024',
         label:
           'Annual Financial Report and Strategic Planning Document for Fiscal Year 2024 with Comprehensive Analysis of Market Trends, Competitive Landscape, Financial Performance Metrics, Revenue Projections, Cost Optimization Strategies, Risk Assessment, and Long-term Growth Initiatives Across All Business Units and Geographical Regions',
       },
       {
-        value: 'product-roadmap',
+        id: 'product-roadmap',
         label:
           'Comprehensive Product Development Roadmap and Feature Implementation Timeline Including Detailed Technical Specifications, Resource Allocation Plans, Cross-functional Team Dependencies, Milestone Tracking, Quality Assurance Procedures, User Acceptance Testing Protocols, and Post-launch Support Strategy for All Product Lines and Service Offerings',
       },
       {
-        value: 'user-guide',
+        id: 'user-guide',
         label:
           'Detailed User Guide and Technical Documentation for Advanced System Features Covering Installation Procedures, Configuration Settings, Security Protocols, Troubleshooting Guidelines, Best Practices, Common Use Cases, Performance Optimization Tips, Integration Methods, API Documentation, and Frequently Asked Questions with Step-by-Step Solutions',
       },

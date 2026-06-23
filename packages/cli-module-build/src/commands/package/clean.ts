@@ -20,7 +20,7 @@ import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 export default async ({ args, info }: CliCommandContext) => {
-  cli({ help: info, booleanFlagNegation: true }, undefined, args);
+  cli({ name: info.usage, booleanFlagNegation: true }, undefined, args);
   await fs.remove(targetPaths.resolve('dist'));
   await fs.remove(targetPaths.resolve('dist-types'));
   await fs.remove(targetPaths.resolve('coverage'));
