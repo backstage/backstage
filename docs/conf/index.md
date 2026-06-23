@@ -20,8 +20,9 @@ and `app-config.local.yaml` for local overrides. Additionally, it is possible
 to define environment-based configuration files with the `BACKSTAGE_ENV`
 environment variable.
 
-`BACKSTAGE_ENV` accepts comma-separated values for stacking multiple
-environments. For example, `BACKSTAGE_ENV=e2e-test,production` loads:
+`BACKSTAGE_ENV` accepts either a single value or comma-separated values for
+stacking multiple environments. For example,
+`BACKSTAGE_ENV=e2e-test,production` loads:
 
 1. `app-config.yaml`
 2. `app-config.e2e-test.yaml`
