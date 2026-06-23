@@ -5,6 +5,7 @@
 ```ts
 import { AnonymousCredential } from '@azure/storage-blob';
 import { Config } from '@backstage/config';
+import type { ConnectionsService } from '@backstage/connections';
 import { ConsumedResponse } from '@backstage/errors';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { StorageSharedKeyCredential } from '@azure/storage-blob';
@@ -323,6 +324,9 @@ export class DefaultAzureDevOpsCredentialsProvider
 export class DefaultGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
+  static fromConnections(
+    connections: ConnectionsService,
+  ): DefaultGithubCredentialsProvider;
   // (undocumented)
   static fromIntegrations(
     integrations: ScmIntegrationRegistry,

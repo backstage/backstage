@@ -21,6 +21,7 @@ import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubC
 import { DefaultGithubCredentialsProvider } from './DefaultGithubCredentialsProvider';
 import { ConfigReader } from '@backstage/config';
 import { GithubCredentials } from './types';
+import { ConnectionsService } from '@backstage/connections';
 
 const resultBuilder = (host: string): GithubCredentials => {
   return {
@@ -89,6 +90,91 @@ describe('DefaultGithubCredentialsProvider tests', () => {
       expect(
         SingleInstanceGithubCredentialsProvider.create,
       ).toHaveBeenCalledWith(grithubIntegration);
+    });
+
+    it('creates and reuses providers from the connections service', async () => {
+      const find = jest.fn().mockResolvedValue({
+        type: 'github',
+        title: 'GitHub',
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+        rawBaseUrl: 'https://raw.githubusercontent.com',
+        auth: {
+          method: 'app',
+          appId: '123',
+          privateKey: 'private-key',
+          clientId: 'client-id',
+          clientSecret: 'client-secret',
+          webhookSecret: 'webhook-secret',
+          publicAccess: true,
+          orgs: ['backstage'],
+        },
+      });
+      const provider = DefaultGithubCredentialsProvider.fromConnections({
+        find: find as ConnectionsService['find'],
+      });
+
+      await provider.getCredentials({
+        url: 'https://github.com/backstage/backstage',
+      });
+      await provider.getCredentials({
+        url: 'https://github.com/backstage/community',
+      });
+
+      expect(find).toHaveBeenCalledWith({
+        type: 'github',
+        url: 'https://github.com/backstage/backstage',
+        authMethods: ['app', 'token', 'none'],
+      });
+      expect(
+        SingleInstanceGithubCredentialsProvider.create,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        SingleInstanceGithubCredentialsProvider.create,
+      ).toHaveBeenCalledWith({
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+        rawBaseUrl: 'https://raw.githubusercontent.com',
+        apps: [
+          {
+            appId: 123,
+            privateKey: 'private-key',
+            clientId: 'client-id',
+            clientSecret: 'client-secret',
+            webhookSecret: 'webhook-secret',
+            publicAccess: true,
+            allowedInstallationOwners: ['backstage'],
+          },
+        ],
+      });
+    });
+
+    it('creates token providers from the connections service', async () => {
+      const find = jest.fn().mockResolvedValue({
+        type: 'github',
+        title: 'GitHub Enterprise',
+        host: 'github.example.com',
+        auth: {
+          method: 'token',
+          token: 'connection-token',
+        },
+      });
+      const provider = DefaultGithubCredentialsProvider.fromConnections({
+        find: find as ConnectionsService['find'],
+      });
+
+      await provider.getCredentials({
+        url: 'https://github.example.com/backstage/backstage',
+      });
+
+      expect(
+        SingleInstanceGithubCredentialsProvider.create,
+      ).toHaveBeenCalledWith({
+        host: 'github.example.com',
+        apiBaseUrl: undefined,
+        rawBaseUrl: undefined,
+        token: 'connection-token',
+      });
     });
   });
 

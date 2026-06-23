@@ -17,6 +17,8 @@
 import { GithubCredentials, GithubCredentialsProvider } from './types';
 import { ScmIntegrationRegistry } from '../registry';
 import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
+import type { ConnectionsService } from '@backstage/connections';
+import { GithubIntegrationConfig } from './config';
 
 /**
  * Handles the creation and caching of credentials for GitHub integrations.
@@ -41,8 +43,19 @@ export class DefaultGithubCredentialsProvider
     return new DefaultGithubCredentialsProvider(credentialsProviders);
   }
 
+  /**
+   * Creates a credentials provider backed by the connections service.
+   *
+   * @param connections - The connections service used to resolve GitHub credentials.
+   * @public
+   */
+  static fromConnections(connections: ConnectionsService) {
+    return new DefaultGithubCredentialsProvider(new Map(), connections);
+  }
+
   private constructor(
     private readonly providers: Map<string, GithubCredentialsProvider>,
+    private readonly connections?: ConnectionsService,
   ) {}
 
   /**
@@ -70,6 +83,48 @@ export class DefaultGithubCredentialsProvider
    * @returns A promise of {@link GithubCredentials}.
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
+    if (this.connections) {
+      const connection = await this.connections.find({
+        type: 'github',
+        url: opts.url,
+        authMethods: ['app', 'token', 'none'],
+      });
+      const { auth } = connection;
+      const providerKey = `${connection.host}:${auth.method}:${
+        auth.method === 'app' ? auth.appId : ''
+      }`;
+
+      let provider = this.providers.get(providerKey);
+      if (!provider) {
+        const config: GithubIntegrationConfig = {
+          host: connection.host,
+          apiBaseUrl: connection.apiBaseUrl,
+          rawBaseUrl: connection.rawBaseUrl,
+        };
+
+        if (auth.method === 'app') {
+          config.apps = [
+            {
+              appId: Number(auth.appId),
+              privateKey: auth.privateKey,
+              clientId: auth.clientId,
+              clientSecret: auth.clientSecret,
+              webhookSecret: auth.webhookSecret,
+              publicAccess: auth.publicAccess,
+              allowedInstallationOwners: auth.orgs,
+            },
+          ];
+        } else if (auth.method === 'token') {
+          config.token = auth.token;
+        }
+
+        provider = SingleInstanceGithubCredentialsProvider.create(config);
+        this.providers.set(providerKey, provider);
+      }
+
+      return provider.getCredentials(opts);
+    }
+
     const parsed = new URL(opts.url);
     const provider = this.providers.get(parsed.host);
 
