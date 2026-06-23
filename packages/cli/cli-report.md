@@ -78,19 +78,8 @@ Options:
   -h, --help
 
 Commands:
-  add
   help
   list
-  remove
-```
-
-### `backstage-cli actions sources add`
-
-```
-Usage: backstage-cli actions sources add [flags...] <plugin-ids...>
-
-Options:
-  -h, --help
 ```
 
 ### `backstage-cli actions sources list`
@@ -99,15 +88,7 @@ Options:
 Usage: backstage-cli actions sources list [flags...]
 
 Options:
-  -h, --help
-```
-
-### `backstage-cli actions sources remove`
-
-```
-Usage: backstage-cli actions sources remove [flags...] <plugin-ids...>
-
-Options:
+  --instance <string>
   -h, --help
 ```
 

@@ -33,6 +33,32 @@ describe('ActionsClient', () => {
     client = new ActionsClient(baseUrl, accessToken);
   });
 
+  describe('listSources', () => {
+    it('fetches sources from the server', async () => {
+      mockHttpJson.mockResolvedValue({
+        sources: ['catalog', 'scaffolder'],
+      });
+
+      const result = await client.listSources();
+
+      expect(mockHttpJson).toHaveBeenCalledWith(
+        'https://backstage.example.com/.backstage/actions/v1/sources',
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+        }),
+      );
+      expect(result).toEqual(['catalog', 'scaffolder']);
+    });
+
+    it('returns empty array when no sources configured', async () => {
+      mockHttpJson.mockResolvedValue({ sources: [] });
+
+      const result = await client.listSources();
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('list', () => {
     it('returns empty array when no plugin sources provided', async () => {
       const result = await client.list([]);

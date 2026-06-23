@@ -60,6 +60,17 @@ export class ActionsClient {
     private readonly accessToken: string,
   ) {}
 
+  async listSources(): Promise<string[]> {
+    const url = new URL(
+      '/.backstage/actions/v1/sources',
+      this.baseUrl,
+    ).toString();
+    const response = await httpJson<{ sources: string[] }>(url, {
+      signal: AbortSignal.timeout(30_000),
+    });
+    return response.sources;
+  }
+
   async list(pluginSources: string[]): Promise<GroupedActions> {
     return Promise.all(
       pluginSources.map(async pluginId => {

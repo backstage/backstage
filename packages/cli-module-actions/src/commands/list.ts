@@ -37,18 +37,18 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
-  const { accessToken, pluginSources, baseUrl } = await resolveAuth(
-    instanceFlag,
-  );
+  const { accessToken, baseUrl } = await resolveAuth(instanceFlag);
+  const client = new ActionsClient(baseUrl, accessToken);
+
+  const pluginSources = await client.listSources();
 
   if (!pluginSources.length) {
     process.stderr.write(
-      'No plugin sources configured. Run "actions sources add <plugin-id>" to add one.\n',
+      'No plugin sources configured. Set "backend.actions.pluginSources" in your app-config.\n',
     );
     return;
   }
 
-  const client = new ActionsClient(baseUrl, accessToken);
   const grouped = await client.list(pluginSources);
 
   const hasActions = grouped.some(g => g.actions.length > 0);

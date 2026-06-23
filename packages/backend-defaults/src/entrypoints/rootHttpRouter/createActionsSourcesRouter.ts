@@ -14,6 +14,28 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v3';
+import { RootConfigService } from '@backstage/backend-plugin-api';
+import Router from 'express-promise-router';
+import { Request, Response } from 'express';
 
-export const pluginSourcesSchema = z.array(z.string()).default([]);
+/**
+ * @public
+ */
+export function createActionsSourcesRouter(options: {
+  config: RootConfigService;
+}) {
+  const router = Router();
+
+  router.get(
+    '/.backstage/actions/v1/sources',
+    async (_request: Request, response: Response) => {
+      const sources =
+        options.config.getOptionalStringArray(
+          'backend.actions.pluginSources',
+        ) ?? [];
+      response.json({ sources });
+    },
+  );
+
+  return router;
+}

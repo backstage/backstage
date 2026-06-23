@@ -15,24 +15,18 @@
  */
 
 import { CliAuth } from '@backstage/cli-node';
-import { pluginSourcesSchema } from './pluginSources';
 
 export async function resolveAuth(instanceFlag?: string): Promise<{
   baseUrl: string;
   instanceName: string;
   accessToken: string;
-  pluginSources: string[];
 }> {
   const auth = await CliAuth.create({ instanceName: instanceFlag });
   const accessToken = await auth.getAccessToken();
-  const pluginSources = pluginSourcesSchema.parse(
-    await auth.getMetadata('pluginSources'),
-  );
 
   return {
     baseUrl: auth.getBaseUrl(),
     instanceName: auth.getInstanceName(),
     accessToken,
-    pluginSources,
   };
 }
