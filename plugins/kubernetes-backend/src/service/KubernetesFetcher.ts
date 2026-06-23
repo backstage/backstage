@@ -298,6 +298,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       };
       return;
     }
+    // split the body into a stream of lines
     const stream = response.body.pipe(split2());
 
     try {
