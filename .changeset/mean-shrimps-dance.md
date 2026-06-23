@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Fix crash in toStreamRequest when filters contain undefined entries
+Fix crash when exporting the catalog with unset filters
