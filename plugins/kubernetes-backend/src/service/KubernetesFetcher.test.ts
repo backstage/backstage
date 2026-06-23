@@ -16,7 +16,10 @@
 
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { ObjectToFetch } from '@backstage/plugin-kubernetes-node';
+import {
+  KubernetesCredential,
+  ObjectToFetch,
+} from '@backstage/plugin-kubernetes-node';
 import {
   MockedRequest,
   RestContext,
@@ -1425,6 +1428,16 @@ describe('KubernetesFetcher', () => {
     let sut: KubernetesClientBasedFetcher;
     const logger = mockServices.logger.mock();
 
+    const defaultCluster = {
+      name: 'test-cluster',
+      url: 'http://localhost:9999',
+      authMetadata: {},
+    };
+    const defaultCredential: KubernetesCredential = {
+      type: 'bearer token' as const,
+      token: 'token',
+    };
+
     beforeEach(() => {
       sut = new KubernetesClientBasedFetcher({
         logger,
@@ -1465,14 +1478,12 @@ describe('KubernetesFetcher', () => {
       const events: KubernetesWatchEvent[] = [];
       for await (const event of sut.watchResource(
         {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
         },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
         { namespace: 'default' },
       )) {
         events.push(event);
@@ -1497,14 +1508,12 @@ describe('KubernetesFetcher', () => {
       const events: KubernetesWatchEvent[] = [];
       for await (const event of sut.watchResource(
         {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
         },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
         { namespace: 'default' },
       )) {
         events.push(event);
@@ -1555,14 +1564,12 @@ describe('KubernetesFetcher', () => {
       const events: KubernetesWatchEvent[] = [];
       for await (const event of sut.watchResource(
         {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
         },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
         { namespace: 'default' },
       )) {
         events.push(event);
@@ -1607,14 +1614,12 @@ describe('KubernetesFetcher', () => {
       const events: KubernetesWatchEvent[] = [];
       for await (const event of sut.watchResource(
         {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
         },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
         { namespace: 'default' },
       )) {
         events.push(event);
@@ -1660,14 +1665,12 @@ describe('KubernetesFetcher', () => {
       const events: KubernetesWatchEvent[] = [];
       for await (const event of sut.watchResource(
         {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
         },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
         { namespace: 'default' },
       )) {
         events.push(event);
@@ -1698,14 +1701,12 @@ describe('KubernetesFetcher', () => {
       const events: KubernetesWatchEvent[] = [];
       for await (const event of sut.watchResource(
         {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
+          clusterDetails: defaultCluster,
+          credential: { type: 'bearer token', token: 'bad-token' },
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
         },
-        { type: 'bearer token', token: 'bad-token' },
-        '',
-        'v1',
-        'pods',
         { namespace: 'default' },
       )) {
         events.push(event);
@@ -1730,17 +1731,13 @@ describe('KubernetesFetcher', () => {
       );
 
       const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'invalidresource',
-      )) {
+      for await (const event of sut.watchResource({
+        clusterDetails: defaultCluster,
+        credential: defaultCredential,
+        group: '',
+        apiVersion: 'v1',
+        plural: 'invalidresource',
+      })) {
         events.push(event);
       }
 
@@ -1763,17 +1760,13 @@ describe('KubernetesFetcher', () => {
       );
 
       const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
-      )) {
+      for await (const event of sut.watchResource({
+        clusterDetails: defaultCluster,
+        credential: defaultCredential,
+        group: '',
+        apiVersion: 'v1',
+        plural: 'pods',
+      })) {
         events.push(event);
       }
 
@@ -1814,14 +1807,12 @@ describe('KubernetesFetcher', () => {
       const events: KubernetesWatchEvent[] = [];
       for await (const event of sut.watchResource(
         {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
         },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
         { resourceVersion: '1' },
       )) {
         events.push(event);
@@ -1863,17 +1854,13 @@ describe('KubernetesFetcher', () => {
       );
 
       const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
-      )) {
+      for await (const event of sut.watchResource({
+        clusterDetails: defaultCluster,
+        credential: defaultCredential,
+        group: '',
+        apiVersion: 'v1',
+        plural: 'pods',
+      })) {
         events.push(event);
       }
 
@@ -1905,17 +1892,13 @@ describe('KubernetesFetcher', () => {
       );
 
       const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
-      )) {
+      for await (const event of sut.watchResource({
+        clusterDetails: defaultCluster,
+        credential: defaultCredential,
+        group: '',
+        apiVersion: 'v1',
+        plural: 'pods',
+      })) {
         events.push(event);
       }
 
@@ -1948,17 +1931,13 @@ describe('KubernetesFetcher', () => {
       );
 
       const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
-      )) {
+      for await (const event of sut.watchResource({
+        clusterDetails: defaultCluster,
+        credential: defaultCredential,
+        group: '',
+        apiVersion: 'v1',
+        plural: 'pods',
+      })) {
         events.push(event);
       }
 
@@ -2000,14 +1979,12 @@ describe('KubernetesFetcher', () => {
       const events: KubernetesWatchEvent[] = [];
       for await (const event of sut.watchResource(
         {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
         },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
         {
           namespace: 'my-namespace',
           labelSelector: 'app=frontend',
@@ -2056,14 +2033,12 @@ describe('KubernetesFetcher', () => {
       const events: KubernetesWatchEvent[] = [];
       for await (const event of sut.watchResource(
         {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
         },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
         {
           timeoutSeconds: 300,
           allowWatchBookmarks: true,
@@ -2106,17 +2081,13 @@ describe('KubernetesFetcher', () => {
       );
 
       const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'token' },
-        'example.com',
-        'v1',
-        'customthings',
-      )) {
+      for await (const event of sut.watchResource({
+        clusterDetails: defaultCluster,
+        credential: defaultCredential,
+        group: 'example.com',
+        apiVersion: 'v1',
+        plural: 'customthings',
+      })) {
         events.push(event);
       }
 
@@ -2145,17 +2116,13 @@ describe('KubernetesFetcher', () => {
       );
 
       const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'bearer token', token: 'my-secret-token' },
-        '',
-        'v1',
-        'pods',
-      )) {
+      for await (const event of sut.watchResource({
+        clusterDetails: defaultCluster,
+        credential: { type: 'bearer token', token: 'my-secret-token' },
+        group: '',
+        apiVersion: 'v1',
+        plural: 'pods',
+      })) {
         events.push(event);
       }
 
@@ -2182,21 +2149,17 @@ describe('KubernetesFetcher', () => {
       );
 
       const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        {
+      for await (const event of sut.watchResource({
+        clusterDetails: defaultCluster,
+        credential: {
           type: 'x509 client certificate',
           cert: 'MOCKCERT',
           key: 'MOCKKEY',
         },
-        '',
-        'v1',
-        'pods',
-      )) {
+        group: '',
+        apiVersion: 'v1',
+        plural: 'pods',
+      })) {
         events.push(event);
       }
 
@@ -2212,17 +2175,13 @@ describe('KubernetesFetcher', () => {
       );
 
       const events: KubernetesWatchEvent[] = [];
-      for await (const event of sut.watchResource(
-        {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
-        },
-        { type: 'anonymous' },
-        '',
-        'v1',
-        'pods',
-      )) {
+      for await (const event of sut.watchResource({
+        clusterDetails: defaultCluster,
+        credential: { type: 'anonymous' },
+        group: '',
+        apiVersion: 'v1',
+        plural: 'pods',
+      })) {
         events.push(event);
       }
 
@@ -2267,14 +2226,12 @@ describe('KubernetesFetcher', () => {
       const events: KubernetesWatchEvent[] = [];
       for await (const event of sut.watchResource(
         {
-          name: 'test-cluster',
-          url: 'http://localhost:9999',
-          authMetadata: {},
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
         },
-        { type: 'bearer token', token: 'token' },
-        '',
-        'v1',
-        'pods',
         { allowWatchBookmarks: true },
       )) {
         events.push(event);
@@ -2291,6 +2248,71 @@ describe('KubernetesFetcher', () => {
         object: bookmark,
         resourceVersion: '12345',
       });
+    });
+
+    it('should stop yielding events when signal is aborted', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '100' },
+      };
+
+      const watchData = [
+        JSON.stringify({ type: 'ADDED', object: pod }),
+        JSON.stringify({ type: 'MODIFIED', object: pod }),
+        JSON.stringify({ type: 'DELETED', object: pod }),
+      ].join('\n');
+
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const controller = new AbortController();
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
+        },
+        { signal: controller.signal },
+      )) {
+        events.push(event);
+        if (events.length === 1) {
+          controller.abort();
+        }
+      }
+
+      expect(events.length).toBeLessThanOrEqual(2);
+      expect(events[0].type).toBe('ADDED');
+    });
+
+    it('should not yield any events when signal is already aborted', async () => {
+      const controller = new AbortController();
+      controller.abort();
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          clusterDetails: defaultCluster,
+          credential: defaultCredential,
+          group: '',
+          apiVersion: 'v1',
+          plural: 'pods',
+        },
+        { signal: controller.signal },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(0);
     });
   });
 });

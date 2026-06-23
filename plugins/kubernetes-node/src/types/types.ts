@@ -238,6 +238,23 @@ export interface FetchResponseWrapper {
 }
 
 /**
+ * Parameters identifying the Kubernetes resource to watch
+ * @public
+ */
+export interface KubernetesWatchParams {
+  /** Cluster connection details */
+  clusterDetails: ClusterDetails;
+  /** Authentication credentials */
+  credential: KubernetesCredential;
+  /** API group (empty string for core resources) */
+  group: string;
+  /** API version (e.g., 'v1', 'v1beta1') */
+  apiVersion: string;
+  /** Resource plural name (e.g., 'pods', 'deployments') */
+  plural: string;
+}
+
+/**
  * Fetches information from a kubernetes cluster using the cluster details object to target a specific cluster
  *
  * @public
@@ -264,19 +281,11 @@ export interface KubernetesFetcher {
    *   - Next (`undefined`): the consumer cannot send values into the generator
    *     via `.next(value)`; this is a produce-only stream.
    *
-   * @param clusterDetails - Cluster connection details
-   * @param credential - Authentication credentials
-   * @param group - API group (empty string for core resources)
-   * @param apiVersion - API version (e.g., 'v1', 'v1beta1')
-   * @param plural - Resource plural name (e.g., 'pods', 'deployments')
-   * @param options - Optional watch parameters
+   * @param params - Cluster, credentials, and resource identification
+   * @param options - Optional watch parameters (filters, signal, etc.)
    */
   watchResource(
-    clusterDetails: ClusterDetails,
-    credential: KubernetesCredential,
-    group: string,
-    apiVersion: string,
-    plural: string,
+    params: KubernetesWatchParams,
     options?: KubernetesWatchOptions,
   ): AsyncGenerator<KubernetesWatchEvent, void, undefined>;
 }

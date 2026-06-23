@@ -386,4 +386,6 @@ export interface KubernetesWatchOptions {
    * cache rather than quorum-reading etcd.
    */
   resourceVersionMatch?: 'NotOlderThan' | 'Exact';
+  /** AbortSignal to cancel the watch from outside the iteration loop */
+  signal?: AbortSignal;
 }

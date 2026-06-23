@@ -34,11 +34,13 @@ import { KubernetesClientBasedFetcher } from '@backstage/plugin-kubernetes-backe
 const fetcher = new KubernetesClientBasedFetcher({ logger });
 
 for await (const event of fetcher.watchResource(
-  clusterDetails,
-  credential,
-  '', // empty string for core API group
-  'v1',
-  'pods',
+  {
+    clusterDetails,
+    credential,
+    group: '', // empty string for core API group
+    apiVersion: 'v1',
+    plural: 'pods',
+  },
   { namespace: 'default', labelSelector: 'app=myapp' },
 )) {
   if (event.type === 'ERROR') {
@@ -72,15 +74,16 @@ events contain a structured `KubernetesFetchError` with an `errorType` and
 
 The `KubernetesWatchOptions` interface supports the following parameters:
 
-| Option                 | Type      | Description                                                                                                                                                       |
-| ---------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `namespace`            | `string`  | Namespace to watch (omit for cluster-scoped resources).                                                                                                           |
-| `labelSelector`        | `string`  | Label selector to filter resources.                                                                                                                               |
-| `resourceVersion`      | `string`  | Resource version to start watching from.                                                                                                                          |
-| `timeoutSeconds`       | `number`  | Server-side timeout for the watch connection.                                                                                                                     |
-| `allowWatchBookmarks`  | `boolean` | Enable bookmark events for efficient version tracking.                                                                                                            |
-| `sendInitialEvents`    | `boolean` | Begin the stream with synthetic events reproducing current state, ending with a bookmark annotated `k8s.io/initial-events-end`. Requires Kubernetes 1.32+ (Beta). |
-| `resourceVersionMatch` | `string`  | How the resource version constraint is applied. Set to `NotOlderThan` when using `sendInitialEvents` so the server can serve from its watch cache.                |
+| Option                 | Type          | Description                                                                                                                                                       |
+| ---------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `namespace`            | `string`      | Namespace to watch (omit for cluster-scoped resources).                                                                                                           |
+| `labelSelector`        | `string`      | Label selector to filter resources.                                                                                                                               |
+| `resourceVersion`      | `string`      | Resource version to start watching from.                                                                                                                          |
+| `timeoutSeconds`       | `number`      | Server-side timeout for the watch connection.                                                                                                                     |
+| `allowWatchBookmarks`  | `boolean`     | Enable bookmark events for efficient version tracking.                                                                                                            |
+| `sendInitialEvents`    | `boolean`     | Begin the stream with synthetic events reproducing current state, ending with a bookmark annotated `k8s.io/initial-events-end`. Requires Kubernetes 1.32+ (Beta). |
+| `resourceVersionMatch` | `string`      | How the resource version constraint is applied. Set to `NotOlderThan` when using `sendInitialEvents` so the server can serve from its watch cache.                |
+| `signal`               | `AbortSignal` | Abort signal to cancel the watch from outside the iteration loop.                                                                                                 |
 
 ## Watching custom resources
 
@@ -88,11 +91,13 @@ To watch custom resources, provide the API group, version, and plural name:
 
 ```typescript
 for await (const event of fetcher.watchResource(
-  clusterDetails,
-  credential,
-  'apps', // API group
-  'v1', // API version
-  'deployments', // plural resource name
+  {
+    clusterDetails,
+    credential,
+    group: 'apps',
+    apiVersion: 'v1',
+    plural: 'deployments',
+  },
   { namespace: 'production' },
 )) {
   // handle events
@@ -121,6 +126,33 @@ There are three categories of errors:
 The watch method reuses the same authentication mechanisms as the rest of the
 Kubernetes backend plugin. All configured auth providers (bearer token, x509
 client certificates, service account, OIDC, etc.) work with watch connections.
+
+## Cancellation
+
+To stop a watch from outside the iteration loop, pass an `AbortSignal`:
+
+```typescript
+const controller = new AbortController();
+
+// Cancel the watch after 30 seconds
+setTimeout(() => controller.abort(), 30_000);
+
+for await (const event of fetcher.watchResource(
+  {
+    clusterDetails,
+    credential,
+    group: '',
+    apiVersion: 'v1',
+    plural: 'pods',
+  },
+  { namespace: 'default', signal: controller.signal },
+)) {
+  // handle events — loop ends cleanly when signal fires
+}
+```
+
+Breaking out of the `for await` loop also stops the watch and cleans up the
+underlying HTTP connection.
 
 ## Limitations
 

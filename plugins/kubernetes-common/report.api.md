@@ -399,6 +399,7 @@ export interface KubernetesWatchOptions {
   resourceVersion?: string;
   resourceVersionMatch?: 'NotOlderThan' | 'Exact';
   sendInitialEvents?: boolean;
+  signal?: AbortSignal;
   timeoutSeconds?: number;
 }
 

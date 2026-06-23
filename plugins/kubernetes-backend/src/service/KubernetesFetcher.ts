@@ -18,6 +18,7 @@ import type { Cluster, CoreV1Api, Metrics } from '@kubernetes/client-node';
 import {
   FetchResponseWrapper,
   KubernetesFetcher,
+  KubernetesWatchParams,
   ObjectFetchParams,
   ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
@@ -189,13 +190,10 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
    * `for await (const event of fetcher.watchResource(...))` consumption.
    */
   async *watchResource(
-    clusterDetails: ClusterDetails,
-    credential: KubernetesCredential,
-    group: string,
-    apiVersion: string,
-    plural: string,
+    params: KubernetesWatchParams,
     options?: KubernetesWatchOptions,
   ): AsyncGenerator<KubernetesWatchEvent, void, undefined> {
+    const { clusterDetails, credential, group, apiVersion, plural } = params;
     const {
       namespace,
       labelSelector,
@@ -204,7 +202,10 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       allowWatchBookmarks,
       sendInitialEvents,
       resourceVersionMatch,
+      signal,
     } = options || {};
+
+    if (signal?.aborted) return;
 
     // Build resource path
     const encode = (s: string) => encodeURIComponent(s);
@@ -257,6 +258,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     url.search = new URLSearchParams(queryParams).toString();
 
     // Make request
+    if (signal) {
+      (requestInit as any).signal = signal;
+    }
     let response;
     try {
       response = await fetch(url, requestInit);
@@ -303,6 +307,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
     try {
       for await (const line of stream) {
+        if (signal?.aborted) return;
         if (!line) continue;
 
         let data;
@@ -315,6 +320,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
         yield this.transformWatchEvent(data, resourcePath);
       }
+    } catch (err) {
+      if (signal?.aborted) return;
+      throw err;
     } finally {
       stream.destroy();
       if (response.body && 'destroy' in response.body) {
