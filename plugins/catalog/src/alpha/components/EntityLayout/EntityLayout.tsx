@@ -36,7 +36,12 @@ import { catalogTranslationRef } from '../../translation';
 import { EntityHeader } from '../EntityHeader';
 import { EntityTabs } from '../EntityTabs';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
-import { EntityLayoutRoute, useEntityLayoutRoutes } from './entityLayoutRoutes';
+import {
+  EntityLayoutRoute,
+  EntityLayoutRouteData,
+  filterEntityLayoutRoutes,
+  useEntityLayoutRouteChildren,
+} from './entityLayoutRoutes';
 
 export type { EntityLayoutRouteProps } from './entityLayoutRoutes';
 
@@ -82,22 +87,26 @@ export interface EntityLayoutProps {
  *
  * @public
  */
-export const EntityLayout = (props: EntityLayoutProps) => {
+export function InternalEntityLayout(
+  props: Omit<EntityLayoutProps, 'children'> & {
+    routes: EntityLayoutRouteData[];
+  },
+) {
   const {
     UNSTABLE_extraContextMenuItems,
     contextMenuItems,
-    children,
     header,
     NotFoundComponent,
     parentEntityRelations,
     groupDefinitions,
     defaultContentOrder,
     showNavItemIcons,
+    routes,
   } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
 
-  const routes = useEntityLayoutRoutes(children, entity);
+  const visibleRoutes = filterEntityLayoutRoutes(routes, entity);
 
   const { t } = useTranslationRef(catalogTranslationRef);
 
@@ -115,7 +124,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
       {entity && (
         <EntityTabs
-          routes={routes}
+          routes={visibleRoutes}
           groupDefinitions={groupDefinitions}
           defaultContentOrder={defaultContentOrder}
           showIcons={showNavItemIcons}
@@ -148,6 +157,12 @@ export const EntityLayout = (props: EntityLayoutProps) => {
       )}
     </Page>
   );
+}
+
+export const EntityLayout = (props: EntityLayoutProps) => {
+  const { children, ...layoutProps } = props;
+  const routes = useEntityLayoutRouteChildren(children);
+  return <InternalEntityLayout {...layoutProps} routes={routes} />;
 };
 
 EntityLayout.Route = EntityLayoutRoute;

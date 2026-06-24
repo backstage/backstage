@@ -30,6 +30,8 @@ export type EntityLayoutRouteProps = {
   if?: (entity: Entity) => boolean;
 };
 
+export type EntityLayoutRouteData = EntityLayoutRouteProps;
+
 const dataKey = 'plugin.catalog.entityLayoutRoute';
 
 export const EntityLayoutRoute: (props: EntityLayoutRouteProps) => null = () =>
@@ -38,10 +40,7 @@ attachComponentData(EntityLayoutRoute, dataKey, true);
 // Ensures mount points discovered within a route use the route's own path.
 attachComponentData(EntityLayoutRoute, 'core.gatherMountPoints', true);
 
-export function useEntityLayoutRoutes(
-  children: ReactNode,
-  entity: Entity | undefined,
-) {
+export function useEntityLayoutRouteChildren(children: ReactNode) {
   return useElementFilter(
     children,
     elements =>
@@ -52,18 +51,17 @@ export function useEntityLayoutRoutes(
             'Child of EntityLayout must be an EntityLayout.Route',
         })
         .getElements<EntityLayoutRouteProps>()
-        .flatMap(({ props }) => {
-          if (!entity || (props.if && !props.if(entity))) return [];
-          return [
-            {
-              path: props.path,
-              title: props.title,
-              group: props.group,
-              icon: props.icon,
-              children: props.children,
-            },
-          ];
-        }),
-    [entity],
+        .map(({ props }) => props),
+    [],
   );
+}
+
+export function filterEntityLayoutRoutes(
+  routes: EntityLayoutRouteData[],
+  entity: Entity | undefined,
+) {
+  if (!entity) {
+    return [];
+  }
+  return routes.filter(route => !route.if || route.if(entity));
 }

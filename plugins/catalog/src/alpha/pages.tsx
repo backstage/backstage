@@ -209,10 +209,11 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       // `core-compat-api` package.
       routeRef: convertLegacyRouteRef(entityRouteRef), // READ THE ABOVE
       loader: async () => {
-        const [{ EntityLayout }, { EntityLayoutBui }] = await Promise.all([
-          import('./components/EntityLayout'),
-          import('./components/EntityLayout/EntityLayoutBui'),
-        ]);
+        const [{ InternalEntityLayout }, { EntityLayoutBui }] =
+          await Promise.all([
+            import('./components/EntityLayout/EntityLayout'),
+            import('./components/EntityLayout/EntityLayoutBui'),
+          ]);
 
         const menuItems = inputs.contextMenuItems.map(item => ({
           data: item.get(EntityContextMenuItemBlueprint.dataRefs.data),
@@ -259,21 +260,17 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             {} as EntityContentGroupDefinitions,
           ) ?? defaultEntityContentGroupDefinitions;
 
-        const routes = inputs.contents.map(output => (
-          <EntityLayout.Route
-            group={output.get(EntityContentBlueprint.dataRefs.group)}
-            key={output.get(coreExtensionData.routePath)}
-            path={output.get(coreExtensionData.routePath)}
-            title={output.get(EntityContentBlueprint.dataRefs.title)}
-            icon={output.get(EntityContentBlueprint.dataRefs.icon)}
-            if={buildFilterFn(
-              output.get(EntityContentBlueprint.dataRefs.filterFunction),
-              output.get(EntityContentBlueprint.dataRefs.filterExpression),
-            )}
-          >
-            {output.get(coreExtensionData.reactElement)}
-          </EntityLayout.Route>
-        ));
+        const routes = inputs.contents.map(output => ({
+          group: output.get(EntityContentBlueprint.dataRefs.group),
+          path: output.get(coreExtensionData.routePath),
+          title: output.get(EntityContentBlueprint.dataRefs.title),
+          icon: output.get(EntityContentBlueprint.dataRefs.icon),
+          if: buildFilterFn(
+            output.get(EntityContentBlueprint.dataRefs.filterFunction),
+            output.get(EntityContentBlueprint.dataRefs.filterExpression),
+          ),
+          children: output.get(coreExtensionData.reactElement),
+        }));
 
         const Component = () => {
           const routeParams = useRouteRefParams(entityRouteRef);
@@ -301,23 +298,21 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           const layout =
             HeaderComponent || !legacyHeader ? (
               <EntityLayoutBui
+                routes={routes}
                 HeaderComponent={HeaderComponent}
                 contextMenuItems={filteredMenuItems}
                 groupDefinitions={groupDefinitions}
                 defaultContentOrder={config.defaultContentOrder}
-              >
-                {routes}
-              </EntityLayoutBui>
+              />
             ) : (
-              <EntityLayout
+              <InternalEntityLayout
+                routes={routes}
                 header={legacyHeader}
                 contextMenuItems={filteredMenuItems}
                 groupDefinitions={groupDefinitions}
                 defaultContentOrder={config.defaultContentOrder}
                 showNavItemIcons={config.showNavItemIcons}
-              >
-                {routes}
-              </EntityLayout>
+              />
             );
 
           return (

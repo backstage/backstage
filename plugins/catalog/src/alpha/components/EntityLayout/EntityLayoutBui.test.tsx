@@ -30,7 +30,6 @@ import {
 } from '@backstage/plugin-catalog-react/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityLayoutBui } from './EntityLayoutBui';
-import { EntityLayoutRoute } from './entityLayoutRoutes';
 
 const componentEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -59,16 +58,25 @@ async function renderLayout(options: {
       error={options.error}
     >
       <EntityLayoutBui
+        routes={[
+          {
+            path: '/overview',
+            title: 'Overview',
+            children: <div>Overview content</div>,
+          },
+          {
+            path: '/hidden',
+            title: 'Hidden',
+            children: <div>Hidden content</div>,
+            if: () => false,
+          },
+        ]}
         groupDefinitions={defaultEntityContentGroupDefinitions}
         defaultContentOrder="title"
         contextMenuItems={[]}
         NotFoundComponent={options.NotFoundComponent}
         HeaderComponent={options.HeaderComponent}
-      >
-        <EntityLayoutRoute path="/overview" title="Overview">
-          <div>Overview content</div>
-        </EntityLayoutRoute>
-      </EntityLayoutBui>
+      />
     </AsyncEntityProvider>,
     {
       apis: [
