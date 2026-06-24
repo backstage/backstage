@@ -580,4 +580,89 @@ describe('TaskWorker', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    'next_run_start_at is populated when transitioning from manual trigger to cadence-based schedule, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(
+        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+      );
+
+      // First, register the task with manual trigger so next_run_start_at is NULL
+      const manualSettings: TaskSettingsV2 = {
+        version: 2,
+        cadence: 'manual',
+        timeoutAfterDuration: 'PT1M',
+      };
+
+      const worker = new TaskWorker('task99', fn, knex, logger);
+      await worker.persistTask(manualSettings);
+
+      const rowBeforeTransition = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+      expect(rowBeforeTransition.next_run_start_at).toBeNull();
+
+      // Now re-register the same task with a duration-based cadence
+      const cadenceSettings: TaskSettingsV2 = {
+        version: 2,
+        cadence: 'PT4H',
+        timeoutAfterDuration: 'PT1M',
+      };
+
+      await worker.persistTask(cadenceSettings);
+
+      const rowAfterTransition = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+      expect(rowAfterTransition.next_run_start_at).not.toBeNull();
+
+      // Verify the next_run_start_at is approximately 4 hours from now
+      const nextStartAt = DateTime.fromJSDate(
+        new Date(rowAfterTransition.next_run_start_at!),
+      );
+      const now = DateTime.now();
+      expect(nextStartAt.diff(now).as('hours')).toBeCloseTo(4, 0);
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'next_run_start_at is populated when transitioning from manual trigger to cron schedule, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(
+        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+      );
+
+      // First, register the task with manual trigger so next_run_start_at is NULL
+      const manualSettings: TaskSettingsV2 = {
+        version: 2,
+        cadence: 'manual',
+        timeoutAfterDuration: 'PT1M',
+      };
+
+      const worker = new TaskWorker('task99', fn, knex, logger);
+      await worker.persistTask(manualSettings);
+
+      const rowBeforeTransition = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+      expect(rowBeforeTransition.next_run_start_at).toBeNull();
+
+      // Now re-register the same task with a cron schedule
+      const cronSettings: TaskSettingsV2 = {
+        version: 2,
+        cadence: '*/15 * * * *',
+        timeoutAfterDuration: 'PT1M',
+      };
+
+      await worker.persistTask(cronSettings);
+
+      const rowAfterTransition = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+      expect(rowAfterTransition.next_run_start_at).not.toBeNull();
+
+      await knex.destroy();
+    },
+  );
 });
