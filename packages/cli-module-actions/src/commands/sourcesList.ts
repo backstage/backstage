@@ -18,6 +18,7 @@ import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { ActionsClient } from '../lib/ActionsClient';
 import { resolveAuth } from '../lib/resolveAuth';
+import { mergePluginSources } from '../lib/pluginSources';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
@@ -36,9 +37,17 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
-  const { accessToken, baseUrl } = await resolveAuth(instanceFlag);
+  const { accessToken, pluginSources, excludedPluginSources, baseUrl } =
+    await resolveAuth(instanceFlag);
+
   const client = new ActionsClient(baseUrl, accessToken);
-  const sources = await client.listSources();
+  const serverSources = await client.listSources();
+
+  const sources = mergePluginSources({
+    serverSources,
+    localAdditions: pluginSources,
+    localExclusions: excludedPluginSources,
+  });
 
   if (!sources.length) {
     process.stderr.write('No plugin sources configured.\n');

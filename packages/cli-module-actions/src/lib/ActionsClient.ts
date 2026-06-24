@@ -66,6 +66,7 @@ export class ActionsClient {
       this.baseUrl,
     ).toString();
     const response = await httpJson<{ sources: string[] }>(url, {
+      headers: { Authorization: `Bearer ${this.accessToken}` },
       signal: AbortSignal.timeout(30_000),
     });
     return response.sources;

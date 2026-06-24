@@ -27,6 +27,10 @@ jest.mock('@backstage/cli-node', () => {
 
 const mockCreate = CliAuth.create as jest.MockedFunction<typeof CliAuth.create>;
 
+function mockMetadata(data: Record<string, unknown>) {
+  return jest.fn().mockImplementation((key: string) => data[key]);
+}
+
 describe('resolveAuth', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -37,6 +41,9 @@ describe('resolveAuth', () => {
       getInstanceName: jest.fn().mockReturnValue('production'),
       getBaseUrl: jest.fn().mockReturnValue('https://backstage.example.com'),
       getAccessToken: jest.fn().mockResolvedValue('test-access-token'),
+      getMetadata: mockMetadata({
+        pluginSources: ['catalog', 'scaffolder'],
+      }),
     } as unknown as CliAuth);
 
     const result = await resolveAuth();
@@ -46,6 +53,8 @@ describe('resolveAuth', () => {
       baseUrl: 'https://backstage.example.com',
       instanceName: 'production',
       accessToken: 'test-access-token',
+      pluginSources: ['catalog', 'scaffolder'],
+      excludedPluginSources: [],
     });
   });
 
@@ -54,6 +63,7 @@ describe('resolveAuth', () => {
       getInstanceName: jest.fn().mockReturnValue('staging'),
       getBaseUrl: jest.fn().mockReturnValue('https://staging.example.com'),
       getAccessToken: jest.fn().mockResolvedValue('test-access-token'),
+      getMetadata: mockMetadata({}),
     } as unknown as CliAuth);
 
     await resolveAuth('staging');
@@ -70,10 +80,42 @@ describe('resolveAuth', () => {
         .mockRejectedValue(
           new Error('No access token found. Run "auth login" to authenticate.'),
         ),
+      getMetadata: mockMetadata({}),
     } as unknown as CliAuth);
 
     await expect(resolveAuth()).rejects.toThrow(
       'No access token found. Run "auth login" to authenticate.',
     );
+  });
+
+  it('returns empty plugin sources when none are configured', async () => {
+    mockCreate.mockResolvedValue({
+      getInstanceName: jest.fn().mockReturnValue('production'),
+      getBaseUrl: jest.fn().mockReturnValue('https://backstage.example.com'),
+      getAccessToken: jest.fn().mockResolvedValue('test-access-token'),
+      getMetadata: mockMetadata({}),
+    } as unknown as CliAuth);
+
+    const result = await resolveAuth();
+
+    expect(result.pluginSources).toEqual([]);
+    expect(result.excludedPluginSources).toEqual([]);
+  });
+
+  it('returns excluded plugin sources', async () => {
+    mockCreate.mockResolvedValue({
+      getInstanceName: jest.fn().mockReturnValue('production'),
+      getBaseUrl: jest.fn().mockReturnValue('https://backstage.example.com'),
+      getAccessToken: jest.fn().mockResolvedValue('test-access-token'),
+      getMetadata: mockMetadata({
+        pluginSources: ['auth'],
+        excludedPluginSources: ['catalog'],
+      }),
+    } as unknown as CliAuth);
+
+    const result = await resolveAuth();
+
+    expect(result.pluginSources).toEqual(['auth']);
+    expect(result.excludedPluginSources).toEqual(['catalog']);
   });
 });

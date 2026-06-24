@@ -44,6 +44,7 @@ describe('ActionsClient', () => {
       expect(mockHttpJson).toHaveBeenCalledWith(
         'https://backstage.example.com/.backstage/actions/v1/sources',
         expect.objectContaining({
+          headers: { Authorization: 'Bearer test-token' },
           signal: expect.any(AbortSignal),
         }),
       );

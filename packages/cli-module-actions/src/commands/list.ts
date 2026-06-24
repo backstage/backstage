@@ -19,6 +19,7 @@ import type { CliCommandContext } from '@backstage/cli-node';
 import { ActionsClient } from '../lib/ActionsClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import { formatActionList } from '../lib/format';
+import { mergePluginSources } from '../lib/pluginSources';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
@@ -37,19 +38,26 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
-  const { accessToken, baseUrl } = await resolveAuth(instanceFlag);
+  const { accessToken, pluginSources, excludedPluginSources, baseUrl } =
+    await resolveAuth(instanceFlag);
+
   const client = new ActionsClient(baseUrl, accessToken);
+  const serverSources = await client.listSources();
 
-  const pluginSources = await client.listSources();
+  const sources = mergePluginSources({
+    serverSources,
+    localAdditions: pluginSources,
+    localExclusions: excludedPluginSources,
+  });
 
-  if (!pluginSources.length) {
+  if (!sources.length) {
     process.stderr.write(
-      'No plugin sources configured. Set "backend.actions.pluginSources" in your app-config.\n',
+      'No plugin sources configured. Add sources with "actions sources add <plugin-id>" or set "backend.actions.pluginSources" in your app-config.\n',
     );
     return;
   }
 
-  const grouped = await client.list(pluginSources);
+  const grouped = await client.list(sources);
 
   const hasActions = grouped.some(g => g.actions.length > 0);
   if (!hasActions) {

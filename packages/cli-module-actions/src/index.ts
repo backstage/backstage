@@ -31,9 +31,19 @@ export default createCliModule({
       execute: { loader: () => import('./commands/execute') },
     });
     reg.addCommand({
+      path: ['actions', 'sources', 'add'],
+      description: 'Add a plugin source for action discovery',
+      execute: { loader: () => import('./commands/sourcesAdd') },
+    });
+    reg.addCommand({
       path: ['actions', 'sources', 'list'],
       description: 'List configured plugin sources',
       execute: { loader: () => import('./commands/sourcesList') },
+    });
+    reg.addCommand({
+      path: ['actions', 'sources', 'remove'],
+      description: 'Remove a plugin source',
+      execute: { loader: () => import('./commands/sourcesRemove') },
     });
   },
 });

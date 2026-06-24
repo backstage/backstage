@@ -401,6 +401,7 @@ describe('rootHttpRouterServiceFactory', () => {
 
     await request(app)
       .get('/.backstage/actions/v1/sources')
+      .set('Authorization', 'Bearer test-token')
       .expect(200, { sources: ['catalog', 'scaffolder'] });
   });
 
@@ -417,6 +418,21 @@ describe('rootHttpRouterServiceFactory', () => {
 
     await request(app)
       .get('/.backstage/actions/v1/sources')
+      .set('Authorization', 'Bearer test-token')
       .expect(200, { sources: [] });
+  });
+
+  it('should reject unauthenticated requests to actions sources endpoint', async () => {
+    const { app } = await createExpressApp(
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            listen: { port: 0 },
+          },
+        },
+      }),
+    );
+
+    await request(app).get('/.backstage/actions/v1/sources').expect(401);
   });
 });

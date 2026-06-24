@@ -28,7 +28,15 @@ export function createActionsSourcesRouter(options: {
 
   router.get(
     '/.backstage/actions/v1/sources',
-    async (_request: Request, response: Response) => {
+    async (request: Request, response: Response) => {
+      const authorization = request.headers.authorization;
+      if (!authorization || !authorization.startsWith('Bearer ')) {
+        response
+          .status(401)
+          .json({ error: 'Missing or invalid authorization header' });
+        return;
+      }
+
       const sources =
         options.config.getOptionalStringArray(
           'backend.actions.pluginSources',
