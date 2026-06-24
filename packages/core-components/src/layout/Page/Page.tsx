@@ -30,6 +30,12 @@ const useStyles = makeStyles(
       gridTemplateColumns: 'auto 1fr auto',
       overflowY: 'auto',
       height: '100vh',
+      // When nested inside a @backstage/ui Box/FullPage (<main class="bui-Box">),
+      // let the outer container own the scroll to avoid nested scrollbars.
+      'main.bui-Box &': {
+        overflowY: 'hidden',
+        height: '100%',
+      },
       [theme.breakpoints.down('xs')]: {
         height: '100%',
       },
