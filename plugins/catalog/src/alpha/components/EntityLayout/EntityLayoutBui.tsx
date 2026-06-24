@@ -40,7 +40,7 @@ import { catalogTranslationRef } from '../../translation';
 import { EntityHeaderBui } from '../EntityHeader/EntityHeaderBui';
 import { useEntityTabs } from '../EntityTabs/useEntityTabs';
 import {
-  EntityLayoutRouteData,
+  EntityLayoutRoute,
   filterEntityLayoutRoutes,
 } from './entityLayoutRoutes';
 
@@ -146,7 +146,7 @@ function EntityLayoutContent(props: {
 }
 
 export function EntityLayoutBui(props: {
-  routes: EntityLayoutRouteData[];
+  routes: EntityLayoutRoute[];
   NotFoundComponent?: ReactNode;
   groupDefinitions: EntityContentGroupDefinitions;
   defaultContentOrder: 'title' | 'natural';

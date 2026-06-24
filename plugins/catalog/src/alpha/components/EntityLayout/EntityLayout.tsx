@@ -38,20 +38,14 @@ import { EntityTabs } from '../EntityTabs';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 import {
   EntityLayoutRoute,
-  EntityLayoutRouteData,
   filterEntityLayoutRoutes,
-  useEntityLayoutRouteChildren,
 } from './entityLayoutRoutes';
 
-export type { EntityLayoutRouteProps } from './entityLayoutRoutes';
-
-/** @public */
-export interface EntityLayoutProps {
+interface EntityLayoutProps {
   UNSTABLE_extraContextMenuItems?: ComponentProps<
     typeof EntityHeader
   >['UNSTABLE_extraContextMenuItems'];
   contextMenuItems?: ComponentProps<typeof EntityHeader>['contextMenuItems'];
-  children?: ReactNode;
   header?: JSX.Element;
   NotFoundComponent?: ReactNode;
   /**
@@ -68,30 +62,10 @@ export interface EntityLayoutProps {
   groupDefinitions: EntityContentGroupDefinitions;
   defaultContentOrder?: 'title' | 'natural';
   showNavItemIcons?: boolean;
+  routes: EntityLayoutRoute[];
 }
 
-/**
- * EntityLayout is a compound component, which allows you to define a layout for
- * entities using a sub-navigation mechanism.
- *
- * Consists of two parts: EntityLayout and EntityLayout.Route
- *
- * @example
- * ```jsx
- * <EntityLayout>
- *   <EntityLayout.Route path="/example" title="Example tab">
- *     <div>This is rendered under /example/anything-here route</div>
- *   </EntityLayout.Route>
- * </EntityLayout>
- * ```
- *
- * @public
- */
-export function InternalEntityLayout(
-  props: Omit<EntityLayoutProps, 'children'> & {
-    routes: EntityLayoutRouteData[];
-  },
-) {
+export function EntityLayout(props: EntityLayoutProps) {
   const {
     UNSTABLE_extraContextMenuItems,
     contextMenuItems,
@@ -158,11 +132,3 @@ export function InternalEntityLayout(
     </Page>
   );
 }
-
-export const EntityLayout = (props: EntityLayoutProps) => {
-  const { children, ...layoutProps } = props;
-  const routes = useEntityLayoutRouteChildren(children);
-  return <InternalEntityLayout {...layoutProps} routes={routes} />;
-};
-
-EntityLayout.Route = EntityLayoutRoute;

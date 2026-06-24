@@ -209,11 +209,10 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       // `core-compat-api` package.
       routeRef: convertLegacyRouteRef(entityRouteRef), // READ THE ABOVE
       loader: async () => {
-        const [{ InternalEntityLayout }, { EntityLayoutBui }] =
-          await Promise.all([
-            import('./components/EntityLayout/EntityLayout'),
-            import('./components/EntityLayout/EntityLayoutBui'),
-          ]);
+        const [{ EntityLayout }, { EntityLayoutBui }] = await Promise.all([
+          import('./components/EntityLayout'),
+          import('./components/EntityLayout/EntityLayoutBui'),
+        ]);
 
         const menuItems = inputs.contextMenuItems.map(item => ({
           data: item.get(EntityContextMenuItemBlueprint.dataRefs.data),
@@ -305,7 +304,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
                 defaultContentOrder={config.defaultContentOrder}
               />
             ) : (
-              <InternalEntityLayout
+              <EntityLayout
                 routes={routes}
                 header={legacyHeader}
                 contextMenuItems={filteredMenuItems}
