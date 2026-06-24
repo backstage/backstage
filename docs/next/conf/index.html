@@ -32,7 +32,7 @@
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script>
 <script src="https://widget.kapa.ai/kapa-widget.bundle.js" data-website-id="4f3b7b51-4ea6-4a5b-aede-44fbe128c0f2" data-project-name="Backstage" data-project-color="#36baa2" data-project-logo="https://backstage.io/img/favicon.svg" data-launcher-button-image="https://backstage.io/img/favicon.svg" data-button-position-bottom="4rem" data-button-position-right="0.75rem" data-color-scheme-selector="[data-theme=&#39;dark&#39;]" data-example-questions="What is Backstage?,How do I get started?" async></script><link rel="stylesheet" href="/assets/css/styles.a3f04945.css">
-<script src="/assets/js/runtime~main.1dcaf4c5.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.b2becb3d.js" defer="defer"></script>
 <script src="/assets/js/main.b446cb20.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -49,15 +49,22 @@ allowing for customization.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="supplying-configuration">Supplying Configuration<a href="#supplying-configuration" class="hash-link" aria-label="Direct link to Supplying Configuration" title="Direct link to Supplying Configuration" translate="no">​</a></h2>
 <p>Configuration is stored in YAML files where the defaults are <code>app-config.yaml</code>
 and <code>app-config.local.yaml</code> for local overrides. Additionally, it is possible
-to define environment based configuration files with <code>BACKSTAGE_ENV</code>
-environment variable, which will load <code>app-config.&lt;BACKSTAGE_ENV&gt;.yaml</code>.</p>
-<p>Loading order of these files is as follows:</p>
+to define environment-based configuration files with the <code>BACKSTAGE_ENV</code>
+environment variable.</p>
+<p><code>BACKSTAGE_ENV</code> accepts either a single value or comma-separated values for
+stacking multiple environments. For example,
+<code>BACKSTAGE_ENV=e2e-test,production</code> loads:</p>
 <ol>
 <li class=""><code>app-config.yaml</code></li>
-<li class=""><code>app-config.&lt;BACKSTAGE_ENV&gt;.yaml</code></li>
+<li class=""><code>app-config.e2e-test.yaml</code></li>
+<li class=""><code>app-config.production.yaml</code></li>
 <li class=""><code>app-config.local.yaml</code></li>
-<li class=""><code>app-config.&lt;BACKSTAGE_ENV&gt;.local.yaml</code></li>
+<li class=""><code>app-config.e2e-test.local.yaml</code></li>
+<li class=""><code>app-config.production.local.yaml</code></li>
 </ol>
+<p>All non-local environment files are loaded before any local files, so local
+overrides always take priority. Within each group, environments are ordered
+left-to-right as specified. The base <code>app-config.yaml</code> is required by default, while the other files are optional and only loaded if they exist.</p>
 <p>Other sets of files can by loaded by passing <code>--config &lt;path&gt;</code> flags.
 Read more about the configuration loading order in the
 <a class="" href="/docs/next/conf/writing#configuration-files">Configuration Files</a> section.</p>
