@@ -32,7 +32,7 @@
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script>
 <script src="https://widget.kapa.ai/kapa-widget.bundle.js" data-website-id="4f3b7b51-4ea6-4a5b-aede-44fbe128c0f2" data-project-name="Backstage" data-project-color="#36baa2" data-project-logo="https://backstage.io/img/favicon.svg" data-launcher-button-image="https://backstage.io/img/favicon.svg" data-button-position-bottom="4rem" data-button-position-right="0.75rem" data-color-scheme-selector="[data-theme=&#39;dark&#39;]" data-example-questions="What is Backstage?,How do I get started?" async></script><link rel="stylesheet" href="/assets/css/styles.a3f04945.css">
-<script src="/assets/js/runtime~main.b2becb3d.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.5dd27ab2.js" defer="defer"></script>
 <script src="/assets/js/main.b446cb20.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -70,7 +70,7 @@
 <p>Generally, installing a backend plugin is really easy - you just add a</p>
 <div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token plain">backend.import(`@scope/package`)</span><br></span></code></pre></div></div>
 <p>to your <code>packages/backend/src/index.ts</code> file alongside the other entries. Saving the file will trigger a hot reload and just like that your new plugin is available and usable. For advanced cases, there may be required config for the plugin that you&#x27;ll have to set. That config will (or should) be documented by the plugin in their <code>README</code>.</p>
-<p>You may also need to add backend modules to provide the additional functionality in the plugin that you&#x27;re looking for. Backend modules are further extensions to backend code that can provide tailored functionality, good examples are catalog processor modules that add support for Github, LDAP and AWS software entities. Modules install the exact same way as backend plugins. Installing a module may also require additional configuration, which should also be documented in the plugin&#x27;s <code>README</code>.</p>
+<p>You may also need to add backend modules to provide the additional functionality in the plugin that you&#x27;re looking for. Backend modules are further extensions to backend code that can provide tailored functionality, good examples are catalog processor modules that add support for GitHub, LDAP and AWS software entities. Modules install the exact same way as backend plugins. Installing a module may also require additional configuration, which should also be documented in the plugin&#x27;s <code>README</code>.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="installing-a-frontend-plugin">Installing a Frontend Plugin<a href="#installing-a-frontend-plugin" class="hash-link" aria-label="Direct link to Installing a Frontend Plugin" title="Direct link to Installing a Frontend Plugin" translate="no">​</a></h3>
 <p>Frontend plugins have multiple entrypoints, you should follow the plugin&#x27;s documentation for how to install it.</p>
 <p>The New Frontend System vastly simplifies this! Keep your eyes peeled for updates.</p>
