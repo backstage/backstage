@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const GerritConnectionType = createConnectionType({
   type: 'gerrit',
+  title: 'Gerrit',
   configSchema: z.object({
     host: z.string(),
     baseUrl: z.string().optional(),

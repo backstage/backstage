@@ -5,30 +5,31 @@
 ### `backstage-cli-module-actions`
 
 ```
-Usage: @backstage/cli-module-actions [options] [command]
+Usage: @backstage/cli-module-actions [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  actions [command]
-  help [command]
+  actions
+  help
 ```
 
 ### `backstage-cli-module-actions actions`
 
 ```
-Usage: @backstage/cli-module-actions actions [options] [command] [command]
+Usage: @backstage/cli-module-actions actions [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   execute
-  help [command]
+  help
   list
-  sources [command]
+  sources
 ```
 
 ### `backstage-cli-module-actions actions execute`
@@ -54,14 +55,15 @@ Options:
 ### `backstage-cli-module-actions actions sources`
 
 ```
-Usage: @backstage/cli-module-actions actions sources [options] [command] [command]
+Usage: @backstage/cli-module-actions actions sources [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   add
-  help [command]
+  help
   list
   remove
 ```

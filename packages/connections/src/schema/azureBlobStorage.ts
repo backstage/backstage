@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const AzureBlobStorageConnectionType = createConnectionType({
   type: 'azure-blob-storage',
+  title: 'Azure Blob Storage',
   configSchema: z.object({
     host: z.string(),
     accountName: z.string().optional(),

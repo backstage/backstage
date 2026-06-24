@@ -75,7 +75,9 @@ export const SelectContentDefinition = defineComponent<SelectContentOwnProps>()(
   {
     styles,
     classNames: {
-      root: 'bui-SelectSearchWrapper',
+      root: 'bui-SelectContent',
+      searchWrapper: 'bui-SelectSearchWrapper',
+      results: 'bui-SelectResults',
       search: 'bui-SelectSearch',
       searchClear: 'bui-SelectSearchClear',
     },

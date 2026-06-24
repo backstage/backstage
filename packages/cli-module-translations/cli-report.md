@@ -5,28 +5,29 @@
 ### `backstage-cli-module-translations`
 
 ```
-Usage: @backstage/cli-module-translations [options] [command]
+Usage: @backstage/cli-module-translations [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  translations [command]
+  help
+  translations
 ```
 
 ### `backstage-cli-module-translations translations`
 
 ```
-Usage: @backstage/cli-module-translations translations [options] [command] [command]
+Usage: @backstage/cli-module-translations translations [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   export
-  help [command]
+  help
   import
 ```
 

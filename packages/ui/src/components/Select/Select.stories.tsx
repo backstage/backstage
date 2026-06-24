@@ -23,7 +23,8 @@ import { Text } from '../Text';
 import { Form } from 'react-aria-components';
 import { RiCheckLine, RiCloudLine } from '@remixicon/react';
 import { useAsyncList } from '@backstage/ui';
-import type { ReactNode } from 'react';
+import { useState } from 'react';
+import { expect, screen, waitFor } from 'storybook/test';
 
 const meta = preview.meta({
   title: 'Backstage UI/Select',
@@ -261,30 +262,57 @@ const serverOptions = serverOwners.map(owner => ({
   label: owner.name,
 }));
 
+const paginatedServerOptions = Array.from({ length: 200 }, (_, index) => ({
+  id: `owner-${index + 1}`,
+  label: `Owner ${String(index + 1).padStart(3, '0')}`,
+}));
+
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const serverDelay = 1_500;
 const serverPageSize = 5;
+const paginationServerDelay = 100;
+const paginationServerPageSize = 10;
 
-function ConstrainedSelectList({ children }: { children: ReactNode }) {
-  return (
-    <>
-      <style>{`.bui-SelectList { max-height: 9rem; }`}</style>
-      {children}
-    </>
-  );
+function readCount(element: HTMLElement) {
+  return Number(element.textContent);
 }
 
-function ServerBackedSelect() {
+async function waitForRequestCountToStabilize(element: HTMLElement) {
+  let previousCount = readCount(element);
+  let stableChecks = 0;
+
+  for (let index = 0; index < 20; index++) {
+    await wait(250);
+    const currentCount = readCount(element);
+
+    if (currentCount === previousCount) {
+      stableChecks += 1;
+      if (stableChecks === 3) {
+        return currentCount;
+      }
+    } else {
+      previousCount = currentCount;
+      stableChecks = 0;
+    }
+  }
+
+  throw new Error('Request count did not stabilize');
+}
+
+function ServerBackedSelect({ searchable }: { searchable: boolean }) {
+  const label = searchable ? 'Searchable Select' : 'Select';
+  const [requestCount, setRequestCount] = useState(0);
   const list = useAsyncList({
     async load({ cursor, filterText }) {
-      await wait(serverDelay);
+      setRequestCount(count => count + 1);
+      await wait(paginationServerDelay);
 
       const query = filterText.toLocaleLowerCase();
-      const filteredOptions = serverOptions.filter(option =>
+      const filteredOptions = paginatedServerOptions.filter(option =>
         option.label.toLocaleLowerCase().includes(query),
       );
       const startIndex = cursor ? Number(cursor) : 0;
-      const endIndex = startIndex + serverPageSize;
+      const endIndex = startIndex + paginationServerPageSize;
 
       return {
         items: filteredOptions.slice(startIndex, endIndex),
@@ -295,20 +323,161 @@ function ServerBackedSelect() {
   });
 
   return (
-    <ConstrainedSelectList>
-      <Select
-        label="Owner"
-        placeholder="Select an owner"
-        options={list}
-        search={{ mode: 'server', placeholder: 'Search owners...' }}
-        style={{ width: 300 }}
-      />
-    </ConstrainedSelectList>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+      }}
+    >
+      <div>
+        <div>
+          Requests:{' '}
+          <output aria-label={`${label} request count`}>{requestCount}</output>
+        </div>
+        <div>
+          Results:{' '}
+          <output aria-label={`${label} result count`}>
+            {list.items.length}
+          </output>
+        </div>
+        <Select
+          label="Owner"
+          placeholder="Select an owner"
+          options={list}
+          search={
+            searchable
+              ? { mode: 'server', placeholder: 'Search owners...' }
+              : undefined
+          }
+          style={{ width: 300 }}
+        />
+      </div>
+    </div>
   );
 }
 
+export const ServerBackedNonSearchableOptions = meta.story({
+  render: () => <ServerBackedSelect searchable={false} />,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  play: async ({ canvas, userEvent }) => {
+    const requestCount = canvas.getByLabelText('Select request count');
+    const resultCount = canvas.getByLabelText('Select result count');
+
+    await waitFor(() =>
+      expect(readCount(resultCount)).toBe(paginationServerPageSize),
+    );
+    await userEvent.click(canvas.getByRole('button'));
+
+    const listbox = await screen.findByRole('listbox');
+    const scrollElement = listbox.closest('.bui-SelectResults');
+
+    expect(scrollElement).toBeTruthy();
+    expect(window.getComputedStyle(listbox).maxHeight).toBe('none');
+
+    await waitFor(
+      () =>
+        expect(scrollElement!.scrollHeight).toBeGreaterThan(
+          scrollElement!.clientHeight,
+        ),
+      { timeout: 5_000 },
+    );
+
+    const stabilizedRequestCount = await waitForRequestCountToStabilize(
+      requestCount,
+    );
+
+    expect(stabilizedRequestCount).toBeLessThan(
+      paginatedServerOptions.length / paginationServerPageSize,
+    );
+    expect(readCount(resultCount)).toBeLessThan(paginatedServerOptions.length);
+
+    listbox.focus();
+    await userEvent.keyboard('{End}');
+    const bottomScrollTop =
+      scrollElement!.scrollHeight - scrollElement!.clientHeight;
+    scrollElement!.scrollTop = bottomScrollTop;
+    await waitFor(() =>
+      expect(scrollElement!.scrollTop).toBeGreaterThanOrEqual(
+        bottomScrollTop - 1,
+      ),
+    );
+
+    await waitFor(
+      () =>
+        expect(readCount(requestCount)).toBeGreaterThan(stabilizedRequestCount),
+      { timeout: 5_000 },
+    );
+  },
+});
+
 export const ServerBackedOptions = meta.story({
-  render: () => <ServerBackedSelect />,
+  render: () => <ServerBackedSelect searchable />,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  play: async ({ canvas, userEvent }) => {
+    const requestCount = canvas.getByLabelText(
+      'Searchable Select request count',
+    );
+    const resultCount = canvas.getByLabelText('Searchable Select result count');
+
+    await waitFor(() =>
+      expect(readCount(resultCount)).toBe(paginationServerPageSize),
+    );
+    await userEvent.click(canvas.getByRole('button'));
+
+    const listbox = await screen.findByRole('listbox');
+    const searchbox = await screen.findByRole('searchbox');
+    const scrollElement = listbox.closest('.bui-SelectResults');
+
+    expect(scrollElement).toBeTruthy();
+    expect(scrollElement).not.toContainElement(searchbox);
+    expect(window.getComputedStyle(listbox).maxHeight).toBe('none');
+
+    await waitFor(
+      () =>
+        expect(scrollElement!.scrollHeight).toBeGreaterThan(
+          scrollElement!.clientHeight,
+        ),
+      { timeout: 5_000 },
+    );
+
+    const stabilizedRequestCount = await waitForRequestCountToStabilize(
+      requestCount,
+    );
+
+    expect(stabilizedRequestCount).toBeLessThan(
+      paginatedServerOptions.length / paginationServerPageSize,
+    );
+    expect(readCount(resultCount)).toBeLessThan(paginatedServerOptions.length);
+
+    const searchboxTop = searchbox.getBoundingClientRect().top;
+    listbox.focus();
+    await userEvent.keyboard('{End}');
+    const bottomScrollTop =
+      scrollElement!.scrollHeight - scrollElement!.clientHeight;
+    scrollElement!.scrollTop = bottomScrollTop;
+    await waitFor(() =>
+      expect(scrollElement!.scrollTop).toBeGreaterThanOrEqual(
+        bottomScrollTop - 1,
+      ),
+    );
+
+    await waitFor(
+      () =>
+        expect(readCount(requestCount)).toBeGreaterThan(stabilizedRequestCount),
+      { timeout: 5_000 },
+    );
+    await waitFor(() =>
+      expect(
+        Math.abs(searchbox.getBoundingClientRect().top - searchboxTop),
+      ).toBeLessThan(1),
+    );
+    expect(searchbox).toBeVisible();
+  },
 });
 
 function ServerBackedCustomSelect() {
@@ -331,26 +500,24 @@ function ServerBackedCustomSelect() {
   });
 
   return (
-    <ConstrainedSelectList>
-      <Select
-        label="Owner"
-        placeholder="Select an owner"
-        items={list}
-        search={{ mode: 'server', placeholder: 'Search names and roles...' }}
-        style={{ width: 300 }}
-      >
-        {owner => (
-          <SelectItem textValue={owner.name}>
-            <Text as="div" weight="bold">
-              {owner.name}
-            </Text>
-            <Text as="div" variant="body-small" color="secondary">
-              {owner.role}
-            </Text>
-          </SelectItem>
-        )}
-      </Select>
-    </ConstrainedSelectList>
+    <Select
+      label="Owner"
+      placeholder="Select an owner"
+      items={list}
+      search={{ mode: 'server', placeholder: 'Search names and roles...' }}
+      style={{ width: 300 }}
+    >
+      {owner => (
+        <SelectItem textValue={owner.name}>
+          <Text as="div" weight="bold">
+            {owner.name}
+          </Text>
+          <Text as="div" variant="body-small" color="secondary">
+            {owner.role}
+          </Text>
+        </SelectItem>
+      )}
+    </Select>
   );
 }
 

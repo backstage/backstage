@@ -40,10 +40,6 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
     jest.resetAllMocks();
   });
 
-  afterEach(async () => {
-    await knex?.destroy();
-  });
-
   it('goes through the expected states', async () => {
     const fn = jest.fn(
       async () => new Promise<void>(resolve => setTimeout(resolve, 50)),

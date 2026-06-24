@@ -5,15 +5,15 @@
 ### `backstage-cli-module-migrate`
 
 ```
-Usage: @backstage/cli-module-migrate [options] [command]
+Usage: @backstage/cli-module-migrate [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  migrate [command]
+  help
+  migrate
   versions:bump
   versions:migrate
 ```
@@ -21,13 +21,14 @@ Commands:
 ### `backstage-cli-module-migrate migrate`
 
 ```
-Usage: @backstage/cli-module-migrate migrate [options] [command] [command]
+Usage: @backstage/cli-module-migrate migrate [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   package-exports
   package-lint-configs
   package-roles

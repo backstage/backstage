@@ -53,6 +53,7 @@ export * from './components/Tabs';
 export * from './components/TagGroup';
 export * from './components/Text';
 export * from './components/TextField';
+export * from './components/TextAreaField';
 export * from './components/NumberField';
 export * from './components/PasswordField';
 export * from './components/Tooltip';
@@ -71,6 +72,9 @@ export * from './components/VisuallyHidden';
 
 // Types
 export * from './types';
+
+// Re-exported react-aria-components APIs
+export * from './react-aria-components';
 
 // Hooks
 export { useBreakpoint } from './hooks/useBreakpoint';

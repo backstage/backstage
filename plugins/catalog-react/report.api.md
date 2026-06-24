@@ -6,6 +6,7 @@
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api';
 import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
+import { AutocompleteRenderOptionState } from '@material-ui/lab/Autocomplete';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
@@ -346,6 +347,11 @@ export type EntityAutocompletePickerProps<
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
   hidden?: boolean;
+  getOptionLabel?: (option: string) => string;
+  renderOption?: (
+    option: string,
+    state: AutocompleteRenderOptionState,
+  ) => ReactNode;
 };
 
 // @public

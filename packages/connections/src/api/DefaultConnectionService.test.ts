@@ -550,6 +550,116 @@ describe('DefaultConnectionsService', () => {
     });
   });
 
+  describe('title', () => {
+    it('uses the configured title when provided', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            title: 'GitHub Production',
+            auth: [{ method: 'token', token: 'my-token' }],
+          },
+        ]),
+      });
+
+      const connection = await service.forPlugin('catalog').find({
+        type: 'github',
+        url: 'https://github.com/my-org/my-repo',
+        authMethods: ['token'],
+      });
+
+      expect(connection?.title).toBe('GitHub Production');
+    });
+
+    it('defaults to the provider display name for a single connection of that type', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [{ method: 'token', token: 'my-token' }],
+          },
+        ]),
+      });
+
+      const connection = await service.forPlugin('catalog').find({
+        type: 'github',
+        url: 'https://github.com/my-org/my-repo',
+        authMethods: ['token'],
+      });
+
+      expect(connection?.title).toBe('GitHub');
+    });
+
+    it('includes the host when multiple connections share a type', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [{ method: 'token', token: 'public-token' }],
+          },
+          {
+            type: 'github',
+            host: 'ghe.acme.com',
+            auth: [{ method: 'token', token: 'enterprise-token' }],
+          },
+        ]),
+      });
+
+      const pub = await service.forPlugin('catalog').find({
+        type: 'github',
+        url: 'https://github.com/my-org/my-repo',
+        authMethods: ['token'],
+      });
+      const ent = await service.forPlugin('catalog').find({
+        type: 'github',
+        url: 'https://ghe.acme.com/my-org/my-repo',
+        authMethods: ['token'],
+      });
+
+      expect(pub?.title).toBe('GitHub (github.com)');
+      expect(ent?.title).toBe('GitHub (ghe.acme.com)');
+    });
+
+    it('does not override a configured title even when multiple connections share a type', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            title: 'Public GitHub',
+            auth: [{ method: 'token', token: 'public-token' }],
+          },
+          {
+            type: 'github',
+            host: 'ghe.acme.com',
+            auth: [{ method: 'token', token: 'enterprise-token' }],
+          },
+        ]),
+      });
+
+      const pub = await service.forPlugin('catalog').find({
+        type: 'github',
+        url: 'https://github.com/my-org/my-repo',
+        authMethods: ['token'],
+      });
+      const ent = await service.forPlugin('catalog').find({
+        type: 'github',
+        url: 'https://ghe.acme.com/my-org/my-repo',
+        authMethods: ['token'],
+      });
+
+      expect(pub?.title).toBe('Public GitHub');
+      expect(ent?.title).toBe('GitHub (ghe.acme.com)');
+    });
+  });
+
   describe('config validation', () => {
     it('throws with the failing field when a connection is missing a required value', () => {
       expect(() =>

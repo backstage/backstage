@@ -15,7 +15,7 @@
  */
 
 import { cli } from 'cleye';
-import { JSONSchema7 as JSONSchema } from 'json-schema';
+import type { JSONSchema7 as JSONSchema } from 'json-schema';
 import { stringify as stringifyYaml } from 'yaml';
 import { loadCliConfig } from '../lib/config';
 import { JsonObject } from '@backstage/types';

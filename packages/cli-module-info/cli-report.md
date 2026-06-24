@@ -5,14 +5,14 @@
 ### `backstage-cli-module-info`
 
 ```
-Usage: @backstage/cli-module-info [options] [command]
+Usage: @backstage/cli-module-info [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   info
 ```
 

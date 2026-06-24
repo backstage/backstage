@@ -216,7 +216,9 @@ export const RepoUrlPicker = (
           accessToken={accessToken}
         />
       )}
-      {hostType === 'bitbucket' && (
+      {(hostType === 'bitbucket' ||
+        hostType === 'bitbucketCloud' ||
+        hostType === 'bitbucketServer') && (
         <BitbucketRepoPicker
           allowedOwners={allowedOwners}
           allowedProjects={allowedProjects}

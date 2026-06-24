@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.2.1
+
+### Patch Changes
+
+- 02c4e8a: Removed unused `json-schema` runtime dependency. The package was only used for TypeScript types from `@types/json-schema`; affected imports have been converted to `import type` to allow safe removal.
+- Updated dependencies
+  - @backstage/integration@2.0.3
+
 ## 2.2.1-next.0
 
 ### Patch Changes

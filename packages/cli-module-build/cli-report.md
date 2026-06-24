@@ -5,7 +5,7 @@
 ### `backstage-cli-module-build`
 
 ```
-Usage: @backstage/cli-module-build [options] [command]
+Usage: @backstage/cli-module-build [flags...]
 
 Options:
   -V, --version
@@ -13,9 +13,9 @@ Options:
 
 Commands:
   build-workspace
-  help [command]
-  package [command]
-  repo [command]
+  help
+  package
+  repo
 ```
 
 ### `backstage-cli-module-build build-workspace`
@@ -31,15 +31,16 @@ Options:
 ### `backstage-cli-module-build package`
 
 ```
-Usage: @backstage/cli-module-build package [options] [command] [command]
+Usage: @backstage/cli-module-build package [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   build
   clean
-  help [command]
+  help
   postpack
   prepack
   start
@@ -107,15 +108,16 @@ Options:
 ### `backstage-cli-module-build repo`
 
 ```
-Usage: @backstage/cli-module-build repo [options] [command] [command]
+Usage: @backstage/cli-module-build repo [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   build
   clean
-  help [command]
+  help
   start
 ```
 

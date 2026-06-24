@@ -17,13 +17,15 @@
 import fs from 'fs-extra';
 import npmPackList from 'npm-packlist';
 import { resolve as resolvePath, posix as posixPath } from 'node:path';
-import { BackstagePackageJson } from '@backstage/cli-node';
+import { BackstagePackageJson, PackageGraphNode } from '@backstage/cli-node';
+import { loadConfigSchema } from '@backstage/config-loader';
 import { readEntryPoints } from '../entryPoints';
 import { getEntryPointDefaultFeatureType } from '../typeDistProject';
 import { Project } from 'ts-morph';
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
+const GENERATED_CONFIG_SCHEMA_PATH = 'config.schema.json';
 
 const SKIPPED_KEYS = ['access', 'registry', 'tag'];
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
@@ -31,10 +33,64 @@ const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 interface ProductionPackOptions {
   packageDir: string;
   targetDir?: string;
+  configSchema?: ConfigSchemaValue;
   /**
    * Enables package feature detection using this TS-morph project.
    */
   featureDetectionProject?: Project;
+}
+
+type ConfigSchemaValue = Record<string, unknown>;
+
+type PackageJsonWithConfigSchema = BackstagePackageJson & {
+  configSchema?: string | ConfigSchemaValue;
+};
+
+function getTypeScriptConfigSchemaPath(pkg: BackstagePackageJson) {
+  const configSchema = (pkg as PackageJsonWithConfigSchema).configSchema;
+  return typeof configSchema === 'string' && configSchema.endsWith('.d.ts')
+    ? configSchema
+    : undefined;
+}
+
+export async function compilePackageConfigSchemas(
+  packages: Pick<PackageGraphNode, 'name' | 'dir' | 'packageJson'>[],
+) {
+  const schemaPackages = packages.flatMap(pkg => {
+    const schemaPath = getTypeScriptConfigSchemaPath(pkg.packageJson);
+    return schemaPath ? [{ ...pkg, schemaPath }] : [];
+  });
+  if (schemaPackages.length === 0) {
+    return new Map<string, ConfigSchemaValue>();
+  }
+
+  const schema = await loadConfigSchema({
+    dependencies: [],
+    packagePaths: schemaPackages.map(pkg =>
+      resolvePath(pkg.dir, 'package.json'),
+    ),
+    excludePackageDependencies: true,
+  });
+  const serialized = schema.serialize() as {
+    schemas: Array<{
+      packageName: string;
+      path: string;
+      value: ConfigSchemaValue;
+    }>;
+  };
+  const expectedPaths = new Map(
+    schemaPackages.map(pkg => [pkg.name, resolvePath(pkg.dir, pkg.schemaPath)]),
+  );
+  const result = new Map<string, ConfigSchemaValue>();
+  for (const entry of serialized.schemas) {
+    if (
+      expectedPaths.get(entry.packageName) ===
+      resolvePath(process.cwd(), entry.path)
+    ) {
+      result.set(entry.packageName, entry.value);
+    }
+  }
+  return result;
 }
 
 export async function productionPack(options: ProductionPackOptions) {
@@ -68,6 +124,32 @@ export async function productionPack(options: ProductionPackOptions) {
     delete pkg.optionalDependencies;
   }
 
+  const sourceConfigSchemaPath = getTypeScriptConfigSchemaPath(pkg);
+  let generatedConfigSchema: ConfigSchemaValue | undefined;
+  if (sourceConfigSchemaPath) {
+    generatedConfigSchema =
+      options.configSchema ??
+      (
+        await compilePackageConfigSchemas([
+          { name: pkg.name, dir: packageDir, packageJson: pkg },
+        ])
+      ).get(pkg.name);
+    if (!generatedConfigSchema) {
+      throw new Error(`Failed to compile configuration schema for ${pkg.name}`);
+    }
+
+    (pkg as PackageJsonWithConfigSchema).configSchema =
+      GENERATED_CONFIG_SCHEMA_PATH;
+    if (pkg.files) {
+      pkg.files = pkg.files.map(path =>
+        path === sourceConfigSchemaPath ? GENERATED_CONFIG_SCHEMA_PATH : path,
+      );
+      if (!pkg.files.includes(GENERATED_CONFIG_SCHEMA_PATH)) {
+        pkg.files.push(GENERATED_CONFIG_SCHEMA_PATH);
+      }
+    }
+  }
+
   if (targetDir) {
     // Lists all dist files, respecting .npmignore, files field in package.json, etc.
     const filePaths = await npmPackList({
@@ -80,6 +162,9 @@ export async function productionPack(options: ProductionPackOptions) {
 
     await fs.ensureDir(targetDir);
     for (const filePath of filePaths.sort()) {
+      if (filePath === sourceConfigSchemaPath) {
+        continue;
+      }
       const target = resolvePath(targetDir, filePath);
       if (filePath === PKG_PATH) {
         await fs.writeJson(target, pkg, { encoding: 'utf8', spaces: 2 });
@@ -87,7 +172,21 @@ export async function productionPack(options: ProductionPackOptions) {
         await fs.copy(resolvePath(packageDir, filePath), target);
       }
     }
+    if (generatedConfigSchema) {
+      await fs.writeJson(
+        resolvePath(targetDir, GENERATED_CONFIG_SCHEMA_PATH),
+        generatedConfigSchema,
+        { encoding: 'utf8', spaces: 2 },
+      );
+    }
   } else {
+    if (generatedConfigSchema) {
+      await fs.writeJson(
+        resolvePath(packageDir, GENERATED_CONFIG_SCHEMA_PATH),
+        generatedConfigSchema,
+        { encoding: 'utf8', spaces: 2 },
+      );
+    }
     await fs.writeJson(pkgPath, pkg, { encoding: 'utf8', spaces: 2 });
   }
 }
@@ -100,6 +199,10 @@ export async function revertProductionPack(packageDir: string) {
 
     // Check if we're shipping types for other release stages, clean up in that case
     const pkg = await fs.readJson(PKG_PATH);
+
+    if (getTypeScriptConfigSchemaPath(pkg)) {
+      await fs.remove(resolvePath(packageDir, GENERATED_CONFIG_SCHEMA_PATH));
+    }
 
     // Remove any extra entrypoint backwards compatibility directories
     const entryPoints = readEntryPoints(pkg);

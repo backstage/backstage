@@ -47,10 +47,6 @@ describe.each(databases.eachSupportedId())(
   databaseId => {
     let knex: Knex;
 
-    afterEach(async () => {
-      await knex.destroy();
-    });
-
     async function createDatabase() {
       knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);

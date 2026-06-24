@@ -5,14 +5,14 @@
 ### `backstage-cli-module-new`
 
 ```
-Usage: @backstage/cli-module-new [options] [command]
+Usage: @backstage/cli-module-new [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   new
 ```
 

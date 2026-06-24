@@ -5,28 +5,29 @@
 ### `backstage-cli-module-test-jest`
 
 ```
-Usage: @backstage/cli-module-test-jest [options] [command]
+Usage: @backstage/cli-module-test-jest [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  package [command]
-  repo [command]
+  help
+  package
+  repo
 ```
 
 ### `backstage-cli-module-test-jest package`
 
 ```
-Usage: @backstage/cli-module-test-jest package [options] [command] [command]
+Usage: @backstage/cli-module-test-jest package [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   test
 ```
 
@@ -146,13 +147,14 @@ Options:
 ### `backstage-cli-module-test-jest repo`
 
 ```
-Usage: @backstage/cli-module-test-jest repo [options] [command] [command]
+Usage: @backstage/cli-module-test-jest repo [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   test
 ```
 

@@ -5,27 +5,28 @@
 ### `backstage-cli-module-auth`
 
 ```
-Usage: @backstage/cli-module-auth [options] [command]
+Usage: @backstage/cli-module-auth [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  auth [command]
-  help [command]
+  auth
+  help
 ```
 
 ### `backstage-cli-module-auth auth`
 
 ```
-Usage: @backstage/cli-module-auth auth [options] [command] [command]
+Usage: @backstage/cli-module-auth auth [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   list
   login
   logout

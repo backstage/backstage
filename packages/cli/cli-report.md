@@ -5,29 +5,29 @@
 ### `backstage-cli`
 
 ```
-Usage: backstage-cli [options] [command]
+Usage: backstage-cli [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  actions [command]
-  auth [command]
+  actions
+  auth
   build-workspace
-  config [command]
+  config
   config:check
   config:docs
   config:print
   config:schema
   create-github-app
-  help [command]
+  help
   info
-  migrate [command]
+  migrate
   new
-  package [command]
-  repo [command]
-  translations [command]
+  package
+  repo
+  translations
   versions:bump
   versions:migrate
 ```
@@ -35,16 +35,17 @@ Commands:
 ### `backstage-cli actions`
 
 ```
-Usage: backstage-cli actions [options] [command] [command]
+Usage: backstage-cli actions [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   execute
-  help [command]
+  help
   list
-  sources [command]
+  sources
 ```
 
 ### `backstage-cli actions execute`
@@ -70,14 +71,15 @@ Options:
 ### `backstage-cli actions sources`
 
 ```
-Usage: backstage-cli actions sources [options] [command] [command]
+Usage: backstage-cli actions sources [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   add
-  help [command]
+  help
   list
   remove
 ```
@@ -112,13 +114,14 @@ Options:
 ### `backstage-cli auth`
 
 ```
-Usage: backstage-cli auth [options] [command] [command]
+Usage: backstage-cli auth [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   list
   login
   logout
@@ -201,14 +204,15 @@ Options:
 ### `backstage-cli config`
 
 ```
-Usage: backstage-cli config [options] [command] [command]
+Usage: backstage-cli config [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   docs
-  help [command]
+  help
   schema
 ```
 
@@ -309,13 +313,14 @@ Options:
 ### `backstage-cli migrate`
 
 ```
-Usage: backstage-cli migrate [options] [command] [command]
+Usage: backstage-cli migrate [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   package-exports
   package-lint-configs
   package-roles
@@ -388,15 +393,16 @@ Options:
 ### `backstage-cli package`
 
 ```
-Usage: backstage-cli package [options] [command] [command]
+Usage: backstage-cli package [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   build
   clean
-  help [command]
+  help
   lint
   postpack
   prepack
@@ -592,16 +598,17 @@ Options:
 ### `backstage-cli repo`
 
 ```
-Usage: backstage-cli repo [options] [command] [command]
+Usage: backstage-cli repo [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   build
   clean
   fix
-  help [command]
+  help
   lint
   list-deprecations
   start
@@ -697,14 +704,15 @@ Options:
 ### `backstage-cli translations`
 
 ```
-Usage: backstage-cli translations [options] [command] [command]
+Usage: backstage-cli translations [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   export
-  help [command]
+  help
   import
 ```
 

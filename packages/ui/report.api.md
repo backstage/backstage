@@ -24,13 +24,14 @@ import type { DisclosureGroupProps } from 'react-aria-components';
 import type { DisclosurePanelProps } from 'react-aria-components';
 import type { DisclosureProps } from 'react-aria-components';
 import type { ElementType } from 'react';
+import { Focusable } from 'react-aria-components';
 import { ForwardRefExoticComponent } from 'react';
 import type { GridListItemProps } from 'react-aria-components';
 import type { GridListProps } from 'react-aria-components';
 import type { HeadingProps } from 'react-aria-components';
 import type { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
-import type { Key } from 'react-aria-components';
+import { Key } from 'react-aria-components';
 import type { LinkProps as LinkProps_2 } from 'react-aria-components';
 import type { ListBoxItemProps } from 'react-aria-components';
 import type { ListBoxItemRenderProps } from 'react-aria-components';
@@ -49,10 +50,12 @@ import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import { RowProps as RowProps_2 } from 'react-aria-components';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
+import { Selection as Selection_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SeparatorProps } from 'react-aria-components';
 import type { SliderProps as SliderProps_2 } from 'react-aria-components';
 import type { SortDescriptor as SortDescriptor_2 } from 'react-stately';
+import { SortDirection } from 'react-aria-components';
 import type { SubmenuTriggerProps as SubmenuTriggerProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { TableBodyProps as TableBodyProps_2 } from 'react-aria-components';
@@ -2060,6 +2063,8 @@ export interface FlexProps
 // @public (undocumented)
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
 
+export { Focusable };
+
 // @public
 export const FullPage: ForwardRefExoticComponent<
   FullPageProps & RefAttributes<HTMLElement>
@@ -2484,6 +2489,8 @@ export type JustifyContent =
   | 'end'
   | 'around'
   | 'between';
+
+export { Key };
 
 // @public (undocumented)
 export type LegacyOption = {
@@ -3007,6 +3014,14 @@ export interface PasswordFieldProps
 export const PluginHeader: (props: PluginHeaderProps) => JSX_2.Element;
 
 // @public
+export interface PluginHeaderBreadcrumbEntry {
+  // (undocumented)
+  href: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
 export const PluginHeaderDefinition: {
   readonly styles: {
     readonly [key: string]: string;
@@ -3018,12 +3033,15 @@ export const PluginHeaderDefinition: {
     readonly toolbarControls: 'bui-PluginHeaderToolbarControls';
     readonly toolbarIcon: 'bui-PluginHeaderToolbarIcon';
     readonly toolbarName: 'bui-PluginHeaderToolbarName';
+    readonly breadcrumbs: 'bui-PluginHeaderBreadcrumbs';
+    readonly breadcrumbsEllipsis: 'bui-PluginHeaderBreadcrumbsEllipsis';
     readonly tabs: 'bui-PluginHeaderTabsWrapper';
   };
   readonly propDefs: {
     readonly icon: {};
     readonly title: {};
     readonly titleLink: {};
+    readonly breadcrumbs: {};
     readonly customActions: {};
     readonly tabs: {};
     readonly onTabSelectionChange: {};
@@ -3033,6 +3051,8 @@ export const PluginHeaderDefinition: {
 
 // @public
 export interface PluginHeaderOwnProps {
+  // (undocumented)
+  breadcrumbs?: PluginHeaderBreadcrumbEntry[];
   // (undocumented)
   className?: string;
   // (undocumented)
@@ -3456,7 +3476,9 @@ export const SelectContentDefinition: {
     readonly [key: string]: string;
   };
   readonly classNames: {
-    readonly root: 'bui-SelectSearchWrapper';
+    readonly root: 'bui-SelectContent';
+    readonly searchWrapper: 'bui-SelectSearchWrapper';
+    readonly results: 'bui-SelectResults';
     readonly search: 'bui-SelectSearch';
     readonly searchClear: 'bui-SelectSearchClear';
   };
@@ -3503,6 +3525,8 @@ export const SelectDefinition: {
     readonly className: {};
   };
 };
+
+export { Selection_2 as Selection };
 
 // @public
 export function SelectItem<T extends object = object>(
@@ -3840,6 +3864,7 @@ export const SkeletonDefinition: {
   readonly classNames: {
     readonly root: 'bui-Skeleton';
   };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly width: {
       readonly default: 80;
@@ -3922,6 +3947,8 @@ export interface SliderProps<T extends number | number[]>
 
 // @public (undocumented)
 export type SortDescriptor = SortDescriptor_2;
+
+export { SortDirection };
 
 // @public (undocumented)
 export interface SortState {
@@ -4319,6 +4346,53 @@ const Text_2: {
   displayName: string;
 };
 export { Text_2 as Text };
+
+// @public
+export const TextAreaField: ForwardRefExoticComponent<
+  TextAreaFieldProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const TextAreaFieldDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-TextAreaField';
+    readonly textArea: 'bui-TextArea';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly placeholder: {};
+    readonly rows: {
+      readonly default: 3;
+    };
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
+  };
+};
+
+// @public (undocumented)
+export type TextAreaFieldOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  className?: string;
+  placeholder?: string;
+  rows?: number;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+};
+
+// @public (undocumented)
+export interface TextAreaFieldProps
+  extends Omit<TextFieldProps_2, 'className' | 'description'>,
+    TextAreaFieldOwnProps {}
 
 // @public (undocumented)
 export type TextColors = 'primary' | 'secondary';

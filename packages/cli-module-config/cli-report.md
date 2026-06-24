@@ -5,32 +5,33 @@
 ### `backstage-cli-module-config`
 
 ```
-Usage: @backstage/cli-module-config [options] [command]
+Usage: @backstage/cli-module-config [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  config [command]
+  config
   config:check
   config:docs
   config:print
   config:schema
-  help [command]
+  help
 ```
 
 ### `backstage-cli-module-config config`
 
 ```
-Usage: @backstage/cli-module-config config [options] [command] [command]
+Usage: @backstage/cli-module-config config [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   docs
-  help [command]
+  help
   schema
 ```
 

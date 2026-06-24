@@ -1,5 +1,17 @@
 # @backstage/config-loader
 
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 4a7240b: Configuration schemas declared in TypeScript now resolve and validate imported types instead of treating them as unconstrained values. Invalid imports now cause schema loading to fail.
+
+## 1.10.12
+
+### Patch Changes
+
+- 02c4e8a: Removed unused `json-schema` runtime dependency. The package was only used for TypeScript types from `@types/json-schema`; affected imports have been converted to `import type` to allow safe removal.
+
 ## 1.10.11
 
 ### Patch Changes

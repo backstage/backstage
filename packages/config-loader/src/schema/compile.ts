@@ -15,7 +15,7 @@
  */
 
 import Ajv from 'ajv';
-import { JSONSchema7 as JSONSchema } from 'json-schema';
+import type { JSONSchema7 as JSONSchema } from 'json-schema';
 import mergeAllOf, { Resolvers } from 'json-schema-merge-allof';
 import traverse from 'json-schema-traverse';
 import { ConfigReader } from '@backstage/config';

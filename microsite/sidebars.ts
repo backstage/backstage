@@ -395,7 +395,7 @@ export default {
           'integrations/azure-blobStorage/locations',
           'integrations/azure-blobStorage/discovery',
         ]),
-        sidebarElementWithIndex({ label: 'Azure' }, [
+        sidebarElementWithIndex({ label: 'Azure DevOps' }, [
           'integrations/azure/locations',
           'integrations/azure/discovery',
           'integrations/azure/org',

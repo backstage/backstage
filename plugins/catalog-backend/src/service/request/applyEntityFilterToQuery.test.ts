@@ -73,10 +73,6 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
-    afterAll(async () => {
-      knex.destroy();
-    });
-
     async function addEntity(entity: Entity) {
       const id = uuid();
       const entityRef = stringifyEntityRef(entity);

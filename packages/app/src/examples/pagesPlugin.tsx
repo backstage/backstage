@@ -103,6 +103,13 @@ const IndexPage = PageBlueprint.make({
                 — a page that is always visible, but individual cards on it are
                 toggled by permissions
               </li>
+              <li>
+                <Link to="/permission-action-example">
+                  Permission Action Example
+                </Link>{' '}
+                — requires <code>catalog.entity.read#read</code> (action-scoped
+                permission)
+              </li>
             </ul>
 
             <h2>Feature Flag Enablement Examples</h2>
@@ -429,6 +436,50 @@ const FeatureFlagCard = PermissionExampleCardBlueprint.make({
   if: { featureFlags: { $contains: 'experimental-card' } },
 });
 
+// Example: Page enabled only when the user has a specific action on a permission.
+//
+// The `#action` suffix narrows the check to a particular action on the named
+// permission. `catalog.entity.read#read` means "the user must be allowed to
+// perform the 'read' action on the catalog.entity.read permission".
+//
+// Without the suffix (just `catalog.entity.read`) the check uses an empty
+// attributes object — compatible with basic permissions that have no action.
+const PermissionActionPage = PageBlueprint.make({
+  name: 'permissionActionExample',
+  params: {
+    path: '/permission-action-example',
+    loader: async () => {
+      const Component = () => {
+        const indexLink = useRouteRef(indexRouteRef);
+        return (
+          <div>
+            <h1>Action-Scoped Permission Page</h1>
+            <p>
+              This page is only present when the user is allowed to perform the{' '}
+              <code>read</code> action on the <code>catalog.entity.read</code>{' '}
+              permission.
+            </p>
+            <p>
+              It uses the <code>#action</code> suffix format:
+            </p>
+            <pre>
+              {'if: { permissions: { $contains: "catalog.entity.read#read" } }'}
+            </pre>
+            <p>
+              The permission name before <code>#</code> is used to look up the
+              permission, and the part after is passed as the{' '}
+              <code>attributes.action</code> field to the permission API.
+            </p>
+            {indexLink && <Link to={indexLink()}>Go back</Link>}
+          </div>
+        );
+      };
+      return <Component />;
+    },
+  },
+  if: { permissions: { $contains: 'catalog.entity.read#read' } },
+});
+
 // Example: Page enabled only when the user is allowed to create catalog entities.
 //
 // The `if` predicate is evaluated once at app startup (after sign-in),
@@ -488,6 +539,7 @@ export const pagesPlugin = createFrontendPlugin({
     PublicCard,
     RestrictedCard,
     PermissionGatedPage,
+    PermissionActionPage,
     FeatureFlagCard,
   ],
 });
