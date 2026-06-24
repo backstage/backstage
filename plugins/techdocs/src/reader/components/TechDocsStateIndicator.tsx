@@ -23,6 +23,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { useTechDocsReader } from './TechDocsReaderProvider';
+import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 import { techdocsTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
@@ -49,6 +50,10 @@ export const TechDocsStateIndicator = () => {
     syncErrorMessage,
     buildLog,
   } = useTechDocsReader();
+
+  const {
+    metadata: { error: metadataError, loading: metadataLoading },
+  } = useTechDocsReaderPage();
 
   if (state === 'INITIAL_BUILD') {
     StateAlert = (
@@ -122,6 +127,21 @@ export const TechDocsStateIndicator = () => {
           </Alert>
         )}
         <TechDocsNotFound errorMessage={contentErrorMessage} />
+      </>
+    );
+  }
+
+  if (!metadataLoading && metadataError && state !== 'CONTENT_NOT_FOUND') {
+    StateAlert = (
+      <>
+        {StateAlert}
+        <Alert
+          variant="outlined"
+          severity="warning"
+          classes={{ root: classes.root, message: classes.message }}
+        >
+          {t('reader.metadataMissing.message')}
+        </Alert>
       </>
     );
   }

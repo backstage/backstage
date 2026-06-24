@@ -566,6 +566,7 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'pageWrapper.subtitle': 'Documentation available in {{orgName}}';
     readonly 'entityContent.title': 'TechDocs';
     readonly 'reader.settings': 'Settings';
+    readonly 'reader.metadataMissing.message': 'Documentation metadata could not be loaded. This may occur if the documentation was built without the TechDocs CLI, which can prevent features like cache invalidation from working correctly. Try rebuilding and publishing the docs using the TechDocs CLI.';
   }
 >;
 
