@@ -84,18 +84,25 @@ export class DefaultGithubCredentialsProvider
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
     if (this.connections) {
+      // Resolve on every request because the connections service may select a
+      // different GitHub App based on the organization in the URL.
       const connection = await this.connections.find({
         type: 'github',
         url: opts.url,
         authMethods: ['app', 'token', 'none'],
       });
       const { auth } = connection;
+
+      // Keep one provider per host and selected auth method. In particular,
+      // reusing an App provider preserves its installation-token cache.
       const providerKey = `${connection.host}:${auth.method}:${
         auth.method === 'app' ? auth.appId : ''
       }`;
 
       let provider = this.providers.get(providerKey);
       if (!provider) {
+        // Adapt the connection schema to the existing provider configuration
+        // so credential creation and token caching stay in one implementation.
         const config: GithubIntegrationConfig = {
           host: connection.host,
           apiBaseUrl: connection.apiBaseUrl,
