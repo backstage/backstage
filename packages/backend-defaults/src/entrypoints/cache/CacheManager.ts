@@ -28,6 +28,7 @@ import {
   CacheStoreOptions,
   CacheStoreConnection,
   CacheStoreConfiguration,
+  CacheStoreDeps,
   RedisCacheStoreConfiguration,
   RedisCacheStoreOptions,
   InfinispanClientBehaviorOptions,
@@ -190,22 +191,21 @@ export class CacheManager {
       );
     }
 
-    const parseOptions: CacheStoreConfiguration = {
-      storeConfigPath,
-      config,
-      logger,
-    };
+    const deps = { config, logger };
 
     switch (store) {
       case 'redis':
-        return CacheManager.parseRedisOptions({
-          ...parseOptions,
-          connection,
-        });
+        return CacheManager.parseRedisOptions(
+          { storeConfigPath, connection },
+          deps,
+        );
       case 'valkey':
-        return CacheManager.parseValkeyOptions(parseOptions);
+        return CacheManager.parseValkeyOptions({ storeConfigPath }, deps);
       case 'infinispan':
-        return InfinispanOptionsMapper.parseInfinispanOptions(parseOptions);
+        return InfinispanOptionsMapper.parseInfinispanOptions(
+          { storeConfigPath },
+          deps,
+        );
       default:
         return undefined;
     }
@@ -214,18 +214,17 @@ export class CacheManager {
   /**
    * Parse Redis-specific options from configuration.
    */
-  private static parseRedisOptions({
-    storeConfigPath,
-    connection,
-    config,
-    logger,
-  }: RedisCacheStoreConfiguration): RedisCacheStoreOptions {
+  private static parseRedisOptions(
+    config: RedisCacheStoreConfiguration,
+    deps: CacheStoreDeps,
+  ): RedisCacheStoreOptions {
     const redisOptions: RedisCacheStoreOptions = {
       type: 'redis',
     };
 
     const redisConfig =
-      config.getOptionalConfig(storeConfigPath) ?? new ConfigReader({});
+      deps.config.getOptionalConfig(config.storeConfigPath) ??
+      new ConfigReader({});
 
     redisOptions.client = {
       namespace: redisConfig.getOptionalString('client.namespace'),
@@ -242,7 +241,7 @@ export class CacheManager {
       const clusterConfig = redisConfig.getConfig('cluster');
 
       if (!clusterConfig.has('rootNodes')) {
-        logger?.warn(
+        deps.logger?.warn(
           `Redis cluster config has no 'rootNodes' key, defaulting to non-clustered mode`,
         );
         return redisOptions;
@@ -253,11 +252,9 @@ export class CacheManager {
       let defaults: RedisClusterOptions['defaults'] =
         clusterConfig.getOptional('defaults');
 
-      if (typeof connection === 'object') {
-        const { url: _url, ...connectionDefaults } = connection as Record<
-          string,
-          unknown
-        >;
+      if (typeof config.connection === 'object') {
+        const { url: _url, ...connectionDefaults } =
+          config.connection as Record<string, unknown>;
         defaults = { ...defaults, ...connectionDefaults };
       }
 
@@ -280,17 +277,17 @@ export class CacheManager {
   /**
    * Parse Valkey-specific options from configuration.
    */
-  private static parseValkeyOptions({
-    storeConfigPath,
-    config,
-    logger,
-  }: CacheStoreConfiguration): ValkeyCacheStoreOptions {
+  private static parseValkeyOptions(
+    config: CacheStoreConfiguration,
+    deps: CacheStoreDeps,
+  ): ValkeyCacheStoreOptions {
     const valkeyOptions: ValkeyCacheStoreOptions = {
       type: 'valkey',
     };
 
     const valkeyConfig =
-      config.getOptionalConfig(storeConfigPath) ?? new ConfigReader({});
+      deps.config.getOptionalConfig(config.storeConfigPath) ??
+      new ConfigReader({});
 
     valkeyOptions.client = {
       keyPrefix: valkeyConfig.getOptionalString('client.keyPrefix'),
@@ -300,7 +297,7 @@ export class CacheManager {
       const clusterConfig = valkeyConfig.getConfig('cluster');
 
       if (!clusterConfig.has('rootNodes')) {
-        logger?.warn(
+        deps.logger?.warn(
           `Valkey cluster config has no 'rootNodes' key, defaulting to non-clustered mode`,
         );
         return valkeyOptions;

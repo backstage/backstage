@@ -32,12 +32,20 @@ import type { ClusterNode, ClusterOptions } from 'iovalkey';
 export type CacheStoreConnection = string | Record<string, unknown>;
 
 /**
- * Common options passed to store-specific config parsers.
+ * Common config options passed to store-specific config parsers.
  *
  * @public
  */
 export type CacheStoreConfiguration = {
   storeConfigPath: string;
+};
+
+/**
+ * Service dependencies required by cache store config parsers.
+ *
+ * @public
+ */
+export type CacheStoreDeps = {
   config: RootConfigService;
   logger?: LoggerService;
 };
