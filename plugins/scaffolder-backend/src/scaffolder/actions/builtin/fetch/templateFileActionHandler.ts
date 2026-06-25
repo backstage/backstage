@@ -22,9 +22,8 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
 import path from 'node:path';
-import { createDefaultFilters } from '../../../../lib/templating/filters/createDefaultFilters';
-import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
-import { convertFiltersToRecord } from '../../../../util/templating';
+import { createTemplateRenderer, TemplateCapabilities } from 'nunjitsu';
+import { collectActionTemplateCapabilities } from './templateActionHandler';
 
 export type TemplateFileActionInput = {
   targetPath: string;
@@ -43,19 +42,11 @@ export async function createTemplateFileActionHandler<
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  templateCapabilities?: TemplateCapabilities;
 }) {
-  const {
-    resolveTemplateFile,
-    integrations,
-    additionalTemplateFilters,
-    additionalTemplateGlobals: templateGlobals,
-    ctx,
-  } = options;
-
-  const templateFilters = {
-    ...convertFiltersToRecord(createDefaultFilters({ integrations })),
-    ...additionalTemplateFilters,
-  };
+  const { resolveTemplateFile, ctx } = options;
+  const templateCapabilities =
+    options.templateCapabilities ?? collectActionTemplateCapabilities(options);
 
   const outputPath = resolveSafeChildPath(
     ctx.workspacePath,
@@ -80,25 +71,17 @@ export async function createTemplateFileActionHandler<
     ctx.input.values,
   );
 
-  const { render: renderTemplate, dispose } =
-    await SecureTemplater.loadRenderer({
-      cookiecutterCompat,
-      templateFilters,
-      templateGlobals,
-      nunjucksConfigs: {
-        trimBlocks: ctx.input.trimBlocks,
-        lstripBlocks: ctx.input.lstripBlocks,
-      },
-    });
+  const templateRenderer = createTemplateRenderer({
+    ...templateCapabilities,
+    cookiecutterCompat,
+    trimBlocks: ctx.input.trimBlocks,
+    lstripBlocks: ctx.input.lstripBlocks,
+  });
 
-  try {
-    const contents = await fs.readFile(filePath, 'utf-8');
-    const result = renderTemplate(contents, context);
-    await fs.ensureDir(path.dirname(outputPath));
-    await fs.outputFile(outputPath, result);
+  const contents = await fs.readFile(filePath, 'utf-8');
+  const result = templateRenderer.render(contents, context);
+  await fs.ensureDir(path.dirname(outputPath));
+  await fs.outputFile(outputPath, result);
 
-    ctx.logger.info(`Template file has been written to ${outputPath}`);
-  } finally {
-    dispose();
-  }
+  ctx.logger.info(`Template file has been written to ${outputPath}`);
 }

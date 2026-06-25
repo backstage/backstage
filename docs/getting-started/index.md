@@ -85,7 +85,6 @@ This guide also assumes a basic understanding of working on a Linux based operat
   - [Binary Download](https://nodejs.org/en/download/)
   - [Package manager](https://nodejs.org/en/download/package-manager/)
   - [Using NodeSource packages](https://github.com/nodesource/distributions/blob/master/README.md)
-- Install the `isolated-vm` module, following their [requirements section](https://github.com/laverdet/isolated-vm#requirements).
 - `yarn` [Installation](https://yarnpkg.com/getting-started/install)
   - Backstage currently uses Yarn 4.4.1, once you've ran `corepack enable` you'll want to then run `yarn set version 4.4.1`
 - `docker` [installation](https://docs.docker.com/engine/install/)

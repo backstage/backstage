@@ -80,7 +80,6 @@ COPY --from=node-builder --chown=65532:65532 /app/node_modules ./node_modules
 COPY --from=python-builder --chown=65532:65532 /home/nonroot/venv /home/nonroot/venv
 ENV PATH=/home/nonroot/venv/bin:$PATH
 
-ENV NODE_OPTIONS="--no-node-snapshot"
 ENV GIT_PYTHON_REFRESH="quiet"
 
 ENTRYPOINT ["tini", "--"]
