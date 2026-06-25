@@ -22,7 +22,6 @@ import { CatalogPermissionRule } from '../permissions';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 import { Cursor, QueryEntitiesResponse } from '../catalog/types';
 import { Entity } from '@backstage/catalog-model';
-import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { mockCredentials } from '@backstage/backend-test-utils';
 
@@ -83,7 +82,7 @@ describe('AuthorizedEntitiesCatalog', () => {
 
       expect(fakeCatalog.entities).toHaveBeenCalledWith({
         credentials: mockCredentials.none(),
-        filter: { key: 'kind', values: ['b'] },
+        filter: { kind: 'b' },
       });
     });
 
@@ -140,7 +139,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       expect(fakeCatalog.entitiesBatch).toHaveBeenCalledWith({
         entityRefs: ['component:default/component-a'],
         credentials: mockCredentials.none(),
-        filter: { key: 'kind', values: ['b'] },
+        filter: { kind: 'b' },
       });
     });
 
@@ -172,7 +171,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       await expect(
         catalog.queryEntities({
           credentials: mockCredentials.none(),
-          filter: { key: 'kind', values: ['b'] },
+          filter: { kind: 'b' },
         }),
       ).resolves.toEqual({
         items: { type: 'object', entities: [] },
@@ -191,12 +190,12 @@ describe('AuthorizedEntitiesCatalog', () => {
 
       await catalog.queryEntities({
         credentials: mockCredentials.none(),
-        filter: { key: 'kind', values: ['b'] },
+        filter: { kind: 'b' },
       });
 
       expect(fakeCatalog.queryEntities).toHaveBeenCalledWith({
         credentials: mockCredentials.none(),
-        filter: { key: 'kind', values: ['b'] },
+        filter: { kind: 'b' },
       });
     });
 
@@ -211,7 +210,7 @@ describe('AuthorizedEntitiesCatalog', () => {
         },
       ]);
 
-      const requestFilter: EntityFilter = { key: 'name', values: ['name'] };
+      const requestFilter: FilterPredicate = { name: 'name' };
 
       const entities = [
         {
@@ -232,12 +231,12 @@ describe('AuthorizedEntitiesCatalog', () => {
           nextCursor: {
             isPrevious: false,
             orderFieldValues: ['xxx', null],
-            filter: { allOf: [{ key: 'kind', values: ['b'] }, requestFilter] },
+            filter: { $all: [{ kind: 'b' }, requestFilter] },
           },
           prevCursor: {
             isPrevious: true,
             orderFieldValues: ['a', null],
-            filter: { allOf: [{ key: 'kind', values: ['b'] }, requestFilter] },
+            filter: { $all: [{ kind: 'b' }, requestFilter] },
           },
         },
         totalItems: 4,
@@ -246,12 +245,12 @@ describe('AuthorizedEntitiesCatalog', () => {
 
       let response = await catalog.queryEntities({
         credentials: mockCredentials.none(),
-        filter: { key: 'name', values: ['name'] },
+        filter: { name: 'name' },
       });
 
       expect(fakeCatalog.queryEntities).toHaveBeenCalledWith({
         credentials: mockCredentials.none(),
-        filter: { allOf: [{ key: 'kind', values: ['b'] }, requestFilter] },
+        filter: { $all: [{ kind: 'b' }, requestFilter] },
       });
 
       expect(response).toEqual({
@@ -286,7 +285,7 @@ describe('AuthorizedEntitiesCatalog', () => {
         credentials: mockCredentials.none(),
         cursor: {
           ...cursor,
-          filter: { allOf: [{ key: 'kind', values: ['b'] }, requestFilter] },
+          filter: { $all: [{ kind: 'b' }, requestFilter] },
         },
       });
 
@@ -308,7 +307,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       });
     });
 
-    it('passes through query alongside permission filter on CONDITIONAL with initial request', async () => {
+    it('combines user filter with permission filter on CONDITIONAL with initial request', async () => {
       fakePermissionApi.authorizeConditional.mockResolvedValue([
         {
           result: AuthorizeResult.CONDITIONAL,
@@ -319,7 +318,7 @@ describe('AuthorizedEntitiesCatalog', () => {
         },
       ]);
 
-      const userQuery: FilterPredicate = { 'metadata.name': 'my-entity' };
+      const userFilter: FilterPredicate = { 'metadata.name': 'my-entity' };
 
       const entities = [
         {
@@ -335,8 +334,7 @@ describe('AuthorizedEntitiesCatalog', () => {
           nextCursor: {
             isPrevious: false,
             orderFieldValues: ['xxx', null],
-            query: userQuery,
-            filter: { key: 'kind', values: ['b'] },
+            filter: { $all: [{ kind: 'b' }, userFilter] },
             orderFields: [{ field: 'name', order: 'asc' }],
           },
         },
@@ -347,25 +345,23 @@ describe('AuthorizedEntitiesCatalog', () => {
 
       const response = await catalog.queryEntities({
         credentials: mockCredentials.none(),
-        query: userQuery,
+        filter: userFilter,
       });
 
       expect(fakeCatalog.queryEntities).toHaveBeenCalledWith({
         credentials: mockCredentials.none(),
-        query: userQuery,
-        filter: { key: 'kind', values: ['b'] },
+        filter: { $all: [{ kind: 'b' }, userFilter] },
       });
 
       expect(response.pageInfo.nextCursor).toEqual({
         isPrevious: false,
         orderFieldValues: ['xxx', null],
-        query: userQuery,
-        filter: undefined,
+        filter: userFilter,
         orderFields: [{ field: 'name', order: 'asc' }],
       });
     });
 
-    it('passes through cursor query alongside permission filter on CONDITIONAL with cursor request', async () => {
+    it('combines cursor filter with permission filter on CONDITIONAL with cursor request', async () => {
       fakePermissionApi.authorizeConditional.mockResolvedValue([
         {
           result: AuthorizeResult.CONDITIONAL,
@@ -376,7 +372,7 @@ describe('AuthorizedEntitiesCatalog', () => {
         },
       ]);
 
-      const userQuery: FilterPredicate = { 'metadata.name': 'my-entity' };
+      const userFilter: FilterPredicate = { 'metadata.name': 'my-entity' };
 
       const entities = [
         {
@@ -392,15 +388,13 @@ describe('AuthorizedEntitiesCatalog', () => {
           nextCursor: {
             isPrevious: false,
             orderFieldValues: ['yyy', null],
-            query: userQuery,
-            filter: { key: 'kind', values: ['b'] },
+            filter: { $all: [{ kind: 'b' }, userFilter] },
             orderFields: [{ field: 'name', order: 'asc' }],
           },
           prevCursor: {
             isPrevious: true,
             orderFieldValues: ['aaa', null],
-            query: userQuery,
-            filter: { key: 'kind', values: ['b'] },
+            filter: { $all: [{ kind: 'b' }, userFilter] },
             orderFields: [{ field: 'name', order: 'asc' }],
           },
         },
@@ -410,7 +404,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       const catalog = createCatalog(isEntityKind);
 
       const cursor: Cursor = {
-        query: userQuery,
+        filter: userFilter,
         orderFields: [{ field: 'name', order: 'asc' }],
         isPrevious: false,
         orderFieldValues: ['xxx', null],
@@ -425,23 +419,21 @@ describe('AuthorizedEntitiesCatalog', () => {
         credentials: mockCredentials.none(),
         cursor: {
           ...cursor,
-          filter: { key: 'kind', values: ['b'] },
+          filter: { $all: [{ kind: 'b' }, userFilter] },
         },
       });
 
       expect(response.pageInfo.nextCursor).toEqual({
         isPrevious: false,
         orderFieldValues: ['yyy', null],
-        query: userQuery,
-        filter: undefined,
+        filter: userFilter,
         orderFields: [{ field: 'name', order: 'asc' }],
       });
 
       expect(response.pageInfo.prevCursor).toEqual({
         isPrevious: true,
         orderFieldValues: ['aaa', null],
-        query: userQuery,
-        filter: undefined,
+        filter: userFilter,
         orderFields: [{ field: 'name', order: 'asc' }],
       });
     });
@@ -657,7 +649,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       expect(fakeCatalog.facets).toHaveBeenCalledWith({
         facets: ['a'],
         credentials: mockCredentials.none(),
-        filter: { key: 'kind', values: ['b'] },
+        filter: { kind: 'b' },
       });
     });
 

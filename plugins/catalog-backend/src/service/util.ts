@@ -25,7 +25,8 @@ import {
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
 } from '../catalog/types';
-import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessor, EntityFilter } from '@backstage/plugin-catalog-node';
+import { entityFilterToFilterPredicate } from './request';
 import {
   Entity,
   parseEntityRef,
@@ -101,7 +102,20 @@ export function isQueryEntitiesCursorRequest(
 
 const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
 
-export const cursorParser: z.ZodSchema<Cursor> = z.object({
+// @deprecated — accepts the legacy EntityFilter shape in cursor.filter
+// for backward compatibility with cursors already held by clients.
+const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
+  z
+    .object({
+      key: z.string(),
+      values: z.array(z.string()).optional(),
+    })
+    .or(z.object({ not: entityFilterParser }))
+    .or(z.object({ anyOf: z.array(entityFilterParser) }))
+    .or(z.object({ allOf: z.array(entityFilterParser) })),
+);
+
+const rawCursorParser = z.object({
   orderFields: z.array(
     z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
   ),
@@ -112,8 +126,10 @@ export const cursorParser: z.ZodSchema<Cursor> = z.object({
     })
     .optional(),
   orderFieldValues: z.array(z.string().or(z.null())),
-  filter: filterPredicateSchema.optional(),
+  filter: filterPredicateSchema.or(entityFilterParser).optional(),
   isPrevious: z.boolean(),
+  // @deprecated — old cursors may carry a separate query field
+  query: filterPredicateSchema.optional(),
   firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
   totalItems: z.number().optional(),
 });
@@ -123,15 +139,38 @@ export function encodeCursor(cursor: Cursor) {
   return Buffer.from(json, 'utf8').toString('base64');
 }
 
-export function decodeCursor(encodedCursor: string) {
+function isLegacyEntityFilter(value: unknown): value is EntityFilter {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    ('key' in value || 'allOf' in value || 'anyOf' in value || 'not' in value)
+  );
+}
+
+export function decodeCursor(encodedCursor: string): Cursor {
   try {
     const data = Buffer.from(encodedCursor, 'base64').toString('utf8');
-    const result = cursorParser.safeParse(JSON.parse(data));
+    const result = rawCursorParser.safeParse(JSON.parse(data));
 
     if (!result.success) {
       throw new InputError(`Malformed cursor: ${result.error}`);
     }
-    return result.data;
+
+    const { filter: rawFilter, query, ...rest } = result.data;
+
+    // Convert legacy EntityFilter format to FilterPredicate
+    const convertedFilter =
+      rawFilter && isLegacyEntityFilter(rawFilter)
+        ? entityFilterToFilterPredicate(rawFilter)
+        : rawFilter;
+
+    // Merge deprecated query field into filter
+    const mergedFilter =
+      convertedFilter && query
+        ? { $all: [convertedFilter, query] }
+        : convertedFilter ?? query;
+
+    return { ...rest, filter: mergedFilter };
   } catch (e) {
     throw new InputError(`Malformed cursor: ${e}`);
   }
