@@ -11,6 +11,7 @@
 | `icon`        | `character varying`        | true     | 255        | -                   |
 | `id`          | `uuid`                     | false    | -          | -                   |
 | `link`        | `text`                     | true     | -          | -                   |
+| `metadata`    | `text`                     | true     | -          | -                   |
 | `origin`      | `character varying`        | false    | 255        | -                   |
 | `scope`       | `character varying`        | true     | 255        | -                   |
 | `severity`    | `character varying`        | false    | 8          | -                   |
@@ -45,6 +46,7 @@
 | `icon`        | `character varying`        | true     | 255        | -                   |
 | `id`          | `uuid`                     | false    | -          | -                   |
 | `link`        | `text`                     | true     | -          | -                   |
+| `metadata`    | `text`                     | true     | -          | -                   |
 | `origin`      | `character varying`        | false    | 255        | -                   |
 | `read`        | `timestamp with time zone` | true     | -          | -                   |
 | `saved`       | `timestamp with time zone` | true     | -          | -                   |
