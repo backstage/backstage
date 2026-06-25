@@ -15,7 +15,10 @@
  */
 
 import { InputError, NotAllowedError } from '@backstage/errors';
-import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
+import {
+  createZodV3FilterPredicateSchema,
+  FilterPredicate,
+} from '@backstage/filter-predicates';
 import { Request } from 'express';
 import lodash from 'lodash';
 import { z } from 'zod/v3';
@@ -100,6 +103,8 @@ export function isQueryEntitiesCursorRequest(
   return !!(input as QueryEntitiesCursorRequest).cursor;
 }
 
+const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
+
 // @deprecated — accepts the legacy EntityFilter shape in cursor.filter
 // for backward compatibility with cursors already held by clients.
 const legacyEntityFilterSchema: z.ZodSchema<EntityFilter> = z.lazy(() =>
@@ -112,8 +117,6 @@ const legacyEntityFilterSchema: z.ZodSchema<EntityFilter> = z.lazy(() =>
     .or(z.object({ anyOf: z.array(legacyEntityFilterSchema) }))
     .or(z.object({ allOf: z.array(legacyEntityFilterSchema) })),
 );
-
-const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
 
 const cursorParser = z.object({
   orderFields: z.array(
@@ -148,32 +151,19 @@ export function decodeCursor(encodedCursor: string): Cursor {
       throw new InputError(`Malformed cursor: ${result.error}`);
     }
 
-    const { filter: rawFilter, query, ...rest } = result.data;
+    const { filter, ...rest } = result.data;
 
-    // Convert legacy EntityFilter format to FilterPredicate
+    // If the filter was an old-style EntityFilter that only matched
+    // legacyEntityFilterSchema, convert it to a FilterPredicate.
     const convertedFilter =
-      rawFilter && isLegacyEntityFilter(rawFilter)
-        ? entityFilterToFilterPredicate(rawFilter)
-        : rawFilter;
+      filter && !filterPredicateSchema.safeParse(filter).success
+        ? entityFilterToFilterPredicate(filter as EntityFilter)
+        : (filter as FilterPredicate | undefined);
 
-    // Merge deprecated query field into filter
-    const mergedFilter =
-      convertedFilter && query
-        ? { $all: [convertedFilter, query] }
-        : convertedFilter ?? query;
-
-    return { ...rest, filter: mergedFilter };
+    return { ...rest, filter: convertedFilter };
   } catch (e) {
     throw new InputError(`Malformed cursor: ${e}`);
   }
-}
-
-function isLegacyEntityFilter(value: unknown): value is EntityFilter {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    ('key' in value || 'allOf' in value || 'anyOf' in value || 'not' in value)
-  );
 }
 
 // TODO(freben): This is added as a compatibility guarantee, until we can be

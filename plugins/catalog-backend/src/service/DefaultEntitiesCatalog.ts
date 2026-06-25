@@ -429,6 +429,15 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           knex: this.database,
         });
       }
+      // @deprecated — old cursors may carry a separate query field
+      if (cursor.query) {
+        applyEntityFilterToQuery({
+          filter: cursor.query,
+          targetQuery: q,
+          onEntityIdField: 'final_entities.entity_id',
+          knex: this.database,
+        });
+      }
 
       if (normalizedFullTextFilterTerm) {
         if (

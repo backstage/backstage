@@ -284,8 +284,19 @@ export type Cursor = {
   orderFieldValues: Array<string | null>;
   /**
    * A filter to be applied to the full list of entities.
+   *
+   * @remarks
+   * For backward compatibility, this may also be an EntityFilter from the
+   * legacy filter system. Both shapes are accepted by the cursor parser and
+   * passed through to the query builder which handles both.
    */
   filter?: FilterPredicate;
+  /**
+   * @deprecated Merged into `filter` for new cursors. Old cursors that
+   * carried a separate `query` field are still accepted for backward
+   * compatibility.
+   */
+  query?: FilterPredicate;
   /**
    * true if the cursor is a previous cursor.
    */
