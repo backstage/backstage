@@ -4,6 +4,7 @@ ACLs
 addon
 addons
 ADRs
+Agentic
 airbrake
 Airbrake
 Airbrakes
@@ -204,6 +205,7 @@ Iain
 idempotency
 Iglesias
 iLert
+ios
 img
 impactful
 incentivised
