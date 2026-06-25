@@ -1,4 +1,4 @@
-import { PodExecTerminal } from './src/components/PodExecTerminal/PodExecTerminal';
+import { PodExecTerminal } from '.';
 /*
  * Copyright 2023 The Backstage Authors
  *
