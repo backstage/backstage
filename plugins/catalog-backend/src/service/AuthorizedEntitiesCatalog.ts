@@ -36,7 +36,7 @@ import {
   QueryEntitiesResponse,
 } from '../catalog/types';
 import { FilterPredicate } from '@backstage/filter-predicates';
-import { basicEntityFilter } from './request';
+import { basicEntityFilter, entityFilterToFilterPredicate } from './request';
 import { isQueryEntitiesCursorRequest } from './util';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
 import {
@@ -59,6 +59,16 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     this.transformConditions = transformConditions;
   }
 
+  private permissionPredicate(
+    conditions: Parameters<ConditionTransformer<EntityFilter>>[0],
+    requestFilter?: FilterPredicate,
+  ): FilterPredicate {
+    const permFilter = entityFilterToFilterPredicate(
+      this.transformConditions(conditions),
+    );
+    return requestFilter ? { $all: [permFilter, requestFilter] } : permFilter;
+  }
+
   async entities(request: EntitiesRequest): Promise<EntitiesResponse> {
     const authorizeDecision = (
       await this.permissionApi.authorizeConditional(
@@ -75,14 +85,12 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
-      const permissionFilter: EntityFilter = this.transformConditions(
-        authorizeDecision.conditions,
-      );
       return this.entitiesCatalog.entities({
         ...request,
-        filter: request?.filter
-          ? { allOf: [permissionFilter, request.filter] }
-          : permissionFilter,
+        filter: this.permissionPredicate(
+          authorizeDecision.conditions,
+          request.filter,
+        ),
       });
     }
 
@@ -109,14 +117,12 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
-      const permissionFilter: EntityFilter = this.transformConditions(
-        authorizeDecision.conditions,
-      );
       return this.entitiesCatalog.entitiesBatch({
         ...request,
-        filter: request?.filter
-          ? { allOf: [permissionFilter, request.filter] }
-          : permissionFilter,
+        filter: this.permissionPredicate(
+          authorizeDecision.conditions,
+          request.filter,
+        ),
       });
     }
 
@@ -142,36 +148,29 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
-      const permissionFilter: EntityFilter = this.transformConditions(
-        authorizeDecision.conditions,
-      );
-
       let permissionedRequest: QueryEntitiesRequest;
-      let requestFilter: EntityFilter | undefined;
-      let requestQuery: FilterPredicate | undefined;
+      let requestFilter: FilterPredicate | undefined;
 
       if (isQueryEntitiesCursorRequest(request)) {
         requestFilter = request.cursor.filter;
-        requestQuery = request.cursor.query;
-
         permissionedRequest = {
           ...request,
           cursor: {
             ...request.cursor,
-            filter: request.cursor.filter
-              ? { allOf: [permissionFilter, request.cursor.filter] }
-              : permissionFilter,
+            filter: this.permissionPredicate(
+              authorizeDecision.conditions,
+              request.cursor.filter,
+            ),
           },
         };
       } else {
         requestFilter = request.filter;
-        requestQuery = request.query;
-
         permissionedRequest = {
           ...request,
-          filter: request.filter
-            ? { allOf: [permissionFilter, request.filter] }
-            : permissionFilter,
+          filter: this.permissionPredicate(
+            authorizeDecision.conditions,
+            request.filter,
+          ),
         };
       }
 
@@ -182,13 +181,11 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
       const prevCursor: Cursor | undefined = response.pageInfo.prevCursor && {
         ...response.pageInfo.prevCursor,
         filter: requestFilter,
-        query: requestQuery,
       };
 
       const nextCursor: Cursor | undefined = response.pageInfo.nextCursor && {
         ...response.pageInfo.nextCursor,
         filter: requestFilter,
-        query: requestQuery,
       };
 
       return {
@@ -218,14 +215,12 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
       throw new NotAllowedError();
     }
     if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
-      const permissionFilter: EntityFilter = this.transformConditions(
-        authorizeResponse.conditions,
-      );
       const { entities } = await this.entitiesCatalog.entities({
         credentials: options.credentials,
-        filter: {
-          allOf: [permissionFilter, basicEntityFilter({ 'metadata.uid': uid })],
-        },
+        filter: this.permissionPredicate(
+          authorizeResponse.conditions,
+          basicEntityFilter({ 'metadata.uid': uid }),
+        ),
       });
       if (entities.entities.length === 0) {
         throw new NotAllowedError();
@@ -305,14 +300,12 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
-      const permissionFilter: EntityFilter = this.transformConditions(
-        authorizeDecision.conditions,
-      );
       return this.entitiesCatalog.facets({
         ...request,
-        filter: request?.filter
-          ? { allOf: [permissionFilter, request.filter] }
-          : permissionFilter,
+        filter: this.permissionPredicate(
+          authorizeDecision.conditions,
+          request.filter,
+        ),
       });
     }
 

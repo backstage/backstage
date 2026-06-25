@@ -15,11 +15,19 @@
  */
 
 import { InputError } from '@backstage/errors';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { parseStringsParam } from './common';
-import {
-  EntitiesSearchFilter,
-  EntityFilter,
-} from '@backstage/plugin-catalog-node';
+import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
+
+function searchFilterToPredicate(f: EntitiesSearchFilter): FilterPredicate {
+  if (!f.values) {
+    return { [f.key]: { $exists: true } };
+  }
+  if (f.values.length === 1) {
+    return { [f.key]: f.values[0] };
+  }
+  return { [f.key]: { $in: f.values } };
+}
 
 /**
  * Parses the filtering part of a query, like
@@ -27,15 +35,12 @@ import {
  */
 export function parseEntityFilterParams(
   params: Record<string, unknown>,
-): EntityFilter | undefined {
-  // Each filter string is on the form a=b,c=d
+): FilterPredicate | undefined {
   const filterStrings = parseStringsParam(params.filter, 'filter');
   if (!filterStrings) {
     return undefined;
   }
 
-  // Outer array: "any of the inner ones"
-  // Inner arrays: "all of these must match"
   const filters = filterStrings
     .map(parseEntityFilterString)
     .filter((r): r is EntitiesSearchFilter[] => Boolean(r));
@@ -43,10 +48,11 @@ export function parseEntityFilterParams(
     return undefined;
   }
 
-  const outer = filters.map(inner =>
-    inner.length === 1 ? inner[0] : { allOf: inner },
-  );
-  return outer.length === 1 ? outer[0] : { anyOf: outer };
+  const outer: FilterPredicate[] = filters.map(inner => {
+    const predicates = inner.map(searchFilterToPredicate);
+    return predicates.length === 1 ? predicates[0] : { $all: predicates };
+  });
+  return outer.length === 1 ? outer[0] : { $any: outer };
 }
 
 /**

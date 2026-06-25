@@ -16,7 +16,6 @@
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
@@ -46,7 +45,7 @@ export type PageInfo =
     };
 
 export type EntitiesRequest = {
-  filter?: EntityFilter;
+  filter?: FilterPredicate;
   fields?: (entity: Entity) => Entity;
   order?: EntityOrder[];
   pagination?: EntityPagination;
@@ -81,15 +80,11 @@ export interface EntitiesBatchRequest {
    */
   entityRefs: string[];
   /**
-   * Any additional filters to apply in the selection of the entities. Entities
-   * that do not match the filter result in a null entry in the response, as if
-   * they did not exist.
+   * Filters to apply in the selection of the entities. Entities that do not
+   * match the filter result in a null entry in the response, as if they did
+   * not exist.
    */
-  filter?: EntityFilter;
-  /**
-   * Predicate-based query for filtering entities.
-   */
-  query?: FilterPredicate;
+  filter?: FilterPredicate;
   /**
    * Strips out only the parts of the entity bodies to include in the response.
    */
@@ -123,11 +118,7 @@ export interface EntityFacetsRequest {
   /**
    * A filter to apply on the full list of entities before computing the facets.
    */
-  filter?: EntityFilter;
-  /**
-   * Predicate-based query for filtering entities.
-   */
-  query?: FilterPredicate;
+  filter?: FilterPredicate;
   /**
    * The facets to compute.
    *
@@ -220,11 +211,7 @@ export interface QueryEntitiesInitialRequest {
   fields?: (entity: Entity) => Entity;
   limit?: number;
   offset?: number;
-  filter?: EntityFilter;
-  /**
-   * Predicate-based query for filtering entities.
-   */
-  query?: FilterPredicate;
+  filter?: FilterPredicate;
   orderFields?: EntityOrder[];
   fullTextFilter?: {
     term: string;
@@ -298,11 +285,7 @@ export type Cursor = {
   /**
    * A filter to be applied to the full list of entities.
    */
-  filter?: EntityFilter;
-  /**
-   * A predicate-based query to be applied to the full list of entities.
-   */
-  query?: FilterPredicate;
+  filter?: FilterPredicate;
   /**
    * true if the cursor is a previous cursor.
    */

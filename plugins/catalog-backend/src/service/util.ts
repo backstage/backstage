@@ -25,7 +25,7 @@ import {
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
 } from '../catalog/types';
-import { CatalogProcessor, EntityFilter } from '@backstage/plugin-catalog-node';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import {
   Entity,
   parseEntityRef,
@@ -99,17 +99,6 @@ export function isQueryEntitiesCursorRequest(
   return !!(input as QueryEntitiesCursorRequest).cursor;
 }
 
-const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
-  z
-    .object({
-      key: z.string(),
-      values: z.array(z.string()).optional(),
-    })
-    .or(z.object({ not: entityFilterParser }))
-    .or(z.object({ anyOf: z.array(entityFilterParser) }))
-    .or(z.object({ allOf: z.array(entityFilterParser) })),
-);
-
 const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
 
 export const cursorParser: z.ZodSchema<Cursor> = z.object({
@@ -123,9 +112,8 @@ export const cursorParser: z.ZodSchema<Cursor> = z.object({
     })
     .optional(),
   orderFieldValues: z.array(z.string().or(z.null())),
-  filter: entityFilterParser.optional(),
+  filter: filterPredicateSchema.optional(),
   isPrevious: z.boolean(),
-  query: filterPredicateSchema.optional(),
   firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
   totalItems: z.number().optional(),
 });
