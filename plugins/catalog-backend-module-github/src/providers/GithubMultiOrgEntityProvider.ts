@@ -25,7 +25,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { toError } from '@backstage/errors';
+import { isError } from '@backstage/errors';
 import {
   DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
@@ -370,7 +370,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
             url: `${this.options.githubUrl}/${org}`,
           });
       } catch (error) {
-        if (toError(error).name === 'NotFoundError') {
+        if (isError(error) && error.name === 'NotFoundError') {
           logger.debug(
             `GitHub App installation was not found for org "${org}". ` +
               `Make sure the app is installed for the organization and that the app manager has the Owner role. ` +
