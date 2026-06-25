@@ -612,7 +612,7 @@ Entity content extensions can also declare an `icon` parameter. When provided as
 
 ### Entity Context Menu
 
-You can configure the context menu items using `EntityContextMenuItemBlueprint`. The current items are defined [here](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/alpha/contextMenuItems.tsx#L54)
+You can configure the context menu items using `EntityContextMenuItemBlueprint`. The current items are defined [here](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/alpha/contextMenuItems.tsx#L54-L151).
 
 To add a new context item you can do something like this:
 

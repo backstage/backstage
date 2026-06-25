@@ -108,9 +108,11 @@ app:
 
 Avoid using `convertLegacyEntityContentExtension` from `@backstage/core-compat-api` to convert legacy entity content extensions to the new system. Instead, use the `EntityContentBlueprint` directly. The legacy converter is only intended to help adapt 3rd party plugins that you don't control, and doesn't produce as good results as using the blueprint directly.
 
-### EntityContextMenuItem - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-catalog-react.plugins_catalog-react_src_alpha.EntityContextMenuItemBlueprint.html) - [Example](https://github.com/backstage/backstage/blob/5d0d2c547c7a67a60c4097334bd2c2ca11fbd6b3/plugins/catalog/src/alpha/contextMenuItems.tsx#L54)
+### EntityContextMenuItem - [Example](https://github.com/backstage/backstage/blob/5d0d2c547c7a67a60c4097334bd2c2ca11fbd6b3/plugins/catalog/src/alpha/contextMenuItems.tsx#L54-L152)
 
 Creates menu items inside the entity context menu. Exported as `EntityContextMenuItemBlueprint`.
+
+See the [API reference](https://backstage.io/api/stable/variables/_backstage_plugin-catalog-react.plugins_catalog-react_src_alpha.EntityContextMenuItemBlueprint.html).
 
 ## Extension blueprints in `@backstage/plugin-search-react/alpha`
 
