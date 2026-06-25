@@ -241,7 +241,9 @@ describe.each(databases.eachSupportedId())(
         await storage.saveNotification(metadataNotification);
 
         const notifications = await storage.getNotifications({ user });
-        const saved = notifications.find(n => n.id === 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
+        const saved = notifications.find(
+          n => n.id === 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+        );
         expect(saved?.payload.metadata).toEqual({ key: 'value' });
       });
 
