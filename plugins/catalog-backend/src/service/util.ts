@@ -100,22 +100,22 @@ export function isQueryEntitiesCursorRequest(
   return !!(input as QueryEntitiesCursorRequest).cursor;
 }
 
-const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
-
 // @deprecated — accepts the legacy EntityFilter shape in cursor.filter
 // for backward compatibility with cursors already held by clients.
-const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
+const legacyEntityFilterSchema: z.ZodSchema<EntityFilter> = z.lazy(() =>
   z
     .object({
       key: z.string(),
       values: z.array(z.string()).optional(),
     })
-    .or(z.object({ not: entityFilterParser }))
-    .or(z.object({ anyOf: z.array(entityFilterParser) }))
-    .or(z.object({ allOf: z.array(entityFilterParser) })),
+    .or(z.object({ not: legacyEntityFilterSchema }))
+    .or(z.object({ anyOf: z.array(legacyEntityFilterSchema) }))
+    .or(z.object({ allOf: z.array(legacyEntityFilterSchema) })),
 );
 
-const rawCursorParser = z.object({
+const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
+
+const cursorParser = z.object({
   orderFields: z.array(
     z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
   ),
@@ -126,7 +126,7 @@ const rawCursorParser = z.object({
     })
     .optional(),
   orderFieldValues: z.array(z.string().or(z.null())),
-  filter: filterPredicateSchema.or(entityFilterParser).optional(),
+  filter: filterPredicateSchema.or(legacyEntityFilterSchema).optional(),
   isPrevious: z.boolean(),
   // @deprecated — old cursors may carry a separate query field
   query: filterPredicateSchema.optional(),
@@ -139,18 +139,10 @@ export function encodeCursor(cursor: Cursor) {
   return Buffer.from(json, 'utf8').toString('base64');
 }
 
-function isLegacyEntityFilter(value: unknown): value is EntityFilter {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    ('key' in value || 'allOf' in value || 'anyOf' in value || 'not' in value)
-  );
-}
-
 export function decodeCursor(encodedCursor: string): Cursor {
   try {
     const data = Buffer.from(encodedCursor, 'base64').toString('utf8');
-    const result = rawCursorParser.safeParse(JSON.parse(data));
+    const result = cursorParser.safeParse(JSON.parse(data));
 
     if (!result.success) {
       throw new InputError(`Malformed cursor: ${result.error}`);
@@ -174,6 +166,14 @@ export function decodeCursor(encodedCursor: string): Cursor {
   } catch (e) {
     throw new InputError(`Malformed cursor: ${e}`);
   }
+}
+
+function isLegacyEntityFilter(value: unknown): value is EntityFilter {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    ('key' in value || 'allOf' in value || 'anyOf' in value || 'not' in value)
+  );
 }
 
 // TODO(freben): This is added as a compatibility guarantee, until we can be
