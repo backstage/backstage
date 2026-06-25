@@ -84,8 +84,9 @@ export class DefaultGithubCredentialsProvider
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
     if (this.connections) {
-      // Resolve on every request because the connections service may select a
-      // different GitHub App based on the organization in the URL.
+      // Ask the connections service to select auth for this URL. A host may
+      // have different GitHub Apps for different organizations, so this
+      // selection cannot be done once when the provider is created.
       const connection = await this.connections.find({
         type: 'github',
         url: opts.url,
