@@ -16,6 +16,7 @@
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
@@ -283,18 +284,11 @@ export type Cursor = {
    */
   orderFieldValues: Array<string | null>;
   /**
-   * A filter to be applied to the full list of entities.
-   *
-   * @remarks
-   * For backward compatibility, this may also be an EntityFilter from the
-   * legacy filter system. Both shapes are accepted by the cursor parser and
-   * passed through to the query builder which handles both.
+   * A legacy EntityFilter to be applied to the full list of entities.
    */
-  filter?: FilterPredicate;
+  filter?: EntityFilter;
   /**
-   * @deprecated Merged into `filter` for new cursors. Old cursors that
-   * carried a separate `query` field are still accepted for backward
-   * compatibility.
+   * A predicate-based filter to be applied to the full list of entities.
    */
   query?: FilterPredicate;
   /**

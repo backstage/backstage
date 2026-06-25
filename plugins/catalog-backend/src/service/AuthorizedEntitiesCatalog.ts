@@ -148,23 +148,28 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      const permissionFilter: EntityFilter = this.transformConditions(
+        authorizeDecision.conditions,
+      );
+
       let permissionedRequest: QueryEntitiesRequest;
-      let requestFilter: FilterPredicate | undefined;
+      let requestFilter: EntityFilter | undefined;
+      let requestQuery: FilterPredicate | undefined;
 
       if (isQueryEntitiesCursorRequest(request)) {
         requestFilter = request.cursor.filter;
+        requestQuery = request.cursor.query;
         permissionedRequest = {
           ...request,
           cursor: {
             ...request.cursor,
-            filter: this.permissionPredicate(
-              authorizeDecision.conditions,
-              request.cursor.filter,
-            ),
+            filter: request.cursor.filter
+              ? { allOf: [permissionFilter, request.cursor.filter] }
+              : permissionFilter,
           },
         };
       } else {
-        requestFilter = request.filter;
+        requestQuery = request.filter;
         permissionedRequest = {
           ...request,
           filter: this.permissionPredicate(
@@ -181,11 +186,13 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
       const prevCursor: Cursor | undefined = response.pageInfo.prevCursor && {
         ...response.pageInfo.prevCursor,
         filter: requestFilter,
+        query: requestQuery,
       };
 
       const nextCursor: Cursor | undefined = response.pageInfo.nextCursor && {
         ...response.pageInfo.nextCursor,
         filter: requestFilter,
+        query: requestQuery,
       };
 
       return {

@@ -51,6 +51,7 @@ import {
 } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
+import { entityFilterToFilterPredicate } from './request/entityFilterToFilterPredicate';
 import { processRawEntitiesResult } from './response';
 
 const DEFAULT_LIMIT = 200;
@@ -423,13 +424,12 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     ) => {
       if (cursor.filter) {
         applyEntityFilterToQuery({
-          filter: cursor.filter,
+          filter: entityFilterToFilterPredicate(cursor.filter),
           targetQuery: q,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
         });
       }
-      // @deprecated — old cursors may carry a separate query field
       if (cursor.query) {
         applyEntityFilterToQuery({
           filter: cursor.query,
@@ -878,7 +878,7 @@ function parseCursorFromRequest(
       totalItems: totalItemsMode = 'include',
     } = request;
     return {
-      filter,
+      query: filter,
       orderFields: sortFields,
       fullTextFilter,
       totalItemsMode,

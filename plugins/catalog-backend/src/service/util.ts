@@ -15,10 +15,7 @@
  */
 
 import { InputError, NotAllowedError } from '@backstage/errors';
-import {
-  createZodV3FilterPredicateSchema,
-  FilterPredicate,
-} from '@backstage/filter-predicates';
+import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
 import { Request } from 'express';
 import lodash from 'lodash';
 import { z } from 'zod/v3';
@@ -29,7 +26,6 @@ import {
   QueryEntitiesRequest,
 } from '../catalog/types';
 import { CatalogProcessor, EntityFilter } from '@backstage/plugin-catalog-node';
-import { entityFilterToFilterPredicate } from './request';
 import {
   Entity,
   parseEntityRef,
@@ -103,22 +99,20 @@ export function isQueryEntitiesCursorRequest(
   return !!(input as QueryEntitiesCursorRequest).cursor;
 }
 
-const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
-
-// @deprecated — accepts the legacy EntityFilter shape in cursor.filter
-// for backward compatibility with cursors already held by clients.
-const legacyEntityFilterSchema: z.ZodSchema<EntityFilter> = z.lazy(() =>
+const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
   z
     .object({
       key: z.string(),
       values: z.array(z.string()).optional(),
     })
-    .or(z.object({ not: legacyEntityFilterSchema }))
-    .or(z.object({ anyOf: z.array(legacyEntityFilterSchema) }))
-    .or(z.object({ allOf: z.array(legacyEntityFilterSchema) })),
+    .or(z.object({ not: entityFilterParser }))
+    .or(z.object({ anyOf: z.array(entityFilterParser) }))
+    .or(z.object({ allOf: z.array(entityFilterParser) })),
 );
 
-const cursorParser = z.object({
+const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
+
+export const cursorParser: z.ZodSchema<Cursor> = z.object({
   orderFields: z.array(
     z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
   ),
@@ -129,9 +123,8 @@ const cursorParser = z.object({
     })
     .optional(),
   orderFieldValues: z.array(z.string().or(z.null())),
-  filter: filterPredicateSchema.or(legacyEntityFilterSchema).optional(),
+  filter: entityFilterParser.optional(),
   isPrevious: z.boolean(),
-  // @deprecated — old cursors may carry a separate query field
   query: filterPredicateSchema.optional(),
   firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
   totalItems: z.number().optional(),
@@ -142,7 +135,7 @@ export function encodeCursor(cursor: Cursor) {
   return Buffer.from(json, 'utf8').toString('base64');
 }
 
-export function decodeCursor(encodedCursor: string): Cursor {
+export function decodeCursor(encodedCursor: string) {
   try {
     const data = Buffer.from(encodedCursor, 'base64').toString('utf8');
     const result = cursorParser.safeParse(JSON.parse(data));
@@ -150,17 +143,7 @@ export function decodeCursor(encodedCursor: string): Cursor {
     if (!result.success) {
       throw new InputError(`Malformed cursor: ${result.error}`);
     }
-
-    const { filter, ...rest } = result.data;
-
-    // If the filter was an old-style EntityFilter that only matched
-    // legacyEntityFilterSchema, convert it to a FilterPredicate.
-    const convertedFilter =
-      filter && !filterPredicateSchema.safeParse(filter).success
-        ? entityFilterToFilterPredicate(filter as EntityFilter)
-        : (filter as FilterPredicate | undefined);
-
-    return { ...rest, filter: convertedFilter };
+    return result.data;
   } catch (e) {
     throw new InputError(`Malformed cursor: ${e}`);
   }

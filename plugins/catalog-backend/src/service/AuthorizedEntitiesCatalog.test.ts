@@ -22,6 +22,7 @@ import { CatalogPermissionRule } from '../permissions';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 import { Cursor, QueryEntitiesResponse } from '../catalog/types';
 import { Entity } from '@backstage/catalog-model';
+import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { mockCredentials } from '@backstage/backend-test-utils';
 
@@ -210,7 +211,8 @@ describe('AuthorizedEntitiesCatalog', () => {
         },
       ]);
 
-      const requestFilter: FilterPredicate = { name: 'name' };
+      const userFilter: FilterPredicate = { name: 'name' };
+      const permFilter: EntityFilter = { key: 'kind', values: ['b'] };
 
       const entities = [
         {
@@ -231,47 +233,52 @@ describe('AuthorizedEntitiesCatalog', () => {
           nextCursor: {
             isPrevious: false,
             orderFieldValues: ['xxx', null],
-            filter: { $all: [{ kind: 'b' }, requestFilter] },
+            filter: permFilter,
+            query: userFilter,
           },
           prevCursor: {
             isPrevious: true,
             orderFieldValues: ['a', null],
-            filter: { $all: [{ kind: 'b' }, requestFilter] },
+            filter: permFilter,
+            query: userFilter,
           },
         },
         totalItems: 4,
       } as QueryEntitiesResponse);
       const catalog = createCatalog(isEntityKind);
 
+      // Initial request: user filter goes into request.filter (FilterPredicate)
       let response = await catalog.queryEntities({
         credentials: mockCredentials.none(),
-        filter: { name: 'name' },
+        filter: userFilter,
       });
 
       expect(fakeCatalog.queryEntities).toHaveBeenCalledWith({
         credentials: mockCredentials.none(),
-        filter: { $all: [{ kind: 'b' }, requestFilter] },
+        filter: { $all: [{ kind: 'b' }, userFilter] },
       });
 
+      // Response cursors should have the user's original filters restored
       expect(response).toEqual({
         items: { type: 'object', entities: entities },
         totalItems: 4,
         pageInfo: {
           nextCursor: {
             isPrevious: false,
-            filter: requestFilter,
             orderFieldValues: ['xxx', null],
+            query: userFilter,
           },
           prevCursor: {
             isPrevious: true,
-            filter: requestFilter,
             orderFieldValues: ['a', null],
+            query: userFilter,
           },
         },
       });
 
+      // Cursor request: user filter is in cursor.query
       const cursor: Cursor = {
-        filter: requestFilter,
+        query: userFilter,
         orderFields: [{ field: 'name', order: 'asc' }],
         isPrevious: false,
         orderFieldValues: ['a', null],
@@ -285,7 +292,7 @@ describe('AuthorizedEntitiesCatalog', () => {
         credentials: mockCredentials.none(),
         cursor: {
           ...cursor,
-          filter: { $all: [{ kind: 'b' }, requestFilter] },
+          filter: permFilter,
         },
       });
 
@@ -295,13 +302,13 @@ describe('AuthorizedEntitiesCatalog', () => {
         pageInfo: {
           nextCursor: {
             isPrevious: false,
-            filter: requestFilter,
             orderFieldValues: ['xxx', null],
+            query: userFilter,
           },
           prevCursor: {
             isPrevious: true,
-            filter: requestFilter,
             orderFieldValues: ['a', null],
+            query: userFilter,
           },
         },
       });
@@ -334,7 +341,8 @@ describe('AuthorizedEntitiesCatalog', () => {
           nextCursor: {
             isPrevious: false,
             orderFieldValues: ['xxx', null],
-            filter: { $all: [{ kind: 'b' }, userFilter] },
+            filter: { key: 'kind', values: ['b'] },
+            query: userFilter,
             orderFields: [{ field: 'name', order: 'asc' }],
           },
         },
@@ -356,7 +364,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       expect(response.pageInfo.nextCursor).toEqual({
         isPrevious: false,
         orderFieldValues: ['xxx', null],
-        filter: userFilter,
+        query: userFilter,
         orderFields: [{ field: 'name', order: 'asc' }],
       });
     });
@@ -382,19 +390,23 @@ describe('AuthorizedEntitiesCatalog', () => {
         } as unknown as Entity,
       ];
 
+      const permFilter: EntityFilter = { key: 'kind', values: ['b'] };
+
       fakeCatalog.queryEntities.mockResolvedValue({
         items: { type: 'object', entities },
         pageInfo: {
           nextCursor: {
             isPrevious: false,
             orderFieldValues: ['yyy', null],
-            filter: { $all: [{ kind: 'b' }, userFilter] },
+            filter: permFilter,
+            query: userFilter,
             orderFields: [{ field: 'name', order: 'asc' }],
           },
           prevCursor: {
             isPrevious: true,
             orderFieldValues: ['aaa', null],
-            filter: { $all: [{ kind: 'b' }, userFilter] },
+            filter: permFilter,
+            query: userFilter,
             orderFields: [{ field: 'name', order: 'asc' }],
           },
         },
@@ -404,7 +416,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       const catalog = createCatalog(isEntityKind);
 
       const cursor: Cursor = {
-        filter: userFilter,
+        query: userFilter,
         orderFields: [{ field: 'name', order: 'asc' }],
         isPrevious: false,
         orderFieldValues: ['xxx', null],
@@ -419,21 +431,21 @@ describe('AuthorizedEntitiesCatalog', () => {
         credentials: mockCredentials.none(),
         cursor: {
           ...cursor,
-          filter: { $all: [{ kind: 'b' }, userFilter] },
+          filter: permFilter,
         },
       });
 
       expect(response.pageInfo.nextCursor).toEqual({
         isPrevious: false,
         orderFieldValues: ['yyy', null],
-        filter: userFilter,
+        query: userFilter,
         orderFields: [{ field: 'name', order: 'asc' }],
       });
 
       expect(response.pageInfo.prevCursor).toEqual({
         isPrevious: true,
         orderFieldValues: ['aaa', null],
-        filter: userFilter,
+        query: userFilter,
         orderFields: [{ field: 'name', order: 'asc' }],
       });
     });
