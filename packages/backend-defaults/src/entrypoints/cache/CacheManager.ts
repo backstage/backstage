@@ -114,10 +114,8 @@ export class CacheManager {
 
     // Read store-specific options from config
     const storeOptions = CacheManager.parseStoreOptions(
-      store,
-      connection,
-      config,
-      logger,
+      { store, connection },
+      { config, logger },
     );
 
     return new CacheManager(
@@ -179,20 +177,17 @@ export class CacheManager {
    * @returns The parsed store options
    */
   private static parseStoreOptions(
-    store: string,
-    connection: CacheStoreConnection,
-    config: RootConfigService,
-    logger?: LoggerService,
+    config: { store: string; connection: CacheStoreConnection },
+    deps: CacheStoreDeps,
   ): CacheStoreOptions | undefined {
+    const { store, connection } = config;
     const storeConfigPath = `backend.cache.${store}`;
 
-    if (store !== 'memory' && !config.has(storeConfigPath)) {
-      logger?.warn(
+    if (store !== 'memory' && !deps.config.has(storeConfigPath)) {
+      deps.logger?.warn(
         `No configuration found for cache store '${store}' at '${storeConfigPath}'.`,
       );
     }
-
-    const deps = { config, logger };
 
     switch (store) {
       case 'redis':
