@@ -23,7 +23,7 @@ describe('parseEntityQuery', () => {
     it('returns empty result for empty request', () => {
       const result = parseEntityQuery({});
       expect(result).toEqual({
-        query: undefined,
+        filter: undefined,
         orderFields: undefined,
         fullTextFilter: undefined,
         fields: undefined,
@@ -36,7 +36,7 @@ describe('parseEntityQuery', () => {
       const query = { kind: 'component' };
       const result = parseEntityQuery({ query });
       expect(result).toEqual(
-        expect.objectContaining({ query: { kind: 'component' } }),
+        expect.objectContaining({ filter: { kind: 'component' } }),
       );
     });
 
