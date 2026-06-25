@@ -28,7 +28,7 @@
 #
 # Source: githubnext/agentics/workflows/issue-triage.md@7f7f2aa5bfb4221903b250111ef5675d85c4f22e
 #
-# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"afd60ac0ef882d0f9f16f8ae2caaaee24f7bf8dd01b194c781dbc583b044a53d","compiler_version":"v0.63.0","strict":true,"agent_id":"copilot"}
+# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"5c0971b58fdca91f68d700be00f9f18ed5e2eda50de127c91dfcc1684ddb0beb","compiler_version":"v0.63.0","strict":true,"agent_id":"copilot"}
 
 name: "Agentic Triage"
 "on":
