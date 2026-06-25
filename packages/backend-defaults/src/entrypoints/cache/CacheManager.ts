@@ -27,6 +27,7 @@ import {
   ttlToMilliseconds,
   CacheStoreOptions,
   CacheStoreConnection,
+  CacheStoreConnectionObject,
   CacheStoreConfiguration,
   CacheStoreDeps,
   RedisCacheStoreConfiguration,
@@ -157,7 +158,7 @@ export class CacheManager {
         );
       }
 
-      return raw as Record<string, unknown>;
+      return raw as CacheStoreConnectionObject;
     }
 
     if (raw !== undefined && typeof raw !== 'string') {
@@ -253,8 +254,7 @@ export class CacheManager {
         clusterConfig.getOptional('defaults');
 
       if (typeof config.connection === 'object') {
-        const { url: _url, ...connectionDefaults } =
-          config.connection as Record<string, unknown>;
+        const { url: _url, ...connectionDefaults } = config.connection;
         defaults = { ...defaults, ...connectionDefaults };
       }
 
