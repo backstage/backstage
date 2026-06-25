@@ -232,7 +232,7 @@ describe.each(databases.eachSupportedId())(
       it('should preserve metadata', async () => {
         const metadataNotification = {
           ...testNotification1,
-          id: 'meta-1234',
+          id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
           payload: {
             ...testNotification1.payload,
             metadata: { key: 'value' },
@@ -241,7 +241,7 @@ describe.each(databases.eachSupportedId())(
         await storage.saveNotification(metadataNotification);
 
         const notifications = await storage.getNotifications({ user });
-        const saved = notifications.find(n => n.id === 'meta-1234');
+        const saved = notifications.find(n => n.id === 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
         expect(saved?.payload.metadata).toEqual({ key: 'value' });
       });
 
