@@ -864,14 +864,12 @@ function parseCursorFromRequest(
   if (isQueryEntitiesInitialRequest(request)) {
     const {
       filter,
-      query,
       orderFields: sortFields = [],
       fullTextFilter,
       totalItems: totalItemsMode = 'include',
     } = request;
     return {
       filter,
-      query,
       orderFields: sortFields,
       fullTextFilter,
       totalItemsMode,

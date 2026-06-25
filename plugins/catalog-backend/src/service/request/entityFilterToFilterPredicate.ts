@@ -32,12 +32,12 @@ export function entityFilterToFilterPredicate(
   if (isEntitiesSearchFilter(filter)) {
     const { key, values } = filter;
     if (!values) {
-      return { [key]: { $exists: true } };
+      return { [key]: { $exists: true } } as FilterPredicate;
     }
     if (values.length === 1) {
-      return { [key]: values[0] };
+      return { [key]: values[0] } as FilterPredicate;
     }
-    return { [key]: { $in: values } };
+    return { [key]: { $in: values } } as FilterPredicate;
   }
 
   if ('not' in filter) {

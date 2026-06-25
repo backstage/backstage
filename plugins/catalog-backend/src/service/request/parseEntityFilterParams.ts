@@ -21,12 +21,12 @@ import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 
 function searchFilterToPredicate(f: EntitiesSearchFilter): FilterPredicate {
   if (!f.values) {
-    return { [f.key]: { $exists: true } };
+    return { [f.key]: { $exists: true } } as FilterPredicate;
   }
   if (f.values.length === 1) {
-    return { [f.key]: f.values[0] };
+    return { [f.key]: f.values[0] } as FilterPredicate;
   }
-  return { [f.key]: { $in: f.values } };
+  return { [f.key]: { $in: f.values } } as FilterPredicate;
 }
 
 /**

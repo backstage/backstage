@@ -22,13 +22,11 @@ import { FilterPredicate } from '@backstage/filter-predicates';
 export function basicEntityFilter(
   items: Record<string, string | string[]>,
 ): FilterPredicate {
-  const predicates: FilterPredicate[] = Object.entries(items).map(
-    ([key, value]) => {
-      const values = [value].flat();
-      return values.length === 1
-        ? { [key]: values[0] }
-        : { [key]: { $in: values } };
-    },
-  );
+  const predicates = Object.entries(items).map(([key, value]) => {
+    const values = [value].flat();
+    return (
+      values.length === 1 ? { [key]: values[0] } : { [key]: { $in: values } }
+    ) as FilterPredicate;
+  });
   return predicates.length === 1 ? predicates[0] : { $all: predicates };
 }
