@@ -28,7 +28,7 @@
 #
 # Source: githubnext/agentics/workflows/issue-triage.md@7f7f2aa5bfb4221903b250111ef5675d85c4f22e
 #
-# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"5c0971b58fdca91f68d700be00f9f18ed5e2eda50de127c91dfcc1684ddb0beb","compiler_version":"v0.63.0","strict":true,"agent_id":"copilot"}
+# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"c7558ef9f86bae3e7ffff32dca2b7d84a6ef07056141528c3e1afd2b1c07f841","compiler_version":"v0.63.0","strict":true,"agent_id":"copilot"}
 
 name: "Agentic Triage"
 "on":
@@ -164,7 +164,7 @@ jobs:
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_prompt.md"
           cat << 'GH_AW_PROMPT_EOF'
           <safe-output-tools>
-          Tools: add_comment, close_issue, add_labels, set_issue_type, missing_tool, missing_data, noop
+          Tools: add_comment, add_labels, set_issue_type, missing_tool, missing_data, noop
           </safe-output-tools>
           <github-context>
           The following GitHub context information is available for this workflow:
@@ -358,7 +358,7 @@ jobs:
           mkdir -p /tmp/gh-aw/safeoutputs
           mkdir -p /tmp/gh-aw/mcp-logs/safeoutputs
           cat > ${RUNNER_TEMP}/gh-aw/safeoutputs/config.json << 'GH_AW_SAFE_OUTPUTS_CONFIG_EOF'
-          {"add_comment":{"max":1},"add_labels":{"max":5},"close_issue":{"max":1,"target":"triggering"},"missing_data":{},"missing_tool":{},"noop":{"max":1},"set_issue_type":{"max":1}}
+          {"add_comment":{"max":1},"add_labels":{"max":5},"missing_data":{},"missing_tool":{},"noop":{"max":1},"set_issue_type":{"max":1}}
           GH_AW_SAFE_OUTPUTS_CONFIG_EOF
       - name: Write Safe Outputs Tools
         run: |
@@ -366,8 +366,7 @@ jobs:
           {
             "description_suffixes": {
               "add_comment": " CONSTRAINTS: Maximum 1 comment(s) can be added.",
-              "add_labels": " CONSTRAINTS: Maximum 5 label(s) can be added.",
-              "close_issue": " CONSTRAINTS: Maximum 1 issue(s) can be closed. Target: triggering."
+              "add_labels": " CONSTRAINTS: Maximum 5 label(s) can be added."
             },
             "repo_params": {},
             "dynamic_tools": []
@@ -405,24 +404,6 @@ jobs:
                   "itemType": "string",
                   "itemSanitize": true,
                   "itemMaxLength": 128
-                },
-                "repo": {
-                  "type": "string",
-                  "maxLength": 256
-                }
-              }
-            },
-            "close_issue": {
-              "defaultMax": 1,
-              "fields": {
-                "body": {
-                  "required": true,
-                  "type": "string",
-                  "sanitize": true,
-                  "maxLength": 65000
-                },
-                "issue_number": {
-                  "optionalPositiveInteger": true
                 },
                 "repo": {
                   "type": "string",
@@ -1117,7 +1098,7 @@ jobs:
           GH_AW_ALLOWED_DOMAINS: "api.business.githubcopilot.com,api.enterprise.githubcopilot.com,api.github.com,api.githubcopilot.com,api.individual.githubcopilot.com,api.snapcraft.io,archive.ubuntu.com,azure.archive.ubuntu.com,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,github.com,host.docker.internal,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,ppa.launchpad.net,raw.githubusercontent.com,registry.npmjs.org,s.symcb.com,s.symcd.com,security.ubuntu.com,telemetry.enterprise.githubcopilot.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.googleapis.com"
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_API_URL: ${{ github.api_url }}
-          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"add_comment\":{\"max\":1},\"add_labels\":{\"max\":5},\"close_issue\":{\"max\":1,\"target\":\"triggering\"},\"missing_data\":{},\"missing_tool\":{},\"noop\":{\"max\":1,\"report-as-issue\":\"true\"},\"set_issue_type\":{\"max\":1}}"
+          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"add_comment\":{\"max\":1},\"add_labels\":{\"max\":5},\"missing_data\":{},\"missing_tool\":{},\"noop\":{\"max\":1,\"report-as-issue\":\"true\"},\"set_issue_type\":{\"max\":1}}"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |

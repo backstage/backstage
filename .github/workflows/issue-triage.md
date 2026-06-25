@@ -29,9 +29,6 @@ safe-outputs:
   add-comment:
   set-issue-type:
     max: 1
-  close-issue:
-    target: 'triggering'
-    max: 1
 
 tools:
   web-fetch:
@@ -61,7 +58,7 @@ Do not make assumptions beyond what the issue content supports. Do not invent mi
 
 ## Step 2: Spam and quality check
 
-**Spam and invalid issues:** Close immediately as "not planned" with a one-sentence reason and apply the `invalid` or `spam` label if one exists. Do not produce a triage report or apply any other metadata. **Stop here; do not continue to Steps 3 or 4.**
+**Spam and invalid issues:** Apply the `invalid` or `spam` label if one exists, add a comment recommending closure to maintainers with a one-sentence reason, and do not produce a full triage report or apply any other metadata. **Stop here; do not continue to Steps 3 or 4.**
 
 An issue is spam or invalid if it meets any of the following criteria:
 
@@ -130,7 +127,7 @@ Apply all triage results:
 
 - Use `set_issue_type` to set the issue type (if determined).
 - Use `update_issue` to apply labels.
-- Use `close_issue` to close the issue if it is spam (state reason: "not planned").
+- If the issue is spam or invalid, do not close it directly — leave a comment recommending closure to maintainers with a brief reason (e.g. "Recommend closing: this appears to be spam.").
 - Add an issue comment with your triage report using the format below.
 
 ## Comment format
