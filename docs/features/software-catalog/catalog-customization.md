@@ -628,11 +628,12 @@ const customEntityMenuItem = EntityContextMenuItemBlueprint.make({
       return {
         title: 'Open Custom Dialog',
         disabled: false,
-        onClick: async () => { // or href: '/example-path'
-            dialogApi.open(({ dialog }) => (
-                <AsyncEntityProvider entity={entity} loading={false}>
-                    <CustomDialog open onClose={() => dialog.close()} />
-                </AsyncEntityProvider>
+        // href: '/example-path'
+        onClick: async () => {
+          dialogApi.open(({ dialog }) => (
+            <AsyncEntityProvider entity={entity} loading={false}>
+              <CustomDialog open onClose={() => dialog.close()} />
+            </AsyncEntityProvider>
           ));
         },
       };
