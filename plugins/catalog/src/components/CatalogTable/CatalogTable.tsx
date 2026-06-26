@@ -104,6 +104,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const entityListContext = useEntityList();
 
   const {
+    loading,
     pending,
     error,
     entities,
@@ -211,7 +212,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   // Show the count as long as we have one. Hide it only when new rows
   // have arrived but the count hasn't caught up yet — at that point
   // the old count would be wrong for the new data.
-  const countIsStale = !pending && totalItemsLoading;
+  const countIsStale = !loading && totalItemsLoading;
   const currentCount =
     typeof totalItems === 'number' && !countIsStale ? ` (${totalItems})` : '';
   const somethingIsLoading = pending || totalItemsLoading;

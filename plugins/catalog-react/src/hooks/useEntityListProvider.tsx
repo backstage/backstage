@@ -456,6 +456,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         | Partial<EntityFilter>
         | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
     ) => {
+      staleRefreshRef.current = false;
       // changing filters will affect pagination, so we need to reset
       // the cursor and start from the first page.
       // TODO(vinzscam): this is currently causing issues at page reload
@@ -476,6 +477,16 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     [paginationMode],
   );
 
+  const updateLimit = useCallback((newLimit: number) => {
+    staleRefreshRef.current = false;
+    setLimit(newLimit);
+  }, []);
+
+  const updateOffset = useCallback((newOffset: number) => {
+    staleRefreshRef.current = false;
+    setOffset(newOffset);
+  }, []);
+
   const triggerRefresh = useCallback(() => {
     staleRefreshRef.current = true;
     // Clear the ref to allow refetching with the same params.
@@ -491,8 +502,18 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     const prevCursor = backendState.pageInfo?.prevCursor;
     const nextCursor = backendState.pageInfo?.nextCursor;
     return {
-      prev: prevCursor ? () => setCursor(prevCursor) : undefined,
-      next: nextCursor ? () => setCursor(nextCursor) : undefined,
+      prev: prevCursor
+        ? () => {
+            staleRefreshRef.current = false;
+            setCursor(prevCursor);
+          }
+        : undefined,
+      next: nextCursor
+        ? () => {
+            staleRefreshRef.current = false;
+            setCursor(nextCursor);
+          }
+        : undefined,
     };
   }, [paginationMode, backendState.pageInfo]);
 
@@ -514,8 +535,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       totalItemsLoading: paginationMode !== 'none' && totalItemsLoading,
       limit,
       offset,
-      setLimit,
-      setOffset,
+      setLimit: updateLimit,
+      setOffset: updateOffset,
       paginationMode,
       refresh: triggerRefresh,
     }),
@@ -533,8 +554,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       paginationMode,
       limit,
       offset,
-      setLimit,
-      setOffset,
+      updateLimit,
+      updateOffset,
       triggerRefresh,
     ],
   );
