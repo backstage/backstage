@@ -22,7 +22,7 @@ import { EntityDetails } from './plugin';
 
 describe('Entity details component', () => {
   it('should render the entity name and owner', async () => {
-    await renderInTestApp(<EntityDetails owner="tools" name="test" />);
+    renderInTestApp(<EntityDetails owner="tools" name="test" />);
 
     await expect(
       screen.findByText('The entity "test" is owned by "tools"'),
@@ -43,7 +43,7 @@ import { MyEntitiesList } from './plugin';
 
 describe('MyEntitiesList', () => {
   it('should render entities owned by the current user', async () => {
-    await renderInTestApp(<MyEntitiesList />, {
+    renderInTestApp(<MyEntitiesList />, {
       apis: [
         [
           identityApiRef,
@@ -93,7 +93,7 @@ import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
   it('should render the index page', async () => {
-    await renderInTestApp(
+    renderInTestApp(
       createExtensionTester(indexPageExtension).reactElement(),
     );
 
@@ -116,7 +116,7 @@ import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
   it('should render with a custom identity', async () => {
-    await renderInTestApp(
+    renderInTestApp(
       createExtensionTester(indexPageExtension, {
         apis: [
           [
@@ -150,7 +150,7 @@ describe('Index page', async () => {
       // Adding the header to be rendered on the index page
       .add(indexPageHeader);
 
-    await renderInTestApp(tester.reactElement());
+    renderInTestApp(tester.reactElement());
 
     await expect(screen.findByText('Index page')).toBeInTheDocument();
     await expect(screen.findByText('Index page header')).toBeInTheDocument();
@@ -184,7 +184,7 @@ describe('Index page', () => {
       config: { title: 'Custom page header' },
     });
 
-    await renderInTestApp(tester.reactElement(), {
+    renderInTestApp(tester.reactElement(), {
       // Global configuration for the app
       config: {
         app: {
@@ -259,7 +259,7 @@ import { MyComponent } from './MyComponent';
 
 describe('MyComponent', () => {
   it('should render a link to the plugin page', async () => {
-    await renderInTestApp(<MyComponent />, {
+    renderInTestApp(<MyComponent />, {
       mountedRoutes: {
         '/my-plugin/details': detailsRouteRef,
       },
