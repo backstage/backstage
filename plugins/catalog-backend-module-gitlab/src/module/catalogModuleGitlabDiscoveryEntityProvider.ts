@@ -23,6 +23,11 @@ import { catalogScmEventsServiceRef } from '@backstage/plugin-catalog-node/alpha
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GitLabScmEventsBridge } from '../events/GitLabScmEventsBridge';
 import { GitlabDiscoveryEntityProvider } from '../providers';
+import {
+  connectionsServiceRef,
+  declareConnection,
+} from '@backstage/connections';
+import { DefaultGitlabCredentialsProvider } from '@backstage/integration';
 
 /**
  * Registers the GitlabDiscoveryEntityProvider with the catalog processing extension point.
@@ -34,6 +39,10 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'gitlab-discovery-entity-provider',
   register(env) {
+    declareConnection(env, {
+      type: 'gitlab',
+      description: 'Accesses GitLab repositories managed by the catalog',
+    });
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
@@ -43,6 +52,7 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
         scheduler: coreServices.scheduler,
         events: eventsServiceRef,
         lifecycle: coreServices.lifecycle,
+        connections: connectionsServiceRef,
       },
       async init({
         config,
@@ -52,12 +62,16 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
         scheduler,
         events,
         lifecycle,
+        connections,
       }) {
+        const gitlabCredentialsProvider =
+          DefaultGitlabCredentialsProvider.fromConnections(connections);
         const gitlabDiscoveryEntityProvider =
           GitlabDiscoveryEntityProvider.fromConfig(config, {
             logger,
             events,
             scheduler,
+            gitlabCredentialsProvider,
           });
         catalog.addEntityProvider(gitlabDiscoveryEntityProvider);
 

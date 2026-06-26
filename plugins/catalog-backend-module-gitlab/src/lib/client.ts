@@ -18,6 +18,7 @@ import {
   getGitLabRequestOptions,
   GitLabIntegration,
   GitLabIntegrationConfig,
+  GitlabCredentialsProvider,
 } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import {
@@ -59,14 +60,34 @@ export class GitLabClient {
   private readonly config: GitLabIntegrationConfig;
   private readonly integration: GitLabIntegration;
   private readonly logger: LoggerService;
+  private readonly credentialsProvider: GitlabCredentialsProvider;
 
   constructor(options: {
     integration: GitLabIntegration;
     logger: LoggerService;
+    credentialsProvider?: GitlabCredentialsProvider;
   }) {
     this.config = options.integration.config;
     this.integration = options.integration;
     this.logger = options.logger;
+    this.credentialsProvider = options.credentialsProvider ?? {
+      getCredentials: async () => ({
+        ...getGitLabRequestOptions(this.config),
+        token: this.config.token,
+      }),
+    };
+  }
+
+  private async getRequestOptions(url: string) {
+    const credentials = await this.credentialsProvider.getCredentials({ url });
+    return {
+      headers:
+        credentials.headers ??
+        getGitLabRequestOptions(
+          { ...this.config, token: undefined },
+          credentials.token,
+        ).headers,
+    };
   }
 
   /**
@@ -234,11 +255,12 @@ export class GitLabClient {
     let endCursor: string | null = null;
 
     do {
+      const url = `${this.config.baseUrl}/api/graphql`;
       const response: GitLabDescendantGroupsResponse = await this.integration
-        .fetch(`${this.config.baseUrl}/api/graphql`, {
+        .fetch(url, {
           method: 'POST',
           headers: {
-            ...getGitLabRequestOptions(this.config).headers,
+            ...(await this.getRequestOptions(url)).headers,
             ['Content-Type']: 'application/json',
           },
           body: JSON.stringify({
@@ -309,11 +331,12 @@ export class GitLabClient {
     let hasNextPage: boolean = false;
     let endCursor: string | null = null;
     do {
+      const url = `${this.config.baseUrl}/api/graphql`;
       const response: GitLabGroupMembersResponse = await this.integration
-        .fetch(`${this.config.baseUrl}/api/graphql`, {
+        .fetch(url, {
           method: 'POST',
           headers: {
-            ...getGitLabRequestOptions(this.config).headers,
+            ...(await this.getRequestOptions(url)).headers,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -403,7 +426,7 @@ export class GitLabClient {
     request.searchParams.append('ref', branch);
 
     const response = await this.integration.fetch(request.toString(), {
-      headers: getGitLabRequestOptions(this.config).headers,
+      headers: (await this.getRequestOptions(request.toString())).headers,
       method: 'HEAD',
     });
 
@@ -451,7 +474,7 @@ export class GitLabClient {
     this.logger.debug(`Fetching: ${request.toString()}`);
     const response = await this.integration.fetch(
       request.toString(),
-      getGitLabRequestOptions(this.config),
+      await this.getRequestOptions(request.toString()),
     );
 
     if (!response.ok) {
@@ -489,7 +512,7 @@ export class GitLabClient {
 
     const response = await this.integration.fetch(
       request.toString(),
-      getGitLabRequestOptions(this.config),
+      await this.getRequestOptions(request.toString()),
     );
 
     if (!response.ok) {

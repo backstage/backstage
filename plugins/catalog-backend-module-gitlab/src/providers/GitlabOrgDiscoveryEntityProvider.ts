@@ -24,7 +24,11 @@ import {
   Entity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
+import {
+  GitLabIntegration,
+  GitlabCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
@@ -123,6 +127,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       groupEntitiesTransformer?: GroupEntitiesTransformer;
       groupNameTransformer?: GroupNameTransformer;
+      gitlabCredentialsProvider?: GitlabCredentialsProvider;
     },
   ): GitlabOrgDiscoveryEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
@@ -184,6 +189,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     userTransformer?: UserTransformer;
     groupEntitiesTransformer?: GroupEntitiesTransformer;
     groupNameTransformer?: GroupNameTransformer;
+    gitlabCredentialsProvider?: GitlabCredentialsProvider;
   }) {
     this.config = options.config;
     this.integration = options.integration;
@@ -206,6 +212,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     this.gitLabClient = new GitLabClient({
       integration: this.integration,
       logger: this.logger,
+      credentialsProvider: options.gitlabCredentialsProvider,
     });
   }
 

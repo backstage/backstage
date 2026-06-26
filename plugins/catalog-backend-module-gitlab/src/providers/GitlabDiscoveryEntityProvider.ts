@@ -20,7 +20,11 @@ import {
   SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
+import {
+  GitLabIntegration,
+  GitlabCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   DeferredEntity,
@@ -74,6 +78,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       events?: EventsService;
       schedule?: SchedulerServiceTaskRunner;
       scheduler?: SchedulerService;
+      gitlabCredentialsProvider?: GitlabCredentialsProvider;
     },
   ): GitlabDiscoveryEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
@@ -126,6 +131,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     logger: LoggerService;
     events?: EventsService;
     taskRunner: SchedulerServiceTaskRunner;
+    gitlabCredentialsProvider?: GitlabCredentialsProvider;
   }) {
     this.config = options.config;
     this.integration = options.integration;
@@ -137,6 +143,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     this.gitLabClient = new GitLabClient({
       integration: this.integration,
       logger: this.logger,
+      credentialsProvider: options.gitlabCredentialsProvider,
     });
   }
 

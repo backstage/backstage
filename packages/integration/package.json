@@ -40,6 +40,7 @@
     "@azure/identity": "^4.0.0",
     "@azure/storage-blob": "^12.5.0",
     "@backstage/config": "workspace:^",
+    "@backstage/connections": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@octokit/auth-app": "^4.0.0",
     "@octokit/rest": "^19.0.3",

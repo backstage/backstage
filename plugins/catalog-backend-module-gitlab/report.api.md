@@ -10,6 +10,7 @@ import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { EventsService } from '@backstage/plugin-events-node';
+import { GitlabCredentialsProvider } from '@backstage/integration';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
@@ -35,6 +36,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       events?: EventsService;
       schedule?: SchedulerServiceTaskRunner;
       scheduler?: SchedulerService;
+      gitlabCredentialsProvider?: GitlabCredentialsProvider;
     },
   ): GitlabDiscoveryEntityProvider[];
   // (undocumented)
@@ -94,6 +96,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       groupEntitiesTransformer?: GroupTransformer;
       groupNameTransformer?: GroupNameTransformer;
+      gitlabCredentialsProvider?: GitlabCredentialsProvider;
     },
   ): GitlabOrgDiscoveryEntityProvider[];
   // (undocumented)

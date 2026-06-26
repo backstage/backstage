@@ -21,6 +21,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import {
   GitLabIntegration,
+  GitlabCredentialsProvider,
   readGitLabIntegrationConfig,
 } from '@backstage/integration';
 import { setupServer } from 'msw/node';
@@ -57,6 +58,35 @@ describe('GitLabClient', () => {
   });
 
   describe('pagedRequest', () => {
+    it('uses credentials from the supplied provider', async () => {
+      const integration = new GitLabIntegration(
+        readGitLabIntegrationConfig(new ConfigReader(mock.config_self_managed)),
+      );
+      const fetch = jest.spyOn(integration, 'fetch');
+      const getCredentials = jest.fn().mockResolvedValue({
+        token: 'connection-token',
+      });
+      const client = new GitLabClient({
+        integration,
+        logger: mockServices.logger.mock(),
+        credentialsProvider: {
+          getCredentials,
+        } as GitlabCredentialsProvider,
+      });
+
+      await client.pagedRequest(mock.paged_endpoint);
+
+      expect(getCredentials).toHaveBeenCalledWith({
+        url: expect.stringContaining(mock.paged_endpoint),
+      });
+      expect(fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: { Authorization: 'Bearer connection-token' },
+        }),
+      );
+    });
+
     it('should provide immediate items within the page', async () => {
       const client = new GitLabClient({
         integration: new GitLabIntegration(

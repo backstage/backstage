@@ -26,6 +26,11 @@ import {
 } from '@backstage/plugin-catalog-backend-module-gitlab';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import {
+  connectionsServiceRef,
+  declareConnection,
+} from '@backstage/connections';
+import { DefaultGitlabCredentialsProvider } from '@backstage/integration';
 
 /**
  * Interface for {@link gitlabOrgEntityProviderTransformsExtensionPoint}.
@@ -66,6 +71,10 @@ export const catalogModuleGitlabOrgDiscoveryEntityProvider =
     pluginId: 'catalog',
     moduleId: 'gitlabOrgDiscoveryEntityProvider',
     register(env) {
+      declareConnection(env, {
+        type: 'gitlab',
+        description: 'Imports GitLab users and groups into the catalog',
+      });
       let userTransformer: UserTransformer | undefined;
       let groupTransformer: GroupTransformer | undefined;
 
@@ -94,8 +103,18 @@ export const catalogModuleGitlabOrgDiscoveryEntityProvider =
           logger: coreServices.logger,
           scheduler: coreServices.scheduler,
           events: eventsServiceRef,
+          connections: connectionsServiceRef,
         },
-        async init({ config, catalog, logger, scheduler, events }) {
+        async init({
+          config,
+          catalog,
+          logger,
+          scheduler,
+          events,
+          connections,
+        }) {
+          const gitlabCredentialsProvider =
+            DefaultGitlabCredentialsProvider.fromConnections(connections);
           const gitlabOrgDiscoveryEntityProvider =
             GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
               logger,
@@ -103,6 +122,7 @@ export const catalogModuleGitlabOrgDiscoveryEntityProvider =
               scheduler,
               userTransformer,
               groupEntitiesTransformer: groupTransformer,
+              gitlabCredentialsProvider,
             });
           catalog.addEntityProvider(gitlabOrgDiscoveryEntityProvider);
         },
