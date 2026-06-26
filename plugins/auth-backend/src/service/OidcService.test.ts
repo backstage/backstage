@@ -425,6 +425,29 @@ describe('OidcService', () => {
         });
       });
 
+      it('should accept loopback redirect URI with a different port per RFC 8252', async () => {
+        const { service } = await createOidcService({ databaseId });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://localhost:3000/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'http://localhost:60056/callback',
+          responseType: 'code',
+          scope: 'openid',
+        });
+
+        expect(authSession).toEqual({
+          id: expect.any(String),
+          clientName: 'Test Client',
+          scope: 'openid',
+          redirectUri: 'http://localhost:60056/callback',
+        });
+      });
+
       it('should throw error for invalid client', async () => {
         const { service } = await createOidcService({ databaseId });
 

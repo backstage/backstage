@@ -395,7 +395,10 @@ export class OidcService {
       throw new InputError('Invalid client_id');
     }
 
-    if (opts.redirectUri && !client.redirectUris.includes(opts.redirectUri)) {
+    if (
+      opts.redirectUri &&
+      !matchesRedirectUri(opts.redirectUri, client.redirectUris)
+    ) {
       throw new InputError(`Invalid redirect_uri '${opts.redirectUri}'`);
     }
 
