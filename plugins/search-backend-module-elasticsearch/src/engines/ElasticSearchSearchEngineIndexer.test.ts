@@ -164,7 +164,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     // Old index should be cleaned up.
     expect(deleteSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        path: '/some-type-index__123tobedeleted%2Csome-type-index__456tobedeleted',
+        path: '/some-type-index__123tobedeleted,some-type-index__456tobedeleted',
       }),
     );
   });

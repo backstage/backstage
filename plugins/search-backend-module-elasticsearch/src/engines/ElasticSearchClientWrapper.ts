@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Client as ElasticSearchClient } from '@elastic/elasticsearch';
+import {
+  Client as ElasticSearchClient,
+  ClientOptions as ElasticSearchClientLibOptions,
+} from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
 import { Readable } from 'node:stream';
 import {
@@ -52,6 +55,38 @@ export type ElasticSearchIndexAction = {
 };
 
 /**
+ * The normalized response shape returned by the wrapped client methods.
+ *
+ * Both the Elasticsearch and Opensearch clients expose the response payload
+ * under a `body` property, so consumers can read `response.body` regardless of
+ * the configured provider.
+ *
+ * @public
+ */
+export type ElasticSearchClientResponse = {
+  body: any;
+};
+
+/**
+ * Adapts the provider-agnostic client options to the shape expected by the
+ * `@elastic/elasticsearch` v8 client.
+ *
+ * The v8 client reads TLS configuration from a `tls` property; the `ssl`
+ * property used by the Opensearch client (and by earlier Elasticsearch client
+ * versions) is no longer recognized. Map it across so that TLS settings keep
+ * being honored.
+ */
+function toElasticSearchClientOptions(
+  options: ElasticSearchClientOptions,
+): ElasticSearchClientLibOptions {
+  const { ssl, ...rest } = options;
+  return {
+    ...rest,
+    ...(ssl ? { tls: ssl } : {}),
+  } as ElasticSearchClientLibOptions;
+}
+
+/**
  * A wrapper class that exposes logical methods that are conditionally fired
  * against either a configured Elasticsearch client or a configured Opensearch
  * client.
@@ -63,6 +98,13 @@ export type ElasticSearchIndexAction = {
  * In the future, if the differences between implementations become
  * unmaintainably divergent, we should split out the Opensearch and
  * Elasticsearch search engine implementations.
+ *
+ * The Elasticsearch client calls below pass `{ meta: true }`. As of v8 the
+ * `@elastic/elasticsearch` client returns the response body directly, whereas
+ * the Opensearch client (forked from the v7 Elasticsearch client) still wraps
+ * it in `{ body, statusCode, headers, ... }`. Requesting the meta envelope
+ * keeps both clients returning the same shape, so consumers can continue to
+ * read `response.body` regardless of the configured provider.
  *
  * @public
  */
@@ -86,11 +128,16 @@ export class ElasticSearchClientWrapper {
     }
 
     return new ElasticSearchClientWrapper({
-      elasticSearchClient: new ElasticSearchClient(options),
+      elasticSearchClient: new ElasticSearchClient(
+        toElasticSearchClientOptions(options),
+      ),
     });
   }
 
-  search(options: { index: string | string[]; body: Object }) {
+  search(options: {
+    index: string | string[];
+    body: Object;
+  }): Promise<ElasticSearchClientResponse> {
     const searchOptions = {
       ignore_unavailable: true,
       allow_no_indices: true,
@@ -104,10 +151,13 @@ export class ElasticSearchClientWrapper {
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.search({
-        ...options,
-        ...searchOptions,
-      });
+      return this.elasticSearchClient.search(
+        {
+          ...options,
+          ...searchOptions,
+        },
+        { meta: true },
+      );
     }
 
     throw new Error('No client defined');
@@ -129,49 +179,59 @@ export class ElasticSearchClientWrapper {
     throw new Error('No client defined');
   }
 
-  putIndexTemplate(template: ElasticSearchCustomIndexTemplate) {
+  putIndexTemplate(
+    template: ElasticSearchCustomIndexTemplate,
+  ): Promise<ElasticSearchClientResponse> {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.putIndexTemplate(template);
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.indices.putIndexTemplate(template);
+      return this.elasticSearchClient.indices.putIndexTemplate(template, {
+        meta: true,
+      });
     }
 
     throw new Error('No client defined');
   }
 
-  listIndices(options: { index: string }) {
+  listIndices(options: {
+    index: string;
+  }): Promise<ElasticSearchClientResponse> {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.get(options);
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.indices.get(options);
+      return this.elasticSearchClient.indices.get(options, { meta: true });
     }
 
     throw new Error('No client defined');
   }
 
-  indexExists(options: { index: string | string[] }) {
+  indexExists(options: {
+    index: string | string[];
+  }): Promise<ElasticSearchClientResponse> {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.exists(options);
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.indices.exists(options);
+      return this.elasticSearchClient.indices.exists(options, { meta: true });
     }
 
     throw new Error('No client defined');
   }
 
-  deleteIndex(options: { index: string | string[] }) {
+  deleteIndex(options: {
+    index: string | string[];
+  }): Promise<ElasticSearchClientResponse> {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.delete(options);
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.indices.delete(options);
+      return this.elasticSearchClient.indices.delete(options, { meta: true });
     }
 
     throw new Error('No client defined');
@@ -180,7 +240,9 @@ export class ElasticSearchClientWrapper {
   /**
    * @deprecated unused by the ElasticSearch Engine, will be removed in the future
    */
-  getAliases(options: { aliases: string[] }) {
+  getAliases(options: {
+    aliases: string[];
+  }): Promise<ElasticSearchClientResponse> {
     const { aliases } = options;
 
     if (this.openSearchClient) {
@@ -191,28 +253,35 @@ export class ElasticSearchClientWrapper {
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.cat.aliases({
-        format: 'json',
-        name: aliases,
-      });
+      return this.elasticSearchClient.cat.aliases(
+        {
+          format: 'json',
+          name: aliases,
+        },
+        { meta: true },
+      );
     }
 
     throw new Error('No client defined');
   }
 
-  createIndex(options: { index: string }) {
+  createIndex(options: {
+    index: string;
+  }): Promise<ElasticSearchClientResponse> {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.create(options);
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.indices.create(options);
+      return this.elasticSearchClient.indices.create(options, { meta: true });
     }
 
     throw new Error('No client defined');
   }
 
-  updateAliases(options: { actions: ElasticSearchAliasAction[] }) {
+  updateAliases(options: {
+    actions: ElasticSearchAliasAction[];
+  }): Promise<ElasticSearchClientResponse> {
     const filteredActions = options.actions.filter(Boolean);
 
     if (this.openSearchClient) {
@@ -224,11 +293,14 @@ export class ElasticSearchClientWrapper {
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.indices.updateAliases({
-        body: {
-          actions: filteredActions,
+      return this.elasticSearchClient.indices.updateAliases(
+        {
+          body: {
+            actions: filteredActions as any[],
+          },
         },
-      });
+        { meta: true },
+      );
     }
 
     throw new Error('No client defined');
