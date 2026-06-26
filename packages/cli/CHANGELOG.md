@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.36.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.5-next.0
+  - @backstage/cli-defaults@0.1.4-next.0
+
 ## 0.36.3
 
 ### Patch Changes

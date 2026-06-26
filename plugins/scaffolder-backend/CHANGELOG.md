@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.0.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.2-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog-node@2.2.3-next.0
+  - @backstage/plugin-events-node@0.4.24-next.0
+  - @backstage/plugin-scaffolder-node@0.13.5-next.0
+  - @backstage/backend-openapi-utils@0.6.11-next.0
+
 ## 4.0.1
 
 ### Patch Changes

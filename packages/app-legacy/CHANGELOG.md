@@ -1,5 +1,44 @@
 # example-app-legacy
 
+## 0.2.123-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-org@0.7.6-next.0
+  - @backstage/plugin-catalog@2.0.7-next.0
+  - @backstage/plugin-catalog-react@3.2.0-next.0
+  - @backstage/plugin-scaffolder@1.38.1-next.0
+  - @backstage/ui@0.17.0-next.0
+  - @backstage/plugin-techdocs@1.17.8-next.0
+  - @backstage/frontend-app-api@0.16.5-next.0
+  - @backstage/cli@0.36.4-next.0
+  - @backstage/plugin-api-docs@0.14.3-next.0
+  - @backstage/plugin-catalog-graph@0.6.6-next.0
+  - @backstage/plugin-catalog-import@0.13.15-next.0
+  - @backstage/plugin-home@0.9.8-next.0
+  - @backstage/plugin-scaffolder-react@2.0.2-next.0
+  - @backstage/plugin-user-settings@0.9.5-next.0
+  - @backstage/plugin-kubernetes@0.12.21-next.0
+  - @backstage/plugin-kubernetes-cluster@0.0.39-next.0
+  - @backstage/plugin-search@1.7.6-next.0
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.38-next.0
+  - @backstage/core-app-api@1.20.3-next.0
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.33-next.0
+  - @backstage/plugin-devtools@0.1.41-next.0
+  - @backstage/plugin-mui-to-bui@0.2.9-next.0
+  - @backstage/plugin-notifications@0.5.19-next.0
+  - @backstage/plugin-search-react@1.11.6-next.0
+  - @backstage/app-defaults@1.7.10-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/integration-react@1.2.20-next.0
+  - @backstage/plugin-auth-react@0.1.29-next.0
+  - @backstage/plugin-home-react@0.1.40-next.0
+  - @backstage/plugin-permission-react@0.5.3-next.0
+  - @backstage/plugin-signals@0.0.33-next.0
+  - @backstage/plugin-techdocs-react@1.3.13-next.0
+
 ## 0.2.122
 
 ### Patch Changes

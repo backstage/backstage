@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder
 
+## 1.38.1-next.0
+
+### Patch Changes
+
+- c32e636: Fixed an issue where Bitbucket Cloud and Bitbucket Server hosts would not render the correct repository and branch picker fields in the Scaffolder.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.0-next.0
+  - @backstage/ui@0.17.0-next.0
+  - @backstage/filter-predicates@0.1.4-next.0
+  - @backstage/plugin-scaffolder-react@2.0.2-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/integration-react@1.2.20-next.0
+  - @backstage/plugin-permission-react@0.5.3-next.0
+  - @backstage/plugin-techdocs-react@1.3.13-next.0
+
 ## 1.38.0
 
 ### Minor Changes

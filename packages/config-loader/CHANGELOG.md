@@ -1,5 +1,11 @@
 # @backstage/config-loader
 
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 4a7240b: Configuration schemas declared in TypeScript now resolve and validate imported types instead of treating them as unconstrained values. Invalid imports now cause schema loading to fail.
+
 ## 1.10.12
 
 ### Patch Changes

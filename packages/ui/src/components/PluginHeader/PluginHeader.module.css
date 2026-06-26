@@ -120,6 +120,10 @@
       flex-shrink: 0;
     }
 
+    & > span[aria-hidden] {
+      display: flex;
+    }
+
     &[data-current] {
       flex: 1;
       min-width: 0;

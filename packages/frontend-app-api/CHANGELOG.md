@@ -1,5 +1,17 @@
 # @backstage/frontend-app-api
 
+## 0.16.5-next.0
+
+### Patch Changes
+
+- 74fbcd7: Extension `if` predicates now support specifying an `action` attribute in the permission reference. When a permission name contains a `#` separator (e.g. `catalog.entity.read#read`), the part after `#` is used as `attributes.action` when evaluating the permission. This removes the need to configure action attributes separately for basic permissions.
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.4-next.0
+  - @backstage/core-app-api@1.20.3-next.0
+  - @backstage/frontend-defaults@0.5.4-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+
 ## 0.16.4
 
 ### Patch Changes

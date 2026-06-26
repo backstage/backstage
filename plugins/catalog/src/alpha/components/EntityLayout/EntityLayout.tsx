@@ -36,17 +36,16 @@ import { catalogTranslationRef } from '../../translation';
 import { EntityHeader } from '../EntityHeader';
 import { EntityTabs } from '../EntityTabs';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
-import { EntityLayoutRoute, useEntityLayoutRoutes } from './entityLayoutRoutes';
+import {
+  EntityLayoutRoute,
+  filterEntityLayoutRoutes,
+} from './entityLayoutRoutes';
 
-export type { EntityLayoutRouteProps } from './entityLayoutRoutes';
-
-/** @public */
-export interface EntityLayoutProps {
+interface EntityLayoutProps {
   UNSTABLE_extraContextMenuItems?: ComponentProps<
     typeof EntityHeader
   >['UNSTABLE_extraContextMenuItems'];
   contextMenuItems?: ComponentProps<typeof EntityHeader>['contextMenuItems'];
-  children?: ReactNode;
   header?: JSX.Element;
   NotFoundComponent?: ReactNode;
   /**
@@ -63,41 +62,25 @@ export interface EntityLayoutProps {
   groupDefinitions: EntityContentGroupDefinitions;
   defaultContentOrder?: 'title' | 'natural';
   showNavItemIcons?: boolean;
+  routes: EntityLayoutRoute[];
 }
 
-/**
- * EntityLayout is a compound component, which allows you to define a layout for
- * entities using a sub-navigation mechanism.
- *
- * Consists of two parts: EntityLayout and EntityLayout.Route
- *
- * @example
- * ```jsx
- * <EntityLayout>
- *   <EntityLayout.Route path="/example" title="Example tab">
- *     <div>This is rendered under /example/anything-here route</div>
- *   </EntityLayout.Route>
- * </EntityLayout>
- * ```
- *
- * @public
- */
-export const EntityLayout = (props: EntityLayoutProps) => {
+export function EntityLayout(props: EntityLayoutProps) {
   const {
     UNSTABLE_extraContextMenuItems,
     contextMenuItems,
-    children,
     header,
     NotFoundComponent,
     parentEntityRelations,
     groupDefinitions,
     defaultContentOrder,
     showNavItemIcons,
+    routes,
   } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
 
-  const routes = useEntityLayoutRoutes(children, entity);
+  const visibleRoutes = filterEntityLayoutRoutes(routes, entity);
 
   const { t } = useTranslationRef(catalogTranslationRef);
 
@@ -115,7 +98,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
       {entity && (
         <EntityTabs
-          routes={routes}
+          routes={visibleRoutes}
           groupDefinitions={groupDefinitions}
           defaultContentOrder={defaultContentOrder}
           showIcons={showNavItemIcons}
@@ -148,6 +131,4 @@ export const EntityLayout = (props: EntityLayoutProps) => {
       )}
     </Page>
   );
-};
-
-EntityLayout.Route = EntityLayoutRoute;
+}

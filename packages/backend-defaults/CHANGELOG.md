@@ -1,5 +1,19 @@
 # @backstage/backend-defaults
 
+## 0.17.4-next.0
+
+### Patch Changes
+
+- aaa7d65: Improved readability of the AWS S3 URL parser by splitting the single monolithic regex into two separate patterns (standard S3 and VPC PrivateLink) with named capture groups. Also made the VPC endpoint region mandatory in the regex, fixing a potential mis-parse when the region segment was absent.
+- 8419f51: Added support for AWS PrivateLink for Amazon S3.
+- Updated dependencies
+  - @backstage/config-loader@1.11.0-next.0
+  - @backstage/plugin-auth-node@0.7.3-next.0
+  - @backstage/backend-app-api@1.7.2-next.0
+  - @backstage/plugin-permission-node@0.11.2-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-events-node@0.4.24-next.0
+
 ## 0.17.3
 
 ### Patch Changes

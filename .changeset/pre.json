@@ -230,5 +230,25 @@
     "@backstage/plugin-user-settings-backend": "0.4.4",
     "@backstage/plugin-user-settings-common": "0.1.0"
   },
-  "changesets": []
+  "changesets": [
+    "aws-s3-url-parser-cleanup",
+    "calm-keys-smile",
+    "calm-schemas-pack",
+    "catalog-bui-entity-context-menu",
+    "catalog-entity-bui-header",
+    "catalog-react-bui-entity-context-menu",
+    "catalog-react-entity-header-layout-blueprint",
+    "create-app-1782228497",
+    "fix-bitbucket-picker-types",
+    "free-moose-shop",
+    "great-states-smash",
+    "mysql-84-test-database",
+    "neat-docs-wave",
+    "permission-attributes-nfs",
+    "quiet-schemas-resolve",
+    "text-area-field",
+    "ui-reexport-react-aria-components",
+    "warm-flags-flow",
+    "wide-knives-roll"
+  ]
 }

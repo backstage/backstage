@@ -355,8 +355,9 @@ export class TaskWorker {
           ? {
               settings_json: settingsJson,
               next_run_start_at: this.knex.raw(
-                `CASE WHEN ?? < ?? THEN ?? ELSE ?? END`,
+                `CASE WHEN ?? IS NULL OR ?? < ?? THEN ?? ELSE ?? END`,
                 [
+                  'next_run_start_at',
                   nextStartAt,
                   'next_run_start_at',
                   nextStartAt,
@@ -367,8 +368,9 @@ export class TaskWorker {
           : {
               settings_json: this.knex.ref('excluded.settings_json'),
               next_run_start_at: this.knex.raw(
-                `CASE WHEN ?? < ?? THEN ?? ELSE ?? END`,
+                `CASE WHEN ?? IS NULL OR ?? < ?? THEN ?? ELSE ?? END`,
                 [
+                  `${DB_TASKS_TABLE}.next_run_start_at`,
                   nextStartAt,
                   `${DB_TASKS_TABLE}.next_run_start_at`,
                   nextStartAt,

@@ -1,5 +1,14 @@
 # @backstage/cli-module-build
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 87af6ce: Package preparation now converts TypeScript configuration schemas to separate JSON files. Backend builds compile schemas together before assembling the distribution workspace, while package publishing compiles each schema independently.
+- da820d1: Added support for passing custom flags to the embedded postgres processes via `backend.database.connection.flags.postgres` and `backend.database.connection.flags.initdb` configuration properties.
+- Updated dependencies
+  - @backstage/config-loader@1.11.0-next.0
+
 ## 0.1.4
 
 ### Patch Changes

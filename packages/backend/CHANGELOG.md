@@ -1,5 +1,47 @@
 # example-backend
 
+## 0.0.52-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.4-next.0
+  - @backstage/plugin-catalog-backend@3.8.1-next.0
+  - @backstage/plugin-auth-node@0.7.3-next.0
+  - @backstage/plugin-app-backend@0.5.16-next.0
+  - @backstage/plugin-auth-backend@0.29.2-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.5.5-next.0
+  - @backstage/plugin-auth-backend-module-openshift-provider@0.1.9-next.0
+  - @backstage/plugin-devtools-backend@0.5.19-next.0
+  - @backstage/plugin-events-backend@0.6.4-next.0
+  - @backstage/plugin-events-backend-module-google-pubsub@0.2.5-next.0
+  - @backstage/plugin-kubernetes-backend@0.21.6-next.0
+  - @backstage/plugin-mcp-actions-backend@0.1.15-next.0
+  - @backstage/plugin-notifications-backend@0.6.7-next.0
+  - @backstage/plugin-permission-backend@0.7.14-next.0
+  - @backstage/plugin-permission-node@0.11.2-next.0
+  - @backstage/plugin-proxy-backend@0.6.15-next.0
+  - @backstage/plugin-scaffolder-backend@4.0.2-next.0
+  - @backstage/plugin-search-backend@2.1.4-next.0
+  - @backstage/plugin-search-backend-node@1.4.6-next.0
+  - @backstage/plugin-signals-backend@0.3.17-next.0
+  - @backstage/plugin-techdocs-backend@2.2.2-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.21-next.0
+  - @backstage/plugin-catalog-backend-module-ai-model@0.1.2-next.0
+  - @backstage/plugin-catalog-backend-module-logs@0.1.24-next.0
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.24-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.22-next.0
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.14-next.0
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.21-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.11-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.17-next.0
+  - @backstage/plugin-search-backend-module-elasticsearch@1.8.5-next.0
+  - @backstage/plugin-search-backend-module-explore@0.3.16-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.16-next.0
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.16-next.0
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.24-next.0
+
 ## 0.0.51
 
 ### Patch Changes

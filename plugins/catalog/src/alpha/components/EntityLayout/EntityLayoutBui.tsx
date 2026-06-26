@@ -39,7 +39,10 @@ import {
 import { catalogTranslationRef } from '../../translation';
 import { EntityHeaderBui } from '../EntityHeader/EntityHeaderBui';
 import { useEntityTabs } from '../EntityTabs/useEntityTabs';
-import { useEntityLayoutRoutes } from './entityLayoutRoutes';
+import {
+  EntityLayoutRoute,
+  filterEntityLayoutRoutes,
+} from './entityLayoutRoutes';
 
 function EntityDocumentTitle(props: { activeContentTitle?: string }) {
   const configApi = useApi(configApiRef);
@@ -143,7 +146,7 @@ function EntityLayoutContent(props: {
 }
 
 export function EntityLayoutBui(props: {
-  children?: ReactNode;
+  routes: EntityLayoutRoute[];
   NotFoundComponent?: ReactNode;
   groupDefinitions: EntityContentGroupDefinitions;
   defaultContentOrder: 'title' | 'natural';
@@ -151,7 +154,7 @@ export function EntityLayoutBui(props: {
   HeaderComponent?: ComponentType<EntityHeaderLayoutProps>;
 }) {
   const {
-    children,
+    routes,
     NotFoundComponent,
     groupDefinitions,
     defaultContentOrder,
@@ -159,8 +162,12 @@ export function EntityLayoutBui(props: {
     HeaderComponent,
   } = props;
   const { entity } = useAsyncEntity();
-  const routes = useEntityLayoutRoutes(children, entity);
-  const tabs = useEntityTabs({ routes, groupDefinitions, defaultContentOrder });
+  const visibleRoutes = filterEntityLayoutRoutes(routes, entity);
+  const tabs = useEntityTabs({
+    routes: visibleRoutes,
+    groupDefinitions,
+    defaultContentOrder,
+  });
 
   return (
     <main>

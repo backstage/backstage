@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend
 
+## 3.8.1-next.0
+
+### Patch Changes
+
+- 28c1c1c: Synced zod-validation-error versions between packages
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.4-next.0
+  - @backstage/plugin-permission-node@0.11.2-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog-node@2.2.3-next.0
+  - @backstage/plugin-events-node@0.4.24-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+  - @backstage/backend-openapi-utils@0.6.11-next.0
+
 ## 3.8.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @backstage/catalog-client
 
+## 1.16.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.4-next.0
+
 ## 1.16.0
 
 ### Minor Changes
