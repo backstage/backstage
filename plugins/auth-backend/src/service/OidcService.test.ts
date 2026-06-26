@@ -448,6 +448,80 @@ describe('OidcService', () => {
         });
       });
 
+      it('should accept loopback redirect URI with a different port and matching query', async () => {
+        const { service } = await createOidcService({ databaseId });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://localhost:3000/callback?client=desktop'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'http://localhost:60056/callback?client=desktop',
+          responseType: 'code',
+          scope: 'openid',
+        });
+
+        expect(authSession).toEqual({
+          id: expect.any(String),
+          clientName: 'Test Client',
+          scope: 'openid',
+          redirectUri: 'http://localhost:60056/callback?client=desktop',
+        });
+      });
+
+      it('should reject loopback redirect URI with a different query', async () => {
+        const { service } = await createOidcService({ databaseId });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://localhost:3000/callback?client=desktop'],
+        });
+
+        await expect(
+          service.createAuthorizationSession({
+            clientId: client.clientId,
+            redirectUri: 'http://localhost:60056/callback?client=other',
+            responseType: 'code',
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+      });
+
+      it('should reject requested redirect URI containing a fragment', async () => {
+        const { service } = await createOidcService({ databaseId });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://localhost:3000/callback'],
+        });
+
+        await expect(
+          service.createAuthorizationSession({
+            clientId: client.clientId,
+            redirectUri: 'http://localhost:60056/callback#fragment',
+            responseType: 'code',
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+      });
+
+      it('should reject registered redirect URI containing a fragment', async () => {
+        const { service } = await createOidcService({ databaseId });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://localhost:3000/callback#fragment'],
+        });
+
+        await expect(
+          service.createAuthorizationSession({
+            clientId: client.clientId,
+            redirectUri: 'http://localhost:60056/callback',
+            responseType: 'code',
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+      });
+
       it('should throw error for invalid client', async () => {
         const { service } = await createOidcService({ databaseId });
 

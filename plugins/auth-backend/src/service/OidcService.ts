@@ -57,14 +57,18 @@ const LOOPBACK_REDIRECT_PATTERNS = [
 
 /**
  * RFC 8252 Section 7.3: For loopback redirect URIs, the authorization server
- * MUST allow any port to be specified at the time of the request. This matches
- * redirect URIs by scheme, hostname, and path only, ignoring the port.
+ * MUST allow any port to be specified at the time of the request. This ignores
+ * only the port, while keeping the rest of the redirect URI matching strict.
  */
 function matchesRedirectUri(
   requestUri: string,
   registeredUris: string[],
 ): boolean {
   const requested = new URL(requestUri);
+
+  if (requested.hash) {
+    return false;
+  }
 
   if (!LOOPBACK_HOSTS.includes(requested.hostname)) {
     return registeredUris.includes(requestUri);
@@ -78,10 +82,12 @@ function matchesRedirectUri(
       return false;
     }
     return (
+      !reg.hash &&
       LOOPBACK_HOSTS.includes(reg.hostname) &&
       reg.protocol === requested.protocol &&
       reg.hostname === requested.hostname &&
-      reg.pathname === requested.pathname
+      reg.pathname === requested.pathname &&
+      reg.search === requested.search
     );
   });
 }
