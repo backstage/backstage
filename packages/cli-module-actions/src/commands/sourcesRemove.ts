@@ -73,13 +73,13 @@ export default async ({ args, info }: CliCommandContext) => {
       );
     }
 
-    const fromServer = removed.filter(
-      id => serverSources.includes(id) && !localAdditions.includes(id),
+    const toExclude = removed.filter(
+      id => serverSources.includes(id) && !localExclusions.includes(id),
     );
-    if (fromServer.length > 0) {
+    if (toExclude.length > 0) {
       await auth.setMetadata('excludedPluginSources', [
         ...localExclusions,
-        ...fromServer,
+        ...toExclude,
       ]);
     }
 

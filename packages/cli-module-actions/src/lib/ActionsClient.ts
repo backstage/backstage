@@ -65,11 +65,17 @@ export class ActionsClient {
       '/.backstage/actions/v1/sources',
       this.baseUrl,
     ).toString();
-    const response = await httpJson<{ sources: string[] }>(url, {
-      headers: { Authorization: `Bearer ${this.accessToken}` },
-      signal: AbortSignal.timeout(30_000),
-    });
-    return response.sources;
+    try {
+      const response = await httpJson<{ sources: string[] }>(url, {
+        signal: AbortSignal.timeout(30_000),
+      });
+      return response.sources;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('404')) {
+        return [];
+      }
+      throw error;
+    }
   }
 
   async list(pluginSources: string[]): Promise<GroupedActions> {

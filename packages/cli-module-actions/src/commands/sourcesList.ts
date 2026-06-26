@@ -15,10 +15,13 @@
  */
 
 import { cli } from 'cleye';
-import type { CliCommandContext } from '@backstage/cli-node';
+import { CliAuth, type CliCommandContext } from '@backstage/cli-node';
 import { ActionsClient } from '../lib/ActionsClient';
-import { resolveAuth } from '../lib/resolveAuth';
-import { mergePluginSources } from '../lib/pluginSources';
+import {
+  pluginSourcesSchema,
+  excludedSourcesSchema,
+  mergePluginSources,
+} from '../lib/pluginSources';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
@@ -37,16 +40,21 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
-  const { accessToken, pluginSources, excludedPluginSources, baseUrl } =
-    await resolveAuth(instanceFlag);
+  const auth = await CliAuth.create({ instanceName: instanceFlag });
+  const localAdditions = pluginSourcesSchema.parse(
+    await auth.getMetadata('pluginSources'),
+  );
+  const localExclusions = excludedSourcesSchema.parse(
+    await auth.getMetadata('excludedPluginSources'),
+  );
 
-  const client = new ActionsClient(baseUrl, accessToken);
+  const client = new ActionsClient(auth.getBaseUrl(), '');
   const serverSources = await client.listSources();
 
   const sources = mergePluginSources({
     serverSources,
-    localAdditions: pluginSources,
-    localExclusions: excludedPluginSources,
+    localAdditions,
+    localExclusions,
   });
 
   if (!sources.length) {

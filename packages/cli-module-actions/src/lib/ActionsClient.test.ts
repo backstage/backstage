@@ -44,7 +44,6 @@ describe('ActionsClient', () => {
       expect(mockHttpJson).toHaveBeenCalledWith(
         'https://backstage.example.com/.backstage/actions/v1/sources',
         expect.objectContaining({
-          headers: { Authorization: 'Bearer test-token' },
           signal: expect.any(AbortSignal),
         }),
       );
@@ -57,6 +56,22 @@ describe('ActionsClient', () => {
       const result = await client.listSources();
 
       expect(result).toEqual([]);
+    });
+
+    it('returns empty array on 404 from older backends', async () => {
+      mockHttpJson.mockRejectedValue(
+        new Error('Request failed with 404 Not Found'),
+      );
+
+      const result = await client.listSources();
+
+      expect(result).toEqual([]);
+    });
+
+    it('propagates non-404 errors', async () => {
+      mockHttpJson.mockRejectedValue(new Error('Network error'));
+
+      await expect(client.listSources()).rejects.toThrow('Network error');
     });
   });
 

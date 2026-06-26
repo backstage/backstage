@@ -115,6 +115,20 @@ describe('sourcesRemove command', () => {
     expect(output).toContain('Removed plugin sources: catalog, auth');
   });
 
+  it('removes a source that is both server-provided and locally added', async () => {
+    mockMetadata({ pluginSources: ['catalog'] });
+    mockListSources.mockResolvedValue(['catalog', 'scaffolder']);
+
+    await sourcesRemoveCommand({ ...baseContext, args: ['catalog'] });
+
+    expect(mockSetMetadata).toHaveBeenCalledWith('pluginSources', []);
+    expect(mockSetMetadata).toHaveBeenCalledWith('excludedPluginSources', [
+      'catalog',
+    ]);
+    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
+    expect(output).toContain('Removed plugin source: catalog');
+  });
+
   it('skips sources that are not in the effective set', async () => {
     mockMetadata({ pluginSources: ['catalog'] });
     mockListSources.mockResolvedValue([]);
