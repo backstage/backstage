@@ -15,8 +15,10 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
+import { connectionsServiceFactory } from '@backstage/connections';
 
 const backend = createBackend();
+backend.add(connectionsServiceFactory);
 backend.add(import('@backstage/plugin-events-backend'));
 backend.add(import('@backstage/plugin-events-backend-module-github'));
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));

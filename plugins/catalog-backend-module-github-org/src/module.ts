@@ -31,6 +31,11 @@ import {
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GithubOrgEntityCleanerProvider } from './GithubOrgEntityCleanerProvider';
+import {
+  connectionsServiceRef,
+  declareConnection,
+} from '@backstage/connections';
+import { DefaultGithubCredentialsProvider } from '@backstage/integration';
 
 /**
  * Interface for {@link githubOrgEntityProviderTransformsExtensionPoint}.
@@ -70,6 +75,10 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'github-org-entity-provider',
   register(env) {
+    declareConnection(env, {
+      type: 'github',
+      description: 'Imports GitHub users and teams into the catalog',
+    });
     let userTransformer: UserTransformer | undefined;
     let teamTransformer: TeamTransformer | undefined;
 
@@ -99,10 +108,21 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
         events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
+        connections: connectionsServiceRef,
       },
 
-      async init({ catalog, cache, config, events, logger, scheduler }) {
+      async init({
+        catalog,
+        cache,
+        config,
+        events,
+        logger,
+        scheduler,
+        connections,
+      }) {
         const definitions = readDefinitionsFromConfig(config);
+        const githubCredentialsProvider =
+          DefaultGithubCredentialsProvider.fromConnections(connections);
 
         for (const definition of definitions) {
           catalog.addEntityProvider(
@@ -131,6 +151,7 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
               cache,
               experimental_checkForSuspendedUsersWithRest:
                 definition.experimental_checkForSuspendedUsersWithRest,
+              githubCredentialsProvider,
             }),
           );
         }

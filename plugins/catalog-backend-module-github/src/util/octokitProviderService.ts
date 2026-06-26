@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import {
-  coreServices,
-  createServiceFactory,
-  createServiceRef,
-  RootConfigService,
-} from '@backstage/backend-plugin-api';
-import {
-  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
   ScmIntegrations,
@@ -33,17 +27,18 @@ export interface OctokitProviderService {
   getOctokit: (url: string) => Promise<Octokit>;
 }
 
-class OctokitProviderImpl implements OctokitProviderService {
+export class DefaultOctokitProvider implements OctokitProviderService {
   readonly #integrations: ScmIntegrationRegistry;
   readonly #githubCredentials: GithubCredentialsProvider;
   readonly #octokitCache: Map<string, Octokit>;
   readonly #octokitCacheTtl: HumanDuration;
 
-  constructor(config: RootConfigService) {
+  constructor(
+    config: RootConfigService,
+    githubCredentials: GithubCredentialsProvider,
+  ) {
     this.#integrations = ScmIntegrations.fromConfig(config);
-    this.#githubCredentials = DefaultGithubCredentialsProvider.fromIntegrations(
-      this.#integrations,
-    );
+    this.#githubCredentials = githubCredentials;
     this.#octokitCache = new Map();
     this.#octokitCacheTtl = { hours: 1 };
   }
@@ -88,21 +83,3 @@ class OctokitProviderImpl implements OctokitProviderService {
     return octokit;
   }
 }
-
-/**
- * This will have to live here, until we have a proper shared one in an
- * integrations layer.
- */
-export const octokitProviderServiceRef =
-  createServiceRef<OctokitProviderService>({
-    id: 'octokitProvider',
-    scope: 'root',
-    defaultFactory: async service =>
-      createServiceFactory({
-        service,
-        deps: { config: coreServices.rootConfig },
-        async factory({ config }) {
-          return new OctokitProviderImpl(config);
-        },
-      }),
-  });

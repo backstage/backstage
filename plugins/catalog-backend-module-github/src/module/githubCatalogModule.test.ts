@@ -23,9 +23,17 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { githubCatalogModule } from './githubCatalogModule';
 import { GithubLocationAnalyzer } from '../analyzers/GithubLocationAnalyzer';
+import { connectionsServiceFactory } from '@backstage/connections';
+import { DefaultGithubCredentialsProvider } from '@backstage/integration';
 
 describe('githubCatalogModule', () => {
+  afterEach(() => jest.restoreAllMocks());
+
   it('should register provider at the catalog extension point', async () => {
+    const fromConnections = jest.spyOn(
+      DefaultGithubCredentialsProvider,
+      'fromConnections',
+    );
     let addedProviders: Array<EntityProvider> | undefined;
     let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
 
@@ -69,6 +77,7 @@ describe('githubCatalogModule', () => {
       ],
       features: [
         githubCatalogModule,
+        connectionsServiceFactory,
         mockServices.rootConfig.factory({ data: config }),
         scheduler.factory,
       ],
@@ -84,5 +93,6 @@ describe('githubCatalogModule', () => {
     expect(analysisExtensionPoint.addScmLocationAnalyzer).toHaveBeenCalledWith(
       expect.any(GithubLocationAnalyzer),
     );
+    expect(fromConnections).toHaveBeenCalledTimes(1);
   });
 });

@@ -27,8 +27,13 @@ import { catalogScmEventsServiceRef } from '@backstage/plugin-catalog-node/alpha
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GithubEntityProvider } from '../providers/GithubEntityProvider';
 import { GithubLocationAnalyzer } from '../analyzers/GithubLocationAnalyzer';
-import { octokitProviderServiceRef } from '../util/octokitProviderService';
 import { GithubScmEventsBridge } from '../events/GithubScmEventsBridge';
+import {
+  connectionsServiceRef,
+  declareConnection,
+} from '@backstage/connections';
+import { DefaultGithubCredentialsProvider } from '@backstage/integration';
+import { DefaultOctokitProvider } from '../util/octokitProviderService';
 
 /**
  * Registers all relevant GitHub integration points into the catalog backend.
@@ -39,6 +44,10 @@ export const githubCatalogModule = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'github',
   register(env) {
+    declareConnection(env, {
+      type: 'github',
+      description: 'Accesses GitHub repositories managed by the catalog',
+    });
     env.registerInit({
       deps: {
         catalogAnalyzers: catalogAnalysisExtensionPoint,
@@ -49,7 +58,7 @@ export const githubCatalogModule = createBackendModule({
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         catalog: catalogServiceRef,
-        octokitProvider: octokitProviderServiceRef,
+        connections: connectionsServiceRef,
         catalogScmEvents: catalogScmEventsServiceRef,
         lifecycle: coreServices.lifecycle,
       },
@@ -62,15 +71,19 @@ export const githubCatalogModule = createBackendModule({
         catalogAnalyzers,
         auth,
         catalog,
-        octokitProvider,
+        connections,
         catalogScmEvents,
         lifecycle,
       }) {
+        const githubCredentialsProvider =
+          DefaultGithubCredentialsProvider.fromConnections(connections);
+
         catalogAnalyzers.addScmLocationAnalyzer(
           new GithubLocationAnalyzer({
             config,
             auth,
             catalog,
+            githubCredentialsProvider,
           }),
         );
 
@@ -79,13 +92,17 @@ export const githubCatalogModule = createBackendModule({
             events,
             logger,
             scheduler,
+            githubCredentialsProvider,
           }),
         );
 
         const bridge = new GithubScmEventsBridge({
           logger,
           events,
-          octokitProvider,
+          octokitProvider: new DefaultOctokitProvider(
+            config,
+            githubCredentialsProvider,
+          ),
           catalogScmEvents,
         });
         lifecycle.addStartupHook(async () => {
