@@ -168,8 +168,8 @@ describe('Transformers > Html > Sanitizer Custom Elements', () => {
       const dirtyDom = document.createElement('html');
       dirtyDom.innerHTML = `<body><a href="https://example.com">Example</a></body>`;
 
-      const cleanDom = await result.current(dirtyDom);
-      const anchor = cleanDom.querySelector<HTMLAnchorElement>('a');
+      const clearDom = await result.current(dirtyDom);
+      const anchor = clearDom.querySelector<HTMLAnchorElement>('a');
 
       // The globally-registered hook must NOT have touched the TechDocs output.
       expect(anchor).not.toBeNull();

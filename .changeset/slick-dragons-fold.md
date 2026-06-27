@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs': patch
 ---
 
-fix(techdocs): isolate DOMPurify instance to prevent hook pollution
+Fixed TechDocs pages sometimes rendering blank due to sanitizer hooks registered by other plugins.
