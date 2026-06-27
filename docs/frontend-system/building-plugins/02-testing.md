@@ -92,7 +92,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should render the index page', async () => {
+  it('should render the index page', () => {
     renderInTestApp(
       createExtensionTester(indexPageExtension).reactElement(),
     );
@@ -115,7 +115,7 @@ import { identityApiRef } from '@backstage/frontend-plugin-api';
 import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should render with a custom identity', async () => {
+  it('should render with a custom identity', () => {
     renderInTestApp(
       createExtensionTester(indexPageExtension, {
         apis: [
