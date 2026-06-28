@@ -280,9 +280,11 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const handleRemove = (widgetId: string) => {
-    const remaining = widgets.filter(w => w.id !== widgetId);
-    setWidgets(remaining);
-    storeWidgets(remaining);
+    setWidgets(prevWidgets => {
+      const remaining = prevWidgets.filter(w => w.id !== widgetId);
+      storeWidgets(remaining);
+      return remaining;
+    });
   };
 
   const handleSettingsSave = (
