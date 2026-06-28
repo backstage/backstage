@@ -21,6 +21,7 @@ import {
   PageBlueprint,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
+import { z } from 'zod/v4';
 
 import {
   ApiEntity,
@@ -56,12 +57,9 @@ const apiDocsConfigApi = ApiBlueprint.make({
 });
 
 const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
-  config: {
-    schema: {
-      // Omitting columns and actions for now as their types are too complex to map to zod
-      initiallySelectedFilter: z =>
-        z.enum(['owned', 'starred', 'all']).optional(),
-    },
+  configSchema: {
+    // Omitting columns and actions for now as their types are too complex to map to zod
+    initiallySelectedFilter: z.enum(['owned', 'starred', 'all']).optional(),
   },
   factory(originalFactory, { config }) {
     return originalFactory({
