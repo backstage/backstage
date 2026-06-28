@@ -275,11 +275,14 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
         resizable: widget.resizable,
       },
     ]);
+    setEditMode(true);
     setAddWidgetDialogOpen(false);
   };
 
   const handleRemove = (widgetId: string) => {
-    setWidgets(widgets.filter(w => w.id !== widgetId));
+    const remaining = widgets.filter(w => w.id !== widgetId);
+    setWidgets(remaining);
+    storeWidgets(remaining);
   };
 
   const handleSettingsSave = (
@@ -296,7 +299,9 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const clearLayout = () => {
-    setWidgets(widgets.filter(w => w.deletable === false));
+    const remaining = widgets.filter(w => w.deletable === false);
+    setWidgets(remaining);
+    storeWidgets(remaining);
   };
 
   const changeEditMode = (mode: boolean) => {
