@@ -52,12 +52,12 @@ describe('navigation', () => {
       });
     });
 
-    it('THE BUG CASE — round-trip with underscore in name', () => {
+    it('round-trips a name containing underscores', () => {
       const ext = { kind: 'filter' as ExtensionKind, name: 'my_custom_filter' };
       expect(parseFragment(renderFragment(ext))).toEqual(ext);
     });
 
-    it('multi-underscore name: a_b_c', () => {
+    it('parses a name with multiple underscores', () => {
       expect(parseFragment('function_a_b_c')).toEqual({
         kind: 'function',
         name: 'a_b_c',
@@ -69,11 +69,13 @@ describe('navigation', () => {
     });
 
     it('invalid kind throws', () => {
-      expect(() => parseFragment('bogus_x')).toThrow();
+      expect(() => parseFragment('bogus_x')).toThrow(
+        /Invalid templating extension fragment "bogus_x"/,
+      );
     });
   });
 
-  describe('round-trip: all kinds with underscore names', () => {
+  describe('round-trips all kinds with underscore names', () => {
     const kinds: ExtensionKind[] = ['filter', 'function', 'value'];
     for (const kind of kinds) {
       it(`round-trips ${kind} with underscore name`, () => {

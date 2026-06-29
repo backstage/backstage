@@ -52,5 +52,8 @@ export const parseFragment = (fragment: string): Extension => {
       name: rest.join('_'),
     };
   }
-  throw Error(fragment);
+  const kindList = kinds.join(', ');
+  throw new Error(
+    `Invalid templating extension fragment "${fragment}": unknown kind "${kind}", expected one of ${kindList}.`,
+  );
 };
