@@ -27,7 +27,7 @@ import {
   useEntityRefLink,
 } from '@backstage/plugin-catalog-react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useState, useEffect } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
@@ -80,7 +80,19 @@ const useMemberStyles = makeStyles({
   },
 });
 
-const MemberComponent = (props: { member: UserEntity }) => {
+/** @public */
+export type MembersListCardRenderMemberAvatarProps = {
+  member: UserEntity;
+  displayName: string;
+  className?: string;
+};
+
+const MemberComponent = (props: {
+  member: UserEntity;
+  renderMemberAvatar?: (
+    options: MembersListCardRenderMemberAvatarProps,
+  ) => ReactElement;
+}) => {
   const { t } = useTranslationRef(orgTranslationRef);
   const classes = useMemberStyles();
   const {
@@ -90,19 +102,29 @@ const MemberComponent = (props: { member: UserEntity }) => {
   const displayName = profile?.displayName ?? metaName;
   const entityLink = useEntityRefLink();
 
+  const avatar = props.renderMemberAvatar ? (
+    props.renderMemberAvatar({
+      member: props.member,
+      displayName,
+      className: classes.avatar,
+    })
+  ) : (
+    <Avatar
+      className={classes.avatar}
+      name={displayName}
+      src={profile?.picture ?? ''}
+      purpose="decoration"
+      size="x-large"
+    />
+  );
+
   return (
     <Card
       className={classes.card}
       href={entityLink(props.member)}
       label={t('membersListCard.cardLabel', { memberName: displayName })}
     >
-      <Avatar
-        className={classes.avatar}
-        name={displayName}
-        src={profile?.picture ?? ''}
-        purpose="decoration"
-        size="x-large"
-      />
+      {avatar}
       <Flex className={classes.cardTextContainer} direction="column" gap="1">
         <Text variant="body-large" as="h4">
           {displayName}
@@ -154,6 +176,9 @@ export const MembersListCard = (props: {
   /** @deprecated Please use `relationAggregation` instead */
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
+  renderMemberAvatar?: (
+    options: MembersListCardRenderMemberAvatarProps,
+  ) => ReactElement;
 }) => {
   const { t } = useTranslationRef(orgTranslationRef);
   const {
@@ -161,6 +186,7 @@ export const MembersListCard = (props: {
     pageSize = 50,
     showAggregateMembersToggle,
     relationType = 'memberof',
+    renderMemberAvatar,
   } = props;
   const relationAggregation =
     props.relationAggregation ?? props.relationsType ?? 'direct';
@@ -283,7 +309,10 @@ export const MembersListCard = (props: {
             className={classes.memberListItem}
             key={stringifyEntityRef(member)}
           >
-            <MemberComponent member={member} />
+            <MemberComponent
+              member={member}
+              renderMemberAvatar={renderMemberAvatar}
+            />
           </li>
         ))}
       </ul>

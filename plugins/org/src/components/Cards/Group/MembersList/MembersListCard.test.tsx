@@ -131,6 +131,26 @@ describe('MemberTab Test', () => {
     expect(screen.getByText('team-d members (1 of 1)')).toBeInTheDocument();
   });
 
+  it('renderMemberAvatar overrides the default avatar', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityProvider entity={groupEntity}>
+          <MembersListCard
+            renderMemberAvatar={() => <div data-testid="custom-avatar" />}
+          />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByTestId('custom-avatar')).toBeInTheDocument();
+  });
+
   it('Can render different member display title', async () => {
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>

@@ -7,7 +7,9 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { ReactElement } from 'react';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { UserEntity } from '@backstage/catalog-model';
 
 // @public (undocumented)
 export type ComponentsGridClassKey =
@@ -29,6 +31,9 @@ export const EntityMembersListCard: (props: {
   relationType?: string;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
+  renderMemberAvatar?: (
+    options: MembersListCardRenderMemberAvatarProps,
+  ) => ReactElement;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -63,10 +68,20 @@ export const MembersListCard: (props: {
   relationType?: string;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
+  renderMemberAvatar?: (
+    options: MembersListCardRenderMemberAvatarProps,
+  ) => ReactElement;
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export type MembersListCardClassKey = 'memberList';
+
+// @public (undocumented)
+export type MembersListCardRenderMemberAvatarProps = {
+  member: UserEntity;
+  displayName: string;
+  className?: string;
+};
 
 // @public
 export const MyGroupsSidebarItem: (props: {
