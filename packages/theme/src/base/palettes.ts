@@ -80,7 +80,8 @@ export const palettes = {
       },
       submenu: {
         background: '#404040',
-        selectedItemBackground: '#6f6f6f',
+        selectedBackground: '#6f6f6f',
+        selectedColor: '#FFFFFF',
       },
     },
     pinSidebarButton: {
@@ -155,7 +156,8 @@ export const palettes = {
       },
       submenu: {
         background: '#404040',
-        selectedItemBackground: '#6f6f6f',
+        selectedBackground: '#6f6f6f',
+        selectedColor: '#FFFFFF',
       },
     },
     pinSidebarButton: {

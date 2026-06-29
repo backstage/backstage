@@ -52,7 +52,8 @@ export type BackstagePaletteAdditions = {
     };
     submenu?: {
       background: string;
-      selectedItemBackground?: string;
+      selectedBackground?: string;
+      selectedColor?: string;
     };
   };
   tabbar: {

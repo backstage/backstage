@@ -65,8 +65,10 @@ const useStyles = makeStyles(
     },
     selected: {
       background:
-        theme.palette.navigation.submenu?.selectedItemBackground ?? '#6f6f6f',
-      color: theme.palette.common.white,
+        theme.palette.navigation.submenu?.selectedBackground ?? '#6f6f6f',
+      color:
+        theme.palette.navigation.submenu?.selectedColor ??
+        theme.palette.common.white,
     },
     label: {
       margin: theme.spacing(1.75),

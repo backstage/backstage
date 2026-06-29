@@ -55,7 +55,8 @@ export type BackstagePaletteAdditions = {
     };
     submenu?: {
       background: string;
-      selectedItemBackground?: string;
+      selectedBackground?: string;
+      selectedColor?: string;
     };
   };
   tabbar: {
@@ -306,7 +307,8 @@ export const palettes: {
       };
       submenu: {
         background: string;
-        selectedItemBackground: string;
+        selectedBackground: string;
+        selectedColor: string;
       };
     };
     pinSidebarButton: {
@@ -381,7 +383,8 @@ export const palettes: {
       };
       submenu: {
         background: string;
-        selectedItemBackground: string;
+        selectedBackground: string;
+        selectedColor: string;
       };
     };
     pinSidebarButton: {
