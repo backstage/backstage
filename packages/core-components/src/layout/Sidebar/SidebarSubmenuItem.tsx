@@ -64,7 +64,8 @@ const useStyles = makeStyles(
       width: '100%',
     },
     selected: {
-      background: '#6f6f6f',
+      background:
+        theme.palette.navigation.submenu?.selectedItemBackground ?? '#6f6f6f',
       color: theme.palette.common.white,
     },
     label: {
