@@ -73,14 +73,24 @@ export const myPlugin = createBackendPlugin({
 
 ### Namespaced Tool Names
 
-By default, MCP tool names include the plugin ID prefix to avoid collisions across plugins. For example, an action registered as `greet-user` by `my-custom-plugin` is exposed as `my-custom-plugin.greet-user`.
+By default, MCP tool names include the plugin ID prefix to reduce the risk of collisions across plugins. For example, an action registered as `greet-user` by `my-custom-plugin` is exposed as `my_custom_plugin_greet_user`.
 
-You can disable this if you need the short names for backward compatibility:
+You can disable the plugin ID prefix if you need the short names for backward compatibility:
 
 ```yaml
 mcpActions:
   namespacedToolNames: false
 ```
+
+With namespacing disabled, the same action is exposed as `greet_user`.
+
+#### Tool Name Normalization
+
+Tool names are normalized to `snake_case` before they are exposed: any run of characters other than letters, digits, or underscores is replaced with a single underscore and the result is lowercased. While the MCP specification treats tool names as opaque strings, some LLM clients (such as Anthropic Claude and Google Gemini) reject names that contain `.` or `-`, whereas `_` is accepted across all tested providers.
+
+For backward compatibility, `tools/call` requests still resolve actions referenced by their previous, un-normalized name (for example `my-custom-plugin.greet-user`), so existing clients continue to work without changes.
+
+If two actions normalize to the same tool name, only the first is listed under that name and a warning is logged identifying both actions, so the collision can be resolved by renaming one of them.
 
 ### Multiple MCP Servers
 
