@@ -36,7 +36,6 @@ export default async ({ args, info }: CliCommandContext) => {
   const pluginIds: string[] = parsed._.pluginIds;
 
   const auth = await CliAuth.create();
-  const accessToken = await auth.getAccessToken();
   const localAdditions = pluginSourcesSchema.parse(
     await auth.getMetadata('pluginSources'),
   );
@@ -44,7 +43,7 @@ export default async ({ args, info }: CliCommandContext) => {
     await auth.getMetadata('excludedPluginSources'),
   );
 
-  const client = new ActionsClient(auth.getBaseUrl(), accessToken);
+  const client = new ActionsClient(auth.getBaseUrl(), '');
   const serverSources = await client.listSources();
 
   const effective = mergePluginSources({

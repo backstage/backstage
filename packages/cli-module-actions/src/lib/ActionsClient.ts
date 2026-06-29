@@ -71,7 +71,8 @@ export class ActionsClient {
       });
       return response.sources;
     } catch (error) {
-      if (error instanceof Error && error.message.includes('404')) {
+      const cause = error instanceof Error ? (error as any).cause : undefined;
+      if (cause?.statusCode === 404) {
         return [];
       }
       throw error;

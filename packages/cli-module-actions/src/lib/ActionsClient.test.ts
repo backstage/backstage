@@ -59,8 +59,13 @@ describe('ActionsClient', () => {
     });
 
     it('returns empty array on 404 from older backends', async () => {
+      const cause = Object.assign(new Error('Not Found'), {
+        statusCode: 404,
+      });
       mockHttpJson.mockRejectedValue(
-        new Error('Request failed with 404 Not Found'),
+        Object.assign(new Error('Request failed with 404 Not Found'), {
+          cause,
+        }),
       );
 
       const result = await client.listSources();
