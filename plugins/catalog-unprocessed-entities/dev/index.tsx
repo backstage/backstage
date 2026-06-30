@@ -185,7 +185,12 @@ const pendingEntities: UnprocessedEntity[] = [
 const mockApi: CatalogUnprocessedEntitiesApi = {
   failed: async () => ({ entities: failedEntities }),
   pending: async () => ({ entities: pendingEntities }),
-  delete: async (_entityId: string) => {},
+  delete: async (entityId: string) => {
+    const index = failedEntities.findIndex(e => e.entity_id === entityId);
+    if (index !== -1) {
+      failedEntities.splice(index, 1);
+    }
+  },
 };
 
 createDevApp()

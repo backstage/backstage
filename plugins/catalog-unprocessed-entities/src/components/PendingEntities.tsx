@@ -80,7 +80,7 @@ export const PendingEntities = () => {
   return (
     <>
       <Table
-        options={{ pageSize: 20 }}
+        options={{ pageSize: 20, search: true }}
         columns={columns}
         data={data?.entities || []}
         emptyContent={
