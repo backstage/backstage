@@ -81,13 +81,9 @@ This is highly experimental, proceed with caution.</p>
 The <code>@backstage/plugin-auth</code> package is currently only available in the new frontend system.</p>
 </div>
 <h2 id="configuring-mcp-clients" class="tsd-anchor-link">Configuring MCP Clients<a href="#configuring-mcp-clients" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<p>The MCP server supports both Server-Sent Events (SSE) and Streamable HTTP protocols.</p>
-<p>The SSE protocol is deprecated, and should be avoided as it will be removed in a future release.</p>
+<p>The MCP server uses the Streamable HTTP protocol.</p>
 <h3 id="single-server-default" class="tsd-anchor-link">Single Server (default)<a href="#single-server-default" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<ul>
-<li><code>Streamable HTTP</code>: <code>http://localhost:7007/api/mcp-actions/v1</code></li>
-<li><code>SSE</code>: <code>http://localhost:7007/api/mcp-actions/v1/sse</code></li>
-</ul>
+<p>Use <code>http://localhost:7007/api/mcp-actions/v1</code> for the default single server.</p>
 <pre><code class="json"><span class="hl-2">{</span><br/><span class="hl-2">  </span><span class="hl-17">&quot;mcpServers&quot;</span><span class="hl-2">: {</span><br/><span class="hl-2">    </span><span class="hl-17">&quot;backstage-actions&quot;</span><span class="hl-2">: {</span><br/><span class="hl-2">      </span><span class="hl-17">&quot;url&quot;</span><span class="hl-2">: </span><span class="hl-4">&quot;http://localhost:7007/api/mcp-actions/v1&quot;</span><span class="hl-2">,</span><br/><span class="hl-2">      </span><span class="hl-17">&quot;headers&quot;</span><span class="hl-2">: {</span><br/><span class="hl-2">        </span><span class="hl-17">&quot;Authorization&quot;</span><span class="hl-2">: </span><span class="hl-4">&quot;Bearer ${MCP_TOKEN}&quot;</span><br/><span class="hl-2">      }</span><br/><span class="hl-2">    }</span><br/><span class="hl-2">  }</span><br/><span class="hl-2">}</span>
 </code><button type="button">Copy</button></pre>
 
