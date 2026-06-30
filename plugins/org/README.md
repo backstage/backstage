@@ -83,3 +83,39 @@ Once added MyGroupsSidebarItem will work in three ways:
 3. The user is logged in and a member of more than one group: the MyGroupsSidebarItem will display a single items with a sub-menu with all the related groups like this:
 
    ![MyGroupsSidebarItem multiple example](./docs/mygroupssidebaritem-multiple.png)
+
+### MembersListCard and custom member avatars
+
+On the group entity page, wire `EntityMembersListCard` or `MembersListCard` in your catalog `EntityPage.tsx`. By default, member avatars use `member.spec.profile.picture` from the catalog; when that field is empty, initials are shown.
+
+`renderMemberAvatar` is a prop on `MembersListCard`. In the old frontend system, `EntityMembersListCard` is not a separate implementation — it lazy-loads `MembersListCard` — so you can pass the prop to either export in `EntityPage.tsx`.
+
+To lazy-load avatars from an external source (for example an identity provider API):
+
+```tsx
+import {
+  EntityMembersListCard,
+  type MembersListCardRenderMemberAvatarProps,
+} from '@backstage/plugin-org';
+
+const groupPage = (
+  <EntityLayout>
+    <EntityLayout.Route path="/" title="Overview">
+      <Grid container spacing={3}>
+        {/* ...other group cards... */}
+        <Grid item xs={12} md={6}>
+          <EntityMembersListCard
+            renderMemberAvatar={(
+              props: MembersListCardRenderMemberAvatarProps,
+            ) => <LazyMemberAvatar {...props} />}
+          />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+  </EntityLayout>
+);
+```
+
+You can use `MembersListCard` with the same prop if you import it directly.
+
+When the prop is omitted, behavior is unchanged. On the new frontend system, the default `entity-card:org/members-list` extension does not expose `renderMemberAvatar` through `app-config.yaml` — use an extension override instead. See [README-alpha.md](./README-alpha.md#custom-member-avatars).

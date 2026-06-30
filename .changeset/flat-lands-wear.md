@@ -2,7 +2,7 @@
 '@backstage/plugin-org': minor
 ---
 
-Added an optional `renderMemberAvatar` render prop to `MembersListCard` and `EntityMembersListCard`, plus the exported `MembersListCardRenderMemberAvatarProps` type.
+Added an optional `renderMemberAvatar` render prop to `MembersListCard`, plus the exported `MembersListCardRenderMemberAvatarProps` type. Legacy `EntityMembersListCard` usage in `EntityPage.tsx` inherits the prop because it lazy-loads the same component.
 
 **Why:** By default, each member row renders a `@backstage/ui` `Avatar` using `member.spec.profile.picture` from the catalog. That works when profile pictures are stored on the entity during ingestion (for example, via the Microsoft Graph catalog provider with `loadUserPhotos: true`). When pictures are fetched lazily from an external source instead — or when bulk photo sync is disabled for performance — `spec.profile.picture` is empty and the stock card always shows initials, even if photos are available on demand.
 
@@ -70,6 +70,6 @@ export const LazyMembersListCard = () => (
 );
 ```
 
-`EntityMembersListCard` is a lazy wrapper around the same `MembersListCard` component, so it accepts `renderMemberAvatar` with identical behavior.
+`EntityMembersListCard` in the old frontend system lazy-loads the same `MembersListCard` component, so `renderMemberAvatar` works when passed in `EntityPage.tsx`. The default `entity-card:org/members-list` extension on the new frontend system does not expose this prop through `app-config.yaml`; use an extension override instead.
 
 **Backward compatibility:** No breaking changes. Existing callers of `MembersListCard` and `EntityMembersListCard` require no updates.

@@ -24,9 +24,9 @@ And below is an example of how a user page looks with the user profile and owner
 - [Routes](#routes)
 - [Extensions](#extensions)
   - [Entity Group Profile Card](#entity-group-profile-card)
-  - [Entity Group Profile Card](#entity-members-list-card)
-  - [Entity Group Profile Card](#entity-members-list-card)
-  - [Entity Group Profile Card](#entity-user-profile-card)
+  - [Entity Members List Card](#entity-members-list-card)
+  - [Entity Ownership Card](#entity-ownership-card)
+  - [Entity User Profile Card](#entity-user-profile-card)
   - [My Groups Sidebar Item](#my-groups-sidebar-item)
 
 ## Installation
@@ -143,7 +143,9 @@ For more information about where to place extension overrides, see the official 
 
 ### Entity Members List Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays the names and emails of group members. By clicking the member's name, you'll be directed to the user's catalog page, and the email opens your default email program.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays group members with avatars, names, and emails. Clicking a member's name opens the user's catalog page; clicking an email opens your default mail client.
+
+By default, each member avatar uses `member.spec.profile.picture` from the catalog. When that field is empty, the card shows initials. If your organization loads profile photos lazily from an external source instead of storing them in the catalog during ingestion, use the [`renderMemberAvatar`](#custom-member-avatars) prop to supply photos on demand.
 
 | Kind          | Namespace | Name           | Id                             |
 | ------------- | --------- | -------------- | ------------------------------ |
@@ -151,46 +153,104 @@ An [entity card](https://github.com/backstage/backstage/blob/master/plugins/cata
 
 #### Config
 
-Currently, this entity card extension has only one configuration:
+The following keys can be set under `app.extensions` for `entity-card:org/members-list`:
 
-| Config key | Default value       | Description                                                                                                                                 |
-| ---------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `filter`   | `{ kind: 'group' }` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
+| Config key                   | Default value | Description                                                                                                      |
+| ---------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `showAggregateMembersToggle` | `false`       | When `true`, shows a toggle to switch between direct members and aggregated (descendant) group members.          |
+| `initialRelationAggregation` | `direct`      | Initial member list mode: `direct` (immediate members only) or `aggregated` (includes descendant group members). |
 
-This is how to configure the `members-list` extension in the `app-config.yaml` file:
+Example:
 
 ```yaml
 app:
   extensions:
     - entity-card:org/members-list:
         config:
-          <Config-Key>: '<Config-Value>'
+          showAggregateMembersToggle: true
+          initialRelationAggregation: aggregated
 ```
+
+> [!NOTE]
+> Member avatar rendering is **not** configurable through `app-config.yaml`. See [Custom member avatars](#custom-member-avatars) below.
+
+#### Custom member avatars
+
+`MembersListCard` accepts an optional `renderMemberAvatar` render prop. When provided, it replaces the built-in `@backstage/ui` `Avatar` for each member row. Search, pagination, and aggregate-member behavior are unchanged.
+
+| How you use the card                                                              | `renderMemberAvatar` available?                                                                                                              |
+| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<MembersListCard renderMemberAvatar={...} />` in app code                        | Yes                                                                                                                                          |
+| `<EntityMembersListCard renderMemberAvatar={...} />` in a legacy `EntityPage.tsx` | Yes — `EntityMembersListCard` lazy-loads the same `MembersListCard` component, so props pass through unchanged                               |
+| `entity-card:org/members-list` enabled via `app-config.yaml`                      | No — the default extension renders `MembersListCard` internally without forwarding this prop; use an [extension override](#override) instead |
+
+```tsx
+import {
+  MembersListCard,
+  type MembersListCardRenderMemberAvatarProps,
+} from '@backstage/plugin-org';
+
+<MembersListCard
+  renderMemberAvatar={({ member, displayName, className }) => (
+    <LazyMemberAvatar
+      member={member}
+      displayName={displayName}
+      className={className}
+    />
+  )}
+/>;
+```
+
+The renderer receives:
+
+| Prop          | Type         | Description                                                                  |
+| ------------- | ------------ | ---------------------------------------------------------------------------- |
+| `member`      | `UserEntity` | Catalog user entity for the row.                                             |
+| `displayName` | `string`     | `member.spec.profile.displayName`, or `member.metadata.name` as fallback.    |
+| `className`   | `string`     | Layout class used by the default avatar; pass through for consistent sizing. |
+
+When `renderMemberAvatar` is omitted, behavior is unchanged:
+
+```tsx
+<Avatar src={profile?.picture ?? ''} />
+```
+
+On the new frontend system, wire custom avatars with an [extension override](#override) that loads `MembersListCard` and passes `renderMemberAvatar` (see example below). You cannot set `renderMemberAvatar` from `app-config.yaml` alone.
 
 #### Override
 
-Use extension overrides for completely re-implementing the members-list entity card extension:
+Use extension overrides to customize the members-list card — either pass `renderMemberAvatar` to the stock `MembersListCard`, or replace the card entirely:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { MembersListCard } from '@backstage/plugin-org';
+import { LazyMemberAvatar } from './LazyMemberAvatar';
 
 export default createFrontendModule({
   pluginId: 'org',
   extensions: [
     EntityCardBlueprint.make({
-      // Name is necessary so the system knows that this extension will override the default 'members-list' entity card extension provided by the 'org' plugin
       name: 'members-list',
       params: {
-        // By default, this card will show up only for groups
         filter: { kind: 'group' },
-        // Returning a custom card component
-        loader: () =>
-          import('./components').then(m => <m.MyCustomMembersListEntityCard />),
+        loader: async () => (
+          <MembersListCard
+            showAggregateMembersToggle
+            renderMemberAvatar={props => <LazyMemberAvatar {...props} />}
+          />
+        ),
       },
     }),
   ],
 });
+```
+
+To fully replace the card UI, return your own component from `loader` instead:
+
+```tsx
+loader: () =>
+  import('./components').then(m => <m.MyCustomMembersListEntityCard />),
 ```
 
 For more information about where to place extension overrides, see the official [documentation](https://backstage.io/docs/frontend-system/architecture/extension-overrides).
