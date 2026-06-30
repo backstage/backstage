@@ -13,41 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState } from 'react';
-
 import {
   ErrorPanel,
   Progress,
   TableColumn,
   Table,
 } from '@backstage/core-components';
-import Typography from '@material-ui/core/Typography';
-import { Theme, makeStyles } from '@material-ui/core/styles';
-
-import { UnprocessedEntity } from '../types';
+import { Alert, Text } from '@backstage/ui';
 
 import { EntityDialog } from './EntityDialog';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  successMessage: {
-    background: theme.palette.infoBackground,
-    color: theme.palette.infoText,
-    padding: theme.spacing(2),
-  },
-}));
+import { UnprocessedEntity } from '@backstage/plugin-catalog-unprocessed-entities-common';
 
 export const PendingEntities = () => {
-  const classes = useStyles();
   const unprocessedApi = useApi(catalogUnprocessedEntitiesApiRef);
   const {
     loading,
     error,
     value: data,
   } = useAsync(async () => await unprocessedApi.pending());
-  const [, setSelectedSearchTerm] = useState<string>('');
 
   if (loading) {
     return <Progress />;
@@ -58,7 +44,7 @@ export const PendingEntities = () => {
 
   const columns: TableColumn[] = [
     {
-      title: <Typography>entityRef</Typography>,
+      title: <Text>entityRef</Text>,
       sorting: true,
       field: 'entity_ref',
       customFilterAndSearch: (query, row: any) =>
@@ -69,14 +55,14 @@ export const PendingEntities = () => {
         (rowData as UnprocessedEntity).entity_ref,
     },
     {
-      title: <Typography>Kind</Typography>,
+      title: <Text>Kind</Text>,
       sorting: true,
       field: 'kind',
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).unprocessed_entity.kind,
     },
     {
-      title: <Typography>Owner</Typography>,
+      title: <Text>Owner</Text>,
       sorting: true,
       field: 'unprocessed_entity.spec.owner',
       render: (rowData: UnprocessedEntity | {}) =>
@@ -84,7 +70,7 @@ export const PendingEntities = () => {
         'unknown',
     },
     {
-      title: <Typography>Raw</Typography>,
+      title: <Text>Raw</Text>,
       sorting: false,
       render: (rowData: UnprocessedEntity | {}) => (
         <EntityDialog entity={rowData as UnprocessedEntity} />
@@ -97,13 +83,12 @@ export const PendingEntities = () => {
         options={{ pageSize: 20 }}
         columns={columns}
         data={data?.entities || []}
-        onSearchChange={(searchTerm: string) =>
-          setSelectedSearchTerm(searchTerm)
-        }
         emptyContent={
-          <Typography className={classes.successMessage}>
-            No pending entities found
-          </Typography>
+          <Alert
+            status="info"
+            title="No pending entities found"
+            style={{ placeSelf: 'center', margin: 'var(--bui-space-4)' }}
+          />
         }
       />
     </>
