@@ -189,4 +189,34 @@ describe('FailedEntities', () => {
       }),
     );
   });
+
+  it('falls back to the entity id (never "undefined") when deleting a null-ref entity fails', async () => {
+    api.failed.mockResolvedValue({
+      entities: [
+        makeEntity({
+          entity_id: 'id-null',
+          entity_ref: null as unknown as string,
+        }),
+      ],
+    });
+    api.delete.mockRejectedValue(new Error('network error'));
+    await renderComponent();
+
+    await userEvent.click(
+      (
+        await screen.findAllByLabelText('Delete entity unknown')
+      )[0],
+    );
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Delete' }),
+    );
+
+    await waitFor(() => expect(api.delete).toHaveBeenCalledWith('id-null'));
+    expect(toastApi.post).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Failed to delete entity id-null',
+        status: 'danger',
+      }),
+    );
+  });
 });
