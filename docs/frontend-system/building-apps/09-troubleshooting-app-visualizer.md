@@ -1,19 +1,23 @@
 ---
 id: troubleshooting-visualizer
-title: Install Troubleshooting Plugin Visualizer
-sidebar_label: Troubleshooting Plugin Visualizer
-description: How to install the plugin visualizer in the frontend system for troubleshooting
+title: Install App Visualizer Plugin
+sidebar_label: App Visualizer Plugin for troubleshooting
+description: How to install the  app-visualizer plugin in the frontend system for troubleshooting
 ---
 
 ## Overview
 
-This section describes how to install the `app-visualizer` plugin in the frontend system. It also describes which views are available.
+This section describes how to install the `app-visualizer` plugin in the frontend system. It also describes which views are available. It can be used during normal usage of the frontend system or during migration.
 
 ### Visualizer Plugin
 
 The `app-visualizer` plugin can help with troubleshooting. It provides a visual overview of your app's extension tree, making it easy to verify that plugins are installed correctly, see how extensions are wired together, and identify issues during migration.
 
-It can only be installed starting with release 1.49.0.
+:::note
+
+The plugin is available starting with Backstage v1.22.0.
+
+:::
 
 #### Installation
 
