@@ -16,7 +16,6 @@
 
 import os from 'node:os';
 import fs from 'fs-extra';
-import fetch from 'cross-fetch';
 import handlebars from 'handlebars';
 import killTree from 'tree-kill';
 import { resolve as resolvePath, join as joinPath } from 'node:path';
@@ -28,6 +27,7 @@ import mysql from 'mysql2/promise';
 import pgtools from 'pgtools';
 
 import { OptionValues } from 'commander';
+import { isError, stringifyError } from '@backstage/errors';
 import { findOwnPaths, runOutput, run } from '@backstage/cli-common';
 
 /* eslint-disable-next-line no-restricted-syntax */
@@ -81,6 +81,8 @@ export async function runCommand(opts: OptionValues) {
       '--config',
       productionConfig,
     );
+    // Brief pause to let the OS reclaim the port from the previous backend
+    await new Promise(resolve => setTimeout(resolve, 3000));
   }
   print('Testing the Database backend startup');
   await testBackendStart(appDir);
@@ -516,28 +518,61 @@ async function testBackendStart(appDir: string, ...args: string[]) {
       // Skipping the whole block
       throw new Error(stderr);
     }
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     print('Try to fetch entities from the backend');
-    // Try fetch entities, should be ok
-    const res = await fetch('http://localhost:7007/api/catalog/entities');
-    if (!res.ok) {
-      throw new Error(
-        `Failed to fetch entities: ${res.status} ${res.statusText}`,
-      );
+    const maxAttempts = 3;
+    const errors: Error[] = [];
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      if (attempt > 1) {
+        if (child.exitCode !== null) {
+          errors.push(
+            new Error(
+              `Backend process exited with code ${child.exitCode} before fetch could succeed`,
+            ),
+          );
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+      try {
+        const res = await fetch('http://localhost:7007/api/catalog/entities');
+        if (!res.ok) {
+          throw new Error(
+            `Failed to fetch entities: ${res.status} ${res.statusText}`,
+          );
+        }
+        const content = await res.text();
+        try {
+          JSON.parse(content);
+        } catch (parseError) {
+          throw new Error(
+            `Failed to parse entities JSON response: ${stringifyError(
+              parseError,
+            )}\n${content}`,
+          );
+        }
+        errors.length = 0;
+        break;
+      } catch (error) {
+        errors.push(isError(error) ? error : new Error(stringifyError(error)));
+      }
     }
-    const content = await res.text();
-    try {
-      JSON.parse(content);
-    } catch (error) {
+    if (errors.length > 0) {
       throw new Error(
-        `Failed to parse entities JSON response: ${error}\n${content}`,
+        `Failed to fetch entities after ${maxAttempts} attempts:\n${errors
+          .map(e => `  - ${e.message}`)
+          .join('\n')}`,
       );
     }
     print('Entities fetched successfully');
     successful = true;
   } catch (error) {
     print('');
+    print(`Backend stdout:\n${stdout}`);
+    if (stderr) {
+      print(`Backend stderr:\n${stderr}`);
+    }
     throw new Error(`Backend failed to startup: ${error}`);
   } finally {
     print('Stopping the child process');

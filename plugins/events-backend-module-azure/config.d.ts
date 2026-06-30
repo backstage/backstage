@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,22 @@
  */
 
 export interface Config {
-  kubernetes?: {
-    /**
-     * Pod Exec Terminal config
-     */
-    podExecTerminal?: {
+  events?: {
+    modules?: {
       /**
-       * Enable `PodExecTerminal` UI feature
-       * @visibility frontend
+       * events-backend-module-azure plugin configuration.
        */
-      enabled?: boolean;
-    };
-    /**
-     * Frontend config
-     */
-    frontend?: {
-      /**
-       * Pod Delete config
-       */
-      podDelete?: {
+      azureDevOps?: {
         /**
-         * Enable `podDelete` UI feature
-         * @visibility frontend
+         * Shared secret for validating incoming Azure DevOps webhook
+         * requests. Configure the same value as the
+         * `x-ado-webhook-secret` HTTP header in your Azure DevOps
+         * service hook subscription. Requests without a matching
+         * secret are rejected with 403.
+         *
+         * @visibility secret
          */
-        enabled?: boolean;
+        webhookSecret?: string;
       };
     };
   };
