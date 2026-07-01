@@ -954,12 +954,22 @@ describe('createRouter readonly disabled', () => {
         getLocationByEntity: jest.fn(),
       };
       const router = await createRouter({
+        entitiesCatalog: {
+          entities: jest.fn(),
+          entitiesBatch: jest.fn(),
+          queryEntities: jest.fn(),
+          removeEntityByUid: jest.fn(),
+          entityAncestry: jest.fn(),
+          facets: jest.fn(),
+        },
+        locationAnalyzer: { analyzeLocation: jest.fn() },
         locationService,
         logger: mockServices.logger.mock(),
         config: new ConfigReader(undefined),
         auth: mockServices.auth(),
         httpAuth: mockServices.httpAuth(),
         orchestrator: { process: jest.fn() },
+        refreshService: { refresh: jest.fn() },
         permissionsService: mockServices.permissions(),
         auditor: mockServices.auditor.mock(),
       });
@@ -1477,6 +1487,7 @@ describe('createRouter readonly and raw json enabled', () => {
     };
     const router = await createRouter({
       entitiesCatalog,
+      locationAnalyzer: { analyzeLocation: jest.fn() },
       locationService,
       logger: mockServices.logger.mock(),
       config: new ConfigReader({
@@ -1487,6 +1498,7 @@ describe('createRouter readonly and raw json enabled', () => {
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
       orchestrator: { process: jest.fn() },
+      refreshService: { refresh: jest.fn() },
       permissionsService,
       auditor: mockServices.auditor.mock(),
     });
@@ -1711,12 +1723,22 @@ describe.each(databases.eachSupportedId())(
       );
 
       const router = await createRouter({
+        entitiesCatalog: {
+          entities: jest.fn(),
+          entitiesBatch: jest.fn(),
+          queryEntities: jest.fn(),
+          removeEntityByUid: jest.fn(),
+          entityAncestry: jest.fn(),
+          facets: jest.fn(),
+        },
+        locationAnalyzer: { analyzeLocation: jest.fn() },
         locationService,
         logger: mockServices.logger.mock(),
         config: new ConfigReader(undefined),
         auth: mockServices.auth(),
         httpAuth: mockServices.httpAuth(),
         orchestrator: { process: jest.fn() },
+        refreshService: { refresh: jest.fn() },
         permissionsService: mockServices.permissions(),
         auditor: mockServices.auditor.mock(),
       });
