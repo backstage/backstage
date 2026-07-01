@@ -868,6 +868,8 @@ By default, TechDocs serves documentation to anyone who can view the entity in t
 
 TechDocs supports the Backstage permission framework through the `techdocs.entity.read` permission. When permissions are enabled, all TechDocs endpoints check this permission before serving content.
 
+TechDocs does not enforce any access rules of its own beyond this check — **you decide in your own permission policy what stays open to everyone and what gets locked down**. The sections below show a suggested convention, using a well-known annotation to activate restriction for specific entities, but you are free to base your policy on any entity property (owner, tags, labels, kind, and so on).
+
 ### Understanding how TechDocs permissions work
 
 TechDocs uses **two layers of permission checks**:
@@ -916,5 +918,74 @@ class MyPermissionPolicy implements PermissionPolicy {
 ```
 
 Since `techdocs.entity.read` uses the `catalog-entity` resource type, you can reuse existing catalog permission rules and conditions in your policy.
+
+### Restrict only specific documentation
+
+You usually don't want to lock down _all_ documentation — only a subset, such as
+security runbooks or sensitive architecture documents. TechDocs exports a
+well-known annotation, `backstage.io/techdocs-visibility`, that entity owners can
+add to mark their documentation as restricted:
+
+```yaml title="catalog-info.yaml"
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: incident-response-runbook
+  annotations:
+    backstage.io/techdocs-visibility: restricted
+spec:
+  type: documentation
+  owner: security-team
+```
+
+Your permission policy can then read this annotation and restrict access to
+entity owners only, while leaving all other documentation open by default:
+
+```typescript
+import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
+import { TECHDOCS_VISIBILITY_ANNOTATION } from '@backstage/plugin-techdocs-common';
+import { isPermission } from '@backstage/plugin-permission-common';
+import {
+  catalogConditions,
+  createCatalogConditionalDecision,
+} from '@backstage/plugin-catalog-backend/alpha';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
+
+class MyPermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, techDocsEntityReadPermission)) {
+      return createCatalogConditionalDecision(request.permission, {
+        anyOf: [
+          // Documentation without the annotation stays open to everyone.
+          {
+            not: catalogConditions.hasAnnotation({
+              annotation: TECHDOCS_VISIBILITY_ANNOTATION,
+              value: 'restricted',
+            }),
+          },
+          // Restricted documentation is only readable by entity owners.
+          catalogConditions.isEntityOwner({
+            claims: user?.info.ownershipEntityRefs ?? [],
+          }),
+        ],
+      });
+    }
+
+    return { result: AuthorizeResult.ALLOW };
+  }
+}
+```
+
+With this policy, documentation stays open by default, and only entities marked
+with `backstage.io/techdocs-visibility: restricted` are limited to their owners.
+The annotation is only a signal — the permission policy is what enforces access,
+so you remain free to define what "restricted" means for your organization.
 
 For more details on writing permission policies, see the [permission documentation](../../permissions/writing-a-policy.md).

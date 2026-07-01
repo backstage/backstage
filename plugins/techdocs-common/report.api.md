@@ -16,6 +16,10 @@ export const TECHDOCS_EXTERNAL_PATH_ANNOTATION =
   'backstage.io/techdocs-entity-path';
 
 // @public
+export const TECHDOCS_VISIBILITY_ANNOTATION =
+  'backstage.io/techdocs-visibility';
+
+// @public
 export const techDocsEntityReadPermission: ResourcePermission<'catalog-entity'>;
 
 // @public
