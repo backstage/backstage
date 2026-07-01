@@ -15,7 +15,9 @@
  */
 
 import fs from 'fs-extra';
-import { EOL } from 'node:os';
+import type * as TsJsonSchemaGenerator from 'ts-json-schema-generator';
+import type * as TypeScript from 'typescript';
+import { createHash } from 'node:crypto';
 import {
   resolve as resolvePath,
   relative as relativePath,
@@ -23,8 +25,7 @@ import {
   sep,
 } from 'node:path';
 import { ConfigSchemaPackageEntry } from './types';
-import { JsonObject } from '@backstage/types';
-import { toError } from '@backstage/errors';
+import type { JsonObject } from '@backstage/types';
 
 type Item = {
   name?: string;
@@ -54,6 +55,7 @@ export const internal = {
 export async function collectConfigSchemas(
   packageNames: string[],
   packagePaths: string[],
+  options?: { excludePackageDependencies?: boolean },
 ): Promise<ConfigSchemaPackageEntry[]> {
   const schemas = new Array<ConfigSchemaPackageEntry>();
   const tsSchemaPaths = new Array<{ packageName: string; path: string }>();
@@ -149,11 +151,13 @@ export async function collectConfigSchemas(
       }
     }
 
-    await Promise.all(
-      depNames.map(depName =>
-        processItem({ name: depName, parentPath: pkgPath }),
-      ),
-    );
+    if (!options?.excludePackageDependencies) {
+      await Promise.all(
+        depNames.map(depName =>
+          processItem({ name: depName, parentPath: pkgPath }),
+        ),
+      );
+    }
   }
 
   await Promise.all([
@@ -180,9 +184,81 @@ export async function collectConfigSchemas(
   return allSchemas;
 }
 
+function namespaceSchemaDefinitions(
+  schema: JsonObject,
+  namespace: string,
+): JsonObject {
+  const definitions = schema.definitions;
+  if (
+    !definitions ||
+    typeof definitions !== 'object' ||
+    Array.isArray(definitions) ||
+    Object.keys(definitions).length === 0
+  ) {
+    delete schema.definitions;
+    return schema;
+  }
+
+  const renamedDefinitions = Object.fromEntries(
+    Object.entries(definitions).map(([name, definition]) => [
+      `${namespace}-${name}`,
+      definition,
+    ]),
+  );
+  const renamedRefs = new Map<string, string>();
+  for (const name of Object.keys(definitions)) {
+    const renamed = `${namespace}-${name}`;
+    renamedRefs.set(`#/definitions/${name}`, `#/definitions/${renamed}`);
+    renamedRefs.set(
+      `#/definitions/${encodeURIComponent(name)}`,
+      `#/definitions/${encodeURIComponent(renamed)}`,
+    );
+  }
+
+  function rewriteRefs(value: unknown): void {
+    if (Array.isArray(value)) {
+      value.forEach(rewriteRefs);
+      return;
+    }
+    if (!value || typeof value !== 'object') {
+      return;
+    }
+
+    const object = value as Record<string, unknown>;
+    if (typeof object.$ref === 'string') {
+      object.$ref = renamedRefs.get(object.$ref) ?? object.$ref;
+    }
+    Object.values(object).forEach(rewriteRefs);
+  }
+
+  schema.definitions = renamedDefinitions;
+  rewriteRefs(schema);
+  return schema;
+}
+
+function parseNestedSchemaAnnotation(annotation: unknown) {
+  if (typeof annotation !== 'string') {
+    return undefined;
+  }
+
+  const match = annotation.match(/^\.([\w-]+)\s+([\s\S]+)$/);
+  if (!match) {
+    return undefined;
+  }
+
+  const [, key, text] = match;
+  let value: unknown = text.trim();
+  try {
+    value = JSON.parse(value as string);
+  } catch {
+    // Plain strings such as visibility values are not JSON encoded.
+  }
+  return { key, value };
+}
+
 // This handles the support of TypeScript .d.ts config schema declarations.
-// We collect all typescript schema definition and compile them all in one go.
-// This is much faster than compiling them separately.
+// We collect all TypeScript schema definitions and compile them in one shared
+// program, which avoids repeatedly resolving and parsing imported types.
 async function compileTsSchemas(
   entries: { path: string; packageName: string }[],
 ) {
@@ -190,74 +266,131 @@ async function compileTsSchemas(
     return [];
   }
 
-  // Lazy loaded, because this brings up all of TypeScript and we don't
-  // want that eagerly loaded in tests
-  const { getProgramFromFiles, buildGenerator } =
-    require('typescript-json-schema') as typeof import('typescript-json-schema');
+  // Lazy loaded, because these bring up all of TypeScript and we don't want
+  // that eagerly loaded when collecting JSON schemas.
+  const ts: typeof TypeScript = require('typescript');
+  const {
+    AnnotatedTypeFormatter,
+    createFormatter,
+    createParser,
+    DEFAULT_CONFIG,
+    SchemaGenerator,
+  }: typeof TsJsonSchemaGenerator = require('ts-json-schema-generator');
 
-  const program = getProgramFromFiles(
-    entries.map(({ path }) => path),
-    {
-      incremental: false,
-      isolatedModules: true,
-      lib: ['ES5'], // Skipping most libs speeds processing up a lot, we just need the primitive types anyway
-      noEmit: true,
-      noResolve: true,
-      skipLibCheck: true, // Skipping lib checks speeds things up
-      skipDefaultLibCheck: true,
-      strict: true,
-      typeRoots: [], // Do not include any additional types
-      types: [],
+  const currentDir = process.cwd();
+  const rootNames = entries.map(({ path }) => resolvePath(currentDir, path));
+  const compilerOptions: TypeScript.CompilerOptions = {
+    incremental: false,
+    jsx: ts.JsxEmit.Preserve,
+    module: ts.ModuleKind.ESNext,
+    moduleResolution: ts.ModuleResolutionKind.Bundler,
+    noEmit: true,
+    noResolve: false,
+    skipDefaultLibCheck: true,
+    skipLibCheck: false,
+    strict: true,
+    target: ts.ScriptTarget.ES2022,
+    types: [],
+  };
+
+  const program = ts.createProgram(rootNames, compilerOptions);
+  const diagnostics = [
+    ...program.getOptionsDiagnostics(),
+    ...program.getGlobalDiagnostics(),
+    ...rootNames.flatMap(rootName => {
+      const sourceFile = program.getSourceFile(rootName);
+      return sourceFile
+        ? [
+            ...program.getSyntacticDiagnostics(sourceFile),
+            ...program.getSemanticDiagnostics(sourceFile),
+          ]
+        : [];
+    }),
+  ];
+  if (diagnostics.length > 0) {
+    const message = ts.formatDiagnostics(diagnostics, {
+      getCanonicalFileName: fileName => fileName,
+      getCurrentDirectory: () => currentDir,
+      getNewLine: () => '\n',
+    });
+    throw new Error(`Invalid TypeScript configuration schema:\n${message}`);
+  }
+
+  const generatorConfig = {
+    ...DEFAULT_CONFIG,
+    additionalProperties: true,
+    expose: 'none' as const,
+    extraTags: ['visibility', 'deepVisibility', 'deprecated', 'items'],
+    jsDoc: 'extended' as const,
+    skipTypeCheck: true,
+    topRef: false,
+    tsProgram: program,
+  };
+  const parser = createParser(program, generatorConfig);
+  class NestedAnnotationsFormatter extends AnnotatedTypeFormatter {
+    override getDefinition(type: TsJsonSchemaGenerator.AnnotatedType) {
+      const annotations = type.getAnnotations();
+      const itemsAnnotation = annotations.items;
+      const nestedItems = parseNestedSchemaAnnotation(itemsAnnotation);
+      if (!nestedItems) {
+        return super.getDefinition(type);
+      }
+
+      delete annotations.items;
+      try {
+        const definition = super.getDefinition(type);
+        const items = definition.items;
+        if (items && typeof items === 'object' && !Array.isArray(items)) {
+          Object.assign(items, { [nestedItems.key]: nestedItems.value });
+        }
+        return definition;
+      } finally {
+        annotations.items = itemsAnnotation;
+      }
+    }
+  }
+  const formatter = createFormatter(
+    generatorConfig,
+    (chainFormatter, circularReferenceFormatter) => {
+      chainFormatter.addTypeFormatter(
+        new NestedAnnotationsFormatter(circularReferenceFormatter),
+      );
     },
   );
+  const generator = new SchemaGenerator(
+    program,
+    parser,
+    formatter,
+    generatorConfig,
+  );
 
-  const tsSchemas = entries.map(({ path, packageName }) => {
-    let value;
-    try {
-      const generator = buildGenerator(
-        program,
-        // This enables the use of these tags in TSDoc comments
-        {
-          required: true,
-          validationKeywords: ['visibility', 'deepVisibility', 'deprecated'],
-        },
-        [path.split(sep).join('/')], // Unix paths are expected for all OSes here
-      );
-
-      // All schemas should export a `Config` symbol
-      value = generator?.getSchemaForSymbol('Config') as JsonObject | null;
-
-      // This makes sure that no additional symbols are defined in the schema. We don't allow
-      // this because they share a global namespace and will be merged together, leading to
-      // unpredictable behavior.
-      const userSymbols = new Set(generator?.getUserSymbols());
-      userSymbols.delete('Config');
-      if (userSymbols.size !== 0) {
-        const names = Array.from(userSymbols).join("', '");
-        throw new Error(
-          `Invalid configuration schema in ${path}, additional symbol definitions are not allowed, found '${names}'`,
-        );
-      }
-
-      // This makes sure that no unsupported types are used in the schema, for example `Record<,>`.
-      // The generator will extract these as a schema reference, which will in turn be broken for our usage.
-      const reffedDefs = Object.keys(generator?.ReffedDefinitions ?? {});
-      if (reffedDefs.length !== 0) {
-        const lines = reffedDefs.join(`${EOL}  `);
-        throw new Error(
-          `Invalid configuration schema in ${path}, the following definitions are not supported:${EOL}${EOL}  ${lines}`,
-        );
-      }
-    } catch (error) {
-      const err = toError(error);
-      if (err.message !== 'type Config not found') {
-        throw err;
-      }
-    }
-
-    if (!value) {
+  const tsSchemas = entries.map(({ path, packageName }, index) => {
+    const sourceFile = program.getSourceFile(rootNames[index]);
+    if (!sourceFile) {
       throw new Error(`Invalid schema in ${path}, missing Config export`);
     }
+    const configNode = sourceFile.statements.find(
+      statement =>
+        (ts.isInterfaceDeclaration(statement) ||
+          ts.isTypeAliasDeclaration(statement)) &&
+        statement.name.text === 'Config',
+    );
+    if (!configNode) {
+      throw new Error(`Invalid schema in ${path}, missing Config export`);
+    }
+
+    const namespace = createHash('sha256')
+      .update(packageName)
+      .update('\0')
+      .update(path.split(sep).join('/'))
+      .digest('hex');
+    const value = namespaceSchemaDefinitions(
+      structuredClone(
+        generator.createSchemaFromNodes([configNode]),
+      ) as JsonObject,
+      namespace,
+    );
+
     return { path, value, packageName };
   });
 

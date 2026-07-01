@@ -18,3 +18,4 @@ export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
 export { actionsServiceFactory } from './entrypoints/actions';
 export { metricsServiceFactory } from './entrypoints/metrics';
 export { rootSystemMetadataServiceFactory } from './entrypoints/rootSystemMetadata';
+export { tracingServiceFactory } from './entrypoints/tracing';

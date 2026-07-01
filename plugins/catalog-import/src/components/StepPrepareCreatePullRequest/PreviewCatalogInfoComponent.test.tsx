@@ -49,7 +49,7 @@ const mockConfigApi = mockApis.config();
 const apis = [[configApiRef, mockConfigApi]] as const;
 
 describe('<PreviewCatalogInfoComponent />', () => {
-  it('renders without exploding', () => {
+  it('renders without exploding', async () => {
     render(
       <TestApiProvider apis={apis}>
         <PreviewCatalogInfoComponent
@@ -62,14 +62,15 @@ describe('<PreviewCatalogInfoComponent />', () => {
     const repositoryUrl = screen.getByText(
       'http://my-repository/a/catalog-info.yaml',
     );
-    const kindText = screen.getByText(/Kind_2/);
     expect(repositoryUrl).toBeInTheDocument();
     expect(repositoryUrl).toBeVisible();
+
+    const kindText = await screen.findByText(/Kind_2/);
     expect(kindText).toBeInTheDocument();
     expect(kindText).toBeVisible();
   });
 
-  it('renders card with custom styles', () => {
+  it('renders card with custom styles', async () => {
     const { result } = renderHook(() => useStyles());
 
     render(
@@ -85,14 +86,15 @@ describe('<PreviewCatalogInfoComponent />', () => {
     const repositoryUrl = screen.getByText(
       'http://my-repository/a/catalog-info.yaml',
     );
-    const kindText = screen.getByText(/Kind_2/);
     expect(repositoryUrl).toBeInTheDocument();
     expect(repositoryUrl).not.toBeVisible();
+
+    const kindText = await screen.findByText(/Kind_2/);
     expect(kindText).toBeInTheDocument();
     expect(kindText).not.toBeVisible();
   });
 
-  it('renders with custom styles', () => {
+  it('renders with custom styles', async () => {
     const { result } = renderHook(() => useStyles());
 
     render(
@@ -108,9 +110,10 @@ describe('<PreviewCatalogInfoComponent />', () => {
     const repositoryUrl = screen.getByText(
       'http://my-repository/a/catalog-info.yaml',
     );
-    const kindText = screen.getByText(/Kind_2/);
     expect(repositoryUrl).toBeInTheDocument();
     expect(repositoryUrl).toBeVisible();
+
+    const kindText = await screen.findByText(/Kind_2/);
     expect(kindText).toBeInTheDocument();
     expect(kindText).not.toBeVisible();
   });

@@ -634,6 +634,35 @@ export interface Config {
           }
         | {
             /**
+             * The specific config for AWS RDS connections with IAM authentication.
+             * Requires the `@aws-sdk/rds-signer` package to be installed.
+             * The IAM role or user must have the `rds-db:connect` permission for the database user.
+             */
+            type: 'rds';
+            /**
+             * The hostname of the RDS instance.
+             */
+            host: string;
+            /**
+             * The port number the database is listening on.
+             */
+            port: number;
+            /**
+             * The database user to authenticate as. This user must have the `rds_iam` role granted.
+             */
+            user: string;
+            /**
+             * The AWS region where the RDS instance is located.
+             * Falls back to the AWS_REGION or AWS_DEFAULT_REGION environment variables if not set.
+             */
+            region?: string;
+            /**
+             * Other connection settings
+             */
+            [key: string]: unknown;
+          }
+        | {
+            /**
              * The rest config for default, regular connections
              */
             type?: 'default';
@@ -1150,6 +1179,52 @@ export interface Config {
             version?: string;
             /**
              * Schema URL for the meter.
+             */
+            schemaUrl?: string;
+          };
+        };
+      };
+    };
+
+    /**
+     * Tracing-related backend configuration. Honored by Backstage backend
+     * plugins that emit OpenTelemetry trace spans.
+     */
+    tracing?: {
+      /**
+       * Opt-in capture of attributes that may identify users or contain
+       * sensitive data on backend trace spans.
+       */
+      capture?: {
+        /**
+         * When true, backend plugins emitting trace spans for authenticated
+         * requests SHOULD include the authenticated principal's identity as
+         * `enduser.id` (the user entity ref for a user principal, or the
+         * service subject for a service principal). Defaults to false.
+         */
+        endUser?: boolean;
+      };
+      /**
+       * Plugin-specific tracing configuration. Each plugin can override
+       * tracer instrumentation scope metadata.
+       */
+      plugin?: {
+        [pluginId: string]: {
+          /**
+           * Tracer configuration for this plugin.
+           */
+          tracer?: {
+            /**
+             * Custom tracer name. If not set, defaults to
+             * backstage-plugin-{pluginId}.
+             */
+            name?: string;
+            /**
+             * Version for the tracer.
+             */
+            version?: string;
+            /**
+             * Schema URL for the tracer.
              */
             schemaUrl?: string;
           };

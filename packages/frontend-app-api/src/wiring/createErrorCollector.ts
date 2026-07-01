@@ -97,6 +97,9 @@ export type AppErrorTypes = {
       bootstrapPluginId: string;
     };
   };
+  FEATURE_FLAG_INVALID: {
+    context: { pluginId: string; flagName: string; error: Error };
+  };
   // routing
   ROUTE_DUPLICATE: {
     context: { routeId: string };

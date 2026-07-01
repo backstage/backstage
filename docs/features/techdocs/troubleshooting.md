@@ -26,7 +26,7 @@ TechDocs architecture (documentation generated and published in CI/CD).
 
 ## MkDocs Build Errors
 
-Using the [TechDocs CLI](https://github.com/backstage/techdocs-cli), you can
+Using the [TechDocs CLI](https://backstage.io/docs/features/techdocs/cli), you can
 troubleshoot MkDocs build issues locally. Note this requires you have Docker
 available to launch images. First, `git clone` the target repository locally,
 then in the root of the repository, run:

@@ -15,42 +15,26 @@
  */
 
 import { Progress, WarningPanel } from '@backstage/core-components';
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  useTheme,
-} from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
+import { Alert, Box, Text } from '@backstage/ui';
+import useObservable from 'react-use/esm/useObservable';
 import ReactJson from 'react-json-view';
 import { useConfig } from '../../../hooks';
 import { ConfigError } from '@backstage/plugin-devtools-common';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    warningStyle: {
-      paddingBottom: theme.spacing(2),
-    },
-    paperStyle: {
-      padding: theme.spacing(2),
-    },
-  }),
-);
-
 export const WarningContent = ({ error }: { error: ConfigError }) => {
   if (!error.messages) {
-    return <Typography>{error.message}</Typography>;
+    return <Text as="p">{error.message}</Text>;
   }
 
-  const messages = error.messages as string[];
+  const messages = error.messages;
 
   return (
     <Box>
       {messages.map(message => (
-        <Typography>{message}</Typography>
+        <Text as="p" key={message}>
+          {message}
+        </Text>
       ))}
     </Box>
   );
@@ -58,37 +42,44 @@ export const WarningContent = ({ error }: { error: ConfigError }) => {
 
 /** @public */
 export const ConfigContent = () => {
-  const classes = useStyles();
-  const theme = useTheme();
+  const appThemeApi = useApi(appThemeApiRef);
+  const activeThemeId = useObservable(
+    appThemeApi.activeThemeId$(),
+    appThemeApi.getActiveThemeId(),
+  );
+  const activeTheme = appThemeApi
+    .getInstalledThemes()
+    .find(t => t.id === activeThemeId);
+  const isDark = activeTheme?.variant === 'dark';
   const { configInfo, loading, error } = useConfig();
 
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <Alert status="danger" description={error.message} />;
   }
 
   if (!configInfo) {
-    return <Alert severity="error">Unable to load config data</Alert>;
+    return <Alert status="danger" description="Unable to load config data" />;
   }
 
   return (
     <Box>
       {configInfo && configInfo.error && (
-        <Box className={classes.warningStyle}>
+        <Box pb="2">
           <WarningPanel title="Config validation failed">
             <WarningContent error={configInfo.error} />
           </WarningPanel>
         </Box>
       )}
-      <Paper className={classes.paperStyle}>
+      <Box bg="neutral" p="4">
         <ReactJson
           src={configInfo.config as object}
           name="config"
           enableClipboard={false}
-          theme={theme.palette.type === 'dark' ? 'chalk' : 'rjv-default'}
+          theme={isDark ? 'chalk' : 'rjv-default'}
         />
-      </Paper>
+      </Box>
     </Box>
   );
 };

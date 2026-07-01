@@ -18,6 +18,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
+import { z } from 'zod/v4';
 
 import {
   CatalogIcon,
@@ -36,7 +37,6 @@ import {
   ApiBlueprint,
   createExtensionInput,
   PageBlueprint,
-  NavItemBlueprint,
   configApiRef,
 } from '@backstage/frontend-plugin-api';
 
@@ -93,10 +93,8 @@ const useSearchPageStyles = makeStyles((theme: Theme) => ({
 
 /** @alpha */
 export const searchPage = PageBlueprint.makeWithOverrides({
-  config: {
-    schema: {
-      noTrack: z => z.boolean().default(false),
-    },
+  configSchema: {
+    noTrack: z.boolean().default(false),
   },
   inputs: {
     items: createExtensionInput([SearchResultListItemBlueprint.dataRefs.item]),
@@ -111,6 +109,8 @@ export const searchPage = PageBlueprint.makeWithOverrides({
     return originalFactory({
       path: '/search',
       routeRef: rootRouteRef,
+      title: 'Search',
+      icon: <SearchIcon fontSize="inherit" />,
       loader: async () => {
         const getResultItemComponent = (result: SearchResult) => {
           const value = inputs.items.find(item =>
@@ -260,21 +260,12 @@ export const searchPage = PageBlueprint.makeWithOverrides({
 });
 
 /** @alpha */
-export const searchNavItem = NavItemBlueprint.make({
-  params: {
-    routeRef: rootRouteRef,
-    title: 'Search',
-    icon: SearchIcon,
-  },
-});
-
-/** @alpha */
 export default createFrontendPlugin({
   pluginId: 'search',
   title: 'Search',
   icon: <SearchIcon fontSize="inherit" />,
   info: { packageJson: () => import('../package.json') },
-  extensions: [searchApi, searchPage, searchNavItem],
+  extensions: [searchApi, searchPage],
   routes: {
     root: rootRouteRef,
   },

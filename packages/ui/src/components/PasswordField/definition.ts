@@ -32,6 +32,7 @@ export const PasswordFieldDefinition = defineComponent<PasswordFieldOwnProps>()(
       inputIcon: 'bui-PasswordFieldIcon',
       inputVisibility: 'bui-PasswordFieldVisibility',
     },
+    bg: 'consumer',
     propDefs: {
       size: { dataAttribute: true, default: 'small' },
       className: {},

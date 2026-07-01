@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import { Content } from '@backstage/core-components';
+import { BreadcrumbEntry } from '@backstage/frontend-plugin-api';
 import { OngoingTaskBody } from '../../components/OngoingTask';
 import { ListTaskPageContent } from '../../components/ListTasksPage';
+
+function TaskDetailWithBreadcrumb() {
+  const { taskId } = useParams<{ taskId: string }>();
+  if (!taskId) {
+    return <OngoingTaskBody />;
+  }
+  return (
+    <BreadcrumbEntry entry={{ label: taskId, href: taskId }}>
+      <OngoingTaskBody />
+    </BreadcrumbEntry>
+  );
+}
 
 /**
  * Sub-page for the tasks tab. Renders the task list at the index route
@@ -36,7 +49,7 @@ export function TasksSubPage() {
           </Content>
         }
       />
-      <Route path=":taskId" element={<OngoingTaskBody />} />
+      <Route path=":taskId" element={<TaskDetailWithBreadcrumb />} />
     </Routes>
   );
 }

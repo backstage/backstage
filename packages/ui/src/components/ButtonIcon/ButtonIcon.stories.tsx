@@ -82,14 +82,14 @@ export const Responsive = meta.story({
   render: args => <ButtonIcon {...args} icon={<RiCloudLine />} />,
 });
 
-export const Loading = meta.story({
+export const Pending = meta.story({
   render: () => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, setIsPending] = useState(false);
 
     const handleClick = () => {
-      setIsLoading(true);
+      setIsPending(true);
       setTimeout(() => {
-        setIsLoading(false);
+        setIsPending(false);
       }, 3000);
     };
 
@@ -97,14 +97,14 @@ export const Loading = meta.story({
       <ButtonIcon
         variant="primary"
         icon={<RiCloudLine />}
-        loading={isLoading}
+        isPending={isPending}
         onPress={handleClick}
       />
     );
   },
 });
 
-export const LoadingVariants = meta.story({
+export const PendingVariants = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Text>Primary</Text>
@@ -113,13 +113,13 @@ export const LoadingVariants = meta.story({
           variant="primary"
           size="small"
           icon={<RiCloudLine />}
-          loading
+          isPending
         />
         <ButtonIcon
           variant="primary"
           size="medium"
           icon={<RiCloudLine />}
-          loading
+          isPending
         />
       </Flex>
 
@@ -129,13 +129,13 @@ export const LoadingVariants = meta.story({
           variant="secondary"
           size="small"
           icon={<RiCloudLine />}
-          loading
+          isPending
         />
         <ButtonIcon
           variant="secondary"
           size="medium"
           icon={<RiCloudLine />}
-          loading
+          isPending
         />
       </Flex>
 
@@ -145,24 +145,24 @@ export const LoadingVariants = meta.story({
           variant="tertiary"
           size="small"
           icon={<RiCloudLine />}
-          loading
+          isPending
         />
         <ButtonIcon
           variant="tertiary"
           size="medium"
           icon={<RiCloudLine />}
-          loading
+          isPending
         />
       </Flex>
 
-      <Text>Loading vs Disabled</Text>
+      <Text>Pending vs Disabled</Text>
       <Flex align="center" gap="4">
-        <ButtonIcon variant="primary" icon={<RiCloudLine />} loading />
+        <ButtonIcon variant="primary" icon={<RiCloudLine />} isPending />
         <ButtonIcon variant="primary" icon={<RiCloudLine />} isDisabled />
         <ButtonIcon
           variant="primary"
           icon={<RiCloudLine />}
-          loading
+          isPending
           isDisabled
         />
       </Flex>

@@ -17,7 +17,6 @@
 // JWT Web Token definitions are in the URL below
 // https://developers.cloudflare.com/cloudflare-one/identity/users/validating-json/
 export const CF_JWT_HEADER = 'cf-access-jwt-assertion';
-export const CF_AUTH_IDENTITY = 'cf-access-authenticated-user-email';
 export const COOKIE_AUTH_NAME = 'CF_Authorization';
 export const CACHE_PREFIX = 'providers/cloudflare-access/profile-v1';
 

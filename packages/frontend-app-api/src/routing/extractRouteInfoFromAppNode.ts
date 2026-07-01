@@ -21,6 +21,7 @@ import {
   createExactRouteAliasResolver,
   RouteAliasResolver,
 } from './RouteAliasResolver';
+import { joinPaths } from './joinPaths';
 
 /** @internal */
 export type RouteInfo = {
@@ -40,15 +41,6 @@ export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   element: 'match-all', // These elements aren't used, so we add in a bit of debug information
   routeRefs: new Set(),
 };
-
-// Joins a list of paths together, avoiding trailing and duplicate slashes
-export function joinPaths(...paths: string[]): string {
-  const normalized = paths.join('/').replace(/\/\/+/g, '/');
-  if (normalized !== '/' && normalized.endsWith('/')) {
-    return normalized.slice(0, -1);
-  }
-  return normalized;
-}
 
 export function extractRouteInfoFromAppNode(
   node: AppNode,

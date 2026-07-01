@@ -111,19 +111,6 @@ export function validateCimdUrl(clientId: string): URL {
 }
 
 /**
- * Checks if a client_id is a valid CIMD URL.
- * Requires HTTPS for production, but allows HTTP for localhost (development).
- */
-export function isCimdUrl(clientId: string): boolean {
-  try {
-    validateCimdUrl(clientId);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
  * SSRF (Server-Side Request Forgery) Protection
  *
  * When fetching CIMD metadata from client-provided URLs, we must prevent
@@ -200,6 +187,24 @@ function validateMetadata(
   }
 }
 
+async function readCappedResponseBody(response: Response): Promise<string> {
+  if (!response.body) {
+    return '';
+  }
+
+  const chunks: Buffer[] = [];
+  let received = 0;
+  for await (const chunk of response.body) {
+    received += chunk.byteLength;
+    if (received > MAX_RESPONSE_BYTES) {
+      throw new InputError('Client metadata document too large');
+    }
+    chunks.push(Buffer.from(chunk));
+  }
+
+  return Buffer.concat(chunks).toString('utf8');
+}
+
 /**
  * Fetches and validates a CIMD metadata document.
  * @throws InputError if fetching or validation fails
@@ -241,8 +246,12 @@ export async function fetchCimdMetadata(opts: {
 
   let metadata: CimdMetadata;
   try {
-    metadata = await response.json();
-  } catch {
+    const responseBody = await readCappedResponseBody(response);
+    metadata = JSON.parse(responseBody) as CimdMetadata;
+  } catch (error) {
+    if (isError(error) && error.name === 'InputError') {
+      throw error;
+    }
     throw new InputError('Invalid client metadata document');
   }
 

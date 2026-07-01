@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 import {
-  createExtensionTester,
-  renderInTestApp,
-} from '@backstage/frontend-test-utils';
-import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
-import { screen, waitFor } from '@testing-library/react';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+  EntityContextMenuItemBlueprint,
+  type EntityContextMenuItemParams,
+} from './EntityContextMenuItemBlueprint';
 import { Entity } from '@backstage/catalog-model';
 
-jest.mock('../../hooks/useEntityContextMenu', () => ({
-  useEntityContextMenu: () => ({
-    onMenuClose: jest.fn(),
-  }),
-}));
-
 describe('EntityContextMenuItemBlueprint', () => {
+  function getMenuItemData(params: EntityContextMenuItemParams) {
+    const extension = EntityContextMenuItemBlueprint.make({
+      name: 'test',
+      params,
+    });
+
+    return createExtensionTester(extension).get(
+      EntityContextMenuItemBlueprint.dataRefs.data,
+    );
+  }
+
   const data = [
     {
       icon: <span>Test</span>,
@@ -64,143 +67,7 @@ describe('EntityContextMenuItemBlueprint', () => {
         },
         "configSchema": {
           "parse": [Function],
-          "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "filter": {
-                "anyOf": [
-                  {
-                    "anyOf": [
-                      {
-                        "additionalProperties": {
-                          "anyOf": [
-                            {
-                              "type": [
-                                "string",
-                                "number",
-                                "boolean",
-                              ],
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$exists": {
-                                  "type": "boolean",
-                                },
-                              },
-                              "required": [
-                                "$exists",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$in": {
-                                  "items": {
-                                    "$ref": "#/properties/filter/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
-                                  },
-                                  "type": "array",
-                                },
-                              },
-                              "required": [
-                                "$in",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$contains": {
-                                  "$ref": "#/properties/filter",
-                                },
-                              },
-                              "required": [
-                                "$contains",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$hasPrefix": {
-                                  "type": "string",
-                                },
-                              },
-                              "required": [
-                                "$hasPrefix",
-                              ],
-                              "type": "object",
-                            },
-                          ],
-                        },
-                        "propertyNames": {
-                          "pattern": "^(?!\\$).*$",
-                        },
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": {
-                          "not": {},
-                        },
-                        "propertyNames": {
-                          "pattern": "^\\$",
-                        },
-                        "type": "object",
-                      },
-                    ],
-                  },
-                  {
-                    "$ref": "#/properties/filter/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "$all": {
-                        "items": {
-                          "$ref": "#/properties/filter",
-                        },
-                        "type": "array",
-                      },
-                    },
-                    "required": [
-                      "$all",
-                    ],
-                    "type": "object",
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "$any": {
-                        "items": {
-                          "$ref": "#/properties/filter",
-                        },
-                        "type": "array",
-                      },
-                    },
-                    "required": [
-                      "$any",
-                    ],
-                    "type": "object",
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "$not": {
-                        "$ref": "#/properties/filter",
-                      },
-                    },
-                    "required": [
-                      "$not",
-                    ],
-                    "type": "object",
-                  },
-                ],
-              },
-            },
-            "type": "object",
-          },
+          "schema": [Function],
         },
         "disabled": false,
         "factory": [Function],
@@ -227,32 +94,13 @@ describe('EntityContextMenuItemBlueprint', () => {
     `);
   });
 
-  it('should render a menu item', async () => {
-    const extension = EntityContextMenuItemBlueprint.make({
-      name: 'test',
-      params: {
-        icon: <span>Icon</span>,
-        useProps: () => ({
-          title: 'Test',
-          onClick: () => {},
-        }),
-      },
-    });
+  it('should output menu item data', () => {
+    const icon = <span>Icon</span>;
+    const useProps = () => ({ title: 'Test', onClick: () => {} });
 
-    renderInTestApp(
-      <EntityProvider
-        entity={{
-          apiVersion: 'v1',
-          kind: 'Component',
-          metadata: { name: 'test' },
-        }}
-      >
-        <ul>{createExtensionTester(extension).reactElement()}</ul>
-      </EntityProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Test')).toBeInTheDocument();
+    expect(getMenuItemData({ icon, useProps })).toEqual({
+      icon,
+      useProps,
     });
   });
 

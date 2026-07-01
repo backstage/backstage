@@ -11,6 +11,83 @@ This section provides migration guides for different versions of the frontend sy
 
 This guide is intended for app and plugin authors who have already migrated their code to the new frontend system, and are looking to keep it up to date with the latest changes. These guides do not cover trivial migrations that can be explained in a deprecation message, such as a renamed export.
 
+## 1.50
+
+### New `configSchema` option for extension config
+
+The `config.schema` option for `createExtension` and `createExtensionBlueprint` is now deprecated in favor of a new top-level `configSchema` option. The new option accepts direct schema values from any [Standard Schema](https://github.com/standard-schema/standard-schema) compatible library with JSON Schema support, rather than requiring factory functions. The `createSchemaFromZod` helper has also been removed.
+
+The `configSchema` option requires schemas that implement the Standard Schema interface with JSON Schema support. This means you need to use [zod v4](https://zod.dev/) (`zod@^4.0.0`). Note that the `zod/v4` subpath export from the zod v3 package does **not** work — while it exposes the Zod v4 API surface, the resulting schema objects do not support JSON Schema conversion, which `configSchema` requires. Direct zod v3 schemas are also **not** supported by the new `configSchema` option — they are only supported through the deprecated `config.schema` callback format.
+
+For example, an extension previously declared like this:
+
+```tsx
+createExtension({
+  // ...
+  config: {
+    schema: {
+      title: z => z.string().default('Hello'),
+      count: z => z.number().optional(),
+    },
+  },
+  factory({ config }) {
+    // ...
+  },
+});
+```
+
+Should now look like this, using [zod v4](https://zod.dev/) (`zod@^4.0.0`):
+
+```tsx
+import { z } from 'zod';
+
+createExtension({
+  // ...
+  configSchema: {
+    title: z.string().default('Hello'),
+    count: z.number().optional(),
+  },
+  factory({ config }) {
+    // ...
+  },
+});
+```
+
+The same applies to `createExtensionBlueprint`:
+
+```tsx
+import { z } from 'zod';
+
+const MyBlueprint = createExtensionBlueprint({
+  // ...
+  configSchema: {
+    title: z.string().default('Hello'),
+  },
+  factory(params, { config }) {
+    // ...
+  },
+});
+```
+
+And when adding config through `makeWithOverrides`:
+
+```tsx
+import { z } from 'zod';
+
+MyBlueprint.makeWithOverrides({
+  configSchema: {
+    extra: z.string(),
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      // ...
+    });
+  },
+});
+```
+
+Each field in the `configSchema` record is a standalone schema value rather than a factory function. This decouples the config schema declaration from any specific zod version, and lets you use any schema library that implements the Standard Schema interface with JSON Schema support.
+
 ## 1.31
 
 ### `namespace` parameter should be removed

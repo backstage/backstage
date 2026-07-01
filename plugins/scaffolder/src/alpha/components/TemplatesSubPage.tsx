@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useCallback } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useCallback, useMemo } from 'react';
+import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import {
   Content,
   ContentHeader,
@@ -37,9 +37,13 @@ import {
   TemplateCategoryPicker,
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import { createGroupsWithOther } from '../lib/createGroupsWithOther';
 import {
   FieldExtensionOptions,
+  FormProps,
+  type LayoutOptions,
   SecretsContextProvider,
+  TemplateGroupFilter,
   useCustomFieldExtensions,
   useCustomLayouts,
 } from '@backstage/plugin-scaffolder-react';
@@ -57,12 +61,17 @@ import {
 import { scaffolderTranslationRef } from '../../translation';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
+import { BreadcrumbEntry } from '@backstage/frontend-plugin-api';
 import {
   TECHDOCS_ANNOTATION,
   TECHDOCS_EXTERNAL_ANNOTATION,
 } from '@backstage/plugin-techdocs-common';
 
-function TemplateListContent() {
+function TemplateListContent({
+  groups: configuredGroups,
+}: {
+  groups?: TemplateGroupFilter[];
+}) {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
@@ -70,12 +79,21 @@ function TemplateListContent() {
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  const groups = [
-    {
-      title: t('templateListPage.templateGroups.defaultTitle'),
-      filter: () => true,
-    },
-  ];
+  const groups = useMemo(
+    () =>
+      configuredGroups?.length
+        ? createGroupsWithOther(
+            configuredGroups,
+            t('templateListPage.templateGroups.otherTitle'),
+          )
+        : [
+            {
+              title: t('templateListPage.templateGroups.defaultTitle'),
+              filter: () => true,
+            },
+          ],
+    [configuredGroups, t],
+  );
 
   const additionalLinksForEntity = useCallback(
     (template: TemplateEntityV1beta3) => {
@@ -153,13 +171,36 @@ function TemplateListContent() {
   );
 }
 
+function TemplateWizardWithBreadcrumb(props: {
+  customFieldExtensions: FieldExtensionOptions[];
+  layouts: LayoutOptions[];
+  formProps?: FormProps;
+}) {
+  const { templateName } = useParams<{ templateName: string }>();
+  return (
+    <BreadcrumbEntry entry={{ label: templateName ?? 'Template', href: '.' }}>
+      <SecretsContextProvider>
+        <TemplateWizardPageContent
+          customFieldExtensions={props.customFieldExtensions}
+          layouts={props.layouts}
+          formProps={props.formProps}
+        />
+      </SecretsContextProvider>
+    </BreadcrumbEntry>
+  );
+}
+
 /**
  * Sub-page for the templates tab. Renders the template list at the index route
  * and the template wizard at the parameterized route.
  *
  * @internal
  */
-export function TemplatesSubPage(props: { formFields?: Array<FormField> }) {
+export function TemplatesSubPage(props: {
+  formFields?: Array<FormField>;
+  formProps?: FormProps;
+  groups?: TemplateGroupFilter[];
+}) {
   const customFieldExtensions = useCustomFieldExtensions(undefined);
   const customLayouts = useCustomLayouts(undefined);
 
@@ -177,16 +218,15 @@ export function TemplatesSubPage(props: { formFields?: Array<FormField> }) {
 
   return (
     <Routes>
-      <Route index element={<TemplateListContent />} />
+      <Route index element={<TemplateListContent groups={props.groups} />} />
       <Route
         path=":namespace/:templateName"
         element={
-          <SecretsContextProvider>
-            <TemplateWizardPageContent
-              customFieldExtensions={fieldExtensions}
-              layouts={customLayouts}
-            />
-          </SecretsContextProvider>
+          <TemplateWizardWithBreadcrumb
+            customFieldExtensions={fieldExtensions}
+            layouts={customLayouts}
+            formProps={props.formProps}
+          />
         }
       />
     </Routes>

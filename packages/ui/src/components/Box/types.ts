@@ -15,7 +15,12 @@
  */
 
 import type { ReactNode, CSSProperties } from 'react';
-import type { Responsive, ProviderBg, SpaceProps } from '../../types';
+import type {
+  Responsive,
+  ProviderBg,
+  SpaceProps,
+  FlexItemProps,
+} from '../../types';
 
 /** @public */
 export type BoxOwnProps = {
@@ -43,6 +48,7 @@ export type BoxUtilityProps = {
 /** @public */
 export interface BoxProps
   extends SpaceProps,
+    FlexItemProps,
     BoxOwnProps,
     BoxUtilityProps,
     Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {}

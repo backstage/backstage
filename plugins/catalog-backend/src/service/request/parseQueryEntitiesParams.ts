@@ -14,16 +14,37 @@
  * limitations under the License.
  */
 
+import { InputError } from '@backstage/errors';
 import {
   QueryEntitiesCursorRequest,
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
+  TotalItemsMode,
 } from '../../catalog/types';
 import { decodeCursor } from '../util';
 import { parseEntityFilterParams } from './parseEntityFilterParams';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { parseEntityTransformParams } from './parseEntityTransformParams';
 import { GetEntitiesByQuery } from '../../schema/openapi';
+
+const TOTAL_ITEMS_MODES: TotalItemsMode[] = ['include', 'exclude'];
+
+function parseTotalItems(value: unknown): TotalItemsMode | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (
+    typeof value !== 'string' ||
+    !TOTAL_ITEMS_MODES.includes(value as TotalItemsMode)
+  ) {
+    throw new InputError(
+      `Invalid totalItems parameter "${value}", expected one of: ${TOTAL_ITEMS_MODES.join(
+        ', ',
+      )}`,
+    );
+  }
+  return value as TotalItemsMode;
+}
 
 export function parseQueryEntitiesParams(
   params: GetEntitiesByQuery['query'],
@@ -41,6 +62,7 @@ export function parseQueryEntitiesParams(
 
   const filter = parseEntityFilterParams(params);
   const orderFields = parseEntityOrderFieldParams(params);
+  const totalItemsMode = parseTotalItems(params.totalItems);
 
   const response: Omit<QueryEntitiesInitialRequest, 'credentials'> = {
     fields,
@@ -50,6 +72,7 @@ export function parseQueryEntitiesParams(
       term: params.fullTextFilterTerm || '',
       fields: params.fullTextFilterFields,
     },
+    ...(totalItemsMode !== undefined && { totalItems: totalItemsMode }),
   };
 
   return response;

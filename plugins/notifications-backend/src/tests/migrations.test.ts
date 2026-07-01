@@ -41,59 +41,56 @@ async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
 
 jest.setTimeout(60_000);
 
-describe('migrations', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  it.each(databases.eachSupportedId())(
-    '20221109192547_search_add_original_value_column.js, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
+describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
+  it('20221109192547_search_add_original_value_column.js', async () => {
+    const knex = await databases.init(databaseId);
 
-      await migrateUntilBefore(knex, '20250317_addTopic.js');
+    await migrateUntilBefore(knex, '20250317_addTopic.js');
 
-      await knex
-        .insert({
+    await knex
+      .insert({
+        user: 'user1',
+        channel: 'channel1',
+        origin: 'origin1',
+        enabled: true,
+      })
+      .into('user_settings');
+
+    await migrateUpOnce(knex);
+
+    let rows = await knex('user_settings');
+    let normalized = rows.map(r => ({ ...r, enabled: !!r.enabled }));
+
+    expect(normalized).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
           user: 'user1',
           channel: 'channel1',
           origin: 'origin1',
           enabled: true,
-        })
-        .into('user_settings');
+          settings_key_hash:
+            '73f97aff883b8b08a7f4e366234ef4f86827702b0016574ac4c1bf313c703d15',
+          topic: null,
+        }),
+      ]),
+    );
 
-      await migrateUpOnce(knex);
+    await migrateDownOnce(knex);
 
-      let rows = await knex('user_settings');
-      let normalized = rows.map(r => ({ ...r, enabled: !!r.enabled }));
+    rows = await knex('user_settings');
+    normalized = rows.map(r => ({ ...r, enabled: !!r.enabled }));
 
-      expect(normalized).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            user: 'user1',
-            channel: 'channel1',
-            origin: 'origin1',
-            enabled: true,
-            settings_key_hash:
-              '73f97aff883b8b08a7f4e366234ef4f86827702b0016574ac4c1bf313c703d15',
-            topic: null,
-          }),
-        ]),
-      );
-
-      await migrateDownOnce(knex);
-
-      rows = await knex('user_settings');
-      normalized = rows.map(r => ({ ...r, enabled: !!r.enabled }));
-
-      expect(normalized).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            user: 'user1',
-            channel: 'channel1',
-            origin: 'origin1',
-            enabled: true,
-          }),
-        ]),
-      );
-    },
-  );
+    expect(normalized).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          user: 'user1',
+          channel: 'channel1',
+          origin: 'origin1',
+          enabled: true,
+        }),
+      ]),
+    );
+  });
 });

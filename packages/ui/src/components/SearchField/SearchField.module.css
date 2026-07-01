@@ -23,7 +23,6 @@
     font-family: var(--bui-font-regular);
     width: 100%;
     flex: 1;
-    flex-shrink: 0;
 
     &[data-size='small'] {
       --search-field-item-height: 2rem;

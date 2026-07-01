@@ -686,7 +686,7 @@ createApp({
 
 #### App Root Sidebar
 
-New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items. Nav items are auto-discovered from page extensions registered under `app/routes` (no explicit `NavItemBlueprint` required), with metadata from page config, nav item extensions, or plugin defaults.
+New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items. Nav items are auto-discovered from page extensions registered under `app/routes`, with metadata from page config or plugin defaults.
 
 In order to migrate your existing sidebar, you will want to create an override for the `app/nav` extension. You can do this by copying the standard of having a `src/modules/nav/` folder, which can contain an extension which you can install into the `app` in the form of a `module`.
 
@@ -740,14 +740,7 @@ The deprecated `items` prop (a flat list compatible with `<SidebarItem {...item}
 
 You might also notice that when you're rendering additional fixed icons for plugins (e.g. Search in a dedicated group) these might become duplicated, since that page is also included in `nav.rest()`. To exclude an item from the remaining list, call `nav.take('page:search')` before calling `nav.rest()` — you can discard the return value. Items that have been taken will not appear in `rest()`.
 
-You can also use the old `NavItemBlueprint`-based nav item extensions to disable items from the nav bar, these can be disabled in config without affecting the page itself:
-
-```yaml title="in app-config.yaml"
-app:
-  extensions:
-    - nav-item:search: false
-    - nav-item:catalog: false
-```
+To hide a page from the sidebar without disabling the page itself, use `nav.take('page:...')` in your custom sidebar implementation before calling `nav.rest()`, or disable the page extension in config with `page:<plugin-id>: false`.
 
 #### App Root Routes
 
@@ -919,11 +912,41 @@ The `yarn new` command now defaults to the new frontend system templates for fro
 
 ## Troubleshooting
 
-We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting. If you run `yarn add @backstage/plugin-app-visualizer` in `packages/app` it should be automatically added to the sidebar, and available on `/visualizer`.
+### Using the App Visualizer Plugin
 
-There is a `tree` mode that can be very helpful in understanding which plugins are being automatically detected and the extensions that they are providing to the system. You should also be able to see any legacy extensions which are being converted and added to the app.
+We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting. It provides a visual overview of your app's extension tree, making it easy to verify that plugins are installed correctly, see how extensions are wired together, and identify issues during migration.
 
-This can be really useful output when raising any issue to the main repository too, so we can dig in to see what's happening with the system.
+#### Installation
+
+Install the plugin in your app package:
+
+```bash
+yarn --cwd packages/app add @backstage/plugin-app-visualizer
+```
+
+When integrated into your app, the plugin provides the `/visualizer` route. Depending on your app setup, it may also appear in the sidebar as a **Visualizer** entry.
+
+#### Available Views
+
+The app visualizer provides three views, each accessible via tabs at the top of the page:
+
+- **Tree** — Displays the full extension tree as an interactive hierarchy. Each node represents an extension, showing its ID, the plugin it belongs to, and whether it is enabled or disabled. This is the most useful view during migration, as it lets you verify which plugins are being automatically detected and which legacy extensions have been converted. Expand nodes to see child extensions and their configuration.
+
+- **Detailed** — Shows a list of all extensions with additional metadata. Use this view to inspect individual extension properties, configuration, and attachment points. It is helpful for debugging configuration overrides and understanding how extensions are resolved.
+
+- **Text** — Renders the extension tree as plain text. This is useful for copying and pasting into GitHub issues or Discord when asking for help, since it provides a compact, readable snapshot of your app's structure.
+
+#### Using the Visualizer During Migration
+
+During migration, the tree view is particularly helpful for:
+
+- **Verifying plugin detection** — After converting your app with `convertLegacyAppOptions` and `convertLegacyAppRoot`, open the tree view to confirm that all expected plugins appear. Legacy plugins that were converted will show up alongside native new-system plugins.
+
+- **Spotting duplicate extensions** — If you see duplicate entries for the same plugin or page, it likely means the plugin is being loaded both through the legacy conversion helpers and the new system. See the [duplicate cards troubleshooting section](#im-seeing-duplicate-cards-for-entity-pages) below.
+
+- **Sharing debug output** — When raising issues, use the text view to copy your extension tree and include it in your bug report. This gives maintainers immediate visibility into your app's structure.
+
+You can also use the **Copy tree as JSON** button in the page header to export the full extension tree as a JSON structure, which can be attached to issue reports for deeper analysis.
 
 ### I'm seeing duplicate cards for Entity Pages
 

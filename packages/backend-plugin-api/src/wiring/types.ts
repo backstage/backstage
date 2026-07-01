@@ -27,7 +27,7 @@ export type ExtensionPoint<T> = {
 
   /**
    * Utility for getting the type of the extension point, using `typeof extensionPoint.T`.
-   * Attempting to actually read this value will result in an exception.
+   * Reading this value will always return `null`. It is only intended for use with `typeof extensionPoint.T`.
    */
   T: T;
 
@@ -56,10 +56,38 @@ type DepsToInstances<
     [key in string]: ServiceRef<unknown> | ExtensionPoint<unknown>;
   },
 > = {
-  [key in keyof TDeps]: TDeps[key] extends ServiceRef<unknown, any, 'multiton'>
+  [key in keyof TDeps]: TDeps[key] extends ServiceRef<
+    unknown,
+    'root' | 'plugin',
+    'multiton'
+  >
     ? Array<TDeps[key]['T']>
     : TDeps[key]['T'];
 };
+
+/**
+ * Declares that a plugin or module consumes a particular connection type.
+ *
+ * @alpha
+ */
+export interface ConnectionRegistration {
+  /**
+   * The connection type identifier, matching the `type` field in connections
+   * config and in calls to `find` / `findOptional` on the connections service.
+   */
+  type: string;
+  /**
+   * Whether the connection is essential for the plugin or module to function.
+   * If true, the backend will fail to start if no matching connection is
+   * configured. Defaults to false.
+   */
+  required?: boolean;
+  /**
+   * Human-readable explanation of why the plugin or module needs this
+   * connection type. Surfaced in tooling and startup diagnostics.
+   */
+  description?: string;
+}
 
 /**
  * The callbacks passed to the `register` method of a backend plugin.
@@ -116,6 +144,18 @@ export interface BackendModuleRegistrationPoints {
 }
 
 /** @internal */
+export interface InternalBackendPluginRegistrationPoints
+  extends BackendPluginRegistrationPoints {
+  registerConnection(registration: ConnectionRegistration): void;
+}
+
+/** @internal */
+export interface InternalBackendModuleRegistrationPoints
+  extends BackendModuleRegistrationPoints {
+  registerConnection(registration: ConnectionRegistration): void;
+}
+
+/** @internal */
 export interface InternalBackendRegistrations extends BackendFeature {
   version: 'v1';
   featureType: 'registrations';
@@ -161,6 +201,7 @@ export interface InternalBackendPluginRegistrationV1_1 {
   pluginId: string;
   type: 'plugin-v1.1';
   extensionPoints: Array<ExtensionPointRegistration>;
+  connections: ConnectionRegistration[];
   init: {
     deps: Record<string, ServiceRef<unknown>>;
     func(deps: Record<string, unknown>): Promise<void>;
@@ -173,6 +214,7 @@ export interface InternalBackendModuleRegistrationV1_1 {
   moduleId: string;
   type: 'module-v1.1';
   extensionPoints: Array<ExtensionPointRegistration>;
+  connections: ConnectionRegistration[];
   init: {
     deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
     func(deps: Record<string, unknown>): Promise<void>;

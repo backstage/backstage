@@ -2,13 +2,13 @@
 
 ## Unused dependencies (1)
 
-| Name                      | Location     | Severity |
-| :------------------------ | :----------- | :------- |
-| @backstage/catalog-client | plugins/scaffolder-react/package.json | error    |
+| Name                      | Location          | Severity |
+| :------------------------ | :---------------- | :------- |
+| @backstage/catalog-client | package.json:65:6 | error    |
 
 ## Unused devDependencies (1)
 
-| Name                             | Location     | Severity |
-| :------------------------------- | :----------- | :------- |
-| @backstage/plugin-catalog-common | plugins/scaffolder-react/package.json | error    |
+| Name                             | Location           | Severity |
+| :------------------------------- | :----------------- | :------- |
+| @backstage/plugin-catalog-common | package.json:107:6 | error    |
 

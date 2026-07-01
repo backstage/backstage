@@ -32,6 +32,7 @@ import {
   EntityPagination,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  TotalItemsMode,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
@@ -41,7 +42,7 @@ import {
   DbRelationsRow,
   DbSearchRow,
 } from '../database/tables';
-import { Stitcher } from '../stitching/types';
+import { markForStitching } from '../database/operations/stitcher/markForStitching';
 
 import {
   expandLegacyCompoundRelationsInEntity,
@@ -102,18 +103,15 @@ function stringifyPagination(
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: LoggerService;
-  private readonly stitcher: Stitcher;
   private readonly enableRelationsCompatibility: boolean;
 
   constructor(options: {
     database: Knex;
     logger: LoggerService;
-    stitcher: Stitcher;
     enableRelationsCompatibility?: boolean;
   }) {
     this.database = options.database;
     this.logger = options.logger;
-    this.stitcher = options.stitcher;
     this.enableRelationsCompatibility = Boolean(
       options.enableRelationsCompatibility,
     );
@@ -122,64 +120,89 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const db = this.database;
     const { limit, offset } = parsePagination(request?.pagination);
+    const primaryOrder = request?.order?.[0];
 
-    let entitiesQuery =
-      db<DbFinalEntitiesRow>('final_entities').select('final_entities.*');
-
-    request?.order?.forEach(({ field }, index) => {
-      const alias = `order_${index}`;
-      entitiesQuery = entitiesQuery.leftOuterJoin(
-        { [alias]: 'search' },
-        function search(inner) {
-          inner
-            .on(`${alias}.entity_id`, 'final_entities.entity_id')
-            .andOn(`${alias}.key`, db.raw('?', [field]));
-        },
+    // When exactly one order field is specified we run a two-phase fetch
+    // that drives from the search-by-key index for that field. The index
+    // walks rows in already-sorted order, so the planner can short-circuit
+    // on LIMIT instead of having to materialise and sort the full filtered
+    // set. Phase 2 appends entities that lack the order field (NULLS LAST)
+    // and is skipped when phase 1 already fills the request.
+    //
+    // Multi-field ordering falls back to the original LEFT JOIN shape
+    // because tie-breaking on a second field requires materialisation of
+    // the full set anyway.
+    const useFastPath = primaryOrder && (request?.order?.length ?? 0) <= 1;
+    let rows: DbFinalEntitiesRow[];
+    if (useFastPath) {
+      rows = await this.runOrderedEntitiesQuery(
+        request!,
+        primaryOrder,
+        limit,
+        offset,
       );
-    });
-
-    entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
-
-    if (request?.filter) {
-      entitiesQuery = applyEntityFilterToQuery({
-        filter: request.filter,
-        targetQuery: entitiesQuery,
-        onEntityIdField: 'final_entities.entity_id',
-        knex: db,
-      });
-    }
-
-    request?.order?.forEach(({ order }, index) => {
-      if (db.client.config.client === 'pg') {
-        // pg correctly orders by the column value and handling nulls in one go
-        entitiesQuery = entitiesQuery.orderBy([
-          { column: `order_${index}.value`, order, nulls: 'last' },
-        ]);
-      } else {
-        // sqlite and mysql translate the above statement ONLY into "order by (value is null) asc"
-        // no matter what the order is, for some reason, so we have to manually add back the statement
-        // that translates to "order by value <order>" while avoiding to give an order
-        entitiesQuery = entitiesQuery.orderBy([
-          { column: `order_${index}.value`, order: undefined, nulls: 'last' },
-          { column: `order_${index}.value`, order },
-        ]);
-      }
-    });
-
-    if (!request?.order) {
-      entitiesQuery = entitiesQuery.orderBy('final_entities.entity_ref', 'asc'); // default sort
     } else {
-      entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
+      let entitiesQuery =
+        db<DbFinalEntitiesRow>('final_entities').select('final_entities.*');
+
+      request?.order?.forEach(({ field }, index) => {
+        const alias = `order_${index}`;
+        entitiesQuery = entitiesQuery.leftOuterJoin(
+          { [alias]: 'search' },
+          function search(inner) {
+            inner
+              .on(`${alias}.entity_id`, 'final_entities.entity_id')
+              .andOn(`${alias}.key`, db.raw('?', [field]));
+          },
+        );
+      });
+
+      entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
+
+      if (request?.filter) {
+        entitiesQuery = applyEntityFilterToQuery({
+          filter: request.filter,
+          targetQuery: entitiesQuery,
+          onEntityIdField: 'final_entities.entity_id',
+          knex: db,
+        });
+      }
+
+      if (request?.order) {
+        request.order.forEach(({ order }, index) => {
+          if (db.client.config.client === 'pg') {
+            entitiesQuery = entitiesQuery.orderBy([
+              { column: `order_${index}.value`, order, nulls: 'last' },
+            ]);
+          } else {
+            entitiesQuery = entitiesQuery.orderBy([
+              {
+                column: `order_${index}.value`,
+                order: undefined,
+                nulls: 'last',
+              },
+              { column: `order_${index}.value`, order },
+            ]);
+          }
+        });
+        entitiesQuery.orderBy('final_entities.entity_id', 'asc');
+      } else {
+        entitiesQuery = entitiesQuery.orderBy(
+          'final_entities.entity_ref',
+          'asc',
+        );
+      }
+
+      if (limit !== undefined) {
+        entitiesQuery = entitiesQuery.limit(limit + 1);
+      }
+      if (offset !== undefined) {
+        entitiesQuery = entitiesQuery.offset(offset);
+      }
+
+      rows = await entitiesQuery;
     }
 
-    if (limit !== undefined) {
-      entitiesQuery = entitiesQuery.limit(limit + 1);
-    }
-    if (offset !== undefined) {
-      entitiesQuery = entitiesQuery.offset(offset);
-    }
-
-    let rows = await entitiesQuery;
     let pageInfo: DbPageInfo;
     if (limit === undefined || rows.length <= limit) {
       pageInfo = { hasNextPage: false };
@@ -211,18 +234,134 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     };
   }
 
+  /**
+   * Two-phase fetch used when the caller has specified an order field.
+   * See entities() for a longer description of the rationale.
+   */
+  private async runOrderedEntitiesQuery(
+    request: EntitiesRequest,
+    primaryOrder: EntityOrder,
+    limit: number | undefined,
+    offset: number | undefined,
+  ): Promise<DbFinalEntitiesRow[]> {
+    const db = this.database;
+    const isPg = db.client.config.client === 'pg';
+    const wantedRows =
+      limit === undefined ? Number.MAX_SAFE_INTEGER : (offset ?? 0) + limit + 1;
+
+    const applyFilter = <T extends object>(
+      query: Knex.QueryBuilder<T>,
+    ): Knex.QueryBuilder<T> => {
+      if (!request.filter) {
+        return query;
+      }
+      return applyEntityFilterToQuery({
+        filter: request.filter,
+        targetQuery: query,
+        onEntityIdField: 'final_entities.entity_id',
+        knex: db,
+      });
+    };
+
+    // Phase 1 -- entities that have a non-NULL value for the order field.
+    // Rows where the key exists but value IS NULL (e.g. the entity field is
+    // explicitly null, or exceeded MAX_VALUE_LENGTH in buildEntitySearch) are
+    // excluded here so they fall through to Phase 2 and sort in the same
+    // NULLS-LAST bucket as entities that have no row for the key at all —
+    // preserving the semantics of the previous LEFT JOIN approach.
+    let withField = db('search as order_0')
+      .innerJoin(
+        'final_entities',
+        'final_entities.entity_id',
+        'order_0.entity_id',
+      )
+      .where('order_0.key', primaryOrder.field)
+      .whereNotNull('order_0.value')
+      .whereNotNull('final_entities.final_entity')
+      .select<DbFinalEntitiesRow[]>('final_entities.*');
+    withField = applyFilter(withField);
+    withField = isPg
+      ? withField.orderBy([
+          { column: 'order_0.value', order: primaryOrder.order, nulls: 'last' },
+          { column: 'final_entities.entity_id', order: 'asc' },
+        ])
+      : withField.orderBy([
+          { column: 'order_0.value', order: undefined, nulls: 'last' },
+          { column: 'order_0.value', order: primaryOrder.order },
+          { column: 'final_entities.entity_id', order: 'asc' },
+        ]);
+    if (wantedRows < Number.MAX_SAFE_INTEGER) {
+      withField = withField.limit(wantedRows);
+    }
+    const withFieldRows = await withField;
+
+    // If phase 1 already covered everything we asked for, skip the second
+    // phase entirely. This is the common UI case where every entity in the
+    // filtered set has the order field.
+    if (withFieldRows.length >= wantedRows) {
+      const skip = offset ?? 0;
+      return withFieldRows.slice(skip, skip + (limit ?? wantedRows) + 1);
+    }
+
+    // Phase 2 -- entities that lack the order field, appended after.
+    let withoutField = db<DbFinalEntitiesRow>('final_entities')
+      .select<DbFinalEntitiesRow[]>('final_entities.*')
+      .whereNotNull('final_entities.final_entity')
+      .whereNotExists(qb =>
+        qb
+          .from('search')
+          .where('search.entity_id', db.ref('final_entities.entity_id'))
+          .andWhere('search.key', primaryOrder.field)
+          .whereNotNull('search.value'),
+      );
+    withoutField = applyFilter(withoutField);
+    withoutField = withoutField.orderBy(
+      'final_entities.entity_id',
+      'asc', // NULL group always stable-sorted ASC regardless of primary direction
+    );
+    if (limit !== undefined) {
+      // Phase 2 only contributes the rows that phase 1 didn't cover.
+      const remaining =
+        wantedRows - Math.min(withFieldRows.length, (offset ?? 0) + limit + 1);
+      withoutField = withoutField.limit(Math.max(0, remaining));
+    }
+    const withoutFieldRows = await withoutField;
+
+    const combined = [...withFieldRows, ...withoutFieldRows];
+    if (limit === undefined) {
+      return combined.slice(offset ?? 0);
+    }
+    const skip = offset ?? 0;
+    return combined.slice(skip, skip + limit + 1);
+  }
+
   async entitiesBatch(
     request: EntitiesBatchRequest,
   ): Promise<EntitiesBatchResponse> {
-    const lookup = new Map<string, string>();
+    if (request.entityRefs.length === 0) {
+      return { items: processRawEntitiesResult([], request.fields) };
+    }
 
-    for (const chunk of lodashChunk(request.entityRefs, 200)) {
-      let query = this.database<DbFinalEntitiesRow>('final_entities')
-        .select({
-          entityRef: 'final_entities.entity_ref',
-          entity: 'final_entities.final_entity',
-        })
-        .whereIn('final_entities.entity_ref', chunk);
+    const lookup = new Map<string, string>();
+    const isPg = this.database.client.config.client === 'pg';
+
+    const chunks = isPg
+      ? [request.entityRefs]
+      : lodashChunk(request.entityRefs, 200);
+
+    for (const chunk of chunks) {
+      let query = this.database<DbFinalEntitiesRow>('final_entities').select({
+        entityRef: 'final_entities.entity_ref',
+        entity: 'final_entities.final_entity',
+      });
+
+      if (isPg) {
+        query = query.whereRaw('final_entities.entity_ref = ANY(?::text[])', [
+          chunk,
+        ]);
+      } else {
+        query = query.whereIn('final_entities.entity_ref', chunk);
+      }
 
       if (request?.filter || request?.query) {
         query = applyEntityFilterToQuery({
@@ -249,21 +388,17 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   ): Promise<QueryEntitiesResponse> {
     const limit = request.limit ?? DEFAULT_LIMIT;
 
-    const cursor: Omit<Cursor, 'orderFieldValues'> & {
-      orderFieldValues?: (string | null)[];
-      skipTotalItems: boolean;
-    } = {
-      orderFields: [],
+    const { totalItemsMode, ...cursor } = {
+      orderFields: [] as EntityOrder[],
       isPrevious: false,
       ...parseCursorFromRequest(request),
+    } satisfies Omit<Cursor, 'orderFieldValues'> & {
+      orderFieldValues?: (string | null)[];
+      totalItemsMode: TotalItemsMode;
     };
 
-    // For performance reasons we invoke the count query only on the first
-    // request. The result is then embedded into the cursor for subsequent
-    // requests. Threfore this can be undefined here, but will then get
-    // populated further down.
     const shouldComputeTotalItems =
-      cursor.totalItems === undefined && !cursor.skipTotalItems;
+      cursor.totalItems === undefined && totalItemsMode !== 'exclude';
     const isFetchingBackwards = cursor.isPrevious;
 
     if (cursor.orderFields.length > 1) {
@@ -271,102 +406,123 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     const sortField = cursor.orderFields.at(0);
+    const sortKey = sortField?.field.toLocaleLowerCase('en-US');
 
-    // The first part of the query builder is a subquery that applies all of the
-    // filtering.
+    const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
+    const textFilterFields = cursor.fullTextFilter?.fields ?? [
+      sortKey || 'metadata.uid',
+    ];
+
+    // Shared predicate logic applied to both the list CTE and the
+    // standalone count query so they stay in sync. The `searchInScope`
+    // flag indicates whether a `search` table is already joined in the
+    // target query (true for the list CTE when a sort field is set),
+    // enabling a fast-path LIKE on the already-joined row.
+    const applyPredicates = (
+      q: Knex.QueryBuilder,
+      options?: { searchInScope?: boolean },
+    ) => {
+      if (cursor.filter || cursor.query) {
+        applyEntityFilterToQuery({
+          filter: cursor.filter,
+          query: cursor.query,
+          targetQuery: q,
+          onEntityIdField: 'final_entities.entity_id',
+          knex: this.database,
+        });
+      }
+
+      if (normalizedFullTextFilterTerm) {
+        if (
+          options?.searchInScope &&
+          sortField &&
+          textFilterFields.length === 1 &&
+          textFilterFields[0] === sortKey
+        ) {
+          q.andWhereRaw(
+            'search.value like ?',
+            `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+          );
+        } else {
+          const matchQuery = this.database<DbSearchRow>('search')
+            .select('search.entity_id')
+            .whereIn(
+              'search.key',
+              textFilterFields.map(field => field.toLocaleLowerCase('en-US')),
+            )
+            .andWhere(function keyFilter() {
+              this.andWhereRaw(
+                'search.value like ?',
+                `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+              );
+            });
+          q.andWhere('final_entities.entity_id', 'in', matchQuery);
+        }
+      }
+    };
+
+    // The list CTE. When a sort field is specified, the search table for
+    // that key drives the query via INNER JOIN so that the covering index
+    // walks rows in sort order, letting LIMIT short-circuit. Entities
+    // that lack the sort field are excluded — this aligns totalItems with
+    // the set reachable through cursor pagination.
     const dbQuery = this.database.with(
       'filtered',
       ['entity_id', 'final_entity', ...(sortField ? ['value'] : [])],
       inner => {
-        inner
-          .from<DbFinalEntitiesRow>('final_entities')
-          .whereNotNull('final_entity');
-
         if (sortField) {
           inner
-            .distinct()
-            .leftOuterJoin('search', qb =>
-              qb
-                .on('search.entity_id', 'final_entities.entity_id')
-                .andOnVal('search.key', sortField.field),
+            .from('search')
+            .innerJoin(
+              'final_entities',
+              'final_entities.entity_id',
+              'search.entity_id',
             )
+            .where('search.key', sortKey!)
+            .whereNotNull('search.value')
+            .whereNotNull('final_entities.final_entity')
             .select({
               entity_id: 'final_entities.entity_id',
               final_entity: 'final_entities.final_entity',
               value: 'search.value',
             });
         } else {
-          inner.select({
-            entity_id: 'final_entities.entity_id',
-            final_entity: 'final_entities.final_entity',
-          });
+          inner
+            .from<DbFinalEntitiesRow>('final_entities')
+            .whereNotNull('final_entity')
+            .select({
+              entity_id: 'final_entities.entity_id',
+              final_entity: 'final_entities.final_entity',
+            });
         }
 
-        // Add regular filters and/or predicate query, if given
-        if (cursor.filter || cursor.query) {
-          applyEntityFilterToQuery({
-            filter: cursor.filter,
-            query: cursor.query,
-            targetQuery: inner,
-            onEntityIdField: 'final_entities.entity_id',
-            knex: this.database,
-          });
-        }
-
-        // Add full text search filters, if given
-        const normalizedFullTextFilterTerm =
-          cursor.fullTextFilter?.term?.trim();
-        const textFilterFields = cursor.fullTextFilter?.fields ?? [
-          sortField?.field || 'metadata.uid',
-        ];
-        if (normalizedFullTextFilterTerm) {
-          if (
-            textFilterFields.length === 1 &&
-            textFilterFields[0] === sortField?.field
-          ) {
-            // If there is one item, apply the like query to the top level query which is already
-            //   filtered based on the singular sortField.
-            inner.andWhereRaw(
-              'search.value like ?',
-              `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
-            );
-          } else {
-            const matchQuery = this.database<DbSearchRow>('search')
-              .select('search.entity_id')
-              // textFilterFields must be lowercased to match searchable keys in database, i.e. spec.profile.displayName -> spec.profile.displayname
-              .whereIn(
-                'search.key',
-                textFilterFields.map(field => field.toLocaleLowerCase('en-US')),
-              )
-              .andWhere(function keyFilter() {
-                this.andWhereRaw(
-                  'search.value like ?',
-                  `%${normalizedFullTextFilterTerm.toLocaleLowerCase(
-                    'en-US',
-                  )}%`,
-                );
-              });
-            inner.andWhere('final_entities.entity_id', 'in', matchQuery);
-          }
-        }
+        applyPredicates(inner, { searchInScope: !!sortField });
       },
     );
 
-    // Only pay the cost of counting the number of items if needed
+    // The list query references the CTE exactly once, allowing Postgres
+    // 12+ to inline it and short-circuit on LIMIT.
+    dbQuery.from('filtered').select('*');
+
+    // Standalone count query — runs concurrently with the list so the
+    // CTE stays single-referenced and inlineable.
+    let countQuery: Knex.QueryBuilder | undefined;
     if (shouldComputeTotalItems) {
-      // Note the intentional cross join here. The filtered_count dataset is
-      // always exactly one row, so it won't grow the result unnecessarily. But
-      // it's also important that there IS at least one row, because even if the
-      // filtered dataset is empty, we still want to know the total number of
-      // items.
-      dbQuery
-        .with('filtered_count', ['count'], inner =>
-          inner.from('filtered').count('*', { as: 'count' }),
-        )
-        .fromRaw('filtered_count, filtered')
-        .select('count', 'filtered.*');
-    } else {
-      dbQuery.from('filtered').select('*');
+      countQuery = this.database('final_entities')
+        .whereNotNull('final_entities.final_entity')
+        .count('*', { as: 'count' });
+
+      if (sortField) {
+        countQuery.whereExists(
+          this.database('search')
+            .select(this.database.raw(1))
+            .whereRaw('search.entity_id = final_entities.entity_id')
+            .where('search.key', sortKey!)
+            .whereNotNull('search.value'),
+        );
+      }
+
+      applyPredicates(countQuery);
     }
 
     const isOrderingDescending = sortField?.order === 'desc';
@@ -396,52 +552,14 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       }
     }
 
-    // Add the ordering
     let order = sortField?.order ?? 'asc';
     if (isFetchingBackwards) {
       order = invertOrder(order);
     }
-    if (this.database.client.config.client === 'pg') {
-      // pg correctly orders by the column value and handling nulls in one go
-      dbQuery.orderBy([
-        ...(sortField
-          ? [
-              {
-                column: 'filtered.value',
-                order,
-                nulls: 'last',
-              },
-            ]
-          : []),
-        {
-          column: 'filtered.entity_id',
-          order,
-        },
-      ]);
-    } else {
-      // sqlite and mysql translate the above statement ONLY into "order by (value is null) asc"
-      // no matter what the order is, for some reason, so we have to manually add back the statement
-      // that translates to "order by value <order>" while avoiding to give an order
-      dbQuery.orderBy([
-        ...(sortField
-          ? [
-              {
-                column: 'filtered.value',
-                order: undefined,
-                nulls: 'last',
-              },
-              {
-                column: 'filtered.value',
-                order,
-              },
-            ]
-          : []),
-        {
-          column: 'filtered.entity_id',
-          order,
-        },
-      ]);
-    }
+    dbQuery.orderBy([
+      ...(sortField ? [{ column: 'filtered.value', order }] : []),
+      { column: 'filtered.entity_id', order },
+    ]);
 
     // Apply a manually set initial offset
     if (
@@ -453,15 +571,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // fetch an extra item to check if there are more items.
     dbQuery.limit(isFetchingBackwards ? limit : limit + 1);
 
-    const rows = shouldComputeTotalItems || limit > 0 ? await dbQuery : [];
+    // Run list and count queries concurrently
+    const [rows, countResult] = await Promise.all([
+      limit > 0 ? dbQuery : Promise.resolve([]),
+      countQuery ?? Promise.resolve(undefined),
+    ]);
 
     let totalItems: number;
     if (cursor.totalItems !== undefined) {
       totalItems = cursor.totalItems;
-    } else if (cursor.skipTotalItems) {
+    } else if (totalItemsMode === 'exclude') {
       totalItems = 0;
-    } else if (rows.length) {
-      totalItems = Number(rows[0].count);
+    } else if (countResult?.[0]) {
+      totalItems = Number(countResult[0].count);
     } else {
       totalItems = 0;
     }
@@ -611,7 +733,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     });
 
     if (relationPeerRefs.size > 0) {
-      await this.stitcher.stitch({
+      await markForStitching({
+        knex: this.database,
         entityRefs: relationPeerRefs,
       });
     }
@@ -685,18 +808,40 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .select({
         facet: 'search.key',
         value: 'search.original_value',
-        count: this.database.raw('count(DISTINCT search.entity_id)'),
+        count: this.database.raw('count(*)'),
       })
-      .groupBy(['search.key', 'search.original_value']);
+      .groupBy(['search.key', 'search.original_value'])
+      .orderBy(['search.key', 'search.original_value']);
 
     if (request.filter || request.query) {
+      // Build a subquery that finds matching entity IDs via
+      // final_entities, so that the EXISTS-based filters correlate
+      // against one-row-per-entity rather than the much larger search
+      // table. The whereNotNull guard on final_entity excludes
+      // not-yet-stitched (or future tombstoned) entities.
+      const entityIdSubquery = this.database('final_entities')
+        .select('final_entities.entity_id')
+        .whereNotNull('final_entities.final_entity');
+
       applyEntityFilterToQuery({
         filter: request.filter,
         query: request.query,
-        targetQuery: query,
-        onEntityIdField: 'search.entity_id',
+        targetQuery: entityIdSubquery,
+        onEntityIdField: 'final_entities.entity_id',
         knex: this.database,
       });
+
+      // Use INNER JOIN rather than `WHERE search.entity_id IN (...)`. The
+      // results are the same but the JOIN form gives the planner more
+      // freedom in join shape and ordering. On PostgreSQL with large
+      // search tables, the IN form tends to materialize the full filtered
+      // entity set up front and spill to temp; the JOIN form lets the
+      // planner pick a much cheaper plan based on actual selectivities.
+      query.innerJoin(
+        entityIdSubquery.as('filtered_entities'),
+        'search.entity_id',
+        'filtered_entities.entity_id',
+      );
     }
 
     const rows = await query;
@@ -718,32 +863,33 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
 function parseCursorFromRequest(
   request?: QueryEntitiesRequest,
-): Partial<Cursor> & { skipTotalItems: boolean } {
+): Partial<Cursor> & { totalItemsMode: TotalItemsMode } {
   if (isQueryEntitiesInitialRequest(request)) {
     const {
       filter,
       query,
       orderFields: sortFields = [],
       fullTextFilter,
-      skipTotalItems = false,
+      totalItems: totalItemsMode = 'include',
     } = request;
     return {
       filter,
       query,
       orderFields: sortFields,
       fullTextFilter,
-      skipTotalItems,
+      totalItemsMode,
     };
   }
   if (isQueryEntitiesCursorRequest(request)) {
     return {
       ...request.cursor,
-      // Doesn't matter here
-      skipTotalItems: false,
+      // Doesn't matter — cursor already carries the computed totalItems
+      // number from the first page, so the count query is skipped regardless.
+      totalItemsMode: 'exclude',
     };
   }
   return {
-    skipTotalItems: false,
+    totalItemsMode: 'include',
   };
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NotModifiedError } from '../errors';
+import { NotModifiedError, ServiceUnavailableError } from '../errors';
 import { deserializeError, serializeError, stringifyError } from './error';
 
 class CustomError extends Error {
@@ -75,6 +75,16 @@ describe('serialization', () => {
     expect(withoutStack2.stack).not.toBeDefined();
     expect(withoutStack1.cause.stack).not.toBeDefined();
     expect(withoutStack2.cause.stack).not.toBeDefined();
+  });
+
+  it('round-trips a ServiceUnavailableError', () => {
+    const before = new ServiceUnavailableError('service down');
+    const after = deserializeError(
+      serializeError(before, { includeStack: true }),
+    );
+    expect(after.name).toEqual('ServiceUnavailableError');
+    expect(after.message).toEqual('service down');
+    expect(after.stack).toEqual(before.stack);
   });
 
   it('stringifies all supported forms', () => {

@@ -25,7 +25,8 @@ import { Box } from '../Box';
 import { Link } from '../Link';
 import { RiShapesLine } from '@remixicon/react';
 import { Text } from '../Text';
-import { BgReset } from '../../hooks/useBg';
+import { VisuallyHidden } from '../VisuallyHidden';
+import { PluginHeaderBreadcrumbs } from './PluginHeaderBreadcrumbs';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -48,12 +49,14 @@ export const PluginHeader = (props: PluginHeaderProps) => {
     icon,
     title,
     titleLink,
+    breadcrumbs,
     customActions,
     onTabSelectionChange,
   } = ownProps;
 
   const hasTabs = tabs && tabs.length > 0;
-  const headerRef = useRef<HTMLElement>(null);
+  const hasBreadcrumbs = breadcrumbs && breadcrumbs.length > 0;
+  const rootRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | undefined>(undefined);
   const lastAppliedHeightRef = useRef<number | undefined>(undefined);
 
@@ -62,7 +65,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
   }, [customActions]);
 
   useIsomorphicLayoutEffect(() => {
-    const el = headerRef.current;
+    const el = rootRef.current;
     if (!el) {
       return undefined;
     }
@@ -125,17 +128,24 @@ export const PluginHeader = (props: PluginHeaderProps) => {
   const titleText = title || 'Your plugin';
 
   return (
-    <BgReset>
-      <header ref={headerRef} className={classes.root}>
-        <Box bg="neutral" className={classes.toolbar} data-has-tabs={hasTabs}>
-          <div className={classes.toolbarContent}>
-            <Box
-              bg="neutral"
-              className={classes.toolbarIcon}
-              aria-hidden="true"
-            >
-              {icon || <RiShapesLine />}
-            </Box>
+    <div ref={rootRef} className={classes.root}>
+      <div className={classes.toolbar} data-has-tabs={hasTabs ? '' : undefined}>
+        <div className={classes.toolbarContent}>
+          <Box bg="neutral" className={classes.toolbarIcon} aria-hidden="true">
+            {icon || <RiShapesLine />}
+          </Box>
+          {hasBreadcrumbs ? (
+            <div className={classes.toolbarName}>
+              <VisuallyHidden>
+                <h1>{titleText}</h1>
+              </VisuallyHidden>
+              <PluginHeaderBreadcrumbs
+                entries={breadcrumbs}
+                className={classes.breadcrumbs}
+                ellipsisClassName={classes.breadcrumbsEllipsis}
+              />
+            </div>
+          ) : (
             <h1 className={classes.toolbarName}>
               {titleLink ? (
                 <Link href={titleLink} standalone variant="body-medium">
@@ -147,28 +157,28 @@ export const PluginHeader = (props: PluginHeaderProps) => {
                 </Text>
               )}
             </h1>
-          </div>
-          <div className={classes.toolbarControls}>{actionChildren}</div>
-        </Box>
-        {tabs && (
-          <Box bg="neutral" className={classes.tabs}>
-            <Tabs onSelectionChange={onTabSelectionChange}>
-              <TabList>
-                {tabs?.map(tab => (
-                  <Tab
-                    key={tab.id}
-                    id={tab.id}
-                    href={tab.href}
-                    matchStrategy={tab.matchStrategy}
-                  >
-                    {tab.label}
-                  </Tab>
-                ))}
-              </TabList>
-            </Tabs>
-          </Box>
-        )}
-      </header>
-    </BgReset>
+          )}
+        </div>
+        <div className={classes.toolbarControls}>{actionChildren}</div>
+      </div>
+      {hasTabs && (
+        <div className={classes.tabs}>
+          <Tabs onSelectionChange={onTabSelectionChange}>
+            <TabList>
+              {tabs?.map(tab => (
+                <Tab
+                  key={tab.id}
+                  id={tab.id}
+                  href={tab.href}
+                  matchStrategy={tab.matchStrategy}
+                >
+                  {tab.label}
+                </Tab>
+              ))}
+            </TabList>
+          </Tabs>
+        </div>
+      )}
+    </div>
   );
 };

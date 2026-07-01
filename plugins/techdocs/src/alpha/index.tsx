@@ -15,12 +15,12 @@
  */
 
 import { Suspense } from 'react';
+import { z } from 'zod/v4';
 import { RiArticleLine } from '@remixicon/react';
 import {
   createFrontendPlugin,
   ApiBlueprint,
   PageBlueprint,
-  NavItemBlueprint,
   PluginHeaderActionBlueprint,
   createExtensionInput,
   coreExtensionData,
@@ -107,13 +107,11 @@ const techDocsClientApi = ApiBlueprint.make({
 /** @alpha */
 export const techDocsSearchResultListItemExtension =
   SearchResultListItemBlueprint.makeWithOverrides({
-    config: {
-      schema: {
-        title: z => z.string().optional(),
-        lineClamp: z => z.number().default(5),
-        asLink: z => z.boolean().default(true),
-        asListItem: z => z.boolean().default(true),
-      },
+    configSchema: {
+      title: z.string().optional(),
+      lineClamp: z.number().default(5),
+      asLink: z.boolean().default(true),
+      asListItem: z.boolean().default(true),
     },
     factory(originalFactory, { config }) {
       return originalFactory({
@@ -140,6 +138,8 @@ const techDocsPage = PageBlueprint.make({
   params: {
     path: '/docs',
     routeRef: rootRouteRef,
+    title: 'Docs',
+    icon: <RiArticleLine />,
     loader: () =>
       import('./components/TechDocsIndexPageContent').then(m => (
         <m.TechDocsIndexPageContent />
@@ -157,11 +157,9 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
   inputs: {
     addons: createExtensionInput([AddonBlueprint.dataRefs.addon]),
   },
-  config: {
-    schema: {
-      withoutSearch: z => z.boolean().default(false),
-      withoutHeader: z => z.boolean().default(false),
-    },
+  configSchema: {
+    withoutSearch: z.boolean().default(false),
+    withoutHeader: z.boolean().default(false),
   },
   factory(originalFactory, { apis, inputs, config }) {
     const addonsApi = apis.get(techdocsAddonsApiRef);
@@ -268,15 +266,6 @@ const techDocsEntityContentEmptyState = createExtension({
   factory: () => [],
 });
 
-/** @alpha */
-const techDocsNavItem = NavItemBlueprint.make({
-  params: {
-    icon: () => <RiArticleLine />,
-    title: 'Docs',
-    routeRef: rootRouteRef,
-  },
-});
-
 const techDocsSupportAction = PluginHeaderActionBlueprint.make({
   params: defineParams =>
     defineParams({
@@ -296,7 +285,6 @@ export default createFrontendPlugin({
     techDocsClientApi,
     techDocsStorageApi,
     TechDocsAddonsApiExtension,
-    techDocsNavItem,
     techDocsSupportAction,
     techDocsPage,
     techDocsReaderPage,
@@ -311,3 +299,6 @@ export default createFrontendPlugin({
     entityContent: rootCatalogDocsRouteRef,
   },
 });
+
+/** @alpha */
+export { techdocsTranslationRef } from '../translation';

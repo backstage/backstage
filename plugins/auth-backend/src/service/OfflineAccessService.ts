@@ -15,6 +15,7 @@
  */
 
 import {
+  AuthService,
   DatabaseService,
   LifecycleService,
   LoggerService,
@@ -23,7 +24,8 @@ import {
 import { AuthenticationError } from '@backstage/errors';
 import { readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
-import { v4 as uuid } from 'uuid';
+import { CatalogService } from '@backstage/plugin-catalog-node';
+import { randomUUID as uuid } from 'node:crypto';
 import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
 import {
   generateRefreshToken,
@@ -39,12 +41,17 @@ import { TokenIssuer } from '../identity/types';
 export class OfflineAccessService {
   readonly #offlineSessionDb: OfflineSessionDatabase;
   readonly #logger: LoggerService;
+  readonly #dangerouslyDisableCatalogPresenceCheck: boolean;
+  readonly #catalog: CatalogService;
+  readonly #auth: AuthService;
 
   static async create(options: {
     config: RootConfigService;
     database: DatabaseService;
     logger: LoggerService;
     lifecycle: LifecycleService;
+    catalog: CatalogService;
+    auth: AuthService;
   }): Promise<OfflineAccessService> {
     const { config, database, logger, lifecycle } = options;
 
@@ -98,6 +105,11 @@ export class OfflineAccessService {
       );
     }
 
+    const dangerouslyDisableCatalogPresenceCheck =
+      config.getOptionalBoolean(
+        'auth.experimentalRefreshToken.dangerouslyDisableCatalogPresenceCheck',
+      ) ?? false;
+
     const knex = await database.getClient();
 
     if (
@@ -135,15 +147,28 @@ export class OfflineAccessService {
       clearInterval(cleanupInterval);
     });
 
-    return new OfflineAccessService(offlineSessionDb, logger);
+    return new OfflineAccessService(
+      offlineSessionDb,
+      logger,
+      dangerouslyDisableCatalogPresenceCheck,
+      options.catalog,
+      options.auth,
+    );
   }
 
   private constructor(
     offlineSessionDb: OfflineSessionDatabase,
     logger: LoggerService,
+    dangerouslyDisableCatalogPresenceCheck: boolean,
+    catalog: CatalogService,
+    auth: AuthService,
   ) {
     this.#offlineSessionDb = offlineSessionDb;
     this.#logger = logger;
+    this.#dangerouslyDisableCatalogPresenceCheck =
+      dangerouslyDisableCatalogPresenceCheck;
+    this.#catalog = catalog;
+    this.#auth = auth;
   }
 
   /**
@@ -210,6 +235,33 @@ export class OfflineAccessService {
     const isValid = await verifyRefreshToken(refreshToken, session.tokenHash);
     if (!isValid) {
       throw new AuthenticationError('Invalid refresh token');
+    }
+
+    if (!this.#dangerouslyDisableCatalogPresenceCheck) {
+      try {
+        const entity = await this.#catalog.getEntityByRef(
+          session.userEntityRef,
+          { credentials: await this.#auth.getOwnServiceCredentials() },
+        );
+        if (!entity) {
+          this.#logger.info(
+            `Rejecting refresh for user ${session.userEntityRef} - catalog entity not found, revoking session ${sessionId}`,
+          );
+          await this.#offlineSessionDb.deleteSession(sessionId);
+          throw new AuthenticationError(
+            'User entity no longer exists in the catalog',
+          );
+        }
+      } catch (error) {
+        if (error.name === 'AuthenticationError') {
+          throw error;
+        }
+        this.#logger.warn(
+          `Failed to validate catalog user existence for ${session.userEntityRef}, rejecting refresh`,
+          error,
+        );
+        throw new AuthenticationError('Unable to validate user existence');
+      }
     }
 
     const { token: newRefreshToken, hash: newHash } =

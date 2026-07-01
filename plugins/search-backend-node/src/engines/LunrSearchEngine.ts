@@ -22,7 +22,7 @@ import {
 import { QueryTranslator, SearchEngine } from '../types';
 import { MissingIndexError } from '../errors';
 import lunr from 'lunr';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 import { LoggerService } from '@backstage/backend-plugin-api';
 

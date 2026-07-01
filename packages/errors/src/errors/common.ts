@@ -100,7 +100,9 @@ export class NotImplementedError extends CustomErrorBase {
  *
  * @public
  */
-export class ServiceUnavailableError extends CustomErrorBase {}
+export class ServiceUnavailableError extends CustomErrorBase {
+  name = 'ServiceUnavailableError' as const;
+}
 
 /**
  * An error that forwards an underlying cause with additional context in the message.

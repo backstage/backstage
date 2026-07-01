@@ -20,6 +20,7 @@ import { SlackNotificationProcessor } from './SlackNotificationProcessor';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { KnownBlock, WebClient } from '@slack/web-api';
 import { Entity } from '@backstage/catalog-model';
+import { Knex } from 'knex';
 import pThrottle from 'p-throttle';
 import { durationToMilliseconds } from '@backstage/types';
 
@@ -41,6 +42,11 @@ jest.mock('@slack/web-api', () => {
   const mockSlack = {
     chat: {
       postMessage: jest.fn(() => ({
+        ok: true,
+        ts: '1234567890.123456',
+        channel: 'C12345678',
+      })),
+      update: jest.fn(() => ({
         ok: true,
         ts: '1234567890.123456',
         channel: 'C12345678',
@@ -1613,6 +1619,384 @@ describe('SlackNotificationProcessor', () => {
           interval: durationToMilliseconds({ seconds: 30 }),
         },
       ]);
+    });
+  });
+
+  describe('scope-based message updates', () => {
+    function createMockDb() {
+      const store = new Map<
+        string,
+        {
+          origin: string;
+          scope: string;
+          channel: string;
+          ts: string;
+          created_at: Date;
+        }
+      >();
+
+      function storeKey(origin: string, scope: string, channel: string) {
+        return `${origin}:${scope}:${channel}`;
+      }
+
+      // Each call to db() creates a fresh query builder that tracks its own
+      // chained .where()/.insert() arguments, avoiding cross-call interference.
+      function createQueryBuilder(): any {
+        let lastWhereArgs: any;
+        let lastInsertRow: any;
+        const qb: any = {
+          where: jest.fn().mockImplementation((args: any) => {
+            lastWhereArgs = args;
+            return qb;
+          }),
+          first: jest.fn().mockImplementation(() => {
+            if (lastWhereArgs) {
+              const key = storeKey(
+                lastWhereArgs.origin,
+                lastWhereArgs.scope,
+                lastWhereArgs.channel,
+              );
+              return Promise.resolve(store.get(key));
+            }
+            return Promise.resolve(undefined);
+          }),
+          insert: jest.fn().mockImplementation((row: any) => {
+            lastInsertRow = row;
+            store.set(storeKey(row.origin, row.scope, row.channel), row);
+            return qb;
+          }),
+          onConflict: jest.fn().mockReturnThis(),
+          merge: jest.fn().mockImplementation((row: any) => {
+            if (lastInsertRow) {
+              const key = storeKey(
+                lastInsertRow.origin,
+                lastInsertRow.scope,
+                lastInsertRow.channel,
+              );
+              const existing = store.get(key);
+              if (existing) {
+                store.set(key, { ...existing, ...row });
+              }
+            }
+            return Promise.resolve();
+          }),
+          delete: jest.fn().mockResolvedValue(0),
+        };
+        return qb;
+      }
+
+      const db = jest
+        .fn()
+        .mockImplementation(() => createQueryBuilder()) as unknown as Knex;
+      (db as any).fn = { now: jest.fn().mockReturnValue(new Date()) };
+      return { db, store, storeKey };
+    }
+
+    function createProcessorWithDb(
+      slack: WebClient,
+      db: Knex,
+    ): SlackNotificationProcessor {
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        metrics,
+        slack,
+      })[0];
+      processor.setDatabase(db);
+      return processor;
+    }
+
+    it('should store the message timestamp after initial scoped send', async () => {
+      const slack = new WebClient();
+      const { db, store, storeKey } = createMockDb();
+      const processor = createProcessorWithDb(slack, db);
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            scope: 'deployment-failure/my-service/42',
+          },
+        },
+        {
+          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          payload: {
+            title: 'notification',
+            scope: 'deployment-failure/my-service/42',
+          },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledTimes(1);
+      expect(store.size).toBe(1);
+      const key = storeKey(
+        'plugin',
+        'deployment-failure/my-service/42',
+        'U12345678',
+      );
+      expect(store.get(key)).toEqual(
+        expect.objectContaining({
+          origin: 'plugin',
+          scope: 'deployment-failure/my-service/42',
+          channel: 'U12345678',
+          ts: '1234567890.123456',
+        }),
+      );
+    });
+
+    it('should use chat.update when the notification has been updated and a stored ts exists', async () => {
+      const slack = new WebClient();
+      const { db, store, storeKey } = createMockDb();
+
+      // Pre-populate the store with a previously sent message.
+      store.set(
+        storeKey('plugin', 'deployment-failure/my-service/42', 'U12345678'),
+        {
+          origin: 'plugin',
+          scope: 'deployment-failure/my-service/42',
+          channel: 'U12345678',
+          ts: '1111111111.111111',
+          created_at: new Date(),
+        },
+      );
+
+      const processor = createProcessorWithDb(slack, db);
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          updated: new Date(),
+          payload: {
+            title: 'notification',
+            description: 'Updated with analysis',
+            scope: 'deployment-failure/my-service/42',
+          },
+        },
+        {
+          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          payload: {
+            title: 'notification',
+            description: 'Updated with analysis',
+            scope: 'deployment-failure/my-service/42',
+          },
+        },
+      );
+
+      expect(slack.chat.postMessage).not.toHaveBeenCalled();
+      expect(slack.chat.update).toHaveBeenCalledTimes(1);
+
+      // Verify chat.update receives only the fields it supports (channel, ts,
+      // text, blocks, attachments) and not the full ChatPostMessageArguments.
+      const updateArgs = (slack.chat.update as jest.Mock).mock.calls[0][0];
+      const updateKeys = Object.keys(updateArgs).sort();
+      expect(updateKeys).toEqual(['attachments', 'channel', 'text', 'ts']);
+      expect(updateArgs.channel).toBe('U12345678');
+      expect(updateArgs.ts).toBe('1111111111.111111');
+    });
+
+    it('should fall back to chat.postMessage when notification is updated but no stored ts exists', async () => {
+      const slack = new WebClient();
+      const { db } = createMockDb();
+      const processor = createProcessorWithDb(slack, db);
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          updated: new Date(),
+          payload: {
+            title: 'notification',
+            scope: 'deployment-failure/my-service/42',
+          },
+        },
+        {
+          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          payload: {
+            title: 'notification',
+            scope: 'deployment-failure/my-service/42',
+          },
+        },
+      );
+
+      // Should fall back to postMessage since there is no stored ts.
+      expect(slack.chat.update).not.toHaveBeenCalled();
+      expect(slack.chat.postMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not interact with the database for non-scoped notifications', async () => {
+      const slack = new WebClient();
+      const { db } = createMockDb();
+      const processor = createProcessorWithDb(slack, db);
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+          },
+        },
+        {
+          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          payload: { title: 'notification' },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledTimes(1);
+      // The db function should not have been called since there is no scope.
+      expect(db).not.toHaveBeenCalled();
+    });
+
+    it('should work without a database (graceful degradation)', async () => {
+      const slack = new WebClient();
+
+      // No db set — the processor should still send messages normally.
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        metrics,
+        slack,
+      })[0];
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            scope: 'deployment-failure/my-service/42',
+          },
+        },
+        {
+          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          payload: {
+            title: 'notification',
+            scope: 'deployment-failure/my-service/42',
+          },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledTimes(1);
+      expect(slack.chat.update).not.toHaveBeenCalled();
+    });
+
+    it('should handle concurrent postProcess calls with different scopes correctly', async () => {
+      const slack = new WebClient();
+      const { db, store, storeKey } = createMockDb();
+
+      // Pre-populate stored timestamps for both scopes.
+      store.set(storeKey('plugin', 'scope-a', 'U12345678'), {
+        origin: 'plugin',
+        scope: 'scope-a',
+        channel: 'U12345678',
+        ts: '1111111111.111111',
+        created_at: new Date(),
+      });
+      store.set(storeKey('plugin', 'scope-b', 'U12345678'), {
+        origin: 'plugin',
+        scope: 'scope-b',
+        channel: 'U12345678',
+        ts: '2222222222.222222',
+        created_at: new Date(),
+      });
+
+      const processor = createProcessorWithDb(slack, db);
+
+      // Fire both postProcess calls concurrently with different scopes.
+      await Promise.all([
+        processor.postProcess(
+          {
+            origin: 'plugin',
+            id: '1',
+            user: 'user:default/mock',
+            created: new Date(),
+            updated: new Date(),
+            payload: { title: 'A', scope: 'scope-a' },
+          },
+          {
+            recipients: { type: 'entity', entityRef: 'user:default/mock' },
+            payload: { title: 'A', scope: 'scope-a' },
+          },
+        ),
+        processor.postProcess(
+          {
+            origin: 'plugin',
+            id: '2',
+            user: 'user:default/mock',
+            created: new Date(),
+            updated: new Date(),
+            payload: { title: 'B', scope: 'scope-b' },
+          },
+          {
+            recipients: { type: 'entity', entityRef: 'user:default/mock' },
+            payload: { title: 'B', scope: 'scope-b' },
+          },
+        ),
+      ]);
+
+      // Both should use chat.update, not postMessage.
+      expect(slack.chat.postMessage).not.toHaveBeenCalled();
+      expect(slack.chat.update).toHaveBeenCalledTimes(2);
+
+      // Each update should use the correct ts for its scope.
+      const updateCalls = (slack.chat.update as jest.Mock).mock.calls;
+      const timestamps = updateCalls.map((call: any[]) => call[0].ts).sort();
+      expect(timestamps).toEqual(['1111111111.111111', '2222222222.222222']);
+    });
+
+    it('should not collide across different origins with the same scope', async () => {
+      const slack = new WebClient();
+      const { db, store, storeKey } = createMockDb();
+
+      // Pre-populate a stored timestamp for origin-a only.
+      store.set(storeKey('origin-a', 'shared-scope', 'U12345678'), {
+        origin: 'origin-a',
+        scope: 'shared-scope',
+        channel: 'U12345678',
+        ts: '1111111111.111111',
+        created_at: new Date(),
+      });
+
+      const processor = createProcessorWithDb(slack, db);
+
+      // Send an update from origin-b with the same scope — should NOT find
+      // the stored ts from origin-a, and should fall back to postMessage.
+      await processor.postProcess(
+        {
+          origin: 'origin-b',
+          id: '1',
+          user: 'user:default/mock',
+          created: new Date(),
+          updated: new Date(),
+          payload: { title: 'From B', scope: 'shared-scope' },
+        },
+        {
+          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          payload: { title: 'From B', scope: 'shared-scope' },
+        },
+      );
+
+      expect(slack.chat.update).not.toHaveBeenCalled();
+      expect(slack.chat.postMessage).toHaveBeenCalledTimes(1);
     });
   });
 });

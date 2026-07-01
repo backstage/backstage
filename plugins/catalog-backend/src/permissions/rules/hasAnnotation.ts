@@ -37,11 +37,34 @@ export const hasAnnotation = createPermissionRule({
       .optional()
       .describe('Value of the annotation to match on'),
   }),
-  apply: (resource, { annotation, value }) =>
-    !!resource.metadata.annotations?.hasOwnProperty(annotation) &&
-    (value === undefined
-      ? true
-      : resource.metadata.annotations?.[annotation] === value),
+  apply: (resource, { annotation, value }) => {
+    if (!resource.metadata.annotations) return false;
+
+    // exact key match
+    const isExactKeyMatch =
+      !!resource.metadata.annotations?.hasOwnProperty(annotation) &&
+      (value === undefined
+        ? true
+        : resource.metadata.annotations?.[annotation] === value);
+
+    if (isExactKeyMatch) return true;
+
+    // case-insensitive matching if exact match is not found
+    const normalizedAnnotation = annotation.toLocaleLowerCase('en-US');
+    const normalizedValue = value?.toLocaleLowerCase('en-US');
+
+    for (const [key, val] of Object.entries(resource.metadata.annotations)) {
+      if (key.toLocaleLowerCase('en-US') === normalizedAnnotation) {
+        if (
+          normalizedValue === undefined ||
+          val.toLocaleLowerCase('en-US') === normalizedValue
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  },
   toQuery: ({ annotation, value }) =>
     value === undefined
       ? {

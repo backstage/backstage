@@ -94,18 +94,26 @@ export class DefaultActionsService implements ActionsService {
   async invoke(opts: {
     id: string;
     input?: JsonObject;
+    secrets?: JsonObject;
     credentials: BackstageCredentials;
   }) {
     const pluginId = this.pluginIdFromActionId(opts.id);
+    // Deprecated: remove v1 fallback once all registries support v2
+    const version = opts.secrets ? 'v2' : 'v1';
+    const body =
+      version === 'v2'
+        ? JSON.stringify({ input: opts.input, secrets: opts.secrets })
+        : JSON.stringify(opts.input);
+
     const response = await this.makeRequest({
-      path: `/.backstage/actions/v1/actions/${encodeURIComponent(
+      path: `/.backstage/actions/${version}/actions/${encodeURIComponent(
         opts.id,
       )}/invoke`,
       pluginId,
       credentials: opts.credentials,
       options: {
         method: 'POST',
-        body: JSON.stringify(opts.input),
+        body,
         headers: {
           'Content-Type': 'application/json',
         },

@@ -32,6 +32,8 @@ import { BitbucketRepoBranchPicker } from './BitbucketRepoBranchPicker';
 import { DefaultRepoBranchPicker } from './DefaultRepoBranchPicker';
 import { GitHubRepoBranchPicker } from './GitHubRepoBranchPicker';
 import { MarkdownContent } from '@backstage/core-components';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { Flex, Text } from '@backstage/ui';
 
 /**
  * The underlying component that is rendered in the form for the `RepoBranchPicker`
@@ -40,6 +42,7 @@ import { MarkdownContent } from '@backstage/core-components';
  * @public
  */
 export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
+  const scaffolderTheme = useScaffolderTheme();
   const {
     uiSchema,
     onChange,
@@ -122,19 +125,23 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
 
   const hostType = (host && integrationApi.byHost(host)?.type) ?? null;
 
+  const accessToken =
+    uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+    secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey];
+  const isDisabled = uiSchema?.['ui:disabled'] ?? false;
+
   const renderRepoBranchPicker = () => {
     switch (hostType) {
       case 'bitbucket':
+      case 'bitbucketCloud':
+      case 'bitbucketServer':
         return (
           <BitbucketRepoBranchPicker
             onChange={updateLocalState}
             state={state}
             rawErrors={rawErrors}
-            accessToken={
-              uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
-              secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
-            }
-            isDisabled={uiSchema?.['ui:disabled'] ?? false}
+            accessToken={accessToken}
+            isDisabled={isDisabled}
             required={required}
           />
         );
@@ -144,11 +151,8 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
             onChange={updateLocalState}
             state={state}
             rawErrors={rawErrors}
-            accessToken={
-              uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
-              secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
-            }
-            isDisabled={uiSchema?.['ui:disabled'] ?? false}
+            accessToken={accessToken}
+            isDisabled={isDisabled}
             required={required}
           />
         );
@@ -158,7 +162,7 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
             onChange={updateLocalState}
             state={state}
             rawErrors={rawErrors}
-            isDisabled={uiSchema?.['ui:disabled'] ?? false}
+            isDisabled={isDisabled}
             required={required}
           />
         );
@@ -166,6 +170,20 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
   };
 
   const description = uiSchema['ui:description'] ?? schema.description;
+
+  if (scaffolderTheme === 'bui') {
+    return (
+      <Flex direction="column" gap="4">
+        {schema.title && (
+          <Text as="h5" variant="title-small" weight="bold">
+            {schema.title}
+          </Text>
+        )}
+        {description && <MarkdownContent content={description} />}
+        {renderRepoBranchPicker()}
+      </Flex>
+    );
+  }
 
   return (
     <>

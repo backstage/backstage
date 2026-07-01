@@ -1,1 +1,0 @@
-Fix OAuth 2.0 Protected Resource Metadata endpoint returning wrong URL

@@ -108,6 +108,8 @@ export async function buildPgDatabaseConfig(
       return buildAzurePgConfig(mergedConfigReader);
     case 'cloudsql':
       return buildCloudSqlConfig(mergedConfigReader);
+    case 'rds':
+      return buildRdsPgConfig(mergedConfigReader);
     default:
       throw new Error(`Unknown connection type: ${config.connection.type}`);
   }
@@ -268,6 +270,69 @@ export async function buildCloudSqlConfig(
       ...sanitizedConnection,
       ...clientOpts,
     },
+  };
+}
+
+export async function buildRdsPgConfig(config: Config): Promise<Knex.Config> {
+  const { Signer } =
+    require('@aws-sdk/rds-signer') as typeof import('@aws-sdk/rds-signer');
+
+  let hostname: string;
+  let port: number;
+  let username: string;
+  try {
+    hostname = config.getString('connection.host');
+    port = config.getNumber('connection.port');
+    username = config.getString('connection.user');
+  } catch (err) {
+    throw new ForwardedError(
+      'AWS RDS IAM auth: missing required database connection config — make sure connection.host, connection.port, and connection.user are set and any environment variables they reference are set',
+      err,
+    );
+  }
+  const region =
+    config.getOptionalString('connection.region') ??
+    process.env.AWS_REGION ??
+    process.env.AWS_DEFAULT_REGION;
+  if (!region) {
+    throw new Error(
+      'Missing region for AWS RDS IAM auth: set connection.region or the AWS_REGION environment variable',
+    );
+  }
+
+  const rawConfig = config.get() as Record<string, unknown>;
+  const sanitizedConnection = omit(
+    config.get('connection') as Record<string, unknown>,
+    ['type', 'region'],
+  ) as Partial<Knex.StaticConnectionConfig>;
+
+  const signer = new Signer({ hostname, port, username, region });
+
+  // RDS IAM auth tokens are valid for 15 minutes. Renew 1 minute early so
+  // that pooled connections are refreshed before the token actually expires.
+  const tokenTtlMs = 15 * 60 * 1000;
+  const renewalOffsetMs = 60 * 1000;
+
+  async function getConnectionConfig() {
+    try {
+      const password = await signer.getAuthToken();
+      const tokenExpiration = Date.now() + tokenTtlMs - renewalOffsetMs;
+      return {
+        ...sanitizedConnection,
+        password,
+        expirationChecker: () => tokenExpiration <= Date.now(),
+      };
+    } catch (err) {
+      throw new ForwardedError(
+        `AWS RDS IAM auth token acquisition failed for ${username}@${hostname}:${port}`,
+        err,
+      );
+    }
+  }
+
+  return {
+    ...(rawConfig as Record<string, unknown>),
+    connection: getConnectionConfig,
   };
 }
 

@@ -17,14 +17,17 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GiteaEntityProvider } from './GiteaEntityProvider';
-import * as uuid from 'uuid';
+import * as nodeCrypto from 'node:crypto';
 import { readGiteaConfigs } from './config';
 import { getGiteaApiUrl } from './core';
 import { GiteaIntegration } from '@backstage/integration';
 
 jest.mock('./config');
 jest.mock('./core');
-jest.mock('uuid');
+jest.mock('node:crypto', () => ({
+  ...jest.requireActual('node:crypto'),
+  randomUUID: jest.fn(),
+}));
 
 describe('GiteaEntityProvider', () => {
   const logger = mockServices.logger.mock();
@@ -59,7 +62,7 @@ describe('GiteaEntityProvider', () => {
       'https://gitea.example.com/api/v1/',
     );
     mockScheduler.createScheduledTaskRunner.mockReturnValue(mockTaskRunner);
-    (uuid.v4 as jest.Mock).mockReturnValue('test-uuid');
+    (nodeCrypto.randomUUID as jest.Mock).mockReturnValue('test-uuid');
 
     // Mock global fetch
     global.fetch = jest.fn();

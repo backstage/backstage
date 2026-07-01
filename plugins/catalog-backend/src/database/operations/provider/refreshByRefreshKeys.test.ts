@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
-import * as uuid from 'uuid';
+import { TestDatabases } from '@backstage/backend-test-utils';
+import { randomUUID as uuid } from 'node:crypto';
 import { applyDatabaseMigrations } from '../../migrations';
 import { DbRefreshKeysRow, DbRefreshStateRow } from '../../tables';
 import { generateTargetKey } from '../../util';
@@ -23,21 +23,21 @@ import { refreshByRefreshKeys } from './refreshByRefreshKeys';
 
 jest.setTimeout(60_000);
 
-describe('refreshByRefreshKeys', () => {
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  async function createDatabase(databaseId: TestDatabaseId) {
-    const knex = await databases.init(databaseId);
-    await applyDatabaseMigrations(knex);
-    return knex;
-  }
+describe.each(databases.eachSupportedId())(
+  'refreshByRefreshKeys, %p',
+  databaseId => {
+    async function createDatabase() {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      return knex;
+    }
 
-  it.each(databases.eachSupportedId())(
-    'works for the simple path, %p',
-    async databaseId => {
-      const knex = await createDatabase(databaseId);
+    it('works for the simple path', async () => {
+      const knex = await createDatabase();
 
-      const eid1 = uuid.v4();
+      const eid1 = uuid();
       await knex<DbRefreshStateRow>('refresh_state').insert({
         entity_id: eid1,
         entity_ref: 'k:ns/n1',
@@ -48,7 +48,7 @@ describe('refreshByRefreshKeys', () => {
         last_discovery_at: '2021-04-01 13:37:00',
       });
 
-      const eid2 = uuid.v4();
+      const eid2 = uuid();
       await knex<DbRefreshStateRow>('refresh_state').insert({
         entity_id: eid2,
         entity_ref: 'k:ns/n2',
@@ -89,6 +89,6 @@ describe('refreshByRefreshKeys', () => {
       expect(normalizeTimestamp(before2.next_update_at)).toEqual(
         normalizeTimestamp(after2.next_update_at),
       );
-    },
-  );
-});
+    });
+  },
+);

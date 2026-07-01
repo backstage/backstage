@@ -17,13 +17,12 @@
 import {
   mockCredentials,
   mockServices,
-  TestDatabaseId,
   TestDatabases,
 } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { createHash } from 'node:crypto';
 import { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
@@ -36,172 +35,161 @@ import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProc
 import { EntityProcessingRequest } from '../processing/types';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { ConfigReader } from '@backstage/config';
-import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 jest.setTimeout(60_000);
 
-describe('DefaultRefreshService', () => {
-  const defaultLogger = mockServices.logger.mock();
-  const databases = TestDatabases.create();
+const databases = TestDatabases.create();
 
-  async function createDatabase(
-    databaseId: TestDatabaseId,
-    logger: LoggerService = defaultLogger,
-  ) {
-    const knex = await databases.init(databaseId);
-    await applyDatabaseMigrations(knex);
-    return {
-      knex,
-      processingDb: new DefaultProcessingDatabase({
-        database: knex,
-        logger,
-        refreshInterval: () => 100,
-        events: mockServices.events.mock(),
-        metrics: metricsServiceMock.mock(),
-      }),
-      catalogDb: new DefaultCatalogDatabase({
-        database: knex,
-        logger,
-      }),
-    };
-  }
+describe.each(databases.eachSupportedId())(
+  'DefaultRefreshService, %p',
+  databaseId => {
+    const defaultLogger = mockServices.logger.mock();
 
-  const createPopulatedEngine = async (options: {
-    db: ProcessingDatabase;
-    knex: Knex;
-    entities: Entity[];
-    references: { [source: string]: string[] };
-    entityProcessor?: (entity: Entity) => void;
-  }) => {
-    const { db, knex, entities, references, entityProcessor } = options;
-
-    const entityMap = new Map(
-      entities.map(entity => [stringifyEntityRef(entity), entity]),
-    );
-
-    for (const entity of entities) {
-      await knex<DbRefreshStateRow>('refresh_state').insert({
-        entity_id: uuid(),
-        entity_ref: stringifyEntityRef(entity),
-        unprocessed_entity: JSON.stringify(entity),
-        errors: '[]',
-        next_update_at: '2031-01-01 23:00:00',
-        last_discovery_at: '2021-04-01 13:37:00',
-      });
+    async function createDatabase(logger: LoggerService = defaultLogger) {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      return {
+        knex,
+        processingDb: new DefaultProcessingDatabase({
+          database: knex,
+          logger,
+          refreshInterval: () => 100,
+          events: mockServices.events.mock(),
+          metrics: metricsServiceMock.mock(),
+        }),
+        catalogDb: new DefaultCatalogDatabase({
+          database: knex,
+          logger,
+        }),
+      };
     }
 
-    const entitiesWithParent = new Set(Object.values(references).flat());
-    for (const entityRef of entityMap.keys()) {
-      if (!entitiesWithParent.has(entityRef)) {
-        await knex<DbRefreshStateReferencesRow>(
-          'refresh_state_references',
-        ).insert({
-          source_key: 'ConfigLocationProvider',
-          target_entity_ref: entityRef,
+    const createPopulatedEngine = async (options: {
+      db: ProcessingDatabase;
+      knex: Knex;
+      entities: Entity[];
+      references: { [source: string]: string[] };
+      entityProcessor?: (entity: Entity) => void;
+    }) => {
+      const { db, knex, entities, references, entityProcessor } = options;
+
+      const entityMap = new Map(
+        entities.map(entity => [stringifyEntityRef(entity), entity]),
+      );
+
+      for (const entity of entities) {
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: uuid(),
+          entity_ref: stringifyEntityRef(entity),
+          unprocessed_entity: JSON.stringify(entity),
+          errors: '[]',
+          next_update_at: '2031-01-01 23:00:00',
+          last_discovery_at: '2021-04-01 13:37:00',
         });
       }
-    }
-    for (const [sourceRef, targetRefs] of Object.entries(references)) {
-      for (const targetRef of targetRefs) {
-        await knex<DbRefreshStateReferencesRow>(
-          'refresh_state_references',
-        ).insert({
-          source_entity_ref: sourceRef,
-          target_entity_ref: targetRef,
-        });
+
+      const entitiesWithParent = new Set(Object.values(references).flat());
+      for (const entityRef of entityMap.keys()) {
+        if (!entitiesWithParent.has(entityRef)) {
+          await knex<DbRefreshStateReferencesRow>(
+            'refresh_state_references',
+          ).insert({
+            source_key: 'ConfigLocationProvider',
+            target_entity_ref: entityRef,
+          });
+        }
       }
-    }
+      for (const [sourceRef, targetRefs] of Object.entries(references)) {
+        for (const targetRef of targetRefs) {
+          await knex<DbRefreshStateReferencesRow>(
+            'refresh_state_references',
+          ).insert({
+            source_entity_ref: sourceRef,
+            target_entity_ref: targetRef,
+          });
+        }
+      }
 
-    const stitcher = DefaultStitcher.fromConfig(new ConfigReader({}), {
-      knex,
-      logger: defaultLogger,
-      metrics: metricsServiceMock.mock(),
-    });
-    const engine = new DefaultCatalogProcessingEngine({
-      config: new ConfigReader({}),
-      logger: defaultLogger,
-      processingDatabase: db,
-      knex: knex,
-      stitcher: stitcher,
-      scheduler: mockServices.scheduler(),
-      orchestrator: {
-        async process(request: EntityProcessingRequest) {
-          const entityRef = stringifyEntityRef(request.entity);
-          const entity = entityMap.get(entityRef);
-          if (!entity) {
-            throw new Error(`Unexpected entity: ${entityRef}`);
-          }
-          const deferredEntities =
-            references[entityRef]?.map(ref => {
-              const e = entityMap.get(ref);
-              if (!e) {
-                throw new Error(`Target entity not found: ${ref}`);
-              }
-              return { entity: e, locationKey: ref };
-            }) || [];
+      const engine = new DefaultCatalogProcessingEngine({
+        config: new ConfigReader({}),
+        logger: defaultLogger,
+        processingDatabase: db,
+        knex: knex,
+        scheduler: mockServices.scheduler(),
+        orchestrator: {
+          async process(request: EntityProcessingRequest) {
+            const entityRef = stringifyEntityRef(request.entity);
+            const entity = entityMap.get(entityRef);
+            if (!entity) {
+              throw new Error(`Unexpected entity: ${entityRef}`);
+            }
+            const deferredEntities =
+              references[entityRef]?.map(ref => {
+                const e = entityMap.get(ref);
+                if (!e) {
+                  throw new Error(`Target entity not found: ${ref}`);
+                }
+                return { entity: e, locationKey: ref };
+              }) || [];
 
-          entityProcessor?.(entity);
+            entityProcessor?.(entity);
 
-          return {
-            ok: true,
-            completedEntity: {
-              ...entity,
-              metadata: {
-                ...entity.metadata,
-                annotations: {
-                  ...entity.metadata.annotations,
-                  'refresh-completed': 'true',
+            return {
+              ok: true,
+              completedEntity: {
+                ...entity,
+                metadata: {
+                  ...entity.metadata,
+                  annotations: {
+                    ...entity.metadata.annotations,
+                    'refresh-completed': 'true',
+                  },
                 },
               },
-            },
-            relations: [],
-            errors: [],
-            deferredEntities,
-            state: {},
-            refreshKeys: [],
-          };
+              relations: [],
+              errors: [],
+              deferredEntities,
+              state: {},
+              refreshKeys: [],
+            };
+          },
         },
-      },
-      createHash: () => createHash('sha1'),
-      pollingIntervalMs: 50,
-      events: mockServices.events.mock(),
-      metrics: metricsServiceMock.mock(),
-    });
+        createHash: () => createHash('sha1'),
+        pollingIntervalMs: 50,
+        events: mockServices.events.mock(),
+        metrics: metricsServiceMock.mock(),
+      });
 
-    return engine;
-  };
+      return engine;
+    };
 
-  const waitForRefresh = async (knex: Knex, entityRef: string) => {
-    for (;;) {
-      const [result] = await knex<DbRefreshStateRow>('refresh_state')
-        .where('entity_ref', entityRef)
-        .select();
+    const waitForRefresh = async (knex: Knex, entityRef: string) => {
+      for (;;) {
+        const [result] = await knex<DbRefreshStateRow>('refresh_state')
+          .where('entity_ref', entityRef)
+          .select();
 
-      const entity = result.processed_entity
-        ? (JSON.parse(result.processed_entity) as Entity)
-        : undefined;
-      if (entity?.metadata?.annotations?.['refresh-completed']) {
-        // Reset the annotation so that we can run another verification
-        delete entity.metadata.annotations['refresh-completed'];
-        await knex<DbRefreshStateRow>('refresh_state')
-          .update({
-            processed_entity: JSON.stringify(entity),
-          })
-          .where('entity_ref', entityRef);
-        return true;
+        const entity = result.processed_entity
+          ? (JSON.parse(result.processed_entity) as Entity)
+          : undefined;
+        if (entity?.metadata?.annotations?.['refresh-completed']) {
+          // Reset the annotation so that we can run another verification
+          delete entity.metadata.annotations['refresh-completed'];
+          await knex<DbRefreshStateRow>('refresh_state')
+            .update({
+              processed_entity: JSON.stringify(entity),
+            })
+            .where('entity_ref', entityRef);
+          return true;
+        }
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
-  };
+    };
 
-  it.each(databases.eachSupportedId())(
-    'should refresh the parent location, %p',
-    async databaseId => {
-      const { knex, processingDb, catalogDb } = await createDatabase(
-        databaseId,
-      );
+    it('should refresh the parent location', async () => {
+      const { knex, processingDb, catalogDb } = await createDatabase();
       const refreshService = new DefaultRefreshService({ database: catalogDb });
       const engine = await createPopulatedEngine({
         db: processingDb,
@@ -239,15 +227,10 @@ describe('DefaultRefreshService', () => {
       ).resolves.toBe(true);
 
       await engine.stop();
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'should refresh the location further up the tree, %p',
-    async databaseId => {
-      const { knex, processingDb, catalogDb } = await createDatabase(
-        databaseId,
-      );
+    it('should refresh the location further up the tree', async () => {
+      const { knex, processingDb, catalogDb } = await createDatabase();
       const refreshService = new DefaultRefreshService({ database: catalogDb });
       const engine = await createPopulatedEngine({
         db: processingDb,
@@ -293,16 +276,11 @@ describe('DefaultRefreshService', () => {
       );
 
       await engine.stop();
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'should refresh even when parent has no changes',
-    async databaseId => {
+    it('should refresh even when parent has no changes', async () => {
       let secondRound = false;
-      const { knex, processingDb, catalogDb } = await createDatabase(
-        databaseId,
-      );
+      const { knex, processingDb, catalogDb } = await createDatabase();
       const refreshService = new DefaultRefreshService({ database: catalogDb });
       const engine = await createPopulatedEngine({
         db: processingDb,
@@ -356,6 +334,6 @@ describe('DefaultRefreshService', () => {
       ).resolves.toBe(true);
 
       await engine.stop();
-    },
-  );
-});
+    });
+  },
+);

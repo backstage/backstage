@@ -18,6 +18,7 @@ import { FC } from 'react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import type { JSX as JSX_3 } from 'react';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
@@ -95,7 +96,7 @@ export type DocsGroupConfig = {
   filterPredicate: ((entity: Entity) => boolean) | string;
 };
 
-// @public
+// @public (undocumented)
 export const DocsTable: {
   (props: DocsTableProps): JSX_2.Element | null;
   columns: {
@@ -107,26 +108,50 @@ export const DocsTable: {
     createOwnerColumn(): TableColumn<DocsTableRow>;
     createKindColumn(): TableColumn<DocsTableRow>;
     createTypeColumn(): TableColumn<DocsTableRow>;
-  };
-  actions: {
-    createCopyDocsUrlAction(copyToClipboard: Function): (row: DocsTableRow) => {
-      icon: () => JSX_2.Element;
-      tooltip: string;
-      onClick: () => any;
-    };
-    createStarEntityAction(
-      isStarredEntity: Function,
-      toggleStarredEntity: Function,
-    ): (row: DocsTableRow) => {
-      cellStyle: {
-        paddingLeft: string;
-      };
-      icon: () => JSX_2.Element;
-      tooltip: string;
-      onClick: () => any;
-    };
-  };
+  (props: DocsTableProps): JSX.Element | null;
+  columns: DocsTableColumnFactories;
+  actions: DocsTableActionFactories;
 };
+
+// @public
+export interface DocsTableActionFactories {
+  // (undocumented)
+  createCopyDocsUrlAction(
+    copyToClipboard: Function,
+    t?: Function,
+  ): (row: DocsTableRow) => {
+    icon: () => JSX_3.Element;
+    tooltip: string;
+    onClick: () => void;
+  };
+  // (undocumented)
+  createStarEntityAction(
+    isStarredEntity: Function,
+    toggleStarredEntity: Function,
+    t?: Function,
+  ): (row: DocsTableRow) => {
+    cellStyle: {
+      paddingLeft: string;
+    };
+    icon: () => JSX_3.Element;
+    tooltip: string;
+    onClick: () => void;
+  };
+}
+
+// @public
+export interface DocsTableColumnFactories {
+  // (undocumented)
+  createKindColumn(): TableColumn<DocsTableRow>;
+  // (undocumented)
+  createNameColumn(): TableColumn<DocsTableRow>;
+  // (undocumented)
+  createOwnerColumn(): TableColumn<DocsTableRow>;
+  // (undocumented)
+  createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow>;
+  // (undocumented)
+  createTypeColumn(): TableColumn<DocsTableRow>;
+}
 
 // @public
 export type DocsTableProps = {
@@ -165,7 +190,7 @@ export type EntityListDocsGridPageProps = {
   groups?: DocsGroupConfig[];
 };
 
-// @public
+// @public (undocumented)
 export const EntityListDocsTable: {
   (props: EntityListDocsTableProps): JSX_2.Element;
   columns: {
@@ -196,6 +221,9 @@ export const EntityListDocsTable: {
       onClick: () => any;
     };
   };
+  (props: EntityListDocsTableProps): JSX.Element | null;
+  columns: DocsTableColumnFactories;
+  actions: DocsTableActionFactories;
 };
 
 // @public

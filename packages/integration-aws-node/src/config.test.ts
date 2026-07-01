@@ -332,4 +332,118 @@ describe('readAwsIntegrationConfig', () => {
       ),
     ).toThrow(/no role name/);
   });
+
+  it('reads webIdentityTokenFile on accounts and accountDefaults', () => {
+    const output = readAwsIntegrationConfig(
+      buildConfig({
+        accounts: [
+          {
+            accountId: '111111111111',
+            roleName: 'my-role',
+            webIdentityTokenFile: '/var/run/aws/token',
+          },
+        ],
+        accountDefaults: {
+          roleName: 'default-role',
+          webIdentityTokenFile: '/var/run/aws/default-token',
+        },
+      }),
+    );
+    expect(output.accounts[0].webIdentityTokenFile).toBe('/var/run/aws/token');
+    expect(output.accountDefaults.webIdentityTokenFile).toBe(
+      '/var/run/aws/default-token',
+    );
+  });
+
+  it('rejects webIdentityTokenFile combined with static credentials', () => {
+    expect(() =>
+      readAwsIntegrationConfig(
+        buildConfig({
+          accounts: [
+            {
+              accountId: '111111111111',
+              roleName: 'my-role',
+              accessKeyId: 'ABC',
+              secretAccessKey: 'DEF',
+              webIdentityTokenFile: '/var/run/aws/token',
+            },
+          ],
+        }),
+      ),
+    ).toThrow(/web identity token file and static credentials/);
+  });
+
+  it('rejects webIdentityTokenFile combined with profile', () => {
+    expect(() =>
+      readAwsIntegrationConfig(
+        buildConfig({
+          accounts: [
+            {
+              accountId: '111111111111',
+              webIdentityTokenFile: '/var/run/aws/token',
+              profile: 'my-profile',
+            },
+          ],
+        }),
+      ),
+    ).toThrow(/web identity token file and a profile/);
+  });
+
+  it('rejects webIdentityTokenFile without a role name', () => {
+    expect(() =>
+      readAwsIntegrationConfig(
+        buildConfig({
+          accounts: [
+            {
+              accountId: '111111111111',
+              webIdentityTokenFile: '/var/run/aws/token',
+            },
+          ],
+        }),
+      ),
+    ).toThrow(/web identity token file configured, but no role name/);
+  });
+
+  it('rejects webIdentityTokenFile combined with externalId', () => {
+    expect(() =>
+      readAwsIntegrationConfig(
+        buildConfig({
+          accounts: [
+            {
+              accountId: '111111111111',
+              roleName: 'my-role',
+              webIdentityTokenFile: '/var/run/aws/token',
+              externalId: 'ext-1',
+            },
+          ],
+        }),
+      ),
+    ).toThrow(/AssumeRoleWithWebIdentity does not support external IDs/);
+  });
+
+  it('rejects accountDefaults webIdentityTokenFile without a role name', () => {
+    expect(() =>
+      readAwsIntegrationConfig(
+        buildConfig({
+          accountDefaults: {
+            webIdentityTokenFile: '/var/run/aws/token',
+          },
+        }),
+      ),
+    ).toThrow(/web identity token file configured, but no role name/);
+  });
+
+  it('rejects accountDefaults webIdentityTokenFile combined with externalId', () => {
+    expect(() =>
+      readAwsIntegrationConfig(
+        buildConfig({
+          accountDefaults: {
+            roleName: 'my-role',
+            webIdentityTokenFile: '/var/run/aws/token',
+            externalId: 'ext-1',
+          },
+        }),
+      ),
+    ).toThrow(/AssumeRoleWithWebIdentity does not support external IDs/);
+  });
 });

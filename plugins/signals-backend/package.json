@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-backend",
-  "version": "0.3.14-next.2",
+  "version": "0.3.17-next.0",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "signals",
@@ -44,8 +44,7 @@
     "@backstage/types": "workspace:^",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
-    "uuid": "^11.0.0",
-    "ws": "^8.18.0"
+    "ws": "^8.20.1"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

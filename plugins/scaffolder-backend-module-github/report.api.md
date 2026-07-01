@@ -8,6 +8,7 @@ import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { GithubCredentialsProvider } from '@backstage/integration';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Octokit } from 'octokit';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -66,15 +67,15 @@ export function createGithubBranchProtectionAction(options: {
     dismissStaleReviews?: boolean | undefined;
     bypassPullRequestAllowances?:
       | {
+          users?: string[] | undefined;
           apps?: string[] | undefined;
           teams?: string[] | undefined;
-          users?: string[] | undefined;
         }
       | undefined;
     restrictions?:
       | {
-          teams: string[];
           users: string[];
+          teams: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -241,9 +242,9 @@ export function createGithubRepoCreateAction(options: {
     branch?: string | undefined;
     bypassPullRequestAllowances?:
       | {
+          users?: string[] | undefined;
           apps?: string[] | undefined;
           teams?: string[] | undefined;
-          users?: string[] | undefined;
         }
       | undefined;
     collaborators?:
@@ -290,8 +291,8 @@ export function createGithubRepoCreateAction(options: {
     requireLastPushApproval?: boolean | undefined;
     restrictions?:
       | {
-          teams: string[];
           users: string[];
+          teams: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -328,16 +329,16 @@ export function createGithubRepoPushAction(options: {
     requiredStatusCheckContexts?: string[] | undefined;
     bypassPullRequestAllowances?:
       | {
+          users?: string[] | undefined;
           apps?: string[] | undefined;
           teams?: string[] | undefined;
-          users?: string[] | undefined;
         }
       | undefined;
     requiredApprovingReviewCount?: number | undefined;
     restrictions?:
       | {
-          teams: string[];
           users: string[];
+          teams: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -398,16 +399,16 @@ export function createPublishGithubAction(options: {
     access?: string | undefined;
     bypassPullRequestAllowances?:
       | {
+          users?: string[] | undefined;
           apps?: string[] | undefined;
           teams?: string[] | undefined;
-          users?: string[] | undefined;
         }
       | undefined;
     requiredApprovingReviewCount?: number | undefined;
     restrictions?:
       | {
-          teams: string[];
           users: string[];
+          teams: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -510,6 +511,13 @@ export const createPublishGithubPullRequestAction: (
 >;
 
 // @public
+export function getOctokitClient(
+  octokitOptions: OctokitOptions,
+  logger: LoggerService,
+  retryOptions?: RetryOptions,
+): Octokit;
+
+// @public
 export function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
@@ -530,4 +538,10 @@ export function getOctokitOptions(options: {
 // @public
 const githubModule: BackendFeature;
 export default githubModule;
+
+// @public
+export type RetryOptions = {
+  retries?: number;
+  retryAfter?: number;
+};
 ```

@@ -18,7 +18,7 @@ import { useState } from 'react';
 import preview from '../../../../../.storybook/preview';
 import { Button, Flex, Text } from '../../../../../packages/ui/src';
 /* eslint-enable @backstage/no-relative-monorepo-imports */
-import { ToastQueue } from '@react-stately/toast';
+import { ToastQueue } from 'react-stately';
 import { ToastContainer } from './index';
 import type { ToastApiMessageContent } from './types';
 import { MemoryRouter } from 'react-router-dom';

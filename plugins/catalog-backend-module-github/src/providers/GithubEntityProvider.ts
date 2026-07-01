@@ -32,7 +32,7 @@ import {
 
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import {
   GithubEntityProviderConfig,
   readProviderConfigs,
@@ -189,7 +189,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
           const logger = this.logger.child({
             class: GithubEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
           try {
             await this.refresh(logger);

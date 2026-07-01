@@ -15,7 +15,7 @@
  */
 
 import { cli } from 'cleye';
-import { JSONSchema7 as JSONSchema } from 'json-schema';
+import type { JSONSchema7 as JSONSchema } from 'json-schema';
 import { stringify as stringifyYaml } from 'yaml';
 import { loadCliConfig } from '../lib/config';
 import { JsonObject } from '@backstage/types';
@@ -27,7 +27,7 @@ export default async ({ args, info }: CliCommandContext) => {
     flags: { merge, format, package: pkg },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         package: { type: String, description: 'Package to print schema for' },

@@ -92,7 +92,7 @@ the source code hosting provider. Notice that instead of the `dir:` prefix, the
 `url:` prefix is used instead. For example:
 
 - **GitHub**: `url:https://githubhost.com/org/repo/tree/<branch_name>`
-- **GitLab**: `url:https://gitlabhost.com/org/repo/tree/<branch_name>`
+- **GitLab**: `url:https://gitlabhost.com/org/repo`
 - **Bitbucket**: `url:https://bitbuckethost.com/project/repo/src/<branch_name>`
 - **Azure**: `url:https://azurehost.com/organization/project/_git/repository`
 
@@ -987,7 +987,7 @@ metadata:
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: example-platfrom
+  name: example-platform
   title: Example Application Platform
   namespace: default
   description: This is the child entity

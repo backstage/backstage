@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { CSSProperties } from 'react';
+
 /** @public */
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -119,6 +121,20 @@ export interface PaddingProps {
 
 /** @public */
 export interface SpaceProps extends MarginProps, PaddingProps {}
+
+/**
+ * Flex item properties.
+ *
+ * @public
+ */
+export interface FlexItemProps {
+  /** Controls the flex-grow property. Values of `true` or `false` are converted to `1` or `0` respectively. */
+  grow?: Responsive<number | boolean>;
+  /** Controls the flex-shrink property. Values of `true` or `false` are converted to `1` or `0` respectively. */
+  shrink?: Responsive<number | boolean>;
+  /** Controls the flex-basis property. */
+  basis?: Responsive<CSSProperties['flexBasis']>;
+}
 
 /** @public */
 export type TextVariants =

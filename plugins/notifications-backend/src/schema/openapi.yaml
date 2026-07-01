@@ -1,0 +1,675 @@
+openapi: 3.1.0
+info:
+  title: notifications
+  version: '1'
+  description: The Backstage backend plugin that powers user notifications.
+  license:
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  contact: {}
+servers:
+  - url: /
+components:
+  examples: {}
+  headers: {}
+  parameters:
+    notificationId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    offset:
+      name: offset
+      in: query
+      required: false
+      allowReserved: true
+      schema:
+        type: integer
+        minimum: 0
+    limit:
+      name: limit
+      in: query
+      required: false
+      allowReserved: true
+      schema:
+        type: integer
+        minimum: 0
+    orderField:
+      name: orderField
+      in: query
+      required: false
+      allowReserved: true
+      description: One or more "field,direction" pairs. Direction is "asc" or "desc". Pass multiple to express compound sorts.
+      schema:
+        $ref: '#/components/schemas/OrderField'
+    topic:
+      name: topic
+      in: query
+      required: false
+      allowReserved: true
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      required: false
+      allowReserved: true
+      schema:
+        type: string
+    read:
+      name: read
+      in: query
+      required: false
+      allowReserved: true
+      schema:
+        type: string
+        enum:
+          - 'true'
+          - 'false'
+    saved:
+      name: saved
+      in: query
+      required: false
+      allowReserved: true
+      schema:
+        type: string
+        enum:
+          - 'true'
+          - 'false'
+    createdAfter:
+      name: createdAfter
+      in: query
+      required: false
+      allowReserved: true
+      description: ISO 8601 date-time string. Validated by the handler.
+      schema:
+        type: string
+    minimumSeverity:
+      name: minimumSeverity
+      in: query
+      required: false
+      allowReserved: true
+      schema:
+        $ref: '#/components/schemas/NotificationSeverity'
+  requestBodies: {}
+  responses:
+    ErrorResponse:
+      description: An error response from the backend.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    NotificationSeverity:
+      type: string
+      enum:
+        - critical
+        - high
+        - normal
+        - low
+
+    NotificationPayload:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: Notification title
+        description:
+          type: string
+          description: Optional longer description for the notification
+        link:
+          type: string
+          description: Optional link where the notification is pointing to
+        severity:
+          $ref: '#/components/schemas/NotificationSeverity'
+        topic:
+          type: string
+          description: Optional notification topic
+        scope:
+          type: string
+          description: Notification scope, can be used to re-send same notifications in case the scope and origin matches.
+        icon:
+          type: string
+          description: Optional notification icon
+        metadata:
+          type: object
+          description: Optional additional customizable metadata.
+          additionalProperties: true
+
+    NotificationResponsePayload:
+      description: Response variant of NotificationPayload. Optional string fields may be returned as null when unset.
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+        description:
+          type:
+            - string
+            - 'null'
+        link:
+          type:
+            - string
+            - 'null'
+        severity:
+          $ref: '#/components/schemas/NotificationSeverity'
+        topic:
+          type:
+            - string
+            - 'null'
+        scope:
+          type:
+            - string
+            - 'null'
+        icon:
+          type:
+            - string
+            - 'null'
+        metadata:
+          type: object
+          additionalProperties: true
+
+    Notification:
+      type: object
+      required:
+        - id
+        - user
+        - created
+        - origin
+        - payload
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the notification.
+        user:
+          type:
+            - string
+            - 'null'
+          description: User entity reference, or null for broadcast notifications.
+        created:
+          type: string
+          format: date-time
+        saved:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        read:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        updated:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        origin:
+          type: string
+          description: Origin of the notification (the sender's reference).
+        payload:
+          $ref: '#/components/schemas/NotificationResponsePayload'
+
+    NotificationStatus:
+      type: object
+      required:
+        - unread
+        - read
+      properties:
+        unread:
+          type: integer
+        read:
+          type: integer
+
+    TopicSetting:
+      type: object
+      required:
+        - id
+        - enabled
+      properties:
+        id:
+          type: string
+        enabled:
+          type: boolean
+
+    OriginSetting:
+      type: object
+      required:
+        - id
+        - enabled
+      properties:
+        id:
+          type: string
+        enabled:
+          type: boolean
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopicSetting'
+
+    ChannelSetting:
+      type: object
+      required:
+        - id
+        - origins
+      properties:
+        id:
+          type: string
+        enabled:
+          type: boolean
+        origins:
+          type: array
+          items:
+            $ref: '#/components/schemas/OriginSetting'
+
+    NotificationSettings:
+      type: object
+      required:
+        - channels
+      properties:
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelSetting'
+
+    EntityRef:
+      description: A single entity ref, or a list of entity refs.
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+
+    OrderField:
+      description: One or more "field,direction" pairs, given as a single string or an array of strings.
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+
+    NotificationRecipients:
+      oneOf:
+        - type: object
+          required:
+            - type
+            - entityRef
+          properties:
+            type:
+              type: string
+              enum:
+                - entity
+            entityRef:
+              $ref: '#/components/schemas/EntityRef'
+            excludeEntityRef:
+              $ref: '#/components/schemas/EntityRef'
+        - type: object
+          required:
+            - type
+          properties:
+            type:
+              type: string
+              enum:
+                - broadcast
+
+    NotificationSendOptions:
+      type: object
+      required:
+        - recipients
+        - payload
+      properties:
+        recipients:
+          $ref: '#/components/schemas/NotificationRecipients'
+        payload:
+          $ref: '#/components/schemas/NotificationPayload'
+
+    UpdateNotificationsRequest:
+      type: object
+      required:
+        - ids
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+        read:
+          type: boolean
+        saved:
+          type: boolean
+
+    ListNotificationsResponse:
+      type: object
+      required:
+        - totalCount
+        - notifications
+      properties:
+        totalCount:
+          type: integer
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+
+    GetTopicsResponse:
+      type: object
+      required:
+        - topics
+      properties:
+        topics:
+          type: array
+          items:
+            type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+          required:
+            - name
+            - message
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+          required:
+            - method
+            - url
+        response:
+          type: object
+          properties:
+            statusCode:
+              type: number
+          required:
+            - statusCode
+      required:
+        - error
+        - request
+        - response
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /:
+    get:
+      operationId: ListNotificationsLegacy
+      deprecated: true
+      description: Deprecated alias for `GET /notifications`.
+      parameters:
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/orderField'
+        - $ref: '#/components/parameters/topic'
+        - $ref: '#/components/parameters/search'
+        - $ref: '#/components/parameters/read'
+        - $ref: '#/components/parameters/saved'
+        - $ref: '#/components/parameters/createdAfter'
+        - $ref: '#/components/parameters/minimumSeverity'
+      responses:
+        '200':
+          description: A page of notifications for the current user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListNotificationsResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+    post:
+      operationId: CreateNotificationsLegacy
+      deprecated: true
+      description: Deprecated alias for `POST /notifications`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationSendOptions'
+      responses:
+        '200':
+          description: The notifications that were created.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+
+  /notifications:
+    get:
+      operationId: ListNotifications
+      description: List notifications for the current user.
+      parameters:
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/orderField'
+        - $ref: '#/components/parameters/topic'
+        - $ref: '#/components/parameters/search'
+        - $ref: '#/components/parameters/read'
+        - $ref: '#/components/parameters/saved'
+        - $ref: '#/components/parameters/createdAfter'
+        - $ref: '#/components/parameters/minimumSeverity'
+      responses:
+        '200':
+          description: A page of notifications for the current user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListNotificationsResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+    post:
+      operationId: CreateNotifications
+      description: Send a notification to one or more recipients (service credentials required).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationSendOptions'
+      responses:
+        '200':
+          description: The notifications that were created.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+
+  /update:
+    post:
+      operationId: UpdateNotificationsLegacy
+      deprecated: true
+      description: Deprecated alias for `POST /notifications/update`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNotificationsRequest'
+      responses:
+        '200':
+          description: The notifications that were updated.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+
+  /notifications/update:
+    post:
+      operationId: UpdateNotifications
+      description: Mark notifications as read/unread or saved/unsaved.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNotificationsRequest'
+      responses:
+        '200':
+          description: The notifications that were updated.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+
+  /status:
+    get:
+      operationId: GetStatus
+      description: Get the unread/read counts for the current user.
+      responses:
+        '200':
+          description: The current user's notification status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationStatus'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+
+  /settings:
+    get:
+      operationId: GetSettings
+      description: Get the current user's notification settings, merged with defaults.
+      responses:
+        '200':
+          description: Effective notification settings for the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSettings'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+    post:
+      operationId: UpdateSettings
+      description: Update the current user's notification settings.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationSettings'
+      responses:
+        '200':
+          description: Effective notification settings for the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSettings'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+
+  /topics:
+    get:
+      operationId: GetTopics
+      description: List notification topics that the user has received notifications on.
+      parameters:
+        - $ref: '#/components/parameters/search'
+        - $ref: '#/components/parameters/read'
+        - $ref: '#/components/parameters/saved'
+        - $ref: '#/components/parameters/createdAfter'
+        - $ref: '#/components/parameters/minimumSeverity'
+      responses:
+        '200':
+          description: The list of topics.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTopicsResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+
+  /{id}:
+    get:
+      operationId: GetNotificationLegacy
+      deprecated: true
+      description: Deprecated alias for `GET /notifications/{id}`.
+      parameters:
+        - $ref: '#/components/parameters/notificationId'
+      responses:
+        '200':
+          description: The requested notification.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+
+  /notifications/{id}:
+    get:
+      operationId: GetNotification
+      description: Get a single notification by id for the current user.
+      parameters:
+        - $ref: '#/components/parameters/notificationId'
+      responses:
+        '200':
+          description: The requested notification.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []

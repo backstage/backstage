@@ -20,6 +20,8 @@ export {
   HeaderNavItemDefinition,
   HeaderNavGroupDefinition,
 } from './HeaderNavDefinition';
+export { HeaderMetadataUsers } from './HeaderMetadataUsers';
+export { HeaderMetadataStatus } from './HeaderMetadataStatus';
 export type {
   HeaderNavTab,
   HeaderNavTabGroup,
@@ -27,6 +29,10 @@ export type {
   HeaderOwnProps,
   HeaderProps,
   HeaderBreadcrumb,
+  HeaderTag,
+  HeaderMetadataItem,
+  HeaderMetadataUser,
+  HeaderMetadataStatusProps,
   HeaderPageOwnProps,
   HeaderPageProps,
   HeaderPageBreadcrumb,

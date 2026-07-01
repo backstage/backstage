@@ -29,6 +29,7 @@ export * from './routing';
 export * from './schema';
 export * from './apis/system';
 export * from './translation';
+export * from './breadcrumbs';
 export * from './wiring';
 
 export type {

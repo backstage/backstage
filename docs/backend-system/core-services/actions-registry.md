@@ -18,9 +18,10 @@ Each action registered with the service must conform to the `ActionsRegistryActi
 - **`name`:** A unique identifier for the action (string)
 - **`title`:** A human-readable title for the action (string)
 - **`description`:** A detailed description of what the action does (string)
-- **`schema`:** Object containing input and output schema definitions
+- **`schema`:** Object containing schema definitions
   - **`input`:** Function that returns a Zod schema for validating input
   - **`output`:** Function that returns a Zod schema for validating output
+  - **`secrets`:** (optional) Function that returns a Zod schema for validating secrets. See [Secrets](#secrets) below.
 - **`action`:** The async function that executes the action logic
 
 ### Optional Properties
@@ -36,6 +37,7 @@ Each action registered with the service must conform to the `ActionsRegistryActi
 When an action is executed, it receives a context object (`ActionsRegistryActionContext`) containing:
 
 - **`input`:** The validated input data matching the defined input schema
+- **`secrets`:** The validated secrets data matching the defined secrets schema, or `undefined` if no secrets schema is declared
 - **`logger`:** A LoggerService instance for logging within the action
 - **`credentials`:** BackstageCredentials for authentication and authorization
 
@@ -194,6 +196,63 @@ actionsRegistry.register({
 ```
 
 Actions without a `visibilityPermission` field remain visible and accessible by all callers, preserving backwards compatibility.
+
+## Secrets
+
+Actions can declare a `secrets` schema to request external credentials from the end user, such as API tokens, personal access tokens, or other sensitive values that are not part of Backstage's own authentication system. Secrets are kept separate from the input schema so they never appear in tool definitions or LLM context when actions are exposed as MCP tools.
+
+### Declaring a Secrets Schema
+
+Add a `secrets` function to the `schema` object alongside `input` and `output`. It works the same way as the input schema, receiving the Zod instance and returning a Zod object schema:
+
+```typescript
+actionsRegistry.register({
+  name: 'create-issue',
+  title: 'Create GitHub Issue',
+  description: 'Creates an issue in a GitHub repository',
+  schema: {
+    input: z =>
+      z.object({
+        repo: z.string(),
+        title: z.string(),
+        body: z.string().optional(),
+      }),
+    output: z =>
+      z.object({
+        issueUrl: z.string(),
+      }),
+    secrets: z =>
+      z.object({
+        githubToken: z
+          .string()
+          .describe('GitHub Personal Access Token with repo scope'),
+      }),
+  },
+  attributes: {
+    destructive: false,
+  },
+  action: async ({ input, secrets, credentials }) => {
+    const octokit = new Octokit({ auth: secrets.githubToken });
+
+    const { data } = await octokit.issues.create({
+      owner: input.repo.split('/')[0],
+      repo: input.repo.split('/')[1],
+      title: input.title,
+      body: input.body,
+    });
+
+    return { output: { issueUrl: data.html_url } };
+  },
+});
+```
+
+The `secrets` field in the action context is fully typed based on the declared schema. Actions without a `secrets` schema receive `undefined` for the `secrets` field.
+
+### How Secrets Flow Through the System
+
+Secrets are validated against the Zod schema the same way input is validated. If secrets are required but not provided, or if they fail validation, the action returns an `InputError`. If secrets are provided to an action that does not declare a secrets schema, the request is also rejected.
+
+The secrets schema is included in the action metadata returned by the list endpoint, so callers can discover which secrets an action requires before invoking it.
 
 ## Best Practices
 

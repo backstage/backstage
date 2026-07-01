@@ -35,6 +35,7 @@ export const TableWrapperDefinition = defineComponent<{
   classNames: {
     root: 'bui-TableWrapper',
     resizableContainer: 'bui-TableResizableContainer',
+    scrollContainer: 'bui-TableScrollContainer',
   },
   propDefs: {
     className: {},
@@ -52,6 +53,7 @@ export const TableDefinition = defineComponent<TableRootOwnProps>()({
   },
   propDefs: {
     stale: { dataAttribute: true },
+    isPending: { dataAttribute: true },
     loading: { dataAttribute: true },
   },
 });

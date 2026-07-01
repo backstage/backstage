@@ -15,15 +15,25 @@
  */
 
 import { BackendFeature, ServiceFactory } from '@backstage/backend-plugin-api';
+import { isPromise, unwrapFeature } from '@internal/backend';
 import { BackendInitializer } from './BackendInitializer';
-import { unwrapFeature } from './helpers';
-import { Backend, BackendStartupResult } from './types';
+import {
+  Backend,
+  BackendStartupResult,
+  ExtensionPointFactoryMiddleware,
+} from './types';
 
 export class BackstageBackend implements Backend {
   #initializer: BackendInitializer;
 
-  constructor(defaultServiceFactories: ServiceFactory[]) {
-    this.#initializer = new BackendInitializer(defaultServiceFactories);
+  constructor(
+    defaultServiceFactories: ServiceFactory[],
+    extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[],
+  ) {
+    this.#initializer = new BackendInitializer(
+      defaultServiceFactories,
+      extensionPointFactoryMiddleware,
+    );
   }
 
   add(feature: BackendFeature | Promise<{ default: BackendFeature }>): void {
@@ -41,13 +51,4 @@ export class BackstageBackend implements Backend {
   async stop(): Promise<void> {
     await this.#initializer.stop();
   }
-}
-
-function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'then' in value &&
-    typeof value.then === 'function'
-  );
 }

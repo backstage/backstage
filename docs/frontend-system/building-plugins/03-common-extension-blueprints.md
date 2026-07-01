@@ -15,10 +15,6 @@ These are the [extension blueprints](../architecture/23-extension-blueprints.md)
 
 An API extension is used to add or override [Utility API factories](../utility-apis/01-index.md) in the app. They are commonly used by plugins for both internal and shared APIs. There are also many built-in Api extensions provided by the framework that you are able to override.
 
-### NavItem (deprecated) - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.NavItemBlueprint.html)
-
-The `NavItemBlueprint` is deprecated. The app now auto-discovers navigation items from page extensions, so explicit nav item extensions are no longer needed. To migrate, ensure your plugin and/or page extensions have a `title` and `icon` set — these are used to populate the sidebar automatically.
-
 ### Page - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.PageBlueprint.html)
 
 Page extensions provide content for a particular route in the app. By default pages are attached to the app routes extensions, which renders the root routes. Pages automatically inherit the plugin's `title` and `icon` as defaults, which can be overridden per-page via `PageBlueprint` params.

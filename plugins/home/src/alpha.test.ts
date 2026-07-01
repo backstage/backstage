@@ -38,10 +38,6 @@ describe('Home Plugin Alpha', () => {
     it('should export core home page extension', () => {
       expect(homePlugin.getExtension('page:home')).toBeDefined();
     });
-
-    it('should export navigation item extension', () => {
-      expect(homePlugin.getExtension('nav-item:home')).toBeDefined();
-    });
   });
 
   describe('Optional Extensions (Disabled by Default)', () => {
@@ -99,7 +95,6 @@ describe('Home Plugin Alpha', () => {
     it('should include all extensions in the correct order', () => {
       // Core extensions (always enabled)
       expect(homePlugin.getExtension('page:home')).toBeDefined();
-      expect(homePlugin.getExtension('nav-item:home')).toBeDefined();
 
       // Optional extensions (disabled by default)
       expect(homePlugin.getExtension('api:home/visits')).toBeDefined();

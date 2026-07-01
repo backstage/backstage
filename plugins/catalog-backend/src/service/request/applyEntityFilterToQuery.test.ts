@@ -25,7 +25,7 @@ import { Knex } from 'knex';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { buildEntitySearch } from '../../database/operations/stitcher/buildEntitySearch';
 
 jest.setTimeout(60_000);
@@ -71,10 +71,6 @@ describe.each(databases.eachSupportedId())(
         metadata: { name: '4', namespace: 'default' },
         spec: {},
       });
-    });
-
-    afterAll(async () => {
-      knex.destroy();
     });
 
     async function addEntity(entity: Entity) {

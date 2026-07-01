@@ -28,6 +28,7 @@ export const SwitchDefinition = defineComponent<SwitchOwnProps>()({
     root: 'bui-Switch',
     indicator: 'bui-SwitchIndicator',
   },
+  bg: 'consumer',
   propDefs: {
     label: {},
     className: {},

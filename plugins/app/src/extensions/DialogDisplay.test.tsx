@@ -16,6 +16,7 @@
 
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { act, useEffect } from 'react';
+import { screen } from '@testing-library/react';
 import {
   AppRootElementBlueprint,
   DialogApi,
@@ -49,11 +50,11 @@ async function withDialogApi<T>(
 }
 
 describe('DialogDisplay', () => {
-  function AutoDialog({
+  function AutoCloseDialog({
     dialog,
     result,
   }: {
-    dialog: DialogApiDialog<string | undefined>;
+    dialog: DialogApiDialog<string>;
     result?: string;
   }) {
     useEffect(() => {
@@ -64,112 +65,219 @@ describe('DialogDisplay', () => {
     return <div />;
   }
 
-  it('should render a simple dialog', async () => {
-    const result = await withDialogApi(async dialogApi => {
-      const dialog = await act(() => dialogApi.show<string>(<div>Test</div>));
-      dialog.close('test');
-      return dialog.result();
-    });
-    expect(result).toBe('test');
-  });
-
-  it('should allow dialog to be updated', async () => {
-    const result = await withDialogApi(async dialogApi => {
-      const dialog = await act(() => dialogApi.show(AutoDialog));
-
-      setTimeout(async () => {
-        await act(async () => {
-          dialog.update(props => <AutoDialog {...props} result="test2" />);
-        });
-      }, 100);
-
-      return dialog.result();
+  describe('open', () => {
+    it('should render a dialog and return a result', async () => {
+      const result = await withDialogApi(async dialogApi => {
+        const dialog = await act(() => dialogApi.open<string>(<div>Test</div>));
+        dialog.close('test');
+        return dialog.result();
+      });
+      expect(result).toBe('test');
     });
 
-    expect(result).toBe('test2');
-  });
-
-  it('should allow dialog to be closed by pressing escape', async () => {
-    const result = await withDialogApi(async dialogApi => {
-      const dialog = await act(() => dialogApi.show(AutoDialog));
-
-      setTimeout(async () => {
-        await userEvent.keyboard('{Escape}');
-      }, 100);
-
-      return dialog.result();
+    it('should render dialog content directly without wrapper chrome', async () => {
+      await withDialogApi(async dialogApi => {
+        await act(() =>
+          dialogApi.open(<div data-testid="bare-content">Hello</div>),
+        );
+        expect(await screen.findByTestId('bare-content')).toBeInTheDocument();
+        return undefined;
+      });
     });
 
-    expect(result).toBe(undefined);
-  });
-
-  it('should allow a stack of dialogs', async () => {
-    const result = await withDialogApi(async dialogApi => {
-      const dialog1 = await act(() => dialogApi.show(AutoDialog));
-      const dialog2 = await act(() => dialogApi.show(AutoDialog));
-      const dialog3 = await act(() => dialogApi.show(AutoDialog));
-
-      setTimeout(async () => {
-        await act(async () => {
-          dialog3.close('test3');
-          dialog1.close('test1');
-          dialog2.close('test2');
-        });
-      }, 100);
-
-      return Promise.all([
-        dialog1.result(),
-        dialog2.result(),
-        dialog3.result(),
-      ]);
-    });
-
-    expect(result).toEqual(['test1', 'test2', 'test3']);
-  });
-
-  it('should only cancel one dialog at a time', async () => {
-    const result = await withDialogApi(async dialogApi => {
-      const dialog1 = await act(() => dialogApi.show(AutoDialog));
-      const dialog2 = await act(() => dialogApi.show(AutoDialog));
-      const dialog3 = await act(() => dialogApi.show(AutoDialog));
-
-      setTimeout(async () => {
-        await userEvent.keyboard('{Escape}');
-
-        await act(async () => {
-          dialog1.close('test1');
-          dialog2.close('test2');
-          dialog3.close('test3');
-        });
-      }, 100);
-
-      return Promise.all([
-        dialog1.result(),
-        dialog2.result(),
-        dialog3.result(),
-      ]);
-    });
-
-    expect(result).toEqual(['test1', 'test2', undefined]);
-  });
-
-  it('should not allow modal dialog to be closed by pressing escape', async () => {
-    const result = await withDialogApi(async dialogApi => {
-      const dialog = await act(() => dialogApi.showModal(AutoDialog));
-
-      setTimeout(async () => {
-        await userEvent.keyboard('{Escape}');
+    it('should allow dialog to be updated', async () => {
+      const result = await withDialogApi(async dialogApi => {
+        const dialog = await act(() => dialogApi.open<string>(AutoCloseDialog));
 
         setTimeout(async () => {
           await act(async () => {
-            dialog.close('test');
+            dialog.update(props => (
+              <AutoCloseDialog {...props} result="test2" />
+            ));
           });
         }, 100);
-      }, 100);
 
-      return dialog.result();
+        return dialog.result();
+      });
+
+      expect(result).toBe('test2');
     });
 
-    expect(result).toBe('test');
+    it('should allow a stack of dialogs, rendering only the most recent', async () => {
+      const result = await withDialogApi(async dialogApi => {
+        const dialog1 = await act(() =>
+          dialogApi.open<string>(AutoCloseDialog),
+        );
+        const dialog2 = await act(() =>
+          dialogApi.open<string>(AutoCloseDialog),
+        );
+        const dialog3 = await act(() =>
+          dialogApi.open<string>(AutoCloseDialog),
+        );
+
+        setTimeout(async () => {
+          await act(async () => {
+            dialog3.close('test3');
+            dialog1.close('test1');
+            dialog2.close('test2');
+          });
+        }, 100);
+
+        return Promise.all([
+          dialog1.result(),
+          dialog2.result(),
+          dialog3.result(),
+        ]);
+      });
+
+      expect(result).toEqual(['test1', 'test2', 'test3']);
+    });
+
+    it('should accept a component that receives the dialog handle', async () => {
+      function TestDialog({ dialog }: { dialog: DialogApiDialog<string> }) {
+        return (
+          <button onClick={() => dialog.close('from-component')}>Close</button>
+        );
+      }
+
+      const result = await withDialogApi(async dialogApi => {
+        const dialog = await act(() => dialogApi.open<string>(TestDialog));
+
+        setTimeout(async () => {
+          const button = await screen.findByRole('button', { name: 'Close' });
+          await userEvent.click(button);
+        }, 100);
+
+        return dialog.result();
+      });
+
+      expect(result).toBe('from-component');
+    });
+  });
+
+  describe('deprecated show', () => {
+    function AutoDialog({
+      dialog,
+      result,
+    }: {
+      dialog: DialogApiDialog<string | undefined>;
+      result?: string;
+    }) {
+      useEffect(() => {
+        if (result) {
+          dialog.close(result);
+        }
+      }, [dialog, result]);
+      return <div />;
+    }
+
+    it('should render a simple dialog', async () => {
+      const result = await withDialogApi(async dialogApi => {
+        const dialog = await act(() => dialogApi.show<string>(<div>Test</div>));
+        dialog.close('test');
+        return dialog.result();
+      });
+      expect(result).toBe('test');
+    });
+
+    it('should allow dialog to be updated', async () => {
+      const result = await withDialogApi(async dialogApi => {
+        const dialog = await act(() => dialogApi.show(AutoDialog));
+
+        setTimeout(async () => {
+          await act(async () => {
+            dialog.update(props => <AutoDialog {...props} result="test2" />);
+          });
+        }, 100);
+
+        return dialog.result();
+      });
+
+      expect(result).toBe('test2');
+    });
+
+    it('should allow dialog to be closed by pressing escape', async () => {
+      const result = await withDialogApi(async dialogApi => {
+        const dialog = await act(() => dialogApi.show(AutoDialog));
+
+        setTimeout(async () => {
+          await userEvent.keyboard('{Escape}');
+        }, 100);
+
+        return dialog.result();
+      });
+
+      expect(result).toBe(undefined);
+    });
+
+    it('should allow a stack of dialogs', async () => {
+      const result = await withDialogApi(async dialogApi => {
+        const dialog1 = await act(() => dialogApi.show(AutoDialog));
+        const dialog2 = await act(() => dialogApi.show(AutoDialog));
+        const dialog3 = await act(() => dialogApi.show(AutoDialog));
+
+        setTimeout(async () => {
+          await act(async () => {
+            dialog3.close('test3');
+            dialog1.close('test1');
+            dialog2.close('test2');
+          });
+        }, 100);
+
+        return Promise.all([
+          dialog1.result(),
+          dialog2.result(),
+          dialog3.result(),
+        ]);
+      });
+
+      expect(result).toEqual(['test1', 'test2', 'test3']);
+    });
+
+    it('should only cancel one dialog at a time', async () => {
+      const result = await withDialogApi(async dialogApi => {
+        const dialog1 = await act(() => dialogApi.show(AutoDialog));
+        const dialog2 = await act(() => dialogApi.show(AutoDialog));
+        const dialog3 = await act(() => dialogApi.show(AutoDialog));
+
+        setTimeout(async () => {
+          await userEvent.keyboard('{Escape}');
+
+          await act(async () => {
+            dialog1.close('test1');
+            dialog2.close('test2');
+            dialog3.close('test3');
+          });
+        }, 100);
+
+        return Promise.all([
+          dialog1.result(),
+          dialog2.result(),
+          dialog3.result(),
+        ]);
+      });
+
+      expect(result).toEqual(['test1', 'test2', undefined]);
+    });
+
+    it('should not allow modal dialog to be closed by pressing escape', async () => {
+      const result = await withDialogApi(async dialogApi => {
+        const dialog = await act(() => dialogApi.showModal(AutoDialog));
+
+        setTimeout(async () => {
+          await userEvent.keyboard('{Escape}');
+
+          setTimeout(async () => {
+            await act(async () => {
+              dialog.close('test');
+            });
+          }, 100);
+        }, 100);
+
+        return dialog.result();
+      });
+
+      expect(result).toBe('test');
+    });
   });
 });

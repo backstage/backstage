@@ -155,6 +155,7 @@ export const createGitlabRepoPushAction: (options: {
     targetPath?: string | undefined;
     token?: string | undefined;
     commitAction?: 'auto' | 'update' | 'create' | 'delete' | undefined;
+    allowEmpty?: boolean | undefined;
   },
   {
     projectid: string;

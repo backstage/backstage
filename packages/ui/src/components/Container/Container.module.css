@@ -18,6 +18,8 @@
 
 @layer components {
   .bui-Container {
+    flex: 1;
+    width: 100%;
     max-width: 120rem;
     padding-inline: var(--bui-space-4);
     margin-inline: auto;

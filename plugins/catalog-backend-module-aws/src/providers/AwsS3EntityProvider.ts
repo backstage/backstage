@@ -29,7 +29,7 @@ import {
   ListObjectsV2Output,
   S3,
 } from '@aws-sdk/client-s3';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { getEndpointFromInstructions } from '@aws-sdk/middleware-endpoint';
 import {
   AwsCredentialsManager,
@@ -137,7 +137,7 @@ export class AwsS3EntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: AwsS3EntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

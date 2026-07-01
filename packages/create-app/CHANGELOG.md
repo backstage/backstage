@@ -1,5 +1,98 @@
 # @backstage/create-app
 
+## 0.8.5-next.1
+
+### Patch Changes
+
+- fc4cae1: Added the user settings backend plugin to the create-app templates, enabling database-backed user settings persistence for newly created Backstage apps out of the box. The frontend storage API is also wired up to use backend-persisted storage instead of browser local storage, via the new `@backstage/plugin-app-module-user-settings` module.
+- 3acdf87: Pinned `@types/node` to `22.20.0` in the seed lockfile to prevent yarn from resolving the `*` wildcard (from `@jest/environment-jsdom-abstract`) to `@types/node@26.0.0`, which breaks `tsc:full` due to incompatible `EventEmitter` types in `tarn`.
+
+## 0.8.5-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.4
+
+### Patch Changes
+
+- 68db890: Bumped create-app version.
+- e7e4ef0: Bumped create-app version.
+- 6344c54: Newly scaffolded apps now use Yarn 4.13.0 (up from 4.4.1) and enable Yarn's `npmMinimalAgeGate: 3d` setting, which refuses to install npm packages published less than three days ago as a defense against supply-chain attacks. Backstage's own packages are exempted via `npmPreapprovedPackages: ['@backstage/*']` so newly released Backstage versions remain installable without delay.
+
+  Existing apps are unaffected. To opt in, add the `npmMinimalAgeGate` and `npmPreapprovedPackages` settings to your own `.yarnrc.yml` and upgrade Yarn to 4.13 or later.
+
+## 0.8.4-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.4-next.1
+
+### Patch Changes
+
+- 6344c54: Newly scaffolded apps now use Yarn 4.13.0 (up from 4.4.1) and enable Yarn's `npmMinimalAgeGate: 3d` setting, which refuses to install npm packages published less than three days ago as a defense against supply-chain attacks. Backstage's own packages are exempted via `npmPreapprovedPackages: ['@backstage/*']` so newly released Backstage versions remain installable without delay.
+
+  Existing apps are unaffected. To opt in, add the `npmMinimalAgeGate` and `npmPreapprovedPackages` settings to your own `.yarnrc.yml` and upgrade Yarn to 4.13 or later.
+
+## 0.8.4-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.3
+
+### Patch Changes
+
+- 7295193: Bumped create-app version.
+- b0bc1e5: Bumped create-app version.
+- 14e2056: Pinned the Jest version range in app templates to `~30.2.0` to prevent automatic upgrades to Jest 30.4.x, which requires Node.js v24.9+ and breaks tests on Node 22.
+- 927c003: Replaced internal error utilities with shared ones from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.2
+
+## 0.8.3-next.3
+
+### Patch Changes
+
+- 14e2056: Pinned the Jest version range in app templates to `~30.2.0` to prevent automatic upgrades to Jest 30.4.x, which requires Node.js v24.9+ and breaks tests on Node 22.
+
+## 0.8.3-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.3-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.3-next.0
+
+### Patch Changes
+
+- 927c003: Replaced internal error utilities with shared ones from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.2-next.0
+
+## 0.8.2
+
+### Patch Changes
+
+- a2cb332: Bumped create-app version.
+- 6c10d88: Bumped create-app version.
+- e8ffac1: Various fixes for the `create-app` template: reorganizing sidebar items, removing redundant config and code, and adding a documentation example.
+- 72a493a: Added the `mcp-actions-backend` and `plugin-auth` plugins
+- 4cf9f3a: Removed the unnecessary `@backstage/cli-module-new` dependency from the `next-app` template, since it is already included through `@backstage/cli-defaults`.
+- 2541837: Renamed the built-in template directories from `next-app` to `default-app` and `default-app` to `legacy-app`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1
+
 ## 0.8.2-next.2
 
 ### Patch Changes

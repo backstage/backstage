@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-info",
-  "version": "0.1.1-next.0",
+  "version": "0.1.3",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -19,6 +19,7 @@
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-info",
   "files": [
     "dist",
     "bin"
@@ -34,13 +35,12 @@
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
-    "cleye": "^2.3.0",
+    "cleye": "^2.6.0",
     "fs-extra": "^11.2.0",
     "minimatch": "^10.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0"
-  },
-  "bin": "bin/backstage-cli-module-info"
+  }
 }

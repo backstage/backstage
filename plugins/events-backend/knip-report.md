@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name                       | Location     | Severity |
-| :------------------------- | :----------- | :------- |
-| @backstage/backend-app-api | plugins/events-backend/package.json | error    |
+| Name                       | Location          | Severity |
+| :------------------------- | :---------------- | :------- |
+| @backstage/backend-app-api | package.json:69:6 | error    |
 

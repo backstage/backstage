@@ -289,11 +289,11 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       }
     }
 
-    if (options.limit) {
+    if (options.limit !== undefined) {
       query.limit(options.limit);
     }
 
-    if (options.offset) {
+    if (options.offset !== undefined) {
       query.offset(options.offset);
     }
 

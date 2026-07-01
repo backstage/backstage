@@ -58,17 +58,8 @@ export function isError(value: unknown): value is ErrorLike {
  * @param value - an unknown value
  */
 export function assertError(value: unknown): asserts value is ErrorLike {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    throw new Error(`Encountered invalid error, not an object, got '${value}'`);
-  }
-  const maybe = value as Partial<ErrorLike>;
-  if (typeof maybe.name !== 'string' || maybe.name === '') {
-    throw new Error(`Encountered error object without a name, got '${value}'`);
-  }
-  if (typeof maybe.message !== 'string') {
-    throw new Error(
-      `Encountered error object without a message, got '${value}'`,
-    );
+  if (!isError(value)) {
+    throw new Error(`Encountered invalid error, got '${value}'`);
   }
 }
 

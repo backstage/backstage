@@ -15,7 +15,7 @@
  */
 import { devToolsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/esm/useAsync';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 
 export const useScheduledTasks = (plugin: string) => {
   const api = useApi(devToolsApiRef);
@@ -24,7 +24,8 @@ export const useScheduledTasks = (plugin: string) => {
     value,
     loading,
     error: asyncError,
-  } = useAsync(async () => {
+    retry: refresh,
+  } = useAsyncRetry(async () => {
     return api.getScheduledTasksByPlugin(plugin);
   }, [api, plugin]);
 
@@ -33,6 +34,7 @@ export const useScheduledTasks = (plugin: string) => {
       scheduledTasks: undefined,
       loading: false,
       error: asyncError.message,
+      refresh,
     };
   }
 
@@ -40,5 +42,6 @@ export const useScheduledTasks = (plugin: string) => {
     scheduledTasks: value?.scheduledTasks,
     loading,
     error: value?.error,
+    refresh,
   };
 };

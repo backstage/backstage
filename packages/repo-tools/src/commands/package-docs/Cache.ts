@@ -77,7 +77,7 @@ export class PackageDocsCache {
         }
         map.set(pkg, parsed);
       } catch (e) {
-        console.error(`Skipping unparseable cache file ${file}: ${e}`);
+        console.error(`Skipping unparsable cache file ${file}: ${e}`);
       }
     }
     return new PackageDocsCache(lockfile, map, baseDirectory);

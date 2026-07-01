@@ -53,13 +53,14 @@ Team: @backstage/community-plugins-maintainers
 
 Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugins repository](https://github.com/backstage/community-plugins)
 
-| Name                 | Organization  | GitHub                                      | Discord      |
-| -------------------- | ------------- | ------------------------------------------- | ------------ |
-| André Wanlin         | Spotify       | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
-| Bethany Griggs       | Red Hat       | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
-| Kashish Mittal       | Red Hat       | [04kash](https://github.com/04kash)         | `kashh._.`   |
-| Vincenzo Scamporlino | Spotify       | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
-| Peter Macdonald      | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M) | `parsifal`   |
+| Name                 | Organization  | GitHub                                          | Discord      |
+| -------------------- | ------------- | ----------------------------------------------- | ------------ |
+| André Wanlin         | Spotify       | [awanlin](https://github.com/awanlin)           | `ahhhndre`   |
+| Bethany Griggs       | Red Hat       | [BethGriggs](https://github.com/BethGriggs)     | `bethgriggs` |
+| Hope Hadfield        | Red Hat       | [hopehadfield](https://github.com/hopehadfield) | `hh0p3`      |
+| Kashish Mittal       | Red Hat       | [04kash](https://github.com/04kash)             | `kashh._.`   |
+| Peter Macdonald      | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)     | `parsifal`   |
+| Vincenzo Scamporlino | Spotify       | [vinzscam](https://github.com/vinzscam)         | `vinzscam`   |
 
 ### Design System
 
@@ -222,6 +223,20 @@ Scope: The auditor core service, along with auditor usage in the main repository
 | Name         | Organization | GitHub                                          | Discord        |
 | ------------ | ------------ | ----------------------------------------------- | -------------- |
 | Paul Schultz | Red Hat      | [schultzp2020](https://github.com/schultzp2020) | `schultzp2020` |
+
+### Codemods
+
+Team: @backstage/codemods-maintainers
+
+Scope: The official Backstage codemods and migration tooling in the [codemods repository](https://github.com/backstage/codemods)
+
+| Name                   | Organization | GitHub                                                | Discord        |
+| ---------------------- | ------------ | ----------------------------------------------------- | -------------- |
+| Paul Schultz           | Red Hat      | [schultzp2020](https://github.com/schultzp2020)       | `schultzp2020` |
+| Hope Hadfield          | Red Hat      | [hopehadfield](https://github.com/hopehadfield)       | `hh0p3`        |
+| Alex Bit               | Codemod      | [alexbit-codemod](https://github.com/alexbit-codemod) | `alex__bit`    |
+| Mo Mohebifar           | Codemod      | [mohebifar](https://github.com/mohebifar)             | `mohebifar`    |
+| Juan Pablo Garcia Ripa | SAS          | [Sarabadu](https://github.com/Sarabadu)               | `sarabadu`     |
 
 ### Events
 

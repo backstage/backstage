@@ -16,7 +16,6 @@
 import { SignalApi, SignalSubscriber } from '@backstage/plugin-signals-react';
 import { JsonObject } from '@backstage/types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-import { v4 as uuid } from 'uuid';
 
 type Subscription = {
   channel: string;
@@ -76,7 +75,7 @@ export class SignalClient implements SignalApi {
     channel: string,
     onMessage: (message: TMessage) => void,
   ): SignalSubscriber {
-    const subscriptionId = uuid();
+    const subscriptionId = globalThis.crypto.randomUUID();
     const exists = [...this.subscriptions.values()].find(
       sub => sub.channel === channel,
     );

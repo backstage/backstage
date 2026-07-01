@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod/v4';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
@@ -50,11 +51,9 @@ export const SubPageBlueprint = createExtensionBlueprint({
     coreExtensionData.routeRef.optional(),
     coreExtensionData.icon.optional(),
   ],
-  config: {
-    schema: {
-      path: z => z.string().optional(),
-      title: z => z.string().optional(),
-    },
+  configSchema: {
+    path: z.string().optional(),
+    title: z.string().optional(),
   },
   *factory(
     params: {

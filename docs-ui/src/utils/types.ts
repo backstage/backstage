@@ -5,6 +5,7 @@ export type Component =
   | 'accordion-trigger'
   | 'alert'
   | 'avatar'
+  | 'badge'
   | 'box'
   | 'button'
   | 'button-icon'
@@ -18,10 +19,12 @@ export type Component =
   | 'cell-text'
   | 'checkbox'
   | 'checkbox-group'
+  | 'combobox'
   | 'collapsible'
   | 'column'
   | 'container'
   | 'datatable'
+  | 'date-picker'
   | 'dialog'
   | 'dialog-body'
   | 'dialog-footer'
@@ -61,6 +64,7 @@ export type Component =
   | 'searchfield'
   | 'select'
   | 'skeleton'
+  | 'slider'
   | 'submenu-trigger'
   | 'switch'
   | 'tab'
@@ -80,6 +84,7 @@ export type Component =
   | 'toggle-button-group'
   | 'tooltip'
   | 'tooltip-trigger'
+  | 'use-table'
   | 'visually-hidden';
 
 export type Hook = 'use-breakpoint';

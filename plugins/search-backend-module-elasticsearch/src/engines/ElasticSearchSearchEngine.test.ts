@@ -27,7 +27,10 @@ import {
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('uuid', () => ({ v4: () => 'tag' }));
+jest.mock('node:crypto', () => ({
+  ...jest.requireActual('node:crypto'),
+  randomUUID: () => 'tag',
+}));
 
 class ElasticSearchSearchEngineForTranslatorTests extends ElasticSearchSearchEngine {
   getTranslator() {

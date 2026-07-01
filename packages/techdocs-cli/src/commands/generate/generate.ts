@@ -42,6 +42,7 @@ export default async function generate(opts: OptionValues) {
   const dockerImage = opts.dockerImage;
   const pullImage = opts.pull;
   const legacyCopyReadmeMdToIndexMd = opts.legacyCopyReadmeMdToIndexMd;
+  const disableExternalFonts = opts.disableExternalFonts;
   const defaultPlugins = opts.defaultPlugin;
 
   logger.info(`Using source dir ${sourceDir}`);
@@ -64,6 +65,7 @@ export default async function generate(opts: OptionValues) {
         mkdocs: {
           legacyCopyReadmeMdToIndexMd,
           omitTechdocsCorePlugin,
+          disableExternalFonts,
           defaultPlugins,
         },
       },

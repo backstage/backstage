@@ -305,67 +305,37 @@ For more information about where to place extension overrides, see the official 
 
 ### My Groups Sidebar Item
 
-As the [NavItem](https://backstage.io/docs/reference/frontend-plugin-api.createnavitemextension) extension type does not support conditional rendering, this plugin does not provide navigation items, so to use the `MyGroupsSidebarItem` component, we recommend overriding the [App/Nav](https://backstage.io/docs/frontend-system/building-apps/built-in-extensions#app-nav) extension and adding the item statically.
-
-> [!IMPORTANT]
-> As you can see in the example below, we are using the same attachment point, inputs and outputs as the default App/Nav extension to avoid side effects on the NavItem and NavLogo extensions.
+This plugin does not provide a page extension for the groups sidebar item, since it requires conditional rendering based on the logged-in user. To use the `MyGroupsSidebarItem` component, add it to your custom sidebar implementation using the `NavContentBlueprint` in `packages/app/src/modules/nav/Sidebar.tsx`:
 
 ```tsx
-// ...
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
+import { NavContentBlueprint } from '@backstage/plugin-app-react';
 
-export default createFrontendModule({
-  pluginId: 'app',
-  extensions: [
-    createExtension({
-      // Name is necessary so the system knows that this extension will override the default app nav extension
-      name: 'nav',
-      // Keeping the same attachment point as in the default App/Nav extension
-      attachTo: { id: 'app/layout', input: 'nav' },
-      // Keeping the same inputs as in the default App/Nav extension
-      inputs: {
-        items: createExtensionInput({
-          target: createNavItemExtension.targetDataRef,
-        }),
-        logos: createExtensionInput(
-          {
-            elements: createNavLogoExtension.logoElementsDataRef,
-          },
-          {
-            singleton: true,
-            optional: true,
-          },
-        ),
-      },
-      // Keeping the same output as in the default App/Nav extension
-      output: {
-        element: coreExtensionData.reactElement,
-      },
-      factory({ inputs }) {
-        return {
-          element: (
-            <Sidebar>
-              {/* Code borrowed from the default extension implementation to render the logos and items inputs */}
-              <SidebarLogo {...inputs.logos?.output.elements} />
-              <SidebarDivider />
-              {inputs.items.map((item, index) => (
-                <SidebarNavItem {...item.output.target} key={index} />
-              ))}
-              {/* Here is where we actually modifies the default implementation by adding a static item to render a group of squad pages */}
-              <SidebarGroup label="Menu" icon={<MenuIcon />}>
-                {/* The MyGroupsSidebarItem provides quick access to the group(s) the logged in user is a member of directly in the sidebar. */}
-                <MyGroupsSidebarItem
-                  singularTitle="My Squad"
-                  pluralTitle="My Squads"
-                  icon={GroupIcon}
-                />
-              </SidebarGroup>
-            </Sidebar>
-          ),
-        };
-      },
-    }),
-  ],
+export const SidebarContent = NavContentBlueprint.make({
+  params: {
+    component: ({ navItems }) => {
+      const nav = navItems.withComponent(item => (
+        <SidebarItem icon={() => item.icon} to={item.href} text={item.title} />
+      ));
+
+      return (
+        <Sidebar>
+          <SidebarLogo />
+          <SidebarDivider />
+          <SidebarGroup label="Menu" icon={<MenuIcon />}>
+            {nav.rest()}
+            <MyGroupsSidebarItem
+              singularTitle="My Squad"
+              pluralTitle="My Squads"
+              icon={GroupIcon}
+            />
+          </SidebarGroup>
+        </Sidebar>
+      );
+    },
+  },
 });
 ```
+
+For more details on customizing the sidebar, see the [app migration guide](https://backstage.io/docs/frontend-system/building-apps/migrating#app-root-sidebar).

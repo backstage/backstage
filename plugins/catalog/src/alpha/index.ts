@@ -16,6 +16,13 @@
 
 export { default } from './plugin';
 
+export { CatalogExportConfigBlueprint } from './pages';
+export type {
+  CatalogExportSettings,
+  CatalogExporterConfig,
+  CatalogExporter,
+  CatalogExportSettingsColumn,
+} from '../components/CatalogExportButton';
 export { NfsDefaultCatalogPage as CatalogIndexPage } from '../components/CatalogPage';
 export type { DefaultCatalogPageProps as CatalogIndexPageProps } from '../components/CatalogPage';
 export type {

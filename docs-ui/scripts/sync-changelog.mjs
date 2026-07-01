@@ -99,6 +99,7 @@ function pascalToKebab(str) {
     DataTable: 'datatable',
     ScrollArea: 'scrollarea',
     'Grid.Item': 'grid-item',
+    useTable: 'use-table',
   };
 
   if (specialCases[str]) {

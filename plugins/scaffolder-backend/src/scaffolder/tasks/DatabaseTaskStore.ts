@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import {
   TaskStore,
   TaskStoreCreateTaskOptions,

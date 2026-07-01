@@ -6,22 +6,25 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { ApiHolder } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContextMenuItemData } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContextMenuItemParams } from '@backstage/plugin-catalog-react/alpha';
+import { EntityHeaderLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
-import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
@@ -36,10 +39,68 @@ import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
+import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
+
+// @public
+export const CatalogExportConfigBlueprint: ExtensionBlueprint<{
+  kind: 'catalog-export-config';
+  params: {
+    exporters?: CatalogExportSettings['exporters'];
+    columns?: CatalogExportSettings['columns'];
+    onSuccess?: CatalogExportSettings['onSuccess'];
+    onError?: CatalogExportSettings['onError'];
+  };
+  output: ExtensionDataRef<
+    {
+      exporters?: CatalogExportSettings['exporters'];
+      columns?: CatalogExportSettings['columns'];
+      onSuccess?: CatalogExportSettings['onSuccess'];
+      onError?: CatalogExportSettings['onError'];
+    },
+    'catalog.export-customization',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
+
+// @public
+export type CatalogExporter = (options: {
+  apis: ApiHolder;
+  columns: CatalogExportSettingsColumn[];
+  streamRequest?: StreamEntitiesRequest;
+}) => {
+  generator: AsyncGenerator<string, void, unknown>;
+  contentType: string;
+};
+
+// @public
+export interface CatalogExporterConfig {
+  exporter: CatalogExporter;
+  label?: string;
+}
+
+// @public
+export interface CatalogExportSettings {
+  columns?: CatalogExportSettingsColumn[];
+  disableBuiltinExporters?: boolean;
+  enabled?: boolean;
+  exporters?: Record<string, CatalogExporterConfig>;
+  onError?: (options: { error: Error }) => void;
+  onSuccess?: () => void;
+}
+
+// @public
+export interface CatalogExportSettingsColumn {
+  entityFilterKey: string;
+  title?: string;
+}
 
 // @public (undocumented)
 export function CatalogIndexPage(props: CatalogIndexPageProps): JSX_3.Element;
@@ -52,6 +113,8 @@ export interface CatalogIndexPageProps {
   columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
   emptyContent?: ReactNode;
+  // (undocumented)
+  exportSettings?: CatalogExportSettings;
   // (undocumented)
   filters?: ReactNode;
   // (undocumented)
@@ -97,13 +160,9 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
     readonly 'deleteEntity.dialogTitle': 'Are you sure you want to delete this entity?';
     readonly 'deleteEntity.actionButtonTitle': 'Delete entity';
-    readonly 'indexPage.title': '{{orgName}} Catalog';
-    readonly 'indexPage.createButtonTitle': 'Create';
-    readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
-    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
-    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.unknown': 'unknown';
+    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
     readonly 'aboutCard.editButtonTitle': 'Edit Metadata';
     readonly 'aboutCard.editButtonAriaLabel': 'Edit';
@@ -111,7 +170,6 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.refreshScheduledMessage': 'Refresh scheduled';
     readonly 'aboutCard.refreshButtonAriaLabel': 'Refresh';
     readonly 'aboutCard.launchTemplate': 'Launch Template';
-    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.viewSource': 'View Source';
     readonly 'aboutCard.descriptionField.value': 'No description';
     readonly 'aboutCard.descriptionField.label': 'Description';
@@ -129,6 +187,11 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.tagsField.value': 'No Tags';
     readonly 'aboutCard.tagsField.label': 'Tags';
     readonly 'aboutCard.targetsField.label': 'Targets';
+    readonly 'indexPage.title': '{{orgName}} Catalog';
+    readonly 'indexPage.createButtonTitle': 'Create';
+    readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
+    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
+    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'searchResultItem.type': 'Type';
     readonly 'searchResultItem.kind': 'Kind';
     readonly 'searchResultItem.owner': 'Owner';
@@ -150,7 +213,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityContextMenu.inspectMenuTitle': 'Inspect entity';
     readonly 'entityContextMenu.copyURLMenuTitle': 'Copy entity URL';
     readonly 'entityContextMenu.unregisterMenuTitle': 'Unregister entity';
-    readonly 'entityContextMenu.moreButtonAriaLabel': 'more';
+    readonly 'entityContextMenu.moreButtonAriaLabel': 'More actions';
     readonly 'entityLabelsCard.title': 'Labels';
     readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
     readonly 'entityLabelsCard.columnKeyLabel': 'Label';
@@ -159,6 +222,9 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityLabels.ownerLabel': 'Owner';
     readonly 'entityLabels.warningPanelTitle': 'Entity not found';
     readonly 'entityLabels.lifecycleLabel': 'Lifecycle';
+    readonly 'entityLabels.systemLabel': 'System';
+    readonly 'entityLabels.domainLabel': 'Domain';
+    readonly 'entityLabels.partOfLabel': 'Part of';
     readonly 'entityLinksCard.title': 'Links';
     readonly 'entityLinksCard.readMoreButtonTitle': 'Read more';
     readonly 'entityLinksCard.emptyDescription': 'No links defined for this entity. You can add links to your entity YAML as shown in the highlighted example below:';
@@ -166,6 +232,15 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
     readonly 'entityNotFound.docButtonTitle': 'DOCS';
     readonly 'entityTabs.tabsAriaLabel': 'Tabs';
+    readonly 'catalogExportButton.errorMessage': 'Failed to export catalog: {{errorMessage}}';
+    readonly 'catalogExportButton.cancelButtonTitle': 'Cancel';
+    readonly 'catalogExportButton.dialogTitle': 'Export catalog selection';
+    readonly 'catalogExportButton.triggerButtonTitle': 'Export selection';
+    readonly 'catalogExportButton.formatLabel': 'Format';
+    readonly 'catalogExportButton.columnsLabel': 'Columns';
+    readonly 'catalogExportButton.confirmButtonTitle': 'Confirm';
+    readonly 'catalogExportButton.exportingButtonTitle': 'Exporting…';
+    readonly 'catalogExportButton.successMessage': 'Catalog exported successfully';
     readonly entityProcessingErrorsDescription: 'The error below originates from';
     readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ";
     readonly 'hasComponentsCard.title': 'Has components';
@@ -181,8 +256,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this.';
     readonly 'systemDiagramCard.title': 'System Diagram';
     readonly 'systemDiagramCard.description': 'Use pinch & zoom to move around the diagram.';
-    readonly 'systemDiagramCard.edgeLabels.dependsOn': 'depends on';
     readonly 'systemDiagramCard.edgeLabels.partOf': 'part of';
+    readonly 'systemDiagramCard.edgeLabels.dependsOn': 'depends on';
     readonly 'systemDiagramCard.edgeLabels.provides': 'provides';
   }
 >;
@@ -808,9 +883,9 @@ const _default: OverridableFrontendPlugin<
         icon: string | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
+        filter?: FilterPredicate | undefined;
         group?: string | false | undefined;
         icon?: string | undefined;
       };
@@ -935,13 +1010,17 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | undefined;
       };
       output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            EntityContextMenuItemData,
+            'catalog.entity-context-menu-item-data',
+            {}
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
@@ -956,13 +1035,17 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | undefined;
       };
       output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            EntityContextMenuItemData,
+            'catalog.entity-context-menu-item-data',
+            {}
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
@@ -977,13 +1060,17 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | undefined;
       };
       output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            EntityContextMenuItemData,
+            'catalog.entity-context-menu-item-data',
+            {}
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
@@ -997,9 +1084,9 @@ const _default: OverridableFrontendPlugin<
         filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
         label?: string | undefined;
         title?: string | undefined;
+        filter?: FilterPredicate | undefined;
       };
       output:
         | ExtensionDataRef<
@@ -1027,36 +1114,21 @@ const _default: OverridableFrontendPlugin<
         filter?: FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'nav-item:catalog': OverridableExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef_2<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef_2<undefined>;
-      };
-    }>;
     'page:catalog': OverridableExtensionDefinition<{
       config: {
         pagination:
           | boolean
           | {
               mode: 'offset' | 'cursor';
-              offset?: number | undefined;
               limit?: number | undefined;
+              offset?: number | undefined;
             };
+        exportSettings:
+          | {
+              enabled?: boolean | undefined;
+              disableBuiltinExporters?: boolean | undefined;
+            }
+          | undefined;
         path: string | undefined;
         title: string | undefined;
       };
@@ -1065,12 +1137,18 @@ const _default: OverridableFrontendPlugin<
           | boolean
           | {
               mode: 'offset' | 'cursor';
-              offset?: number | undefined;
               limit?: number | undefined;
+              offset?: number | undefined;
             }
           | undefined;
-        title?: string | undefined;
+        exportSettings?:
+          | {
+              enabled?: boolean | undefined;
+              disableBuiltinExporters?: boolean | undefined;
+            }
+          | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -1135,6 +1213,25 @@ const _default: OverridableFrontendPlugin<
             internal: false;
           }
         >;
+        exportConfig: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            {
+              exporters?: CatalogExportSettings['exporters'];
+              columns?: CatalogExportSettings['columns'];
+              onSuccess?: CatalogExportSettings['onSuccess'];
+              onError?: CatalogExportSettings['onError'];
+            },
+            'catalog.export-customization',
+            {
+              optional: true;
+            }
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
       };
       kind: 'page';
       name: undefined;
@@ -1179,8 +1276,8 @@ const _default: OverridableFrontendPlugin<
           | undefined;
         defaultContentOrder?: 'title' | 'natural' | undefined;
         showNavItemIcons?: boolean | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -1230,6 +1327,25 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        headerLayouts: ExtensionInput<
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              (props: EntityHeaderLayoutProps) => JSX_2.Element,
+              'catalog.entity-header-layout.component',
+              {}
             >,
           {
             singleton: false;
@@ -1308,7 +1424,11 @@ const _default: OverridableFrontendPlugin<
           }
         >;
         contextMenuItems: ExtensionInput<
-          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<
+              EntityContextMenuItemData,
+              'catalog.entity-context-menu-item-data',
+              {}
+            >
           | ConfigurableExtensionDataRef<
               (entity: Entity) => boolean,
               'catalog.entity-filter-function',

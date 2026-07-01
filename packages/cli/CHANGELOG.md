@@ -1,5 +1,102 @@
 # @backstage/cli
 
+## 0.36.4-next.1
+
+### Patch Changes
+
+- 61d4881: The shared ESLint configuration now reports unused imports in `config.d.ts` configuration schema files. These declaration files are not covered by the TypeScript compiler's unused-variable checks, which previously allowed a stray import to slip through. Such an import can resolve during local development but break configuration schema loading for consumers of the published package, so it is now caught at lint time.
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.5-next.1
+
+## 0.36.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.5-next.0
+  - @backstage/cli-defaults@0.1.4-next.0
+
+## 0.36.3
+
+### Patch Changes
+
+- b521571: Improved validation of conflicting CLI module commands, including conflicts between parent and nested command paths.
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.4
+  - @backstage/cli-module-test-jest@0.1.3
+  - @backstage/cli-node@0.3.3
+  - @backstage/eslint-plugin@0.3.1
+  - @backstage/cli-defaults@0.1.3
+
+## 0.36.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/eslint-plugin@0.3.1-next.0
+  - @backstage/cli-defaults@0.1.3-next.1
+
+## 0.36.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.4-next.0
+  - @backstage/cli-defaults@0.1.3-next.0
+
+## 0.36.2
+
+### Patch Changes
+
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.3.0
+  - @backstage/errors@1.3.1
+  - @backstage/cli-module-build@0.1.3
+  - @backstage/cli-node@0.3.2
+  - @backstage/cli-common@0.2.2
+  - @backstage/cli-defaults@0.1.2
+  - @backstage/cli-module-test-jest@0.1.2
+
+## 0.36.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/eslint-plugin@0.3.0-next.0
+  - @backstage/cli-node@0.3.2-next.1
+
+## 0.36.2-next.0
+
+### Patch Changes
+
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/cli-module-build@0.1.3-next.0
+  - @backstage/cli-common@0.2.2-next.0
+  - @backstage/cli-node@0.3.2-next.0
+  - @backstage/cli-defaults@0.1.2-next.0
+  - @backstage/cli-module-test-jest@0.1.2-next.0
+  - @backstage/eslint-plugin@0.2.3
+
+## 0.36.1
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- a2f0c72: Removed the unused `isDev` export from the internal version module.
+- a7a14b7: Added `DOM.AsyncIterable` to the default `lib` in the shared TypeScript configuration, enabling standard async iteration support for DOM APIs such as `FileSystemDirectoryHandle`. This aligns behavior with [TypeScript 6.0](https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/#the-dom-lib-now-contains-domiterable-and-domasynciterable), where this lib is included in `DOM` by default.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/cli-module-build@0.1.1
+  - @backstage/cli-module-test-jest@0.1.1
+  - @backstage/cli-common@0.2.1
+  - @backstage/cli-node@0.3.1
+  - @backstage/eslint-plugin@0.2.3
+  - @backstage/cli-defaults@0.1.1
+
 ## 0.36.1-next.2
 
 ### Patch Changes

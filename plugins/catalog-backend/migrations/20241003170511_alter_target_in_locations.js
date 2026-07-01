@@ -22,7 +22,7 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('locations', table => {
-    table.text('target').alter();
+    table.text('target').notNullable().alter();
   });
 };
 
@@ -42,6 +42,6 @@ exports.down = async function down(knex) {
   }
 
   await knex.schema.alterTable('locations', table => {
-    table.string('target').alter();
+    table.string('target').notNullable().alter();
   });
 };

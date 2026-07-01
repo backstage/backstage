@@ -26,6 +26,7 @@ export interface PluginHeaderOwnProps {
   icon?: React.ReactNode;
   title?: string;
   titleLink?: string;
+  breadcrumbs?: PluginHeaderBreadcrumbEntry[];
   customActions?: React.ReactNode;
   tabs?: HeaderTab[];
   onTabSelectionChange?: TabsProps['onSelectionChange'];
@@ -54,4 +55,14 @@ export interface HeaderTab {
    * - 'prefix': Tab is active if current pathname starts with tab href
    */
   matchStrategy?: TabMatchStrategy;
+}
+
+/**
+ * Represents a breadcrumb item in the PluginHeader Breadcrumbs
+ *
+ * @public
+ */
+export interface PluginHeaderBreadcrumbEntry {
+  href: string;
+  label: string;
 }

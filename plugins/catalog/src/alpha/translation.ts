@@ -110,7 +110,7 @@ export const catalogTranslationRef = createTranslationRef({
       inspectMenuTitle: 'Inspect entity',
       copyURLMenuTitle: 'Copy entity URL',
       unregisterMenuTitle: 'Unregister entity',
-      moreButtonAriaLabel: 'more',
+      moreButtonAriaLabel: 'More actions',
     },
     entityLabelsCard: {
       title: 'Labels',
@@ -124,6 +124,9 @@ export const catalogTranslationRef = createTranslationRef({
       warningPanelTitle: 'Entity not found',
       ownerLabel: 'Owner',
       lifecycleLabel: 'Lifecycle',
+      systemLabel: 'System',
+      domainLabel: 'Domain',
+      partOfLabel: 'Part of',
     },
     entityLinksCard: {
       title: 'Links',
@@ -147,6 +150,17 @@ export const catalogTranslationRef = createTranslationRef({
       description:
         'This entity is not referenced by any location and is therefore not receiving updates.',
       actionButtonTitle: 'Delete entity',
+    },
+    catalogExportButton: {
+      triggerButtonTitle: 'Export selection',
+      dialogTitle: 'Export catalog selection',
+      formatLabel: 'Format',
+      columnsLabel: 'Columns',
+      cancelButtonTitle: 'Cancel',
+      confirmButtonTitle: 'Confirm',
+      exportingButtonTitle: 'Exporting…',
+      successMessage: 'Catalog exported successfully',
+      errorMessage: 'Failed to export catalog: {{errorMessage}}',
     },
     entityProcessingErrorsDescription: 'The error below originates from',
     entityRelationWarningDescription:

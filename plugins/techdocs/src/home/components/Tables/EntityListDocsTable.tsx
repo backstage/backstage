@@ -29,17 +29,24 @@ import {
   useApiHolder,
   useRouteRef,
 } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   useEntityList,
   useStarredEntities,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
+import { techdocsTranslationRef } from '../../../translation';
 import { DocsTable } from './DocsTable';
 import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
 import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { actionFactories } from './actions';
-import { columnFactories } from './columns';
-import { DocsTableRow } from './types';
+import { columnFactories, defaultColumns } from './columns';
+import {
+  DocsTableRow,
+  DocsTableColumnFactories,
+  DocsTableActionFactories,
+} from './types';
 import { rootDocsRouteRef } from '../../../routes';
 import { entitiesToDocsMapper } from './helpers';
 
@@ -59,7 +66,9 @@ export type EntityListDocsTableProps = {
  *
  * @public
  */
-export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
+const EntityListDocsTableComponent = (
+  props: EntityListDocsTableProps,
+): JSX.Element | null => {
   const { columns, actions, options } = props;
   const { loading, error, entities, filters, paginationMode, pageInfo } =
     useEntityList();
@@ -68,14 +77,16 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
   const apiHolder = useApiHolder();
+  const { t } = useTranslationRef(techdocsTranslationRef);
 
   const title = capitalize(filters.user?.value ?? 'all');
 
   const defaultActions = [
-    actionFactories.createCopyDocsUrlAction(copyToClipboard),
+    actionFactories.createCopyDocsUrlAction(copyToClipboard, t),
     actionFactories.createStarEntityAction(
       isStarredEntity,
       toggleStarredEntity,
+      t,
     ),
   ];
 
@@ -125,10 +136,7 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
 
   if (error) {
     return (
-      <WarningPanel
-        severity="error"
-        title="Could not load available documentation."
-      >
+      <WarningPanel severity="error" title={t('error.couldNotLoad')}>
         <CodeSnippet language="text" text={error.toString()} />
       </WarningPanel>
     );
@@ -144,6 +152,15 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
       options={options}
     />
   );
+};
+
+/**
+ * @public
+ */
+export const EntityListDocsTable = EntityListDocsTableComponent as {
+  (props: EntityListDocsTableProps): JSX.Element | null;
+  columns: DocsTableColumnFactories;
+  actions: DocsTableActionFactories;
 };
 
 EntityListDocsTable.columns = columnFactories;
