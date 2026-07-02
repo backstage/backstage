@@ -95,20 +95,18 @@ describe('handleUpgrade', () => {
     );
     trigger.on('error', () => {});
     await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(
-        () => reject(new Error('Timed out waiting for upgrade listener')),
-        5000,
-      );
-      const check = () => {
+      const start = Date.now();
+      const poll = setInterval(() => {
         if (server.listenerCount('upgrade') > 0) {
-          clearTimeout(timeout);
+          clearInterval(poll);
           trigger.destroy();
           resolve();
-        } else {
-          setTimeout(check, 10);
+        } else if (Date.now() - start > 5000) {
+          clearInterval(poll);
+          trigger.destroy();
+          reject(new Error('Timed out waiting for upgrade listener'));
         }
-      };
-      check();
+      }, 10);
     });
 
     return { server, port };
@@ -179,7 +177,7 @@ describe('handleUpgrade', () => {
       expect(result.headers.upgrade).toBeUndefined();
     } finally {
       server.closeAllConnections();
-      server.close();
+      await new Promise<void>(resolve => server.close(() => resolve()));
     }
   });
 
@@ -202,7 +200,7 @@ describe('handleUpgrade', () => {
       expect(result.headers.upgrade).toBeUndefined();
     } finally {
       server.closeAllConnections();
-      server.close();
+      await new Promise<void>(resolve => server.close(() => resolve()));
     }
   });
 });
