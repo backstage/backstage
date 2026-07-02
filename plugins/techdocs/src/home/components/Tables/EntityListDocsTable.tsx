@@ -29,7 +29,6 @@ import {
   useApiHolder,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   useEntityList,
