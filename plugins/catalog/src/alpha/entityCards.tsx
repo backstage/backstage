@@ -42,9 +42,7 @@ export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
       // hook call order across renders (rules of hooks). The filter is only
       // used to decide whether to include the result in the rendered output.
       const links = inputs.iconLinks.reduce((rest, iconLink) => {
-        const props = iconLink.get(
-          EntityIconLinkBlueprint.dataRefs.useProps,
-        )();
+        const props = iconLink.get(EntityIconLinkBlueprint.dataRefs.useProps)();
         const filter = buildFilterFn(
           iconLink.get(EntityIconLinkBlueprint.dataRefs.filterFunction),
           iconLink.get(EntityIconLinkBlueprint.dataRefs.filterExpression),
