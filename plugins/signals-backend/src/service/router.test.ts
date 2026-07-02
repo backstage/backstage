@@ -94,7 +94,22 @@ describe('handleUpgrade', () => {
       res => res.resume(),
     );
     trigger.on('error', () => {});
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(
+        () => reject(new Error('Timed out waiting for upgrade listener')),
+        5000,
+      );
+      const check = () => {
+        if (server.listenerCount('upgrade') > 0) {
+          clearTimeout(timeout);
+          trigger.destroy();
+          resolve();
+        } else {
+          setTimeout(check, 10);
+        }
+      };
+      check();
+    });
 
     return { server, port };
   }
@@ -141,7 +156,7 @@ describe('handleUpgrade', () => {
     });
   }
 
-  let handleUpgradeSpy: jest.SpyInstance;
+  let handleUpgradeSpy: jest.SpyInstance | undefined;
 
   afterEach(() => {
     handleUpgradeSpy?.mockRestore();
