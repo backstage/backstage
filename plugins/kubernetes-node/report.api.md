@@ -143,10 +143,6 @@ export interface KubernetesFetcher {
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
-  watchResource(
-    params: KubernetesWatchParams,
-    options?: KubernetesWatchOptions,
-  ): AsyncGenerator<KubernetesWatchEvent, void, undefined>;
 }
 
 // @public
@@ -279,6 +275,14 @@ export type KubernetesServiceLocatorFactory = (opts: {
   getDefault: () => Promise<KubernetesServiceLocator_2>;
   clusterSupplier: KubernetesClustersSupplier_2;
 }) => Promise<KubernetesServiceLocator_2>;
+
+// @public
+export interface KubernetesWatcher {
+  watchResource(
+    params: KubernetesWatchParams,
+    options?: KubernetesWatchOptions,
+  ): AsyncGenerator<KubernetesWatchEvent, void, undefined>;
+}
 
 // @public
 export interface KubernetesWatchParams {

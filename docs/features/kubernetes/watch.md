@@ -6,7 +6,7 @@ description: Streaming real-time Kubernetes resource changes in Backstage plugin
 ---
 
 The Kubernetes backend plugin provides a `watchResource()` method on the
-`KubernetesFetcher` interface that lets plugin authors stream resource changes
+`KubernetesWatcher` interface that lets plugin authors stream resource changes
 from the Kubernetes API in real time. This is the watch counterpart to the
 existing `get` and `list` operations and follows the same error handling
 patterns.
@@ -29,11 +29,10 @@ The stream processing pipeline is:
 ## Usage
 
 ```typescript
-import { KubernetesClientBasedFetcher } from '@backstage/plugin-kubernetes-backend';
+// The watcher is available through the KubernetesWatcher interface
+// from @backstage/plugin-kubernetes-node
 
-const fetcher = new KubernetesClientBasedFetcher({ logger });
-
-for await (const event of fetcher.watchResource(
+for await (const event of watcher.watchResource(
   {
     clusterDetails,
     credential,
@@ -91,7 +90,7 @@ The `KubernetesWatchOptions` interface supports the following parameters:
 To watch custom resources, provide the API group, version, and plural name:
 
 ```typescript
-for await (const event of fetcher.watchResource(
+for await (const event of watcher.watchResource(
   {
     clusterDetails,
     credential,
@@ -125,8 +124,11 @@ There are three categories of errors:
 ## Authentication
 
 The watch method reuses the same authentication mechanisms as the rest of the
-Kubernetes backend plugin. All configured auth providers (bearer token, x509
-client certificates, service account, OIDC, etc.) work with watch connections.
+Kubernetes backend plugin. Server-side auth providers (`serviceAccount`,
+`googleServiceAccount`, `aws`, `azure`, `localKubectlProxy`) work with watch
+connections. Client-side auth providers (`google`, `oidc`, `aks`) are not
+supported because the watcher runs as a long-lived backend connection and cannot
+refresh browser-mediated credentials.
 
 ## Cancellation
 
@@ -138,7 +140,7 @@ const controller = new AbortController();
 // Cancel the watch after 30 seconds
 setTimeout(() => controller.abort(), 30_000);
 
-for await (const event of fetcher.watchResource(
+for await (const event of watcher.watchResource(
   {
     clusterDetails,
     credential,

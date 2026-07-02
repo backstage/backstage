@@ -269,6 +269,17 @@ export interface KubernetesFetcher {
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
+}
+
+/**
+ * Watches Kubernetes resources for changes.
+ *
+ * Separated from {@link KubernetesFetcher} because watching is a long-lived
+ * streaming connection that only works with server-side auth providers.
+ *
+ * @public
+ */
+export interface KubernetesWatcher {
   /**
    * Watch Kubernetes resources for changes.
    *

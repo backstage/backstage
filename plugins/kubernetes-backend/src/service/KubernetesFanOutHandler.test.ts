@@ -28,6 +28,7 @@ import {
   DEFAULT_OBJECTS,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { KubernetesConnection } from './KubernetesConnection';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -47,7 +48,6 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 describe('KubernetesFanOutHandler', () => {
   const fetchObjectsForService = jest.fn();
   const fetchPodMetricsByNamespaces = jest.fn();
-  const watchResource = jest.fn();
   const getClustersByEntity = jest.fn<
     Promise<{ clusters: ClusterDetails[] }>,
     [Entity]
@@ -204,7 +204,6 @@ describe('KubernetesFanOutHandler', () => {
       fetcher: {
         fetchObjectsForService,
         fetchPodMetricsByNamespaces,
-        watchResource,
       },
       serviceLocator: {
         getClustersByEntity,
@@ -1259,7 +1258,10 @@ describe('KubernetesFanOutHandler', () => {
         const logger = mockServices.logger.mock();
         const kubernetesFanOutHandler = new KubernetesFanOutHandler({
           logger,
-          fetcher: new KubernetesClientBasedFetcher({ logger }),
+          fetcher: new KubernetesClientBasedFetcher({
+            logger,
+            connection: new KubernetesConnection({ logger }),
+          }),
           serviceLocator: fleet,
           customResources: [],
           objectTypesToFetch: [
