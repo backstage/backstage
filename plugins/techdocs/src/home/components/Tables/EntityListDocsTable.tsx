@@ -40,7 +40,7 @@ import { DocsTable } from './DocsTable';
 import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
 import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { actionFactories } from './actions';
-import { columnFactories, defaultColumns } from './columns';
+import { columnFactories } from './columns';
 import {
   DocsTableRow,
   DocsTableColumnFactories,

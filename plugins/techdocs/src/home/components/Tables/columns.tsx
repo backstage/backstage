@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { Link, SubvalueCell, TableColumn } from '@backstage/core-components';
+import {
+  Link,
+  SubvalueCell,
+  type TableColumn,
+} from '@backstage/core-components';
 import {
   EntityDisplayName,
-  EntityPresentationApi,
+  type EntityPresentationApi,
   entityPresentationApiRef,
   entityPresentationSnapshot,
   EntityRefLinks,
@@ -26,7 +30,7 @@ import { Entity } from '@backstage/catalog-model';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { techdocsTranslationRef } from '../../../translation';
 import { DocsTableRow } from './types';
-import { ApiHolder } from '@backstage/core-plugin-api';
+import type { ApiHolder } from '@backstage/core-plugin-api';
 
 function customTitle(
   entity: Entity,

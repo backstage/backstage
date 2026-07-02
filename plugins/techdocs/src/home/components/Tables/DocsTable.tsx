@@ -36,7 +36,7 @@ import {
 } from '@backstage/core-components';
 import { techdocsTranslationRef } from '../../../translation';
 import { actionFactories } from './actions';
-import { columnFactories, defaultColumns } from './columns';
+import { columnFactories } from './columns';
 import {
   DocsTableRow,
   DocsTableColumnFactories,
