@@ -16,7 +16,6 @@
 
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { ApiEntityV1alpha1 } from './ApiEntityV1alpha1';
-import type { ApiRemote } from './ApiRemote';
 import aiModelServerSchema from '../schema/kinds/API.v1alpha1.ai-model-server.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
@@ -33,7 +32,15 @@ export interface AiModelServerApiEntity
     lifecycle: string;
     owner: string;
     system?: string;
-    remotes: ApiRemote[];
+    serverType: string;
+    serverUrl: string;
+    requiresApiKey?: boolean;
+    apiEntityRef?: string;
+    models?: {
+      discoverable?: boolean;
+      available?: string[];
+      default?: string;
+    };
   };
 }
 

@@ -33,17 +33,13 @@ describe('aiModelServerApiEntityValidator', () => {
         type: 'ai-model-server',
         lifecycle: 'experimental',
         owner: 'backstage',
-        remotes: [
-          {
-            type: 'streamable-https',
-            url: 'https://api.openai.com/v1',
-          },
-        ],
+        serverType: 'openai-v1',
+        serverUrl: 'https://api.openai.com/v1',
       },
     };
   });
 
-  it('accepts a valid ai-model-server entity', async () => {
+  it('accepts a valid ai-model-server entity with required fields only', async () => {
     await expect(aiModelServerApiEntityValidator.check(entity)).resolves.toBe(
       true,
     );
@@ -56,6 +52,36 @@ describe('aiModelServerApiEntityValidator', () => {
     );
   });
 
+  it('accepts a fully populated entity with all optional fields', async () => {
+    entity.spec = {
+      ...entity.spec,
+      requiresApiKey: true,
+      apiEntityRef: 'api:default/openai-spec',
+      models: {
+        discoverable: true,
+        available: ['gpt-4o', 'gpt-4o-mini'],
+        default: 'gpt-4o',
+      },
+    };
+    await expect(aiModelServerApiEntityValidator.check(entity)).resolves.toBe(
+      true,
+    );
+  });
+
+  it('accepts entity with models struct containing only discoverable', async () => {
+    entity.spec.models = { discoverable: true };
+    await expect(aiModelServerApiEntityValidator.check(entity)).resolves.toBe(
+      true,
+    );
+  });
+
+  it('accepts entity with requiresApiKey set to false', async () => {
+    entity.spec.requiresApiKey = false;
+    await expect(aiModelServerApiEntityValidator.check(entity)).resolves.toBe(
+      true,
+    );
+  });
+
   it('rejects wrong spec.type value', async () => {
     (entity as any).spec.type = 'openapi';
     await expect(aiModelServerApiEntityValidator.check(entity)).rejects.toThrow(
@@ -63,31 +89,31 @@ describe('aiModelServerApiEntityValidator', () => {
     );
   });
 
-  it('rejects missing remotes', async () => {
-    delete (entity as any).spec.remotes;
+  it('rejects missing serverType', async () => {
+    delete (entity as any).spec.serverType;
     await expect(aiModelServerApiEntityValidator.check(entity)).rejects.toThrow(
-      /remotes/,
+      /serverType/,
     );
   });
 
-  it('rejects empty remotes array', async () => {
-    (entity as any).spec.remotes = [];
+  it('rejects missing serverUrl', async () => {
+    delete (entity as any).spec.serverUrl;
     await expect(aiModelServerApiEntityValidator.check(entity)).rejects.toThrow(
-      /remotes/,
+      /serverUrl/,
     );
   });
 
-  it('rejects remote missing url', async () => {
-    (entity as any).spec.remotes[0] = { type: 'https' };
+  it('rejects empty serverType', async () => {
+    (entity as any).spec.serverType = '';
     await expect(aiModelServerApiEntityValidator.check(entity)).rejects.toThrow(
-      /url/,
+      /serverType/,
     );
   });
 
-  it('rejects remote missing type', async () => {
-    (entity as any).spec.remotes[0] = { url: 'https://api.openai.com/v1' };
+  it('rejects empty serverUrl', async () => {
+    (entity as any).spec.serverUrl = '';
     await expect(aiModelServerApiEntityValidator.check(entity)).rejects.toThrow(
-      /type/,
+      /serverUrl/,
     );
   });
 });
@@ -102,7 +128,8 @@ describe('isAiModelServerApiEntity', () => {
         type: 'ai-model-server',
         lifecycle: 'production',
         owner: 'me',
-        remotes: [{ type: 'https', url: 'https://api.openai.com/v1' }],
+        serverType: 'openai-v1',
+        serverUrl: 'https://api.openai.com/v1',
       },
     };
     expect(isAiModelServerApiEntity(entity)).toBe(true);

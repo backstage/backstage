@@ -46,10 +46,10 @@ export type {
   ApiEntityV1alpha1 as ApiEntity,
   ApiEntityV1alpha1,
 } from './kinds/ApiEntityV1alpha1';
-export type { ApiRemote } from './kinds/ApiRemote';
-export type { McpServerApiEntity } from './kinds/McpServerApiEntity';
-/** @deprecated Use {@link ApiRemote} instead. */
-export type { McpServerRemote } from './kinds/McpServerApiEntity';
+export type {
+  McpServerApiEntity,
+  McpServerRemote,
+} from './kinds/McpServerApiEntity';
 export {
   mcpServerApiEntityValidator,
   isMcpServerApiEntity,

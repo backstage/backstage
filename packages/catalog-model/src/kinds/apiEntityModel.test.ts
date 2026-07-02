@@ -104,8 +104,10 @@ describe('apiEntityModel ai-model-server dispatch', () => {
       aiModelServer,
       'jsonSchema.properties.spec.required',
     );
-    expect(aiModelServerSpecRequired).toContain('remotes');
+    expect(aiModelServerSpecRequired).toContain('serverType');
+    expect(aiModelServerSpecRequired).toContain('serverUrl');
     expect(aiModelServerSpecRequired).not.toContain('definition');
+    expect(aiModelServerSpecRequired).not.toContain('remotes');
   });
 
   it('routes ai-model-server under v1beta1 too', () => {
@@ -119,6 +121,7 @@ describe('apiEntityModel ai-model-server dispatch', () => {
       aiModelServer,
       'jsonSchema.properties.spec.required',
     );
-    expect(required).toContain('remotes');
+    expect(required).toContain('serverType');
+    expect(required).toContain('serverUrl');
   });
 });

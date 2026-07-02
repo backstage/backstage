@@ -17,7 +17,15 @@ export interface AiModelServerApiEntity
     lifecycle: string;
     owner: string;
     system?: string;
-    remotes: ApiRemote[];
+    serverType: string;
+    serverUrl: string;
+    requiresApiKey?: boolean;
+    apiEntityRef?: string;
+    models?: {
+      discoverable?: boolean;
+      available?: string[];
+      default?: string;
+    };
   };
 }
 
@@ -76,12 +84,6 @@ interface ApiEntityV1alpha1 extends Entity {
 }
 export { ApiEntityV1alpha1 as ApiEntity };
 export { ApiEntityV1alpha1 };
-
-// @alpha
-export type ApiRemote = {
-  type: string;
-  url: string;
-};
 
 // @alpha
 export type AsyncCatalogModelSourceGenerator = AsyncGenerator<
@@ -568,7 +570,7 @@ export interface McpServerApiEntity extends Omit<ApiEntityV1alpha1, 'spec'> {
     lifecycle: string;
     owner: string;
     system?: string;
-    remotes: ApiRemote[];
+    remotes: McpServerRemote[];
   };
 }
 
@@ -578,8 +580,11 @@ export const mcpServerApiEntityModel: CatalogModelLayer;
 // @alpha
 export const mcpServerApiEntityValidator: KindValidator;
 
-// @alpha @deprecated
-export type McpServerRemote = ApiRemote;
+// @alpha
+export type McpServerRemote = {
+  type: string;
+  url: string;
+};
 
 // @alpha
 export interface RuleAiResourceEntityV1alpha1

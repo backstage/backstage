@@ -16,9 +16,18 @@
 
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { ApiEntityV1alpha1 } from './ApiEntityV1alpha1';
-import type { ApiRemote } from './ApiRemote';
 import mcpServerSchema from '../schema/kinds/API.v1alpha1.mcp-server.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
+
+/**
+ * A transport endpoint for an MCP server API entity.
+ *
+ * @alpha
+ */
+export type McpServerRemote = {
+  type: string;
+  url: string;
+};
 
 /**
  * An MCP (Model Context Protocol) server represented as an API entity
@@ -32,17 +41,9 @@ export interface McpServerApiEntity extends Omit<ApiEntityV1alpha1, 'spec'> {
     lifecycle: string;
     owner: string;
     system?: string;
-    remotes: ApiRemote[];
+    remotes: McpServerRemote[];
   };
 }
-
-/**
- * Deprecated alias for {@link ApiRemote}.
- *
- * @alpha
- * @deprecated Use {@link ApiRemote} instead.
- */
-export type McpServerRemote = ApiRemote;
 
 /**
  * {@link KindValidator} for the `mcp-server` specType of API entities.
