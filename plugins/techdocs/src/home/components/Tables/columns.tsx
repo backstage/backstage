@@ -98,7 +98,11 @@ export const columnFactories = {
         <SubvalueCell
           value={
             <Link to={row.resolved.docsUrl}>
-              <EntityDisplayName entityRef={row.entity} />
+              {presentationApi ? (
+                <EntityDisplayName entityRef={row.entity} />
+              ) : (
+                customTitle(row.entity)
+              )}
             </Link>
           }
           subvalue={row.entity.metadata.description}
