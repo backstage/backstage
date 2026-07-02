@@ -15,6 +15,7 @@
  */
 
 import { cli } from 'cleye';
+import chalk from 'chalk';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { ActionsClient } from '../lib/ActionsClient';
 import { resolveAuth } from '../lib/resolveAuth';
@@ -22,7 +23,7 @@ import { formatActionList } from '../lib/format';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
-    flags: { instance: instanceFlag },
+    flags: { instance: instanceFlag, output: outputFlag },
   } = cli(
     {
       name: info.usage,
@@ -30,6 +31,10 @@ export default async ({ args, info }: CliCommandContext) => {
         instance: {
           type: String,
           description: 'Name of the instance to use',
+        },
+        output: {
+          type: String,
+          description: 'Output format: "human" (default) or "json"',
         },
       },
     },
@@ -49,13 +54,49 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   const client = new ActionsClient(baseUrl, accessToken);
-  const grouped = await client.list(pluginSources);
+  const { grouped, failed } = await client.list(pluginSources);
+
+  if (outputFlag === 'json') {
+    const actions = grouped.flatMap(g =>
+      g.actions.map(a => ({ ...a, pluginId: g.pluginId })),
+    );
+    const errors = failed.map(f => ({
+      pluginId: f.pluginId,
+      message: f.message,
+    }));
+    process.stdout.write(`${JSON.stringify({ actions, errors })}\n`);
+    if (grouped.length === 0) {
+      process.exitCode = 1;
+    }
+    return;
+  }
 
   const hasActions = grouped.some(g => g.actions.length > 0);
-  if (!hasActions) {
+
+  if (grouped.length === 0 && failed.length > 0) {
+    for (const { pluginId, message } of failed) {
+      process.stderr.write(
+        chalk.yellow(`Warning: source '${pluginId}' failed — ${message}\n`),
+      );
+    }
+    process.exitCode = 1;
+    return;
+  }
+
+  if (!hasActions && failed.length === 0) {
     process.stderr.write('No actions found.\n');
     return;
   }
 
-  process.stdout.write(`${formatActionList(grouped)}\n`);
+  if (hasActions) {
+    process.stdout.write(`${formatActionList(grouped)}\n`);
+  }
+
+  for (const { pluginId, message } of failed) {
+    process.stderr.write(
+      chalk.yellow(
+        `Warning: source '${pluginId}' returned an error — skipped (${message})\n`,
+      ),
+    );
+  }
 };

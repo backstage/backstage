@@ -54,14 +54,21 @@ function pluginActionsUrl(baseUrl: string, pluginId: string): string {
 
 export type GroupedActions = { pluginId: string; actions: ActionDef[] }[];
 
+export type FailedSource = { pluginId: string; message: string };
+
+export type ListResult = {
+  grouped: GroupedActions;
+  failed: FailedSource[];
+};
+
 export class ActionsClient {
   constructor(
     private readonly baseUrl: string,
     private readonly accessToken: string,
   ) {}
 
-  async list(pluginSources: string[]): Promise<GroupedActions> {
-    return Promise.all(
+  async list(pluginSources: string[]): Promise<ListResult> {
+    const results = await Promise.allSettled(
       pluginSources.map(async pluginId => {
         const url = pluginActionsUrl(this.baseUrl, pluginId);
         const response = await httpJson<ListActionsResponse>(url, {
@@ -71,11 +78,28 @@ export class ActionsClient {
         return { pluginId, actions: response.actions };
       }),
     );
+
+    const grouped: GroupedActions = [];
+    const failed: FailedSource[] = [];
+
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i];
+      if (result.status === 'fulfilled') {
+        grouped.push(result.value);
+      } else {
+        failed.push({
+          pluginId: pluginSources[i],
+          message: result.reason?.message ?? String(result.reason),
+        });
+      }
+    }
+
+    return { grouped, failed };
   }
 
   async listForPlugin(actionId: string): Promise<ActionDef[]> {
     const pluginId = extractPluginId(actionId);
-    const grouped = await this.list([pluginId]);
+    const { grouped } = await this.list([pluginId]);
     return grouped.flatMap(g => g.actions);
   }
 
