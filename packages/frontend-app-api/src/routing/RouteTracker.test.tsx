@@ -27,6 +27,7 @@ import {
   AppNode,
   useAnalytics,
 } from '@backstage/frontend-plugin-api';
+import { OpaqueRouteRef } from '@internal/frontend';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 
 describe('RouteTracker', () => {
@@ -34,11 +35,15 @@ describe('RouteTracker', () => {
   const routeRef1 = createRouteRef();
   const routeRef2 = createRouteRef();
 
+  OpaqueRouteRef.toInternal(routeRef0).setId('route0');
+  OpaqueRouteRef.toInternal(routeRef1).setId('route1');
+  OpaqueRouteRef.toInternal(routeRef2).setId('route2');
+
   const routeObjects: BackstageRouteObject[] = [
     {
       path: '',
       element: <div>home page</div>,
-      routeRefs: new Set([routeRef0]),
+      routeRefs: new Set([createRouteRef(), routeRef0]),
       caseSensitive: false,
       children: [MATCH_ALL_ROUTE],
       appNode: {
@@ -102,6 +107,7 @@ describe('RouteTracker', () => {
       context: {
         extensionId: 'plugin1.page.index',
         pluginId: 'plugin1',
+        routeRef: 'route1',
       },
       subject: '/path/foo/bar',
       value: undefined,
@@ -133,6 +139,7 @@ describe('RouteTracker', () => {
       context: {
         extensionId: 'plugin2.page.index',
         pluginId: 'plugin2',
+        routeRef: 'route2',
       },
       subject: '/path2/hello',
       value: undefined,
@@ -157,6 +164,7 @@ describe('RouteTracker', () => {
       context: {
         extensionId: 'plugin1.page.index',
         pluginId: 'plugin1',
+        routeRef: 'route1',
       },
       subject: '/path/foo/bar?q=1#header-1',
       value: undefined,
@@ -178,6 +186,7 @@ describe('RouteTracker', () => {
       context: {
         extensionId: 'home.page.index',
         pluginId: 'home',
+        routeRef: 'route0',
       },
       subject: '/',
       value: undefined,
@@ -243,6 +252,7 @@ describe('RouteTracker', () => {
       context: {
         extensionId: 'plugin2.page.index',
         pluginId: 'plugin2',
+        routeRef: 'route2',
       },
       subject: '/path2/param-value/sub-route',
       value: undefined,

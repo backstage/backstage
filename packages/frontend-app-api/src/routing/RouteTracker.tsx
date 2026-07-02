@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { useEffect } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
 import {
@@ -21,6 +20,7 @@ import {
   AnalyticsContext,
   AnalyticsEventAttributes,
 } from '@backstage/frontend-plugin-api';
+import { OpaqueRouteRef } from '@internal/frontend';
 import { BackstageRouteObject } from './types';
 
 /**
@@ -34,7 +34,6 @@ const getExtensionContext = (
   try {
     // Find matching routes for the given path name.
     const matches = matchRoutes(routes, { pathname });
-
     // Of the matching routes, get the last (e.g. most specific) instance of
     // the BackstageRouteObject that contains a routeRef. Filtering by routeRef
     // ensures subRouteRefs are aligned to their parent routes' context.
@@ -42,18 +41,15 @@ const getExtensionContext = (
       ?.filter(match => match?.route.routeRefs?.size > 0)
       .pop();
     const routeObject = routeMatch?.route;
-
     // If there is no route object, then allow inheritance of default context.
     if (!routeObject) {
       return undefined;
     }
-
     // If the matched route is the root route (no path), and the pathname is
     // not the path of the homepage, then inherit from the default context.
     if (routeObject.path === '' && pathname !== '/') {
       return undefined;
     }
-
     const params = Object.entries(
       routeMatch?.params || {},
     ).reduce<AnalyticsEventAttributes>((acc, [key, value]) => {
@@ -62,14 +58,26 @@ const getExtensionContext = (
       }
       return acc;
     }, {});
-
     const plugin = routeObject.appNode?.spec.plugin;
     const extension = routeObject.appNode?.spec.extension;
+
+    // If there is a single route ref, use it.
+    let routeRef: string | undefined;
+    for (const ref of routeObject.routeRefs) {
+      if (ref && OpaqueRouteRef.isType(ref)) {
+        const description = OpaqueRouteRef.toInternal(ref).getDescription();
+        if (!description.startsWith('created at ')) {
+          routeRef = description;
+          break;
+        }
+      }
+    }
 
     return {
       params,
       pluginId: plugin?.id || 'root',
       extensionId: extension?.id || 'App',
+      ...(routeRef ? { routeRef } : {}),
     };
   } catch {
     return undefined;
@@ -96,7 +104,6 @@ const TrackNavigation = ({
       attributes,
     });
   }, [analytics, pathname, search, hash, attributes]);
-
   return null;
 };
 
@@ -110,12 +117,10 @@ export const RouteTracker = ({
   routeObjects: BackstageRouteObject[];
 }) => {
   const { pathname, search, hash } = useLocation();
-
   const { params, ...attributes } = getExtensionContext(
     pathname,
     routeObjects,
   ) || { params: {} };
-
   return (
     <AnalyticsContext attributes={attributes}>
       <TrackNavigation

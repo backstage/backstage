@@ -191,6 +191,34 @@ const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
   },
 });
 
+const homePageRecentlyVisitedWidget = HomePageWidgetBlueprint.make({
+  name: 'recently-visited',
+  params: {
+    name: 'HomePageRecentlyVisited',
+    title: 'Recently Visited',
+    components: () =>
+      import('./homePageComponents/VisitedByType/RecentlyVisited').then(m => ({
+        Content: m.Content,
+        Actions: m.Actions,
+        ContextProvider: m.ContextProvider,
+      })),
+  },
+});
+
+const homePageTopVisitedWidget = HomePageWidgetBlueprint.make({
+  name: 'top-visited',
+  params: {
+    name: 'HomePageTopVisited',
+    title: 'Top Visited',
+    components: () =>
+      import('./homePageComponents/VisitedByType/TopVisited').then(m => ({
+        Content: m.Content,
+        Actions: m.Actions,
+        ContextProvider: m.ContextProvider,
+      })),
+  },
+});
+
 /**
  * Home plugin for the new frontend system.
  *
@@ -211,6 +239,8 @@ export default createFrontendPlugin({
     homePageToolkitWidget,
     homePageStarredEntitiesWidget,
     homePageRandomJokeWidget,
+    homePageRecentlyVisitedWidget,
+    homePageTopVisitedWidget,
   ],
   routes: {
     root: rootRouteRef,

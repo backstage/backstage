@@ -62,6 +62,15 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: HomePageWidgetBlueprintParams;
     }>;
+    'home-page-widget:home/recently-visited': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'recently-visited';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
     'home-page-widget:home/starred-entities': OverridableExtensionDefinition<{
       kind: 'home-page-widget';
       name: 'starred-entities';
@@ -74,6 +83,15 @@ const _default: OverridableFrontendPlugin<
     'home-page-widget:home/toolkit': OverridableExtensionDefinition<{
       kind: 'home-page-widget';
       name: 'toolkit';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/top-visited': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'top-visited';
       config: {};
       configInput: {};
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
