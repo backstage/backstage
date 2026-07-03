@@ -32,8 +32,8 @@ import {
   connectionsServiceRef,
   declareConnection,
 } from '@backstage/connections';
-import { DefaultGithubCredentialsProvider } from '@backstage/integration';
 import { DefaultOctokitProvider } from '../util/octokitProviderService';
+import { createGithubCredentialsProvider } from '../util/createGithubCredentialsProvider';
 
 /**
  * Registers all relevant GitHub integration points into the catalog backend.
@@ -76,7 +76,7 @@ export const githubCatalogModule = createBackendModule({
         lifecycle,
       }) {
         const githubCredentialsProvider =
-          DefaultGithubCredentialsProvider.fromConnections(connections);
+          createGithubCredentialsProvider(connections);
 
         catalogAnalyzers.addScmLocationAnalyzer(
           new GithubLocationAnalyzer({

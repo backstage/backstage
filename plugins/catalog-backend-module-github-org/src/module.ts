@@ -35,7 +35,7 @@ import {
   connectionsServiceRef,
   declareConnection,
 } from '@backstage/connections';
-import { DefaultGithubCredentialsProvider } from '@backstage/integration';
+import { createGithubCredentialsProvider } from './createGithubCredentialsProvider';
 
 /**
  * Interface for {@link githubOrgEntityProviderTransformsExtensionPoint}.
@@ -122,7 +122,7 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
       }) {
         const definitions = readDefinitionsFromConfig(config);
         const githubCredentialsProvider =
-          DefaultGithubCredentialsProvider.fromConnections(connections);
+          createGithubCredentialsProvider(connections);
 
         for (const definition of definitions) {
           catalog.addEntityProvider(

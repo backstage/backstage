@@ -20,16 +20,9 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { catalogModuleGithubOrgEntityProvider } from './module';
 import { connectionsServiceFactory } from '@backstage/connections';
-import { DefaultGithubCredentialsProvider } from '@backstage/integration';
 
 describe('catalogModuleGithubOrgEntityProvider', () => {
-  afterEach(() => jest.restoreAllMocks());
-
   it('should register provider at the catalog extension point', async () => {
-    const fromConnections = jest.spyOn(
-      DefaultGithubCredentialsProvider,
-      'fromConnections',
-    );
     let addedProviders: Array<EntityProvider> | undefined;
     let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
 
@@ -81,7 +74,6 @@ describe('catalogModuleGithubOrgEntityProvider', () => {
       'GithubMultiOrgEntityProvider:default',
     );
     expect(runner).not.toHaveBeenCalled();
-    expect(fromConnections).toHaveBeenCalledTimes(1);
   });
 
   it('should register provider with custom page sizes', async () => {
