@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { mockClient } from 'aws-sdk-client-mock';
-import 'aws-sdk-client-mock-jest';
 import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
 import {
   ListAccountsCommand,
   OrganizationsClient,
 } from '@aws-sdk/client-organizations';
+
+const organizationsSendMock = jest.fn();
 
 describe('AwsOrganizationCloudAccountProcessor', () => {
   describe('readLocation', () => {
@@ -29,14 +29,15 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
     });
     const location = { type: 'aws-cloud-accounts', target: '' };
     const emit = jest.fn();
-    const mock = mockClient(OrganizationsClient);
-
     afterEach(() => {
-      jest.resetAllMocks();
+      jest.clearAllMocks();
     });
 
     it('generates component entities for accounts', async () => {
-      mock.on(ListAccountsCommand).resolves({
+      jest
+        .spyOn(OrganizationsClient.prototype, 'send')
+        .mockImplementation(organizationsSendMock);
+      organizationsSendMock.mockResolvedValue({
         Accounts: [
           {
             Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
@@ -78,11 +79,14 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
     });
 
     it('filters out accounts not in specified location target', async () => {
+      jest
+        .spyOn(OrganizationsClient.prototype, 'send')
+        .mockImplementation(organizationsSendMock);
       const locationTest = {
         type: 'aws-cloud-accounts',
         target: 'o-1vl18kc5a3',
       };
-      mock.on(ListAccountsCommand).resolves({
+      organizationsSendMock.mockResolvedValue({
         Accounts: [
           {
             Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',

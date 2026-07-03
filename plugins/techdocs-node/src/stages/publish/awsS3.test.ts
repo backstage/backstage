@@ -32,7 +32,6 @@ import {
   AwsCredentialProviderOptions,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
-import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import express from 'express';
 import request from 'supertest';
 import path from 'node:path';
@@ -47,10 +46,97 @@ import {
 jest.setTimeout(30_000);
 
 const env = process.env;
-let s3Mock: AwsClientStub<S3Client>;
-
 // Create a new MockDirectory for each test to avoid Windows file locking issues
 let mockDir: ReturnType<typeof createMockDirectory>;
+
+const s3SendMock = jest.fn();
+
+async function defaultS3SendImplementation(command: unknown) {
+  if (command instanceof HeadObjectCommand) {
+    if (!fs.pathExistsSync(mockDir.resolve(command.input.Key!))) {
+      throw new Error('File does not exist');
+    }
+    return {};
+  }
+
+  if (command instanceof GetObjectCommand) {
+    if (fs.pathExistsSync(mockDir.resolve(command.input.Key!))) {
+      return {
+        Body: Readable.from(
+          fs.readFileSync(mockDir.resolve(command.input.Key!)),
+        ),
+      };
+    }
+
+    throw new Error(`The file ${command.input.Key} does not exist!`);
+  }
+
+  if (command instanceof HeadBucketCommand) {
+    if (command.input.Bucket === 'errorBucket') {
+      throw new Error('Bucket does not exist');
+    }
+    return {};
+  }
+
+  if (command instanceof ListObjectsV2Command) {
+    if (
+      command.input.Bucket === 'delete_stale_files_success' ||
+      command.input.Bucket === 'delete_stale_files_error'
+    ) {
+      return {
+        Contents: [{ Key: 'stale_file.png' }],
+      };
+    }
+    return {};
+  }
+
+  if (command instanceof DeleteObjectCommand) {
+    if (command.input.Bucket === 'delete_stale_files_error') {
+      throw new Error('Message');
+    }
+    return {};
+  }
+
+  if (command instanceof UploadPartCommand) {
+    throw new Error('UploadPartCommand is not mocked');
+  }
+
+  if (command instanceof PutObjectCommand) {
+    // Body can be undefined in tests; ensure it's a valid MockDirectoryContent value
+    mockDir.addContent({
+      [command.input.Key!]: (command.input.Body ?? '') as any,
+    });
+    return {};
+  }
+
+  throw new Error(
+    `No mock for ${
+      (command as { constructor: { name: string } }).constructor.name
+    }`,
+  );
+}
+
+function mockDefaultS3Send() {
+  s3SendMock.mockImplementation(defaultS3SendImplementation);
+}
+
+function mockListObjectsRetry(
+  error: S3ServiceException,
+  resolveValue: { Contents: [] } = { Contents: [] },
+) {
+  let listObjectsCallCount = 0;
+  s3SendMock.mockImplementation(async command => {
+    if (command instanceof ListObjectsV2Command) {
+      listObjectsCallCount++;
+      if (listObjectsCallCount === 1) {
+        throw error;
+      }
+      return resolveValue;
+    }
+
+    return defaultS3SendImplementation(command);
+  });
+}
 
 function getMockCredentialProvider(): Promise<AwsCredentialProvider> {
   return Promise.resolve({
@@ -199,55 +285,8 @@ describe('AwsS3Publish', () => {
       [directory]: files,
     });
 
-    s3Mock = mockClient(S3Client);
-
-    s3Mock.on(HeadObjectCommand).callsFake(input => {
-      if (!fs.pathExistsSync(mockDir.resolve(input.Key))) {
-        throw new Error('File does not exist');
-      }
-      return {};
-    });
-
-    s3Mock.on(GetObjectCommand).callsFake(input => {
-      if (fs.pathExistsSync(mockDir.resolve(input.Key))) {
-        return {
-          Body: Readable.from(fs.readFileSync(mockDir.resolve(input.Key))),
-        };
-      }
-
-      throw new Error(`The file ${input.Key} does not exist!`);
-    });
-
-    s3Mock.on(HeadBucketCommand).callsFake(input => {
-      if (input.Bucket === 'errorBucket') {
-        throw new Error('Bucket does not exist');
-      }
-      return {};
-    });
-
-    s3Mock.on(ListObjectsV2Command).callsFake(input => {
-      if (
-        input.Bucket === 'delete_stale_files_success' ||
-        input.Bucket === 'delete_stale_files_error'
-      ) {
-        return {
-          Contents: [{ Key: 'stale_file.png' }],
-        };
-      }
-      return {};
-    });
-
-    s3Mock.on(DeleteObjectCommand).callsFake(input => {
-      if (input.Bucket === 'delete_stale_files_error') {
-        throw new Error('Message');
-      }
-      return {};
-    });
-
-    s3Mock.on(UploadPartCommand).rejects();
-    s3Mock.on(PutObjectCommand).callsFake(input => {
-      mockDir.addContent({ [input.Key]: input.Body });
-    });
+    jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+    mockDefaultS3Send();
   });
 
   afterEach(() => {
@@ -514,16 +553,13 @@ describe('AwsS3Publish', () => {
         return error.name === 'NetworkingError';
       });
 
-      s3Mock
-        .on(ListObjectsV2Command)
-        .rejectsOnce(
-          new S3ServiceException({
-            name: 'NetworkingError',
-            $fault: 'client',
-            $metadata: {},
-          }),
-        )
-        .resolvesOnce({ Contents: [] });
+      mockListObjectsRetry(
+        new S3ServiceException({
+          name: 'NetworkingError',
+          $fault: 'client',
+          $metadata: {},
+        }),
+      );
 
       await (publisher as AwsS3Publish).retryOperation(
         async () => {
@@ -540,16 +576,13 @@ describe('AwsS3Publish', () => {
 
     it('should use default retry strategy when no custom strategy provided', async () => {
       const publisher = await createPublisherFromConfig();
-      s3Mock
-        .on(ListObjectsV2Command)
-        .rejectsOnce(
-          new S3ServiceException({
-            name: 'RequestTimeout',
-            $fault: 'client',
-            $metadata: {},
-          }),
-        )
-        .resolvesOnce({ Contents: [] });
+      mockListObjectsRetry(
+        new S3ServiceException({
+          name: 'RequestTimeout',
+          $fault: 'client',
+          $metadata: {},
+        }),
+      );
 
       await (publisher as AwsS3Publish).retryOperation(
         async () => {
@@ -563,16 +596,13 @@ describe('AwsS3Publish', () => {
 
     it('should retry on server errors (5xx)', async () => {
       const publisher = await createPublisherFromConfig();
-      s3Mock
-        .on(ListObjectsV2Command)
-        .rejectsOnce(
-          new S3ServiceException({
-            name: 'InternalError',
-            $fault: 'server',
-            $metadata: { httpStatusCode: 500 },
-          }),
-        )
-        .resolvesOnce({ Contents: [] });
+      mockListObjectsRetry(
+        new S3ServiceException({
+          name: 'InternalError',
+          $fault: 'server',
+          $metadata: { httpStatusCode: 500 },
+        }),
+      );
 
       await (publisher as AwsS3Publish).retryOperation(
         async () => {
@@ -586,16 +616,13 @@ describe('AwsS3Publish', () => {
 
     it('should retry on specific 4xx errors that are transient', async () => {
       const publisher = await createPublisherFromConfig();
-      s3Mock
-        .on(ListObjectsV2Command)
-        .rejectsOnce(
-          new S3ServiceException({
-            name: 'RequestTimeout',
-            $fault: 'client',
-            $metadata: { httpStatusCode: 408 },
-          }),
-        )
-        .resolvesOnce({ Contents: [] });
+      mockListObjectsRetry(
+        new S3ServiceException({
+          name: 'RequestTimeout',
+          $fault: 'client',
+          $metadata: { httpStatusCode: 408 },
+        }),
+      );
 
       await (publisher as AwsS3Publish).retryOperation(
         async () => {
@@ -610,16 +637,13 @@ describe('AwsS3Publish', () => {
     it('should use exact error code matching for transient errors', async () => {
       const publisher = await createPublisherFromConfig();
       // Test that ConnectionError (exact match) is retried, but ConnectionErrorSomething (substring) is not
-      s3Mock
-        .on(ListObjectsV2Command)
-        .rejectsOnce(
-          new S3ServiceException({
-            name: 'ConnectionError',
-            $fault: 'client',
-            $metadata: {},
-          }),
-        )
-        .resolvesOnce({ Contents: [] });
+      mockListObjectsRetry(
+        new S3ServiceException({
+          name: 'ConnectionError',
+          $fault: 'client',
+          $metadata: {},
+        }),
+      );
 
       await (publisher as AwsS3Publish).retryOperation(
         async () => {
@@ -635,16 +659,13 @@ describe('AwsS3Publish', () => {
       const publisher = await createPublisherFromConfig();
       const startTime = Date.now();
 
-      s3Mock
-        .on(ListObjectsV2Command)
-        .rejectsOnce(
-          new S3ServiceException({
-            name: 'SlowDown',
-            $fault: 'server',
-            $metadata: {},
-          }),
-        )
-        .resolvesOnce({ Contents: [] });
+      mockListObjectsRetry(
+        new S3ServiceException({
+          name: 'SlowDown',
+          $fault: 'server',
+          $metadata: {},
+        }),
+      );
 
       await (publisher as AwsS3Publish).retryOperation(
         async () => {
@@ -919,10 +940,13 @@ describe('AwsS3Publish', () => {
     });
 
     it('should return an error if the techdocs_metadata.json file cannot be read from stream', async () => {
-      s3Mock.on(GetObjectCommand).callsFake(() => {
-        return {
-          Body: new ErrorReadable('No stream!'),
-        };
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: new ErrorReadable('No stream!'),
+          };
+        }
+        return defaultS3SendImplementation(command);
       });
 
       const publisher = await createPublisherFromConfig();
@@ -1058,10 +1082,13 @@ describe('AwsS3Publish', () => {
     });
 
     it('should return 404 if file cannot be read from stream', async () => {
-      s3Mock.on(GetObjectCommand).callsFake(() => {
-        return {
-          Body: new ErrorReadable('No stream!'),
-        };
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: new ErrorReadable('No stream!'),
+          };
+        }
+        return defaultS3SendImplementation(command);
       });
 
       const response = await request(app).get(

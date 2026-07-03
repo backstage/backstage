@@ -47,9 +47,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
-    "aws-sdk-client-mock": "^4.0.0",
-    "aws-sdk-client-mock-jest": "^4.0.0"
+    "@backstage/test-utils": "workspace:^"
   },
   "configSchema": "config.d.ts"
 }

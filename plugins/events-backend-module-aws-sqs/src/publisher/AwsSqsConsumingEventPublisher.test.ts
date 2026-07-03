@@ -22,9 +22,10 @@ import {
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
-import { mockClient } from 'aws-sdk-client-mock';
 import { AwsSqsConsumingEventPublisher } from './AwsSqsConsumingEventPublisher';
 import { mockServices } from '@backstage/backend-test-utils';
+
+const sqsSendMock = jest.fn();
 
 describe('AwsSqsConsumingEventPublisher', () => {
   it('creates one publisher instance per configured topic', async () => {
@@ -144,58 +145,51 @@ describe('AwsSqsConsumingEventPublisher', () => {
     } as unknown as SchedulerService;
 
     // on the first attempt, we will return 1 message and 0 messages afterwards
-    const sqsMock = mockClient(SQSClient);
-    sqsMock
-      .on(ReceiveMessageCommand, {
-        MaxNumberOfMessages: 10,
-        QueueUrl: 'https://fake1.queue.url',
-        WaitTimeSeconds: 20,
-      })
-      .resolvesOnce({
-        Messages: [],
-      })
-      .resolvesOnce({
-        Messages: [
-          {
-            Body: '{"event":"payload1"}',
-            ReceiptHandle: 'fake-handle1',
-            MessageAttributes: {
-              'X-Custom-Attr': {
-                DataType: 'String',
-                StringValue: 'value',
+    let receiveCalls = 0;
+    jest.spyOn(SQSClient.prototype, 'send').mockImplementation(sqsSendMock);
+    sqsSendMock.mockImplementation(async command => {
+      if (command instanceof ReceiveMessageCommand) {
+        receiveCalls += 1;
+        if (receiveCalls === 1) {
+          return { Messages: [] };
+        }
+        if (receiveCalls === 2) {
+          return {
+            Messages: [
+              {
+                Body: '{"event":"payload1"}',
+                ReceiptHandle: 'fake-handle1',
+                MessageAttributes: {
+                  'X-Custom-Attr': {
+                    DataType: 'String',
+                    StringValue: 'value',
+                  },
+                },
               },
+              {
+                Body: '{"event":"payload2"}',
+                ReceiptHandle: 'fake-handle2',
+              },
+            ],
+          };
+        }
+        return { Messages: [] };
+      }
+      if (command instanceof DeleteMessageBatchCommand) {
+        return {
+          Failed: [
+            {
+              Id: 'message-1',
+              Message: 'test failure',
+              SenderFault: true,
+              Code: '400',
             },
-          },
-          {
-            Body: '{"event":"payload2"}',
-            ReceiptHandle: 'fake-handle2',
-          },
-        ],
-      })
-      .on(DeleteMessageBatchCommand, {
-        Entries: [
-          {
-            Id: 'message-0',
-            ReceiptHandle: 'fake-handle1',
-          },
-          {
-            Id: 'message-1',
-            ReceiptHandle: 'fake-handle2',
-          },
-        ],
-        QueueUrl: 'https://fake1.queue.url',
-      })
-      .resolvesOnce({
-        Failed: [
-          {
-            Id: 'message-1',
-            Message: 'test failure',
-            SenderFault: true,
-            Code: '400',
-          },
-        ],
-        Successful: [{ Id: 'message-0' }],
-      });
+          ],
+          Successful: [{ Id: 'message-0' }],
+        };
+      }
+      throw new Error(`No mock for ${command.constructor.name}`);
+    });
 
     const publishers = AwsSqsConsumingEventPublisher.fromConfig({
       config,

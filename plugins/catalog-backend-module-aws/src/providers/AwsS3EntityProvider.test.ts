@@ -22,10 +22,10 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { AwsS3EntityProvider } from './AwsS3EntityProvider';
-import { mockClient } from 'aws-sdk-client-mock';
-import 'aws-sdk-client-mock-jest';
 import { ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { mockServices } from '@backstage/backend-test-utils';
+
+const s3SendMock = jest.fn();
 
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
@@ -53,10 +53,15 @@ describe('AwsS3EntityProvider', () => {
   };
 
   const keys = ['key1.yaml', 'key2.yaml', 'key3.yaml', 'key 4.yaml'];
-  const mock = mockClient(S3Client);
 
   beforeEach(() => {
-    mock.on(ListObjectsV2Command).callsFake(async req => {
+    jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+    s3SendMock.mockImplementation(async command => {
+      if (!(command instanceof ListObjectsV2Command)) {
+        throw new Error(`No mock for ${command.constructor.name}`);
+      }
+
+      const req = command.input;
       const prefix = req.Prefix ?? '';
 
       if (!req.ContinuationToken) {

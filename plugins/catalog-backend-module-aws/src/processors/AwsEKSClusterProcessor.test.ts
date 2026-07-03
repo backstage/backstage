@@ -15,7 +15,6 @@
  */
 
 import { AwsEKSClusterProcessor } from './AwsEKSClusterProcessor';
-import { mockClient } from 'aws-sdk-client-mock';
 import {
   ListClustersResponse,
   DescribeClusterResponse,
@@ -24,6 +23,8 @@ import {
   EKSClient,
 } from '@aws-sdk/client-eks';
 
+const eksSendMock = jest.fn();
+
 describe('AwsEKSClusterProcessor', () => {
   describe('readLocation', () => {
     const processor = new (AwsEKSClusterProcessor as any)({});
@@ -31,6 +32,7 @@ describe('AwsEKSClusterProcessor', () => {
     const emit = jest.fn();
 
     it('generates cluster correctly', async () => {
+      jest.spyOn(EKSClient.prototype, 'send').mockImplementation(eksSendMock);
       const clusters: ListClustersResponse = {
         clusters: ['backstage-test'],
         nextToken: undefined,
@@ -46,10 +48,15 @@ describe('AwsEKSClusterProcessor', () => {
           },
         },
       };
-      const mock = mockClient(EKSClient);
-
-      mock.on(ListClustersCommand).resolves(clusters);
-      mock.on(DescribeClusterCommand).resolves(cluster);
+      eksSendMock.mockImplementation(async command => {
+        if (command instanceof ListClustersCommand) {
+          return clusters;
+        }
+        if (command instanceof DescribeClusterCommand) {
+          return cluster;
+        }
+        throw new Error(`Unexpected command: ${command.constructor.name}`);
+      });
 
       await processor.readLocation(location, false, emit);
 
