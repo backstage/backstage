@@ -23,7 +23,7 @@ import { formatActionList } from '../lib/format';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
-    flags: { instance: instanceFlag, output: outputFlag },
+    flags: { instance: instanceFlag },
   } = cli(
     {
       name: info.usage,
@@ -31,10 +31,6 @@ export default async ({ args, info }: CliCommandContext) => {
         instance: {
           type: String,
           description: 'Name of the instance to use',
-        },
-        output: {
-          type: String,
-          description: 'Output format: "human" (default) or "json"',
         },
       },
     },
@@ -55,21 +51,6 @@ export default async ({ args, info }: CliCommandContext) => {
 
   const client = new ActionsClient(baseUrl, accessToken);
   const { grouped, failed } = await client.list(pluginSources);
-
-  if (outputFlag === 'json') {
-    const actions = grouped.flatMap(g =>
-      g.actions.map(a => ({ ...a, pluginId: g.pluginId })),
-    );
-    const errors = failed.map(f => ({
-      pluginId: f.pluginId,
-      message: f.message,
-    }));
-    process.stdout.write(`${JSON.stringify({ actions, errors })}\n`);
-    if (grouped.length === 0) {
-      process.exitCode = 1;
-    }
-    return;
-  }
 
   const hasActions = grouped.some(g => g.actions.length > 0);
 

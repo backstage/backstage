@@ -30,10 +30,8 @@ jest.mock('../lib/ActionsClient', () => ({
 }));
 
 import listCommand from './list';
-import { cli } from 'cleye';
 import { resolveAuth } from '../lib/resolveAuth';
 
-const mockCli = cli as jest.MockedFunction<typeof cli>;
 const mockResolveAuth = resolveAuth as jest.MockedFunction<typeof resolveAuth>;
 
 const baseContext: CliCommandContext = {
@@ -126,76 +124,6 @@ describe('list command', () => {
     const stderr = stderrSpy.mock.calls.map(c => c[0]).join('');
     expect(stderr).toContain('catalog');
     expect(stderr).toContain('notifications');
-    expect(process.exitCode).toBe(1);
-  });
-
-  it('outputs JSON with actions and errors arrays when --output=json', async () => {
-    mockResolveAuth.mockResolvedValue(authResponse());
-    (mockCli as jest.Mock).mockReturnValue({
-      flags: { output: 'json' },
-    });
-    const result: ListResult = {
-      grouped: [
-        {
-          pluginId: 'catalog',
-          actions: [
-            {
-              id: 'catalog:refresh',
-              name: 'refresh',
-              schema: { input: {}, output: {} },
-            },
-          ],
-        },
-      ],
-      failed: [
-        {
-          pluginId: 'notifications',
-          message: 'Request failed with 404 Not Found',
-        },
-      ],
-    };
-    mockList.mockResolvedValue(result);
-
-    await listCommand(baseContext);
-
-    const stdout = stdoutSpy.mock.calls.map(c => c[0]).join('');
-    const parsed = JSON.parse(stdout);
-    expect(parsed.actions).toEqual([
-      {
-        id: 'catalog:refresh',
-        name: 'refresh',
-        pluginId: 'catalog',
-        schema: { input: {}, output: {} },
-      },
-    ]);
-    expect(parsed.errors).toEqual([
-      {
-        pluginId: 'notifications',
-        message: 'Request failed with 404 Not Found',
-      },
-    ]);
-    expect(process.exitCode).toBeUndefined();
-  });
-
-  it('sets exit code 1 in JSON mode when all sources fail', async () => {
-    mockResolveAuth.mockResolvedValue(authResponse());
-    (mockCli as jest.Mock).mockReturnValue({
-      flags: { output: 'json' },
-    });
-    const result: ListResult = {
-      grouped: [],
-      failed: [
-        { pluginId: 'catalog', message: 'Request failed with 404 Not Found' },
-      ],
-    };
-    mockList.mockResolvedValue(result);
-
-    await listCommand(baseContext);
-
-    const stdout = stdoutSpy.mock.calls.map(c => c[0]).join('');
-    const parsed = JSON.parse(stdout);
-    expect(parsed.actions).toEqual([]);
-    expect(parsed.errors).toHaveLength(1);
     expect(process.exitCode).toBe(1);
   });
 
