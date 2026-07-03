@@ -17,7 +17,6 @@
 import { ScmIntegrationRegistry } from '../registry';
 import { SingleInstanceGitlabCredentialsProvider } from './SingleInstanceGitlabCredentialsProvider';
 import { GitlabCredentials, GitlabCredentialsProvider } from './types';
-import type { ConnectionsService } from '@backstage/connections';
 
 /**
  * Handles the creation and caching of credentials for GitLab integrations.
@@ -39,40 +38,11 @@ export class DefaultGitlabCredentialsProvider
     return new DefaultGitlabCredentialsProvider(credentialsProviders);
   }
 
-  /**
-   * Creates a credentials provider backed by the connections service.
-   *
-   * @param connections - The connections service used to resolve GitLab credentials.
-   * @public
-   */
-  static fromConnections(connections: ConnectionsService) {
-    return new DefaultGitlabCredentialsProvider(new Map(), connections);
-  }
-
   private constructor(
     private readonly providers: Map<string, GitlabCredentialsProvider>,
-    private readonly connections?: ConnectionsService,
   ) {}
 
   async getCredentials(opts: { url: string }): Promise<GitlabCredentials> {
-    if (this.connections) {
-      const connection = await this.connections.find({
-        type: 'gitlab',
-        url: opts.url,
-        authMethods: ['token', 'none'],
-      });
-
-      if (connection.auth.method === 'token') {
-        return {
-          headers: {
-            Authorization: `Bearer ${connection.auth.token}`,
-          },
-          token: connection.auth.token,
-        };
-      }
-      return {};
-    }
-
     const parsed = new URL(opts.url);
     const provider = this.providers.get(parsed.host);
 

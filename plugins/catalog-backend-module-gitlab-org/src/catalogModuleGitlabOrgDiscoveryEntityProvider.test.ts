@@ -26,16 +26,11 @@ import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { catalogModuleGitlabOrgDiscoveryEntityProvider } from './catalogModuleGitlabOrgDiscoveryEntityProvider';
 import { connectionsServiceFactory } from '@backstage/connections';
-import { DefaultGitlabCredentialsProvider } from '@backstage/integration';
 
 describe('catalogModuleGitlabOrgDiscoveryEntityProvider', () => {
   afterEach(() => jest.restoreAllMocks());
 
   it('should register provider at the catalog extension point', async () => {
-    const fromConnections = jest.spyOn(
-      DefaultGitlabCredentialsProvider,
-      'fromConnections',
-    );
     const events = new TestEventsService();
     const eventsServiceFactory = createServiceFactory({
       service: eventsServiceRef,
@@ -115,6 +110,5 @@ describe('catalogModuleGitlabOrgDiscoveryEntityProvider', () => {
       'GitlabOrgDiscoveryEntityProvider:test-id',
     );
     expect(runner).toHaveBeenCalledTimes(1);
-    expect(fromConnections).toHaveBeenCalledTimes(1);
   });
 });

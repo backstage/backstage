@@ -24,10 +24,11 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GitLabScmEventsBridge } from '../events/GitLabScmEventsBridge';
 import { GitlabDiscoveryEntityProvider } from '../providers';
 import {
+  type ConnectionsService,
   connectionsServiceRef,
   declareConnection,
 } from '@backstage/connections';
-import { DefaultGitlabCredentialsProvider } from '@backstage/integration';
+import { GitlabCredentialsProvider } from '@backstage/integration';
 
 /**
  * Registers the GitlabDiscoveryEntityProvider with the catalog processing extension point.
@@ -65,7 +66,7 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
         connections,
       }) {
         const gitlabCredentialsProvider =
-          DefaultGitlabCredentialsProvider.fromConnections(connections);
+          gitlabCredentialsProviderFromConnections(connections);
         const gitlabDiscoveryEntityProvider =
           GitlabDiscoveryEntityProvider.fromConfig(config, {
             logger,
@@ -91,3 +92,27 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
     });
   },
 });
+
+function gitlabCredentialsProviderFromConnections(
+  connections: ConnectionsService,
+): GitlabCredentialsProvider {
+  return {
+    async getCredentials({ url }) {
+      const connection = await connections.find({
+        type: 'gitlab',
+        url,
+        authMethods: ['token', 'none'],
+      });
+
+      if (connection.auth.method === 'token') {
+        return {
+          headers: {
+            Authorization: `Bearer ${connection.auth.token}`,
+          },
+          token: connection.auth.token,
+        };
+      }
+      return {};
+    },
+  };
+}
