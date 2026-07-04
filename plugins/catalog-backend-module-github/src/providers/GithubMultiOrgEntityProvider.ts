@@ -25,9 +25,11 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { isError } from '@backstage/errors';
 import {
   DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
+  GithubCredentials,
   GithubCredentialsProvider,
   GithubIntegrationConfig,
   ScmIntegrations,
@@ -361,10 +363,24 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      const { headers, type: tokenType } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${org}`,
-        });
+      let credentials: GithubCredentials;
+      try {
+        credentials =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${org}`,
+          });
+      } catch (error) {
+        if (isError(error) && error.name === 'NotFoundError') {
+          logger.debug(
+            `GitHub App installation was not found for org "${org}". ` +
+              `Make sure the app is installed for the organization and that the app manager has the Owner role. ` +
+              `See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting`,
+          );
+        }
+        throw error;
+      }
+
+      const { headers, type: tokenType } = credentials;
       const client = graphql.defaults({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
         headers,
