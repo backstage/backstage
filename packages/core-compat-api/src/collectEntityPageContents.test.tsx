@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-import { ExtensionAttachTo } from '@backstage/frontend-plugin-api';
+import {
+  coreExtensionData,
+  ExtensionAttachTo,
+  ExtensionDefinition,
+} from '@backstage/frontend-plugin-api';
 import { EntityLayout, EntitySwitch, isKind } from '@backstage/plugin-catalog';
 import { JSX } from 'react';
 import { collectEntityPageContents } from './collectEntityPageContents';
 import {
+  createRouteRef,
   createComponentExtension,
   createPlugin,
+  createRoutableExtension,
 } from '@backstage/core-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   resolveExtensionDefinition,
   toInternalExtension,
 } from '../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 const fooPlugin = createPlugin({
   id: 'foo',
@@ -42,6 +49,14 @@ const OtherFooContent = fooPlugin.provide(
   createComponentExtension({
     name: 'OtherFooContent',
     component: { sync: () => <div>other foo content</div> },
+  }),
+);
+const fooRouteRef = createRouteRef({ id: 'foo' });
+const FooRoutableContent = fooPlugin.provide(
+  createRoutableExtension({
+    name: 'FooRoutableContent',
+    mountPoint: fooRouteRef,
+    component: async () => () => <div>foo routable content</div>,
   }),
 );
 
@@ -167,5 +182,28 @@ describe('collectEntityPageContents', () => {
         },
       ]
     `);
+  });
+
+  it('preserves mount points as route refs on discovered entity content', () => {
+    const discovered = new Array<ExtensionDefinition>();
+
+    collectEntityPageContents(
+      <EntityLayout>
+        <EntityLayout.Route path="/foo" title="Foo">
+          <FooRoutableContent />
+        </EntityLayout.Route>
+      </EntityLayout>,
+      {
+        discoverExtension(extension) {
+          discovered.push(extension);
+        },
+      },
+    );
+
+    expect(discovered).toHaveLength(1);
+    const tester = createExtensionTester(discovered[0]);
+
+    expect(tester.get(coreExtensionData.routePath)).toBe('/foo');
+    expect(tester.get(coreExtensionData.routeRef)).toBe(fooRouteRef);
   });
 });
