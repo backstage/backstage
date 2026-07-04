@@ -112,10 +112,16 @@ export function collectEntityPageContents(
           );
         } else {
           const name = `discovered-${routeCounter++}`;
-          const routeRef = getComponentData<RouteRef<AnyRouteRefParams>>(
-            pageNode.children,
+          let routeRef = getComponentData<RouteRef<AnyRouteRefParams>>(
+            element,
             'core.mountPoint',
           );
+          if (!routeRef) {
+            routeRef = getComponentData<RouteRef<AnyRouteRefParams>>(
+              pageNode.children,
+              'core.mountPoint',
+            );
+          }
 
           context.discoverExtension(
             EntityContentBlueprint.makeWithOverrides({

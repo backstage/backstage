@@ -23,11 +23,13 @@ import { EntityLayout, EntitySwitch, isKind } from '@backstage/plugin-catalog';
 import { JSX } from 'react';
 import { collectEntityPageContents } from './collectEntityPageContents';
 import {
+  attachComponentData,
   createRouteRef,
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
+import { ComponentProps } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   resolveExtensionDefinition,
@@ -59,6 +61,17 @@ const FooRoutableContent = fooPlugin.provide(
     component: async () => () => <div>foo routable content</div>,
   }),
 );
+const routeMountPointRef = createRouteRef({ id: 'route-mounted' });
+
+function RouteWithMountPoint(props: ComponentProps<typeof EntityLayout.Route>) {
+  return <EntityLayout.Route {...props} />;
+}
+attachComponentData(
+  RouteWithMountPoint,
+  'plugin.catalog.entityLayoutRoute',
+  true,
+);
+attachComponentData(RouteWithMountPoint, 'core.mountPoint', routeMountPointRef);
 
 const simpleTestContent = (
   <EntityLayout>
@@ -205,5 +218,28 @@ describe('collectEntityPageContents', () => {
 
     expect(tester.get(coreExtensionData.routePath)).toBe('/foo');
     expect(tester.get(coreExtensionData.routeRef)).toBe(fooRouteRef);
+  });
+
+  it('preserves mount points from route elements as route refs on discovered entity content', () => {
+    const discovered = new Array<ExtensionDefinition>();
+
+    collectEntityPageContents(
+      <EntityLayout>
+        <RouteWithMountPoint path="/mounted" title="Mounted">
+          <div>mounted route</div>
+        </RouteWithMountPoint>
+      </EntityLayout>,
+      {
+        discoverExtension(extension) {
+          discovered.push(extension);
+        },
+      },
+    );
+
+    expect(discovered).toHaveLength(1);
+    const tester = createExtensionTester(discovered[0]);
+
+    expect(tester.get(coreExtensionData.routePath)).toBe('/mounted');
+    expect(tester.get(coreExtensionData.routeRef)).toBe(routeMountPointRef);
   });
 });
