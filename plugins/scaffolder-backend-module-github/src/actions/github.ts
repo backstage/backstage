@@ -34,6 +34,19 @@ import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './github.examples';
 
+function withoutProperties<T extends object, K extends keyof T>(
+  object: T,
+  keys: K[],
+): Omit<T, K> {
+  const result: Partial<T> = { ...object };
+
+  keys.forEach(key => {
+    delete result[key];
+  });
+
+  return result as Omit<T, K>;
+}
+
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
  * and publishes it to GitHub.
@@ -46,19 +59,6 @@ export function createPublishGithubAction(options: {
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
   const { integrations, config, githubCredentialsProvider } = options;
-
-  function withoutProperties<T extends object, K extends keyof T>(
-    object: T,
-    keys: K[],
-  ): Omit<T, K> {
-    const result = { ...object };
-
-    keys.forEach(key => {
-      delete result[key];
-    });
-
-    return result;
-  }
 
   return createTemplateAction({
     id: 'publish:github',
