@@ -197,8 +197,11 @@ describe('collectEntityPageContents', () => {
     `);
   });
 
-  it('preserves mount points as route refs on discovered entity content', () => {
-    const discovered = new Array<ExtensionDefinition>();
+  it('preserves plugin-specific route context for analytics on discovered entity tabs', () => {
+    const discovered = new Array<{
+      extension: ExtensionDefinition;
+      pluginId: string | undefined;
+    }>();
 
     collectEntityPageContents(
       <EntityLayout>
@@ -207,14 +210,27 @@ describe('collectEntityPageContents', () => {
         </EntityLayout.Route>
       </EntityLayout>,
       {
-        discoverExtension(extension) {
-          discovered.push(extension);
+        discoverExtension(extension, plugin) {
+          discovered.push({ extension, pluginId: plugin?.getId() });
         },
       },
     );
 
     expect(discovered).toHaveLength(1);
-    const tester = createExtensionTester(discovered[0]);
+    expect(discovered[0].pluginId).toBe('foo');
+
+    const internal = toInternalExtension(
+      resolveExtensionDefinition(discovered[0].extension, {
+        namespace: discovered[0].pluginId ?? 'test',
+      }),
+    );
+    expect(internal.id).toBe('entity-content:foo/discovered-1');
+    expect(internal.attachTo).toEqual({
+      id: 'page:catalog/entity',
+      input: 'contents',
+    });
+
+    const tester = createExtensionTester(discovered[0].extension);
 
     expect(tester.get(coreExtensionData.routePath)).toBe('/foo');
     expect(tester.get(coreExtensionData.routeRef)).toBe(fooRouteRef);
