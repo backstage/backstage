@@ -25,9 +25,11 @@ import type {
 import {
   AuthorizeResult,
   BasicPermission,
+  Permission,
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
 import { NotFoundError, NotAllowedError } from '@backstage/errors';
+import { RequiredDoc } from '../types';
 
 type PermissionsExtension = {
   permission: string;
@@ -38,6 +40,54 @@ type PermissionsExtension = {
   };
   onDeny?: { statusCode: 403 | 404 } | { statusCode?: number; body: any };
 };
+
+/**
+ * Collect the unique names of all permissions referenced by an
+ * `x-backstage-permissions` extension across every operation in the spec.
+ */
+function collectReferencedPermissionNames(spec: RequiredDoc): string[] {
+  const names = new Set<string>();
+  const paths = (spec.paths ?? {}) as Record<string, unknown>;
+  for (const pathItem of Object.values(paths)) {
+    if (!pathItem || typeof pathItem !== 'object') {
+      continue;
+    }
+    for (const operation of Object.values(
+      pathItem as Record<string, unknown>,
+    )) {
+      const config = (operation as OperationObject | undefined)?.[
+        'x-backstage-permissions'
+      ] as PermissionsExtension | undefined;
+      if (config?.permission) {
+        names.add(config.permission);
+      }
+    }
+  }
+  return Array.from(names);
+}
+
+/**
+ * Throw if any permission referenced by the spec is missing from the set of
+ * registered permissions, so misconfigurations fail when the router is created
+ * rather than when a request first reaches the affected operation.
+ */
+function assertReferencedPermissionsAreRegistered(
+  spec: RequiredDoc,
+  registeredPermissions: Permission[],
+): void {
+  const registeredNames = new Set(registeredPermissions.map(p => p.name));
+  const missing = collectReferencedPermissionNames(spec)
+    .filter(name => !registeredNames.has(name))
+    .sort();
+
+  if (missing.length > 0) {
+    throw new Error(
+      `The following permissions are referenced by 'x-backstage-permissions' in the OpenAPI spec but are not registered in the permissions registry: ${missing.join(
+        ', ',
+      )}. Register them with permissionsRegistry.addPermissions or permissionsRegistry.addResourceType before creating the router.`,
+    );
+  }
+}
 
 /** @public */
 export interface WithOpenapi {
@@ -60,10 +110,18 @@ export function permissionsMiddlewareFactory(dependencies: {
   permissionsRegistry: PermissionsRegistryService;
   httpAuth: HttpAuthService;
   logger: LoggerService;
+  spec?: RequiredDoc;
 }) {
-  const { permissionsRegistry } = dependencies;
+  const { permissionsRegistry, spec } = dependencies;
   const registeredPermissions = permissionsRegistry.listPermissions();
   const { permissions: permissionsService, httpAuth, logger } = dependencies;
+
+  // Validate up front that every permission referenced by the spec is
+  // registered, so a missing permission fails when the router is created
+  // rather than on the first request to the affected operation.
+  if (spec) {
+    assertReferencedPermissionsAreRegistered(spec, registeredPermissions);
+  }
   return async (
     req: Request & WithOpenapi,
     res: Response,

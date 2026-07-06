@@ -63,6 +63,66 @@ export function createRouter() {
 }
 ```
 
+## Permissions
+
+Operations can declare an authorization requirement directly in the spec using
+the `x-backstage-permissions` extension. When the router is created with the
+permissions services (see below), a middleware reads this extension and enforces
+the permission before the route handler runs.
+
+```yaml
+paths:
+  /locations/{id}:
+    get:
+      operationId: GetLocation
+      x-backstage-permissions:
+        # The name of the permission to enforce. This must be registered with
+        # the permissions registry (see the note below).
+        permission: catalog.location.read
+        # Optional. When the permission is a resource permission, describes where
+        # to read the resource reference from. Omit for basic permissions.
+        resourceRef:
+          from: path # or `query`
+          param: id
+        # Optional. Controls the response when authorization is denied. Defaults
+        # to a 403. Use `{ statusCode: 404 }` to hide the resource, or provide a
+        # custom `body` (with an optional `statusCode`) to return a fallback
+        # response such as an empty list.
+        onDeny:
+          statusCode: 404
+        # Optional. When true, the middleware only verifies that the permission
+        # is registered and leaves the actual authorization to the route handler.
+        validateManually: false
+```
+
+To enable enforcement, pass the permissions services when creating the router:
+
+```ts
+import { coreServices } from '@backstage/backend-plugin-api';
+import { createOpenApiRouter } from '../schema/openapi.generated';
+// ...
+const router = await createOpenApiRouter(validatorOptions, {
+  permissions,
+  permissionsRegistry,
+  httpAuth,
+  logger,
+});
+```
+
+If the services are omitted, the middleware is not wired up and the
+`x-backstage-permissions` extensions are ignored.
+
+> **Every permission referenced by an `x-backstage-permissions` extension must be
+> registered with the `permissionsRegistry` service before the router is created**
+> — use `permissionsRegistry.addPermissions(...)` for basic permissions and
+> `permissionsRegistry.addResourceType(...)` for resource permissions. This is a
+> stricter requirement than authorizing in code: basic permissions previously did
+> not need to be registered to be enforced. The middleware reads the registered
+> permissions once when the router is constructed, so registration must happen in
+> your plugin's `registerInit` before `createOpenApiRouter` is called. If any
+> referenced permission is not registered, the router throws when it is created —
+> failing at startup rather than on the first request to the affected operation.
+
 ## FAQs
 
 ### Why am I getting `unknown` as the type for a response?

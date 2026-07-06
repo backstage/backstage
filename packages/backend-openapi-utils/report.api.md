@@ -100,10 +100,8 @@ type CookieSchema<
 // @public
 export function createValidatedOpenApiRouter<T extends RequiredDoc>(
   spec: T,
-  options?: {
-    validatorOptions?: Partial<Parameters<typeof middleware>['0']>;
-    middleware?: RequestHandler[];
-  },
+  options?: CreateValidatedOpenApiRouterOptions,
+  services?: CreateValidatedOpenApiRouterServices,
 ): ApiRouter<typeof spec>;
 
 // @public
@@ -111,11 +109,23 @@ export function createValidatedOpenApiRouterFromGeneratedEndpointMap<
   T extends EndpointMap,
 >(
   spec: RequiredDoc,
-  options?: {
-    validatorOptions?: Partial<Parameters<typeof middleware>['0']>;
-    middleware?: RequestHandler[];
-  },
+  options?: CreateValidatedOpenApiRouterOptions,
+  services?: CreateValidatedOpenApiRouterServices,
 ): TypedRouter<T>;
+
+// @public (undocumented)
+export type CreateValidatedOpenApiRouterOptions = {
+  validatorOptions?: Partial<Parameters<typeof middleware>['0']>;
+  middleware?: RequestHandler[];
+};
+
+// @public
+export type CreateValidatedOpenApiRouterServices = {
+  permissions: PermissionsService;
+  permissionsRegistry: PermissionsRegistryService;
+  httpAuth: HttpAuthService;
+  logger: LoggerService;
+};
 
 // @public (undocumented)
 type DiscriminateUnion<T, K extends keyof T, V extends T[K]> = Extract<
@@ -670,6 +680,7 @@ export function permissionsMiddlewareFactory(dependencies: {
   permissionsRegistry: PermissionsRegistryService;
   httpAuth: HttpAuthService;
   logger: LoggerService;
+  spec?: RequiredDoc;
 }): (
   req: Request_3 & WithOpenapi,
   res: Response_4,

@@ -52,6 +52,7 @@ import {
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { EventsService } from '@backstage/plugin-events-node';
+import { isResourcePermission } from '@backstage/plugin-permission-common';
 import { createConditionTransformer } from '@backstage/plugin-permission-node';
 import { durationToMilliseconds } from '@backstage/types';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
@@ -464,12 +465,26 @@ export class CatalogBuilder {
       return entitiesResponseToObjects(items).map(e => e || undefined);
     };
 
+    // Resource permissions (those scoped to the catalog-entity resource type)
+    // are registered alongside the resource type so that conditional decisions
+    // can be evaluated. Basic permissions are registered separately, since they
+    // do not belong to a resource type; registering them still makes them
+    // discoverable via the permissions registry (e.g. for RBAC tooling and for
+    // enforcement via the OpenAPI permissions middleware).
     permissionsRegistry.addResourceType({
       resourceRef: catalogEntityPermissionResourceRef,
       getResources,
-      permissions: [...catalogPermissions],
+      permissions: catalogPermissions.filter(permission =>
+        isResourcePermission(permission),
+      ),
       rules: Object.values(catalogPermissionRules),
     });
+
+    permissionsRegistry.addPermissions(
+      catalogPermissions.filter(
+        permission => !isResourcePermission(permission),
+      ),
+    );
 
     const scmEventHandlingConfig = readScmEventHandlingConfig(config);
     const locationStore = new DefaultLocationStore(

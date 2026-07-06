@@ -13,6 +13,12 @@ For a deep dive into how to use the `permissionsRegistry` service, see the [perm
 
 If all you want to do is add new custom permission rules to an existing plugin, you can instead refer to the [custom permission rules guide](../../permissions/custom-rules.md).
 
+:::note
+
+Both basic and resource permissions should be registered. Registering a resource type with `addResourceType` is required so that conditional decisions for that resource type can be evaluated. Registering basic permissions with `addPermissions` makes them discoverable, for example to RBAC tooling. It is also required when enforcing permissions through the `@backstage/backend-openapi-utils` OpenAPI router, which looks permissions up by name in the registry — a permission referenced by an operation but not registered will cause requests to that operation to fail.
+
+:::
+
 ## Migrating from `createPermissionIntegrationRouter`
 
 Before this service was introduced, plugins would use

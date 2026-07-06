@@ -121,6 +121,7 @@ function createRouterWithValidation(
         permissionsRegistry,
         httpAuth,
         logger,
+        spec,
       }),
     );
   }

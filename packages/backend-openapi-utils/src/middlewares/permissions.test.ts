@@ -624,4 +624,60 @@ describe('permissionsMiddleware', () => {
       'is not a resource permission, but resourceRef was specified',
     );
   });
+
+  describe('startup validation', () => {
+    const buildFactory = (
+      spec: unknown,
+      registered: Array<{ name: string }>,
+    ) => {
+      const registry = mockServices.permissionsRegistry.mock();
+      registry.listPermissions.mockReturnValue(registered as any);
+      return () =>
+        permissionsMiddlewareFactory({
+          permissions: createMockPermissionsService().permissionsService,
+          httpAuth: mockServices.httpAuth.mock(),
+          permissionsRegistry: registry,
+          logger: mockServices.logger.mock(),
+          spec: spec as any,
+        });
+    };
+
+    it('throws when the spec references an unregistered permission', () => {
+      // specWithPermissions references catalog.entity.read,
+      // catalog.location.read.resource and others that are not registered here.
+      expect(
+        buildFactory(specWithPermissions, [catalogLocationReadPermission]),
+      ).toThrow(/not registered in the permissions registry/);
+
+      expect(
+        buildFactory(specWithPermissions, [catalogLocationReadPermission]),
+      ).toThrow(/catalog\.entity\.read/);
+    });
+
+    it('does not throw when all referenced permissions are registered', () => {
+      const spec = {
+        openapi: '3.0.2',
+        info: { title: 'Test', version: '1.0.0' },
+        paths: {
+          '/locations/{id}': {
+            get: {
+              operationId: 'getLocation',
+              'x-backstage-permissions': {
+                permission: 'catalog.location.read',
+              },
+              responses: { '200': { description: 'OK' } },
+            },
+          },
+        },
+      };
+
+      expect(buildFactory(spec, [catalogLocationReadPermission])).not.toThrow();
+    });
+
+    it('does not validate the spec when none is provided', () => {
+      // Without a spec the factory falls back to per-request validation only,
+      // so construction succeeds even when nothing is registered.
+      expect(buildFactory(undefined, [])).not.toThrow();
+    });
+  });
 });
