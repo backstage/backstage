@@ -20,16 +20,6 @@ import mcpServerSchema from '../schema/kinds/API.v1alpha1.mcp-server.schema.json
 import { ajvCompiledJsonSchemaValidator } from './util';
 
 /**
- * A transport endpoint for an MCP server API entity.
- *
- * @alpha
- */
-export type McpServerRemote = {
-  type: string;
-  url: string;
-};
-
-/**
  * An MCP (Model Context Protocol) server represented as an API entity
  * (spec.type: 'mcp-server').
  *
@@ -44,6 +34,16 @@ export interface McpServerApiEntity extends Omit<ApiEntityV1alpha1, 'spec'> {
     remotes: McpServerRemote[];
   };
 }
+
+/**
+ * A transport endpoint for an MCP server.
+ *
+ * @alpha
+ */
+export type McpServerRemote = {
+  type: string;
+  url: string;
+};
 
 /**
  * {@link KindValidator} for the `mcp-server` specType of API entities.
