@@ -84,7 +84,8 @@ describe('AwsS3EntityProvider', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    s3SendMock.mockReset();
     process.env.AWS_REGION = undefined;
   });
 

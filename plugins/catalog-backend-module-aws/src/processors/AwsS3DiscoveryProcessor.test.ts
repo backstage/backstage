@@ -59,6 +59,11 @@ describe('readLocation', () => {
     target: 'https://testbucket.s3.us-east-2.amazonaws.com',
   };
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+    s3SendMock.mockReset();
+  });
+
   beforeEach(() => {
     jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
     s3SendMock.mockImplementation(async command => {

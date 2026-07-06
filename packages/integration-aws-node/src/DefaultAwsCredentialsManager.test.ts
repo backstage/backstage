@@ -554,7 +554,7 @@ describe('DefaultAwsCredentialsManager', () => {
         DefaultAwsCredentialsManager.fromConfig(configWithRegion);
       await provider.getCredentialProvider({ accountId: '123456789012' });
 
-      const stsClient = stsSendMock.mock.instances[0] as STSClient;
+      const stsClient = stsSendMock.mock.contexts[0] as STSClient;
       expect(await stsClient.config.region()).toEqual(region);
     });
 

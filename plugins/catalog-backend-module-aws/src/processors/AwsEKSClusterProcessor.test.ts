@@ -31,6 +31,12 @@ describe('AwsEKSClusterProcessor', () => {
     const location = { type: 'aws-eks', target: '957140518395/us-west-2' };
     const emit = jest.fn();
 
+    afterEach(() => {
+      jest.restoreAllMocks();
+      eksSendMock.mockReset();
+      emit.mockReset();
+    });
+
     it('generates cluster correctly', async () => {
       jest.spyOn(EKSClient.prototype, 'send').mockImplementation(eksSendMock);
       const clusters: ListClustersResponse = {

@@ -28,6 +28,11 @@ import { mockServices } from '@backstage/backend-test-utils';
 const sqsSendMock = jest.fn();
 
 describe('AwsSqsConsumingEventPublisher', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    sqsSendMock.mockReset();
+  });
+
   it('creates one publisher instance per configured topic', async () => {
     const config = new ConfigReader({
       events: {
@@ -144,7 +149,7 @@ describe('AwsSqsConsumingEventPublisher', () => {
       },
     } as unknown as SchedulerService;
 
-    // on the first attempt, we will return 1 message and 0 messages afterwards
+    // on the first attempt, we will return 0 messages; on the second attempt, 2 messages; afterwards 0 messages
     let receiveCalls = 0;
     jest.spyOn(SQSClient.prototype, 'send').mockImplementation(sqsSendMock);
     sqsSendMock.mockImplementation(async command => {
@@ -204,6 +209,44 @@ describe('AwsSqsConsumingEventPublisher', () => {
     await taskFn!();
     await taskFn!();
     await taskFn!();
+
+    const receiveMessageCommands = sqsSendMock.mock.calls
+      .map(call => call[0])
+      .filter(
+        (command): command is ReceiveMessageCommand =>
+          command instanceof ReceiveMessageCommand,
+      );
+    expect(receiveMessageCommands).toHaveLength(3);
+    for (const command of receiveMessageCommands) {
+      expect(command.input).toEqual(
+        expect.objectContaining({
+          MaxNumberOfMessages: 10,
+          QueueUrl: 'https://fake1.queue.url',
+          WaitTimeSeconds: 20,
+        }),
+      );
+    }
+
+    const deleteMessageCommands = sqsSendMock.mock.calls
+      .map(call => call[0])
+      .filter(
+        (command): command is DeleteMessageBatchCommand =>
+          command instanceof DeleteMessageBatchCommand,
+      );
+    expect(deleteMessageCommands).toHaveLength(1);
+    expect(deleteMessageCommands[0].input).toEqual({
+      QueueUrl: 'https://fake1.queue.url',
+      Entries: [
+        {
+          Id: 'message-0',
+          ReceiptHandle: 'fake-handle1',
+        },
+        {
+          Id: 'message-1',
+          ReceiptHandle: 'fake-handle2',
+        },
+      ],
+    });
 
     expect(events.published).toHaveLength(2);
     expect(events.published[0].topic).toEqual('fake1');

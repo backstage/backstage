@@ -15,7 +15,10 @@
  */
 
 import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
-import { OrganizationsClient } from '@aws-sdk/client-organizations';
+import {
+  ListAccountsCommand,
+  OrganizationsClient,
+} from '@aws-sdk/client-organizations';
 
 const organizationsSendMock = jest.fn();
 
@@ -27,25 +30,36 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
     const location = { type: 'aws-cloud-accounts', target: '' };
     const emit = jest.fn();
     afterEach(() => {
-      jest.clearAllMocks();
+      jest.restoreAllMocks();
+      organizationsSendMock.mockReset();
+      emit.mockReset();
     });
 
     it('generates component entities for accounts', async () => {
       jest
         .spyOn(OrganizationsClient.prototype, 'send')
         .mockImplementation(organizationsSendMock);
-      organizationsSendMock.mockResolvedValue({
-        Accounts: [
-          {
-            Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
-            Name: 'Test Account',
-            Email: 'aws-test-account@backstage.io',
-            Status: 'ACTIVE',
-          },
-        ],
-        NextToken: undefined,
+      organizationsSendMock.mockImplementation(async command => {
+        if (command instanceof ListAccountsCommand) {
+          return {
+            Accounts: [
+              {
+                Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
+                Name: 'Test Account',
+                Email: 'aws-test-account@backstage.io',
+                Status: 'ACTIVE',
+              },
+            ],
+            NextToken: undefined,
+          };
+        }
+        throw new Error(`Unexpected command: ${command.constructor.name}`);
       });
       await processor.readLocation(location, false, emit);
+      expect(organizationsSendMock).toHaveBeenCalledWith(
+        expect.any(ListAccountsCommand),
+        undefined,
+      );
       expect(emit).toHaveBeenCalledWith({
         type: 'entity',
         location,
@@ -83,20 +97,29 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
         type: 'aws-cloud-accounts',
         target: 'o-1vl18kc5a3',
       };
-      organizationsSendMock.mockResolvedValue({
-        Accounts: [
-          {
-            Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
-            Name: 'Test Account',
-          },
-          {
-            Arn: 'arn:aws:organizations::192594491037:account/o-zzzzzzzzz/957140518395',
-            Name: 'Test Account 2',
-          },
-        ],
-        NextToken: undefined,
+      organizationsSendMock.mockImplementation(async command => {
+        if (command instanceof ListAccountsCommand) {
+          return {
+            Accounts: [
+              {
+                Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
+                Name: 'Test Account',
+              },
+              {
+                Arn: 'arn:aws:organizations::192594491037:account/o-zzzzzzzzz/957140518395',
+                Name: 'Test Account 2',
+              },
+            ],
+            NextToken: undefined,
+          };
+        }
+        throw new Error(`Unexpected command: ${command.constructor.name}`);
       });
       await processor.readLocation(locationTest, false, emit);
+      expect(organizationsSendMock).toHaveBeenCalledWith(
+        expect.any(ListAccountsCommand),
+        undefined,
+      );
       expect(emit).toHaveBeenCalledTimes(1);
       expect(emit).toHaveBeenCalledWith({
         type: 'entity',

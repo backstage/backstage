@@ -592,6 +592,8 @@ describe('AwsS3Publish', () => {
         'TestOperation',
         3,
       );
+
+      expect(s3SendMock).toHaveBeenCalledTimes(2);
     });
 
     it('should retry on server errors (5xx)', async () => {
@@ -612,6 +614,8 @@ describe('AwsS3Publish', () => {
         'TestOperation',
         3,
       );
+
+      expect(s3SendMock).toHaveBeenCalledTimes(2);
     });
 
     it('should retry on specific 4xx errors that are transient', async () => {
@@ -632,6 +636,8 @@ describe('AwsS3Publish', () => {
         'TestOperation',
         3,
       );
+
+      expect(s3SendMock).toHaveBeenCalledTimes(2);
     });
 
     it('should use exact error code matching for transient errors', async () => {
@@ -653,6 +659,8 @@ describe('AwsS3Publish', () => {
         'TestOperation',
         3,
       );
+
+      expect(s3SendMock).toHaveBeenCalledTimes(2);
     });
 
     it('should apply exponential backoff with correct calculation', async () => {
