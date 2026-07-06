@@ -15,10 +15,7 @@
  */
 
 import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
-import {
-  ListAccountsCommand,
-  OrganizationsClient,
-} from '@aws-sdk/client-organizations';
+import { OrganizationsClient } from '@aws-sdk/client-organizations';
 
 const organizationsSendMock = jest.fn();
 
