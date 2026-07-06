@@ -74,29 +74,30 @@ the `object` field and the resource version in the `resourceVersion` field.
 
 The `KubernetesWatchOptions` interface supports the following parameters:
 
-| Option                 | Type          | Description                                                                                                                                                       |
-| ---------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `namespace`            | `string`      | Namespace to watch (omit for cluster-scoped resources).                                                                                                           |
-| `labelSelector`        | `string`      | Label selector to filter resources.                                                                                                                               |
-| `resourceVersion`      | `string`      | Resource version to start watching from.                                                                                                                          |
-| `timeoutSeconds`       | `number`      | Server-side timeout for the watch connection.                                                                                                                     |
-| `allowWatchBookmarks`  | `boolean`     | Enable bookmark events for efficient version tracking.                                                                                                            |
-| `sendInitialEvents`    | `boolean`     | Begin the stream with synthetic events reproducing current state, ending with a bookmark annotated `k8s.io/initial-events-end`. Requires Kubernetes 1.32+ (Beta). |
-| `resourceVersionMatch` | `string`      | How the resource version constraint is applied. Set to `NotOlderThan` when using `sendInitialEvents` so the server can serve from its watch cache.                |
-| `signal`               | `AbortSignal` | Abort signal to cancel the watch from outside the iteration loop.                                                                                                 |
+| Option                 | Type                        | Description                                                                                                                                                       |
+| ---------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `namespace`            | `string`                    | Namespace to watch (omit for cluster-scoped resources).                                                                                                           |
+| `labelSelector`        | `string`                    | Label selector to filter resources.                                                                                                                               |
+| `resourceVersion`      | `string`                    | Resource version to start watching from.                                                                                                                          |
+| `timeoutSeconds`       | `number`                    | Server-side timeout for the watch connection.                                                                                                                     |
+| `allowWatchBookmarks`  | `boolean`                   | Enable bookmark events for efficient version tracking.                                                                                                            |
+| `sendInitialEvents`    | `boolean`                   | Begin the stream with synthetic events reproducing current state, ending with a bookmark annotated `k8s.io/initial-events-end`. Requires Kubernetes 1.32+ (Beta). |
+| `resourceVersionMatch` | `'NotOlderThan' \| 'Exact'` | How the resource version constraint is applied. Set to `NotOlderThan` when using `sendInitialEvents` so the server can serve from its watch cache.                |
+| `signal`               | `AbortSignal`               | Abort signal to cancel the watch from outside the iteration loop.                                                                                                 |
 
-## Watching custom resources
+## Watching grouped API resources
 
-To watch custom resources, provide the API group, version, and plural name:
+To watch resources from a named API group, provide the group, version, and plural
+name:
 
 ```typescript
 for await (const event of watcher.watchResource(
   {
     clusterDetails,
     credential,
-    group: 'apps',
+    group: 'stable.example.com',
     apiVersion: 'v1',
-    plural: 'deployments',
+    plural: 'crontabs',
   },
   { namespace: 'production' },
 )) {

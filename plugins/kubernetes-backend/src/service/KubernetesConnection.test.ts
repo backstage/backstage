@@ -92,10 +92,10 @@ describe('KubernetesConnection', () => {
         connection.buildResourcePath(
           'example.com',
           'v1alpha1',
-          'my-resources',
-          'my-ns',
+          'my resources',
+          'my ns',
         ),
-      ).toBe('/apis/example.com/v1alpha1/namespaces/my-ns/my-resources');
+      ).toBe('/apis/example.com/v1alpha1/namespaces/my%20ns/my%20resources');
     });
   });
 
