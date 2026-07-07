@@ -2196,7 +2196,7 @@ __metadata:
     logform: "npm:^2.3.2"
     luxon: "npm:^3.0.0"
     minimatch: "npm:^10.2.1"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     mysql2: "npm:^3.0.0"
     node-fetch: "npm:^2.7.0"
     node-forge: "npm:^1.3.2"
@@ -2300,7 +2300,7 @@ __metadata:
     json-schema-to-ts: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
     mockttp: "npm:^3.13.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     openapi-merge: "npm:^1.3.2"
     openapi3-ts: "npm:^3.1.2"
     supertest: "npm:^7.0.0"
@@ -3546,7 +3546,7 @@ __metadata:
     git-url-parse: "npm:^15.0.0"
     lodash: "npm:^4.17.21"
     luxon: "npm:^3.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     p-throttle: "npm:^4.1.1"
   languageName: unknown
   linkType: soft

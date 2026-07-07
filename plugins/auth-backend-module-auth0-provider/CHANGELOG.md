@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-auth0-provider
 
+## 0.4.3-next.1
+
+### Patch Changes
+
+- 5446838: Added an optional `prompt` setting for Auth0 authorization requests. Set it to
+  `auto` to let Auth0 determine whether the user needs to be prompted. Existing
+  configurations continue to use `consent` by default.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
 ## 0.4.3-next.0
 
 ### Patch Changes

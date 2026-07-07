@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { BitbucketServerIntegrationConfig } from './config';
@@ -108,14 +108,9 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () => HttpResponse.json(defaultBranchResponse),
         ),
       );
 
@@ -151,14 +146,9 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () => HttpResponse.json(defaultBranchResponse),
         ),
       );
       const config: BitbucketServerIntegrationConfig = {
@@ -196,14 +186,9 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () => HttpResponse.json(defaultBranchResponse),
         ),
       );
       const config: BitbucketServerIntegrationConfig = {
@@ -222,23 +207,16 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(404),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 404,
+            }),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () => HttpResponse.json(defaultBranchResponse),
         ),
       );
       const config: BitbucketServerIntegrationConfig = {

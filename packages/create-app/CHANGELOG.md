@@ -1,5 +1,16 @@
 # @backstage/create-app
 
+## 0.9.0-next.2
+
+### Minor Changes
+
+- 39deda4: **BREAKING**: No longer bootstraps legacy proxy agents. Use Node.js built-in proxy support by setting `NODE_USE_ENV_PROXY=1` alongside your `HTTP_PROXY`/`HTTPS_PROXY`/`NO_PROXY` environment variables instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+
 ## 0.8.5-next.1
 
 ### Patch Changes

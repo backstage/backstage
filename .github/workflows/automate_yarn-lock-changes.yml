@@ -1,0 +1,22 @@
+name: Yarn Lock Changes
+on: [pull_request]
+
+jobs:
+  yarn-lock-changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Yarn Lock Changes
+        uses: Simek/yarn-lock-changes@59f47ee499424d2c2437c5aebf863b5c6d50a5bc # v0.14.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

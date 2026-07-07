@@ -1,5 +1,15 @@
 # @backstage/backend-defaults
 
+## 0.17.5-next.2
+
+### Patch Changes
+
+- a624fa3: The `connection` config option for the Redis cache store now accepts either a string URL or an object with additional connection options that are passed directly to the underlying client. The object form is only supported when `backend.cache.store` is `redis`; other stores require a plain string. This allows configuring options like `pingInterval` without needing dedicated config fields. For clustered Redis, the connection object properties are merged into cluster defaults. Fixes https://github.com/backstage/backstage/issues/31813, https://github.com/backstage/backstage/issues/31742.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.1
+  - @backstage/cli-node@0.3.4-next.0
+  - @backstage/config-loader@1.11.0-next.2
+
 ## 0.17.5-next.1
 
 ### Patch Changes

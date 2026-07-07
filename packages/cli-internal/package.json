@@ -1,6 +1,6 @@
 {
   "name": "@internal/cli",
-  "version": "0.0.4",
+  "version": "0.0.5-next.0",
   "backstage": {
     "role": "node-library",
     "inline": true

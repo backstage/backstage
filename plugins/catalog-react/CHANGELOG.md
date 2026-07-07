@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-react
 
+## 3.2.0-next.1
+
+### Patch Changes
+
+- 8a500d5: Fixed a regression where `EntityTypePicker`'s `initialFilter` prop was being cleared when used alongside `EntityKindPicker` inside `EntityListProvider`. The type filter is now correctly preserved after the available types load for the selected kind.
+- Updated dependencies
+  - @backstage/core-components@0.18.12-next.1
+
 ## 3.2.0-next.0
 
 ### Minor Changes
