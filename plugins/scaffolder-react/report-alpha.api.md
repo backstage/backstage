@@ -10,15 +10,14 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
-import { Extension } from '@backstage/core-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FieldSchema } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/utils';
-import { FormProps } from '@backstage/plugin-scaffolder-react';
-import type { FormProps as FormProps_2 } from '@rjsf/core';
+import type { FormProps } from '@rjsf/core';
+import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -112,11 +111,6 @@ export function createScaffolderFormDecorator<
   ) => Promise<void>;
 }): ScaffolderFormDecorator<TInput>;
 
-// @public
-export function createScaffolderLayout<TInputProps = unknown>(
-  options: LayoutOptions,
-): Extension<LayoutComponent<TInputProps>>;
-
 // @alpha
 export const DefaultTemplateOutputs: (props: {
   output?: ScaffolderTaskOutput;
@@ -134,7 +128,7 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
 // @alpha
 export const Form: (
   props: PropsWithChildren<
-    ScaffolderRJSFFormProps & Pick<FormProps, 'EXPERIMENTAL_theme'>
+    ScaffolderRJSFFormProps & Pick<FormProps_2, 'EXPERIMENTAL_theme'>
   >,
 ) => JSX_2.Element;
 
@@ -220,9 +214,6 @@ export type FormValidation = {
 };
 
 // @public
-export type LayoutComponent<_TInputProps> = () => null;
-
-// @public
 export interface LayoutOptions<P = any> {
   // (undocumented)
   component: LayoutTemplate<P>;
@@ -232,7 +223,7 @@ export interface LayoutOptions<P = any> {
 
 // @public
 export type LayoutTemplate<T = any> = NonNullable<
-  FormProps_2<T>['uiSchema']
+  FormProps<T>['uiSchema']
 >['ui:ObjectFieldTemplate'];
 
 // @alpha
@@ -340,9 +331,6 @@ export const scaffolderLayoutRef: ConfigurableExtensionDataRef<
   {}
 >;
 
-// @public
-export const ScaffolderLayouts: ComponentType<PropsWithChildren<{}>>;
-
 // @alpha (undocumented)
 export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
@@ -379,10 +367,10 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'scaffolderPageContextMenu.tasksLabel': 'Task List';
     readonly 'scaffolderPageContextMenu.templatingExtensionsLabel': 'Templating Extensions';
     readonly 'stepper.backButtonText': 'Back';
-    readonly 'stepper.nextButtonText': 'Next';
     readonly 'stepper.createButtonText': 'Create';
     readonly 'stepper.reviewButtonText': 'Review';
     readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
+    readonly 'stepper.nextButtonText': 'Next';
     readonly 'templateCategoryPicker.title': 'Categories';
     readonly 'templateCard.noDescription': 'No description';
     readonly 'templateCard.chooseButtonText': 'Choose';
@@ -410,7 +398,7 @@ export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: FieldExtensionOptions<any, any>[];
   templateName?: string;
-  formProps?: FormProps;
+  formProps?: FormProps_2;
   initialState?: Record<string, JsonValue>;
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;
   components?: {

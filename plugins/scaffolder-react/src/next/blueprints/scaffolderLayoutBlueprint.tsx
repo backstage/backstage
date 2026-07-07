@@ -17,7 +17,7 @@ import {
   createExtensionBlueprint,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
-import { LayoutOptions } from '../../layouts';
+import { type LayoutOptions } from '../..';
 
 /**
  * The data reference for defining a layout in the scaffolder frontend.

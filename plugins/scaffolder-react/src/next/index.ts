@@ -17,7 +17,7 @@ export * from './api';
 export * from './components';
 export * from './lib';
 export * from './hooks';
+export type { LayoutOptions, LayoutTemplate } from '../layouts';
 export * from './overridableComponents';
 export * from './blueprints';
 export * from './extensions';
-export * from '../layouts';
