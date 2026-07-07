@@ -14,12 +14,35 @@
  * limitations under the License.
  */
 
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import { Content } from '@backstage/core-components';
+import { BreadcrumbEntry } from '@backstage/frontend-plugin-api';
 import { OngoingTaskBody } from '../../components/OngoingTask';
 import { ListTaskPageContent } from '../../components/ListTasksPage';
 import { ComponentType } from 'react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-common';
+
+function TaskDetailWithBreadcrumb(props: {
+  TemplateOutputsComponent?: ComponentType<{
+    output?: ScaffolderTaskOutput;
+  }>;
+}) {
+  const { taskId } = useParams<{ taskId: string }>();
+  if (!taskId) {
+    return (
+      <OngoingTaskBody
+        TemplateOutputsComponent={props.TemplateOutputsComponent}
+      />
+    );
+  }
+  return (
+    <BreadcrumbEntry entry={{ label: taskId, href: taskId }}>
+      <OngoingTaskBody
+        TemplateOutputsComponent={props.TemplateOutputsComponent}
+      />
+    </BreadcrumbEntry>
+  );
+}
 
 /**
  * Sub-page for the tasks tab. Renders the task list at the index route
@@ -45,7 +68,7 @@ export function TasksSubPage(props: {
       <Route
         path=":taskId"
         element={
-          <OngoingTaskBody
+          <TaskDetailWithBreadcrumb
             TemplateOutputsComponent={props.TemplateOutputsComponent}
           />
         }

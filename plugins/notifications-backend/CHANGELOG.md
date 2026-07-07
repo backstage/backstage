@@ -1,5 +1,28 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog-node@2.2.3-next.0
+  - @backstage/plugin-notifications-node@0.2.28-next.0
+  - @backstage/backend-openapi-utils@0.6.11-next.0
+  - @backstage/plugin-signals-node@0.2.3-next.0
+
+## 0.6.6
+
+### Patch Changes
+
+- ac410b1: Migrated the internal router to be generated from the plugin's OpenAPI specification. The HTTP API is unchanged.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-notifications-node@0.2.27
+  - @backstage/plugin-signals-node@0.2.2
+
 ## 0.6.6-next.0
 
 ### Patch Changes

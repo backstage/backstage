@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-connections
+  title: '@backstage/connections'
+  description: >-
+    Connections framework used by Backstage to better manage external
+    connections used by integrations and plugins
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: framework-maintainers

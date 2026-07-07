@@ -20,6 +20,7 @@ import { useTranslationRef, toastApiRef } from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from '../../alpha/translation';
 import {
   Button,
+  ButtonIcon,
   Checkbox,
   Dialog,
   DialogBody,
@@ -122,8 +123,10 @@ const DEFAULT_EXPORT_COLUMNS = [
  */
 export const CatalogExportButton = ({
   settings,
+  iconOnly = false,
 }: {
   settings?: CatalogExportSettings;
+  iconOnly?: boolean;
 }) => {
   const { t } = useTranslationRef(catalogTranslationRef);
   const { exportStream, loading, error } = useStreamingExport();
@@ -221,13 +224,22 @@ export const CatalogExportButton = ({
 
   return (
     <>
-      <Button
-        variant="secondary"
-        iconStart={<RiDownloadLine />}
-        onPress={handleOpenDialog}
-      >
-        {t('catalogExportButton.triggerButtonTitle')}
-      </Button>
+      {iconOnly ? (
+        <ButtonIcon
+          variant="secondary"
+          icon={<RiDownloadLine />}
+          aria-label={t('catalogExportButton.triggerButtonTitle')}
+          onPress={handleOpenDialog}
+        />
+      ) : (
+        <Button
+          variant="secondary"
+          iconStart={<RiDownloadLine />}
+          onPress={handleOpenDialog}
+        >
+          {t('catalogExportButton.triggerButtonTitle')}
+        </Button>
+      )}
 
       <Dialog isOpen={open} onOpenChange={isOpen => !isOpen && setOpen(false)}>
         <DialogHeader>{t('catalogExportButton.dialogTitle')}</DialogHeader>

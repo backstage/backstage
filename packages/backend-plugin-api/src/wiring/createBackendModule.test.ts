@@ -40,6 +40,7 @@ describe('createBackendModule', () => {
         pluginId: 'x',
         moduleId: 'y',
         extensionPoints: [],
+        connections: [],
         init: {
           deps: expect.any(Object),
           func: expect.any(Function),

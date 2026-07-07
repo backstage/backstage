@@ -16,10 +16,20 @@
 
 /**
  * The module "azure" for the Backstage backend plugin "events-backend"
- * adding an event router for Azure DevOps.
+ * adding an event router and webhook ingress for Azure DevOps.
  *
  * @packageDocumentation
  */
 
-export { eventsModuleAzureDevOpsEventRouter as default } from './service/eventsModuleAzureDevOpsEventRouter';
+import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+
+export default createBackendFeatureLoader({
+  loader() {
+    return [
+      import('./service/eventsModuleAzureDevOpsEventRouter'),
+      import('./service/eventsModuleAzureDevOpsWebhook'),
+    ];
+  },
+});
+
 export { AzureDevOpsEventRouter } from './router/AzureDevOpsEventRouter';

@@ -380,3 +380,118 @@ export const WithTabsPrefixMatchingDeep = meta.story({
     </MemoryRouter>
   ),
 });
+
+export const WithBreadcrumbs = meta.story({
+  args: {
+    title: 'Service Details',
+    breadcrumbs: [
+      { label: 'Home', href: '/' },
+      { label: 'Services', href: '/services' },
+      { label: 'my-service', href: '/services/my-service' },
+    ],
+  },
+  decorators: [withRouter],
+});
+
+export const WithBreadcrumbsWithLongSegments = meta.story({
+  args: {
+    title: 'Service Details',
+    breadcrumbs: [
+      { label: 'Home', href: '/' },
+      { label: 'Services', href: '/services' },
+      {
+        label: 'Page with a very long title that should truncate',
+        href: '/services/long',
+      },
+      {
+        label: 'Service Details',
+        href: '/services/long/another',
+      },
+    ],
+  },
+  decorators: [withRouter],
+});
+
+export const WithBreadcrumbsWithMoreThanFiveSegments = meta.story({
+  args: {
+    title: 'Introduction',
+    breadcrumbs: [
+      { label: 'Home', href: '/' },
+      { label: 'Docs', href: '/docs' },
+      { label: 'Guides', href: '/docs/guides' },
+      { label: 'Setup', href: '/docs/guides/setup' },
+      { label: 'Introduction', href: '/docs/guides/setup/introduction' },
+    ],
+  },
+  decorators: [withRouter],
+});
+
+export const WithBreadcrumbsAndTabs = meta.story({
+  args: {
+    title: 'Service Details',
+    breadcrumbs: [
+      { label: 'Home', href: '/' },
+      { label: 'Services', href: '/services' },
+      { label: 'my-service', href: '/services/my-service' },
+    ],
+    tabs,
+  },
+  decorators: [withRouter],
+});
+
+export const WithBreadcrumbsAndCustomActions = meta.story({
+  args: {
+    title: 'Service Details',
+    breadcrumbs: [
+      { label: 'Home', href: '/' },
+      { label: 'Services', href: '/services' },
+      { label: 'my-service', href: '/services/my-service' },
+    ],
+  },
+  decorators: [withRouter],
+  render: args => (
+    <PluginHeader
+      {...args}
+      customActions={
+        <>
+          <ButtonIcon variant="secondary" icon={<RiHeartLine />} />
+          <MenuTrigger>
+            <ButtonIcon variant="secondary" icon={<RiMore2Line />} />
+            <Menu placement="bottom end">
+              {menuItems.map(option => (
+                <MenuItem
+                  key={option.value}
+                  onAction={option.onClick}
+                  href={option.href}
+                >
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </MenuTrigger>
+        </>
+      }
+    />
+  ),
+});
+
+export const WithBreadcrumbsAndAllOptions = WithCustomActions.extend({
+  args: {
+    tabs,
+    breadcrumbs: [
+      { label: 'Home', href: '/' },
+      { label: 'Docs', href: '/docs' },
+      { label: 'Guides', href: '/docs/guides' },
+      {
+        label:
+          'Setup page with a very long title that should truncate at some point',
+        href: '/docs/guides/setup',
+      },
+      {
+        label:
+          'Introduction with a very long title that should truncate at some point',
+        href: '/docs/guides/setup/introduction',
+      },
+    ],
+  },
+});

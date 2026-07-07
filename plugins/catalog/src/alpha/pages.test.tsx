@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { screen } from '@testing-library/react';
+import { useEffect } from 'react';
+import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   createExtensionTester,
@@ -25,16 +26,19 @@ import {
   EntityContentBlueprint,
   EntityContextMenuItemBlueprint,
   EntityHeaderBlueprint,
+  EntityHeaderLayoutBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   entityRouteRef,
   MockStarredEntitiesApi,
   starredEntitiesApiRef,
+  useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { rootRouteRef } from '../routes';
 import { Entity } from '@backstage/catalog-model';
+import { useAppNode } from '@backstage/frontend-plugin-api';
 
 jest.setTimeout(30_000);
 
@@ -177,15 +181,15 @@ describe('Entity page', () => {
       });
 
       await userEvent.click(
-        await screen.findByRole('tab', { name: /Documentation/ }),
+        await screen.findByRole('button', { name: /Documentation/ }),
       );
 
       await expect(
-        screen.findByRole('button', { name: /TechDocs/ }),
+        screen.findByRole('menuitemradio', { name: /TechDocs/ }),
       ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
       await expect(
-        screen.findByRole('button', { name: /ApiDocs/ }),
+        screen.findByRole('menuitemradio', { name: /ApiDocs/ }),
       ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
@@ -222,14 +226,16 @@ describe('Entity page', () => {
         },
       });
 
-      await userEvent.click(await screen.findByRole('tab', { name: /Docs/ }));
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Docs/ }),
+      );
 
       await expect(
-        screen.findByRole('button', { name: /TechDocs/ }),
+        screen.findByRole('menuitemradio', { name: /TechDocs/ }),
       ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
       await expect(
-        screen.findByRole('button', { name: /ApiDocs/ }),
+        screen.findByRole('menuitemradio', { name: /ApiDocs/ }),
       ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
@@ -262,13 +268,13 @@ describe('Entity page', () => {
       });
 
       await expect(
-        screen.findByRole('tab', { name: /TechDocs/ }),
+        screen.findByRole('link', { name: /TechDocs/ }),
       ).resolves.toBeInTheDocument();
       await expect(
-        screen.findByRole('tab', { name: /ApiDocs/ }),
+        screen.findByRole('link', { name: /ApiDocs/ }),
       ).resolves.toBeInTheDocument();
       expect(
-        screen.queryByRole('tab', { name: /Documentation/ }),
+        screen.queryByRole('button', { name: /Documentation/ }),
       ).not.toBeInTheDocument();
     });
 
@@ -313,14 +319,16 @@ describe('Entity page', () => {
         },
       });
 
-      await userEvent.click(await screen.findByRole('tab', { name: /Docs/ }));
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Docs/ }),
+      );
 
       await expect(
-        screen.findByRole('button', { name: /TechDocs/ }),
+        screen.findByRole('menuitemradio', { name: /TechDocs/ }),
       ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
       await expect(
-        screen.findByRole('button', { name: /ApiDocs/ }),
+        screen.findByRole('menuitemradio', { name: /ApiDocs/ }),
       ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
@@ -354,10 +362,10 @@ describe('Entity page', () => {
       });
 
       await expect(
-        screen.findByRole('tab', { name: /Overview/ }),
+        screen.findByRole('link', { name: /Overview/ }),
       ).resolves.toBeInTheDocument();
       expect(
-        screen.queryByRole('tab', { name: /Development/ }),
+        screen.queryByRole('button', { name: /Development/ }),
       ).not.toBeInTheDocument();
     });
 
@@ -387,15 +395,18 @@ describe('Entity page', () => {
       });
 
       await expect(
-        screen.findByRole('tab', { name: /Documentation/ }),
+        screen.findByRole('button', { name: /Documentation/ }),
       ).resolves.toBeInTheDocument();
       await expect(
-        screen.findByRole('tab', { name: /Overview/ }),
+        screen.findByRole('link', { name: /Overview/ }),
       ).resolves.toBeInTheDocument();
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(2);
-      expect(tabs[0]).toHaveTextContent('Documentation');
-      expect(tabs[1]).toHaveTextContent('Overview');
+      const nav = screen.getByRole('navigation', {
+        name: 'Content navigation',
+      });
+      const items = within(nav).getByRole('list').children;
+      expect(items).toHaveLength(2);
+      expect(items[0]).toHaveTextContent('Documentation');
+      expect(items[1]).toHaveTextContent('Overview');
     });
 
     it('Should resolve group aliases', async () => {
@@ -431,14 +442,16 @@ describe('Entity page', () => {
         },
       });
 
-      await userEvent.click(await screen.findByRole('tab', { name: /Docs/ }));
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Docs/ }),
+      );
 
       await expect(
-        screen.findByRole('button', { name: /TechDocs/ }),
+        screen.findByRole('menuitemradio', { name: /TechDocs/ }),
       ).resolves.toHaveAttribute('href', `${entityPath}/techdocs`);
 
       await expect(
-        screen.findByRole('button', { name: /ApiDocs/ }),
+        screen.findByRole('menuitemradio', { name: /ApiDocs/ }),
       ).resolves.toHaveAttribute('href', `${entityPath}/apidocs`);
     });
 
@@ -467,10 +480,10 @@ describe('Entity page', () => {
       });
 
       await userEvent.click(
-        await screen.findByRole('tab', { name: /Documentation/ }),
+        await screen.findByRole('button', { name: /Documentation/ }),
       );
 
-      const buttons = await screen.findAllByRole('button', {
+      const buttons = await screen.findAllByRole('menuitemradio', {
         name: /Docs/,
       });
       expect(buttons[0]).toHaveTextContent('ApiDocs');
@@ -507,10 +520,10 @@ describe('Entity page', () => {
       });
 
       await userEvent.click(
-        await screen.findByRole('tab', { name: /Documentation/ }),
+        await screen.findByRole('button', { name: /Documentation/ }),
       );
 
-      const buttons = await screen.findAllByRole('button', {
+      const buttons = await screen.findAllByRole('menuitemradio', {
         name: /Docs/,
       });
       expect(buttons[0]).toHaveTextContent('TechDocs');
@@ -555,10 +568,10 @@ describe('Entity page', () => {
       });
 
       await userEvent.click(
-        await screen.findByRole('tab', { name: /Documentation/ }),
+        await screen.findByRole('button', { name: /Documentation/ }),
       );
 
-      const buttons = await screen.findAllByRole('button', {
+      const buttons = await screen.findAllByRole('menuitemradio', {
         name: /Docs/,
       });
       expect(buttons[0]).toHaveTextContent('TechDocs');
@@ -603,19 +616,104 @@ describe('Entity page', () => {
       });
 
       await expect(
-        screen.findByRole('tab', { name: /Overview/ }),
+        screen.findByRole('link', { name: /Overview/ }),
       ).resolves.toBeInTheDocument();
       await expect(
-        screen.findByRole('tab', { name: /Documentation/ }),
+        screen.findByRole('button', { name: /Documentation/ }),
       ).resolves.toBeInTheDocument();
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(2);
-      expect(tabs[0]).toHaveTextContent('Overview');
-      expect(tabs[1]).toHaveTextContent('Documentation');
+      const nav = screen.getByRole('navigation', {
+        name: 'Content navigation',
+      });
+      const items = within(nav).getByRole('list').children;
+      expect(items).toHaveLength(2);
+      expect(items[0]).toHaveTextContent('Overview');
+      expect(items[1]).toHaveTextContent('Documentation');
     });
   });
 
   describe('Entity Page Headers', () => {
+    it('keeps entity content mounted while refreshing the current entity', async () => {
+      let resolveRefresh!: (entity: Entity | undefined) => void;
+      const refreshResponse = new Promise<Entity | undefined>(resolve => {
+        resolveRefresh = resolve;
+      });
+      const getEntityByRef = jest
+        .fn()
+        .mockResolvedValueOnce(entityMock)
+        .mockReturnValueOnce(refreshResponse);
+      let mounts = 0;
+      let unmounts = 0;
+
+      function RefreshContent() {
+        const { refresh } = useAsyncEntity();
+        useEffect(() => {
+          mounts += 1;
+          return () => {
+            unmounts += 1;
+          };
+        }, []);
+        return <button onClick={refresh}>Refresh entity</button>;
+      }
+
+      const refreshContent = EntityContentBlueprint.make({
+        name: 'refresh',
+        params: {
+          path: '/refresh',
+          title: 'Refresh',
+          loader: async () => <RefreshContent />,
+        },
+      });
+      const refreshHeader = EntityHeaderLayoutBlueprint.make({
+        name: 'refresh',
+        params: {
+          filter: { kind: 'component' },
+          loader: async () => () => <header>Refresh header</header>,
+        },
+      });
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      )
+        .add(refreshContent)
+        .add(refreshHeader);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          catalogApiMock.mock({ getEntityByRef }),
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [`${entityPath}/refresh`],
+        config: {
+          app: { title: 'Custom app' },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'Refresh entity' }),
+      );
+      expect(await screen.findByRole('progressbar')).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Refresh entity' }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Refresh header')).toBeInTheDocument();
+      expect(mounts).toBe(1);
+      expect(unmounts).toBe(0);
+
+      await act(async () => resolveRefresh(entityMock));
+      expect(
+        await screen.findByRole('button', { name: 'Refresh entity' }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Refresh header')).toBeInTheDocument();
+      expect(mounts).toBe(1);
+      expect(unmounts).toBe(0);
+    });
+
     it('Should use the default header', async () => {
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
@@ -657,7 +755,9 @@ describe('Entity page', () => {
 
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
-      ).add(customEntityHeader);
+      )
+        .add(customEntityHeader)
+        .add(overviewEntityContent);
 
       await renderInTestApp(tester.reactElement(), {
         apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
@@ -679,6 +779,100 @@ describe('Entity page', () => {
       await expect(
         screen.findByRole('heading', { name: /Custom header/ }),
       ).resolves.toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
+    });
+
+    it('prefers a filtered successor layout over legacy headers', async () => {
+      const successor = EntityHeaderLayoutBlueprint.make({
+        name: 'successor',
+        params: {
+          filter: { kind: 'component' },
+          loader: async () => props =>
+            (
+              <header>
+                Successor header
+                <span>{props.activeTabId}</span>
+              </header>
+            ),
+        },
+      });
+      const legacy = EntityHeaderBlueprint.make({
+        name: 'legacy',
+        params: {
+          loader: async () => <header>Legacy header</header>,
+        },
+      });
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      )
+        .add(overviewEntityContent)
+        .add(legacy)
+        .add(successor);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [`${entityPath}/overview`],
+        config: {
+          app: { title: 'Custom app' },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      expect(await screen.findByText('Successor header')).toBeInTheDocument();
+      expect(screen.getByText('/overview')).toBeInTheDocument();
+      expect(screen.queryByText('Legacy header')).not.toBeInTheDocument();
+    });
+
+    it('does not evaluate header predicates before the entity loads', async () => {
+      let resolveEntity!: (entity: Entity | undefined) => void;
+      const entityPromise = new Promise<Entity | undefined>(resolve => {
+        resolveEntity = resolve;
+      });
+      const filter = jest.fn(() => true);
+      const successor = EntityHeaderLayoutBlueprint.make({
+        name: 'delayed',
+        params: {
+          filter,
+          loader: async () => () => <header>Delayed successor</header>,
+        },
+      });
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      ).add(successor);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          catalogApiMock.mock({
+            getEntityByRef: jest.fn(() => entityPromise),
+          }),
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: { title: 'Custom app' },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      expect(
+        await screen.findByRole('heading', { name: 'artist-lookup' }),
+      ).toBeInTheDocument();
+      expect(filter).not.toHaveBeenCalled();
+      await act(async () => resolveEntity(entityMock));
+      expect(await screen.findByText('Delayed successor')).toBeInTheDocument();
+      expect(filter).toHaveBeenCalledWith(entityMock);
     });
   });
 
@@ -686,6 +880,48 @@ describe('Entity page', () => {
     const onClickMock = jest.fn();
     beforeEach(() => {
       onClickMock.mockReset();
+    });
+
+    it('should render menu items within their extension boundary', async () => {
+      const useProps = () => ({
+        title: useAppNode()!.spec.id,
+        onClick: onClickMock,
+      });
+      const menuItem = EntityContextMenuItemBlueprint.make({
+        name: 'test-boundary',
+        params: {
+          icon: <span>Test Icon</span>,
+          useProps,
+        },
+      });
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      ).add(menuItem);
+      const menuItemExtensionId = tester.query(menuItem).node.spec.id;
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [entityPath],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'More actions' }),
+      );
+
+      const title = await screen.findByText(menuItemExtensionId);
+      expect(title.closest('[role="menuitem"]')).not.toBeNull();
     });
 
     it.each([
@@ -735,13 +971,19 @@ describe('Entity page', () => {
       });
       const { disabled } = params.useProps();
 
-      await userEvent.click(await screen.findByTestId('menu-button'));
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'More actions' }),
+      );
 
-      const title = await screen.findByText('Test Title');
+      const menuItemElement = (await screen.findByText('Test Title')).closest(
+        '[role="menuitem"]',
+      );
+      expect(menuItemElement).not.toBeNull();
       await expect(screen.findByText('Test Icon')).resolves.toBeInTheDocument();
-      const anchor = title.closest('a');
-      expect(anchor).toHaveAttribute('href', '/somewhere');
-      expect(anchor).toHaveAttribute('aria-disabled', disabled.toString());
+      expect(menuItemElement).toHaveAttribute('href', '/somewhere');
+      expect(menuItemElement?.getAttribute('aria-disabled')).toBe(
+        disabled ? 'true' : null,
+      );
     });
 
     it.each([
@@ -794,17 +1036,21 @@ describe('Entity page', () => {
         screen.findByText(/artist-lookup/),
       ).resolves.toBeInTheDocument();
 
-      await userEvent.click(await screen.findByTestId('menu-button'));
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'More actions' }),
+      );
 
-      await expect(
-        screen.findByText('Test Title'),
-      ).resolves.toBeInTheDocument();
+      const menuItemElement = (await screen.findByText('Test Title')).closest(
+        '[role="menuitem"]',
+      );
+      expect(menuItemElement).not.toBeNull();
 
       await expect(screen.findByText('Test Icon')).resolves.toBeInTheDocument();
-      const listItem = (await screen.findByText('Test Title')).closest('li');
-      expect(listItem).toHaveAttribute('aria-disabled', disabled.toString());
+      expect(menuItemElement?.getAttribute('aria-disabled')).toBe(
+        disabled ? 'true' : null,
+      );
       if (!disabled) {
-        await userEvent.click(screen.getByText('Test Title'));
+        await userEvent.click(menuItemElement!);
       }
 
       expect(onClickMock).toHaveBeenCalledTimes(disabled ? 0 : 1);
@@ -882,7 +1128,9 @@ describe('Entity page', () => {
           ],
         });
 
-        await userEvent.click(await screen.findByTestId('menu-button'));
+        await userEvent.click(
+          await screen.findByRole('button', { name: 'More actions' }),
+        );
 
         await expect(
           screen.findByText('Should Render'),

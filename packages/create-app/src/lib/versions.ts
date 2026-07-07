@@ -56,6 +56,7 @@ import { version as ui } from '../../../ui/package.json';
 import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.json';
 import { version as pluginAppVisualizer } from '../../../../plugins/app-visualizer/package.json';
 import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
+import { version as pluginAppModuleUserSettings } from '../../../../plugins/app-module-user-settings/package.json';
 import { version as pluginAppReact } from '../../../../plugins/app-react/package.json';
 import { version as pluginAuth } from '../../../../plugins/auth/package.json';
 import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
@@ -95,11 +96,13 @@ import { version as pluginSearchBackendModuleTechdocs } from '../../../../plugin
 import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
 import { version as pluginSignals } from '../../../../plugins/signals/package.json';
 import { version as pluginSignalsBackend } from '../../../../plugins/signals-backend/package.json';
+import { version as pluginSignalsReact } from '../../../../plugins/signals-react/package.json';
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
 import { version as pluginTechdocsReact } from '../../../../plugins/techdocs-react/package.json';
 import { version as pluginTechdocsModuleAddonsContrib } from '../../../../plugins/techdocs-module-addons-contrib/package.json';
 import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
 import { version as pluginUserSettings } from '../../../../plugins/user-settings/package.json';
+import { version as pluginUserSettingsBackend } from '../../../../plugins/user-settings-backend/package.json';
 
 export const packageVersions = {
   root,
@@ -123,6 +126,7 @@ export const packageVersions = {
   '@backstage/repo-tools': repoTools,
   '@backstage/plugin-api-docs': pluginApiDocs,
   '@backstage/plugin-app-backend': pluginAppBackend,
+  '@backstage/plugin-app-module-user-settings': pluginAppModuleUserSettings,
   '@backstage/plugin-app-react': pluginAppReact,
   '@backstage/plugin-app-visualizer': pluginAppVisualizer,
   '@backstage/plugin-auth': pluginAuth,
@@ -172,12 +176,14 @@ export const packageVersions = {
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
   '@backstage/plugin-signals': pluginSignals,
   '@backstage/plugin-signals-backend': pluginSignalsBackend,
+  '@backstage/plugin-signals-react': pluginSignalsReact,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-react': pluginTechdocsReact,
   '@backstage/plugin-techdocs-module-addons-contrib':
     pluginTechdocsModuleAddonsContrib,
   '@backstage/plugin-techdocs-backend': pluginTechdocsBackend,
   '@backstage/plugin-user-settings': pluginUserSettings,
+  '@backstage/plugin-user-settings-backend': pluginUserSettingsBackend,
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
   '@backstage/ui': ui,

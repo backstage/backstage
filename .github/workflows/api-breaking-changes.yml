@@ -38,6 +38,11 @@ jobs:
         with:
           cache-prefix: linux-v22
 
+      - name: install oasdiff
+        env:
+          OASDIFF_VERSION: '1.18.1'
+        run: curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/v${OASDIFF_VERSION}/install.sh | version=${OASDIFF_VERSION} sh
+
       - name: breaking changes check
         run: |
           yarn backstage-repo-tools repo schema openapi diff --since origin/${{ github.base_ref }} > comment.md

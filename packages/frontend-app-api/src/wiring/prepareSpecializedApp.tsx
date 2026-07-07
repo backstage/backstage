@@ -373,9 +373,10 @@ export function prepareSpecializedApp(
     apis: phase.apis,
     predicateReferences,
   });
-  let signInRuntime: SignInRuntime | undefined;
+
   let finalized: FinalizedSpecializedApp | undefined;
   let bootstrapApp: BootstrapSpecializedApp | undefined;
+  const signInRuntime: SignInRuntime = { requiresSignIn: false };
 
   function updateIdentityApiTarget(identityApi?: IdentityApi) {
     if (!identityApi) {
@@ -391,7 +392,7 @@ export function prepareSpecializedApp(
 
   function createSessionState(predicateContext: ExtensionPredicateContext) {
     const identityApi =
-      signInRuntime?.readyIdentityApi ?? providedSessionData?.identityApi;
+      signInRuntime.readyIdentityApi ?? providedSessionData?.identityApi;
     // As soon as a real identity is available we swap the phase proxy over so
     // the finalized tree observes the same API instance.
     updateIdentityApiTarget(identityApi);
@@ -409,7 +410,7 @@ export function prepareSpecializedApp(
     }
     // The direct finalize() path is intentionally synchronous. If sign-in is
     // still pending we refuse to guess and force the caller to wait.
-    if (signInRuntime?.requiresSignIn) {
+    if (signInRuntime.requiresSignIn) {
       return undefined;
     }
 
@@ -425,7 +426,7 @@ export function prepareSpecializedApp(
     if (providedSessionState) {
       return Promise.resolve(providedSessionState);
     }
-    if (signInRuntime?.requiresSignIn && !signInRuntime.readyIdentityApi) {
+    if (signInRuntime.requiresSignIn && !signInRuntime.readyIdentityApi) {
       return Promise.reject(
         new Error(
           'prepareSpecializedApp requires waiting for the bootstrap app to be ready before calling finalize()',
@@ -435,7 +436,7 @@ export function prepareSpecializedApp(
 
     // For apps without sign-in we can sometimes finalize immediately from the
     // already available predicate context, skipping the async loader.
-    if (!signInRuntime?.requiresSignIn) {
+    if (!signInRuntime.requiresSignIn) {
       const immediateSessionState = getSynchronousSessionState();
       if (immediateSessionState) {
         return Promise.resolve(immediateSessionState);
@@ -500,13 +501,10 @@ export function prepareSpecializedApp(
       return bootstrapApp;
     }
 
-    const runtime: SignInRuntime = {
-      requiresSignIn: false,
-    };
     if (!providedSessionState) {
       phase.identityApiProxy.setTargetHandlers({
         onTargetSet(identityApi) {
-          runtime.readyIdentityApi = identityApi;
+          signInRuntime.readyIdentityApi = identityApi;
           // Sign-in completion only auto-starts finalization for onFinalized().
           // The direct finalize() path stays explicit and synchronous.
           if (finalization.getMode() === 'onFinalized') {
@@ -540,12 +538,13 @@ export function prepareSpecializedApp(
         );
       },
     });
-    if (!result.requiresSignIn) {
+
+    if (result.requiresSignIn) {
+      signInRuntime.requiresSignIn = true;
+    } else {
       phase.identityApiProxy.clearTargetHandlers();
     }
 
-    runtime.requiresSignIn = result.requiresSignIn;
-    signInRuntime = runtime;
     bootstrapApp = { ...result.bootstrapApp, apis: phase.apis };
 
     return bootstrapApp;
@@ -576,7 +575,7 @@ export function prepareSpecializedApp(
       // If sign-in is still in progress we wait for the shared promise created
       // by the sign-in callback. Otherwise we can start finalization right away.
       const finalizedAppPromise =
-        signInRuntime?.requiresSignIn && !signInRuntime.readyIdentityApi
+        signInRuntime.requiresSignIn && !signInRuntime.readyIdentityApi
           ? finalization.getPromise()
           : finalization.start(loadAsyncSessionState);
       finalizedAppPromise
@@ -607,11 +606,11 @@ export function prepareSpecializedApp(
       // must either provide sessionState during prepareSpecializedApp() or
       // invoke finalize() only when the predicate context is already available
       // synchronously.
-      const finalizedSessionState = signInRuntime?.requiresSignIn
+      const finalizedSessionState = signInRuntime.requiresSignIn
         ? undefined
         : getSynchronousSessionState();
       if (!finalizedSessionState) {
-        if (signInRuntime?.requiresSignIn) {
+        if (signInRuntime.requiresSignIn) {
           throw new Error(
             'prepareSpecializedApp requires waiting for the bootstrap app to be ready before calling finalize()',
           );

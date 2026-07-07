@@ -242,16 +242,11 @@ auth:
 
 ## Configuring MCP Clients
 
-The MCP server supports both **Server-Sent Events (SSE)** and **Streamable HTTP** protocols.
-
-:::warning
-The SSE protocol is deprecated and will be removed in a future release.
-:::
+The MCP server uses the **Streamable HTTP** protocol.
 
 ### Endpoints
 
-- **Streamable HTTP:** `http://localhost:7007/api/mcp-actions/v1`
-- **SSE (deprecated):** `http://localhost:7007/api/mcp-actions/v1/sse`
+The default endpoint is `http://localhost:7007/api/mcp-actions/v1`.
 
 ```json
 {

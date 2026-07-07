@@ -3,8 +3,21 @@ import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
 import { ReactAriaLink } from '@/components/ReactAriaLink';
 import { switchPropDefs } from './props-definition';
-import { snippetUsage, defaultSnippet, disabledSnippet } from './snippets';
-import { Default, Disabled } from './components';
+import {
+  snippetUsage,
+  defaultSnippet,
+  disabledSnippet,
+  defaultSelectedSnippet,
+  readOnlySnippet,
+  controlledSnippet,
+} from './snippets';
+import {
+  Default,
+  Disabled,
+  DefaultSelected,
+  ReadOnly,
+  Controlled,
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -35,7 +48,49 @@ export const reactAriaUrls = {
 
 ### Disabled
 
-<Snippet align="center" py={4} preview={<Disabled />} code={disabledSnippet} />
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Disabled />}
+  code={disabledSnippet}
+/>
+
+### Default selected
+
+Use `defaultSelected` to start the switch in the on state for uncontrolled usage.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<DefaultSelected />}
+  code={defaultSelectedSnippet}
+/>
+
+### Read only
+
+Use `isReadOnly` to prevent interaction while keeping the switch focusable and its value visible.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ReadOnly />}
+  code={readOnlySnippet}
+/>
+
+### Controlled
+
+Use `isSelected` and `onChange` together for controlled state.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Controlled />}
+  code={controlledSnippet}
+/>
 
 <Theming definition={SwitchDefinition} />
 

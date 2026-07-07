@@ -22,6 +22,10 @@ export {
 } from './EntityContentLayoutBlueprint';
 export { EntityHeaderBlueprint } from './EntityHeaderBlueprint';
 export {
+  EntityHeaderLayoutBlueprint,
+  type EntityHeaderLayoutProps,
+} from './EntityHeaderLayoutBlueprint';
+export {
   defaultEntityContentGroups,
   defaultEntityContentGroupDefinitions,
   type EntityContentGroupDefinitions,
@@ -29,6 +33,7 @@ export {
 export type { EntityCardType } from './extensionData';
 export {
   EntityContextMenuItemBlueprint,
+  type EntityContextMenuItemData,
   type EntityContextMenuItemParams,
   type UseProps,
 } from './EntityContextMenuItemBlueprint';

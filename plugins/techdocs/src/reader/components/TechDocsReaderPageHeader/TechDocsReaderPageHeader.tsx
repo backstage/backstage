@@ -33,11 +33,12 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { RELATION_OWNED_BY, CompoundEntityRef } from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useRouteRef } from '@backstage/core-plugin-api';
-
 import capitalize from 'lodash/capitalize';
 
 import { rootRouteRef } from '../../../routes';
+import { techdocsTranslationRef } from '../../../translation';
 import { useTechDocsReaderHeaderData } from '../../../hooks/useTechDocsReaderHeaderData';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
@@ -64,6 +65,7 @@ export const TechDocsReaderPageHeader = (
   props: TechDocsReaderPageHeaderProps,
 ) => {
   const { children } = props;
+  const { t } = useTranslationRef(techdocsTranslationRef);
   const {
     title,
     subtitle,
@@ -102,7 +104,7 @@ export const TechDocsReaderPageHeader = (
       />
       {ownedByRelations.length > 0 && (
         <HeaderLabel
-          label="Owner"
+          label={t('readerPageHeader.owner')}
           value={
             <EntityRefLinks
               color="inherit"
@@ -113,7 +115,10 @@ export const TechDocsReaderPageHeader = (
         />
       )}
       {lifecycle ? (
-        <HeaderLabel label="Lifecycle" value={String(lifecycle)} />
+        <HeaderLabel
+          label={t('readerPageHeader.lifecycle')}
+          value={String(lifecycle)}
+        />
       ) : null}
       {showSourceLink ? (
         <HeaderLabel
@@ -124,7 +129,7 @@ export const TechDocsReaderPageHeader = (
                 <CodeIcon style={{ marginTop: '-25px' }} />
               </Grid>
               <Grid style={{ padding: 0 }} item>
-                Source
+                {t('readerPageHeader.source')}
               </Grid>
             </Grid>
           }

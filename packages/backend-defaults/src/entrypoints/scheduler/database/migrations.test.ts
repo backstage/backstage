@@ -99,7 +99,5 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         current_run_expires_at: null,
       },
     ]);
-
-    await knex.destroy();
   });
 });

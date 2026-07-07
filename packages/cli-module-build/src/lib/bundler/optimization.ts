@@ -20,6 +20,7 @@ import {
   LightningCssMinimizerRspackPlugin,
   RspackOptionsNormalized,
 } from '@rspack/core';
+import { STATIC_ASSET_HASH_LENGTH } from './staticAssetHash';
 
 export const optimization = (
   options: BundlingOptions,
@@ -72,7 +73,7 @@ export const optimization = (
           },
           filename: isDev
             ? 'module-[name].js'
-            : 'static/module-[name].[contenthash:8].js',
+            : `static/module-[name].[contenthash:${STATIC_ASSET_HASH_LENGTH}].js`,
           priority: 10,
           minSize: 100000,
           minChunks: 1,

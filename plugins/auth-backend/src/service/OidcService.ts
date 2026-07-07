@@ -86,6 +86,16 @@ function matchesRedirectUri(
   });
 }
 
+/**
+ * Credentials presented by an OAuth client. Confidential clients authenticate
+ * with both a client ID and a client secret, while public clients identify
+ * themselves with a client ID alone.
+ */
+export type OidcClientCredentials = {
+  clientId: string;
+  clientSecret?: string;
+};
+
 export class OidcService {
   private readonly auth: AuthService;
   private readonly tokenIssuer: TokenIssuer;
@@ -181,6 +191,8 @@ export class OidcService {
       code_challenge_methods_supported: ['S256', 'plain'],
       ...(dcrEnabled && {
         registration_endpoint: `${this.baseUrl}/v1/register`,
+      }),
+      ...((dcrEnabled || cimdEnabled) && {
         revocation_endpoint: `${this.baseUrl}/v1/revoke`,
       }),
       ...(cimdEnabled && { client_id_metadata_document_supported: true }),
@@ -625,10 +637,9 @@ export class OidcService {
   /**
    * Verifies client credentials against the registered OIDC clients
    */
-  public async verifyClientCredentials(options: {
-    clientId: string;
-    clientSecret: string;
-  }): Promise<boolean> {
+  public async verifyClientCredentials(
+    options: Required<OidcClientCredentials>,
+  ): Promise<boolean> {
     const { clientId, clientSecret } = options;
     const client = await this.oidc.getClient({ clientId });
     if (!client?.clientSecret) {
@@ -640,6 +651,42 @@ export class OidcService {
       return false;
     }
     return crypto.timingSafeEqual(expected, provided);
+  }
+
+  /**
+   * Verifies a client for token revocation. DCR clients are confidential
+   * clients and must present a valid client secret, while CIMD clients are
+   * public clients that are identified by their client ID alone. The CIMD
+   * metadata document is deliberately not fetched here, so that tokens can
+   * still be revoked when the document is unreachable or has been removed.
+   */
+  public async verifyRevocationClient(
+    options: OidcClientCredentials,
+  ): Promise<boolean> {
+    const { clientId, clientSecret } = options;
+
+    let cimdUrl: URL | undefined;
+    try {
+      cimdUrl = validateCimdUrl(clientId);
+    } catch {
+      // Not a valid CIMD URL, fall through to DCR
+    }
+
+    if (cimdUrl) {
+      const cimd = this.getCimdConfig();
+      return (
+        cimd.enabled &&
+        cimd.allowedClientIdPatterns.some(pattern =>
+          matcher.isMatch(clientId, pattern),
+        )
+      );
+    }
+
+    if (!clientSecret) {
+      return false;
+    }
+
+    return this.verifyClientCredentials({ clientId, clientSecret });
   }
 
   /**

@@ -70,8 +70,8 @@
   border: 1px solid var(--bui-border-1);
   color: var(--bui-fg-primary);
   box-shadow: var(--bui-shadow);
+  user-select: text;
 }
-
 .toast:focus-visible {
   outline: 2px solid var(--bui-ring);
   outline-offset: 2px;

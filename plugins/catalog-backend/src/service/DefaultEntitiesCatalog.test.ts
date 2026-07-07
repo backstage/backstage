@@ -47,10 +47,6 @@ describe.each(databases.eachSupportedId())(
   databaseId => {
     let knex: Knex;
 
-    afterEach(async () => {
-      await knex.destroy();
-    });
-
     async function createDatabase() {
       knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
@@ -916,6 +912,39 @@ describe.each(databases.eachSupportedId())(
           null,
           'k:default/two',
         ]);
+      });
+
+      it('handles more than 200 refs without chunking on PostgreSQL', async () => {
+        await createDatabase();
+
+        const names = Array.from({ length: 250 }, (_, i) => `item-${i}`);
+        for (const name of names) {
+          await addEntity(
+            {
+              apiVersion: 'a',
+              kind: 'k',
+              metadata: { name },
+              spec: {},
+              relations: [],
+            },
+            [],
+          );
+        }
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+        });
+
+        const refs = names.map(n => `k:default/${n}`);
+        const res = await catalog.entitiesBatch({
+          entityRefs: [...refs, 'k:default/does-not-exist'],
+          credentials: mockCredentials.none(),
+        });
+        const items = entitiesResponseToObjects(res.items);
+
+        expect(items.filter(Boolean)).toHaveLength(250);
+        expect(items[items.length - 1]).toBeNull();
       });
 
       it('queries for entities by ref, including filtering', async () => {

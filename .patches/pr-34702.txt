@@ -1,0 +1,1 @@
+Fix scheduler tasks stuck with NULL next_run_start_at when switching from manual trigger to cadence
