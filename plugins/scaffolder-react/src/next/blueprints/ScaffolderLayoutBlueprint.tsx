@@ -17,7 +17,7 @@ import {
   createExtensionBlueprint,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
-import { type LayoutOptions } from '../..';
+import { type LayoutOptions } from '../../layouts';
 
 /**
  * The data reference for defining a layout in the scaffolder frontend.
@@ -36,6 +36,7 @@ export const scaffolderLayoutRef = createExtensionDataRef<LayoutOptions>().with(
  * @alpha
  */
 export interface ScaffolderLayoutBlueprintParams {
+  /** The layout option to register. */
   layout: LayoutOptions;
 }
 

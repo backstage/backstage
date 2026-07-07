@@ -320,7 +320,6 @@ export const ScaffolderLayoutBlueprint: ExtensionBlueprint<{
 
 // @alpha
 export interface ScaffolderLayoutBlueprintParams {
-  // (undocumented)
   layout: LayoutOptions;
 }
 
