@@ -1,0 +1,11 @@
+---
+title: Librechat AI Chat
+author: NOS Portugal
+authorUrl: https://github.com/nosportugal/
+category: Productivity
+description: AI-powered chat assistant, right inside your Backstage developer portal.
+documentation: https://github.com/nosportugal/backstage-plugin-librechat/blob/main/README.md
+iconUrl: /img/nos-logo-black.svg
+npmPackageName: '@nospt/backstage-plugin-librechat'
+addedDate: '2026-07-07'
+status: 'active'
