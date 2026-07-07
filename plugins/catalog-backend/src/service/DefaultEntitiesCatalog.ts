@@ -556,10 +556,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     if (isFetchingBackwards) {
       order = invertOrder(order);
     }
-    dbQuery.orderBy([
-      ...(sortField ? [{ column: 'filtered.value', order }] : []),
-      { column: 'filtered.entity_id', order },
-    ]);
+    if (sortField) {
+      dbQuery.orderByRaw(
+        `CASE
+          WHEN filtered.value GLOB '-[0-9]*'
+            OR filtered.value GLOB '[0-9]*'
+          THEN CAST(filtered.value AS INTEGER)
+          ELSE filtered.value
+        END ${order}`,
+      );
+    }
+
+    dbQuery.orderBy('filtered.entity_id', order);
 
     // Apply a manually set initial offset
     if (

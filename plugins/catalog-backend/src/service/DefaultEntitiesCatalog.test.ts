@@ -2173,6 +2173,61 @@ describe.each(databases.eachSupportedId())(
         ]);
       });
 
+      it('sorts numeric fields numerically', async () => {
+        // Regression test for numeric orderField sorting.
+        // The search table stores values as strings, which causes lexicographic sorting.
+        // For example, "88" would sort before "1200" in descending order because
+        // string comparison compares characters instead of numeric values.
+        // This test verifies that numeric fields are sorted by their actual numeric
+        // value when using orderFields.
+
+        await createDatabase();
+
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'service-alpha',
+            stats: {
+              downloadsTotal: 1200,
+            },
+          },
+          spec: {},
+        });
+
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'service-beta',
+            stats: {
+              downloadsTotal: 88,
+            },
+          },
+          spec: {},
+        });
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+        });
+
+        const response = await catalog.queryEntities({
+          orderFields: [
+            {
+              field: 'metadata.stats.downloadstotal',
+              order: 'desc',
+            },
+          ],
+          limit: 10,
+          credentials: mockCredentials.none(),
+        });
+
+        expect(
+          entitiesResponseToObjects(response.items).map(e => e!.metadata.name),
+        ).toEqual(['service-alpha', 'service-beta']);
+      });
+
       it('should exclude entities with NULL sort-field values from all pages', async () => {
         await createDatabase();
 
