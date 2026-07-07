@@ -86,18 +86,23 @@ describe('handleUpgrade', () => {
     const port = (server.address() as { port: number }).port;
 
     // Register the upgrade handler by sending one request with the
-    // Upgrade header through express. Uses the 'newListener' event
-    // for deterministic, polling-free detection.
-    await new Promise<void>(resolve => {
-      server.on('newListener', event => {
-        if (event === 'upgrade') resolve();
-      });
+    // Upgrade header through express. Guard against the listener
+    // already being registered, and clean up the trigger request.
+    if (server.listenerCount('upgrade') === 0) {
       const trigger = http.get(
         { port, path: '/', headers: { Upgrade: 'websocket' } },
         res => res.resume(),
       );
       trigger.on('error', () => {});
-    });
+      await new Promise<void>(resolve => {
+        server.on('newListener', event => {
+          if (event === 'upgrade') {
+            trigger.destroy();
+            resolve();
+          }
+        });
+      });
+    }
 
     return server;
   }
