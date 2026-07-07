@@ -110,6 +110,14 @@ export type GitLabFile = {
   project_id: number;
 };
 
+export type GitLabRepositoryTreeItem = {
+  id: string;
+  name: string;
+  type: 'blob' | 'tree';
+  path: string;
+  mode?: string;
+};
+
 export type GitLabGroupMembersResponse = {
   errors: { message: string }[];
   data: {

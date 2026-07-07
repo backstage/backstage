@@ -217,6 +217,116 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     });
   });
 
+  it('should discover all wildcard matches in a project tree', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_wildcard_entity_filename,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+    await provider.refresh(logger);
+
+    const mutationCalls = (entityProviderConnection.applyMutation as jest.Mock)
+      .mock.calls;
+    const lastCall = mutationCalls[mutationCalls.length - 1][0];
+    const targets = lastCall.entities.map(
+      (entity: any) => entity.entity.spec.target,
+    );
+
+    expect(targets).toContain(
+      'https://example.com/group1/test-repo1/-/blob/main/catalog-info.yaml',
+    );
+    expect(targets).toContain(
+      'https://example.com/group1/test-repo1/-/blob/main/service/catalog-info.yaml',
+    );
+  });
+
+  it('should discover both yaml and yml catalog files with a glob pattern', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_wildcard_entity_filename_yaml_and_yml,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+    await provider.refresh(logger);
+
+    const mutationCalls = (entityProviderConnection.applyMutation as jest.Mock)
+      .mock.calls;
+    const lastCall = mutationCalls[mutationCalls.length - 1][0];
+    const targets = lastCall.entities.map(
+      (entity: any) => entity.entity.spec.target,
+    );
+
+    expect(targets).toContain(
+      'https://example.com/group1/test-repo1/-/blob/main/service/catalog-info.yaml',
+    );
+    expect(targets).toContain(
+      'https://example.com/group1/test-repo1/-/blob/main/apps/catalog-info.yml',
+    );
+  });
+
+  it('should continue discovery when one project tree scan fails', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_wildcard_entity_filename,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const originalListProjectTree = (provider as any).gitLabClient
+      .listProjectTree;
+    (provider as any).gitLabClient.listProjectTree = jest
+      .fn()
+      .mockImplementation(async (projectId: number, options: unknown) => {
+        if (projectId === 1) {
+          throw new TypeError('fetch failed');
+        }
+
+        return originalListProjectTree.call(
+          (provider as any).gitLabClient,
+          projectId,
+          options,
+        );
+      });
+
+    await provider.connect(entityProviderConnection);
+    await expect(provider.refresh(logger)).resolves.toBeUndefined();
+
+    const mutationCalls = (entityProviderConnection.applyMutation as jest.Mock)
+      .mock.calls;
+    const lastCall = mutationCalls[mutationCalls.length - 1][0];
+    const targets = lastCall.entities.map(
+      (entity: any) => entity.entity.spec.target,
+    );
+
+    expect(targets.length).toBeGreaterThan(0);
+    expect(
+      targets.some((target: string) => target.includes('/test-repo1/')),
+    ).toBe(false);
+  });
+
   it('should filter fork projects', async () => {
     const config = new ConfigReader(mock.config_single_integration_skip_forks);
     const schedule = new PersistingTaskRunner();
@@ -448,6 +558,49 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
       ),
     });
   });
+
+  it('should throw error when useSearch is combined with glob patterns', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            apiBaseUrl: 'https://gitlab.com/api/v4',
+            token: 'token',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            testProvider: {
+              host: 'gitlab.com',
+              entityFilename: '**/catalog-info.y?(a)ml', // glob pattern
+              useSearch: true, // This combination should error
+            },
+          },
+        },
+      },
+    });
+
+    const schedule = new PersistingTaskRunner();
+    const testLogger = mockServices.logger.mock();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger: testLogger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await expect(provider.refresh(testLogger)).rejects.toThrow(
+      'useSearch=true does not support glob patterns in entityFilename',
+    );
+  });
 });
 describe('GitlabDiscoveryEntityProvider - events', () => {
   it('should ignore push event if project is forked', async () => {
@@ -596,6 +749,41 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
       ],
     });
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+  });
+
+  it('should match wildcard entity filenames on push events', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_wildcard_entity_filename,
+    );
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+    await events.publish(mock.push_add_event);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'delta',
+      added: expect.arrayContaining([
+        expect.objectContaining({
+          entity: expect.objectContaining({
+            spec: expect.objectContaining({
+              target:
+                'https://example.com/group1/test-repo1/-/blob/main/cool-folder-1/cool-folder-2/catalog-info.yaml',
+            }),
+          }),
+        }),
+      ]),
+      removed: [],
+    });
   });
 
   it('should ignore projects when none of the groups regex patterns match', async () => {

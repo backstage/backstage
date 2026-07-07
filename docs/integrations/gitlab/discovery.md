@@ -247,8 +247,8 @@ catalog:
         groupPattern: # Optional. Filters for groups based on a list of RegEx. Default, no filters.
           - '^somegroup$'
           - 'anothergroup'
-        entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
-        useSearch: false # Optional. Whether to use the GitLab group search API to find files. Requires Gitlab 'Premium' or 'Ultimate' licenses.  Defaults to `false`
+        entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`. Supports glob patterns like `**/catalog-info.yaml` and `**/catalog-info.y?(a)ml` (to match both `.yaml` and `.yml`)
+        useSearch: false # Optional. Whether to use the GitLab group search API to find files. Requires Gitlab 'Premium' or 'Ultimate' licenses. Defaults to `false`. **Note: Cannot be used with glob patterns in entityFilename**
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
         schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System
@@ -257,6 +257,26 @@ catalog:
           # supports ISO duration, "human duration" as used in code
           timeout: { minutes: 3 }
 ```
+
+:::caution Important Limitations
+
+- **Glob patterns and `useSearch` are incompatible**: When `useSearch: true` is enabled, the provider uses GitLab's search API which does not support glob patterns. If you need glob pattern support (e.g., `**/catalog-info.y?(a)ml`), you must set `useSearch: false`. Attempting to use both will result in an error.
+
+- **Performance considerations**: Glob patterns significantly change the API call pattern and resource usage:
+
+  - **Exact filename** (e.g., `catalog-info.yaml`): `O(projects)` - Makes one HEAD request per project to check file existence
+  - **Glob patterns** (e.g., `**/catalog-info.y?(a)ml`): `O(projects × files)` - Requires recursive tree scanning of entire repository structure
+
+For large installations (100+ projects with 1000+ files each), this can mean the difference between hundreds and tens of thousands of API calls per refresh.
+
+**Recommendations:**
+
+- Use exact filenames (`catalog-info.yaml`) for most cases
+- GitLab Premium/Ultimate users should consider setting `useSearch: true` with exact filenames over glob patterns, to avoid performance degradation
+- Use glob patterns only when necessary for monorepo discovery or matching multiple file extensions
+- Consider [GitLab REST API rate limits](https://docs.gitlab.com/ee/api/rest/index.html#rate-limits) which may be hit with extensive tree scanning
+- Schedule glob-based refreshes during off-peak hours to avoid impacting other GitLab operations
+  :::
 
 ## Alternative processor
 

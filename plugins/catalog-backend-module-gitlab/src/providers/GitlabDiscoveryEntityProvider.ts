@@ -35,18 +35,24 @@ import {
   GitLabClient,
   GitLabGroup,
   GitLabProject,
+  GitLabRepositoryTreeItem,
   GitlabProviderConfig,
   paginated,
   readGitlabConfigs,
 } from '../lib';
-
+import { Minimatch } from 'minimatch';
 import * as path from 'node:path';
 
 const TOPIC_REPO_PUSH = 'gitlab.push';
 
 type Result = {
   scanned: number;
-  matches: GitLabProject[];
+  matches: MatchedProjectFile[];
+};
+
+type MatchedProjectFile = {
+  project: GitLabProject;
+  catalogFile: string;
 };
 
 /**
@@ -66,6 +72,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private readonly events?: EventsService;
   private readonly gitLabClient: GitLabClient;
+  private readonly catalogFileMatcher: Minimatch;
 
   static fromConfig(
     config: Config,
@@ -138,6 +145,9 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       integration: this.integration,
       logger: this.logger,
     });
+    this.catalogFileMatcher = new Minimatch(this.config.catalogFile, {
+      dot: true,
+    });
   }
 
   getProviderName(): string {
@@ -208,13 +218,24 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       );
     }
 
+    // Validate that useSearch and glob patterns are not used together
+    if (this.config.useSearch && this.catalogFileMatcher.hasMagic()) {
+      throw new Error(
+        `useSearch=true does not support glob patterns in entityFilename. ` +
+          `Either set useSearch=false or use an exact filename without glob patterns. ` +
+          `Current entityFilename: '${this.config.catalogFile}'`,
+      );
+    }
+
     this.logger.info(
       `Refreshing Gitlab entity discovery using ${
         this.config.useSearch ? 'search' : 'discovery'
       } mode`,
     );
 
-    const locations = this.config.useSearch
+    const shouldUseSearch = this.config.useSearch;
+
+    const locations = shouldUseSearch
       ? await this.searchEntities()
       : await this.getEntities();
 
@@ -336,8 +357,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       res = await this.getProjectsToProcess(this.config.group);
     }
 
-    const locations = this.deduplicateProjects(res.matches).map(p =>
-      this.createLocationSpec(p),
+    const locations = this.deduplicateLocations(
+      res.matches.map(match => this.createLocationSpec(match)),
     );
 
     this.logger.info(
@@ -348,19 +369,19 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   }
 
   /**
-   * Deduplicate a list of projects based on their id.
+   * Deduplicate a list of catalog locations based on their target.
    *
-   * @param projects - a list of projects to be deduplicated
-   * @returns a list of projects with unique id
+   * @param locations - a list of locations to be deduplicated
+   * @returns a list of locations with unique targets
    */
-  private deduplicateProjects(projects: GitLabProject[]): GitLabProject[] {
-    const uniqueProjects = new Map<number, GitLabProject>();
+  private deduplicateLocations(locations: LocationSpec[]): LocationSpec[] {
+    const uniqueLocations = new Map<string, LocationSpec>();
 
-    for (const project of projects) {
-      uniqueProjects.set(project.id, project);
+    for (const location of locations) {
+      uniqueLocations.set(location.target, location);
     }
 
-    return Array.from(uniqueProjects.values());
+    return Array.from(uniqueLocations.values());
   }
 
   /**
@@ -395,8 +416,23 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     for await (const project of projects) {
       res.scanned++;
 
-      if (await this.shouldProcessProject(project, this.gitLabClient)) {
-        res.matches.push(project);
+      let matchingFiles: string[] = [];
+
+      try {
+        matchingFiles = await this.getProjectCatalogFiles(
+          project,
+          this.gitLabClient,
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Skipping project ${project.path_with_namespace} due to error while scanning catalog files`,
+          error,
+        );
+        continue;
+      }
+
+      for (const catalogFile of matchingFiles) {
+        res.matches.push({ project, catalogFile });
       }
     }
 
@@ -415,7 +451,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     };
   }
 
-  private createLocationSpec(project: GitLabProject): LocationSpec {
+  private createLocationSpec(projectMatch: MatchedProjectFile): LocationSpec {
+    const { project, catalogFile } = projectMatch;
     const project_branch =
       this.config.branch ??
       project.default_branch ??
@@ -424,7 +461,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     return this.createLocationSpecFromParams(
       project.web_url,
       project_branch,
-      this.config.catalogFile,
+      catalogFile,
     );
   }
 
@@ -453,27 +490,20 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       return;
     }
 
-    if (!(await this.shouldProcessProject(project, this.gitLabClient))) {
+    const projectCatalogFiles = await this.getProjectCatalogFiles(
+      project,
+      this.gitLabClient,
+    );
+
+    if (projectCatalogFiles.length === 0) {
       this.logger.debug(`Skipping event ${event.project.path_with_namespace}`);
       return;
     }
 
     // Get array of added, removed or modified files from the push event
-    const added = this.getFilesMatchingConfig(
-      event,
-      'added',
-      this.config.catalogFile,
-    );
-    const removed = this.getFilesMatchingConfig(
-      event,
-      'removed',
-      this.config.catalogFile,
-    );
-    const modified = this.getFilesMatchingConfig(
-      event,
-      'modified',
-      this.config.catalogFile,
-    );
+    const added = this.getFilesMatchingConfig(event, 'added');
+    const removed = this.getFilesMatchingConfig(event, 'removed');
+    const modified = this.getFilesMatchingConfig(event, 'modified');
 
     // Modified files will be scheduled to a refresh
     const addedEntities = this.createLocationSpecCommittedFiles(
@@ -525,31 +555,30 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   }
 
   /**
-   * Gets files matching the specified commit action and catalog file name.
+   * Gets files matching the specified commit action using the instance's catalog file matcher.
+   *
+   * For glob patterns: matches full file paths against the pattern.
+   * For exact filenames: matches basenames against the configured filename.
    *
    * @param event - The push event payload.
    * @param action - The action type ('added', 'removed', or 'modified').
-   * @param catalogFile - The catalog file name.
-   * @returns An array of file paths.
+   * @returns An array of file paths that match the configured catalog file pattern.
    */
   private getFilesMatchingConfig(
     event: WebhookPushEventSchema,
     action: 'added' | 'removed' | 'modified',
-    catalogFile: string,
   ): string[] {
     if (!event.commits) {
       return [];
     }
 
     const matchingFiles = event.commits.flatMap((element: any) =>
-      element[action].filter(
-        (file: string) => path.basename(file) === catalogFile,
-      ),
+      element[action].filter((file: string) => this.filePathMatches(file)),
     );
 
     if (matchingFiles.length === 0) {
       this.logger.debug(
-        `No files matching '${catalogFile}' found in the commits.`,
+        `No files matching '${this.catalogFileMatcher.pattern}' found in the commits.`,
       );
     }
 
@@ -573,9 +602,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       this.config.fallbackBranch;
 
     // Filter added files that match the catalog file pattern
-    const matchingFiles = addedFiles.filter(
-      file => path.basename(file) === this.config.catalogFile,
-    );
+    const matchingFiles = addedFiles.filter(file => this.filePathMatches(file));
 
     // Create a location spec for each matching file
     const locationSpecs: LocationSpec[] = matchingFiles.map(file => ({
@@ -654,12 +681,12 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     return true;
   }
 
-  private async shouldProcessProject(
+  private async getProjectCatalogFiles(
     project: GitLabProject,
     client: GitLabClient,
-  ): Promise<boolean> {
+  ): Promise<string[]> {
     if (!this.isProjectCompliant(project)) {
-      return false;
+      return [];
     }
 
     const project_branch =
@@ -667,13 +694,46 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       project.default_branch ??
       this.config.fallbackBranch;
 
-    const hasFile = await client.hasFile(
-      project.id,
-      project_branch,
-      this.config.catalogFile,
-    );
+    if (!this.catalogFileMatcher.hasMagic()) {
+      const hasFile = await client.hasFile(
+        project.id,
+        project_branch,
+        this.config.catalogFile,
+      );
 
-    return hasFile;
+      return hasFile ? [this.config.catalogFile] : [];
+    }
+
+    const matchingFiles: string[] = [];
+    try {
+      const projectFiles = paginated<GitLabRepositoryTreeItem>(
+        options => client.listProjectTree(project.id, options),
+        {
+          page: 1,
+          per_page: 100,
+          ref: project_branch,
+          recursive: true,
+        },
+      );
+
+      for await (const file of projectFiles) {
+        if (file.type === 'blob' && this.catalogFileMatcher.match(file.path)) {
+          matchingFiles.push(file.path);
+        }
+      }
+    } catch (error) {
+      const message = String(error);
+      if (message.includes('Expected 200 but got 404')) {
+        this.logger.debug(
+          `Skipping project ${project.path_with_namespace} while scanning repository tree at ref '${project_branch}' due to 404 response.`,
+        );
+        return [];
+      }
+
+      throw error;
+    }
+
+    return matchingFiles;
   }
 
   private isGroupCompliant(name: string | undefined) {
@@ -686,5 +746,20 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     }
 
     return false;
+  }
+
+  private filePathMatches(filePath: string): boolean {
+    if (this.catalogFileMatcher.hasMagic()) {
+      return this.catalogFileMatcher.match(filePath);
+    }
+
+    const configuredCatalogFile = this.config.catalogFile;
+    const hasPathSeparator =
+      configuredCatalogFile.includes('/') ||
+      configuredCatalogFile.includes('\\');
+    if (hasPathSeparator) {
+      return filePath === configuredCatalogFile;
+    }
+    return path.basename(filePath) === configuredCatalogFile;
   }
 }
