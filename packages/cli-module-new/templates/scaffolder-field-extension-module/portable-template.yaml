@@ -1,0 +1,8 @@
+name: scaffolder-field-extension-module
+role: frontend-plugin-module
+description: A custom field extension for the Backstage Scaffolder
+values:
+  pluginId: scaffolder
+  moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'
+  extensionName: '{{ upperFirst ( camelCase moduleId ) }}FieldExtension'
+  extensionComponent: '{{ upperFirst ( camelCase moduleId ) }}Field'

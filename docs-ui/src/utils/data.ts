@@ -99,6 +99,10 @@ export const components: Page[] = [
     slug: 'menu',
   },
   {
+    title: 'NumberField',
+    slug: 'number-field',
+  },
+  {
     title: 'PasswordField',
     slug: 'password-field',
   },
@@ -149,6 +153,11 @@ export const components: Page[] = [
   {
     title: 'Text',
     slug: 'text',
+  },
+  {
+    title: 'TextAreaField',
+    slug: 'text-area-field',
+    status: 'new',
   },
   {
     title: 'TextField',

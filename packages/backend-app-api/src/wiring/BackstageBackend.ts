@@ -15,8 +15,8 @@
  */
 
 import { BackendFeature, ServiceFactory } from '@backstage/backend-plugin-api';
+import { isPromise, unwrapFeature } from '@internal/backend';
 import { BackendInitializer } from './BackendInitializer';
-import { unwrapFeature } from './helpers';
 import {
   Backend,
   BackendStartupResult,
@@ -51,13 +51,4 @@ export class BackstageBackend implements Backend {
   async stop(): Promise<void> {
     await this.#initializer.stop();
   }
-}
-
-function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'then' in value &&
-    typeof value.then === 'function'
-  );
 }

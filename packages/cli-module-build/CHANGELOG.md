@@ -1,5 +1,34 @@
 # @backstage/cli-module-build
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- 3cce70f: Increase generated frontend static asset filename hashes to 12 characters to reduce the chance of collisions across long-lived cached builds.
+- Updated dependencies
+  - @backstage/config-loader@1.11.0-next.1
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 87af6ce: Package preparation now converts TypeScript configuration schemas to separate JSON files. Backend builds compile schemas together before assembling the distribution workspace, while package publishing compiles each schema independently.
+- da820d1: Added support for passing custom flags to the embedded postgres processes via `backend.database.connection.flags.postgres` and `backend.database.connection.flags.initdb` configuration properties.
+- Updated dependencies
+  - @backstage/config-loader@1.11.0-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- 696c78c: The `--help` output for commands now shows a generated usage line that lists the available flags and any positional arguments the command accepts.
+- 2e6ffe6: Updated the standalone CLI executable to use the new CLI module runner.
+- a1971ea: Suppress false-positive `@protobufjs/inquire` "Critical dependency" warning in the bundler. Since `protobufjs` 7.5.9, the dynamic require path in inquire is no longer exercised, but webpack/rspack still flags it during static analysis.
+- 8007b58: Updated dependency `embedded-postgres` to `18.3.0-beta.17`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+  - @backstage/config-loader@1.10.12
+
 ## 0.1.4-next.0
 
 ### Patch Changes

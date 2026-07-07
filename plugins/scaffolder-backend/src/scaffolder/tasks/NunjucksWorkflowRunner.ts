@@ -400,7 +400,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           parameters: this.environment?.parameters ?? {},
           secrets: task.isDryRun ? {} : this.environment?.secrets ?? {},
         },
-        secrets: task.isDryRun ? {} : task.secrets ?? {},
+        secrets: task.secrets ?? {},
       };
 
       const resolvedEach =

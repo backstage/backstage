@@ -35,7 +35,12 @@ export { ButtonLinkDefinition } from './components/ButtonLink/definition';
 export { CardDefinition } from './components/Card/definition';
 export { CheckboxDefinition } from './components/Checkbox/definition';
 export { CheckboxGroupDefinition } from './components/CheckboxGroup/definition';
-export { ComboboxDefinition } from './components/Combobox/definition';
+export {
+  ComboboxDefinition,
+  ComboboxItemDefinition,
+  ComboboxItemProfileDefinition,
+  ComboboxItemTextDefinition,
+} from './components/Combobox/definition';
 export { ContainerDefinition } from './components/Container/definition';
 export {
   DatePickerDefinition,
@@ -62,6 +67,7 @@ export {
   ListRowDefinition,
 } from './components/List/definition';
 export { MenuDefinition } from './components/Menu/definition';
+export { NumberFieldDefinition } from './components/NumberField/definition';
 export { PasswordFieldDefinition } from './components/PasswordField/definition';
 export { PopoverDefinition } from './components/Popover/definition';
 export { RadioGroupDefinition } from './components/RadioGroup/definition';
@@ -70,7 +76,12 @@ export {
   SearchAutocompleteItemDefinition,
 } from './components/SearchAutocomplete/definition';
 export { SearchFieldDefinition } from './components/SearchField/definition';
-export { SelectDefinition } from './components/Select/definition';
+export {
+  SelectDefinition,
+  SelectItemDefinition,
+  SelectItemProfileDefinition,
+  SelectItemTextDefinition,
+} from './components/Select/definition';
 export { SkeletonDefinition } from './components/Skeleton/definition';
 export { SliderDefinition } from './components/Slider/definition';
 export { SwitchDefinition } from './components/Switch/definition';
@@ -82,5 +93,6 @@ export { TabsDefinition } from './components/Tabs/definition';
 export { TagGroupDefinition } from './components/TagGroup/definition';
 export { TextDefinition } from './components/Text/definition';
 export { TextFieldDefinition } from './components/TextField/definition';
+export { TextAreaFieldDefinition } from './components/TextAreaField/definition';
 export { TooltipDefinition } from './components/Tooltip/definition';
 export { VisuallyHiddenDefinition } from './components/VisuallyHidden/definition';

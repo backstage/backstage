@@ -23,7 +23,6 @@ import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import request from 'supertest';
 
@@ -86,7 +85,7 @@ describe('Mcp Backend', () => {
     };
   };
 
-  it('should support streamable spec', async () => {
+  it('should only support the streamable HTTP transport', async () => {
     const { client, serverAddress } = await getContext();
     const transport = new StreamableHTTPClientTransport(
       new URL(`${serverAddress}/api/mcp-actions/v1`),
@@ -125,49 +124,11 @@ describe('Mcp Backend', () => {
         name: 'local.make-greeting',
       },
     ]);
-  });
 
-  it('should support sse spec', async () => {
-    const { client, serverAddress } = await getContext();
-    const transport = new SSEClientTransport(
-      new URL(`${serverAddress}/api/mcp-actions/v1/sse`),
+    const legacyResponse = await request(serverAddress).get(
+      '/api/mcp-actions/v1/sse',
     );
-
-    await client.connect(transport);
-
-    const result = await client.request(
-      {
-        method: 'tools/list',
-      },
-      ListToolsResultSchema,
-    );
-
-    await client.close();
-
-    expect(result.tools).toEqual([
-      {
-        annotations: {
-          destructiveHint: true,
-          idempotentHint: false,
-          openWorldHint: false,
-          readOnlyHint: false,
-          title: 'Make Greeting',
-        },
-        description: 'Make a greeting',
-        inputSchema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          additionalProperties: false,
-          properties: {
-            name: {
-              type: 'string',
-            },
-          },
-          required: ['name'],
-          type: 'object',
-        },
-        name: 'local.make-greeting',
-      },
-    ]);
+    expect(legacyResponse.status).toBe(404);
   });
 
   describe('multi-server routing', () => {

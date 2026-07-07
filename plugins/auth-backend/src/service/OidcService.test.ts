@@ -1001,6 +1001,10 @@ describe('OidcService', () => {
           const config = service.getConfiguration();
 
           expect(config.client_id_metadata_document_supported).toBe(true);
+          expect(config.revocation_endpoint).toBe(
+            'http://mock-base-url/v1/revoke',
+          );
+          expect(config).not.toHaveProperty('registration_endpoint');
         });
 
         it('should not include client_id_metadata_document_supported when CIMD is disabled', async () => {
@@ -1018,6 +1022,72 @@ describe('OidcService', () => {
           expect(config).not.toHaveProperty(
             'client_id_metadata_document_supported',
           );
+          expect(config).not.toHaveProperty('revocation_endpoint');
+        });
+      });
+
+      describe('verifyRevocationClient', () => {
+        it('should verify CIMD clients by client ID and DCR clients by secret', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['https://example.com/*'],
+                  allowedRedirectUriPatterns: ['*'],
+                },
+              },
+            },
+          });
+
+          // CIMD clients are public clients and do not need a secret
+          await expect(
+            service.verifyRevocationClient({ clientId: cimdClientId }),
+          ).resolves.toBe(true);
+
+          // CIMD clients outside the allowed patterns are rejected
+          await expect(
+            service.verifyRevocationClient({
+              clientId: 'https://evil.example.net/oauth-metadata.json',
+            }),
+          ).resolves.toBe(false);
+
+          // DCR clients must present a valid client secret
+          const client = await service.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['http://localhost:8080/callback'],
+          });
+          await expect(
+            service.verifyRevocationClient({ clientId: client.clientId }),
+          ).resolves.toBe(false);
+          await expect(
+            service.verifyRevocationClient({
+              clientId: client.clientId,
+              clientSecret: 'wrong-secret',
+            }),
+          ).resolves.toBe(false);
+          await expect(
+            service.verifyRevocationClient({
+              clientId: client.clientId,
+              clientSecret: client.clientSecret,
+            }),
+          ).resolves.toBe(true);
+        });
+
+        it('should reject CIMD client IDs when CIMD is disabled', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: false },
+              },
+            },
+          });
+
+          await expect(
+            service.verifyRevocationClient({ clientId: cimdClientId }),
+          ).resolves.toBe(false);
         });
       });
 

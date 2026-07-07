@@ -43,6 +43,7 @@ export function createAuth0Authenticator(options?: { cache?: CacheService }) {
       const audience = config.getOptionalString('audience');
       const connection = config.getOptionalString('connection');
       const connectionScope = config.getOptionalString('connectionScope');
+      const prompt = config.getOptionalString('prompt') ?? 'consent';
       const callbackURL =
         config.getOptionalString('callbackUrl') ?? callbackUrl;
       const organization = config.getOptionalString('organization');
@@ -102,6 +103,7 @@ export function createAuth0Authenticator(options?: { cache?: CacheService }) {
         audience,
         connection,
         connectionScope,
+        prompt,
         domain,
         clientID,
         federated,
@@ -110,11 +112,17 @@ export function createAuth0Authenticator(options?: { cache?: CacheService }) {
 
     async start(
       input,
-      { helper, audience, connection, connectionScope: connection_scope },
+      {
+        helper,
+        audience,
+        connection,
+        connectionScope: connection_scope,
+        prompt,
+      },
     ) {
       return helper.start(input, {
         accessType: 'offline',
-        prompt: 'consent',
+        ...(prompt !== 'auto' ? { prompt } : {}),
         ...(audience ? { audience } : {}),
         ...(connection ? { connection } : {}),
         ...(connection_scope ? { connection_scope } : {}),

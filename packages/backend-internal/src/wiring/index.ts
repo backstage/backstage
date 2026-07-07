@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export { isPromise, unwrapFeature } from './helpers';
 export { OpaqueExtensionPointFactoryMiddleware } from './OpaqueExtensionPointFactoryMiddleware';

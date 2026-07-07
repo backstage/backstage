@@ -2188,7 +2188,7 @@ describe('NunjucksWorkflowRunner', () => {
       expect(fakeActionHandler.mock.calls[0][0].step.name).toEqual('name');
     });
 
-    it('should not pass environment secrets or task secrets to action inputs during dry-run', async () => {
+    it('should strip environment secrets but pass user-supplied task secrets to action inputs during dry-run', async () => {
       const dryRunHandler = jest.fn();
       actionRegistry.register(
         createTemplateAction({
@@ -2221,7 +2221,7 @@ describe('NunjucksWorkflowRunner', () => {
 
       const handlerCall = dryRunHandler.mock.calls[0][0];
       expect(handlerCall.input.envSecret).toBeUndefined();
-      expect(handlerCall.input.taskSecret).toBeUndefined();
+      expect(handlerCall.input.taskSecret).toEqual('task-secret-value');
     });
   });
 

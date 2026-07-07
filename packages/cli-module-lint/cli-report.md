@@ -5,35 +5,36 @@
 ### `backstage-cli-module-lint`
 
 ```
-Usage: @backstage/cli-module-lint [options] [command]
+Usage: @backstage/cli-module-lint [flags...]
 
 Options:
   -V, --version
   -h, --help
 
 Commands:
-  help [command]
-  package [command]
-  repo [command]
+  help
+  package
+  repo
 ```
 
 ### `backstage-cli-module-lint package`
 
 ```
-Usage: @backstage/cli-module-lint package [options] [command] [command]
+Usage: @backstage/cli-module-lint package [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   lint
 ```
 
 ### `backstage-cli-module-lint package lint`
 
 ```
-Usage: @backstage/cli-module-lint package lint [directories...]
+Usage: @backstage/cli-module-lint package lint [flags...] [directories...]
 
 Options:
   --fix
@@ -46,20 +47,21 @@ Options:
 ### `backstage-cli-module-lint repo`
 
 ```
-Usage: @backstage/cli-module-lint repo [options] [command] [command]
+Usage: @backstage/cli-module-lint repo [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
-  help [command]
+  help
   lint
 ```
 
 ### `backstage-cli-module-lint repo lint`
 
 ```
-Usage: @backstage/cli-module-lint repo lint
+Usage: @backstage/cli-module-lint repo lint [flags...]
 
 Options:
   --fix

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-common",
-  "version": "2.2.1-next.0",
+  "version": "2.2.1",
   "description": "Common functionalities for the scaffolder, to be shared between scaffolder and scaffolder-backend plugin",
   "backstage": {
     "role": "common-library",
@@ -68,7 +68,6 @@
     "@microsoft/fetch-event-source": "^2.0.1",
     "@types/json-schema": "^7.0.9",
     "cross-fetch": "^4.0.0",
-    "json-schema": "^0.4.0",
     "uri-template": "^2.0.0",
     "zen-observable": "^0.10.0"
   },

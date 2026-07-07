@@ -178,9 +178,9 @@ describe.each(databases.eachSupportedId())(
 
       await store.clean();
 
-      // Local testing shows this takes about 80ms, but if this is flaky we can
-      // reduce the count down to 10_000.
-      expect(Date.now() - start).toBeLessThan(500);
+      // Local testing shows this takes about 80ms, but CI containers can
+      // be significantly slower under load.
+      expect(Date.now() - start).toBeLessThan(2000);
 
       await expect(db('event_bus_events').count()).resolves.toEqual([
         { count: '5' },

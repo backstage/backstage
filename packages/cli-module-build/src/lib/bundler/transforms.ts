@@ -20,6 +20,7 @@ import {
   CssExtractRspackPlugin,
   WebpackPluginInstance,
 } from '@rspack/core';
+import { STATIC_ASSET_HASH_LENGTH } from './staticAssetHash';
 
 type Transforms = {
   loaders: RuleSetRule[];
@@ -138,14 +139,14 @@ export const transforms = (options: TransformOptions): Transforms => {
       ],
       type: 'asset/resource',
       generator: {
-        filename: 'static/[name].[hash:8][ext]',
+        filename: `static/[name].[hash:${STATIC_ASSET_HASH_LENGTH}][ext]`,
       },
     },
     {
       test: /\.(eot|woff|woff2|ttf)$/i,
       type: 'asset/resource',
       generator: {
-        filename: 'static/[name].[hash][ext][query]',
+        filename: `static/[name].[hash:${STATIC_ASSET_HASH_LENGTH}][ext][query]`,
       },
     },
     {
@@ -156,7 +157,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       include: /\.(md)$/,
       type: 'asset/resource',
       generator: {
-        filename: 'static/[name].[hash][ext][query]',
+        filename: `static/[name].[hash:${STATIC_ASSET_HASH_LENGTH}][ext][query]`,
       },
     },
     {
@@ -185,8 +186,8 @@ export const transforms = (options: TransformOptions): Transforms => {
   if (!isDev) {
     plugins.push(
       new CssExtractPlugin({
-        filename: 'static/[name].[contenthash:8].css',
-        chunkFilename: 'static/[name].[id].[contenthash:8].css',
+        filename: `static/[name].[contenthash:${STATIC_ASSET_HASH_LENGTH}].css`,
+        chunkFilename: `static/[name].[id].[contenthash:${STATIC_ASSET_HASH_LENGTH}].css`,
         insert: insertBeforeJssStyles, // Only applies to async chunks
       }),
     );

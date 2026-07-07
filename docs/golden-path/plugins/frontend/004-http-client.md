@@ -28,7 +28,7 @@ function useTodos() {
 
     const data = await response.json();
     return data.items;
-  }, [fetch]);
+  });
 }
 ```
 
@@ -37,8 +37,8 @@ Here, we're using Backstage's `fetchApi` which wraps the browser `fetch` and aut
 1. Injects authentication credentials - you don't need to attach any `Authorization` headers manually.
 2. Resolves `plugin://<pluginId>` URL schemes to the real plugin URL for your instance.
 
-The `useAsync` hook from `react-use` runs the async function on mount and
-returns `{ value, loading, error }`, which the component uses to show a
+The `useAsync` hook from `@react-hookz/web` runs the async function on mount and
+returns `[{ status, result, error }, { execute }]`, which the component uses to show a
 loading spinner, example todo items if the backend request fails, or the
 fetched todo list.
 

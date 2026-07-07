@@ -165,8 +165,8 @@ export default definePreview({
                   height: isFullscreen
                     ? 'calc(100vh - (var(--bui-space-4) * 2))'
                     : undefined,
-                  overflow: 'auto',
-                  overscrollBehavior: 'none',
+                  overflow: isFullscreen ? 'auto' : undefined,
+                  overscrollBehavior: isFullscreen ? 'none' : undefined,
                 }}
               >
                 <Story />

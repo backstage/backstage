@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import {
+  BackstageCredentials,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
 import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
+  Tool,
+  ToolSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { JsonObject } from '@backstage/types';
 import {
@@ -76,19 +81,23 @@ function baggageAttributes(
 
 export class McpService {
   private readonly actions: ActionsService;
+  private readonly logger: LoggerService | undefined;
   private readonly namespacedToolNames: boolean;
   private readonly tracingService: TracingService;
   private readonly captureToolPayloads: boolean;
   private readonly operationDuration: MetricsServiceHistogram<McpServerOperationAttributes>;
+  private readonly warnedSkippedActionIds = new Set<string>();
 
   constructor(
     actions: ActionsService,
     metrics: MetricsService,
     tracingService: TracingService,
+    logger: LoggerService | undefined,
     namespacedToolNames?: boolean,
     captureToolPayloads?: boolean,
   ) {
     this.actions = actions;
+    this.logger = logger;
     this.namespacedToolNames = namespacedToolNames ?? true;
     this.tracingService = tracingService;
     this.captureToolPayloads = captureToolPayloads ?? false;
@@ -107,12 +116,14 @@ export class McpService {
     actions,
     metrics,
     tracingService,
+    logger,
     namespacedToolNames,
     captureToolPayloads,
   }: {
     actions: ActionsService;
     metrics: MetricsService;
     tracingService: TracingService;
+    logger?: LoggerService;
     namespacedToolNames?: boolean;
     captureToolPayloads?: boolean;
   }) {
@@ -120,6 +131,7 @@ export class McpService {
       actions,
       metrics,
       tracingService,
+      logger,
       namespacedToolNames,
       captureToolPayloads,
     );
@@ -155,8 +167,9 @@ export class McpService {
           ? this.filterActions(allActions, serverConfig)
           : allActions;
 
-        return {
-          tools: actions.map(action => ({
+        const tools: Tool[] = [];
+        for (const action of actions) {
+          const tool = {
             inputSchema: action.schema.input,
             name: this.getToolName(action),
             description: action.description,
@@ -167,8 +180,26 @@ export class McpService {
               readOnlyHint: action.attributes.readOnly,
               openWorldHint: false,
             },
-          })),
-        };
+          };
+
+          // Validate each tool against the MCP Tool schema so that a single
+          // malformed action (e.g. an inputSchema that isn't a JSON Schema
+          // object at the root) doesn't poison the whole tools/list response.
+          const parsed = ToolSchema.safeParse(tool);
+          if (!parsed.success) {
+            if (!this.warnedSkippedActionIds.has(action.id)) {
+              this.warnedSkippedActionIds.add(action.id);
+              this.logger?.warn(
+                `Skipping MCP tool for action "${action.id}": ${parsed.error.message}`,
+              );
+            }
+            continue;
+          }
+
+          tools.push(parsed.data);
+        }
+
+        return { tools };
       } catch (err) {
         errorType = err instanceof Error ? err.name : 'Error';
         throw err;

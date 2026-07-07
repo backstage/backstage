@@ -131,7 +131,6 @@ describePerformanceTest('getEntities', () => {
 
     afterAll(async () => {
       await backend.stop();
-      await knex.destroy();
     });
 
     it('does a large burst read', async () => {
@@ -156,7 +155,6 @@ describePerformanceTest('getEntities', () => {
 
     afterAll(async () => {
       await backend.stop();
-      await knex.destroy();
     });
 
     it('single matching filter, all fields', async () => {

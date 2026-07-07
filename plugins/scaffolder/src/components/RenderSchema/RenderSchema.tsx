@@ -26,7 +26,7 @@ import {
   Tooltip,
   TooltipTrigger,
 } from '@backstage/ui';
-import {
+import type {
   JSONSchema7,
   JSONSchema7Definition,
   JSONSchema7Type,

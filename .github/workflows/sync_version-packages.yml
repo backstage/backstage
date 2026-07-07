@@ -34,6 +34,7 @@ jobs:
         with:
           node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
+          corepack: true
 
       - name: Install Dependencies
         run: yarn --immutable

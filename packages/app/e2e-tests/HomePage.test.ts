@@ -44,7 +44,9 @@ test('Should render the home page', async ({ page }) => {
 
   // Wait for sign-in to complete
   await expect(
-    page.getByRole('navigation').getByRole('link', { name: 'Catalog' }),
+    page
+      .getByRole('navigation', { name: 'sidebar nav' })
+      .getByRole('link', { name: 'Catalog' }),
   ).toBeVisible();
 
   await page.goto('/home');

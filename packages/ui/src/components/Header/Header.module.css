@@ -128,8 +128,13 @@
     gap: var(--bui-space-1);
   }
 
-  .bui-HeaderBreadcrumbs .bui-HeaderBreadcrumbLink,
-  .bui-HeaderBreadcrumbsSmall .bui-HeaderBreadcrumbLinkSmall {
+  /*
+   * Link variant defaults have the same specificity as these contextual styles.
+   * Repeat the slot class so the Header styles win regardless of stylesheet order.
+   */
+  .bui-HeaderBreadcrumbs .bui-HeaderBreadcrumbLink.bui-HeaderBreadcrumbLink,
+  .bui-HeaderBreadcrumbsSmall
+    .bui-HeaderBreadcrumbLinkSmall.bui-HeaderBreadcrumbLinkSmall {
     max-width: 240px;
     overflow: hidden;
     font-family: var(--bui-font-regular);
@@ -139,11 +144,12 @@
     white-space: nowrap;
   }
 
-  .bui-HeaderBreadcrumbs .bui-HeaderBreadcrumbLink {
+  .bui-HeaderBreadcrumbs .bui-HeaderBreadcrumbLink.bui-HeaderBreadcrumbLink {
     font-size: inherit;
   }
 
-  .bui-HeaderBreadcrumbsSmall .bui-HeaderBreadcrumbLinkSmall {
+  .bui-HeaderBreadcrumbsSmall
+    .bui-HeaderBreadcrumbLinkSmall.bui-HeaderBreadcrumbLinkSmall {
     font-size: var(--bui-font-size-4);
   }
 

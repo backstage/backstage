@@ -85,6 +85,54 @@ describe('Entity Info Card Grid', () => {
     expect(await screen.findByText('TestTitle2')).toBeInTheDocument();
   });
 
+  it('uses unique keys for entities with matching names', async () => {
+    const consoleError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    try {
+      await renderInTestApp(
+        <Wrapper>
+          <InfoCardGrid
+            entities={[
+              {
+                apiVersion: 'version',
+                kind: 'TestKind',
+                metadata: {
+                  namespace: 'first',
+                  name: 'testName',
+                  title: 'First Test Title',
+                },
+              },
+              {
+                apiVersion: 'version',
+                kind: 'TestKind',
+                metadata: {
+                  namespace: 'second',
+                  name: 'testName',
+                  title: 'Second Test Title',
+                },
+              },
+            ]}
+          />
+        </Wrapper>,
+        {
+          mountedRoutes: {
+            '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          },
+        },
+      );
+
+      expect(await screen.findByText('First Test Title')).toBeInTheDocument();
+      expect(screen.getByText('Second Test Title')).toBeInTheDocument();
+      expect(consoleError.mock.calls.flat().join(' ')).not.toContain(
+        'Encountered two children with the same key',
+      );
+    } finally {
+      consoleError.mockRestore();
+    }
+  });
+
   it('should render links correctly', async () => {
     await renderInTestApp(
       <Wrapper>

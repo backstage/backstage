@@ -50,12 +50,11 @@ const apis = [[errorApiRef, mockErrorApi] as const] as const;
 
 describe('<CopyTextButton />', () => {
   it('renders without exploding', async () => {
-    const { getByTitle, queryByText, getByLabelText } = await renderInTestApp(
+    const { queryByText, getByLabelText } = await renderInTestApp(
       <TestApiProvider apis={apis}>
         <CopyTextButton {...props} />
       </TestApiProvider>,
     );
-    expect(getByTitle('mockTooltip')).toBeInTheDocument();
     expect(queryByText('mockTooltip')).not.toBeInTheDocument();
     expect(getByLabelText('Copy text')).toBeInTheDocument();
   });
@@ -72,13 +71,14 @@ describe('<CopyTextButton />', () => {
         <CopyTextButton {...props} />
       </TestApiProvider>,
     );
-    const button = rendered.getByTitle('mockTooltip');
+    const button = rendered.getByLabelText('Copy text');
     fireEvent.click(button);
+    expect(copy).toHaveBeenCalledWith('mockText');
+    rendered.getByText('mockTooltip');
     act(() => {
       jest.runAllTimers();
     });
-    expect(copy).toHaveBeenCalledWith('mockText');
-    rendered.getByText('mockTooltip');
+    expect(rendered.queryByText('mockTooltip')).not.toBeInTheDocument();
     jest.useRealTimers();
   });
 

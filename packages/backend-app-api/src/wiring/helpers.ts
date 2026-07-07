@@ -14,27 +14,6 @@
  * limitations under the License.
  */
 
-import { BackendFeature } from '@backstage/backend-plugin-api';
-
-/** @internal */
-export function unwrapFeature(
-  feature: BackendFeature | { default: BackendFeature },
-): BackendFeature {
-  if ('$$type' in feature) {
-    return feature;
-  }
-
-  // This is a workaround where default exports get transpiled to `exports['default'] = ...`
-  // in CommonJS modules, which in turn results in a double `{ default: { default: ... } }` nesting
-  // when importing using a dynamic import.
-  // TODO: This is a broader issue than just this piece of code, and should move away from CommonJS.
-  if ('default' in feature) {
-    return feature.default;
-  }
-
-  return feature;
-}
-
 /** @internal */
 export type DeepReadonly<T> = {
   readonly [K in keyof T]: T[K] extends object ? DeepReadonly<T[K]> : T[K];

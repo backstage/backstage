@@ -1,5 +1,39 @@
 # @backstage/cli-defaults
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.5-next.0
+  - @backstage/cli-module-new@0.1.5-next.0
+  - @backstage/cli-module-config@0.1.4-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-new@0.1.4
+  - @backstage/cli-module-actions@0.1.2
+  - @backstage/cli-module-auth@0.1.3
+  - @backstage/cli-module-build@0.1.4
+  - @backstage/cli-module-config@0.1.3
+  - @backstage/cli-module-github@0.1.3
+  - @backstage/cli-module-info@0.1.3
+  - @backstage/cli-module-lint@0.1.3
+  - @backstage/cli-module-maintenance@0.1.3
+  - @backstage/cli-module-migrate@0.1.3
+  - @backstage/cli-module-test-jest@0.1.3
+  - @backstage/cli-module-translations@0.1.3
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-new@0.1.4-next.0
+
 ## 0.1.3-next.0
 
 ### Patch Changes

@@ -46,10 +46,6 @@ describePerformanceTest('providerDeltaMutations', () => {
       await applyDatabaseMigrations(knex);
     });
 
-    afterAll(async () => {
-      await knex.destroy();
-    });
-
     it.each([200, 50_000])(
       'inserts and then overwrites identical sets using delta mutations, batch size %p',
       async batchSize => {
