@@ -562,6 +562,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           `CASE
             WHEN filtered.value ~ '^-?[0-9]+$'
             THEN CAST(filtered.value AS INTEGER)
+            ELSE NULL
+          END ${order}`,
+        );
+        dbQuery.orderByRaw(
+          `CASE
+            WHEN filtered.value ~ '^-?[0-9]+$'
+            THEN NULL
             ELSE filtered.value
           END ${order}`,
         );
@@ -571,6 +578,14 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
             WHEN filtered.value GLOB '-[0-9]*'
               OR filtered.value GLOB '[0-9]*'
             THEN CAST(filtered.value AS INTEGER)
+            ELSE NULL
+          END ${order}`,
+        );
+        dbQuery.orderByRaw(
+          `CASE
+            WHEN filtered.value GLOB '-[0-9]*'
+              OR filtered.value GLOB '[0-9]*'
+            THEN NULL
             ELSE filtered.value
           END ${order}`,
         );
