@@ -557,14 +557,24 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       order = invertOrder(order);
     }
     if (sortField) {
-      dbQuery.orderByRaw(
-        `CASE
-          WHEN filtered.value GLOB '-[0-9]*'
-            OR filtered.value GLOB '[0-9]*'
-          THEN CAST(filtered.value AS INTEGER)
-          ELSE filtered.value
-        END ${order}`,
-      );
+      if (this.database.client.config.client === 'pg') {
+        dbQuery.orderByRaw(
+          `CASE
+            WHEN filtered.value ~ '^-?[0-9]+$'
+            THEN CAST(filtered.value AS INTEGER)
+            ELSE filtered.value
+          END ${order}`,
+        );
+      } else {
+        dbQuery.orderByRaw(
+          `CASE
+            WHEN filtered.value GLOB '-[0-9]*'
+              OR filtered.value GLOB '[0-9]*'
+            THEN CAST(filtered.value AS INTEGER)
+            ELSE filtered.value
+          END ${order}`,
+        );
+      }
     }
 
     dbQuery.orderBy('filtered.entity_id', order);
