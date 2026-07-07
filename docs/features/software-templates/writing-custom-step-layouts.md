@@ -23,11 +23,11 @@ This is the same [field](https://rjsf-team.github.io/react-jsonschema-form/docs/
 
 ## Registering a React component as a custom step layout
 
-The scaffolderLayoutBlueprint is used to mark a component as a custom step layout:
+The `ScaffolderLayoutBlueprint` is used to mark a component as a custom step layout:
 
 ```tsx
 import { LayoutTemplate } from '@backstage/plugin-scaffolder-react';
-import { scaffolderLayoutBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderLayoutBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
 import { Grid } from '@material-ui/core';
 
 const TwoColumn: LayoutTemplate = ({ properties, description, title }) => {
@@ -54,7 +54,7 @@ const TwoColumn: LayoutTemplate = ({ properties, description, title }) => {
   );
 };
 
-export const TwoColumnLayout = scaffolderLayoutBlueprint.make({
+export const TwoColumnLayout = ScaffolderLayoutBlueprint.make({
   name: 'two-column-layout',
   params: {
     layout: {

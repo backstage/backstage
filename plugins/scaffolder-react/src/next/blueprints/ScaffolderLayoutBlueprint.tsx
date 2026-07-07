@@ -44,7 +44,7 @@ export interface ScaffolderLayoutBlueprintParams {
  *
  * @alpha
  */
-export const scaffolderLayoutBlueprint = createExtensionBlueprint({
+export const ScaffolderLayoutBlueprint = createExtensionBlueprint({
   kind: 'scaffolder-layout',
   attachTo: { id: 'sub-page:scaffolder/templates', input: 'layouts' },
   output: [scaffolderLayoutRef],

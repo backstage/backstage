@@ -16,5 +16,5 @@
 
 export * from './FormDecoratorBlueprint';
 export * from './FormFieldBlueprint';
-export * from './scaffolderLayoutBlueprint';
+export * from './ScaffolderLayoutBlueprint';
 export * from './types';

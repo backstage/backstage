@@ -302,7 +302,7 @@ export interface ScaffolderFormFieldsApi {
 }
 
 // @alpha
-export const scaffolderLayoutBlueprint: ExtensionBlueprint<{
+export const ScaffolderLayoutBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-layout';
   params: ScaffolderLayoutBlueprintParams;
   output: ExtensionDataRef<LayoutOptions<any>, 'scaffolder.layout-option', {}>;
