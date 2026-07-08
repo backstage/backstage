@@ -295,14 +295,14 @@ export const TranslationBlueprint: ExtensionBlueprint<{
     resource: TranslationResource | TranslationMessages;
   };
   output: ExtensionDataRef<
+    | TranslationResource<string>
     | TranslationMessages<
         string,
         {
           [x: string]: string;
         },
         boolean
-      >
-    | TranslationResource<string>,
+      >,
     'core.translation.translation',
     {}
   >;
@@ -311,14 +311,14 @@ export const TranslationBlueprint: ExtensionBlueprint<{
   configInput: {};
   dataRefs: {
     translation: ConfigurableExtensionDataRef<
+      | TranslationResource<string>
       | TranslationMessages<
           string,
           {
             [x: string]: string;
           },
           boolean
-        >
-      | TranslationResource<string>,
+        >,
       'core.translation.translation',
       {}
     >;
