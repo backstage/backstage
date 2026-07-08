@@ -32,7 +32,7 @@ exported with a name of the pattern `*ApiRef`, for example
 To access one of the Utility APIs inside a React component, use the
 [`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.useApi.html) hook exported by
 [`@backstage/core-plugin-api`](https://backstage.io/api/stable/modules/_backstage_core-plugin-api.html), or the
-[`withApis`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.withApis.html) HOC if you prefer class
+[`withApis`](https://backstage.io/api/stable/functions/_backstage_core-compat-api.index.withApis.html) HOC if you prefer class
 components. For example, the
 [`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ErrorApi.html) can be accessed like this:
 
