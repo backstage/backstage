@@ -818,7 +818,7 @@ const appPlugin: OverridableFrontendPlugin<
       config: {
         transientTimeoutMs: number;
         anchorOrigin: {
-          vertical: 'bottom' | 'top';
+          vertical: 'top' | 'bottom';
           horizontal: 'center' | 'left' | 'right';
         };
       };
@@ -826,7 +826,7 @@ const appPlugin: OverridableFrontendPlugin<
         transientTimeoutMs?: number | undefined;
         anchorOrigin?:
           | {
-              vertical?: 'bottom' | 'top' | undefined;
+              vertical?: 'top' | 'bottom' | undefined;
               horizontal?: 'center' | 'left' | 'right' | undefined;
             }
           | undefined;
