@@ -25,24 +25,6 @@ import { StandardSchemaV1 } from '@standard-schema/spec';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 import type { z } from 'zod/v3';
 
-// @public @deprecated
-export type AlertApi = {
-  post(alert: AlertMessage): void;
-  alert$(): Observable<AlertMessage>;
-};
-
-// @public @deprecated
-export const alertApiRef: ApiRef_2<AlertApi, 'core.alert'> & {
-  readonly $$type: '@backstage/ApiRef';
-};
-
-// @public @deprecated
-export type AlertMessage = {
-  message: string;
-  severity?: 'success' | 'info' | 'warning' | 'error';
-  display?: 'permanent' | 'transient';
-};
-
 // @public
 export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;
@@ -1098,20 +1080,6 @@ export function createTranslationResource<
 // @public
 export interface DialogApi {
   open<TResult = void>(
-    elementOrComponent:
-      | JSX.Element
-      | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
-  ): DialogApiDialog<TResult>;
-  // @deprecated
-  show<TResult = void>(
-    elementOrComponent:
-      | JSX.Element
-      | ((props: {
-          dialog: DialogApiDialog<TResult | undefined>;
-        }) => JSX.Element),
-  ): DialogApiDialog<TResult | undefined>;
-  // @deprecated
-  showModal<TResult = void>(
     elementOrComponent:
       | JSX.Element
       | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { AlertMessage } from '@backstage/frontend-plugin-api';
-import { AlertApi } from '@backstage/frontend-plugin-api';
+import { AlertApi, AlertMessage } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
 /**
- * Mock implementation of {@link @backstage/frontend-plugin-api#AlertApi} for testing alert behavior.
+ * Mock implementation of {@link @backstage/core-plugin-api#AlertApi} for testing alert behavior.
  *
  * @public
  * @deprecated Use `mockApis.alert()` instead.
