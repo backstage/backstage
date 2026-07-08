@@ -771,14 +771,14 @@ const appPlugin: OverridableFrontendPlugin<
       inputs: {
         translations: ExtensionInput<
           ConfigurableExtensionDataRef<
+            | TranslationResource<string>
             | TranslationMessages<
                 string,
                 {
                   [x: string]: string;
                 },
                 boolean
-              >
-            | TranslationResource<string>,
+              >,
             'core.translation.translation',
             {}
           >,
@@ -818,7 +818,7 @@ const appPlugin: OverridableFrontendPlugin<
       config: {
         transientTimeoutMs: number;
         anchorOrigin: {
-          vertical: 'bottom' | 'top';
+          vertical: 'top' | 'bottom';
           horizontal: 'center' | 'left' | 'right';
         };
       };
@@ -826,7 +826,7 @@ const appPlugin: OverridableFrontendPlugin<
         transientTimeoutMs?: number | undefined;
         anchorOrigin?:
           | {
-              vertical?: 'bottom' | 'top' | undefined;
+              vertical?: 'top' | 'bottom' | undefined;
               horizontal?: 'center' | 'left' | 'right' | undefined;
             }
           | undefined;
