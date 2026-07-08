@@ -17,9 +17,9 @@
 import {
   ApiHolder,
   ConfigApi,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
 } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from './types';
 import { CreateAppRouteBinder } from '../routing';
 import { FrontendPluginInfoResolver } from './createPluginInfoAttacher';
 import {
