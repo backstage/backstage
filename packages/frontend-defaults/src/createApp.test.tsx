@@ -119,7 +119,7 @@ describe('createApp', () => {
   });
 
   it('should provide app APIs to sign-in pages before finalization', async () => {
-    const signInApiRef = createApiRef<{ value: string }>({
+    const signInApiRef = createApiRef<{ value: string }>().with({
       id: 'test.sign-in-api',
     });
 

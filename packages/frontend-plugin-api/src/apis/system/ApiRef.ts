@@ -77,31 +77,6 @@ function makeApiRef<T, TId extends string>(
  * });
  * ```
  *
- * The legacy way to create an API reference is:
- *
- * ```ts
- * const myApiRef = createApiRef<MyApi>({ id: 'plugin.my.api' });
- * ```
- *
- * @public
- */
-/**
- * Creates a reference to an API.
- *
- * @deprecated Use `createApiRef<T>().with(...)` instead.
- * @public
- */
-export function createApiRef<T>(
-  config: ApiRefConfig,
-): ApiRef<T> & { readonly $$type: '@backstage/ApiRef' };
-/**
- * Creates a reference to an API.
- *
- * @remarks
- *
- * Returns a builder with a `.with()` method for providing the API reference
- * configuration.
- *
  * @public
  */
 export function createApiRef<T>(): {
@@ -110,20 +85,7 @@ export function createApiRef<T>(): {
   ): ApiRef<T, TId> & {
     readonly $$type: '@backstage/ApiRef';
   };
-};
-export function createApiRef<T>(config?: ApiRefConfig):
-  | (ApiRef<T> & { readonly $$type: '@backstage/ApiRef' })
-  | {
-      with<const TId extends string>(
-        config: ApiRefConfig & { id: TId; pluginId?: string },
-      ): ApiRef<T, TId> & {
-        readonly $$type: '@backstage/ApiRef';
-      };
-    } {
-  if (config) {
-    validateId(config.id);
-    return makeApiRef<T, string>(config);
-  }
+} {
   return {
     with<const TId extends string>(
       withConfig: ApiRefConfig & { id: TId; pluginId?: string },

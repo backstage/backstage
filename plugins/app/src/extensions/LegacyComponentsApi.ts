@@ -38,7 +38,7 @@ export const LegacyComponentsApi = ApiBlueprint.make({
     defineParams({
       api: createApiRef<{
         getComponent(ref: { id: string }): ComponentType<any>;
-      }>({ id: 'core.components' }),
+      }>().with({ id: 'core.components' }),
       deps: {},
       factory: () => ({
         getComponent(ref) {

@@ -104,6 +104,6 @@ export type ToastApi = {
  *
  * @public
  */
-export const toastApiRef: ApiRef<ToastApi> = createApiRef({
+export const toastApiRef: ApiRef<ToastApi> = createApiRef<ToastApi>().with({
   id: 'core.toast',
 });

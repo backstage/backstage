@@ -81,7 +81,7 @@ describe('convertLegacyApp', () => {
 
     expect(
       collected.map((p: any /* TODO */) => ({
-        id: p.id,
+        id: p.pluginId,
         extensions: p.extensions.map((e: any) => ({
           id: e.id,
           attachTo: e.attachTo,
@@ -152,7 +152,7 @@ describe('convertLegacyApp', () => {
 
     expect(
       collected.map((p: any /* TODO */) => ({
-        id: p.id,
+        id: p.pluginId,
         extensions: p.extensions.map((e: any) => ({
           id: e.id,
           attachTo: e.attachTo,

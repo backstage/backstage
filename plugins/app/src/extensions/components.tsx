@@ -61,7 +61,7 @@ export const ErrorDisplay = SwappableComponentBlueprint.make({
       component: SwappableErrorDisplay,
       loader: () => props => {
         const { plugin, error, resetError } = props;
-        const title = `Error in ${plugin?.id}`;
+        const title = `Error in ${plugin?.pluginId}`;
         return (
           <ErrorPanel title={title} error={error} defaultExpanded>
             <Button variant="outlined" onClick={resetError}>

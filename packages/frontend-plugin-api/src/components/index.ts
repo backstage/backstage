@@ -29,5 +29,4 @@ export {
   PageLayout,
   type PageLayoutProps,
   type PageLayoutTab,
-  type PageTab,
 } from './PageLayout';

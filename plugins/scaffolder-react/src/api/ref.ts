@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/frontend-plugin-api';
-import { ScaffolderApi } from './types';
+import { createApiRef, type ApiRef } from '@backstage/frontend-plugin-api';
+import { type ScaffolderApi } from '@backstage/plugin-scaffolder-common';
 
 /** @public */
-export const scaffolderApiRef = createApiRef<ScaffolderApi>({
+export const scaffolderApiRef: ApiRef<ScaffolderApi> & {
+  readonly $$type: '@backstage/ApiRef';
+} = createApiRef<ScaffolderApi>().with({
   id: 'plugin.scaffolder.service',
 });
