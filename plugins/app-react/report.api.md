@@ -58,7 +58,6 @@ export type AnalyticsImplementationFactory<
 export const AppRootWrapperBlueprint: ExtensionBlueprint<{
   kind: 'app-root-wrapper';
   params: {
-    Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   };
   output: ExtensionDataRef<
@@ -135,14 +134,6 @@ export type NavContentComponent = (
 
 // @public
 export interface NavContentComponentProps {
-  // @deprecated
-  items: Array<{
-    icon: IconComponent;
-    title: string;
-    routeRef: RouteRef<undefined>;
-    to: string;
-    text: string;
-  }>;
   navItems: NavContentNavItems;
 }
 
@@ -175,7 +166,6 @@ export interface NavContentNavItemsWithComponent {
 export const RouterBlueprint: ExtensionBlueprint<{
   kind: 'app-router-component';
   params: {
-    Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   };
   output: ExtensionDataRef<
@@ -305,14 +295,14 @@ export const TranslationBlueprint: ExtensionBlueprint<{
     resource: TranslationResource | TranslationMessages;
   };
   output: ExtensionDataRef<
-    | TranslationResource<string>
     | TranslationMessages<
         string,
         {
           [x: string]: string;
         },
         boolean
-      >,
+      >
+    | TranslationResource<string>,
     'core.translation.translation',
     {}
   >;
@@ -321,14 +311,14 @@ export const TranslationBlueprint: ExtensionBlueprint<{
   configInput: {};
   dataRefs: {
     translation: ConfigurableExtensionDataRef<
-      | TranslationResource<string>
       | TranslationMessages<
           string,
           {
             [x: string]: string;
           },
           boolean
-        >,
+        >
+      | TranslationResource<string>,
       'core.translation.translation',
       {}
     >;

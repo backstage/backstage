@@ -19,8 +19,10 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   createExtension,
+  createFrontendModule,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
+import { NavContentBlueprint } from '@backstage/plugin-app-react';
 import { legacyNavItemTargetDataRef } from './legacyNavItem';
 
 const DEFAULT_CONFIG = {
@@ -88,5 +90,34 @@ describe('AppNav', () => {
         within(screen.getByRole('navigation')).getByText('Legacy Nav Title'),
       ).toBeInTheDocument();
     });
+  });
+
+  it('should pass only navItems to custom navigation content', async () => {
+    const customNav = NavContentBlueprint.make({
+      params: {
+        component: props => (
+          <div>
+            {'items' in props
+              ? 'legacy items provided'
+              : `${props.navItems.rest().length} nav item provided`}
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [mockPage],
+      features: [
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [customNav],
+        }),
+      ],
+      config: DEFAULT_CONFIG,
+    });
+
+    await expect(
+      screen.findByText('1 nav item provided'),
+    ).resolves.toBeInTheDocument();
   });
 });
