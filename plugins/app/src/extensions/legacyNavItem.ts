@@ -16,9 +16,9 @@
 
 import {
   createExtensionDataRef,
-  IconComponent,
   RouteRef,
 } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 /**
  * @internal

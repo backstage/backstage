@@ -28,7 +28,6 @@ import {
   NotFoundErrorPageProps,
   ProgressProps,
   ExternalRouteRef,
-  IconComponent,
   IconElement,
   IconsApi,
   RouteFunc,
@@ -103,10 +102,6 @@ class CompatIconsApi implements IconsApi {
   icon(key: string): IconElement | undefined {
     const Icon = this.#app.getSystemIcon(key);
     return Icon ? createElement(Icon) : undefined;
-  }
-
-  getIcon(key: string): IconComponent | undefined {
-    return this.#app.getSystemIcon(key);
   }
 
   listIconKeys(): string[] {
