@@ -13,7 +13,7 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { NavContentComponent } from '@backstage/plugin-app-react';
@@ -492,7 +492,7 @@ const appPlugin: OverridableFrontendPlugin<
         icons: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
-              [x: string]: IconComponent | IconElement;
+              [x: string]: IconElement | IconComponent;
             },
             'core.icons',
             {}
@@ -818,7 +818,7 @@ const appPlugin: OverridableFrontendPlugin<
       config: {
         transientTimeoutMs: number;
         anchorOrigin: {
-          vertical: 'top' | 'bottom';
+          vertical: 'bottom' | 'top';
           horizontal: 'center' | 'left' | 'right';
         };
       };
@@ -826,7 +826,7 @@ const appPlugin: OverridableFrontendPlugin<
         transientTimeoutMs?: number | undefined;
         anchorOrigin?:
           | {
-              vertical?: 'top' | 'bottom' | undefined;
+              vertical?: 'bottom' | 'top' | undefined;
               horizontal?: 'center' | 'left' | 'right' | undefined;
             }
           | undefined;

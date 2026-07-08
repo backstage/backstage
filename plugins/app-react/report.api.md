@@ -11,7 +11,7 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
@@ -86,7 +86,7 @@ export const IconBundleBlueprint: ExtensionBlueprint<{
   };
   output: ExtensionDataRef<
     {
-      [x: string]: IconComponent | IconElement;
+      [x: string]: IconElement | IconComponent;
     },
     'core.icons',
     {}
@@ -97,7 +97,7 @@ export const IconBundleBlueprint: ExtensionBlueprint<{
   dataRefs: {
     icons: ConfigurableExtensionDataRef<
       {
-        [x: string]: IconComponent | IconElement;
+        [x: string]: IconElement | IconComponent;
       },
       'core.icons',
       {}

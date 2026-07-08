@@ -14,27 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  IconComponent,
-  IconElement,
-  IconsApi,
-} from '@backstage/frontend-plugin-api';
-import { cloneElement, createElement, isValidElement } from 'react';
-
-const legacyFontSizeMap = {
-  inherit: 'inherit',
-  small: '1.25rem',
-  medium: '1.5rem',
-  large: '2.1875rem',
-} as const;
-
-function mergeClassNames(...classNames: Array<string | undefined>) {
-  const merged = classNames.filter(Boolean).join(' ');
-  if (merged) {
-    return merged;
-  }
-  return undefined;
-}
+import { IconElement, IconsApi } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
+import { createElement, isValidElement } from 'react';
 
 /**
  * Implementation for the {@link IconsApi}
@@ -43,7 +25,6 @@ function mergeClassNames(...classNames: Array<string | undefined>) {
  */
 export class DefaultIconsApi implements IconsApi {
   #icons: Map<string, IconElement>;
-  #components = new Map<string, IconComponent>();
 
   constructor(icons: { [key in string]: IconComponent | IconElement }) {
     const deprecatedKeys: string[] = [];
@@ -72,50 +53,6 @@ export class DefaultIconsApi implements IconsApi {
 
   icon(key: string): IconElement | undefined {
     return this.#icons.get(key);
-  }
-
-  getIcon(key: string): IconComponent | undefined {
-    let component = this.#components.get(key);
-    if (component) {
-      return component;
-    }
-    const el = this.#icons.get(key);
-    if (el === undefined) {
-      return undefined;
-    }
-    component = props => {
-      if (el === null) {
-        return null;
-      }
-
-      const {
-        fontSize = 'medium',
-        className,
-        style,
-        ...rest
-      } = props as {
-        fontSize?: keyof typeof legacyFontSizeMap;
-        className?: string;
-        style?: Record<string, unknown>;
-      } & Record<string, unknown>;
-
-      const elementProps = el.props as {
-        className?: string;
-        style?: Record<string, unknown>;
-      };
-
-      return cloneElement(el, {
-        ...rest,
-        className: mergeClassNames(elementProps.className, className),
-        style: {
-          ...elementProps.style,
-          fontSize: legacyFontSizeMap[fontSize],
-          ...style,
-        },
-      });
-    };
-    this.#components.set(key, component);
-    return component;
   }
 
   listIconKeys(): string[] {

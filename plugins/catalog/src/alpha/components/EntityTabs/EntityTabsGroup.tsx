@@ -165,11 +165,7 @@ function resolveIcon(
     return undefined;
   }
   if (typeof icon === 'string') {
-    const Icon = iconsApi.getIcon(icon);
-    if (Icon) {
-      return <Icon />;
-    }
-    return undefined;
+    return iconsApi.icon(icon);
   }
   return icon;
 }

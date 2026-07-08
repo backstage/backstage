@@ -15,12 +15,8 @@
  */
 
 import { ComponentType } from 'react';
-import {
-  AppNode,
-  IconComponent,
-  IconElement,
-  RouteRef,
-} from '@backstage/frontend-plugin-api';
+import { AppNode, IconElement, RouteRef } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import {
   createExtensionBlueprint,
   createExtensionDataRef,

@@ -333,7 +333,11 @@ export const atlassianAuthApiRef: ApiRef_2<
 export type AuthProviderInfo = {
   id: string;
   title: string;
-  icon: IconComponent | IconElement;
+  icon:
+    | ComponentType<{
+        fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+      }>
+    | IconElement;
   message?: string;
 };
 
@@ -1787,18 +1791,11 @@ export const googleAuthApiRef: ApiRef_2<
   readonly $$type: '@backstage/ApiRef';
 };
 
-// @public @deprecated
-export type IconComponent = ComponentType<{
-  fontSize?: 'medium' | 'large' | 'small' | 'inherit';
-}>;
-
 // @public
 export type IconElement = JSX_2.Element | null;
 
 // @public
 export interface IconsApi {
-  // @deprecated (undocumented)
-  getIcon(key: string): IconComponent | undefined;
   icon(key: string): IconElement | undefined;
   // (undocumented)
   listIconKeys(): string[];

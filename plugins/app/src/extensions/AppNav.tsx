@@ -20,12 +20,12 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
   appTreeApiRef,
-  IconComponent,
   IconElement,
   RouteRef,
   RouteResolutionApi,
   useApi,
 } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { legacyNavItemTargetDataRef } from './legacyNavItem';
 import {
   NavContentBlueprint,
