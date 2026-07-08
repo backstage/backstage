@@ -196,3 +196,26 @@ export namespace myApiMock {
 ```
 
 Both variants can then be passed directly to the test utilities' `apis` option.
+
+## Migrate standalone mock types
+
+The deprecated standalone mock implementation types, such as `MockAnalyticsApi`
+and `MockErrorApi`, are no longer exported. Use `ReturnType` with the corresponding
+`mockApis` helper when you need to name an instance type:
+
+```ts
+import { mockApis } from '@backstage/frontend-test-utils';
+
+type AnalyticsMock = ReturnType<typeof mockApis.analytics>;
+type ErrorMockOptions = Parameters<typeof mockApis.error>[0];
+type CollectedError = ReturnType<
+  ReturnType<typeof mockApis.error>['getErrors']
+>[number];
+```
+
+Use `Parameters<typeof mockApis.featureFlags>[0]` in place of
+`MockFeatureFlagsApiOptions`, and derive collected error types as above in place
+of `ErrorWithContext`. `MockFetchApiOptions` remains exported for configuring
+`mockApis.fetch`. Inspection methods such as `getEvents`, `getErrors`, and
+`getAlerts` remain available on the helper results. The legacy `mockApis.alert`
+helpers remain available for tests that use the old Alert API.

@@ -21,7 +21,8 @@ import {
   type PendingOAuthRequest,
 } from '@backstage/frontend-plugin-api';
 import { createElement } from 'react';
-import { mockApis } from './mockApis';
+import { alertApiRef } from '@backstage/core-plugin-api';
+import { mockApis, type MockFetchApiOptions } from '../index';
 import { getMockApiFactory } from './MockWithApiFactory';
 
 describe('mockApis', () => {
@@ -92,6 +93,62 @@ describe('mockApis', () => {
       expect(featureFlags.isActive('test')).toBe(true);
       expect(featureFlags.isActive).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('preserves inspection helpers and factory registration', async () => {
+    jest.useFakeTimers();
+    try {
+      const alert = mockApis.alert();
+      const alertMessage = { message: 'legacy alert' };
+      const pendingAlert = alert.waitForAlert(
+        message => message === alertMessage,
+      );
+      alert.post(alertMessage);
+      await expect(pendingAlert).resolves.toBe(alertMessage);
+      expect(alert.getAlerts()).toEqual([alertMessage]);
+      expect(getMockApiFactory(alert)?.api).toBe(alertApiRef);
+      expect(getMockApiFactory(mockApis.alert.mock())?.api).toBe(alertApiRef);
+      alert.clearAlerts();
+      expect(alert.getAlerts()).toEqual([]);
+
+      const errors = mockApis.error({ collect: true });
+      const error = new Error('collected error');
+      const pendingError = errors.waitForError(/collected/);
+      errors.post(error, { hidden: true });
+      await expect(pendingError).resolves.toEqual({
+        error,
+        context: { hidden: true },
+      });
+      expect(errors.getErrors()).toEqual([
+        { error, context: { hidden: true } },
+      ]);
+      expect(getMockApiFactory(errors)?.api).toBe(coreApis.error);
+
+      const analytics = mockApis.analytics();
+      analytics.captureEvent({
+        action: 'click',
+        subject: 'test',
+        context: { pluginId: 'test', extensionId: 'test' },
+      });
+      expect(analytics.getEvents()).toEqual([
+        {
+          action: 'click',
+          subject: 'test',
+          context: { pluginId: 'test', extensionId: 'test' },
+        },
+      ]);
+      expect(getMockApiFactory(analytics)?.api).toBe(coreApis.analytics);
+
+      const fetchOptions: MockFetchApiOptions = {
+        baseImplementation: jest.fn(),
+      };
+      expect(getMockApiFactory(mockApis.fetch(fetchOptions))?.api).toBe(
+        coreApis.fetch,
+      );
+    } finally {
+      jest.clearAllTimers();
+      jest.useRealTimers();
+    }
   });
 
   it('provides a registered jest mock for every core API', () => {
