@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs-editor-common
+  title: '@backstage/plugin-techdocs-editor-common'
+  description: Common types and permissions for the TechDocs in-app editor
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: techdocs-maintainers

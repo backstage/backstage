@@ -37,15 +37,39 @@ Run `yarn install` in the project root before anything else.
 - `packages/backend` — Example backend; entry: `packages/backend/src/index.ts`
 - `/.changeset` — Changeset files for versioning
 
-### Custom onboarding plugin (submodule)
+### Git submodules
 
-`plugins/backstage-plugin-onboarding` is a git submodule → `github.com/Estehsan/backstage-plugin-onboarding`. Three packages under `@estehsaan/`:
+Three custom plugin submodules live under `plugins/`. All are included in the root Yarn workspace; run `git submodule update --remote <path>` to pull latest commits.
+
+#### Onboarding plugin
+
+`plugins/backstage-plugin-onboarding` → `github.com/Estehsan/backstage-plugin-onboarding`. Three packages under `@estehsaan/`:
 
 - `@estehsaan/backstage-plugin-onboarding` — Frontend (NFS, `/alpha` exports)
 - `@estehsaan/backstage-plugin-onboarding-backend` — Backend (Express + Knex + catalog processor)
 - `@estehsaan/backstage-plugin-onboarding-common` — Shared types and permissions
 
-Wired in `packages/backend/src/index.ts`; frontend import currently commented out in `packages/app/src/App.tsx`. Update submodule with `git submodule update --remote plugins/backstage-plugin-onboarding`.
+Wired in `packages/backend/src/index.ts`; frontend import currently commented out in `packages/app/src/App.tsx`.
+
+#### TechDocs Editor plugin
+
+`plugins/backstage-plugin-techdocs-editor` → `github.com/Estehsan/backstage-techdoc-editor`. Five packages under `@estehsaan/`:
+
+- `@estehsaan/backstage-plugin-techdocs-editor` — Frontend (NFS `/alpha` + classic)
+- `@estehsaan/backstage-plugin-techdocs-editor-backend` — Backend (Express + VCS providers)
+- `@estehsaan/backstage-plugin-techdocs-editor-react` — Shared React components + API client
+- `@estehsaan/backstage-plugin-techdocs-editor-node` — Extension point for custom VCS providers
+- `@estehsaan/backstage-plugin-techdocs-editor-common` — Shared types and permissions
+
+Its pre-push checklist adds an extra step 0: `yarn test:common-errors` (fast preflight gate) before the standard submodule checklist.
+
+#### Skill Bridge plugin
+
+`plugins/backstage-plugin-skill-bridge` — five packages (`skill-bridge`, `skill-bridge-backend`, `skill-bridge-common`, `skill-bridge-node`, `skill-bridge-react`) under `@estehsaan/`.
+
+Recurring submodule runtime guardrail (case A — within THIS repo): if you see `TypeError: Cannot read properties of null (reading 'useContext')` (e.g. from `@material-ui/styles/WithStyles`, `@backstage/core-plugin-api/useApp`, or `@backstage/version-bridge/VersionedContext`) **or** `TypeError: theme.spacing is not a function` from `@backstage/core-components/Header`, treat it as duplicated frontend runtime modules (React/MUI/Backstage version-bridge contexts split) caused by a submodule plugin (`backstage-plugin-onboarding` or `backstage-plugin-techdocs-editor`) having its own standalone `node_modules/react` (created by running `yarn install` from the submodule root) that shadows the monorepo's hoisted `node_modules/react`. Fix by removing that submodule's `node_modules` — run `yarn clean:onboarding-linked-react`, `yarn clean:techdocs-editor-linked-react`, or `yarn clean:submodule-linked-react` (both) — before `yarn start` in this root repo. These are already wired into `yarn start`/`yarn start:legacy`, so if the error recurs after a fresh `yarn install --immutable` inside a submodule, re-run the relevant clean script and restart.
+
+Recurring submodule runtime guardrail (case B — consumed from an EXTERNAL Backstage app via `portal:` protocol, e.g. `"@estehsaan/backstage-plugin-onboarding": "portal:/.../Back/backstage/plugins/backstage-plugin-onboarding/workspaces/onboarding/plugins/onboarding"`, seen in practice from `/Users/estehsan/Documents/Coders/SAS/Back/devex-backstage`): the same error there is NOT fixed by cleaning submodule `node_modules` in this repo — it is caused by this repo's own **root** `node_modules/react`. This repo uses `nodeLinker: node-modules`, so webpack/rspack resolves `react` for the portal-linked package by walking up the _real_ filesystem path (this repo's root), not the consumer project's path, and finds this repo's React instead of the consumer's — even when both installs are the same React version, they are physically different module instances. **Verified fix (official `@backstage/cli` feature, v0.36+):** in the CONSUMER project's `start` script (e.g. `devex-backstage/package.json`), add `--link <path-to-this-repo-root>` to the `backstage-cli repo start` (or `package start`) invocation, e.g. `"start": "backstage-cli repo start --link /Users/estehsan/Documents/Coders/SAS/Back/backstage"`. The path must point at a directory whose `package.json` has a `workspaces` field (this repo's root qualifies — it lists the onboarding/techdocs-editor/skill-bridge submodule workspaces). This flag (see `@backstage/cli-module-build/dist/commands/{repo,package}/start/*`) makes the bundler redirect imports of any package inside the linked workspace to resolve within that workspace's own context, and always forces `react`/`react-dom`/`react-router(-dom)` to resolve from the consumer app when the import originates from inside the linked workspace tree — this is the documented mechanism for local cross-repo plugin development, not a workaround. Do not use pnp or file:/yarn-pack workarounds unless `--link` is unavailable in the installed CLI version.
 
 ## Key Conventions
 
@@ -139,6 +163,9 @@ For **submodule plugin repos** (`backstage-plugin-techdocs-editor`, `backstage-p
 ```bash
 # From the submodule root (e.g. plugins/backstage-plugin-techdocs-editor)
 
+# 0. (techdocs-editor only) Common-error regression gate
+yarn test:common-errors
+
 # 1. Immutable install — must succeed with no YN0028 errors
 yarn install --immutable
 
@@ -203,3 +230,49 @@ files when (a) modifying/debugging specific code, (b) the graph lacks detail, or
 
 **In Copilot Chat**: Use `/graphify query "..."`, `/graphify path "..."`, or `/graphify explain "..."`
 to search the knowledge graph. Type `/graphify` alone to see available commands.
+
+<!-- headroom:rtk-instructions -->
+
+# RTK (Rust Token Killer) - Token-Optimized Commands
+
+When running shell commands, **always prefix with `rtk`**. This reduces context
+usage by 60-90% with zero behavior change. If rtk has no filter for a command,
+it passes through unchanged — so it is always safe to use.
+
+## Key Commands
+
+```bash
+# Git (59-80% savings)
+rtk git status          rtk git diff            rtk git log
+
+# Files & Search (60-75% savings)
+rtk ls <path>           rtk read <file>         rtk grep <pattern>
+rtk find <pattern>      rtk diff <file>
+
+# Test (90-99% savings) — shows failures only
+rtk pytest tests/       rtk cargo test          rtk test <cmd>
+
+# Build & Lint (80-90% savings) — shows errors only
+rtk tsc                 rtk lint                rtk cargo build
+rtk prettier --check    rtk mypy                rtk ruff check
+
+# Analysis (70-90% savings)
+rtk err <cmd>           rtk log <file>          rtk json <file>
+rtk summary <cmd>       rtk deps                rtk env
+
+# GitHub (26-87% savings)
+rtk gh pr view <n>      rtk gh run list         rtk gh issue list
+
+# Infrastructure (85% savings)
+rtk docker ps           rtk kubectl get         rtk docker logs <c>
+
+# Package managers (70-90% savings)
+rtk pip list            rtk pnpm install        rtk npm run <script>
+```
+
+## Rules
+
+- In command chains, prefix each segment: `rtk git add . && rtk git commit -m "msg"`
+- For debugging, use raw command without rtk prefix
+- `rtk proxy <cmd>` runs command without filtering but tracks usage
+<!-- /headroom:rtk-instructions -->

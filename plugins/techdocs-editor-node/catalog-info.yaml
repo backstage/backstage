@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs-editor-node
+  title: '@backstage/plugin-techdocs-editor-node'
+  description: Node-side VcsProvider extension point for the TechDocs editor plugin
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: techdocs-maintainers

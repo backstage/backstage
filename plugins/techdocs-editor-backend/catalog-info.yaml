@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs-editor-backend
+  title: '@backstage/plugin-techdocs-editor-backend'
+  description: >-
+    Backend plugin providing source read/write and PR creation APIs for the
+    TechDocs in-app editor
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin
+  owner: techdocs-maintainers

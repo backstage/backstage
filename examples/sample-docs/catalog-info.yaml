@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sample-docs
+  title: Sample Documentation
+  description: A sample component for testing the TechDocs in-app editor plugin.
+  annotations:
+    # url: annotation is required for the TechDocs editor (dir: does not support editing)
+    backstage.io/techdocs-ref: url:https://github.com/Estehsan/test-techdoc/tree/main
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:guest

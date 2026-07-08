@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sample-docs-local
+  title: Sample Documentation (Local)
+  description: A local TechDocs sample using dir:. for out-of-the-box TechDocs generation.
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:guest

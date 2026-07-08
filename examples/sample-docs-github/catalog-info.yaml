@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: akumat
+  title: Akumat (GitHub TechDocs Sample)
+  description: A sample component for testing TechDocs with a GitHub-hosted source. Points to the backstage/mkdocs-techdocs-core test fixtures which contain a valid mkdocs.yml.
+  annotations:
+    backstage.io/techdocs-ref: url:https://github.com/backstage/mkdocs-techdocs-core/tree/main#test-fixtures/docs
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:guest

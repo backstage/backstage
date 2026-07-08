@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: builders-library
+  title: Builders Library
+  description: SAS tech community builders library. Used for testing GitHub-hosted TechDocs.
+  annotations:
+    backstage.io/techdocs-ref: url:https://github.com/flysas-tech/builders-library/tree/main
+    github.com/project-slug: flysas-tech/builders-library
+spec:
+  type: library
+  lifecycle: production
+  owner: user:guest

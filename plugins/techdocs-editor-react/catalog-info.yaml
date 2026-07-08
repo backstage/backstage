@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs-editor-react
+  title: '@backstage/plugin-techdocs-editor-react'
+  description: Shared React components for the TechDocs in-app editor
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: techdocs-maintainers

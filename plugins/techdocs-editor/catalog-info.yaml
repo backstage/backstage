@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs-editor
+  title: '@backstage/plugin-techdocs-editor'
+  description: Backstage plugin for editing TechDocs documentation in-app
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: techdocs-maintainers

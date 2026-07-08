@@ -210,9 +210,9 @@ organization:
 techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
-    runIn: 'docker'
+    runIn: 'docker' # Use 'docker' if you have Docker running; 'local' requires mkdocs installed (pip install mkdocs mkdocs-techdocs-core)
     # dockerImage: my-org/techdocs # use a custom docker image
-    # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
+    pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
 
@@ -231,6 +231,12 @@ integrations:
   gitlab:
     - host: gitlab.com
       token: ${GITLAB_TOKEN}
+
+# TechDocs in-app editor plugin configuration
+techdocsEditor:
+  defaultAuthorName: 'TechDocs Editor Bot'
+  defaultAuthorEmail: 'techdocs-editor@example.com'
+  defaultDraft: true
   ### Example for how to add a bitbucket cloud integration
   # bitbucketCloud:
   #   # Using API token
@@ -270,6 +276,7 @@ catalog:
   import:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
+  processingInterval: { seconds: 30 }
   rules:
     - allow:
         - Component
@@ -278,20 +285,24 @@ catalog:
         - System
         - Domain
         - Location
+        - Document
+        - User
+        - Group
         - OnboardingTemplate
   providers:
-    azureBlob:
-      accountName: ${ACCOUNT_NAME}
-      containerName: ${CONTAINER_NAME}
-      schedule: # same options as in TaskScheduleDefinition
-        # supports cron, ISO duration, "human duration" as used in code
-        frequency: { minutes: 30 }
-        # supports ISO duration, "human duration" as used in code
-        timeout: { minutes: 3 }
+    # azureBlob:  # Disabled — requires ACCOUNT_NAME and CONTAINER_NAME env vars
+    #   accountName: ${ACCOUNT_NAME}
+    #   containerName: ${CONTAINER_NAME}
+    #   schedule:
+    #     frequency: { minutes: 30 }
+    #     timeout: { minutes: 3 }
     backstageOpenapi:
       plugins:
         - catalog
         - search
+    # Keep providers minimal to match upstream demo behavior.
+    # If you want to enable discovery providers later, use the current schema in
+    # the corresponding module docs and add them back incrementally.
   locations:
     # Add a location here to ingest it, for example from a URL:
     #
@@ -317,12 +328,31 @@ catalog:
     # Example component for TechDocs
     - type: file
       target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
+    # Test entity for TechDocs editor plugin (url: annotation needed for editing)
+    - type: file
+      target: ../../plugins/techdocs-editor/examples/test-entity.yaml
+    # Sample docs component for testing the TechDocs in-app editor
+    - type: file
+      target: ../../examples/sample-docs/catalog-info.yaml
+    # Local docs component for testing dir:. TechDocs generation
+    - type: file
+      target: ../../examples/sample-docs-local/catalog-info.yaml
+    # GitHub-hosted TechDocs sample (akumat) — uses backstage/mkdocs-techdocs-core test fixtures
+    - type: file
+      target: ../../examples/sample-docs-github/catalog-info.yaml
+    # GitHub-hosted TechDocs — flysas-tech/builders-library (real production docs)
+    - type: file
+      target: ../../examples/sample-docs-builders-library/catalog-info.yaml
     # Backstage example templates
     - type: file
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
       rules:
         - allow: [Template]
     # Onboarding plugin example templates
+    - type: file
+      target: ../../plugins/backstage-plugin-onboarding/workspaces/onboarding/examples/new-joiner-starter-template.yaml
+      rules:
+        - allow: [OnboardingTemplate]
     - type: file
       target: ../../plugins/backstage-plugin-onboarding/workspaces/onboarding/examples/backend-engineer-template.yaml
       rules:
@@ -399,7 +429,7 @@ auth:
       development:
         clientId: ${AUTH_GITHUB_CLIENT_ID}
         clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
-        enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
+        # enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL} # Only needed for GitHub Enterprise
     gitlab:
       development:
         clientId: ${AUTH_GITLAB_CLIENT_ID}
@@ -467,6 +497,13 @@ auth:
 
 permission:
   enabled: true
+
+notifications:
+  processors:
+    email:
+      transportConfig:
+        transport: stream
+      sender: backstage@example.com
 
 devTools:
   scheduledTasks:
