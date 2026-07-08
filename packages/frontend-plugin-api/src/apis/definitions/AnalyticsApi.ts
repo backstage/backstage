@@ -147,7 +147,7 @@ export type AnalyticsApi = {
  * @remarks
  *
  * To define a concrete Analytics Implementation, use
- * {@link AnalyticsImplementationBlueprint} instead.
+ * {@link @backstage/plugin-app-react#AnalyticsImplementationBlueprint}.
  *
  * @public
  */
