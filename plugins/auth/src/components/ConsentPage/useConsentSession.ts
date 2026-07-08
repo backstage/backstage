@@ -16,7 +16,7 @@
 
 import {
   useApi,
-  alertApiRef,
+  toastApiRef,
   fetchApiRef,
   discoveryApiRef,
 } from '@backstage/frontend-plugin-api';
@@ -41,7 +41,7 @@ type ConsentState =
   | { status: 'completed'; action: 'approve' | 'reject' };
 
 export const useConsentSession = (opts: { sessionId?: string }) => {
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const fetchApi = useApi(fetchApiRef);
   const discoveryApi = useApi(discoveryApiRef);
   const { sessionId } = opts;
@@ -119,18 +119,20 @@ export const useConsentSession = (opts: { sessionId?: string }) => {
     state,
     handleAction: useCallback(
       async (action: 'approve' | 'reject') => {
-        if (state.status !== 'loaded') return;
+        if (state.status !== 'loaded') {
+          return;
+        }
 
         try {
           await handleActionInternal(action, state.session);
         } catch (err) {
-          alertApi.post({
-            message: toError(err).message,
-            severity: 'error',
+          toastApi.post({
+            title: toError(err).message,
+            status: 'danger',
           });
         }
       },
-      [state, handleActionInternal, alertApi],
+      [state, handleActionInternal, toastApi],
     ),
   };
 };
