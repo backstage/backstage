@@ -105,6 +105,6 @@ export type ToastApi = {
  * @public
  * @deprecated Use {@link coreApis.toast} instead.
  */
-export const toastApiRef: ApiRef<ToastApi> = createApiRef({
+export const toastApiRef: ApiRef<ToastApi> = createApiRef<ToastApi>().with({
   id: 'core.toast',
 });

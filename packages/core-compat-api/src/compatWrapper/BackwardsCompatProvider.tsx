@@ -66,7 +66,7 @@ export function toLegacyPlugin(
 
   legacy = {
     getId(): string {
-      return plugin.pluginId ?? plugin.id;
+      return plugin.pluginId;
     },
     get routes() {
       return {};

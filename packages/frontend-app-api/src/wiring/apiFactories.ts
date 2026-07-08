@@ -188,7 +188,7 @@ function registerFeatureFlagDeclarations(
     let source: string | undefined;
 
     if (OpaqueFrontendPlugin.isType(feature)) {
-      pluginId = feature.id;
+      pluginId = feature.pluginId;
       flags = OpaqueFrontendPlugin.toInternal(feature).featureFlags;
       source = 'Plugin';
     } else if (isInternalFrontendModule(feature)) {

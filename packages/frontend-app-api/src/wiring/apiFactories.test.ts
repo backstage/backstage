@@ -224,7 +224,7 @@ describe('registerFeatureFlagDeclarationsInHolder', () => {
 
 describe('wrapFeatureFlagApiFactory', () => {
   it('should not wrap factories for non-feature-flag APIs', () => {
-    const otherApiRef = createApiRef<{}>({ id: 'test.other' });
+    const otherApiRef = createApiRef<{}>().with({ id: 'test.other' });
     const factory = {
       api: otherApiRef,
       deps: {},

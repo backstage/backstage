@@ -25,7 +25,7 @@ import {
 
 describe('FrontendApiResolver', () => {
   it('should cache falsy API values', () => {
-    const falseApiRef = createApiRef<boolean>({ id: 'test.false' });
+    const falseApiRef = createApiRef<boolean>().with({ id: 'test.false' });
     const falseFactoryFn = jest.fn(() => false);
     const registry = new FrontendApiRegistry();
 
@@ -43,8 +43,10 @@ describe('FrontendApiResolver', () => {
   });
 
   it('should resolve falsy dependencies', () => {
-    const falseApiRef = createApiRef<boolean>({ id: 'test.false' });
-    const dependentApiRef = createApiRef<string>({ id: 'test.dependent' });
+    const falseApiRef = createApiRef<boolean>().with({ id: 'test.false' });
+    const dependentApiRef = createApiRef<string>().with({
+      id: 'test.dependent',
+    });
     const falseFactoryFn = jest.fn(() => false);
     const dependentFactoryFn = jest.fn((deps: { falseDependency: boolean }) =>
       deps.falseDependency === false ? 'resolved' : 'unexpected',

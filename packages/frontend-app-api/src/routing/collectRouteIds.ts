@@ -48,7 +48,7 @@ export function collectRouteIds(
     }
 
     for (const [name, ref] of Object.entries(feature.routes)) {
-      const refId = `${feature.id}.${name}`;
+      const refId = `${feature.pluginId}.${name}`;
       if (routesById.has(refId)) {
         collector.report({
           code: 'ROUTE_DUPLICATE',
@@ -68,7 +68,7 @@ export function collectRouteIds(
       }
     }
     for (const [name, ref] of Object.entries(feature.externalRoutes)) {
-      const refId = `${feature.id}.${name}`;
+      const refId = `${feature.pluginId}.${name}`;
       if (externalRoutesById.has(refId)) {
         collector.report({
           code: 'ROUTE_DUPLICATE',

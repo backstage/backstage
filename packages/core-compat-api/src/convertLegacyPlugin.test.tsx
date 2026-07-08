@@ -41,7 +41,6 @@ describe('convertLegacyPlugin', () => {
         "featureFlags": [],
         "getExtension": [Function],
         "icon": undefined,
-        "id": "test",
         "if": undefined,
         "info": [Function],
         "infoOptions": undefined,
@@ -82,7 +81,7 @@ describe('convertLegacyPlugin', () => {
 
     const internalConverted = OpaqueFrontendPlugin.toInternal(converted);
 
-    expect(internalConverted.id).toBe('test');
+    expect(internalConverted.pluginId).toBe('test');
     expect(internalConverted.routes).toEqual({
       test: routeRef,
     });

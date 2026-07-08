@@ -60,7 +60,7 @@ describe('useApp', () => {
     };
 
     const mockPlugin = {
-      id: 'test-plugin',
+      pluginId: 'test-plugin',
     };
 
     const mockAppNode: AppNode = {

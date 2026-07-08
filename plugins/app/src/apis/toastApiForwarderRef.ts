@@ -56,6 +56,6 @@ export type ToastApiForwarderApi = ToastApi & {
  *
  * @internal
  */
-export const toastApiForwarderRef = createApiRef<ToastApiForwarderApi>({
+export const toastApiForwarderRef = createApiRef<ToastApiForwarderApi>().with({
   id: 'app.toast.internal-forwarder',
 });
