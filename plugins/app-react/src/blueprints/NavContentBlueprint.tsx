@@ -15,10 +15,10 @@
  */
 
 import { ComponentType } from 'react';
+import { IconComponent } from '@backstage/core-plugin-api';
 import {
   AppNode,
   ExtensionBoundary,
-  IconComponent,
   IconElement,
   RouteRef,
   createExtensionBlueprint,

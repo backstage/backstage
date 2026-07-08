@@ -48,13 +48,9 @@ describe('useApp', () => {
   });
 
   describe('new system', () => {
-    const mockIcon = () => null;
     const mockIconsApi: IconsApi = {
       icon: jest.fn((key: string) =>
         key === 'test-icon' ? mockIcon() : undefined,
-      ),
-      getIcon: jest.fn((key: string) =>
-        key === 'test-icon' ? mockIcon : undefined,
       ),
       listIconKeys: jest.fn(() => ['test-icon']),
     };

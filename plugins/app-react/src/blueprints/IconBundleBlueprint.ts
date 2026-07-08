@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { IconComponent, IconElement } from '@backstage/frontend-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import {
   createExtensionBlueprint,
   createExtensionDataRef,
