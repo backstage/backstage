@@ -70,7 +70,7 @@ export type AppErrorTypes = {
   EXTENSION_FACTORY_ERROR: {
     context: { node: AppNode };
   };
-  // createSpecializedApp
+  // specialized app
   API_EXTENSION_INVALID: {
     context: { node: AppNode };
   };
