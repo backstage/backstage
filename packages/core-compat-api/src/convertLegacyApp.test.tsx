@@ -103,6 +103,7 @@ describe('convertLegacyApp', () => {
             id: 'api:example-1/plugin.example.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
+            defaultConfig: undefined,
           },
         ],
       },
@@ -124,17 +125,19 @@ describe('convertLegacyApp', () => {
         ],
       },
       {
-        id: undefined,
+        id: 'app',
         extensions: [
           {
             id: 'app/layout',
             attachTo: { id: 'app/root', input: 'children' },
             disabled: false,
+            defaultConfig: undefined,
           },
           {
             id: 'app/nav',
             attachTo: { id: 'app/layout', input: 'nav' },
             disabled: true,
+            defaultConfig: undefined,
           },
         ],
       },
