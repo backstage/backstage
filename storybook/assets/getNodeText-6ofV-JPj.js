@@ -1,1 +1,0 @@
-import{ca as t}from"./iframe-D-U3XCi_.js";function i(r){if(typeof r!="function"){if(Array.isArray(r))return t.Children.map(r,i)?.filter(Boolean).join(" ")||void 0;if(t.isValidElement(r))return i(r.props.children);if(typeof r=="string"||typeof r=="number")return String(r)}}export{i as g};
