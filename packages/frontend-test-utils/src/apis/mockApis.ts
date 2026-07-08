@@ -15,7 +15,6 @@
  */
 
 import {
-  alertApiRef,
   analyticsApiRef,
   configApiRef,
   discoveryApiRef,
@@ -35,6 +34,7 @@ import {
   type StorageApi,
   type TranslationApi,
 } from '@backstage/frontend-plugin-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
   type PermissionApi,
@@ -91,7 +91,7 @@ import { createApiMock } from './createApiMock';
  */
 export namespace mockApis {
   /**
-   * Fake implementation of {@link @backstage/frontend-plugin-api#AlertApi}.
+   * Fake implementation of {@link @backstage/core-plugin-api#AlertApi}.
    *
    * @public
    * @example
@@ -110,14 +110,14 @@ export namespace mockApis {
     ) as MockWithApiFactory<MockAlertApi>;
   }
   /**
-   * Mock helpers for {@link @backstage/frontend-plugin-api#AlertApi}.
+   * Mock helpers for {@link @backstage/core-plugin-api#AlertApi}.
    *
    * @public
    */
   export namespace alert {
     /**
      * Creates a mock implementation of
-     * {@link @backstage/frontend-plugin-api#AlertApi}. All methods are
+     * {@link @backstage/core-plugin-api#AlertApi}. All methods are
      * replaced with jest mock functions, and you can optionally pass in a
      * subset of methods with an explicit implementation.
      *
