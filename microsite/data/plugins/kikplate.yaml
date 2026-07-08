@@ -4,7 +4,7 @@ author: Corpobit
 authorUrl: https://github.com/moeidheidari
 category: Development
 description: Generate production-ready project templates and scaffolding workflows from Kikplate directly inside Backstage.
-documentation: https://www.npmjs.com/package/@corpobit/backstage-plugin-kikplate
+documentation: https://github.com/kikplate/kikplate/blob/main/README.md
 iconUrl: /img/logo-gradient-on-dark.svg
 npmPackageName: '@corpobit/backstage-plugin-kikplate'
 addedDate: '2026-06-26'
