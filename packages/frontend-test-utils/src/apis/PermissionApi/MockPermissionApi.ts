@@ -27,8 +27,6 @@ import {
  * requestHandler function to override the mock result returned for a given
  * request.
  *
- * @public
- * @deprecated Use `mockApis.permission()` instead.
  */
 export class MockPermissionApi implements PermissionApi {
   constructor(

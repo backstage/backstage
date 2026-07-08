@@ -284,9 +284,9 @@ it's important to keep each of these levels of detail disaggregated.
 
 ### Unit Testing Event Capture
 
-The `@backstage/frontend-test-utils` package includes a `MockAnalyticsApi` implementation
-that you can use in your unit tests to spy on and make assertions about any
-analytics events captured.
+The `@backstage/frontend-test-utils` package includes a `mockApis.analytics()`
+helper that you can use in your unit tests to spy on and make assertions about
+any analytics events captured.
 
 Use it like this:
 
@@ -294,14 +294,14 @@ Use it like this:
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { analyticsApiRef } from '@backstage/frontend-plugin-api';
 import {
-  MockAnalyticsApi,
+  mockApis,
   TestApiProvider,
   wrapInTestApp,
 } from '@backstage/frontend-test-utils';
 
 describe('SomeComponent', () => {
   it('should capture event on click', () => {
-    const apiSpy = new MockAnalyticsApi();
+    const apiSpy = mockApis.analytics();
 
     const { getByText } = render(
       wrapInTestApp(

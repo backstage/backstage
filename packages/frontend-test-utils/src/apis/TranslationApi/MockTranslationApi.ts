@@ -34,8 +34,6 @@ const DEFAULT_LANGUAGE = 'en';
 /**
  * Mock implementation of {@link @backstage/frontend-plugin-api#TranslationApi}.
  *
- * @public
- * @deprecated Use `mockApis.translation()` instead.
  */
 export class MockTranslationApi implements TranslationApi {
   static create() {
