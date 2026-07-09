@@ -291,15 +291,14 @@ export async function createRouter(
       };
     }
 
-    // Add config default origins if not in user settings
-    // Only add origins if the channel is enabled (not explicitly disabled)
+    // Add config default origins if not in user settings.
+    // Origins are always merged so that an admin can set a channel to disabled
+    // by default while still enabling specific origins (e.g. enabled: false
+    // globally with plugin:soundcheck enabled: true).
     const defaultChannelSettings = defaultNotificationSettings?.channels?.find(
       c => c.id.toLowerCase() === opts.channel.toLowerCase(),
     );
-    if (
-      defaultChannelSettings?.origins &&
-      settings.channels[0].enabled !== false
-    ) {
+    if (defaultChannelSettings?.origins) {
       for (const defaultOrigin of defaultChannelSettings.origins) {
         if (
           !settings.channels[0].origins.some(
