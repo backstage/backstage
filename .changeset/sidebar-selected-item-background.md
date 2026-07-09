@@ -3,4 +3,4 @@
 '@backstage/core-components': patch
 ---
 
-Added `selectedBackground` and `selectedColor` options to the `navigation.submenu` palette, allowing adopters to customize the background and text color of selected sidebar submenu items. Previously these colors were hardcoded and could not be changed through theme configuration.
+Added `selectedBackground` and `selectedColor` options to the navigation palette, allowing adopters to customize the background and text color of selected sidebar nested menu items. Previously these colors were hardcoded and could not be changed through theme configuration.

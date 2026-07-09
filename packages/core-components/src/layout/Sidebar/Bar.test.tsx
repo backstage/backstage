@@ -15,6 +15,11 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
+import {
+  createUnifiedTheme,
+  palettes,
+  UnifiedThemeProvider,
+} from '@backstage/theme';
 import AcUnitIcon from '@material-ui/icons/AcUnit';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
@@ -132,6 +137,111 @@ describe('Sidebar', () => {
         'href',
         'https://backstage.io/',
       );
+    });
+  });
+});
+
+describe('Submenu selected item theming', () => {
+  it('applies custom palette overrides for selected submenu item background and text color', async () => {
+    const customTheme = createUnifiedTheme({
+      palette: {
+        ...palettes.light,
+        navigation: {
+          ...palettes.light.navigation,
+          submenu: {
+            ...palettes.light.navigation.submenu,
+            selectedBackground: '#123456',
+            selectedColor: '#abcdef',
+          },
+        },
+      },
+    });
+
+    await renderInTestApp(
+      <UnifiedThemeProvider theme={customTheme}>
+        <SidebarPinStateProvider
+          value={{
+            isPinned: false,
+            isMobile: false,
+            toggleSidebarPinState: () => {},
+          }}
+        >
+          <Sidebar disableExpandOnHover>
+            <SidebarItem icon={MenuBookIcon} onClick={() => {}} text="Catalog">
+              <SidebarSubmenu title="Catalog">
+                <SidebarSubmenuItem
+                  title="Tools"
+                  to="/"
+                  icon={BuildRoundedIcon}
+                />
+              </SidebarSubmenu>
+            </SidebarItem>
+          </Sidebar>
+        </SidebarPinStateProvider>
+      </UnifiedThemeProvider>,
+      { routeEntries: ['/'] },
+    );
+
+    await userEvent.hover(screen.getByTestId('item-with-submenu'));
+    const toolsItem = await screen.findByText('Tools');
+    const selectedElement = toolsItem.closest(
+      '[class*="selected"]',
+    ) as HTMLElement;
+
+    expect(selectedElement).toBeInTheDocument();
+    expect(selectedElement).toHaveStyle({
+      background: '#123456',
+      color: '#abcdef',
+    });
+  });
+
+  it('falls back to default colors when no palette overrides are provided', async () => {
+    const defaultTheme = createUnifiedTheme({
+      palette: {
+        ...palettes.light,
+        navigation: {
+          ...palettes.light.navigation,
+          submenu: {
+            background: '#404040',
+          },
+        },
+      },
+    });
+
+    await renderInTestApp(
+      <UnifiedThemeProvider theme={defaultTheme}>
+        <SidebarPinStateProvider
+          value={{
+            isPinned: false,
+            isMobile: false,
+            toggleSidebarPinState: () => {},
+          }}
+        >
+          <Sidebar disableExpandOnHover>
+            <SidebarItem icon={MenuBookIcon} onClick={() => {}} text="Catalog">
+              <SidebarSubmenu title="Catalog">
+                <SidebarSubmenuItem
+                  title="Tools"
+                  to="/"
+                  icon={BuildRoundedIcon}
+                />
+              </SidebarSubmenu>
+            </SidebarItem>
+          </Sidebar>
+        </SidebarPinStateProvider>
+      </UnifiedThemeProvider>,
+      { routeEntries: ['/'] },
+    );
+
+    await userEvent.hover(screen.getByTestId('item-with-submenu'));
+    const toolsItem = await screen.findByText('Tools');
+    const selectedElement = toolsItem.closest(
+      '[class*="selected"]',
+    ) as HTMLElement;
+
+    expect(selectedElement).toBeInTheDocument();
+    expect(selectedElement).toHaveStyle({
+      background: '#6f6f6f',
     });
   });
 });
