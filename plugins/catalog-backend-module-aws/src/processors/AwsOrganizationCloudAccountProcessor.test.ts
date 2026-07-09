@@ -56,9 +56,9 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
         throw new Error(`Unexpected command: ${command.constructor.name}`);
       });
       await processor.readLocation(location, false, emit);
-      expect(organizationsSendMock).toHaveBeenCalledWith(
-        expect.any(ListAccountsCommand),
-        undefined,
+      expect(organizationsSendMock).toHaveBeenCalledTimes(1);
+      expect(organizationsSendMock.mock.calls[0][0]).toBeInstanceOf(
+        ListAccountsCommand,
       );
       expect(emit).toHaveBeenCalledWith({
         type: 'entity',
@@ -116,9 +116,9 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
         throw new Error(`Unexpected command: ${command.constructor.name}`);
       });
       await processor.readLocation(locationTest, false, emit);
-      expect(organizationsSendMock).toHaveBeenCalledWith(
-        expect.any(ListAccountsCommand),
-        undefined,
+      expect(organizationsSendMock).toHaveBeenCalledTimes(1);
+      expect(organizationsSendMock.mock.calls[0][0]).toBeInstanceOf(
+        ListAccountsCommand,
       );
       expect(emit).toHaveBeenCalledTimes(1);
       expect(emit).toHaveBeenCalledWith({

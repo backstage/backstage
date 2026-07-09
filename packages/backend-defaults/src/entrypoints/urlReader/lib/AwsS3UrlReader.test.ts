@@ -270,6 +270,11 @@ describe('parseUrl', () => {
 });
 
 describe('AwsS3UrlReader', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    s3SendMock.mockReset();
+  });
+
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return AwsS3UrlReader.factory({
       config: new ConfigReader(config),

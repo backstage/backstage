@@ -222,6 +222,8 @@ const createPublisherFromConfig = async ({
 };
 
 describe('AwsS3Publish', () => {
+  let s3SendSpy: jest.SpyInstance;
+
   const entity = {
     apiVersion: '1',
     kind: 'Component',
@@ -285,11 +287,15 @@ describe('AwsS3Publish', () => {
       [directory]: files,
     });
 
-    jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+    s3SendSpy = jest
+      .spyOn(S3Client.prototype, 'send')
+      .mockImplementation(s3SendMock);
     mockDefaultS3Send();
   });
 
   afterEach(() => {
+    s3SendSpy?.mockRestore();
+    s3SendMock.mockReset();
     process.env = env;
   });
 

@@ -46,6 +46,7 @@ jest.mock('@aws-sdk/credential-providers', () => {
 describe('DefaultAwsCredentialsManager', () => {
   beforeEach(() => {
     process.env = { ...env };
+    jest.restoreAllMocks();
     jest.resetAllMocks();
 
     stsSendShouldReject = false;
@@ -169,6 +170,7 @@ describe('DefaultAwsCredentialsManager', () => {
 
   afterEach(() => {
     process.env = env;
+    jest.restoreAllMocks();
     if (tmpDir) {
       rmSync(tmpDir, { recursive: true, force: true });
     }
@@ -554,6 +556,7 @@ describe('DefaultAwsCredentialsManager', () => {
         DefaultAwsCredentialsManager.fromConfig(configWithRegion);
       await provider.getCredentialProvider({ accountId: '123456789012' });
 
+      expect(stsSendMock).toHaveBeenCalledTimes(1);
       const stsClient = stsSendMock.mock.contexts[0] as STSClient;
       expect(await stsClient.config.region()).toEqual(region);
     });

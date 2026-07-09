@@ -198,6 +198,11 @@ describe('parseUrl', () => {
 });
 
 describe('AwsCodeCommitUrlReader', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    codeCommitSendMock.mockReset();
+  });
+
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return AwsCodeCommitUrlReader.factory({
       config: new ConfigReader(config),
