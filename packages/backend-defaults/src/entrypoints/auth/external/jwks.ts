@@ -30,6 +30,60 @@ type JWKSTokenContext = {
   url: URL;
   jwks: JWTVerifyGetKey;
   allAccessRestrictions?: AccessRestrictionsMap;
+  claims: Array<{ claim: string; anyOf: string[] }>;
+};
+
+// Normalizes a configured `claims` value into a deduped list of allowed
+// string values. Each string/number/boolean is one exact allowed value; use
+// an array for multiple. Works off an already-extracted raw value rather
+// than a `Config` key lookup (see the call site in `initialize`).
+const readClaimAllowedValues = (value: unknown): string[] | undefined => {
+  const rawValues = Array.isArray(value) ? value : [value];
+
+  const values = [
+    ...new Set(
+      rawValues
+        .map(rawValue => {
+          if (typeof rawValue === 'string') {
+            return rawValue;
+          }
+
+          if (typeof rawValue === 'number' || typeof rawValue === 'boolean') {
+            return String(rawValue);
+          }
+
+          return undefined;
+        })
+        .filter((rawValue): rawValue is string => Boolean(rawValue)),
+    ),
+  ];
+
+  return values.length ? values : undefined;
+};
+
+// Normalizes a verified JWT claim value into the set of values it satisfies:
+// the value itself, plus - for a space-delimited string (e.g. OAuth `scope`)
+// or an array - each of its entries, all by their string form.
+const claimValues = (claimValue: unknown): Set<string> => {
+  let values: unknown[];
+  if (Array.isArray(claimValue)) {
+    values = claimValue;
+  } else if (typeof claimValue === 'string') {
+    values = [claimValue, ...claimValue.split(' ')];
+  } else {
+    values = [claimValue];
+  }
+
+  return new Set(
+    values
+      .filter(
+        value =>
+          typeof value === 'string' ||
+          typeof value === 'number' ||
+          typeof value === 'boolean',
+      )
+      .map(String),
+  );
 };
 
 export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
@@ -48,6 +102,30 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
     const url = new URL(options.getString('url'));
     const jwks = createRemoteJWKSet(url);
     const allAccessRestrictions = readAccessRestrictionsFromConfig(options);
+
+    // Claim names are arbitrary strings and commonly namespaced with dots or
+    // slashes (e.g. `example.com/team` or an Auth0-style
+    // `https://example.com/claim`). They therefore can't be looked up via
+    // `Config.get(key)`, which always splits `key` on `.` as a path and rejects
+    // `/`. Reading the whole `claims` block once as a raw value (a no-argument
+    // `.get()` skips path splitting) and iterating it with plain property
+    // access avoids that.
+    const claimsConfig = options.getOptionalConfig('claims');
+    const claims = claimsConfig
+      ? Object.entries(claimsConfig.get<Record<string, unknown>>()).map(
+          ([claim, value]) => {
+            const anyOf = readClaimAllowedValues(value);
+            if (!anyOf) {
+              throw new Error(
+                `Invalid value for 'claims.${claim}' in JWKS external access config, expected a non-empty string, number, boolean, or array of those`,
+              );
+            }
+
+            return { claim, anyOf };
+          },
+        )
+      : [];
+
     return {
       algorithms,
       audiences,
@@ -56,20 +134,28 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
       subjectPrefix,
       url,
       allAccessRestrictions,
+      claims,
     };
   },
 
   async verifyToken(token: string, context: JWKSTokenContext) {
     try {
-      const {
-        payload: { sub },
-      } = await jwtVerify(token, context.jwks, {
+      const { payload } = await jwtVerify(token, context.jwks, {
         algorithms: context.algorithms,
         issuer: context.issuers,
         audience: context.audiences,
       });
 
+      const { sub } = payload;
       if (sub) {
+        const allClaimsMatch = context.claims.every(({ claim, anyOf }) => {
+          const actual = claimValues(payload[claim]);
+          return anyOf.some(required => actual.has(required));
+        });
+        if (!allClaimsMatch) {
+          return undefined;
+        }
+
         const prefix = context.subjectPrefix
           ? `external:${context.subjectPrefix}:`
           : 'external:';
@@ -80,6 +166,7 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
     } catch {
       return undefined;
     }
+
     return undefined;
   },
 });
