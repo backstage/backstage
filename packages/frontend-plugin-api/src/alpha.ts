@@ -61,3 +61,7 @@ export {
   type PluginWrapperApi,
   pluginWrapperApiRef,
 } from './apis/definitions/PluginWrapperApi';
+export {
+  NestedRoutingContractProvider,
+  type NestedRoutingContractProviderProps,
+} from './routing/NestedRoutingContractProvider';

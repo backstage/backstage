@@ -52,3 +52,4 @@ export * from './ToastApi';
 export * from './TranslationApi';
 export * from './PluginHeaderActionsApi';
 export * from './PluginWrapperApi';
+export * from './PageRouterApi';

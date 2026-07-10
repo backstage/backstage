@@ -21,5 +21,53 @@ export {
   createExternalRouteRef,
   type ExternalRouteRef,
 } from './ExternalRouteRef';
+export {
+  createRouteDescriptor,
+  resolveRouteDescriptorLoader,
+  type CreateRouteDescriptorOptions,
+  type RouteDescriptor,
+  type RouteDescriptorLoader,
+} from './RouteDescriptor';
+export {
+  splitRouteDescriptorPath,
+  isRouteDescriptorSplatSegment,
+  isRouteDescriptorParamSegment,
+  getRouteDescriptorParamName,
+  isSplatRouteDescriptorPath,
+  collectRouteDescriptorParams,
+  joinRouteDescriptorPaths,
+} from './routeDescriptorPath';
 export { useRouteRef } from './useRouteRef';
 export { useRouteRefParams } from './useRouteRefParams';
+export type {
+  RoutingLocation,
+  RoutingContract,
+  RoutingNavigateOptions,
+  RoutingBlocker,
+  RoutingBlockerAction,
+  RoutingBlockerTransition,
+} from './RoutingContract';
+export type {
+  CreateContractOptions,
+  NavigationControllerApi,
+} from './NavigationControllerApi';
+export { navigationControllerApiRef } from './NavigationControllerApi';
+export {
+  RoutingContractContext,
+  useRoutingContract,
+} from './RoutingContractContext';
+export {
+  LazyDescriptorElement,
+  type LazyDescriptorElementProps,
+} from './LazyDescriptorElement';
+export {
+  useFrameworkLocation,
+  useFrameworkNavigate,
+  useOptionalFrameworkNavigate,
+  useCompatNavigate,
+} from './useFrameworkNavigation';
+export {
+  useNavigateRouteRef,
+  type NavigateRouteRefFunc,
+} from './useNavigateRouteRef';
+export { RouteLink, type RouteLinkProps } from './RouteLink';

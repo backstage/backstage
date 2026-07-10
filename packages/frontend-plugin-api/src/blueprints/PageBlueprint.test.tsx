@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef } from '../routing';
+import { createRouteDescriptor, createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import {
   createExtensionTester,
   renderInTestApp,
+  renderTestApp,
 } from '@backstage/frontend-test-utils';
 import {
   coreExtensionData,
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { SubPageBlueprint } from './SubPageBlueprint';
 
 describe('PageBlueprint', () => {
   const mockRouteRef = createRouteRef();
@@ -97,6 +99,24 @@ describe('PageBlueprint', () => {
                 "optional": [Function],
                 "toString": [Function],
               },
+            ],
+            "replaces": undefined,
+            "withContext": [Function],
+          },
+          "router": {
+            "$$type": "@backstage/ExtensionInput",
+            "config": {
+              "internal": false,
+              "optional": true,
+              "singleton": true,
+            },
+            "context": {
+              "input": "router",
+              "kind": "page",
+              "name": "test-page",
+            },
+            "extensionData": [
+              [Function],
             ],
             "replaces": undefined,
             "withContext": [Function],
@@ -266,5 +286,102 @@ describe('PageBlueprint', () => {
         ],
       }
     `);
+  });
+
+  it('should accept route descriptors for subpage tab routing', async () => {
+    const myPage = PageBlueprint.make({
+      name: 'descriptor-page',
+      params: {
+        path: '/tools',
+        title: 'Tools',
+        routes: [
+          createRouteDescriptor({
+            path: 'overview',
+            title: 'Overview',
+            loader: async () => <div data-testid="overview">Overview</div>,
+          }),
+          createRouteDescriptor({
+            path: 'settings',
+            title: 'Settings',
+            loader: async () => <div data-testid="settings">Settings</div>,
+          }),
+        ],
+      },
+    });
+
+    renderTestApp({
+      extensions: [myPage],
+      initialRouteEntries: ['/tools/overview'],
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('overview')).toBeInTheDocument(),
+    );
+    expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();
+  });
+
+  it('should still support SubPageBlueprint pages input alongside descriptors API', async () => {
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/devtools',
+        title: 'DevTools',
+      },
+    });
+
+    const infoSubPage = SubPageBlueprint.make({
+      name: 'info',
+      params: {
+        path: 'info',
+        title: 'Info',
+        loader: async () => <div data-testid="info-page">Info</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [parentPage, infoSubPage],
+      initialRouteEntries: ['/devtools/info'],
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('info-page')).toBeInTheDocument(),
+    );
+  });
+
+  it('should prefer pages input over routes when both are present', async () => {
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/mixed',
+        title: 'Mixed',
+        routes: [
+          createRouteDescriptor({
+            path: 'descriptor',
+            title: 'Descriptor',
+            loader: async () => (
+              <div data-testid="descriptor-page">Descriptor</div>
+            ),
+          }),
+        ],
+      },
+    });
+
+    const inputSubPage = SubPageBlueprint.make({
+      name: 'input',
+      params: {
+        path: 'input',
+        title: 'Input',
+        loader: async () => <div data-testid="input-page">Input</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [parentPage, inputSubPage],
+      initialRouteEntries: ['/mixed/input'],
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('input-page')).toBeInTheDocument(),
+    );
+    expect(screen.queryByTestId('descriptor-page')).not.toBeInTheDocument();
   });
 });
