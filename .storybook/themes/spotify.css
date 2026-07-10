@@ -130,6 +130,7 @@
 
   .bui-ButtonIcon {
     padding: 0;
+    border-radius: var(--bui-radius-full);
   }
 
   .bui-MenuPopup {
