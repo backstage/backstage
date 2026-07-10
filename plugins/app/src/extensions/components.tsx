@@ -28,12 +28,13 @@ import {
 } from '@backstage/core-components';
 import {
   BreadcrumbEntry,
+  RoutingContractContext,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
-import { useMemo } from 'react';
-import { useResolvedPath } from 'react-router-dom';
+import { useContext, useMemo } from 'react';
+import { useInRouterContext, useResolvedPath } from 'react-router-dom';
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -88,8 +89,20 @@ export const PageLayout = SwappableComponentBlueprint.make({
           tabs,
           children,
         } = props;
-        // TODO(Rugvip): Different solution to this path handling would be good
-        const parentPath = useResolvedPath('.').pathname.replace(/\/$/, '');
+        // Prefer the page RoutingContract mount path when NFS is present;
+        // fall back to React Router for isolated/OFS trees (e.g.
+        // createExtensionTester + renderInTestApp without AppRouteSwitch).
+        // Only call useResolvedPath when there is no contract — chrome must
+        // not unconditionally require root RR when a contract is present.
+        const contract = useContext(RoutingContractContext);
+        const inRouter = useInRouterContext();
+        const rrParentPath =
+          !contract && inRouter
+            ? useResolvedPath('.').pathname.replace(/\/$/, '')
+            : '';
+        const parentPath = contract
+          ? contract.basePath.replace(/\/$/, '')
+          : rrParentPath;
         const resolvedTabs = useMemo(
           () =>
             tabs?.map(tab => ({

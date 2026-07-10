@@ -16,16 +16,11 @@
 
 import { screen, waitFor, within } from '@testing-library/react';
 import { Route, Routes, useParams } from 'react-router-dom';
-import {
-  renderTestApp,
-  createExtensionTester,
-  renderInTestApp,
-} from '@backstage/frontend-test-utils';
+import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   BreadcrumbEntry,
   PageBlueprint,
-  coreExtensionData,
-  createExtension,
+  SubPageBlueprint,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 
@@ -189,36 +184,27 @@ describe('PageLayout', () => {
     });
 
     it('should register breadcrumbs for sub-pages', async () => {
+      // Unnamed parent → page:test; the sub-page attaches relatively (same
+      // pattern as PageBlueprint.test.tsx / SubPageBlueprint.test.tsx).
       const myPage = PageBlueprint.make({
-        name: 'my-plugin',
         params: {
           title: 'My Plugin',
           path: '/my-plugin',
         },
       });
 
-      const overviewSubPage = createExtension({
-        kind: 'sub-page',
+      const overviewSubPage = SubPageBlueprint.make({
         name: 'overview',
-        attachTo: { id: 'page:my-plugin', input: 'pages' },
-        output: [
-          coreExtensionData.routePath,
-          coreExtensionData.reactElement,
-          coreExtensionData.title,
-        ],
-        factory() {
-          return [
-            coreExtensionData.routePath('overview'),
-            coreExtensionData.reactElement(<div>Overview content</div>),
-            coreExtensionData.title('Overview'),
-          ];
+        params: {
+          path: 'overview',
+          title: 'Overview',
+          loader: async () => <div>Overview content</div>,
         },
       });
 
-      const tester = createExtensionTester(myPage).add(overviewSubPage);
-
-      renderInTestApp(tester.reactElement(), {
-        initialRouteEntries: ['/overview'],
+      renderTestApp({
+        extensions: [myPage, overviewSubPage],
+        initialRouteEntries: ['/my-plugin/overview'],
       });
 
       await waitFor(() => {
@@ -252,36 +238,27 @@ describe('PageLayout', () => {
         );
       }
 
+      // Unnamed parent → page:test; the sub-page attaches relatively (same
+      // pattern as PageBlueprint.test.tsx / SubPageBlueprint.test.tsx).
       const myPage = PageBlueprint.make({
-        name: 'scaffolder',
         params: {
           title: 'Create',
           path: '/create',
         },
       });
 
-      const tasksSubPage = createExtension({
-        kind: 'sub-page',
+      const tasksSubPage = SubPageBlueprint.make({
         name: 'tasks',
-        attachTo: { id: 'page:scaffolder', input: 'pages' },
-        output: [
-          coreExtensionData.routePath,
-          coreExtensionData.reactElement,
-          coreExtensionData.title,
-        ],
-        factory() {
-          return [
-            coreExtensionData.routePath('tasks'),
-            coreExtensionData.reactElement(<TasksSubPage />),
-            coreExtensionData.title('Tasks'),
-          ];
+        params: {
+          path: 'tasks',
+          title: 'Tasks',
+          loader: async () => <TasksSubPage />,
         },
       });
 
-      const tester = createExtensionTester(myPage).add(tasksSubPage);
-
-      renderInTestApp(tester.reactElement(), {
-        initialRouteEntries: ['/tasks/abc-123'],
+      renderTestApp({
+        extensions: [myPage, tasksSubPage],
+        initialRouteEntries: ['/create/tasks/abc-123'],
       });
 
       await waitFor(() => {

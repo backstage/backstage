@@ -14,47 +14,27 @@
  * limitations under the License.
  */
 
+import { Suspense, type ComponentType, type ReactNode } from 'react';
 import { z } from 'zod/v4';
 import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
   NotFoundErrorPage,
+  navigationControllerApiRef,
+  useApi,
 } from '@backstage/frontend-plugin-api';
-import { Navigate, useLocation, useParams, useRoutes } from 'react-router-dom';
+import { AppRouteSwitch, RouteTable } from '@backstage/frontend-app-api';
 
-function RedirectWithParams({ to }: { to: string }) {
-  const params = useParams() as Record<string, string>;
-  const { search, hash } = useLocation();
-
-  let target = to;
-  for (const [name, value] of Object.entries(params)) {
-    // Use \b (word boundary) for named params so that `:a` doesn't
-    // accidentally match inside `:ab` when both are present.
-    target = target.replace(
-      name === '*' ? /\*/g : new RegExp(`:${name}\\b`, 'g'),
-      value ?? '',
-    );
+function normalizeRoutePath(path: string): string {
+  if (path === '/') {
+    return '/';
   }
+  return path.replace(/\/$/, '') || '/';
+}
 
-  const hashIndex = target.indexOf('#');
-  const beforeHash = hashIndex === -1 ? target : target.slice(0, hashIndex);
-  const targetHash = hashIndex === -1 ? '' : target.slice(hashIndex);
-
-  const queryIndex = beforeHash.indexOf('?');
-  const path = queryIndex === -1 ? beforeHash : beforeHash.slice(0, queryIndex);
-  const targetSearch = queryIndex === -1 ? '' : beforeHash.slice(queryIndex);
-
-  return (
-    <Navigate
-      to={{
-        pathname: path,
-        search: targetSearch || search,
-        hash: targetHash || hash,
-      }}
-      replace
-    />
-  );
+function PageSuspense(props: { children: ReactNode }) {
+  return <Suspense fallback={null}>{props.children}</Suspense>;
 }
 
 export const AppRoutes = createExtension({
@@ -81,36 +61,35 @@ export const AppRoutes = createExtension({
   factory({ inputs, config }) {
     const redirects = config.redirects ?? [];
 
-    const Routes = () => {
-      const element = useRoutes([
-        ...redirects.map(redirect => ({
-          path:
-            redirect.from === '/'
-              ? redirect.from
-              : `${redirect.from.replace(/\/$/, '')}/*`,
-          element: <RedirectWithParams to={redirect.to} />,
-        })),
-        ...inputs.routes.map(route => {
-          const routePath = route.get(coreExtensionData.routePath);
+    const routePaths = inputs.routes.map(route =>
+      normalizeRoutePath(route.get(coreExtensionData.routePath)),
+    );
+    const routeTable = new RouteTable(routePaths);
 
-          return {
-            path:
-              routePath === '/'
-                ? routePath
-                : `${routePath.replace(/\/$/, '')}/*`,
+    const pages = new Map<string, ComponentType>();
+    for (const route of inputs.routes) {
+      const path = normalizeRoutePath(route.get(coreExtensionData.routePath));
+      if (pages.has(path)) {
+        continue;
+      }
+      const element = route.get(coreExtensionData.reactElement);
+      pages.set(path, () => <PageSuspense>{element}</PageSuspense>);
+    }
 
-            element: route.get(coreExtensionData.reactElement),
-          };
-        }),
-        {
-          path: '*',
-          element: <NotFoundErrorPage />,
-        },
-      ]);
+    const RoutesElement = () => {
+      const controller = useApi(navigationControllerApiRef);
 
-      return element;
+      return (
+        <AppRouteSwitch
+          controller={controller}
+          routeTable={routeTable}
+          pages={pages}
+          redirects={redirects}
+          fallback={<NotFoundErrorPage />}
+        />
+      );
     };
 
-    return [coreExtensionData.reactElement(<Routes />)];
+    return [coreExtensionData.reactElement(<RoutesElement />)];
   },
 });
