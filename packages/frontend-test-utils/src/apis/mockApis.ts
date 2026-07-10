@@ -23,6 +23,8 @@ import {
   fetchApiRef,
   featureFlagsApiRef,
   identityApiRef,
+  navigationControllerApiRef,
+  routeResolutionApiRef,
   storageApiRef,
   translationApiRef,
   type AnalyticsApi,
@@ -32,6 +34,8 @@ import {
   type FetchApi,
   type FeatureFlagState,
   type IdentityApi,
+  type NavigationControllerApi,
+  type RouteResolutionApi,
   type StorageApi,
   type TranslationApi,
 } from '@backstage/frontend-plugin-api';
@@ -58,6 +62,16 @@ import {
   type MockWithApiFactory,
 } from './MockWithApiFactory';
 import { createApiMock } from './createApiMock';
+import {
+  createMockNavigationController,
+  type MockNavigationController,
+  type MockNavigationControllerOptions,
+} from './createMockNavigationController';
+import {
+  createMockRouteResolutionApi,
+  type MockRouteResolutionApi,
+  type MockRouteResolutionApiOptions,
+} from './createMockRouteResolutionApi';
 
 /**
  * Mock implementations of the core utility APIs, to be used in tests.
@@ -457,6 +471,88 @@ export namespace mockApis {
   export namespace fetch {
     export const mock = createApiMock(fetchApiRef, () => ({
       fetch: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of
+   * {@link @backstage/frontend-plugin-api#NavigationControllerApi}.
+   *
+   * @public
+   * @example
+   *
+   * ```tsx
+   * const navigate = jest.fn();
+   * const navigationController = mockApis.navigationController({ navigate });
+   * // Pair with mockApis.routeResolution() for RouteLink / useNavigateRouteRef
+   * ```
+   */
+  export function navigationController(
+    options?: MockNavigationControllerOptions,
+  ): MockNavigationController & MockWithApiFactory<NavigationControllerApi> {
+    const instance = createMockNavigationController(options);
+    return attachMockApiFactory(
+      navigationControllerApiRef,
+      instance,
+    ) as MockNavigationController & MockWithApiFactory<NavigationControllerApi>;
+  }
+
+  /**
+   * Mock helpers for
+   * {@link @backstage/frontend-plugin-api#NavigationControllerApi}.
+   *
+   * @public
+   */
+  export namespace navigationController {
+    export const mock = createApiMock(
+      navigationControllerApiRef,
+      () =>
+        ({
+          navigate: jest.fn(),
+          go: jest.fn(),
+          canGoBack: jest.fn(),
+          canGoForward: jest.fn(),
+          historyLength: 1,
+          getAdapterState: jest.fn(),
+          location$: jest.fn(),
+          block: jest.fn(),
+          createContract: jest.fn(),
+        } as unknown as jest.Mocked<NavigationControllerApi>),
+    );
+  }
+
+  /**
+   * Fake implementation of
+   * {@link @backstage/frontend-plugin-api#RouteResolutionApi}.
+   *
+   * @public
+   * @example
+   *
+   * ```tsx
+   * const routeResolution = mockApis.routeResolution({
+   *   routes: [[catalogRouteRef, '/catalog/:namespace/:kind/:name']],
+   * });
+   * ```
+   */
+  export function routeResolution(
+    options?: MockRouteResolutionApiOptions,
+  ): MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi> {
+    const instance = createMockRouteResolutionApi(options);
+    return attachMockApiFactory(
+      routeResolutionApiRef,
+      instance,
+    ) as MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi>;
+  }
+
+  /**
+   * Mock helpers for
+   * {@link @backstage/frontend-plugin-api#RouteResolutionApi}.
+   *
+   * @public
+   */
+  export namespace routeResolution {
+    export const mock = createApiMock(routeResolutionApiRef, () => ({
+      resolve: jest.fn(),
     }));
   }
 }

@@ -7,6 +7,7 @@ import { AlertApi } from '@backstage/frontend-plugin-api';
 import { AlertMessage } from '@backstage/frontend-plugin-api';
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
@@ -38,15 +39,20 @@ import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import type { NavigationControllerApi } from '@backstage/frontend-plugin-api';
 import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactNode } from 'react';
 import { registerMswTestHooks } from '@backstage/test-utils';
-import { RenderResult } from '@testing-library/react';
+import type { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteResolutionApi } from '@backstage/frontend-plugin-api';
+import { RoutingContract } from '@backstage/frontend-plugin-api';
+import { RoutingNavigateOptions } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { SubRouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationApi } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { TranslationSnapshot } from '@backstage/frontend-plugin-api';
@@ -86,6 +92,19 @@ export function createExtensionTester<
     apis?: readonly [...TestApiPairs<TApiPairs>];
   },
 ): ExtensionTester<NonNullable<T['output']>>;
+
+// @public
+export function createMockContract(options: MockContractOptions): MockContract;
+
+// @public
+export function createMockNavigationController(
+  options?: MockNavigationControllerOptions,
+): MockNavigationController;
+
+// @public
+export function createMockRouteResolutionApi(
+  options?: MockRouteResolutionApiOptions,
+): MockRouteResolutionApi;
 
 // @public @deprecated
 export type ErrorWithContext = {
@@ -241,6 +260,15 @@ export namespace mockApis {
         partialImpl?: Partial<IdentityApi> | undefined,
       ) => ApiMock<IdentityApi>;
   }
+  export function navigationController(
+    options?: MockNavigationControllerOptions,
+  ): MockNavigationController & MockWithApiFactory<NavigationControllerApi>;
+  export namespace navigationController {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<NavigationControllerApi> | undefined,
+      ) => ApiMock<NavigationControllerApi>;
+  }
   export function permission(options?: {
     authorize?:
       | AuthorizeResult.ALLOW
@@ -254,6 +282,15 @@ export namespace mockApis {
       mock: (
         partialImpl?: Partial<PermissionApi> | undefined,
       ) => ApiMock<PermissionApi>;
+  }
+  export function routeResolution(
+    options?: MockRouteResolutionApiOptions,
+  ): MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi>;
+  export namespace routeResolution {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RouteResolutionApi> | undefined,
+      ) => ApiMock<RouteResolutionApi>;
   }
   export function storage(options?: {
     data?: JsonObject;
@@ -292,6 +329,25 @@ export class MockConfigApi implements ConfigApi {
   getStringArray(key: string): string[];
   has(key: string): boolean;
   keys(): string[];
+}
+
+// @public
+export interface MockContract extends RoutingContract {
+  // (undocumented)
+  goCalls: number[];
+  // (undocumented)
+  navigateCalls: Array<{
+    to: string;
+    options?: RoutingNavigateOptions;
+  }>;
+}
+
+// @public
+export interface MockContractOptions {
+  // (undocumented)
+  basePath: string;
+  // (undocumented)
+  initialLocation?: string;
 }
 
 // @public @deprecated
@@ -369,6 +425,27 @@ export interface MockFetchApiOptions {
       };
 }
 
+// @public
+export interface MockNavigationController extends NavigationControllerApi {
+  // (undocumented)
+  goCalls: number[];
+  // (undocumented)
+  navigateCalls: Array<{
+    to: string;
+    options?: RoutingNavigateOptions;
+  }>;
+}
+
+// @public
+export interface MockNavigationControllerOptions {
+  // (undocumented)
+  go?: jest.Mock | NavigationControllerApi['go'];
+  // (undocumented)
+  initialLocation?: string;
+  // (undocumented)
+  navigate?: jest.Mock | NavigationControllerApi['navigate'];
+}
+
 // @public @deprecated
 export class MockPermissionApi implements PermissionApi {
   constructor(
@@ -380,6 +457,36 @@ export class MockPermissionApi implements PermissionApi {
   authorize(
     request: EvaluatePermissionRequest,
   ): Promise<EvaluatePermissionResponse>;
+}
+
+// @public
+export interface MockRouteResolutionApi extends RouteResolutionApi {
+  // (undocumented)
+  resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
+}
+
+// @public
+export interface MockRouteResolutionApiOptions {
+  // (undocumented)
+  resolve?: RouteResolutionApi['resolve'];
+  // (undocumented)
+  routes?:
+    | ReadonlyMap<
+        | RouteRef<AnyRouteRefParams>
+        | SubRouteRef<AnyRouteRefParams>
+        | ExternalRouteRef<AnyRouteRefParams>,
+        string
+      >
+    | ReadonlyArray<
+        [
+          (
+            | RouteRef<AnyRouteRefParams>
+            | SubRouteRef<AnyRouteRefParams>
+            | ExternalRouteRef<AnyRouteRefParams>
+          ),
+          string,
+        ]
+      >;
 }
 
 // @public @deprecated
@@ -431,12 +538,12 @@ export { registerMswTestHooks };
 export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
   options?: TestAppOptions<TApiPairs>,
-): RenderResult;
+): TestAppRenderResult;
 
 // @public
 export function renderTestApp<const TApiPairs extends any[] = any[]>(
   options?: RenderTestAppOptions<TApiPairs>,
-): RenderResult;
+): TestAppRenderResult;
 
 // @public
 export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
@@ -481,6 +588,11 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   mountPath?: string;
   initialRouteEntries?: string[];
   apis?: readonly [...TestApiPairs<TApiPairs>];
+};
+
+// @public
+export type TestAppRenderResult = RenderResult & {
+  navigationController: NavigationControllerApi;
 };
 
 export { withLogCollector };

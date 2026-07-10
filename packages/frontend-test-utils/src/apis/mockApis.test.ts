@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { FeatureFlagState } from '@backstage/frontend-plugin-api';
+import {
+  FeatureFlagState,
+  createRouteRef,
+} from '@backstage/frontend-plugin-api';
 import { mockApis } from './mockApis';
 
 describe('mockApis', () => {
@@ -114,6 +117,45 @@ describe('mockApis', () => {
 
     it('should have translation', () => {
       expect(mockApis.translation).toBeDefined();
+    });
+  });
+
+  describe('navigationController', () => {
+    it('can create an instance', () => {
+      const navigate = jest.fn();
+      const controller = mockApis.navigationController({ navigate });
+      controller.navigate('/catalog');
+      expect(navigate).toHaveBeenCalledWith('/catalog');
+      expect(controller.navigateCalls).toEqual([
+        { to: '/catalog', options: undefined },
+      ]);
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const controller = mockApis.navigationController.mock({
+        navigate: jest.fn(),
+      });
+      controller.navigate('/tools');
+      expect(controller.navigate).toHaveBeenCalledWith('/tools');
+    });
+  });
+
+  describe('routeResolution', () => {
+    it('can create an instance', () => {
+      const home = createRouteRef();
+      const routeResolution = mockApis.routeResolution({
+        routes: [[home, '/home']],
+      });
+      expect(routeResolution.resolve(home)?.()).toBe('/home');
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const home = createRouteRef();
+      const routeResolution = mockApis.routeResolution.mock({
+        resolve: jest.fn(() => () => '/mocked'),
+      });
+      expect(routeResolution.resolve(home)?.()).toBe('/mocked');
+      expect(routeResolution.resolve).toHaveBeenCalledWith(home);
     });
   });
 });

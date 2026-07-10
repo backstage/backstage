@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { Fragment } from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { prepareSpecializedApp } from '@backstage/frontend-app-api';
-import { RenderResult, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import {
@@ -25,24 +24,23 @@ import {
   ExtensionDefinition,
   coreExtensionData,
   RouteRef,
-  createFrontendPlugin,
   FrontendFeature,
-  createFrontendModule,
-  createApiFactory,
-  createRouteRef,
   ExternalRouteRef,
   identityApiRef,
-  type ApiRef,
 } from '@backstage/frontend-plugin-api';
-import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
-import { getMockApiFactory } from '../apis/MockWithApiFactory';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../frontend-app-api/src/routing/getBasePath';
 import { TestApiPairs } from '../apis/TestApiProvider';
-import { OpaqueExternalRouteRef } from '@internal/frontend';
+import {
+  createTestNavigation,
+  type TestAppRenderResult,
+} from './createTestNavigation';
+import { prepareTestAppFeatures } from './prepareTestAppFeatures';
+
+export type { TestAppRenderResult };
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -101,7 +99,8 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   mountPath?: string;
 
   /**
-   * Initial route entries to use for the router.
+   * Initial route entries for the in-memory navigation controller history.
+   * The last entry is the starting location.
    */
   initialRouteEntries?: string[];
 
@@ -141,12 +140,21 @@ const appPluginOverride = appPlugin.withOverrides({
 /**
  * @public
  * Renders the given element in a test app, for use in unit tests.
+ *
+ * Navigation is owned by a {@link @backstage/frontend-plugin-api#NavigationControllerApi}
+ * with in-memory history — the same seam as production — rather than a
+ * test-only root React Router as the long-term harness.
  */
 export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
   options?: TestAppOptions<TApiPairs>,
-): RenderResult {
+): TestAppRenderResult {
   const mountPath = options?.mountPath;
+  const configData = options?.config ?? DEFAULT_MOCK_CONFIG;
+  const { controller, basename } = createTestNavigation({
+    initialEntries: options?.initialRouteEntries,
+    config: configData,
+  });
 
   const extensions: Array<ExtensionDefinition> = [
     createExtension({
@@ -172,92 +180,32 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
     }),
   ];
 
-  const externalBindings = new Map<ExternalRouteRef, RouteRef>();
+  const { features, apiFactoryOverrides, externalBindings } =
+    prepareTestAppFeatures({
+      extensions,
+      navigation: { controller, basename },
+      appPluginOverride,
+      mountedRoutes: options?.mountedRoutes,
+      features: options?.features,
+      apis: options?.apis,
+      mountedRouteAttachTo: { id: 'app/root', input: 'elements' },
+    });
 
-  if (options?.mountedRoutes) {
-    for (const [path, optionRef] of Object.entries(options.mountedRoutes)) {
-      let routeRef: RouteRef;
-
-      if (OpaqueExternalRouteRef.isType(optionRef)) {
-        // Create an actual route ref for the external route, then bind the external ref to it
-        routeRef = createRouteRef();
-        externalBindings.set(optionRef, routeRef);
-      } else {
-        routeRef = optionRef;
-      }
-
-      extensions.push(
-        createExtension({
-          kind: 'test-route',
-          name: path,
-          attachTo: { id: 'app/root', input: 'elements' },
-          output: [
-            coreExtensionData.reactElement,
-            coreExtensionData.routePath,
-            coreExtensionData.routeRef,
-          ],
-          factory: () => [
-            coreExtensionData.reactElement(<Fragment />),
-            coreExtensionData.routePath(path),
-            coreExtensionData.routeRef(routeRef),
-          ],
-        }),
-      );
-    }
-  }
-
-  const apiFactoryOverrides = (options?.apis ?? []).map(
-    entry =>
-      getMockApiFactory(entry) ??
-      createApiFactory(...(entry as readonly [ApiRef<any>, any])),
-  );
   const identityOverrideFactory = apiFactoryOverrides.find(
     factory => factory.api.id === identityApiRef.id,
   );
 
-  const features: FrontendFeature[] = [
-    createFrontendModule({
-      pluginId: 'app',
-      extensions: [
-        RouterBlueprint.make({
-          params: {
-            component: ({ children }) => (
-              <MemoryRouter
-                initialEntries={options?.initialRouteEntries}
-                future={{
-                  v7_relativeSplatPath: false,
-                  v7_startTransition: false,
-                }}
-              >
-                {children}
-              </MemoryRouter>
-            ),
-          },
-        }),
-      ],
-    }),
-    createFrontendPlugin({
-      pluginId: 'test',
-      extensions,
-    }),
-    appPluginOverride,
-  ];
-
-  if (options?.features) {
-    features.push(...options.features);
-  }
-
   const config = ConfigReader.fromConfigs([
     {
       context: 'render-config',
-      data: options?.config ?? DEFAULT_MOCK_CONFIG,
+      data: configData,
     },
   ]);
 
   const app = prepareSpecializedApp({
     features,
     config,
-    __internal: options?.apis && {
+    __internal: {
       apiFactoryOverrides: apiFactoryOverrides.filter(
         factory => factory.api.id !== identityApiRef.id,
       ),
@@ -284,7 +232,9 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
     });
   }
 
-  return render(
+  const result = render(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),
   );
+
+  return Object.assign(result, { navigationController: controller });
 }

@@ -27,6 +27,21 @@ export {
   type TestApiPair,
   type TestApiPairs,
 } from './TestApiProvider';
+export {
+  createMockContract,
+  type MockContract,
+  type MockContractOptions,
+} from './createMockContract';
+export {
+  createMockNavigationController,
+  type MockNavigationController,
+  type MockNavigationControllerOptions,
+} from './createMockNavigationController';
+export {
+  createMockRouteResolutionApi,
+  type MockRouteResolutionApi,
+  type MockRouteResolutionApiOptions,
+} from './createMockRouteResolutionApi';
 
 /**
  * @public
