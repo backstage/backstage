@@ -171,7 +171,7 @@ export interface NavContentNavItemsWithComponent {
   take(id: string): JSX.Element | null;
 }
 
-// @public
+// @public @deprecated
 export const RouterBlueprint: ExtensionBlueprint<{
   kind: 'app-router-component';
   params: {

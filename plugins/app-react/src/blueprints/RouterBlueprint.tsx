@@ -24,10 +24,18 @@ const componentDataRef = createExtensionDataRef<
   (props: { children: ReactNode }) => JSX.Element | null
 >().with({ id: 'app.router.wrapper' });
 
+let hasWarnedDeprecation = false;
+
 /**
- * Creates an extension that replaces the router component. This blueprint is limited to use by the app plugin.
+ * Creates an extension that replaces the root router component. This blueprint
+ * is limited to use by the app plugin.
  *
  * @public
+ * @deprecated Prefer page-level router adapters via `PageRouterBlueprint` and
+ * the app-plugin `pageRouterApiRef` default. History is owned by the navigation
+ * controller; this blueprint is no longer the history authority. Existing
+ * overrides still wrap the app root for chrome context, but new apps should
+ * not rely on them for plugin routing.
  */
 export const RouterBlueprint = createExtensionBlueprint({
   kind: 'app-router-component',
@@ -41,6 +49,15 @@ export const RouterBlueprint = createExtensionBlueprint({
     Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   }) {
+    if (!hasWarnedDeprecation && process.env.NODE_ENV !== 'test') {
+      hasWarnedDeprecation = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        'DEPRECATION WARNING: RouterBlueprint is deprecated and is no longer the history authority. ' +
+          'Prefer page-level router adapters via PageRouterBlueprint / pageRouterApiRef. ' +
+          'History is owned by the navigation controller.',
+      );
+    }
     yield componentDataRef(params.component);
   },
 });
