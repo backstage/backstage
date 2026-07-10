@@ -68,6 +68,21 @@ export type ElasticSearchClientResponse = {
 };
 
 /**
+ * The promise returned by the wrapped client methods.
+ *
+ * The Opensearch client returns a promise that additionally exposes an
+ * `abort` method, whereas the Elasticsearch v8 client returns a plain
+ * promise, so `abort` is only present when the Opensearch client is
+ * configured.
+ *
+ * @public
+ */
+export type ElasticSearchClientResponsePromise =
+  Promise<ElasticSearchClientResponse> & {
+    abort?: () => void;
+  };
+
+/**
  * Adapts the provider-agnostic client options to the shape expected by the
  * `@elastic/elasticsearch` v8 client.
  *
@@ -137,7 +152,7 @@ export class ElasticSearchClientWrapper {
   search(options: {
     index: string | string[];
     body: Object;
-  }): Promise<ElasticSearchClientResponse> {
+  }): ElasticSearchClientResponsePromise {
     const searchOptions = {
       ignore_unavailable: true,
       allow_no_indices: true,
@@ -181,7 +196,7 @@ export class ElasticSearchClientWrapper {
 
   putIndexTemplate(
     template: ElasticSearchCustomIndexTemplate,
-  ): Promise<ElasticSearchClientResponse> {
+  ): ElasticSearchClientResponsePromise {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.putIndexTemplate(template);
     }
@@ -195,9 +210,7 @@ export class ElasticSearchClientWrapper {
     throw new Error('No client defined');
   }
 
-  listIndices(options: {
-    index: string;
-  }): Promise<ElasticSearchClientResponse> {
+  listIndices(options: { index: string }): ElasticSearchClientResponsePromise {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.get(options);
     }
@@ -211,7 +224,7 @@ export class ElasticSearchClientWrapper {
 
   indexExists(options: {
     index: string | string[];
-  }): Promise<ElasticSearchClientResponse> {
+  }): ElasticSearchClientResponsePromise {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.exists(options);
     }
@@ -225,7 +238,7 @@ export class ElasticSearchClientWrapper {
 
   deleteIndex(options: {
     index: string | string[];
-  }): Promise<ElasticSearchClientResponse> {
+  }): ElasticSearchClientResponsePromise {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.delete(options);
     }
@@ -242,7 +255,7 @@ export class ElasticSearchClientWrapper {
    */
   getAliases(options: {
     aliases: string[];
-  }): Promise<ElasticSearchClientResponse> {
+  }): ElasticSearchClientResponsePromise {
     const { aliases } = options;
 
     if (this.openSearchClient) {
@@ -265,9 +278,7 @@ export class ElasticSearchClientWrapper {
     throw new Error('No client defined');
   }
 
-  createIndex(options: {
-    index: string;
-  }): Promise<ElasticSearchClientResponse> {
+  createIndex(options: { index: string }): ElasticSearchClientResponsePromise {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.create(options);
     }
@@ -281,7 +292,7 @@ export class ElasticSearchClientWrapper {
 
   updateAliases(options: {
     actions: ElasticSearchAliasAction[];
-  }): Promise<ElasticSearchClientResponse> {
+  }): ElasticSearchClientResponsePromise {
     const filteredActions = options.actions.filter(Boolean);
 
     if (this.openSearchClient) {

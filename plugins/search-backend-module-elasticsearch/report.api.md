@@ -147,6 +147,12 @@ export type ElasticSearchClientResponse = {
 };
 
 // @public
+export type ElasticSearchClientResponsePromise =
+  Promise<ElasticSearchClientResponse> & {
+    abort?: () => void;
+  };
+
+// @public
 export class ElasticSearchClientWrapper {
   // (undocumented)
   bulk(bulkOptions: {
@@ -155,11 +161,11 @@ export class ElasticSearchClientWrapper {
     refreshOnCompletion?: string | boolean;
   }): BulkHelper<BulkStats>;
   // (undocumented)
-  createIndex(options: { index: string }): Promise<ElasticSearchClientResponse>;
+  createIndex(options: { index: string }): ElasticSearchClientResponsePromise;
   // (undocumented)
   deleteIndex(options: {
     index: string | string[];
-  }): Promise<ElasticSearchClientResponse>;
+  }): ElasticSearchClientResponsePromise;
   // (undocumented)
   static fromClientOptions(
     options: ElasticSearchClientOptions,
@@ -167,26 +173,26 @@ export class ElasticSearchClientWrapper {
   // @deprecated (undocumented)
   getAliases(options: {
     aliases: string[];
-  }): Promise<ElasticSearchClientResponse>;
+  }): ElasticSearchClientResponsePromise;
   // (undocumented)
   indexExists(options: {
     index: string | string[];
-  }): Promise<ElasticSearchClientResponse>;
+  }): ElasticSearchClientResponsePromise;
   // (undocumented)
-  listIndices(options: { index: string }): Promise<ElasticSearchClientResponse>;
+  listIndices(options: { index: string }): ElasticSearchClientResponsePromise;
   // (undocumented)
   putIndexTemplate(
     template: ElasticSearchCustomIndexTemplate,
-  ): Promise<ElasticSearchClientResponse>;
+  ): ElasticSearchClientResponsePromise;
   // (undocumented)
   search(options: {
     index: string | string[];
     body: Object;
-  }): Promise<ElasticSearchClientResponse>;
+  }): ElasticSearchClientResponsePromise;
   // (undocumented)
   updateAliases(options: {
     actions: ElasticSearchAliasAction[];
-  }): Promise<ElasticSearchClientResponse>;
+  }): ElasticSearchClientResponsePromise;
 }
 
 // @public

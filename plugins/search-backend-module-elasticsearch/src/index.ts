@@ -32,6 +32,7 @@ export type {
   ElasticSearchAgentOptions,
   ElasticSearchAliasAction,
   ElasticSearchClientResponse,
+  ElasticSearchClientResponsePromise,
   ElasticSearchClientWrapper,
   ElasticSearchConcreteQuery,
   ElasticSearchClientOptions,

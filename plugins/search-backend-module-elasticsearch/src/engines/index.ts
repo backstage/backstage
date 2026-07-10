@@ -35,6 +35,7 @@ export type {
 export type {
   ElasticSearchAliasAction,
   ElasticSearchClientResponse,
+  ElasticSearchClientResponsePromise,
   ElasticSearchClientWrapper,
   ElasticSearchIndexAction,
 } from './ElasticSearchClientWrapper';
