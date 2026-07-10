@@ -15,11 +15,12 @@
  */
 
 import { useEffect } from 'react';
-import { matchRoutes, useLocation } from 'react-router-dom';
+import { matchRoutes } from 'react-router-dom';
 import {
   useAnalytics,
   AnalyticsContext,
   AnalyticsEventAttributes,
+  useFrameworkLocation,
 } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from './types';
 
@@ -109,7 +110,7 @@ export const RouteTracker = ({
 }: {
   routeObjects: BackstageRouteObject[];
 }) => {
-  const { pathname, search, hash } = useLocation();
+  const { pathname, search, hash } = useFrameworkLocation();
 
   const { params, ...attributes } = getExtensionContext(
     pathname,

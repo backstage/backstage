@@ -15,17 +15,20 @@
  */
 
 import { TestApiProvider } from '@backstage/test-utils';
-import { useEffect } from 'react';
+import { createMockNavigationController } from '@backstage/frontend-test-utils';
+import { useEffect, type ReactNode } from 'react';
 import { BackstageRouteObject } from './types';
-import { fireEvent, render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { RouteTracker } from './RouteTracker';
-import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import {
   createRouteRef,
   AnalyticsApi,
   analyticsApiRef,
   AppNode,
   useAnalytics,
+  navigationControllerApiRef,
+  type NavigationControllerApi,
 } from '@backstage/frontend-plugin-api';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 
@@ -50,7 +53,7 @@ describe('RouteTracker', () => {
     },
     {
       path: '/path/:p1/:p2',
-      element: <Link to="/path2/hello">go</Link>,
+      element: <div>path page</div>,
       routeRefs: new Set([routeRef1]),
       caseSensitive: false,
       children: [MATCH_ALL_ROUTE],
@@ -80,18 +83,35 @@ describe('RouteTracker', () => {
     captureEvent: jest.fn(),
   };
 
+  function renderWithNavigation(
+    initialPath: string,
+    children?: ReactNode,
+    navigationController: NavigationControllerApi = createMockNavigationController(
+      { initialLocation: initialPath },
+    ),
+  ) {
+    return {
+      navigationController,
+      ...render(
+        <TestApiProvider
+          apis={[
+            [analyticsApiRef, mockedAnalytics],
+            [navigationControllerApiRef, navigationController],
+          ]}
+        >
+          <RouteTracker routeObjects={routeObjects} />
+          {children}
+        </TestApiProvider>,
+      ),
+    };
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('should capture the navigate event on load', async () => {
-    render(
-      <MemoryRouter initialEntries={['/path/foo/bar']}>
-        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
-          <RouteTracker routeObjects={routeObjects} />
-        </TestApiProvider>
-      </MemoryRouter>,
-    );
+    renderWithNavigation('/path/foo/bar');
 
     expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
       action: 'navigate',
@@ -109,21 +129,11 @@ describe('RouteTracker', () => {
   });
 
   it('should capture the navigate event on route change', async () => {
-    const { getByText } = render(
-      <MemoryRouter initialEntries={['/path/foo/bar']}>
-        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
-          <RouteTracker routeObjects={routeObjects} />
+    const { navigationController } = renderWithNavigation('/path/foo/bar');
 
-          <Routes>
-            {routeObjects.map(({ path, element }) => (
-              <Route key={path} path={path || '/'} element={element} />
-            ))}
-          </Routes>
-        </TestApiProvider>
-      </MemoryRouter>,
-    );
-
-    fireEvent.click(getByText('go'));
+    act(() => {
+      navigationController.navigate('/path2/hello');
+    });
 
     expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
       action: 'navigate',
@@ -140,13 +150,7 @@ describe('RouteTracker', () => {
   });
 
   it('should capture path query and hash', async () => {
-    render(
-      <MemoryRouter initialEntries={['/path/foo/bar?q=1#header-1']}>
-        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
-          <RouteTracker routeObjects={routeObjects} />
-        </TestApiProvider>
-      </MemoryRouter>,
-    );
+    renderWithNavigation('/path/foo/bar?q=1#header-1');
 
     expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
       action: 'navigate',
@@ -164,13 +168,7 @@ describe('RouteTracker', () => {
   });
 
   it('should match the root path and send relevant context', async () => {
-    render(
-      <MemoryRouter initialEntries={['/']}>
-        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
-          <RouteTracker routeObjects={routeObjects} />
-        </TestApiProvider>
-      </MemoryRouter>,
-    );
+    renderWithNavigation('/');
 
     expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
       action: 'navigate',
@@ -193,14 +191,12 @@ describe('RouteTracker', () => {
       return <div>dummy</div>;
     };
 
-    render(
+    renderWithNavigation(
+      '/not-routable-extension',
       <MemoryRouter initialEntries={['/not-routable-extension']}>
-        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
-          <RouteTracker routeObjects={routeObjects} />
-          <Routes>
-            <Route path="/not-routable-extension" element={<Dummy />} />
-          </Routes>
-        </TestApiProvider>
+        <Routes>
+          <Route path="/not-routable-extension" element={<Dummy />} />
+        </Routes>
       </MemoryRouter>,
     );
 
@@ -227,13 +223,7 @@ describe('RouteTracker', () => {
   });
 
   it('should return parent route context on navigating to a sub-route', async () => {
-    render(
-      <MemoryRouter initialEntries={['/path2/param-value/sub-route']}>
-        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
-          <RouteTracker routeObjects={routeObjects} />
-        </TestApiProvider>
-      </MemoryRouter>,
-    );
+    renderWithNavigation('/path2/param-value/sub-route');
 
     expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
       action: 'navigate',

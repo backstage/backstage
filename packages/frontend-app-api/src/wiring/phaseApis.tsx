@@ -25,6 +25,7 @@ import {
   createApiFactory,
   ExternalRouteRef,
   identityApiRef,
+  navigationControllerApiRef,
   RouteFunc,
   RouteRef,
   RouteResolutionApi,
@@ -39,6 +40,7 @@ import { matchRoutes } from 'react-router-dom';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { createRouteAliasResolver } from '../routing/RouteAliasResolver';
+import { createNavigationController } from '../routing/NavigationController';
 import { RouteResolver } from '../routing/RouteResolver';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import {
@@ -214,6 +216,13 @@ export function createPhaseApis(options: {
   );
   const identityProxy = new PreparedAppIdentityProxy();
   const phaseApiRegistry = new FrontendApiRegistry();
+
+  // Avoid constructing a window-history NavigationController (and attaching
+  // popstate) when a static factory already overrides the API — e.g. tests.
+  const hasNavigationOverride = options.staticFactories.some(
+    factory => factory.api.id === navigationControllerApiRef.id,
+  );
+
   phaseApiRegistry.registerAll([
     createApiFactory(appTreeApiRef, appTreeApi),
     ...(options.includeConfigApi
@@ -222,6 +231,16 @@ export function createPhaseApis(options: {
     createApiFactory(routeResolutionApiRef, routeResolutionApi),
     createApiFactory(identityApiRef, identityProxy),
     ...options.staticFactories,
+    ...(hasNavigationOverride
+      ? []
+      : [
+          createApiFactory(
+            navigationControllerApiRef,
+            createNavigationController({
+              basename: options.appBasePath || undefined,
+            }),
+          ),
+        ]),
   ]);
 
   const apis = new FrontendApiResolver({
