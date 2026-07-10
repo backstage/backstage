@@ -30,6 +30,14 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import {
+  NfsRoutingDemoPage,
+  NfsRoutingDemoRouter,
+  NfsRoutingDemoV7Page,
+  NfsRoutingDemoV7Router,
+  NfsRoutingDemoTanstackPage,
+  NfsRoutingDemoTanstackRouter,
+} from './nfsRoutingDemo';
 
 const indexRouteRef = createRouteRef();
 const page1RouteRef = createRouteRef();
@@ -110,6 +118,34 @@ const IndexPage = PageBlueprint.make({
                 </Link>{' '}
                 — requires <code>catalog.entity.read#read</code> (action-scoped
                 permission)
+              </li>
+            </ul>
+
+            <h2>Scoped Plugin Routing</h2>
+            <p>
+              Library-agnostic in-page routes via <code>RouteDescriptor</code>{' '}
+              (RFC{' '}
+              <a href="https://github.com/backstage/backstage/issues/33603">
+                #33603
+              </a>
+              ):
+            </p>
+            <ul>
+              <li>
+                <Link to="/nfs-routing-demo">NFS Routing Demo (RR v6)</Link> —
+                tabbed page declared with <code>createRouteDescriptor</code>
+              </li>
+              <li>
+                <Link to="/nfs-routing-demo-v7">NFS Routing Demo (RR v7)</Link>{' '}
+                — the same descriptor tree under the React Router v7 page
+                adapter
+              </li>
+              <li>
+                <Link to="/nfs-routing-demo-tanstack">
+                  NFS Routing Demo (TanStack)
+                </Link>{' '}
+                — the same descriptor tree under the TanStack Router page
+                adapter
               </li>
             </ul>
 
@@ -550,6 +586,12 @@ export const pagesPlugin = createFrontendPlugin({
     IndexPage,
     Page1,
     ExternalPage,
+    NfsRoutingDemoPage,
+    NfsRoutingDemoRouter,
+    NfsRoutingDemoV7Page,
+    NfsRoutingDemoV7Router,
+    NfsRoutingDemoTanstackPage,
+    NfsRoutingDemoTanstackRouter,
     FeatureFlagPage,
     AllFlagsPage,
     AnyFlagPage,
