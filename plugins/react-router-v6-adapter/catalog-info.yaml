@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-react-router-v6-adapter
+  title: '@backstage/plugin-react-router-v6-adapter'
+  description: >-
+    React Router v6 adapter for the Backstage router-agnostic plugin routing
+    system
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: framework-maintainers
