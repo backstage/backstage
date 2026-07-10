@@ -1155,6 +1155,10 @@ paths:
       tags:
         - Entity
       description: Query entities using predicate-based filters.
+      x-backstage-auditor:
+        eventId: entity-fetch
+        meta:
+          variant: fetch
       responses:
         '200':
           description: Ok
@@ -1265,6 +1269,10 @@ paths:
       tags:
         - Entity
       description: Get entity facets using predicate-based filters.
+      x-backstage-auditor:
+        eventId: entity-facets
+        meta:
+          variant: fetch
       responses:
         '200':
           description: Ok
@@ -1402,6 +1410,10 @@ paths:
       tags:
         - Locations
       description: Query for locations
+      x-backstage-auditor:
+        eventId: location-fetch
+        meta:
+          variant: fetch
       responses:
         '200':
           description: Ok
@@ -1460,6 +1472,11 @@ paths:
       tags:
         - Locations
       description: Update the type and target of an existing location by id.
+      x-backstage-auditor:
+        eventId: location-mutate
+        severityLevel: medium
+        meta:
+          locationId: '{{ request.params.id }}'
       requestBody:
         required: true
         content:
