@@ -22,7 +22,7 @@ import {
   useState,
 } from 'react';
 import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
@@ -58,6 +58,7 @@ import { scaffolderTranslationRef } from '../../translation';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import { default as reactUseAsync } from 'react-use/esm/useAsync';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
 import { OngoingTaskContextMenu } from './OngoingTaskContextMenu';
 
 const useStyles = makeStyles(theme => ({
@@ -173,7 +174,7 @@ export function OngoingTaskBody(props: {
   }, [entityPresentationApi, taskStream.task?.spec.templateInfo?.entityRef]);
 
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
 
@@ -189,13 +190,12 @@ export function OngoingTaskBody(props: {
 
     analytics.captureEvent('click', `Task has been started over`);
 
-    navigate({
-      pathname: templateRouteRef({
+    navigate(
+      `${templateRouteRef({
         namespace,
         templateName: name,
-      }),
-      search: `?${qs.stringify({ formData: JSON.stringify(formData) })}`,
-    });
+      })}?${qs.stringify({ formData: JSON.stringify(formData) })}`,
+    );
   }, [
     analytics,
     navigate,
@@ -295,7 +295,7 @@ function OngoingTaskChrome(props: {
   }, [entityPresentationApi, taskStream.task?.spec.templateInfo?.entityRef]);
 
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
 
@@ -311,13 +311,12 @@ function OngoingTaskChrome(props: {
 
     analytics.captureEvent('click', `Task has been started over`);
 
-    navigate({
-      pathname: templateRouteRef({
+    navigate(
+      `${templateRouteRef({
         namespace,
         templateName: name,
-      }),
-      search: `?${qs.stringify({ formData: JSON.stringify(formData) })}`,
-    });
+      })}?${qs.stringify({ formData: JSON.stringify(formData) })}`,
+    );
   }, [
     analytics,
     navigate,
@@ -399,7 +398,7 @@ function OngoingTaskContent(props: {
 }) {
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
   const taskStream = useTaskEventStream(taskId!);
@@ -486,13 +485,12 @@ function OngoingTaskContent(props: {
 
     analytics.captureEvent('click', `Task has been started over`);
 
-    navigate({
-      pathname: templateRouteRef({
+    navigate(
+      `${templateRouteRef({
         namespace,
         templateName: name,
-      }),
-      search: `?${qs.stringify({ formData: JSON.stringify(formData) })}`,
-    });
+      })}?${qs.stringify({ formData: JSON.stringify(formData) })}`,
+    );
   }, [
     analytics,
     navigate,

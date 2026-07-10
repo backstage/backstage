@@ -15,11 +15,11 @@
  */
 import qs from 'qs';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { rootRouteRef } from '../../plugin';
 
 import { useRouteRef, IconComponent } from '@backstage/core-plugin-api';
 import { SidebarSearchField, useContent } from '@backstage/core-components';
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
 
 /**
  * Props for {@link SidebarSearch}.
@@ -36,7 +36,7 @@ export type SidebarSearchProps = {
 export const SidebarSearch = (props: SidebarSearchProps) => {
   const searchRoute = useRouteRef(rootRouteRef);
   const { focusContent } = useContent();
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const handleSearch = useCallback(
     (query: string): void => {
       const queryString = qs.stringify({ query }, { addQueryPrefix: true });

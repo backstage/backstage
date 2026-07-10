@@ -63,8 +63,9 @@ import {
   ElementType,
   ReactNode,
 } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
@@ -290,7 +291,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   );
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const catalogRoute = useRouteRef(rootRouteRef);

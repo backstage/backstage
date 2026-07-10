@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
 import { useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 /**
  * Resolve a URL to a relative URL given a base URL that may or may not include subpaths.
@@ -39,22 +39,23 @@ export function resolveUrlToRelative(url: string, baseUrl: string) {
 }
 
 /**
- * A helper hook that allows for full internal website urls to be processed through the navigate
- *  hook provided by `react-router-dom`.
+ * A helper hook that allows for full internal website urls to be processed through
+ * framework navigation when available, otherwise React Router's `useNavigate`.
  *
  * NOTE: This does not support routing to external URLs. That should be done with a `Link` or `a`
  *  element instead, or just `window.location.href`.
  *
  * TODO: Update this to use `useRouteRef` instead of `useApi`.
  *
- * @returns Navigation function that is a wrapper over `react-router-dom`'s
- *  to support passing full URLs for navigation.
+ * @returns Navigation function that supports passing full URLs for navigation.
  *
  * @public
  */
 export function useNavigateUrl() {
-  // useRef prevents useNavigate from causing unnecessary re-renders
-  const navigate = useRef(useNavigate());
+  const navigate = useCompatNavigate();
+  // useRef prevents navigate identity churn from causing unnecessary re-renders
+  const navigateRef = useRef(navigate);
+  navigateRef.current = navigate;
   const configApi = useApi(configApiRef);
   const appBaseUrl = configApi.getOptionalString('app.baseUrl');
   const navigateFn = useCallback(
@@ -71,7 +72,7 @@ export function useNavigateUrl() {
           // URL passed in was relative.
         }
       }
-      navigate.current(url);
+      navigateRef.current(url);
     },
     [appBaseUrl],
   );

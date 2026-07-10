@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+
 import yaml from 'yaml';
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -140,7 +141,7 @@ export const TemplateFormPreviewer = ({
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const editLink = useRouteRef(editRouteRef);
 
   const [errorText, setErrorText] = useState<string>();

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { createMockNavigationController } from '@backstage/frontend-test-utils';
+import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
 import { useNavigateToQuery } from './util';
 import { rootRouteRef } from '../plugin';
 
 const navigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => navigate,
-}));
 
 describe('util', () => {
+  beforeEach(() => {
+    navigate.mockClear();
+  });
+
   describe('useNavigateToQuery', () => {
     it('navigates to query', async () => {
       const MyComponent = () => {
@@ -33,14 +35,26 @@ describe('util', () => {
         return <div>test</div>;
       };
 
-      await renderInTestApp(<MyComponent />, {
-        mountedRoutes: {
-          '/search': rootRouteRef,
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [
+              navigationControllerApiRef,
+              createMockNavigationController({ navigate }),
+            ],
+          ]}
+        >
+          <MyComponent />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/search': rootRouteRef,
+          },
         },
-      });
+      );
 
       expect(navigate).toHaveBeenCalled();
-      expect(navigate).toHaveBeenCalledWith('/search?query=test');
+      expect(navigate).toHaveBeenCalledWith('/search?query=test', undefined);
     });
   });
 });

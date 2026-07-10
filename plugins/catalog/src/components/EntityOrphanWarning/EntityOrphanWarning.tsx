@@ -17,12 +17,13 @@
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+
 import { Alert, Button } from '@backstage/ui';
 
 /**
@@ -42,7 +43,7 @@ export function isOrphan(entity: Entity): boolean {
  * @public
  */
 export function EntityOrphanWarning() {
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const catalogLink = useRouteRef(rootRouteRef);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const { entity } = useEntity();

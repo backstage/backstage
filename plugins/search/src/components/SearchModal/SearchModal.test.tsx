@@ -16,9 +16,11 @@
 
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { createMockNavigationController } from '@backstage/frontend-test-utils';
 import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../../plugin';
 import {
   searchApiRef,
@@ -29,11 +31,6 @@ import { SearchModal } from './SearchModal';
 
 const navigate = jest.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => navigate,
-}));
-
 describe('SearchModal', () => {
   const configApiMock = new ConfigReader({ app: { title: 'Mock app' } });
   const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
@@ -41,6 +38,7 @@ describe('SearchModal', () => {
   const apiRegistry = TestApiRegistry.from(
     [configApiRef, configApiMock],
     [searchApiRef, searchApiMock],
+    [navigationControllerApiRef, createMockNavigationController({ navigate })],
   );
 
   beforeEach(() => {
@@ -200,7 +198,7 @@ describe('SearchModal', () => {
     await userEvent.clear(input);
     await userEvent.type(input, 'new term{enter}');
 
-    expect(navigate).toHaveBeenCalledWith('/search?query=new term');
+    expect(navigate).toHaveBeenCalledWith('/search?query=new term', undefined);
   });
 
   it('should navigate with correct search terms to full results', async () => {
@@ -234,7 +232,7 @@ describe('SearchModal', () => {
     });
     await userEvent.click(fullResultsBtn);
 
-    expect(navigate).toHaveBeenCalledWith('/search?query=term');
+    expect(navigate).toHaveBeenCalledWith('/search?query=term', undefined);
   });
 
   it('should completely unmount the Dialog from DOM when open prop is false', async () => {

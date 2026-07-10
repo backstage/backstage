@@ -15,9 +15,16 @@
  */
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { Link, LinkProps } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { ReactNode, forwardRef, useCallback } from 'react';
+import { useApiHolder, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  navigationControllerApiRef,
+  RouteLink,
+} from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line no-restricted-imports
+import MaterialLink from '@material-ui/core/Link';
+import { ReactNode, forwardRef, useCallback, useMemo } from 'react';
 import { entityRouteParams, entityRouteRef } from '../../routes';
 import { EntityDisplayName } from '../EntityDisplayName';
 
@@ -40,6 +47,12 @@ export type EntityRefLinkProps = {
 /**
  * Shows a clickable link to an entity.
  *
+ * Under the new frontend system, entity targets navigate via framework
+ * {@link @backstage/frontend-plugin-api#RouteLink} (not the disposable NFS
+ * `Link` shim). Without a navigation controller (old frontend system), the
+ * shared {@link @backstage/core-components#Link} keeps today's react-router
+ * behavior.
+ *
  * @public
  */
 export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
@@ -55,6 +68,18 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       ...linkProps
     } = props;
     const entityLink = useEntityRefLink();
+    const apiHolder = useApiHolder();
+    const hasNavigationController = Boolean(
+      apiHolder.get(navigationControllerApiRef),
+    );
+    const frameworkEntityRouteRef = useMemo(
+      () => convertLegacyRouteRef(entityRouteRef),
+      [],
+    );
+    const routeParams = useMemo(
+      () => entityRouteParams(entityRef, { encodeParams: true }),
+      [entityRef],
+    );
 
     const content = children ?? title ?? (
       <EntityDisplayName
@@ -65,6 +90,20 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
         disableTooltip={disableTooltip}
       />
     );
+
+    if (hasNavigationController) {
+      return (
+        <MaterialLink
+          {...linkProps}
+          ref={ref}
+          component={RouteLink as any}
+          routeRef={frameworkEntityRouteRef}
+          params={routeParams}
+        >
+          {content}
+        </MaterialLink>
+      );
+    }
 
     return (
       <Link {...linkProps} ref={ref} to={entityLink(props.entityRef)}>
@@ -85,8 +124,8 @@ export function useEntityRefLink(): (
   const entityRoute = useRouteRef(entityRouteRef);
 
   return useCallback(
-    (entityRef: Entity | CompoundEntityRef | string) => {
-      const routeParams = entityRouteParams(entityRef, { encodeParams: true });
+    (ref: Entity | CompoundEntityRef | string) => {
+      const routeParams = entityRouteParams(ref, { encodeParams: true });
       return entityRoute(routeParams);
     },
     [entityRoute],

@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+
 import { useCallback } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 
 import { TemplateEditorIntro } from './TemplateEditorIntro';
-import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   rootRouteRef,
@@ -30,7 +32,7 @@ import { scaffolderTranslationRef } from '../../../translation';
 import { useTemplateDirectory } from './useTemplateDirectory';
 
 export function TemplateIntroPage() {
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const createLink = useRouteRef(rootRouteRef);
   const editorLink = useRouteRef(editorRouteRef);
   const templateFormLink = useRouteRef(templateFormRouteRef);

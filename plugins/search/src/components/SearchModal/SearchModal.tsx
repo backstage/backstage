@@ -35,11 +35,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CloseIcon from '@material-ui/icons/Close';
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { rootRouteRef } from '../../plugin';
 import { SearchResultSet } from '@backstage/plugin-search-common';
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import {
+  useCompatNavigate,
+  useTranslationRef,
+} from '@backstage/frontend-plugin-api';
+
 import { searchTranslationRef } from '../../translation';
 
 /**
@@ -120,7 +123,7 @@ export const Modal = ({
   resultItemComponents,
 }: SearchModalChildrenProps) => {
   const classes = useStyles();
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const { transitions } = useTheme();
   const { focusContent } = useContent();
   const { t } = useTranslationRef(searchTranslationRef);

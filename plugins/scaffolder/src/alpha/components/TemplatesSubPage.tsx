@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import {
   Content,
   ContentHeader,
@@ -61,7 +61,10 @@ import {
 import { scaffolderTranslationRef } from '../../translation';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
-import { BreadcrumbEntry } from '@backstage/frontend-plugin-api';
+import {
+  useCompatNavigate,
+  BreadcrumbEntry,
+} from '@backstage/frontend-plugin-api';
 import {
   TECHDOCS_ANNOTATION,
   TECHDOCS_EXTERNAL_ANNOTATION,
@@ -75,7 +78,7 @@ function TemplateListContent({
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 

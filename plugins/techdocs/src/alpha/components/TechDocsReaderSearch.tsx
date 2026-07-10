@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { useNavigate } from 'react-router-dom';
 import {
   Text,
   Flex,
@@ -24,6 +23,7 @@ import {
 import { SearchContextProvider } from '@backstage/plugin-search-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
 import { useTechDocsSearch } from '../../hooks/useTechDocsSearch';
 
 type TechDocsReaderSearchBarProps = {
@@ -32,7 +32,7 @@ type TechDocsReaderSearchBarProps = {
 
 const TechDocsReaderSearchBar = (props: TechDocsReaderSearchBarProps) => {
   const { entityId } = props;
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const { results, term, setTerm, deferredLoading } =
     useTechDocsSearch(entityId);
 

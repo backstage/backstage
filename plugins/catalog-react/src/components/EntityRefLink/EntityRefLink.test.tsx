@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  createMockContract,
+  createMockNavigationController,
+  createMockRouteResolutionApi,
+} from '@backstage/frontend-test-utils';
+import {
+  navigationControllerApiRef,
+  RoutingContractContext,
+  routeResolutionApiRef,
+} from '@backstage/frontend-plugin-api';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from './EntityRefLink';
 
@@ -193,6 +204,72 @@ describe('<EntityRefLink />', () => {
     expect(screen.getByText('Custom Children')).toHaveAttribute(
       'href',
       '/catalog/tes%5Bt/compone%26nt/softw%23are',
+    );
+  });
+
+  it('navigates via framework RouteLink under NFS scoped routing', () => {
+    const navigate = jest.fn();
+    const navigationController = createMockNavigationController({ navigate });
+    const scopedContract = createMockContract({ basePath: '/create' });
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
+      },
+    };
+
+    render(
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            createMockRouteResolutionApi({
+              routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
+            }),
+          ],
+          [navigationControllerApiRef, navigationController],
+        ]}
+      >
+        <RoutingContractContext.Provider value={scopedContract}>
+          <MemoryRouter>
+            <EntityRefLink entityRef={entity} />
+          </MemoryRouter>
+        </RoutingContractContext.Provider>
+      </TestApiProvider>,
+    );
+
+    const link = screen.getByText('software').closest('a');
+    expect(link).toHaveAttribute('href', '/catalog/default/component/software');
+
+    fireEvent.click(screen.getByText('software'));
+    expect(navigate).toHaveBeenCalledWith(
+      '/catalog/default/component/software',
+      undefined,
+    );
+  });
+
+  it('falls back to react-router Link without NFS navigation controller (OFS)', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
+      },
+    };
+
+    await renderInTestApp(<EntityRefLink entityRef={entity} />, {
+      mountedRoutes: {
+        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+      },
+    });
+
+    expect(screen.getByText('software').closest('a')).toHaveAttribute(
+      'href',
+      '/catalog/default/component/software',
     );
   });
 });

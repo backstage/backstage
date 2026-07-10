@@ -15,14 +15,14 @@
  */
 import qs from 'qs';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { rootRouteRef } from '../plugin';
 
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
 
 export const useNavigateToQuery = () => {
   const searchRoute = useRouteRef(rootRouteRef);
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   return useCallback(
     ({ query }: { query: string }): void => {
       const queryString = qs.stringify({ query }, { addQueryPrefix: true });

@@ -31,13 +31,16 @@ import { RiArrowRightLine } from '@remixicon/react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
 import { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { catalogGraphRouteRef } from '../../routes';
 import {
   EntityRelationsGraph,
   EntityRelationsGraphProps,
 } from '../EntityRelationsGraph';
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import {
+  useCompatNavigate,
+  useTranslationRef,
+} from '@backstage/frontend-plugin-api';
+
 import { catalogGraphTranslationRef } from '../../translation';
 import { Direction, EntityNode } from '../../lib/types';
 import classNames from 'classnames';
@@ -86,7 +89,7 @@ export const CatalogGraphCard = (
   const entityName = useMemo(() => getCompoundEntityRef(entity), [entity]);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const catalogGraphRoute = useRouteRef(catalogGraphRouteRef);
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const classes = useStyles({ height });
   const analytics = useAnalytics();
 

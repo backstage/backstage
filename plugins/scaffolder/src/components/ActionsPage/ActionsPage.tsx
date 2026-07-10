@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { Action, scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
@@ -28,7 +31,6 @@ import {
 } from '@backstage/core-components';
 import { Flex, List, ListRow, SearchField, Text } from '@backstage/ui';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
-import { useNavigate } from 'react-router-dom';
 import {
   editRouteRef,
   rootRouteRef,
@@ -255,7 +257,7 @@ export type ActionsPageProps = {
 };
 
 export const ActionsPage = (props: ActionsPageProps) => {
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);

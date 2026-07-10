@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+
 import { ComponentType, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useApp, useRouteRef } from '@backstage/core-plugin-api';
 
@@ -96,7 +97,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     templateFilter,
     headerOptions,
   } = props;
-  const navigate = useNavigate();
+  const navigate = useCompatNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const actionsLink = useRouteRef(actionsRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
