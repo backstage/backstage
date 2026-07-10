@@ -510,59 +510,83 @@ export async function createRouter(
   });
 
   router.post('/validate-entity', async (req, res) => {
-    const bodySchema = z.object({
-      entity: z.unknown(),
-      location: z.string(),
+    // This route is excluded from the schema-first auditor middleware via
+    // validatorOptions.ignorePaths above, so it audits manually.
+    const auditorEvent = await auditor.createEvent({
+      eventId: 'entity-validate',
+      request: req,
     });
 
-    let body: z.infer<typeof bodySchema>;
-    let entity: Entity;
-    let location: { type: string; target: string };
     try {
-      body = await validateRequestBody(req, bodySchema);
-      entity = validateEntityEnvelope(body.entity);
-      location = parseLocationRef(body.location);
-      if (location.type !== 'url')
-        throw new TypeError(
-          `Invalid location ref ${body.location}, only 'url:<target>' is supported, e.g. url:https://host/path`,
-        );
-    } catch (err) {
-      return res.status(400).json({
-        errors: [serializeError(err)],
+      const bodySchema = z.object({
+        entity: z.unknown(),
+        location: z.string(),
       });
-    }
 
-    const credentials = await httpAuth.credentials(req);
-    const authorizedValidationService = new AuthorizedValidationService(
-      orchestrator,
-      permissionsService,
-    );
-    const processingResult = await authorizedValidationService.process(
-      {
-        entity: {
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            annotations: {
-              [ANNOTATION_LOCATION]: body.location,
-              [ANNOTATION_ORIGIN_LOCATION]: body.location,
-              ...entity.metadata.annotations,
+      let body: z.infer<typeof bodySchema>;
+      let entity: Entity;
+      let location: { type: string; target: string };
+      try {
+        body = await validateRequestBody(req, bodySchema);
+        entity = validateEntityEnvelope(body.entity);
+        location = parseLocationRef(body.location);
+        if (location.type !== 'url')
+          throw new TypeError(
+            `Invalid location ref ${body.location}, only 'url:<target>' is supported, e.g. url:https://host/path`,
+          );
+      } catch (err) {
+        await auditorEvent?.fail({
+          error: err,
+        });
+
+        return res.status(400).json({
+          errors: [serializeError(err)],
+        });
+      }
+
+      const credentials = await httpAuth.credentials(req);
+      const authorizedValidationService = new AuthorizedValidationService(
+        orchestrator,
+        permissionsService,
+      );
+      const processingResult = await authorizedValidationService.process(
+        {
+          entity: {
+            ...entity,
+            metadata: {
+              ...entity.metadata,
+              annotations: {
+                [ANNOTATION_LOCATION]: body.location,
+                [ANNOTATION_ORIGIN_LOCATION]: body.location,
+                ...entity.metadata.annotations,
+              },
             },
           },
         },
-      },
-      credentials,
-    );
+        credentials,
+      );
 
-    if (!processingResult.ok) {
-      const errors = processingResult.errors.map(e => serializeError(e));
+      if (!processingResult.ok) {
+        const errors = processingResult.errors.map(e => serializeError(e));
 
-      res.status(400).json({
-        errors,
+        await auditorEvent?.fail({
+          error: new AggregateError(errors, 'Could not validate entity'),
+        });
+
+        return res.status(400).json({
+          errors,
+        });
+      }
+
+      await auditorEvent?.success();
+
+      return res.status(200).end();
+    } catch (err) {
+      await auditorEvent?.fail({
+        error: err,
       });
+      throw err;
     }
-
-    return res.status(200).end();
   });
 
   router.use(error);

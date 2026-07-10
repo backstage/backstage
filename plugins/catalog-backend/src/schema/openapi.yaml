@@ -1607,8 +1607,10 @@ paths:
       tags:
         - Entity
       description: Validate that a passed in entity has no errors in schema.
-      x-backstage-auditor:
-        eventId: entity-validate
+      # NOTE: this route uses validatorOptions.ignorePaths in createRouter.ts, which
+      # excludes it from express-openapi-validator's managed routes. That means
+      # req.openapi is never populated here, so an x-backstage-auditor annotation
+      # on this operation would never fire. The handler audits manually instead.
       responses:
         '200':
           description: Ok

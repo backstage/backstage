@@ -1984,9 +1984,6 @@ export const spec = {
         tags: ['Entity'],
         description:
           'Validate that a passed in entity has no errors in schema.',
-        'x-backstage-auditor': {
-          eventId: 'entity-validate',
-        },
         responses: {
           '200': {
             description: 'Ok',
