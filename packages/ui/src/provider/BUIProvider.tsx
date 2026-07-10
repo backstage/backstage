@@ -25,8 +25,27 @@ import type { UseAnalyticsFn } from '../analytics/types';
 /** @public */
 export type BUIProviderProps = {
   useAnalytics?: UseAnalyticsFn;
+  /**
+   * Navigate function backed by a host application's own router or
+   * navigation authority (e.g. a Backstage frontend-system navigation
+   * controller). When provided, this is used for all client-side navigation
+   * triggered by descendant BUI components (`Link`, `Tabs`, `Menu`, ...)
+   * instead of React Router's `useNavigate`, and a React Router context is
+   * no longer required.
+   */
+  navigate?: (path: string, options?: { replace?: boolean }) => void;
+  /**
+   * Resolves an href for the react-aria router context, paired with
+   * {@link BUIProviderProps.navigate}. Defaults to returning `href`
+   * unchanged. Ignored when `navigate` is not set.
+   */
+  useHref?: (href: string) => string;
   children: ReactNode;
 };
+
+function identityHref(href: string): string {
+  return href;
+}
 
 /**
  * Provides integration capabilities to all descendant BUI components.
@@ -48,7 +67,7 @@ export type BUIProviderProps = {
  * @public
  */
 export function BUIProvider(props: BUIProviderProps) {
-  const { useAnalytics, children } = props;
+  const { useAnalytics, navigate, useHref, children } = props;
   const value = useMemo(
     () =>
       createVersionedValueMap({
@@ -61,14 +80,25 @@ export function BUIProvider(props: BUIProviderProps) {
     <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
   );
 
-  if (useInRouterContext()) {
-    return <RoutedContent>{content}</RoutedContent>;
+  if (navigate) {
+    return (
+      <RouterProvider navigate={navigate} useHref={useHref ?? identityHref}>
+        {content}
+      </RouterProvider>
+    );
   }
 
-  return content;
+  return <MaybeReactRouterContent>{content}</MaybeReactRouterContent>;
 }
 
-function RoutedContent({ children }: { children: ReactNode }) {
+function MaybeReactRouterContent({ children }: { children: ReactNode }) {
+  if (!useInRouterContext()) {
+    return <>{children}</>;
+  }
+  return <ReactRouterContent>{children}</ReactRouterContent>;
+}
+
+function ReactRouterContent({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   return (
     <RouterProvider navigate={navigate} useHref={useResolvedHref}>
