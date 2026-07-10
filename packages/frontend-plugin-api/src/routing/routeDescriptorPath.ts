@@ -102,16 +102,35 @@ export function collectRouteDescriptorParams(
  *
  * @public
  */
+function stripLeadingSlashes(path: string): string {
+  let start = 0;
+  while (start < path.length && path.charCodeAt(start) === 47 /* / */) {
+    start += 1;
+  }
+  return start === 0 ? path : path.slice(start);
+}
+
+function stripTrailingSlashes(path: string): string {
+  if (path === '/' || path.length === 0) {
+    return path;
+  }
+  let end = path.length;
+  while (end > 0 && path.charCodeAt(end - 1) === 47 /* / */) {
+    end -= 1;
+  }
+  return end === path.length ? path : path.slice(0, end);
+}
+
 export function joinRouteDescriptorPaths(
   parentPath: string,
   subPath: string,
 ): string {
-  const normalizedSub = subPath.replace(/^\/+/, '').replace(/\/+$/, '');
+  const normalizedSub = stripTrailingSlashes(stripLeadingSlashes(subPath));
   if (!normalizedSub) {
-    return parentPath === '/' ? '/' : parentPath.replace(/\/$/, '');
+    return parentPath === '/' ? '/' : stripTrailingSlashes(parentPath);
   }
   if (parentPath === '/') {
     return `/${normalizedSub}`;
   }
-  return `${parentPath.replace(/\/$/, '')}/${normalizedSub}`;
+  return `${stripTrailingSlashes(parentPath)}/${normalizedSub}`;
 }

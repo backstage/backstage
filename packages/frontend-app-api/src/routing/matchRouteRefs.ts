@@ -15,7 +15,11 @@
  */
 
 import { BackstageRouteObject } from './types';
-import { matchPath, routePriority } from './routePattern';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  matchPath,
+  routePriority,
+} from '../../../frontend-plugin-api/src/routing/routePattern';
 
 /** @internal */
 export interface RouteRefMatch {

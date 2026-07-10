@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
+import { compilePath, routePriority } from './routePattern';
+
 /**
- * Provides URL matching for top-level page routing.
- *
- * Routes are sorted by specificity (static segments over params over splats),
- * matching {@link matchRouteRefs} priority via the shared {@link routePattern}
- * module. The root path `/` acts as a catch-all.
- *
- * {@link RouteTable.match} returns both the registered pattern (for page
- * lookup / contract identity) and a concrete `basePath` (the matched URL
- * prefix) for `createContract`. Pass the concrete path as `basePath` and the
- * registered pattern as `routePattern` so contracts can project across
- * entity-style prefix changes without changing identity.
+ * Result of matching a pathname against a {@link RouteTable}.
  *
  * @public
  */
-
-import { compilePath, routePriority } from './routePattern';
-
-/** @public */
 export interface RouteTableMatch {
   /**
    * The registered route pattern. Use this as the page map key.
@@ -53,10 +41,28 @@ type CompiledRoute = {
   matcher?: RegExp;
 };
 
-/** @public */
+/**
+ * Provides URL matching for top-level page routing.
+ *
+ * Routes are sorted by specificity (static segments over params over splats).
+ * The root path `/` acts as a catch-all.
+ *
+ * {@link RouteTable.match} returns both the registered pattern (for page
+ * lookup / contract identity) and a concrete `basePath` (the matched URL
+ * prefix) for `createContract`. Pass the concrete path as `basePath` and the
+ * registered pattern as `routePattern` so contracts can project across
+ * entity-style prefix changes without changing identity.
+ *
+ * @public
+ */
 export class RouteTable {
   private readonly paths: CompiledRoute[];
 
+  /**
+   * Creates a route table from the given registered page base paths.
+   *
+   * Duplicate paths warn and keep the first registration.
+   */
   constructor(basePaths: string[]) {
     const seen = new Set<string>();
     for (const path of basePaths) {
@@ -79,6 +85,9 @@ export class RouteTable {
       .sort((a, b) => b.priority - a.priority || b.path.length - a.path.length);
   }
 
+  /**
+   * Matches `pathname` against registered paths and returns the best match.
+   */
   match(pathname: string): RouteTableMatch | undefined {
     const matched = this.paths.find(({ path, matcher }) =>
       path === '/'

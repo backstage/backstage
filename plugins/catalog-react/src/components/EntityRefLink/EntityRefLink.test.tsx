@@ -21,6 +21,7 @@ import {
   createMockContract,
   createMockNavigationController,
   createMockRouteResolutionApi,
+  renderInTestApp as renderInFrontendTestApp,
 } from '@backstage/frontend-test-utils';
 import {
   navigationControllerApiRef,
@@ -207,7 +208,7 @@ describe('<EntityRefLink />', () => {
     );
   });
 
-  it('navigates via framework RouteLink under NFS scoped routing', () => {
+  it('navigates via the framework controller under NFS scoped routing', () => {
     const navigate = jest.fn();
     const navigationController = createMockNavigationController({ navigate });
     const scopedContract = createMockContract({ basePath: '/create' });
@@ -249,6 +250,94 @@ describe('<EntityRefLink />', () => {
       '/catalog/default/component/software',
       undefined,
     );
+  });
+
+  it('uses entityLink with framework navigate when route resolution returns undefined', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
+      },
+    };
+
+    const { navigationController } = renderInFrontendTestApp(
+      <EntityRefLink entityRef={entity} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+        apis: [[routeResolutionApiRef, { resolve: () => undefined }]],
+      },
+    );
+
+    const navigateSpy = jest.spyOn(navigationController, 'navigate');
+
+    const link = screen.getByText('software').closest('a');
+    expect(link).toHaveAttribute('href', '/catalog/default/component/software');
+
+    fireEvent.click(screen.getByText('software'));
+    expect(navigateSpy).toHaveBeenCalledWith(
+      '/catalog/default/component/software',
+      undefined,
+    );
+  });
+
+  it('does not framework-navigate for modified clicks or target=_blank', () => {
+    const navigate = jest.fn();
+    const navigationController = createMockNavigationController({ navigate });
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
+      },
+    };
+
+    const { rerender } = render(
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            createMockRouteResolutionApi({
+              routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
+            }),
+          ],
+          [navigationControllerApiRef, navigationController],
+        ]}
+      >
+        <MemoryRouter>
+          <EntityRefLink entityRef={entity} target="_blank" />
+        </MemoryRouter>
+      </TestApiProvider>,
+    );
+
+    fireEvent.click(screen.getByText('software'));
+    expect(navigate).not.toHaveBeenCalled();
+
+    rerender(
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            createMockRouteResolutionApi({
+              routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
+            }),
+          ],
+          [navigationControllerApiRef, navigationController],
+        ]}
+      >
+        <MemoryRouter>
+          <EntityRefLink entityRef={entity} />
+        </MemoryRouter>
+      </TestApiProvider>,
+    );
+
+    fireEvent.click(screen.getByText('software'), { ctrlKey: true });
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it('falls back to react-router Link without NFS navigation controller (OFS)', async () => {

@@ -29,7 +29,8 @@ import type {
 } from '@backstage/frontend-plugin-api';
 import type { Observable, Subscription } from '@backstage/types';
 import { joinPaths } from './joinPaths';
-import { matchPath } from './routePattern';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { matchPath } from '../../../frontend-plugin-api/src/routing/routePattern';
 
 type LocationHandler = (location: RoutingLocation) => void;
 

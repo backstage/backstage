@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { createRouteRef, RouteRef } from '@backstage/frontend-plugin-api';
-import { RouteTable } from './RouteTable';
+import {
+  createRouteRef,
+  RouteRef,
+  RouteTable,
+} from '@backstage/frontend-plugin-api';
 import { matchRouteRefs } from './matchRouteRefs';
 import { BackstageRouteObject } from './types';
-import { routePriority } from './routePattern';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { routePriority } from '../../../frontend-plugin-api/src/routing/routePattern';
 
 const rest = {
   element: null,

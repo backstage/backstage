@@ -103,6 +103,12 @@ export const PageLayout = SwappableComponentBlueprint.make({
         const parentPath = contract
           ? contract.basePath.replace(/\/$/, '')
           : rrParentPath;
+        // Empty string titleLink is treated as unset (same as undefined) so the
+        // breadcrumb still points at the page mount path rather than "".
+        const breadcrumbHref =
+          titleLink !== undefined && titleLink !== ''
+            ? titleLink
+            : parentPath || '/';
         const resolvedTabs = useMemo(
           () =>
             tabs?.map(tab => ({
@@ -141,9 +147,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
         }
 
         return (
-          <BreadcrumbEntry
-            entry={{ label: title, href: titleLink ?? (parentPath || '/') }}
-          >
+          <BreadcrumbEntry entry={{ label: title, href: breadcrumbHref }}>
             {content}
           </BreadcrumbEntry>
         );

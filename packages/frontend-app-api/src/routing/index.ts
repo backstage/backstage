@@ -19,5 +19,6 @@ export {
   AppRouteSwitch,
   type AppRouteSwitchProps,
   type AppRouteRedirect,
-} from './AppRouteSwitch';
-export { RouteTable, type RouteTableMatch } from './RouteTable';
+  RouteTable,
+  type RouteTableMatch,
+} from '@backstage/frontend-plugin-api';

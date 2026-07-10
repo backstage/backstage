@@ -720,6 +720,28 @@ export type CreateExtensionOptions<
   }): Iterable<UFactoryOutput>;
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
+
+// @public
+export interface AppRouteRedirect {
+  from: string;
+  to: string;
+}
+
+// @public
+export function AppRouteSwitch(
+  props: AppRouteSwitchProps,
+): JSX_2.Element | null;
+
+// @public
+export interface AppRouteSwitchProps {
+  contracts?: Map<string, RoutingContract>;
+  controller: NavigationControllerApi;
+  fallback: ReactElement;
+  pages: Map<string, ComponentType>;
+  redirects?: AppRouteRedirect[];
+  routeTable: RouteTable;
+}
+
 // @public
 export function createExternalRouteRef<
   TParams extends
@@ -2695,6 +2717,19 @@ export function useAppNode(): AppNode | undefined;
 export function useBreadcrumbEntries(): {
   items: BreadcrumbEntryData[];
 };
+
+
+// @public
+export class RouteTable {
+  constructor(basePaths: string[]);
+  match(pathname: string): RouteTableMatch | undefined;
+}
+
+// @public
+export interface RouteTableMatch {
+  basePath: string;
+  path: string;
+}
 
 // @public
 export function useCompatNavigate(): (

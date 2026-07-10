@@ -16,12 +16,14 @@
 
 import { useEffect, type ComponentType } from 'react';
 import { render, screen, act } from '@testing-library/react';
-import { AppRouteSwitch } from './AppRouteSwitch';
+import {
+  AppRouteSwitch,
+  RouteTable,
+  useRoutingContract,
+  type RoutingContract,
+} from '@backstage/frontend-plugin-api';
 import { createNavigationController } from './NavigationController';
 import type { NavigationController } from './NavigationController';
-import { RouteTable } from './RouteTable';
-import { useRoutingContract } from '@backstage/frontend-plugin-api';
-import type { RoutingContract } from '@backstage/frontend-plugin-api';
 
 function CatalogPage() {
   const contract = useRoutingContract();

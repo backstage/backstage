@@ -24,7 +24,8 @@ import {
   createNavigationController,
   type NavigationController,
 } from './NavigationController';
-import { useObservableAsState } from './useObservableAsState';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { useObservableAsState } from '../../../frontend-plugin-api/src/routing/useObservableAsState';
 
 describe('NavigationController', () => {
   let controller: NavigationController;

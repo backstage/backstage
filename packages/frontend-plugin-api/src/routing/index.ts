@@ -71,3 +71,9 @@ export {
   type NavigateRouteRefFunc,
 } from './useNavigateRouteRef';
 export { RouteLink, type RouteLinkProps } from './RouteLink';
+export {
+  AppRouteSwitch,
+  type AppRouteSwitchProps,
+  type AppRouteRedirect,
+} from './AppRouteSwitch';
+export { RouteTable, type RouteTableMatch } from './RouteTable';

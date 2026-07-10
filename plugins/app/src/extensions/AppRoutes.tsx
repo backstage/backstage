@@ -24,7 +24,7 @@ import {
   navigationControllerApiRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
-import { AppRouteSwitch, RouteTable } from '@backstage/frontend-app-api';
+import { AppRouteSwitch, RouteTable } from '@backstage/frontend-plugin-api';
 
 function normalizeRoutePath(path: string): string {
   if (path === '/') {

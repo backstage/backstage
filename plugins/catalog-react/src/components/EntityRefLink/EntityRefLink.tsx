@@ -15,16 +15,22 @@
  */
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { Link, LinkProps } from '@backstage/core-components';
 import { useApiHolder, useRouteRef } from '@backstage/core-plugin-api';
 import {
-  navigationControllerApiRef,
-  RouteLink,
+  routeResolutionApiRef,
+  useOptionalFrameworkNavigate,
+  type RouteRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line no-restricted-imports
 import MaterialLink from '@material-ui/core/Link';
-import { ReactNode, forwardRef, useCallback, useMemo } from 'react';
+import {
+  MouseEvent as ReactMouseEvent,
+  ReactNode,
+  forwardRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import { entityRouteParams, entityRouteRef } from '../../routes';
 import { EntityDisplayName } from '../EntityDisplayName';
 
@@ -44,14 +50,17 @@ export type EntityRefLinkProps = {
   disableTooltip?: boolean;
 } & Omit<LinkProps, 'to'>;
 
+function isModifiedEvent(event: ReactMouseEvent): boolean {
+  return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+}
+
 /**
  * Shows a clickable link to an entity.
  *
- * Under the new frontend system, entity targets navigate via framework
- * {@link @backstage/frontend-plugin-api#RouteLink} (not the disposable NFS
- * `Link` shim). Without a navigation controller (old frontend system), the
- * shared {@link @backstage/core-components#Link} keeps today's react-router
- * behavior.
+ * Under the new frontend system, entity targets navigate via the framework
+ * navigation controller (not the disposable NFS `Link` shim). Without a
+ * navigation controller (old frontend system), the shared
+ * {@link @backstage/core-components#Link} keeps today's react-router behavior.
  *
  * @public
  */
@@ -65,21 +74,35 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       children,
       hideIcon,
       disableTooltip,
+      onClick,
       ...linkProps
     } = props;
     const entityLink = useEntityRefLink();
     const apiHolder = useApiHolder();
-    const hasNavigationController = Boolean(
-      apiHolder.get(navigationControllerApiRef),
-    );
-    const frameworkEntityRouteRef = useMemo(
-      () => convertLegacyRouteRef(entityRouteRef),
-      [],
-    );
+    const routeResolutionApi = apiHolder.get(routeResolutionApiRef);
+    const frameworkNavigate = useOptionalFrameworkNavigate();
     const routeParams = useMemo(
       () => entityRouteParams(entityRef, { encodeParams: true }),
       [entityRef],
     );
+
+    // Prefer NFS route resolution when available. `entityRouteRef` is the same
+    // object identity catalog alpha dual-types via convertLegacyRouteRef at app
+    // load; avoid importing core-compat-api here (circular package graph).
+    // Absolute entity routes do not need a react-router sourcePath.
+    const resolvedFrameworkPath = useMemo(() => {
+      if (!routeResolutionApi) {
+        return undefined;
+      }
+      const routeFunc = routeResolutionApi.resolve(
+        entityRouteRef as unknown as RouteRef<{
+          name: string;
+          kind: string;
+          namespace: string;
+        }>,
+      );
+      return routeFunc?.(routeParams);
+    }, [routeResolutionApi, routeParams]);
 
     const content = children ?? title ?? (
       <EntityDisplayName
@@ -91,14 +114,28 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       />
     );
 
-    if (hasNavigationController) {
+    // When a navigation controller is present, always use framework navigate —
+    // never fall back to the react-router Link shim under NFS.
+    if (frameworkNavigate) {
+      const to = resolvedFrameworkPath ?? entityLink(props.entityRef);
       return (
         <MaterialLink
           {...linkProps}
           ref={ref}
-          component={RouteLink as any}
-          routeRef={frameworkEntityRouteRef}
-          params={routeParams}
+          href={to}
+          onClick={(event: ReactMouseEvent<HTMLAnchorElement>) => {
+            onClick?.(event as any);
+            if (
+              event.defaultPrevented ||
+              event.button !== 0 ||
+              isModifiedEvent(event) ||
+              linkProps.target === '_blank'
+            ) {
+              return;
+            }
+            event.preventDefault();
+            frameworkNavigate(to);
+          }}
         >
           {content}
         </MaterialLink>
@@ -106,7 +143,12 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     }
 
     return (
-      <Link {...linkProps} ref={ref} to={entityLink(props.entityRef)}>
+      <Link
+        {...linkProps}
+        ref={ref}
+        to={entityLink(props.entityRef)}
+        onClick={onClick}
+      >
         {content}
       </Link>
     );

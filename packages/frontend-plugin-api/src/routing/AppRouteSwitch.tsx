@@ -23,11 +23,9 @@ import {
   type ReactNode,
   useMemo,
 } from 'react';
-import {
-  RoutingContractContext,
-  type NavigationControllerApi,
-  type RoutingContract,
-} from '@backstage/frontend-plugin-api';
+import { RoutingContractContext } from './RoutingContractContext';
+import type { NavigationControllerApi } from './NavigationControllerApi';
+import type { RoutingContract } from './RoutingContract';
 import { RouteTable } from './RouteTable';
 import {
   useObservableAsState,
@@ -62,19 +60,35 @@ class PluginErrorBoundary extends Component<
   }
 }
 
-/** @public */
+/**
+ * A configured redirect applied by {@link AppRouteSwitch} before page matching.
+ *
+ * @public
+ */
 export interface AppRouteRedirect {
+  /** App-absolute path pattern to match. */
   from: string;
+  /** Target path; may include `:param` and `*` substitutions from `from`. */
   to: string;
 }
 
-/** @public */
+/**
+ * Properties for {@link AppRouteSwitch}.
+ *
+ * @public
+ */
 export interface AppRouteSwitchProps {
+  /** Framework navigation controller that owns browser history. */
   controller: NavigationControllerApi;
+  /** Longest-prefix matcher for registered page paths. */
   routeTable: RouteTable;
+  /** Page components keyed by registered route pattern. */
   pages: Map<string, ComponentType>;
+  /** Optional pre-created contracts keyed by registered route pattern. */
   contracts?: Map<string, RoutingContract>;
+  /** Optional redirects resolved before page matching. */
   redirects?: AppRouteRedirect[];
+  /** Rendered when no page matches. */
   fallback: ReactElement;
 }
 

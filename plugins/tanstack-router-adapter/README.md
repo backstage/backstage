@@ -59,7 +59,7 @@ React Router page adapter (or migrate to descriptors).
 
 - Blockers follow TanStack history semantics: push/replace through the adapter
   register into the shared `HistoryBackend` blocker seam so chrome and adapter
-  navigations share policy; go/back/forward never run blockers.
+  navigation share policy; go/back/forward never run blockers.
 - Opaque React Router children under a TanStack default are unsupported by
   policy � pages must use route descriptors (or keep a React Router adapter).
   There is no TanStack opaque-children bridge package.

@@ -20,6 +20,7 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   BreadcrumbEntry,
   PageBlueprint,
+  PageLayout,
   SubPageBlueprint,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
@@ -180,6 +181,44 @@ describe('PageLayout', () => {
           name: 'Root',
         });
         expect(breadcrumbLink).toHaveAttribute('href', '/');
+      });
+    });
+
+    it('should treat an empty titleLink as unset and use the mount path', async () => {
+      // PageBlueprint resolves titleLink from the route ref; force an empty
+      // string through the swappable PageLayout to cover the empty-href case.
+      const myPlugin = createFrontendPlugin({
+        pluginId: 'my-plugin',
+        extensions: [
+          PageBlueprint.make({
+            name: 'index-page',
+            params: {
+              title: 'Outer',
+              path: '/my-plugin',
+              noHeader: true,
+              loader: async () => (
+                <PageLayout title="My Plugin" titleLink="">
+                  <div data-testid="test-content">Plugin content</div>
+                </PageLayout>
+              ),
+            },
+          }),
+        ],
+      });
+
+      renderTestApp({
+        features: [myPlugin],
+        initialRouteEntries: ['/my-plugin'],
+      });
+
+      await waitFor(() => {
+        const breadcrumbList = screen.getByRole('navigation', {
+          name: 'Breadcrumbs',
+        });
+        const breadcrumbLink = within(breadcrumbList).getByRole('link', {
+          name: 'My Plugin',
+        });
+        expect(breadcrumbLink).toHaveAttribute('href', '/my-plugin');
       });
     });
 
