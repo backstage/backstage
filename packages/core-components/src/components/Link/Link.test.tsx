@@ -15,15 +15,29 @@
  */
 
 import { PropsWithChildren, ComponentType } from 'react';
-import { fireEvent, waitFor, screen, renderHook } from '@testing-library/react';
+import {
+  fireEvent,
+  waitFor,
+  screen,
+  renderHook,
+  render,
+} from '@testing-library/react';
 import {
   mockApis,
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
+import {
+  createMockContract,
+  createMockNavigationController,
+} from '@backstage/frontend-test-utils';
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
+import {
+  navigationControllerApiRef,
+  RoutingContractContext,
+} from '@backstage/frontend-plugin-api';
 import { isExternalUri, Link, useResolvedPath } from './Link';
-import { Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ConfigReader } from '@backstage/config';
 
 describe('<Link />', () => {
@@ -139,7 +153,8 @@ describe('<Link />', () => {
       [true, 'ms-help://'],
       [true, 'ms.help://'],
       [true, 'ms+help://'],
-      [false, '//'],
+      [true, '//'],
+      [true, '//evil.example'],
       [false, '123://'],
       [false, 'abc&xzy://'],
       [false, 'http'],
@@ -201,6 +216,53 @@ describe('<Link />', () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Link component rejected javascript: URL as a security precaution"`,
     );
+  });
+
+  describe('NFS Link shim', () => {
+    const navigate = jest.fn();
+    const navigationController = createMockNavigationController({ navigate });
+    const scopedContract = createMockContract({ basePath: '/create' });
+
+    beforeEach(() => {
+      navigate.mockClear();
+    });
+
+    it('escalates cross-plugin absolute targets via the navigation controller', () => {
+      render(
+        <TestApiProvider
+          apis={[[navigationControllerApiRef, navigationController]]}
+        >
+          <RoutingContractContext.Provider value={scopedContract}>
+            <MemoryRouter>
+              <Link to="/catalog/default/component/widget">Entity</Link>
+            </MemoryRouter>
+          </RoutingContractContext.Provider>
+        </TestApiProvider>,
+      );
+
+      fireEvent.click(screen.getByRole('link', { name: 'Entity' }));
+      expect(navigate).toHaveBeenCalledWith(
+        '/catalog/default/component/widget',
+      );
+    });
+
+    it('does not escalate without NFS signals (OFS fallback)', async () => {
+      const testString = 'Arrived';
+      await renderInTestApp(
+        <>
+          <Link to="/test">Go</Link>
+          <Routes>
+            <Route path="/test" element={<p>{testString}</p>} />
+          </Routes>
+        </>,
+      );
+
+      fireEvent.click(screen.getByText('Go'));
+      await waitFor(() => {
+        expect(screen.getByText(testString)).toBeInTheDocument();
+      });
+      expect(navigate).not.toHaveBeenCalled();
+    });
   });
 });
 

@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
+import { fireEvent } from '@testing-library/react';
+import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
+import { createMockNavigationController } from '@backstage/frontend-test-utils';
 import { ErrorPage } from './ErrorPage';
 import { Link } from '../../components/Link';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
 
 describe('<ErrorPage/>', () => {
   it('should render with status code, status message and go back link', async () => {
@@ -108,5 +117,39 @@ describe('<ErrorPage/>', () => {
       />,
     );
     expect(getByText(/Show more details/i)).toBeInTheDocument();
+  });
+
+  describe('go back link', () => {
+    beforeEach(() => {
+      mockNavigate.mockClear();
+    });
+
+    it('calls react-router navigate(-1) when no navigation controller is registered (OFS)', async () => {
+      const { getByTestId } = await renderInTestApp(
+        <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
+      );
+
+      fireEvent.click(getByTestId('go-back-link'));
+
+      expect(mockNavigate).toHaveBeenCalledWith(-1);
+    });
+
+    it('calls the navigation controller go(-1) instead of react-router when one is registered (NFS)', async () => {
+      const go = jest.fn();
+      const navigationController = createMockNavigationController({ go });
+
+      const { getByTestId } = await renderInTestApp(
+        <TestApiProvider
+          apis={[[navigationControllerApiRef, navigationController]]}
+        >
+          <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
+        </TestApiProvider>,
+      );
+
+      fireEvent.click(getByTestId('go-back-link'));
+
+      expect(go).toHaveBeenCalledWith(-1);
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
   });
 });

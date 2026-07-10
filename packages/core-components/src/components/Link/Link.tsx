@@ -41,6 +41,11 @@ import {
   Route,
 } from 'react-router-dom';
 import OpenInNew from '@material-ui/icons/OpenInNew';
+import { shouldNavigateViaFramework } from './absoluteLinkNavigate';
+import {
+  useOptionalNavigationController,
+  useOptionalRoutingContract,
+} from '../../hooks/useOptionalNavigationController';
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -80,7 +85,8 @@ const ExternalLinkIcon = () => {
   return <Icon className={classes.externalLinkIcon} />;
 };
 
-export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
+export const isExternalUri = (uri: string) =>
+  /^([a-z+.-]+):/.test(uri) || uri.startsWith('//');
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
 const scriptProtocolPattern =
@@ -179,15 +185,24 @@ const getNodeText = (node: ReactNode): string => {
   return '';
 };
 
+function isModifiedEvent(event: ReactMouseEvent): boolean {
+  return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+}
+
 /**
  * Unstyled link primitive which...
  * - Uses react-router for internal links.
+ * - Under the new frontend system, routes absolute / cross-plugin targets
+ *   through the framework navigation controller when NFS signals are present
+ *   (see AbsoluteLinkNavigate / `absoluteLinkNavigate.ts`).
  * - Captures link clicks as analytics events.
  */
 export const UnstyledLink = forwardRef<any, LinkProps>(
   ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
+    const navigationController = useOptionalNavigationController();
+    const routingContract = useOptionalRoutingContract();
 
     // Adding the base path to URLs breaks react-router v6 stable, so we only
     // do it for beta. The react router version won't change at runtime so it is
@@ -197,6 +212,13 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
     const linkText = getNodeText(props.children) || to;
     const external = isExternalUri(to);
     const newWindow = external && !!/^https?:/.exec(to);
+    const navigateViaFramework =
+      !external &&
+      shouldNavigateViaFramework({
+        to,
+        navigationController,
+        routingContract,
+      });
 
     if (scriptProtocolPattern.test(to)) {
       throw new Error(
@@ -209,31 +231,52 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
       if (!noTrack) {
         analytics.captureEvent('click', linkText, { attributes: { to } });
       }
+      if (
+        navigateViaFramework &&
+        navigationController &&
+        !event.defaultPrevented &&
+        event.button === 0 &&
+        !isModifiedEvent(event) &&
+        props.target !== '_blank'
+      ) {
+        event.preventDefault();
+        navigationController.navigate(to);
+      }
     };
 
-    return external ? (
-      // External links
-      <a
-        {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
-        {...props}
-        {...(props['aria-label']
-          ? { 'aria-label': `${props['aria-label']}, Opens in a new window` }
-          : {})}
-        ref={ref}
-        href={to}
-        onClick={handleClick}
-        className={classnames(classes.externalLink, props.className)}
-      >
-        {props.children}
-        {externalLinkIcon && <ExternalLinkIcon />}
-        <Typography component="span" className={classes.visuallyHidden}>
-          , Opens in a new window
-        </Typography>
-      </a>
-    ) : (
-      // Interact with React Router for internal links
-      <RouterLink {...props} ref={ref} to={to} onClick={handleClick} />
-    );
+    if (external) {
+      return (
+        <a
+          {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
+          {...props}
+          {...(props['aria-label']
+            ? { 'aria-label': `${props['aria-label']}, Opens in a new window` }
+            : {})}
+          ref={ref}
+          href={to}
+          onClick={handleClick}
+          className={classnames(classes.externalLink, props.className)}
+        >
+          {props.children}
+          {externalLinkIcon && <ExternalLinkIcon />}
+          <Typography component="span" className={classes.visuallyHidden}>
+            , Opens in a new window
+          </Typography>
+        </a>
+      );
+    }
+
+    if (navigateViaFramework) {
+      // AbsoluteLinkNavigate: absolute / cross-plugin targets use the controller
+      return (
+        <a {...props} ref={ref} href={to} onClick={handleClick}>
+          {props.children}
+        </a>
+      );
+    }
+
+    // Interact with React Router for internal links
+    return <RouterLink {...props} ref={ref} to={to} onClick={handleClick} />;
   },
 );
 

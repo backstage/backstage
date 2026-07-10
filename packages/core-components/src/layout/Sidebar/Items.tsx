@@ -53,13 +53,7 @@ import {
   createElement,
 } from 'react';
 
-import {
-  Link,
-  NavLinkProps,
-  resolvePath,
-  useLocation,
-  useResolvedPath,
-} from 'react-router-dom';
+import { Link, NavLinkProps, resolvePath } from 'react-router-dom';
 
 import {
   SidebarConfig,
@@ -71,6 +65,8 @@ import DoubleArrowRight from './icons/DoubleArrowRight';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
 import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
+import { useChromePathname } from './useChromePathname';
+import { useChromeResolvedPath } from './useChromeResolvedPath';
 import { isLocationMatch } from './utils';
 import Button from '@material-ui/core/Button';
 
@@ -348,8 +344,9 @@ export const WorkaroundNavLink = forwardRef<
   },
   ref,
 ) {
-  let { pathname: locationPathname } = useLocation();
-  let { pathname: toPathname } = useResolvedPath(to);
+  // Prefer framework location under NFS; RR remains for OFS only.
+  let locationPathname = useChromePathname();
+  let { pathname: toPathname } = useChromeResolvedPath(to);
 
   if (!caseSensitive) {
     locationPathname = locationPathname.toLocaleLowerCase('en-US');
@@ -463,7 +460,7 @@ const SidebarItemBase = forwardRef<
   };
 
   const analyticsApi = useAnalytics();
-  const { pathname: to } = useResolvedPath(
+  const { pathname: to } = useChromeResolvedPath(
     !isButtonItem(props) && props.to ? props.to : '',
   );
 
@@ -518,7 +515,8 @@ const SidebarItemWithSubmenu = ({
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
   const [isHoveredOn, setIsHoveredOn] = useState(false);
-  const location = useLocation();
+  const pathname = useChromePathname();
+  const location = { pathname } as Location;
   const isActive = useLocationMatch(children, location);
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
