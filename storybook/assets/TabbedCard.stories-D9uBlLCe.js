@@ -1,0 +1,71 @@
+import{ca as i,bR as e,c_ as O,aa as w,w as W}from"./iframe-COykYx45.js";import{C as _,a as L}from"./CardContent-HIXFl6EO.js";import{E as q}from"./ErrorBoundary-DvM2RvVS.js";import{b as H,T as I}from"./Tabs-DupvdDK-.js";import{D as B}from"./Divider-1peNkIEd.js";import{B as P}from"./BottomLink-BklS53Q5.js";import{m as x}from"./makeStyles-4LVf8ZW1.js";import{C as M}from"./CardHeader-3z96uFuv.js";import{S}from"./Grid-BRcD6lxX.js";import"./preload-helper-PPVm8Dsz.js";import"./ErrorPanel-BWXYxd2G.js";import"./WarningPanel-CwfO6u39.js";import"./ExpandMore-BGkiTmW-.js";import"./AccordionDetails-B_CD0nxU.js";import"./index-B9sM2jn7.js";import"./Collapse-E9qJExDE.js";import"./MarkdownContent-TbO5Qkzz.js";import"./Link-Bm3AlTT9.js";import"./index-CS7sQkHC.js";import"./lodash-B-tmFX5K.js";import"./useAnalytics-D6lRulOX.js";import"./useApp-OLJN8mL2.js";import"./CodeSnippet-XMznKSLI.js";import"./List-D4wG1S98.js";import"./ListContext-CnRdieQg.js";import"./ListItem-MGSaNCae.js";import"./ListItemText-Cn4bfwC7.js";import"./CopyTextButton-DWVvtU-z.js";import"./useCopyToClipboard-fn2va9VA.js";import"./useMountedState-Bnm4--Gr.js";import"./Tooltip-BOZftJPl.js";import"./useObjectRef-CMiC6ke_.js";import"./useOverlayTriggerState-BkDz7Lrc.js";import"./utils-ijm_b3mJ.js";import"./useFocusRing-Bjvn0GS4.js";import"./openLink-DVwmAOKC.js";import"./number-B3izyAdU.js";import"./I18nProvider-DL1Ps6Ca.js";import"./useControlledState-CjsdyDjY.js";import"./animation-By8SMLky.js";import"./useHover-gDb7vOkJ.js";import"./ButtonIcon-DD_AnQDN.js";import"./Button-Bito0oFe.js";import"./Label--YQs_5DF.js";import"./Hidden-BsQlbI9F.js";import"./useLabel-PGKREU8T.js";import"./useLabels-Cpdv89rG.js";import"./useButton-rnhRQmzJ.js";import"./usePress-C3UrLlH7.js";import"./textSelection-BToKgSXC.js";import"./index-C2j_KLnZ.js";import"./LinkButton-j69OSM6g.js";import"./Button-_4O6aQrK.js";import"./KeyboardArrowRight-DrMIIDEm.js";import"./ArrowForward-B9aemkai.js";import"./Box-BZMsMDiJ.js";import"./styled-CwK1uEmG.js";const R=x(n=>({root:{padding:n.spacing(0,2,0,2.5),minHeight:n.spacing(3)},indicator:{backgroundColor:n.palette.info.main,height:n.spacing(.3)}}),{name:"BackstageTabbedCard"}),D=O(n=>({root:{padding:n.spacing(2,2,2,2.5),display:"inline-block"},title:{fontWeight:700},subheader:{paddingTop:n.spacing(1)}}),{name:"BackstageTabbedCardBoldHeader"})(M);function m(n){const{slackChannel:s,errorBoundaryProps:l,children:o,title:u,deepLink:y,value:b,onChange:v}=n,f=R(),[T,j]=i.useState(0),k=v||((a,C)=>j(C));let h;b?i.Children.map(o,a=>{i.isValidElement(a)&&a?.props.value===b&&(h=a?.props.children)}):i.Children.map(o,(a,C)=>{i.isValidElement(a)&&C===T&&(h=a?.props.children)});const E=l||(s?{slackChannel:s}:{});return e.jsx(_,{children:e.jsxs(q,{...E,children:[u&&e.jsx(D,{title:u}),e.jsx(H,{classes:f,value:b||T,onChange:k,children:o}),e.jsx(B,{}),e.jsx(L,{children:h}),y&&e.jsx(P,{...y})]})})}const V=x(n=>({root:{minWidth:n.spacing(6),minHeight:n.spacing(3),margin:n.spacing(0,2,0,0),padding:n.spacing(.5,0,.5,0),textTransform:"none","&:hover":{opacity:1,backgroundColor:"transparent",color:n.palette.text.primary}},selected:{fontWeight:n.typography.fontWeightBold}}),{name:"BackstageCardTab"});function r(n){const{children:s,...l}=n,o=V();return e.jsx(I,{disableRipple:!0,classes:o,...l})}m.__docgenInfo={description:"",methods:[],displayName:"TabbedCard",props:{slackChannel:{required:!1,tsType:{name:"string"},description:"@deprecated Use errorBoundaryProps instead"},errorBoundaryProps:{required:!1,tsType:{name:"PropsWithChildren",elements:[{name:"signature",type:"object",raw:`{
+  slackChannel?: string | SlackChannel;
+  onError?: (error: Error, errorInfo: string) => null;
+}`,signature:{properties:[{key:"slackChannel",value:{name:"union",raw:"string | SlackChannel",elements:[{name:"string"},{name:"signature",type:"object",raw:`{
+  name: string;
+  href?: string;
+}`,signature:{properties:[{key:"name",value:{name:"string",required:!0}},{key:"href",value:{name:"string",required:!1}}]}}],required:!1}},{key:"onError",value:{name:"signature",type:"function",raw:"(error: Error, errorInfo: string) => null",signature:{arguments:[{type:{name:"Error"},name:"error"},{type:{name:"string"},name:"errorInfo"}],return:{name:"null"}},required:!1}}]}}],raw:`PropsWithChildren<{
+  slackChannel?: string | SlackChannel;
+  onError?: (error: Error, errorInfo: string) => null;
+}>`},description:""},children:{required:!1,tsType:{name:"Array",elements:[{name:"ReactElement",elements:[{name:"TabProps"}],raw:"ReactElement<TabProps>"}],raw:"ReactElement<TabProps>[]"},description:""},onChange:{required:!1,tsType:{name:"signature",type:"function",raw:"(event: ChangeEvent<{}>, value: number | string) => void",signature:{arguments:[{type:{name:"ChangeEvent",elements:[{name:"signature",type:"object",raw:"{}",signature:{properties:[]}}],raw:"ChangeEvent<{}>"},name:"event"},{type:{name:"union",raw:"number | string",elements:[{name:"number"},{name:"string"}]},name:"value"}],return:{name:"void"}}},description:""},title:{required:!1,tsType:{name:"string"},description:""},value:{required:!1,tsType:{name:"union",raw:"number | string",elements:[{name:"number"},{name:"string"}]},description:""},deepLink:{required:!1,tsType:{name:"signature",type:"object",raw:`{
+  link: string;
+  title: string;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+}`,signature:{properties:[{key:"link",value:{name:"string",required:!0}},{key:"title",value:{name:"string",required:!0}},{key:"onClick",value:{name:"signature",type:"function",raw:"(event: MouseEvent<HTMLAnchorElement>) => void",signature:{arguments:[{type:{name:"MouseEvent",elements:[{name:"HTMLAnchorElement"}],raw:"MouseEvent<HTMLAnchorElement>"},name:"event"}],return:{name:"void"}},required:!1}}]}},description:""}}};r.__docgenInfo={description:`Card tab component used in {@link TabbedCard}
+
+@public`,methods:[],displayName:"CardTab",props:{children:{required:!0,tsType:{name:"ReactNode"},description:""}}};const t={height:200,width:500},g=({children:n})=>e.jsx(W,{children:n}),Ue={title:"Layout/Tabbed Card",component:m,decorators:[n=>e.jsx(S,{container:!0,spacing:4,children:e.jsx(S,{item:!0,children:n()})})],tags:["!manifest"]},d=()=>e.jsx(g,{children:e.jsxs(m,{title:"Default Example Header",children:[e.jsx(r,{label:"Option 1",children:e.jsx("div",{style:t,children:"Some content"})}),e.jsx(r,{label:"Option 2",children:e.jsx("div",{style:t,children:"Some content 2"})}),e.jsx(r,{label:"Option 3",children:e.jsx("div",{style:t,children:"Some content 3"})}),e.jsx(r,{label:"Option 4",children:e.jsx("div",{style:t,children:"Some content 4"})})]})}),N={title:"Go to XYZ Location",link:"#"},p=()=>e.jsx(g,{children:e.jsxs(m,{title:"Footer Link Example Header",deepLink:N,children:[e.jsx(r,{label:"Option 1",children:e.jsx("div",{style:t,children:"Some content"})}),e.jsx(r,{label:"Option 2",children:e.jsx("div",{style:t,children:"Some content 2"})}),e.jsx(r,{label:"Option 3",children:e.jsx("div",{style:t,children:"Some content 3"})}),e.jsx(r,{label:"Option 4",children:e.jsx("div",{style:t,children:"Some content 4"})})]})}),c=()=>{const[n,s]=i.useState("one"),l=(o,u)=>s(u);return e.jsxs(g,{children:[e.jsxs(w,{component:"span",children:["Selected tab is ",n]}),e.jsxs(m,{value:n,onChange:l,title:"Controlled Value Example",children:[e.jsx(r,{value:"one",label:"Option 1",children:e.jsx("div",{style:t,children:"Some content"})}),e.jsx(r,{value:"two",label:"Option 2",children:e.jsx("div",{style:t,children:"Some content 2"})}),e.jsx(r,{value:"three",label:"Option 3",children:e.jsx("div",{style:t,children:"Some content 3"})}),e.jsx(r,{value:"four",label:"Option 4",children:e.jsx("div",{style:t,children:"Some content 4"})})]})]})};d.__docgenInfo={description:"",methods:[],displayName:"Default"};p.__docgenInfo={description:"",methods:[],displayName:"WithFooterLink"};c.__docgenInfo={description:"",methods:[],displayName:"WithControlledTabValue"};d.parameters={...d.parameters,docs:{...d.parameters?.docs,source:{originalSource:`() => {
+  return <Wrapper>
+      <TabbedCard title="Default Example Header">
+        <CardTab label="Option 1">
+          <div style={cardContentStyle}>Some content</div>
+        </CardTab>
+        <CardTab label="Option 2">
+          <div style={cardContentStyle}>Some content 2</div>
+        </CardTab>
+        <CardTab label="Option 3">
+          <div style={cardContentStyle}>Some content 3</div>
+        </CardTab>
+        <CardTab label="Option 4">
+          <div style={cardContentStyle}>Some content 4</div>
+        </CardTab>
+      </TabbedCard>
+    </Wrapper>;
+}`,...d.parameters?.docs?.source}}};p.parameters={...p.parameters,docs:{...p.parameters?.docs,source:{originalSource:`() => {
+  return <Wrapper>
+      <TabbedCard title="Footer Link Example Header" deepLink={linkInfo}>
+        <CardTab label="Option 1">
+          <div style={cardContentStyle}>Some content</div>
+        </CardTab>
+        <CardTab label="Option 2">
+          <div style={cardContentStyle}>Some content 2</div>
+        </CardTab>
+        <CardTab label="Option 3">
+          <div style={cardContentStyle}>Some content 3</div>
+        </CardTab>
+        <CardTab label="Option 4">
+          <div style={cardContentStyle}>Some content 4</div>
+        </CardTab>
+      </TabbedCard>
+    </Wrapper>;
+}`,...p.parameters?.docs?.source}}};c.parameters={...c.parameters,docs:{...c.parameters?.docs,source:{originalSource:`() => {
+  const [selectedTab, setSelectedTab] = useState<string | number>('one');
+  const handleChange = (_ev: any, newSelectedTab: string | number) => setSelectedTab(newSelectedTab);
+  return <Wrapper>
+      <Typography component="span">Selected tab is {selectedTab}</Typography>
+
+      <TabbedCard value={selectedTab} onChange={handleChange} title="Controlled Value Example">
+        <CardTab value="one" label="Option 1">
+          <div style={cardContentStyle}>Some content</div>
+        </CardTab>
+        <CardTab value="two" label="Option 2">
+          <div style={cardContentStyle}>Some content 2</div>
+        </CardTab>
+        <CardTab value="three" label="Option 3">
+          <div style={cardContentStyle}>Some content 3</div>
+        </CardTab>
+        <CardTab value="four" label="Option 4">
+          <div style={cardContentStyle}>Some content 4</div>
+        </CardTab>
+      </TabbedCard>
+    </Wrapper>;
+}`,...c.parameters?.docs?.source}}};const Xe=["Default","WithFooterLink","WithControlledTabValue"];export{d as Default,c as WithControlledTabValue,p as WithFooterLink,Xe as __namedExportsOrder,Ue as default};

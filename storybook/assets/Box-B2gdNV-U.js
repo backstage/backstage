@@ -1,1 +1,0 @@
-import{ak as o,bf as r,ct as n}from"./iframe-B-XWDeDQ.js";import{aa as i,a9 as d,q as l,l as p,s as m,z as u,E as c,a3 as f,a1 as x,n as y,a7 as v,ad as b}from"./styled-BkxpGzDj.js";var g=function(a){var s=i(a);return function(e,t){return s(e,o({defaultTheme:r},t))}},h=d(l(p,m,u,c,f,x,y,v,n,b)),S=g("div")(h,{name:"MuiBox"});export{S as B,g as a,h as s};
