@@ -28,6 +28,7 @@ import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
+  GithubCredentials,
   GithubCredentialsProvider,
   GithubIntegrationConfig,
   ScmIntegrations,
@@ -361,10 +362,33 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      const { headers, type: tokenType } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${org}`,
-        });
+      let credentials: GithubCredentials;
+      try {
+        credentials =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${org}`,
+          });
+      } catch (error) {
+        if (isAppInstallationMissingError(error)) {
+          logger.warn(
+            `No GitHub App installation found for org '${org}'. If you do not have the Organization Owner role you may not be able to install the GitHub App. See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
+          );
+          continue;
+        }
+        throw error;
+      }
+
+      const { headers, type: tokenType } = credentials;
+
+      // When no installation (and no fallback token) is available the request
+      // would otherwise fail later with a confusing rate limit / auth error.
+      if (!headers) {
+        logger.warn(
+          `No GitHub App installation found for org '${org}'. If you do not have the Organization Owner role you may not be able to install the GitHub App. See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
+        );
+        continue;
+      }
+
       const client = graphql.defaults({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
         headers,
@@ -1102,6 +1126,19 @@ function trackProgress(logger: LoggerService) {
   }
 
   return { markReadComplete };
+}
+
+// Detects the error thrown by the GitHub App credentials provider when there is
+// no app installation for the requested org.
+function isAppInstallationMissingError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+  const err = error as { name?: string; message?: string };
+  return (
+    err.name === 'NotFoundError' ||
+    /no app installation found/i.test(err.message ?? '')
+  );
 }
 
 // Makes sure that emitted entities have a proper location

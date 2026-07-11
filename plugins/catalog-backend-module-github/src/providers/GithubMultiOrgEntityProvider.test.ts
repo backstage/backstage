@@ -368,6 +368,116 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
     });
 
+    it('should warn and skip orgs without a GitHub App installation', async () => {
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA', 'orgB', 'orgC'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      // orgB has no app installation, so no credentials/headers are returned
+      mockGetCredentials.mockImplementation(({ url }: { url: string }) => {
+        if (url.includes('orgB')) {
+          return { headers: undefined, type: 'app' };
+        }
+        return { headers: { token: 'blah' }, type: 'app' };
+      });
+
+      mockClient.mockResolvedValue({
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+                id: 'f',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+            ],
+          },
+          teams: {
+            pageInfo: { hasNextPage: false },
+            nodes: [],
+          },
+        },
+      });
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      // The read should complete (skipping orgB) rather than failing entirely
+      await entityProvider.read();
+
+      expect(mockGetCredentials).toHaveBeenCalledWith({
+        url: 'https://github.com/orgB',
+      });
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "No GitHub App installation found for org 'orgB'",
+        ),
+      );
+      // orgA and orgC are still ingested
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalled();
+    });
+
+    it('should warn and skip when getCredentials throws a NotFoundError for an org', async () => {
+      mockGetCredentials.mockImplementation(({ url }: { url: string }) => {
+        if (url.includes('orgB')) {
+          const error = new Error(
+            'No app installation found for orgB in 123',
+          ) as Error & { name?: string };
+          error.name = 'NotFoundError';
+          throw error;
+        }
+        return { headers: { token: 'blah' }, type: 'app' };
+      });
+
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA', 'orgB'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      mockClient.mockResolvedValue({
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [],
+          },
+          teams: {
+            pageInfo: { hasNextPage: false },
+            nodes: [],
+          },
+        },
+      });
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      await entityProvider.read();
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "No GitHub App installation found for org 'orgB'",
+        ),
+      );
+    });
+
     it('should read every accessible org', async () => {
       entityProvider = new GithubMultiOrgEntityProvider({
         id: 'my-id',
