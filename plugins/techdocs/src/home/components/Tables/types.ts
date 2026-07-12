@@ -16,7 +16,7 @@
 
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import type { TableColumn } from '@backstage/core-components';
-import type { ApiHolder } from '@backstage/core-plugin-api';
+import type { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import type { JSX } from 'react';
 
 /**
@@ -40,9 +40,11 @@ export type DocsTableRow = {
 export interface DocsTableColumnFactories {
   createTitleColumn(options?: {
     hidden?: boolean;
-    apis?: ApiHolder;
+    entityPresentationApi?: EntityPresentationApi;
   }): TableColumn<DocsTableRow>;
-  createNameColumn(options?: { apis?: ApiHolder }): TableColumn<DocsTableRow>;
+  createNameColumn(options?: {
+    entityPresentationApi?: EntityPresentationApi;
+  }): TableColumn<DocsTableRow>;
   createOwnerColumn(): TableColumn<DocsTableRow>;
   createKindColumn(): TableColumn<DocsTableRow>;
   createTypeColumn(): TableColumn<DocsTableRow>;

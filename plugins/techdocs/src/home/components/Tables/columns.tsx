@@ -22,7 +22,6 @@ import {
 import {
   EntityDisplayName,
   type EntityPresentationApi,
-  entityPresentationApiRef,
   entityPresentationSnapshot,
   EntityRefLinks,
 } from '@backstage/plugin-catalog-react';
@@ -30,7 +29,6 @@ import { Entity } from '@backstage/catalog-model';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { techdocsTranslationRef } from '../../../translation';
 import { DocsTableRow } from './types';
-import type { ApiHolder } from '@backstage/core-plugin-api';
 
 function customTitle(
   entity: Entity,
@@ -61,9 +59,11 @@ const TableColumnTitle = ({
 export const columnFactories = {
   createTitleColumn(options?: {
     hidden?: boolean;
-    apis?: ApiHolder;
+    entityPresentationApi?: EntityPresentationApi;
   }): TableColumn<DocsTableRow> {
-    const nameCol = columnFactories.createNameColumn({ apis: options?.apis });
+    const nameCol = columnFactories.createNameColumn({
+      entityPresentationApi: options?.entityPresentationApi,
+    });
     return {
       ...nameCol,
       field: 'entity.metadata.title',
@@ -71,8 +71,10 @@ export const columnFactories = {
     };
   },
 
-  createNameColumn(options?: { apis?: ApiHolder }): TableColumn<DocsTableRow> {
-    const presentationApi = options?.apis?.get(entityPresentationApiRef);
+  createNameColumn(options?: {
+    entityPresentationApi?: EntityPresentationApi;
+  }): TableColumn<DocsTableRow> {
+    const presentationApi = options?.entityPresentationApi;
     return {
       title: <TableColumnTitle translationKey="document" />,
       field: 'entity.metadata.name',

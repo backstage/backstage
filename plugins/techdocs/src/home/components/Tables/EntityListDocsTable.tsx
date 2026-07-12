@@ -99,9 +99,11 @@ const EntityListDocsTableComponent = (
   const tableColumns = columns || [
     columnFactories.createTitleColumn({
       hidden: true,
-      apis: apiHolder,
+      entityPresentationApi: apiHolder.get(entityPresentationApiRef),
     }),
-    columnFactories.createNameColumn({ apis: apiHolder }),
+    columnFactories.createNameColumn({
+      entityPresentationApi: apiHolder.get(entityPresentationApiRef),
+    }),
     columnFactories.createOwnerColumn(),
     columnFactories.createKindColumn(),
     columnFactories.createTypeColumn(),
