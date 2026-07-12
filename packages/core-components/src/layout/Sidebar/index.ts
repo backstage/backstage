@@ -17,6 +17,9 @@
 export { Sidebar } from './Bar';
 export { MobileSidebar } from './MobileSidebar';
 export type { MobileSidebarProps } from './MobileSidebar';
+export { MobileHeader } from './MobileHeader';
+export type { MobileHeaderProps } from './MobileHeader';
+export { MobileHeaderThemeToggle } from './MobileHeaderThemeToggle';
 export { SidebarGroup } from './SidebarGroup';
 export type { SidebarGroupProps } from './SidebarGroup';
 export { SidebarSubmenuItem } from './SidebarSubmenuItem';

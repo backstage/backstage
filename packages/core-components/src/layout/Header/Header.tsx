@@ -24,7 +24,11 @@ import { CSSProperties, PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
-import { useContent } from '../Sidebar';
+import {
+  useContent,
+  useSidebarPinState,
+  MobileHeaderThemeToggle,
+} from '../Sidebar';
 
 /** @public */
 export type HeaderClassKey =
@@ -114,6 +118,7 @@ type Props = {
   tooltip?: string;
   type?: string;
   typeLink?: string;
+  showMobileThemeToggle?: boolean;
 };
 
 type TypeFragmentProps = {
@@ -216,6 +221,7 @@ export function Header(props: PropsWithChildren<Props>) {
     tooltip,
     type,
     typeLink,
+    showMobileThemeToggle,
   } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
@@ -224,6 +230,7 @@ export function Header(props: PropsWithChildren<Props>) {
   const pageTitle = title || pageTitleOverride;
   const titleTemplate = `${documentTitle} | %s | ${appTitle}`;
   const defaultTitle = `${documentTitle} | ${appTitle}`;
+  const { isMobile } = useSidebarPinState();
 
   return (
     <>
@@ -248,6 +255,11 @@ export function Header(props: PropsWithChildren<Props>) {
           <SubtitleFragment classes={classes} subtitle={subtitle} />
         </Box>
         <Grid container className={classes.rightItemsBox} spacing={4}>
+          {isMobile && showMobileThemeToggle && (
+            <Grid item>
+              <MobileHeaderThemeToggle />
+            </Grid>
+          )}
           {children}
         </Grid>
       </header>

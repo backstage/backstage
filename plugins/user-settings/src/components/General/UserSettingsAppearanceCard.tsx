@@ -30,7 +30,7 @@ export const UserSettingsAppearanceCard = () => {
   return (
     <InfoCard title={t('appearanceCard.title')} variant="gridItem">
       <List dense>
-        <UserSettingsThemeToggle />
+        {!isMobile && <UserSettingsThemeToggle />}
         <UserSettingsLanguageToggle />
         {!isMobile && <UserSettingsPinToggle />}
       </List>
