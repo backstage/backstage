@@ -40,25 +40,26 @@ type JWKSTokenContext = {
 const readClaimAllowedValues = (value: unknown): string[] | undefined => {
   const rawValues = Array.isArray(value) ? value : [value];
 
-  const values = [
-    ...new Set(
-      rawValues
-        .map(rawValue => {
-          if (typeof rawValue === 'string') {
-            return rawValue;
-          }
+  const values: string[] = [];
+  for (const rawValue of rawValues) {
+    if (typeof rawValue === 'string') {
+      if (rawValue.length === 0) {
+        return undefined;
+      }
+      values.push(rawValue);
+      continue;
+    }
 
-          if (typeof rawValue === 'number' || typeof rawValue === 'boolean') {
-            return String(rawValue);
-          }
+    if (typeof rawValue === 'number' || typeof rawValue === 'boolean') {
+      values.push(String(rawValue));
+      continue;
+    }
 
-          return undefined;
-        })
-        .filter((rawValue): rawValue is string => Boolean(rawValue)),
-    ),
-  ];
+    return undefined;
+  }
 
-  return values.length ? values : undefined;
+  const deduped = [...new Set(values)];
+  return deduped.length ? deduped : undefined;
 };
 
 // Normalizes a verified JWT claim value into the set of values it satisfies:
