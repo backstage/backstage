@@ -198,6 +198,15 @@ export const SearchResultComponent = (props: SearchResultProps) => {
     ...rest
   } = props;
 
+  const context = useSearch();
+  const effectiveTerm = query?.term ?? context.term ?? '';
+  const effectiveTypes = query?.types ?? context.types ?? [];
+  const effectiveFilters = query?.filters ?? context.filters ?? {};
+  const hasQuery =
+    Boolean(effectiveTerm) ||
+    effectiveTypes.length > 0 ||
+    Object.keys(effectiveFilters).length > 0;
+
   return (
     <SearchResultState query={query}>
       {({ loading, error, value }) => {
@@ -215,7 +224,7 @@ export const SearchResultComponent = (props: SearchResultProps) => {
         }
 
         if (!value?.results.length) {
-          return noResultsComponent;
+          return hasQuery ? noResultsComponent : null;
         }
 
         if (isFunction(children)) {
