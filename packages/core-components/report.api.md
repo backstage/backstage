@@ -24,7 +24,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
-import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { JSX as JSX_2 } from 'react';
 import { LinearProgressProps } from '@material-ui/core/LinearProgress';
 import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
@@ -233,15 +233,12 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'table.body.emptyDataSourceMessage': 'No records to display';
     readonly 'table.header.actions': 'Actions';
     readonly 'table.toolbar.search': 'Filter';
-    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
     readonly 'table.pagination.firstTooltip': 'First Page';
+    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
     readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.pagination.lastTooltip': 'Last Page';
     readonly 'table.pagination.nextTooltip': 'Next Page';
     readonly 'table.pagination.previousTooltip': 'Previous Page';
-    readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
-    readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
-    readonly 'emptyState.missingAnnotation.readMore': 'Read more';
     readonly 'signIn.title': 'Sign In';
     readonly 'signIn.loginFailed': 'Login failed';
     readonly 'signIn.customProvider.title': 'Custom User';
@@ -265,6 +262,9 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'errorPage.goBack': 'Go back';
     readonly 'errorPage.showMoreDetails': 'Show more details';
     readonly 'errorPage.showLessDetails': 'Show less details';
+    readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
+    readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
+    readonly 'emptyState.missingAnnotation.readMore': 'Read more';
     readonly 'supportConfig.default.title': 'Support Not Configured';
     readonly 'supportConfig.default.linkTitle': 'Add `app.support` config key';
     readonly 'errorBoundary.title': 'Please contact {{slackChannel}} for help.';
@@ -281,8 +281,8 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'autoLogout.stillTherePrompt.buttonText': "Yes! Don't log me out";
     readonly 'dependencyGraph.fullscreenTooltip': 'Toggle fullscreen';
     readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';
-    readonly 'logViewer.searchField.placeholder': 'Search';
     readonly 'logViewer.downloadBtn.tooltip': 'Download logs';
+    readonly 'logViewer.searchField.placeholder': 'Search';
   }
 >;
 
@@ -928,6 +928,17 @@ export type MicDropClassKey = 'micDrop';
 //
 // @public @deprecated (undocumented)
 export function MissingAnnotationEmptyState(props: Props_3): JSX_2.Element;
+
+// @public (undocumented)
+export function MobileHeader(props: MobileHeaderProps): JSX_2.Element;
+
+// @public (undocumented)
+export type MobileHeaderProps = {
+  children?: ReactNode;
+};
+
+// @public (undocumented)
+export function MobileHeaderThemeToggle(): JSX_2.Element;
 
 // @public
 export const MobileSidebar: (props: MobileSidebarProps) => JSX_2.Element | null;
