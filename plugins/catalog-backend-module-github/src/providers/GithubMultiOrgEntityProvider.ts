@@ -436,6 +436,13 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       allTeams.push(...teams);
     }
 
+    if (!anyOrgProcessed) {
+      throw new Error(
+        `No GitHub orgs could be processed due to missing GitHub App installations. ` +
+          `See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
+      );
+    }
+
     const allUsers = Array.from(allUsersMap.values());
 
     const { markCommitComplete } = markReadComplete({ allUsers, allTeams });
@@ -1147,8 +1154,11 @@ function isAppInstallationMissingError(error: unknown): boolean {
   if (!error || typeof error !== 'object') {
     return false;
   }
-  const err = error as { message?: string };
-  return /no app installation found/i.test(err.message ?? '');
+  const err = error as { name?: string; message?: string };
+  return (
+    err.name === 'NotFoundError' ||
+    /no app installation found/i.test(err.message ?? '')
+  );
 }
 
 // Makes sure that emitted entities have a proper location
