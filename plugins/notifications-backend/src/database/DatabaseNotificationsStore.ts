@@ -78,6 +78,7 @@ type BroadcastRowType = {
   id: string;
   title: string;
   description: string | null;
+  severity: string;
   link: string | null;
   origin: string;
   scope: string | null;
