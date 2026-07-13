@@ -478,6 +478,36 @@ describe('GithubMultiOrgEntityProvider', () => {
       );
     });
 
+    it('should throw if all orgs are skipped due to missing credentials', async () => {
+      mockGetCredentials.mockImplementation(({ url }: { url: string }) => {
+        const error = new Error(
+          'No app installation found for org in 123',
+        ) as Error & { name?: string };
+        error.name = 'NotFoundError';
+        throw error;
+      });
+
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA', 'orgB'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      await expect(entityProvider.read()).rejects.toThrow(
+        'No GitHub orgs could be processed due to missing GitHub App installations',
+      );
+
+      expect(logger.warn).toHaveBeenCalledTimes(2);
+      expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+    });
+
     it('should read every accessible org', async () => {
       entityProvider = new GithubMultiOrgEntityProvider({
         id: 'my-id',

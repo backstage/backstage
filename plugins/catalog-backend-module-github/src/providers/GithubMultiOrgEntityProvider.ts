@@ -361,6 +361,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       ? this.options.orgs
       : await this.getAllOrgs(this.options.gitHubConfig);
 
+    let anyOrgProcessed = false;
+
     for (const org of orgsToProcess) {
       let credentials: GithubCredentials;
       try {
@@ -370,9 +372,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           });
       } catch (error) {
         if (isAppInstallationMissingError(error)) {
-          logger.warn(
-            `No GitHub App installation found for org '${org}'. If you do not have the Organization Owner role you may not be able to install the GitHub App. See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
-          );
+          logMissingCredentialsWarning(logger, org);
           continue;
         }
         throw error;
@@ -383,11 +383,11 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       // When no installation (and no fallback token) is available the request
       // would otherwise fail later with a confusing rate limit / auth error.
       if (!headers) {
-        logger.warn(
-          `No GitHub App installation found for org '${org}'. If you do not have the Organization Owner role you may not be able to install the GitHub App. See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
-        );
+        logMissingCredentialsWarning(logger, org);
         continue;
       }
+
+      anyOrgProcessed = true;
 
       const client = graphql.defaults({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
@@ -462,6 +462,13 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       if (ans !== bns) return ans < bns ? -1 : 1;
       return 0;
     });
+
+    if (!anyOrgProcessed) {
+      throw new Error(
+        `No GitHub orgs could be processed due to missing GitHub App installations. ` +
+          `See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
+      );
+    }
 
     await this.connection.applyMutation({
       type: 'full',
@@ -1128,17 +1135,20 @@ function trackProgress(logger: LoggerService) {
   return { markReadComplete };
 }
 
+function logMissingCredentialsWarning(logger: LoggerService, org: string) {
+  logger.warn(
+    `No GitHub App installation found for org '${org}'. If you do not have the Organization Owner role you may not be able to install the GitHub App. See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
+  );
+}
+
 // Detects the error thrown by the GitHub App credentials provider when there is
 // no app installation for the requested org.
 function isAppInstallationMissingError(error: unknown): boolean {
   if (!error || typeof error !== 'object') {
     return false;
   }
-  const err = error as { name?: string; message?: string };
-  return (
-    err.name === 'NotFoundError' ||
-    /no app installation found/i.test(err.message ?? '')
-  );
+  const err = error as { message?: string };
+  return /no app installation found/i.test(err.message ?? '');
 }
 
 // Makes sure that emitted entities have a proper location
