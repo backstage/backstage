@@ -227,7 +227,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const title = props.title ? (
     titleBase
   ) : (
-    <span
+    <Typography
+      component="span"
       style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5em' }}
     >
       {titleBase}
@@ -235,7 +236,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       {somethingIsLoading && !isLoading && (
         <CircularProgress size="0.8em" data-testid="loading-indicator" />
       )}
-    </span>
+    </Typography>
   );
 
   const actions = props.actions || defaultActions;

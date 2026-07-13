@@ -155,7 +155,7 @@ function ProgressiveCollection({
 }
 
 const Output = memo(
-  function Output(props: {
+  function DetailedVisualizerOutput(props: {
     dataRef: ExtensionDataRef<unknown>;
     node?: AppNode;
   }) {

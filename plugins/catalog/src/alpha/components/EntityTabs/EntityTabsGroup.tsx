@@ -174,7 +174,10 @@ function resolveIcon(
   return icon;
 }
 
-const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
+const Tab = forwardRef(function EntityTabsGroupTab(
+  props: EntityTabsGroupProps,
+  ref: any,
+) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const iconsApi = useApi(iconsApiRef);
 
