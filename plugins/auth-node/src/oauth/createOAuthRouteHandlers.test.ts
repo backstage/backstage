@@ -189,6 +189,21 @@ describe('createOAuthRouteHandlers', () => {
       });
     });
 
+    it('should reject a malformed origin with a 400', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/start')
+        .query({ env: 'development', origin: '@@IWy0O' });
+
+      expect(res.status).toBe(400);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'InputError',
+          message: 'Invalid origin provided in request query parameters',
+        },
+      });
+    });
+
     it('should start', async () => {
       const agent = request.agent(
         wrapInApp(createOAuthRouteHandlers(baseConfig)),

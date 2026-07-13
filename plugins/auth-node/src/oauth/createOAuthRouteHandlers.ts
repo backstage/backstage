@@ -142,6 +142,20 @@ export function createOAuthRouteHandlers<TProfile>(
         throw new InputError('No env provided in request query parameters');
       }
 
+      // Validate `origin` up front. It is otherwise passed unchecked into
+      // `new URL()` deeper inside the cookie manager, where a malformed value
+      // (e.g. `?origin=@@IWy0O`) throws `ERR_INVALID_URL` and surfaces as a
+      // 500. The sibling `frameHandler` guards the same value.
+      if (origin !== undefined) {
+        try {
+          void new URL(origin);
+        } catch {
+          throw new InputError(
+            'Invalid origin provided in request query parameters',
+          );
+        }
+      }
+
       const nonce = crypto.randomBytes(16).toString('base64');
       // set a nonce cookie before redirecting to oauth provider
       cookieManager.setNonce(res, nonce, origin);
