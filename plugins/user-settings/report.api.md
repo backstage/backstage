@@ -186,10 +186,10 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'themeToggle.select': 'Select {{theme}}';
     readonly 'themeToggle.title': 'Theme';
     readonly 'themeToggle.description': 'Change the theme mode';
+    readonly 'themeToggle.selectAuto': 'Select Auto Theme';
     readonly 'themeToggle.names.auto': 'Auto';
     readonly 'themeToggle.names.dark': 'Dark';
     readonly 'themeToggle.names.light': 'Light';
-    readonly 'themeToggle.selectAuto': 'Select Auto Theme';
     readonly 'signOutMenu.title': 'Sign Out';
     readonly 'signOutMenu.moreIconTitle': 'more';
     readonly 'pinToggle.title': 'Pin Sidebar';
@@ -206,10 +206,10 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'emptyProviders.action.title': 'Open app-config.yaml and make the changes as highlighted below:';
     readonly 'emptyProviders.action.readMoreButtonTitle': 'Read More';
     readonly 'emptyProviders.description': 'You can add Authentication Providers to Backstage which allows you to use these providers to authenticate yourself.';
-    readonly 'providerSettingsItem.title.signOut': 'Sign out from {{title}}';
     readonly 'providerSettingsItem.title.signIn': 'Sign in to {{title}}';
-    readonly 'providerSettingsItem.buttonTitle.signOut': 'Sign out';
+    readonly 'providerSettingsItem.title.signOut': 'Sign out from {{title}}';
     readonly 'providerSettingsItem.buttonTitle.signIn': 'Sign in';
+    readonly 'providerSettingsItem.buttonTitle.signOut': 'Sign out';
     readonly 'authProviders.title': 'Available Providers';
     readonly 'defaultSettingsPage.tabsTitle.featureFlags': 'Feature Flags';
     readonly 'defaultSettingsPage.tabsTitle.authProviders': 'Authentication Providers';
