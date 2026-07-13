@@ -24,7 +24,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinearProgressProps } from '@material-ui/core/LinearProgress';
 import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
