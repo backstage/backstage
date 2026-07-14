@@ -89,3 +89,11 @@ fast-xml-builder@*:
   version "22.20.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-22.20.0.tgz#431f5007396bc1a1a47b9c7df60f3e5e0b5b7304"
   integrity sha512-QWlFW2wf3nTjC13/DqRnBpR4ZO36VJH/JVBkA/vcnmbTBNQIlnObqyqZE1tUR7+Ni23Lda8R1BxMfbXRpCUx5g==
+
+// @asyncapi/parser@3.4.0 imports default and named exports from the CommonJS
+// @asyncapi/specs package. Pin to the version used by this repository because
+// newer releases fail strict frontend bundling export checks.
+"@asyncapi/specs@^6.8.0":
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/@asyncapi/specs/-/specs-6.8.0.tgz#18a34f432914c45fc9c2ba855609ce4a62dc333d"
+  integrity sha512-1i6xs8+IOh6U5T7yH+bCMGQBF+m7kP/NpwyAlt++XaDQutoGCgACf24mQBgcDVqDWWoY81evQv+9ABvw0BviVg==
