@@ -1,5 +1,19 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.2.0
+
+### Minor Changes
+
+- 567bc4c: **BREAKING**: Removed the deprecated Server-Sent Events (SSE) MCP transport. MCP clients must use the Streamable HTTP endpoint at `/api/mcp-actions/v1` or a configured named-server endpoint.
+
+### Patch Changes
+
+- e2b3472: Updated OAuth discovery to use the stable `auth.clientIdMetadataDocuments` configuration while retaining compatibility with the deprecated experimental key.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/catalog-client@1.16.1
+  - @backstage/plugin-catalog-node@2.2.3
+
 ## 0.2.0-next.1
 
 ### Minor Changes

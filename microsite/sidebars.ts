@@ -45,6 +45,7 @@ function sidebarElementWithIndex(
 
 export default {
   docs: [
+    'landing-page/doc-landing-page',
     sidebarElementWithIndex({ label: 'Overview' }, [
       'overview/what-is-backstage',
       'overview/technical-overview',

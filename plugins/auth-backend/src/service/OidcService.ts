@@ -33,6 +33,46 @@ import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 
+const WILDCARD_PORT = /:\*(?=\/|$)/;
+const EXPLICIT_PROTOCOL = /^[a-z][a-z0-9+.-]*:/i;
+
+function createUrlPatternMatcher(pattern: string): (url: URL) => boolean {
+  if (pattern === '*') {
+    return () => true;
+  }
+
+  if (!EXPLICIT_PROTOCOL.test(pattern)) {
+    throw new Error(
+      `Invalid URL pattern '${pattern}', an explicit protocol is required`,
+    );
+  }
+
+  // A ':*' port wildcard can only appear in patterns with an authority
+  // section; in patterns such as 'cursor:*' the '*' is part of the path
+  const hasWildcardPort =
+    pattern.includes('://') && WILDCARD_PORT.test(pattern);
+
+  let patternUrl: URL;
+  try {
+    patternUrl = new URL(
+      hasWildcardPort ? pattern.replace(WILDCARD_PORT, ':1') : pattern,
+    );
+  } catch {
+    throw new Error(`Invalid URL pattern '${pattern}'`);
+  }
+
+  const hostnamePattern = patternUrl.hostname || '*';
+  // The path is never empty for http(s) URLs, only for non-special
+  // schemes such as in 'cursor://*', where any path is matched instead
+  const pathPattern = patternUrl.pathname || '*';
+
+  return url =>
+    url.protocol === patternUrl.protocol &&
+    matcher.isMatch(url.hostname, hostnamePattern) &&
+    (hasWildcardPort || url.port === patternUrl.port) &&
+    matcher.isMatch(url.pathname, pathPattern);
+}
+
 function validateRedirectUri(
   redirectUri: string,
   allowedPatterns: string[],
@@ -40,18 +80,23 @@ function validateRedirectUri(
   const parsed = new URL(redirectUri);
   const normalized = `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
 
-  if (!allowedPatterns.some(pattern => matcher.isMatch(normalized, pattern))) {
+  if (parsed.username || parsed.password) {
+    throw new InputError(`Invalid redirect_uri '${normalized}'`);
+  }
+
+  const allowedMatchers = allowedPatterns.map(createUrlPatternMatcher);
+  if (!allowedMatchers.some(matches => matches(parsed))) {
     throw new InputError(`Invalid redirect_uri '${normalized}'`);
   }
 }
 
 const LOOPBACK_HOSTS = ['localhost', '127.0.0.1', '[::1]'];
 const LOOPBACK_REDIRECT_PATTERNS = [
-  'http://localhost:*',
+  'http://localhost:*/*',
   'http://localhost/*',
-  'http://127.0.0.1:*',
+  'http://127.0.0.1:*/*',
   'http://127.0.0.1/*',
-  'http://[::1]:*',
+  'http://[::1]:*/*',
   'http://[::1]/*',
 ];
 
@@ -373,11 +418,10 @@ export class OidcService {
       throw new InputError('Client ID metadata documents not enabled');
     }
 
-    if (
-      !cimd.allowedClientIdPatterns.some(pattern =>
-        matcher.isMatch(opts.clientId, pattern),
-      )
-    ) {
+    const clientIdMatchers = cimd.allowedClientIdPatterns.map(
+      createUrlPatternMatcher,
+    );
+    if (!clientIdMatchers.some(matches => matches(opts.cimdUrl))) {
       throw new InputError(`Invalid client_id '${opts.clientId}'`);
     }
 

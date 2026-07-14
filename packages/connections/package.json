@@ -1,6 +1,6 @@
 {
   "name": "@backstage/connections",
-  "version": "0.1.1-next.1",
+  "version": "0.2.0",
   "description": "Connections framework used by Backstage to better manage external connections used by integrations and plugins",
   "backstage": {
     "role": "node-library",

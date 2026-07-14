@@ -1,5 +1,16 @@
 # @backstage/backend-openapi-utils
 
+## 0.7.0
+
+### Minor Changes
+
+- 84171b3: **BREAKING**: Removed `wrapInOpenApiTestServer`. This function redirected test traffic through the Optic `capture` proxy via the `OPTIC_PROXY` environment variable. Since the Optic dependency has been removed, this function no longer serves a purpose. Use `wrapServer` instead for OpenAPI spec validation in tests.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+
 ## 0.7.0-next.1
 
 ### Minor Changes

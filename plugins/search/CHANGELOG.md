@@ -1,5 +1,19 @@
 # @backstage/plugin-search
 
+## 1.7.6
+
+### Patch Changes
+
+- b8db4fe: The Search page no longer shows the Documentation result type unless it is provided by an installed plugin.
+- 0103d8e: Include custom catalog entity kinds in the search page kind filter.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/ui@0.17.0
+  - @backstage/plugin-catalog-react@3.2.0
+  - @backstage/core-components@0.18.12
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/plugin-search-react@1.11.6
+
 ## 1.7.6-next.0
 
 ### Patch Changes

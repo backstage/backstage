@@ -1,5 +1,13 @@
 # @backstage/plugin-devtools-react
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/core-plugin-api@1.12.8
+
 ## 0.2.4-next.0
 
 ### Patch Changes

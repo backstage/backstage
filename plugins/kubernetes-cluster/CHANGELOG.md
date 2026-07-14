@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.0
+  - @backstage/core-components@0.18.12
+  - @backstage/plugin-kubernetes-react@0.5.22
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/plugin-permission-react@0.5.3
+
 ## 0.0.39-next.0
 
 ### Patch Changes

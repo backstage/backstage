@@ -287,6 +287,107 @@ describe('OidcService', () => {
         );
       });
 
+      it('should match redirect URIs against allowed patterns by URL component', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: [
+                  'https://*.spotify.com/*',
+                  'http://localhost:*/callback',
+                ],
+              },
+            },
+          },
+        });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: [
+            'https://app.spotify.com/oauth/cb',
+            'http://localhost:9000/callback',
+          ],
+        });
+        expect(client).toEqual(
+          expect.objectContaining({
+            redirectUris: [
+              'https://app.spotify.com/oauth/cb',
+              'http://localhost:9000/callback',
+            ],
+          }),
+        );
+
+        for (const redirectUri of [
+          // A wildcard only matches within a single URL component
+          'https://example.org/.spotify.com/cb',
+          'https://example.net/x/.spotify.com/cb',
+          // Scheme must match exactly
+          'http://app.spotify.com/oauth/cb',
+          // Port must match exactly unless the pattern uses ':*'
+          'https://app.spotify.com:8443/oauth/cb',
+          // A wildcard port does not wildcard an explicit path
+          'http://localhost:9000/other',
+        ]) {
+          await expect(
+            service.registerClient({
+              clientName: 'Other Client',
+              redirectUris: [redirectUri],
+            }),
+          ).rejects.toThrow('Invalid redirect_uri');
+        }
+      });
+
+      it('should not treat a wildcard port as a wildcard path', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: ['http://localhost:*'],
+              },
+            },
+          },
+        });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://localhost:7007/'],
+        });
+        expect(client).toEqual(
+          expect.objectContaining({ redirectUris: ['http://localhost:7007/'] }),
+        );
+
+        await expect(
+          service.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['http://localhost:7007/callback'],
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+      });
+
+      it('should reject allowlist patterns without an explicit protocol', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: ['*.spotify.com/*'],
+              },
+            },
+          },
+        });
+
+        await expect(
+          service.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['https://app.spotify.com/oauth/cb'],
+          }),
+        ).rejects.toThrow(
+          "Invalid URL pattern '*.spotify.com/*', an explicit protocol is required",
+        );
+      });
+
       it('should accept IPv6 loopback redirect URI', async () => {
         const { service } = await createOidcService({
           databaseId,
@@ -294,7 +395,7 @@ describe('OidcService', () => {
             auth: {
               experimentalDynamicClientRegistration: {
                 allowedRedirectUriPatterns: [
-                  'http://[::1]:*',
+                  'http://[::1]:*/*',
                   'http://[::1]/*',
                 ],
               },
@@ -361,7 +462,7 @@ describe('OidcService', () => {
           config: {
             auth: {
               experimentalDynamicClientRegistration: {
-                allowedRedirectUriPatterns: ['http://localhost:*'],
+                allowedRedirectUriPatterns: ['http://localhost:*/*'],
               },
             },
           },
@@ -369,15 +470,22 @@ describe('OidcService', () => {
 
         await expect(
           service.registerClient({
-            clientName: 'Evil Client',
-            redirectUris: ['http://localhost:3000@attacker.example/callback'],
+            clientName: 'Test Client',
+            redirectUris: ['http://localhost:3000@example.org/callback'],
           }),
         ).rejects.toThrow('Invalid redirect_uri');
 
         await expect(
           service.registerClient({
-            clientName: 'Evil Client',
+            clientName: 'Test Client',
             redirectUris: ['http://user:pass@example.com/callback'],
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+
+        await expect(
+          service.registerClient({
+            clientName: 'Test Client',
+            redirectUris: ['http://user:pass@localhost:3000/callback'],
           }),
         ).rejects.toThrow('Invalid redirect_uri');
       });
@@ -1221,19 +1329,25 @@ describe('OidcService', () => {
               auth: {
                 clientIdMetadataDocuments: {
                   enabled: true,
-                  allowedClientIdPatterns: ['https://trusted.com/*'],
+                  allowedClientIdPatterns: ['https://*.trusted.com/*'],
                 },
               },
             },
           });
 
-          await expect(
-            service.createAuthorizationSession({
-              clientId: cimdClientId, // https://example.com/oauth-metadata.json
-              redirectUri: 'http://localhost:8080/callback',
-              responseType: 'code',
-            }),
-          ).rejects.toThrow('Invalid client_id');
+          for (const clientId of [
+            cimdClientId, // https://example.com/oauth-metadata.json
+            'https://example.org/.trusted.com/oauth-metadata.json',
+            'https://sub.trusted.com:8443/oauth-metadata.json',
+          ]) {
+            await expect(
+              service.createAuthorizationSession({
+                clientId,
+                redirectUri: 'http://localhost:8080/callback',
+                responseType: 'code',
+              }),
+            ).rejects.toThrow('Invalid client_id');
+          }
         });
 
         it('should accept client_id matching allowedClientIdPatterns', async () => {
@@ -1308,6 +1422,23 @@ describe('OidcService', () => {
               responseType: 'code',
             }),
           ).rejects.toThrow('Invalid redirect_uri');
+
+          for (const redirectUri of [
+            'https://example.org/.example.com/cb',
+            'https://example.net/x/.example.com/cb',
+          ]) {
+            mockFetchCimdMetadata.mockResolvedValue({
+              ...cimdMetadata,
+              redirectUris: [redirectUri],
+            });
+            await expect(
+              service.createAuthorizationSession({
+                clientId: cimdClientId,
+                redirectUri,
+                responseType: 'code',
+              }),
+            ).rejects.toThrow('Invalid redirect_uri');
+          }
         });
 
         it('should accept loopback redirect_uri with a different port per RFC 8252', async () => {
@@ -1388,7 +1519,7 @@ describe('OidcService', () => {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: [
-                    'http://[::1]:*',
+                    'http://[::1]:*/*',
                     'http://[::1]/*',
                   ],
                 },
@@ -1426,7 +1557,7 @@ describe('OidcService', () => {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
                   allowedRedirectUriPatterns: [
-                    'http://127.0.0.1:*',
+                    'http://127.0.0.1:*/*',
                     'http://127.0.0.1/*',
                   ],
                 },
@@ -1463,7 +1594,7 @@ describe('OidcService', () => {
                 clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
-                  allowedRedirectUriPatterns: ['http://localhost:*'],
+                  allowedRedirectUriPatterns: ['http://localhost:*/*'],
                 },
               },
             },
@@ -1487,7 +1618,7 @@ describe('OidcService', () => {
                 clientIdMetadataDocuments: {
                   enabled: true,
                   allowedClientIdPatterns: ['*'],
-                  allowedRedirectUriPatterns: ['http://localhost:*'],
+                  allowedRedirectUriPatterns: ['http://localhost:*/*'],
                 },
               },
             },

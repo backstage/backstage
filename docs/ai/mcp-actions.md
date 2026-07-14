@@ -212,9 +212,9 @@ auth:
     # Optional: override which redirect URIs are allowed.
     # Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
     # allowedRedirectUriPatterns:
-    #   - 'http://localhost:*'
-    #   - 'http://127.0.0.1:*'
-    #   - 'http://[::1]:*'
+    #   - 'http://localhost:*/*'
+    #   - 'http://127.0.0.1:*/*'
+    #   - 'http://[::1]:*/*'
 ```
 
 #### Dynamic Client Registration
@@ -235,9 +235,9 @@ auth:
     # Defaults to Cursor and loopback addresses (localhost, 127.0.0.1, [::1]).
     # allowedRedirectUriPatterns:
     #   - 'cursor://*'
-    #   - 'http://localhost:*'
-    #   - 'http://127.0.0.1:*'
-    #   - 'http://[::1]:*'
+    #   - 'http://localhost:*/*'
+    #   - 'http://127.0.0.1:*/*'
+    #   - 'http://[::1]:*/*'
 ```
 
 ## Configuring MCP Clients

@@ -431,6 +431,57 @@ describe('OidcRouter', () => {
         });
       });
 
+      it('should reject redirect_uri allowlist matches across URL components', async () => {
+        const { router } = await createRouter(databaseId, {
+          experimentalDynamicClientRegistration: {
+            enabled: true,
+            allowedRedirectUriPatterns: ['https://*.spotify.com/*'],
+          },
+        });
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(router.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        await request(server)
+          .post('/api/auth/v1/register')
+          .send({
+            client_name: 'Test Client',
+            redirect_uris: ['https://app.spotify.com/oauth/cb'],
+            response_types: ['code'],
+            grant_types: ['authorization_code'],
+            scope: 'openid',
+          })
+          .expect(201);
+
+        await request(server)
+          .post('/api/auth/v1/register')
+          .send({
+            client_name: 'Other Client',
+            redirect_uris: ['https://example.org/.spotify.com/cb'],
+            response_types: ['code'],
+            grant_types: ['authorization_code'],
+            scope: 'openid',
+          })
+          .expect(400);
+      });
+
       it('should create an authorization session via authorization endpoint', async () => {
         const {
           mocks: { service },

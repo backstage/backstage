@@ -1,5 +1,11 @@
 # @backstage/filter-predicates
 
+## 0.1.4
+
+### Patch Changes
+
+- 28c1c1c: Synced zod-validation-error versions between packages
+
 ## 0.1.4-next.0
 
 ### Patch Changes

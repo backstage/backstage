@@ -1,5 +1,21 @@
 # @backstage/plugin-auth-backend-module-auth0-provider
 
+## 0.4.3
+
+### Patch Changes
+
+- 5446838: Added an optional `prompt` setting for Auth0 authorization requests. Set it to
+  `auto` to let Auth0 determine whether the user needs to be prompted. Existing
+  configurations continue to use `consent` by default.
+- 9a07306: Added `screen_hint` and `login_hint` parameter forwarding for the Auth0 authentication provider.
+  When these parameters are present in the OAuth start request query string, they
+  are forwarded to Auth0's `/authorize` endpoint. This allows callers to guide
+  users to the signup or login screen (`screen_hint=signup`) and pre-fill the
+  email field (`login_hint=user@example.com`) during invitation flows.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.3
+  - @backstage/backend-plugin-api@1.9.3
+
 ## 0.4.3-next.1
 
 ### Patch Changes

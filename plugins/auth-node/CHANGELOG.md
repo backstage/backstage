@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-node
 
+## 0.7.3
+
+### Patch Changes
+
+- 28c1c1c: Synced zod-validation-error versions between packages
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/catalog-client@1.16.1
+
 ## 0.7.3-next.0
 
 ### Patch Changes

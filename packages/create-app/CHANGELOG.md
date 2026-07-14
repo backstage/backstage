@@ -1,5 +1,21 @@
 # @backstage/create-app
 
+## 0.9.0
+
+### Minor Changes
+
+- 39deda4: **BREAKING**: No longer bootstraps legacy proxy agents. Use Node.js built-in proxy support by setting `NODE_USE_ENV_PROXY=1` alongside your `HTTP_PROXY`/`HTTPS_PROXY`/`NO_PROXY` environment variables instead.
+
+### Patch Changes
+
+- fc4cae1: Added the user settings backend plugin to the create-app templates, enabling database-backed user settings persistence for newly created Backstage apps out of the box. The frontend storage API is also wired up to use backend-persisted storage instead of browser local storage, via the new `@backstage/plugin-app-module-user-settings` module.
+- a5bddd1: Bumped create-app version.
+- e2b3472: Updated generated app configurations to use the stable Client ID Metadata Documents setting and stop advertising deprecated Dynamic Client Registration.
+- 3acdf87: Pinned `@types/node` to `22.20.0` in the seed lockfile to prevent yarn from resolving the `*` wildcard (from `@jest/environment-jsdom-abstract`) to `@types/node@26.0.0`, which breaks `tsc:full` due to incompatible `EventEmitter` types in `tarn`.
+- 3a9ab3f: Fixed an issue where two "Notifications" links were displayed in the sidebar.
+- Updated dependencies
+  - @backstage/cli-common@0.3.0
+
 ## 0.9.0-next.2
 
 ### Minor Changes

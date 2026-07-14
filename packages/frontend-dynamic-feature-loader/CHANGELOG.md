@@ -1,5 +1,13 @@
 # @backstage/frontend-dynamic-feature-loader
 
+## 0.1.14
+
+### Patch Changes
+
+- a5e35e9: Added package installation and import instructions to the README file.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+
 ## 0.1.14-next.0
 
 ### Patch Changes

@@ -1,5 +1,48 @@
 # example-backend
 
+## 0.0.52
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.5
+  - @backstage/plugin-mcp-actions-backend@0.2.0
+  - @backstage/plugin-auth-backend@0.29.2
+  - @backstage/plugin-scaffolder-backend@4.0.2
+  - @backstage/plugin-catalog-backend@3.8.1
+  - @backstage/plugin-auth-node@0.7.3
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-app-backend@0.5.16
+  - @backstage/plugin-auth-backend-module-github-provider@0.5.5
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.21
+  - @backstage/plugin-auth-backend-module-openshift-provider@0.1.9
+  - @backstage/plugin-catalog-backend-module-ai-model@0.1.2
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.16
+  - @backstage/plugin-catalog-backend-module-logs@0.1.24
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.24
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.22
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.14
+  - @backstage/plugin-devtools-backend@0.5.19
+  - @backstage/plugin-events-backend@0.6.4
+  - @backstage/plugin-events-backend-module-google-pubsub@0.2.5
+  - @backstage/plugin-kubernetes-backend@0.21.6
+  - @backstage/plugin-notifications-backend@0.6.7
+  - @backstage/plugin-permission-backend@0.7.14
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.21
+  - @backstage/plugin-permission-node@0.11.2
+  - @backstage/plugin-proxy-backend@0.6.15
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.11
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.24
+  - @backstage/plugin-search-backend@2.1.4
+  - @backstage/plugin-search-backend-module-catalog@0.3.17
+  - @backstage/plugin-search-backend-module-elasticsearch@1.8.5
+  - @backstage/plugin-search-backend-module-explore@0.3.16
+  - @backstage/plugin-search-backend-module-techdocs@0.4.16
+  - @backstage/plugin-search-backend-node@1.4.6
+  - @backstage/plugin-signals-backend@0.3.17
+  - @backstage/plugin-techdocs-backend@2.2.2
+  - @backstage/plugin-user-settings-backend@0.4.5
+
 ## 0.0.52-next.1
 
 ### Patch Changes

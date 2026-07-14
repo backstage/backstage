@@ -165,7 +165,16 @@ export interface Config {
       /**
        * A list of allowed URI patterns to use for redirect URIs during
        * dynamic client registration.
+       *
+       * Patterns are matched per URL component: a `*` in the hostname or
+       * path only matches within that component, and a `:*` port matches
+       * any port. Patterns must include an explicit protocol and only
+       * match the path they list, e.g. `http://localhost:*\/*` allows any
+       * port and any path on localhost.
+       *
        * Defaults to Cursor and loopback addresses (localhost, 127.0.0.1, [::1]).
+       *
+       * @example ['http://localhost:*\/*', 'https://*.example.com/callback']
        */
       allowedRedirectUriPatterns?: string[];
     };
@@ -215,7 +224,11 @@ export interface Config {
 
       /**
        * A list of allowed URI patterns for client_id URLs.
-       * Uses glob-style pattern matching where `*` matches any characters.
+       *
+       * Patterns are matched per URL component: a `*` in the hostname or
+       * path only matches within that component, and a `:*` port matches
+       * any port. Patterns must include an explicit protocol.
+       *
        * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', '{baseUrl}/.well-known/oauth-client/cli.json']`
        * where `{baseUrl}` is the auth backend's base URL.
        *
@@ -225,10 +238,16 @@ export interface Config {
 
       /**
        * A list of allowed URI patterns for redirect URIs.
-       * Uses glob-style pattern matching where `*` matches any characters.
+       *
+       * Patterns are matched per URL component: a `*` in the hostname or
+       * path only matches within that component, and a `:*` port matches
+       * any port. Patterns must include an explicit protocol and only
+       * match the path they list, e.g. `http://localhost:*\/*` allows any
+       * port and any path on localhost.
+       *
        * Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
        *
-       * @example ['http://localhost:*', 'http://127.0.0.1:*\/callback']
+       * @example ['http://localhost:*\/*', 'http://127.0.0.1:*\/callback']
        */
       allowedRedirectUriPatterns?: string[];
     };

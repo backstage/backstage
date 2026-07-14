@@ -1,5 +1,14 @@
 # @backstage/plugin-events-backend-module-azure
 
+## 0.2.33
+
+### Patch Changes
+
+- 9d23b9e: Added HTTP POST webhook ingress endpoint for Azure DevOps events, matching the pattern established by the GitHub events module. The ingress endpoint is only registered when `events.modules.azureDevOps.webhookSecret` is configured; without it, no route is exposed. Incoming requests are validated against the `x-ado-webhook-secret` custom header using timing-safe comparison.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-events-node@0.4.24
+
 ## 0.2.33-next.1
 
 ### Patch Changes
