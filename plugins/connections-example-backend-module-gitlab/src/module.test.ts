@@ -21,7 +21,6 @@ import { startTestBackend } from '@backstage/backend-test-utils';
 import { mockServices } from '@backstage/backend-test-utils';
 import {
   connectionsServiceRef,
-  connectionsServiceFactory,
   declareConnection,
 } from '@backstage/connections';
 
@@ -71,7 +70,6 @@ describe('connections-example-backend-module-gitlab', () => {
     await startTestBackend({
       features: [
         testConfig,
-        connectionsServiceFactory,
         createBackendPlugin({
           pluginId: 'test',
           register(env) {
@@ -111,7 +109,6 @@ describe('connections-example-backend-module-gitlab', () => {
     await startTestBackend({
       features: [
         testConfig,
-        connectionsServiceFactory,
         createBackendPlugin({
           pluginId: 'test',
           register(reg) {
@@ -184,7 +181,7 @@ describe('connections-example-backend-module-gitlab', () => {
     });
 
     await startTestBackend({
-      features: [testConfig, connectionsServiceFactory, testPlugin, testModule],
+      features: [testConfig, testPlugin, testModule],
     });
   });
 });

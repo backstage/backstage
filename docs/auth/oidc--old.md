@@ -288,6 +288,6 @@ in the Auth Provider Factory, the resolver, and the different variables each pro
 needs in the YAML config or env variables.
 :::
 
-[1]: https://backstage.io/docs/auth/identity-resolver
-[3]: https://backstage.io/docs/auth/#sign-in-configuration
-[4]: https://backstage.io/docs/api/utility-apis
+[1]: ./identity-resolver.md
+[3]: ./index.md#sign-in-configuration
+[4]: ../api/utility-apis.md

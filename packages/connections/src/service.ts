@@ -18,30 +18,40 @@ import {
   coreServices,
   createServiceFactory,
   createServiceRef,
+  type ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { ConnectionsService, DefaultConnectionsService } from './api';
+
+function createConnectionsServiceFactory<
+  TInstances extends 'singleton' | 'multiton',
+>(service: ServiceRef<ConnectionsService, 'plugin', TInstances>) {
+  return createServiceFactory({
+    service,
+    deps: {
+      pluginMetadata: coreServices.pluginMetadata,
+      rootLogger: coreServices.rootLogger,
+      logger: coreServices.logger,
+      config: coreServices.rootConfig,
+    },
+    async createRootContext({ rootLogger, config }) {
+      return DefaultConnectionsService.create({ logger: rootLogger, config });
+    },
+
+    async factory({ logger, pluginMetadata }, connectionsService) {
+      const pluginId = pluginMetadata.getId();
+      return connectionsService.forPlugin(pluginId, { logger });
+    },
+  });
+}
 
 /** @public */
 export const connectionsServiceRef = createServiceRef<ConnectionsService>({
   id: 'core.connections',
   scope: 'plugin',
+  defaultFactory: async service => createConnectionsServiceFactory(service),
 });
 
 /** @public */
-export const connectionsServiceFactory = createServiceFactory({
-  service: connectionsServiceRef,
-  deps: {
-    pluginMetadata: coreServices.pluginMetadata,
-    rootLogger: coreServices.rootLogger,
-    logger: coreServices.logger,
-    config: coreServices.rootConfig,
-  },
-  async createRootContext({ rootLogger, config }) {
-    return DefaultConnectionsService.create({ logger: rootLogger, config });
-  },
-
-  async factory({ logger, pluginMetadata }, connectionsService) {
-    const pluginId = pluginMetadata.getId();
-    return connectionsService.forPlugin(pluginId, { logger });
-  },
-});
+export const connectionsServiceFactory = createConnectionsServiceFactory(
+  connectionsServiceRef,
+);

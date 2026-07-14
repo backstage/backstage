@@ -1,5 +1,13 @@
 # @backstage/plugin-events-backend-module-github
 
+## 0.4.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-events-node@0.4.24
+
 ## 0.4.14-next.0
 
 ### Patch Changes

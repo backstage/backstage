@@ -17,7 +17,7 @@ listed below.
 ## Quick Start
 
 Backstage projects created with `npx @backstage/create-app` come configured with
-a [guest auth provider](https://backstage.io/docs/auth/guest/provider). This
+a [guest auth provider](./guest/provider.md). This
 provider makes all users share a single "guest" identity. This is useful for
 testing purposes and quickly getting started locally, but is not safe for use in
 production and that particular provider will refuse to work there.

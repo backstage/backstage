@@ -130,6 +130,38 @@ describe('useTechDocsReaderPage', () => {
     );
   });
 
+  it('does not retry metadata loading after a permanent error', async () => {
+    techdocsApiMock.getTechDocsMetadata.mockRejectedValue(
+      new Error('Not Found'),
+    );
+
+    try {
+      const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
+
+      // Wait for the initial metadata request to fail.
+      await waitFor(() => {
+        expect(result.current.metadata.error).toBeDefined();
+      });
+      const callsAfterInitialError =
+        techdocsApiMock.getTechDocsMetadata.mock.calls.length;
+
+      // Attaching the shadow root previously re-triggered the metadata fetch on
+      // every render, causing an unbounded retry loop while the request kept
+      // failing. Setting it must not start retrying a permanently failed load.
+      await act(async () => result.current.setShadowRoot(mockShadowRoot()));
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      expect(techdocsApiMock.getTechDocsMetadata).toHaveBeenCalledTimes(
+        callsAfterInitialError,
+      );
+      expect(result.current.metadata.error).toBeDefined();
+    } finally {
+      techdocsApiMock.getTechDocsMetadata.mockResolvedValue(
+        mockTechDocsMetadata,
+      );
+    }
+  });
+
   it('should set entityRef as lowercase when legacyUseCaseSensitiveTripletPaths is false', async () => {
     const lowercaseEntityRef = {
       kind: mockEntityMetadata.kind.toLocaleLowerCase(),

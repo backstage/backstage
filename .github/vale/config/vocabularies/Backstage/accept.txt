@@ -11,7 +11,9 @@ ajv
 Alaria
 Alef
 allowedHosts
+allowlist
 allowlisted
+allowlists
 Anddddd
 Apdex
 api
@@ -331,6 +333,7 @@ Oldsberg
 onboarded
 onboarding
 onelogin
+oasdiff
 openapi
 OpenSearch
 OpenShift

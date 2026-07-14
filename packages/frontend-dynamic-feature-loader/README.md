@@ -10,9 +10,15 @@ The frontend feature loader provided in this package works hand-in-hand with the
 - To enable this loader, you should:
 
   - Enable the backend dynamic features in your backend application, as explained in the [`backend-dynamic-feature-service` README.md file](../backend-dynamic-feature-service/README.md#how-it-works)
+  - Install the `@backstage/frontend-dynamic-feature-loader` package in your frontend app:
+    ```sh
+    yarn --cwd packages/app add @backstage/frontend-dynamic-feature-loader
+    ```
   - Add the frontend feature loader to the list of features when creating the frontend application:
 
     ```typescript
+    import { dynamicFrontendFeaturesLoader } from '@backstage/frontend-dynamic-feature-loader';
+
     const app = createApp({
       features: [...someOtherFeatures, dynamicFrontendFeaturesLoader()],
     });

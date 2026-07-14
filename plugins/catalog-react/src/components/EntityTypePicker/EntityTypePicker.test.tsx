@@ -153,6 +153,30 @@ describe('<EntityTypePicker/>', () => {
     });
   });
 
+  it('applies initialFilter when kind filter is set without a matching query parameter', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+            updateFilters,
+          }}
+        >
+          <EntityTypePicker initialFilter="service" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    await waitFor(() => screen.getByText('Type'));
+
+    // initialFilter should be applied; no subsequent call should clear it
+    expect(updateFilters).toHaveBeenCalledWith({
+      type: new EntityTypeFilter(['service']),
+    });
+    expect(updateFilters).not.toHaveBeenLastCalledWith({ type: undefined });
+  });
+
   it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
     const rendered = await renderInTestApp(

@@ -20,6 +20,10 @@ import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 // authors must not declare these in their `configSchema`.
 export type ReservedConnectionFields = 'type' | 'auth' | 'match' | 'title';
 
+// Field names the framework owns at the auth method level. Connection-type
+// authors must not declare these in auth method `configSchema` objects.
+export type ReservedAuthMethodFields = 'method' | 'match' | 'title';
+
 // Surfaced when a configSchema declares a reserved key — the message becomes
 // part of the type error so authors see why their schema was rejected.
 type ReservedFieldError<K extends string> = {
@@ -37,11 +41,33 @@ export type WithoutReservedFields<TSchema extends z.ZodObject> = Extract<
     : ReservedFieldError<K & string>
   : never;
 
+// Constrain a ZodObject so its inferred shape can't collide with auth method
+// framework keys.
+export type WithoutReservedAuthMethodFields<TSchema extends z.ZodObject> =
+  Extract<keyof z.infer<TSchema>, ReservedAuthMethodFields> extends infer K
+    ? [K] extends [never]
+      ? TSchema
+      : ReservedFieldError<K & string>
+    : never;
+
+export type WithoutReservedAuthMethods<
+  TAuthMethods extends readonly ConnectionAuthMethod[],
+> = {
+  [I in keyof TAuthMethods]: TAuthMethods[I] extends {
+    configSchema: infer TConfigSchema extends z.ZodObject;
+  }
+    ? Omit<TAuthMethods[I], 'configSchema'> & {
+        configSchema: WithoutReservedAuthMethodFields<TConfigSchema>;
+      }
+    : TAuthMethods[I];
+};
+
 /** @public */
 export type ConnectionAuthValue<TAuthMethod extends ConnectionAuthMethod> =
   TAuthMethod extends any
     ? {
         method: TAuthMethod['method'];
+        title: string;
       } & z.infer<TAuthMethod['configSchema']>
     : never;
 
@@ -76,6 +102,7 @@ export type ConnectionAuthMethod<
   TConfigSchema extends z.ZodObject = z.ZodObject,
 > = {
   method: TMethod;
+  title: string;
   configSchema: TConfigSchema;
 };
 

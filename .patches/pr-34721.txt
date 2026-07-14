@@ -1,1 +1,0 @@
-Fix broken configuration schema in `@backstage/plugin-kubernetes-react`.

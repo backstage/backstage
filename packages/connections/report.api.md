@@ -47,6 +47,7 @@ export type ConnectionAuthMethod<
   TConfigSchema extends z.ZodObject = z.ZodObject,
 > = {
   method: TMethod;
+  title: string;
   configSchema: TConfigSchema;
 };
 
@@ -60,6 +61,7 @@ export type ConnectionAuthValue<TAuthMethod extends ConnectionAuthMethod> =
   TAuthMethod extends any
     ? {
         method: TAuthMethod['method'];
+        title: string;
       } & z.infer<TAuthMethod['configSchema']>
     : never;
 
@@ -124,10 +126,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'accessKey';
+        readonly title: 'Access Key';
         readonly configSchema: ZodObject<
           {
             accessKeyId: ZodString;
@@ -138,6 +142,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'assumeRole';
+        readonly title: 'Assume Role';
         readonly configSchema: ZodObject<
           {
             roleArn: ZodString;
@@ -161,10 +166,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'accessKey';
+        readonly title: 'Access Key';
         readonly configSchema: ZodObject<
           {
             accessKeyId: ZodString;
@@ -175,6 +182,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'assumeRole';
+        readonly title: 'Assume Role';
         readonly configSchema: ZodObject<
           {
             roleArn: ZodString;
@@ -199,10 +207,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'accountKey';
+        readonly title: 'Account Key';
         readonly configSchema: ZodObject<
           {
             accountKey: ZodString;
@@ -212,6 +222,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'sasToken';
+        readonly title: 'SAS Token';
         readonly configSchema: ZodObject<
           {
             sasToken: ZodString;
@@ -221,6 +232,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'connectionString';
+        readonly title: 'Connection String';
         readonly configSchema: ZodObject<
           {
             connectionString: ZodString;
@@ -230,6 +242,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'aadCredential';
+        readonly title: 'AAD Credential';
         readonly configSchema: ZodObject<
           {
             clientId: ZodString;
@@ -252,10 +265,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'pat';
+        readonly title: 'Personal Access Token';
         readonly configSchema: ZodObject<
           {
             personalAccessToken: ZodString;
@@ -266,6 +281,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'clientCredentials';
+        readonly title: 'Client Credentials';
         readonly configSchema: ZodObject<
           {
             clientId: ZodString;
@@ -278,6 +294,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'managedIdentity';
+        readonly title: 'Managed Identity';
         readonly configSchema: ZodObject<
           {
             clientId: ZodString;
@@ -301,10 +318,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'token';
+        readonly title: 'Token';
         readonly configSchema: ZodObject<
           {
             username: ZodString;
@@ -315,6 +334,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'appPassword';
+        readonly title: 'App Password';
         readonly configSchema: ZodObject<
           {
             username: ZodString;
@@ -325,6 +345,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'oauth';
+        readonly title: 'OAuth';
         readonly configSchema: ZodObject<
           {
             clientId: ZodString;
@@ -347,10 +368,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'token';
+        readonly title: 'Token';
         readonly configSchema: ZodObject<
           {
             token: ZodString;
@@ -360,6 +383,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'basic';
+        readonly title: 'Basic';
         readonly configSchema: ZodObject<
           {
             username: ZodString;
@@ -384,10 +408,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'basic';
+        readonly title: 'Basic';
         readonly configSchema: ZodObject<
           {
             username: ZodString;
@@ -410,10 +436,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'basic';
+        readonly title: 'Basic';
         readonly configSchema: ZodObject<
           {
             username: ZodString;
@@ -437,10 +465,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'token';
+        readonly title: 'Token';
         readonly configSchema: ZodObject<
           {
             token: ZodString;
@@ -450,6 +480,7 @@ export const connectionTypes: {
       },
       {
         readonly method: 'app';
+        readonly title: 'GitHub App';
         readonly configSchema: ZodObject<
           {
             appId: ZodUnion<readonly [ZodNumber, ZodString]>;
@@ -478,10 +509,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'token';
+        readonly title: 'Token';
         readonly configSchema: ZodObject<
           {
             token: ZodString;
@@ -502,10 +535,12 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'none';
+        readonly title: 'None';
         readonly configSchema: ZodObject<{}, $strip>;
       },
       {
         readonly method: 'serviceAccount';
+        readonly title: 'Service Account';
         readonly configSchema: ZodObject<
           {
             clientEmail: ZodString;
@@ -527,6 +562,7 @@ export const connectionTypes: {
     readonly [
       {
         readonly method: 'token';
+        readonly title: 'Token';
         readonly configSchema: ZodObject<
           {
             token: ZodString;

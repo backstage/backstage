@@ -1,5 +1,12 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+
 ## 0.4.6-next.0
 
 ### Patch Changes

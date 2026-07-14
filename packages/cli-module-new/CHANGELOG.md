@@ -1,5 +1,22 @@
 # @backstage/cli-module-new
 
+## 0.1.5
+
+### Patch Changes
+
+- 28c1c1c: Synced zod-validation-error versions between packages
+- Updated dependencies
+  - @backstage/cli-common@0.3.0
+  - @backstage/cli-node@0.3.4
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+  - @backstage/cli-node@0.3.4-next.0
+
 ## 0.1.5-next.0
 
 ### Patch Changes

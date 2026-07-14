@@ -24,15 +24,6 @@ import { rest } from 'msw';
 import { NotFoundError } from '@backstage/errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-// Avoid mutating the global agents used in other tests
-jest.mock('global-agent', () => ({
-  bootstrap: jest.fn(),
-}));
-jest.mock('undici', () => ({
-  setGlobalDispatcher: jest.fn(),
-  EnvHttpProxyAgent: class {},
-}));
-
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
   bold: (str: string) => str,

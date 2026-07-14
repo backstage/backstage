@@ -1,5 +1,13 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.28
+
+### Patch Changes
+
+- 73ea4d7: Migrated tests to msw version 2.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+
 ## 0.2.28-next.0
 
 ### Patch Changes
