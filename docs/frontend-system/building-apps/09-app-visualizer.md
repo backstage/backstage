@@ -21,7 +21,7 @@ The plugin is available starting with Backstage v1.22.0.
 
 #### Installation
 
-This plugin could already be installed, please check `packages/app/package.json` under `dependencies`.
+This plugin could already be installed; check `packages/app/package.json` under `dependencies`.
 
 Install the plugin in your app package:
 
@@ -42,4 +42,7 @@ The `app-visualizer` provides three views, each accessible via tabs at the top o
 - **Text** — Renders the extension tree as plain text. This is useful for copying and pasting into GitHub issues or Discord when asking for help, since it provides a compact, readable snapshot of your app's structure.
 
 An example of the tree view:
-![From demo site](visualizer.png)
+![From demo site](visualizer-tree.png)
+
+An example of the detailed view:
+![alt text](visualizer-detailed.png)
