@@ -21,7 +21,7 @@ The plugin is available starting with Backstage v1.22.0.
 
 #### Installation
 
-This plugin could already be installed, please check packages/app/package.json file and look under dependencies.
+This plugin could already be installed, please check `packages/app/package.json` under `dependencies`.
 
 Install the plugin in your app package:
 
