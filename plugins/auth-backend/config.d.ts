@@ -153,6 +153,7 @@ export interface Config {
 
     /**
      * Configuration for dynamic client registration
+     * @deprecated Use `auth.clientIdMetadataDocuments` instead.
      */
     experimentalDynamicClientRegistration?: {
       /**
@@ -173,6 +174,37 @@ export interface Config {
      * Configuration for Client ID Metadata Documents (CIMD)
      *
      * @see https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
+     */
+    clientIdMetadataDocuments?: {
+      /**
+       * Whether to enable Client ID Metadata Documents support
+       * Defaults to false
+       */
+      enabled?: boolean;
+
+      /**
+       * A list of allowed URI patterns for client_id URLs.
+       * Uses glob-style pattern matching where `*` matches any characters.
+       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', '{baseUrl}/.well-known/oauth-client/cli.json']`
+       * where `{baseUrl}` is the auth backend's base URL.
+       *
+       * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
+       */
+      allowedClientIdPatterns?: string[];
+
+      /**
+       * A list of allowed URI patterns for redirect URIs.
+       * Uses glob-style pattern matching where `*` matches any characters.
+       * Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
+       *
+       * @example ['http://localhost:*', 'http://127.0.0.1:*\/callback']
+       */
+      allowedRedirectUriPatterns?: string[];
+    };
+
+    /**
+     * Configuration for Client ID Metadata Documents (CIMD)
+     * @deprecated This is no longer experimental; use `auth.clientIdMetadataDocuments` instead.
      */
     experimentalClientIdMetadataDocuments?: {
       /**

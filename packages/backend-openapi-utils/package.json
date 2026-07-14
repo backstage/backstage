@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-openapi-utils",
-  "version": "0.6.11-next.0",
+  "version": "0.7.0-next.1",
   "description": "OpenAPI typescript support.",
   "backstage": {
     "role": "node-library"
@@ -65,7 +65,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "supertest": "^7.0.0"
   }
 }

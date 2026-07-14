@@ -20,6 +20,22 @@ This section will guide you through how to:
 
 ## Create a basic documentation setup
 
+TechDocs uses the following artifacts to generate the documentation for a component:
+
+- `mkdocs.yml` - A file created at the root of your component repository that provides the name of your documentation site, as well as the navigation for the documentation.
+- `docs` - A folder at the root of your component repository that holds your documentation markdown files. You can call this folder anything you want, but `docs` will be used for the examples that follow. At a minimum, it should include an `index.md` file.
+- `docs/index.md` - The entry point for your documentation.
+
+For example:
+
+```code
+   your-great-component/
+     docs/
+       index.md
+     catalog-info.yaml
+     mkdocs.yml
+```
+
 If you have an existing repository that you'd like to add documentation to, skip
 to the
 [Enable documentation for an already existing entity setup](#enable-documentation-for-an-already-existing-entity)
@@ -49,54 +65,60 @@ Prerequisites:
   [registered in backstage](../software-catalog/index.md#adding-components-to-the-catalog)
   (e.g. via a `catalog-info.yaml` file).
 
-Create an `mkdocs.yml` file in the root of your repository with the following
-content:
+To add documentation to an existing entity:
 
-```yaml
-site_name: 'example-docs'
+1.  Create a `mkdocs.yml` file in the root of your repository with the following
+    content:
 
-nav:
-  - Home: index.md
+    ```yaml
+    site_name: 'example-docs'
 
-plugins:
-  - techdocs-core
-```
+    nav:
+      - Home: index.md
 
-> Note - The plugins section above is optional. Backstage automatically adds the `techdocs-core` plugin to the
-> mkdocs file if it is missing. This functionality can be turned off with a [configuration option](./configuration.md) in Backstage.
+    plugins:
+      - techdocs-core
+    ```
 
-Update your component's entity description by adding the following lines to its
-`catalog-info.yaml` in the root of its repository:
+    :::note
+    The plugins section above is optional. Backstage automatically adds the `techdocs-core` plugin to the
+    mkdocs file if it is missing. This functionality can be turned off with a [configuration option](./configuration.md) in Backstage.
+    :::
 
-```yaml
-metadata:
-  annotations:
-    backstage.io/techdocs-ref: dir:.
-```
+2.  Update your component's entity description by adding the following lines to its
+    `catalog-info.yaml` file in the root of its repository:
 
-The
-[`backstage.io/techdocs-ref` annotation](../software-catalog/well-known-annotations.md#backstageiotechdocs-ref)
-is used by TechDocs to download the documentation source files for generating an
-entity's TechDocs site.
+    ```yaml
+    metadata:
+      annotations:
+        backstage.io/techdocs-ref: dir:.
+    ```
 
-Create a `/docs` folder in the root of your repository with at least an
-`index.md` file in it. _(If you add more markdown files, make sure to update the
-nav in the mkdocs.yml file to get a proper navigation for your documentation.)_
+    The
+    [`backstage.io/techdocs-ref` annotation](../software-catalog/well-known-annotations.md#backstageiotechdocs-ref)
+    is used by TechDocs to download the documentation source files for generating an
+    entity's TechDocs site.
 
-> Note - Although `docs` is a popular directory name for storing documentation,
-> it can be renamed to something else and can be configured by `mkdocs.yml`. See
-> https://www.mkdocs.org/user-guide/configuration/#docs_dir
+3.  Create a `/docs` folder in the root of your repository with at least an
+    `index.md` file in it. _(If you add more markdown files, make sure to update the
+    nav in the mkdocs.yml file to get a proper navigation for your documentation.)_
 
-The `docs/index.md` can for example have the following content:
+    :::note
+    Although `docs` is a popular directory name for storing documentation,
+    it can be renamed to something else and can be configured by `mkdocs.yml`. See
+    https://www.mkdocs.org/user-guide/configuration/#docs_dir
+    :::
 
-```md
-# example docs
+4.  Create a `docs/index.md` file, as a minimum. For example:
 
-This is a basic example of documentation.
-```
+    ```md
+    # example docs
 
-Commit your changes, open a pull request and merge. You will now get your
-updated documentation next time you run Backstage!
+    This is a basic example of documentation.
+    ```
+
+5.  Commit your changes, open a pull request and merge. You will now get your
+    updated documentation next time you run Backstage!
 
 ### Create a standalone documentation
 
@@ -105,48 +127,48 @@ your code, but still want to publish documentation - for example, an onboarding
 tutorial. For this case, you can create a documentation component, which will be
 published as a standalone part of TechDocs.
 
-First, create an entity for your documentation. A minimal example could look like
-this:
+1. Create an entity for your documentation. A minimal example could look like
+   this:
 
-```yaml title="catalog-info.yaml"
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: a-unique-name-for-your-docs
-  annotations:
-    # this could also be `url:<url>` if the documentation isn't in the same location
-    backstage.io/techdocs-ref: dir:.
-spec:
-  type: documentation
-  lifecycle: experimental
-  owner: user-or-team-name
-```
+   ```yaml title="catalog-info.yaml"
+   apiVersion: backstage.io/v1alpha1
+   kind: Component
+   metadata:
+     name: a-unique-name-for-your-docs
+     annotations:
+       # this could also be `url:<url>` if the documentation isn't in the same location
+       backstage.io/techdocs-ref: dir:.
+   spec:
+     type: documentation
+     lifecycle: experimental
+     owner: user-or-team-name
+   ```
 
-Next, create the config file for [mkdocs](https://www.mkdocs.org/), which will be
-used to parse your docs:
+2. Create the config file for [mkdocs](https://www.mkdocs.org/), which will be
+   used to parse your docs:
 
-```yaml title="mkdocs.yml"
-site_name: a-unique-name-for-your-docs
-site_description: An informative description
-plugins:
-  - techdocs-core
-nav:
-  - Getting Started: index.md
-```
+   ```yaml title="mkdocs.yml"
+   site_name: a-unique-name-for-your-docs
+   site_description: An informative description
+   plugins:
+     - techdocs-core
+   nav:
+     - Getting Started: index.md
+   ```
 
-Finally, add your index.md Markdown file, in a folder named `docs/` with your desired
-documentation in Markdown. Your file structure should now look like this:
+3. Add your `index.md` Markdown file, in a folder named `docs/` with your desired
+   documentation in Markdown. Your file structure should now look like this:
 
-```
-your-great-documentation/
-  docs/
-    index.md
-  catalog-info.yaml
-  mkdocs.yml
-```
+   ```
+   your-great-documentation/
+     docs/
+       index.md
+     catalog-info.yaml
+     mkdocs.yml
+   ```
 
-Last but not least, register your component in the software catalog using
-[one of several options](../software-catalog/index.md#adding-components-to-the-catalog).
+4. Register your component in the software catalog using
+   [one of several options](../software-catalog/index.md#adding-components-to-the-catalog).
 
 ## Writing and previewing your documentation
 

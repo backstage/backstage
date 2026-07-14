@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.4.24-next.1
+
+### Patch Changes
+
+- 5e92512: Fixed compatibility with yeoman-environment v4+, which is ESM-only. The previous require() call throws ERR_REQUIRE_ESM; replaced with dynamic import() and updated registration to match the v4+ API.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
 ## 0.4.24-next.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-module-user-settings",
-  "version": "0.0.0",
+  "version": "0.1.0-next.0",
   "description": "Registers user-settings features into the app.",
   "backstage": {
     "role": "frontend-plugin-module",

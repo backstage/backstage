@@ -26,6 +26,7 @@ export const HarnessConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'token',
+      title: 'Token',
       configSchema: z.object({
         token: z.string(),
         apiKey: z.string().optional(),

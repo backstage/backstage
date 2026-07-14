@@ -1,5 +1,11 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 567bc4c: **BREAKING**: Removed the deprecated Server-Sent Events (SSE) MCP transport. MCP clients must use the Streamable HTTP endpoint at `/api/mcp-actions/v1` or a configured named-server endpoint.
+
 ## 0.1.15-next.0
 
 ### Patch Changes

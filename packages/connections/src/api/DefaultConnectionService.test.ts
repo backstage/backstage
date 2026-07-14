@@ -660,6 +660,97 @@ describe('DefaultConnectionsService', () => {
     });
   });
 
+  describe('auth title', () => {
+    it('uses the configured auth title when provided', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [
+              {
+                method: 'token',
+                title: 'Production Token',
+                token: 'my-token',
+              },
+            ],
+          },
+        ]),
+      });
+
+      const connection = await service.forPlugin('catalog').find({
+        type: 'github',
+        url: 'https://github.com/my-org/my-repo',
+        authMethods: ['token'],
+      });
+
+      expect(connection?.auth.title).toBe('Production Token');
+    });
+
+    it('defaults auth title from the auth method definition', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [
+              {
+                method: 'token',
+                token: 'my-token',
+              },
+            ],
+          },
+        ]),
+      });
+
+      const connection = await service.forPlugin('catalog').find({
+        type: 'github',
+        url: 'https://github.com/my-org/my-repo',
+        authMethods: ['token'],
+      });
+
+      expect(connection?.auth.title).toBe('Token');
+    });
+
+    it('keeps auth title after plugin auth filtering', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [
+              {
+                method: 'token',
+                title: 'Catalog Token',
+                token: 'catalog-token',
+                match: { plugins: ['catalog'] },
+              },
+              {
+                method: 'app',
+                appId: 1,
+                privateKey: 'pk',
+                clientId: 'client',
+                clientSecret: 'secret',
+                orgs: ['other-org'],
+              },
+            ],
+          },
+        ]),
+      });
+
+      const connection = await service.forPlugin('catalog').find({
+        type: 'github',
+        url: 'https://github.com/my-org/my-repo',
+        authMethods: ['token'],
+      });
+
+      expect(connection?.auth.title).toBe('Catalog Token');
+    });
+  });
+
   describe('config validation', () => {
     it('throws with the failing field when a connection is missing a required value', () => {
       expect(() =>

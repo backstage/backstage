@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend
 
+## 3.8.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
 ## 3.8.1-next.0
 
 ### Patch Changes

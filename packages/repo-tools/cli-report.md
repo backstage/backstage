@@ -138,7 +138,6 @@ Commands:
   fuzz [options]
   generate [options]
   help [command]
-  init
 ```
 
 ### `backstage-repo-tools package schema openapi fuzz`
@@ -165,15 +164,6 @@ Options:
   --server
   --server-additional-properties [properties]
   --watch
-  -h, --help
-```
-
-### `backstage-repo-tools package schema openapi init`
-
-```
-Usage: backstage-repo-tools package schema openapi init [options]
-
-Options:
   -h, --help
 ```
 
@@ -226,7 +216,6 @@ Commands:
   fuzz [options]
   help [command]
   lint [options] [paths...]
-  test [options] [paths...]
   verify [paths...]
 ```
 
@@ -257,16 +246,6 @@ Usage: backstage-repo-tools repo schema openapi lint [options] [paths...]
 
 Options:
   --strict
-  -h, --help
-```
-
-### `backstage-repo-tools repo schema openapi test`
-
-```
-Usage: backstage-repo-tools repo schema openapi test [options] [paths...]
-
-Options:
-  --update
   -h, --help
 ```
 

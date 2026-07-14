@@ -22,6 +22,7 @@ import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { SearchFilterResultTypeBlueprintParams } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
@@ -437,6 +438,23 @@ const _default: OverridableFrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
       };
+    }>;
+    'search-filter-result-type:techdocs': OverridableExtensionDefinition<{
+      kind: 'search-filter-result-type';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          value: string;
+          name: string;
+          icon: JSX_2.Element;
+        },
+        'search.filters.result-types.type',
+        {}
+      >;
+      inputs: {};
+      params: SearchFilterResultTypeBlueprintParams;
     }>;
     'search-result-list-item:techdocs': OverridableExtensionDefinition<{
       config: {

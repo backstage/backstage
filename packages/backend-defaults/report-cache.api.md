@@ -4,7 +4,7 @@
 
 ```ts
 import { CacheService } from '@backstage/backend-plugin-api';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 

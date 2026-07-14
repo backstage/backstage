@@ -60,7 +60,7 @@
     "@backstage/cli": "workspace:^",
     "cookie-parser": "^1.4.6",
     "express-promise-router": "^4.1.1",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "supertest": "^7.0.0"
   }
 }

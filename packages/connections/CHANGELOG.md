@@ -1,5 +1,13 @@
 # @backstage/connections
 
+## 0.1.1-next.1
+
+### Patch Changes
+
+- ec96761: Added a default implementation for the connections service so backend modules can depend on it without requiring apps to explicitly install the connections service factory.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
 ## 0.1.1-next.0
 
 ### Patch Changes

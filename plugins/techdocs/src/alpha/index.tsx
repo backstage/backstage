@@ -35,7 +35,10 @@ import {
   EntityContentBlueprint,
   EntityIconLinkBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
-import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
+import {
+  SearchFilterResultTypeBlueprint,
+  SearchResultListItemBlueprint,
+} from '@backstage/plugin-search-react/alpha';
 import {
   AddonBlueprint,
   attachTechDocsAddonComponentData,
@@ -126,6 +129,15 @@ export const techDocsSearchResultListItemExtension =
           );
         },
       });
+    },
+  });
+
+const techDocsSearchFilterResultTypeExtension =
+  SearchFilterResultTypeBlueprint.make({
+    params: {
+      value: 'techdocs',
+      name: 'Documentation',
+      icon: <DocsIcon />,
     },
   });
 
@@ -291,6 +303,7 @@ export default createFrontendPlugin({
     techdocsEntityIconLink,
     techDocsEntityContent,
     techDocsEntityContentEmptyState,
+    techDocsSearchFilterResultTypeExtension,
     techDocsSearchResultListItemExtension,
   ],
   routes: {

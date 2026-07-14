@@ -47,6 +47,7 @@ nav:
               - Create a component: 'getting-started/create-a-component.md'
               - Update a component: 'getting-started/update-a-component.md'
               - Unregister/delete a component: 'getting-started/unregister-delete-component.md'
+          - Creating and Publishing Documentation: 'features/techdocs/creating-and-publishing.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
   - Core Features:
       - Software Catalog:

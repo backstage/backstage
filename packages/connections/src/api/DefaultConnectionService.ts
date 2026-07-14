@@ -191,6 +191,7 @@ export class DefaultConnectionsService {
     }
 
     this.#assignDefaultTitles();
+    this.#assignDefaultAuthTitles();
 
     this.logger.info(
       `Loaded ${this.connections.length} connection${
@@ -258,6 +259,26 @@ export class DefaultConnectionsService {
         const host = (c as unknown as { host: string }).host;
         (c as { title?: string }).title =
           typeCounts.get(type)! > 1 ? `${displayName} (${host})` : displayName;
+      }
+    }
+  }
+
+  #assignDefaultAuthTitles(): void {
+    for (const c of this.connections) {
+      const type = c.type as ConnectionTypeKey;
+      const connectionType = getConnectionType(type);
+      for (const auth of c.auth) {
+        const authMethod = connectionType.authMethods.find(
+          am => am.method === auth.method,
+        );
+        // The config schema only allows methods declared by the connection
+        // type, so failing to find one means that invariant has been broken.
+        if (!authMethod) {
+          throw new Error(
+            `Unknown auth method "${auth.method}" for connection type "${type}"`,
+          );
+        }
+        auth.title ??= authMethod.title;
       }
     }
   }

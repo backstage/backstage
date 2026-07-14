@@ -20,7 +20,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { AuthenticationError } from '@backstage/errors';
 import { SignJWT, GeneralSign, importJWK, base64url } from 'jose';
@@ -78,14 +78,10 @@ describe('UserTokenHandler', () => {
     });
 
     server.use(
-      rest.get(
-        'http://localhost:0/api/auth/.well-known/jwks.json',
-        (_req, res, ctx) =>
-          res(
-            ctx.json({
-              keys: [mockPublicKey],
-            }),
-          ),
+      http.get('http://localhost:0/api/auth/.well-known/jwks.json', () =>
+        HttpResponse.json({
+          keys: [mockPublicKey],
+        }),
       ),
     );
   });

@@ -1,5 +1,13 @@
 # @backstage/ui
 
+## 0.17.0-next.1
+
+### Patch Changes
+
+- 2341682: Make PluginHeader > Breadcrumbs separator align with rest of text
+
+  **Affected components:** PluginHeader
+
 ## 0.17.0-next.0
 
 ### Minor Changes

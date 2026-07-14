@@ -26,10 +26,12 @@ export const BitbucketCloudConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'token',
+      title: 'Token',
       configSchema: z.object({
         username: z.string(),
         token: z.string(),
@@ -37,6 +39,7 @@ export const BitbucketCloudConnectionType = createConnectionType({
     },
     {
       method: 'appPassword',
+      title: 'App Password',
       configSchema: z.object({
         username: z.string(),
         appPassword: z.string(),
@@ -44,6 +47,7 @@ export const BitbucketCloudConnectionType = createConnectionType({
     },
     {
       method: 'oauth',
+      title: 'OAuth',
       configSchema: z.object({
         clientId: z.string(),
         clientSecret: z.string(),

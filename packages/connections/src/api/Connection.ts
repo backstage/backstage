@@ -25,6 +25,13 @@ import {
 export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
   ConnectionAuthValue<LookupConnectionType<T>['authMethods'][number]>;
 
+type RootAuthValue<T extends ConnectionType | ConnectionTypeKey> =
+  AuthValue<T> extends infer A
+    ? A extends any
+      ? Omit<A, 'title'> & { title?: string; match?: ConnectionMatch }
+      : never
+    : never;
+
 // A connection of a specific type.
 //
 // - With `T`: a single type, e.g. `Connection<'github'>`.
@@ -57,7 +64,7 @@ export type RootConnection<
 > = Omit<Connection<T>, 'auth' | 'title'> & {
   title?: string;
   match?: ConnectionMatch;
-  auth: (AuthValue<T> & { match?: ConnectionMatch })[];
+  auth: RootAuthValue<T>[];
 };
 
 export type AnyRootConnection = {

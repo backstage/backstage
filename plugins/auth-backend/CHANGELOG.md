@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend
 
+## 0.29.2-next.1
+
+### Patch Changes
+
+- 2aeb246: Added token revocation support for clients using client ID metadata documents (CIMD). The `/v1/revoke` endpoint is now available whenever dynamic client registration or client ID metadata documents are enabled, and is advertised through `revocation_endpoint` in the OpenID provider configuration.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
 ## 0.29.2-next.0
 
 ### Patch Changes

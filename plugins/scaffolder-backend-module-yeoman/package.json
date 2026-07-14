@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-yeoman",
-  "version": "0.4.24-next.0",
+  "version": "0.4.24-next.1",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "scaffolder",
@@ -39,7 +39,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "start": "backstage-cli package start",
-    "test": "backstage-cli package test"
+    "test": "NODE_OPTIONS=--experimental-vm-modules backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
@@ -47,7 +47,7 @@
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "yaml": "^2.0.0",
-    "yeoman-environment": "^3.9.1"
+    "yeoman-environment": "^6.1.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

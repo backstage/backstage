@@ -16,7 +16,7 @@ You may want to consider migrating to Jest 30, to do this, you can follow this g
 
 :::
 
-Backstage uses [Jest](https://facebook.github.io/jest/) for all our unit testing
+Backstage uses [Jest](https://jestjs.io/) for all our unit testing
 needs.
 
 Jest is a Facebook-built unit testing framework specifically built for React. It
@@ -274,7 +274,7 @@ Testing an API involves verifying four things:
 
 #### Mocking API Calls
 
-[Mocking in Jest](https://facebook.github.io/jest/docs/en/mock-functions.html)
+[Mocking in Jest](https://jestjs.io/docs/mock-functions)
 involves wrapping existing functions (like an API call function) with an
 alternative.
 

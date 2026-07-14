@@ -351,9 +351,7 @@ scaffolder:
       environment: ${NODE_ENV}
 
 auth:
-  experimentalDynamicClientRegistration:
-    enabled: true
-  experimentalClientIdMetadataDocuments:
+  clientIdMetadataDocuments:
     enabled: true
 
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running

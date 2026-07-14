@@ -20,7 +20,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { FetchUrlReader } from './FetchUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
@@ -36,48 +36,50 @@ describe('FetchUrlReader', () => {
 
   beforeEach(() => {
     worker.use(
-      rest.get('https://backstage.io/some-resource', (req, res, ctx) => {
-        if (req.headers.get('if-none-match') === 'foo') {
-          return res(
-            ctx.status(304),
-            ctx.set('Content-Type', 'text/plain'),
-            ctx.set('etag', 'foo'),
-          );
+      http.get('https://backstage.io/some-resource', ({ request }) => {
+        if (request.headers.get('if-none-match') === 'foo') {
+          return new HttpResponse(null, {
+            status: 304,
+            headers: {
+              'Content-Type': 'text/plain',
+              etag: 'foo',
+            },
+          });
         }
 
         if (
-          req.headers.get('if-modified-since') &&
-          new Date(req.headers.get('if-modified-since') ?? '') <
+          request.headers.get('if-modified-since') &&
+          new Date(request.headers.get('if-modified-since') ?? '') <
             new Date('2021-01-01T00:00:00Z')
         ) {
-          return res(
-            ctx.status(304),
-            ctx.set('Content-Type', 'text/plain'),
-            ctx.set(
-              'last-modified',
-              new Date('2021-01-01T00:00:00Z').toUTCString(),
-            ),
-          );
+          return new HttpResponse(null, {
+            status: 304,
+            headers: {
+              'Content-Type': 'text/plain',
+              'last-modified': new Date('2021-01-01T00:00:00Z').toUTCString(),
+            },
+          });
         }
 
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'text/plain'),
-          ctx.set('etag', 'foo'),
-          ctx.body('content foo'),
-        );
+        return new HttpResponse('content foo', {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/plain',
+            etag: 'foo',
+          },
+        });
       }),
     );
 
     worker.use(
-      rest.get('https://backstage.io/not-exists', (_req, res, ctx) => {
-        return res(ctx.status(404));
+      http.get('https://backstage.io/not-exists', () => {
+        return new HttpResponse(null, { status: 404 });
       }),
     );
 
     worker.use(
-      rest.get('https://backstage.io/error', (_req, res, ctx) => {
-        return res(ctx.status(500), ctx.body('An internal error occurred'));
+      http.get('https://backstage.io/error', () => {
+        return new HttpResponse('An internal error occurred', { status: 500 });
       }),
     );
   });
@@ -277,11 +279,11 @@ describe('FetchUrlReader', () => {
       expect.assertions(1);
 
       worker.use(
-        rest.get(
+        http.get(
           'https://backstage.io/requires-authentication',
-          (req, res, ctx) => {
-            expect(req.headers.get('authorization')).toBe('Bearer mytoken');
-            return res(ctx.status(200));
+          ({ request }) => {
+            expect(request.headers.get('authorization')).toBe('Bearer mytoken');
+            return new HttpResponse(null, { status: 200 });
           },
         ),
       );
@@ -366,11 +368,11 @@ describe('FetchUrlReader', () => {
       );
 
       worker.use(
-        rest.get('https://backstage.io/redirect', (_req, res, ctx) => {
-          return res(
-            ctx.status(302),
-            ctx.set('location', 'https://evil.com/steal-data'),
-          );
+        http.get('https://backstage.io/redirect', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: 'https://evil.com/steal-data' },
+          });
         }),
       );
 
@@ -391,11 +393,11 @@ describe('FetchUrlReader', () => {
       );
 
       worker.use(
-        rest.get('https://backstage.io/redirect', (_req, res, ctx) => {
-          return res(
-            ctx.status(302),
-            ctx.set('location', 'https://backstage.io/some-resource'),
-          );
+        http.get('https://backstage.io/redirect', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: 'https://backstage.io/some-resource' },
+          });
         }),
       );
 
@@ -431,8 +433,11 @@ describe('FetchUrlReader', () => {
       );
 
       worker.use(
-        rest.get('https://backstage.io/old-path', (_req, res, ctx) => {
-          return res(ctx.status(301), ctx.set('location', '/some-resource'));
+        http.get('https://backstage.io/old-path', () => {
+          return new HttpResponse(null, {
+            status: 301,
+            headers: { location: '/some-resource' },
+          });
         }),
       );
 
@@ -452,11 +457,11 @@ describe('FetchUrlReader', () => {
       );
 
       worker.use(
-        rest.get('https://backstage.io/deep/nested/path', (_req, res, ctx) => {
-          return res(
-            ctx.status(302),
-            ctx.set('location', '../../some-resource'),
-          );
+        http.get('https://backstage.io/deep/nested/path', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '../../some-resource' },
+          });
         }),
       );
 
@@ -478,14 +483,23 @@ describe('FetchUrlReader', () => {
       );
 
       worker.use(
-        rest.get('https://backstage.io/hop1', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/hop2'));
+        http.get('https://backstage.io/hop1', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/hop2' },
+          });
         }),
-        rest.get('https://backstage.io/hop2', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/hop3'));
+        http.get('https://backstage.io/hop2', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/hop3' },
+          });
         }),
-        rest.get('https://backstage.io/hop3', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/some-resource'));
+        http.get('https://backstage.io/hop3', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/some-resource' },
+          });
         }),
       );
 
@@ -506,23 +520,41 @@ describe('FetchUrlReader', () => {
 
       // Create a chain of 6 redirects (exceeds MAX_REDIRECTS of 5)
       worker.use(
-        rest.get('https://backstage.io/loop0', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/loop1'));
+        http.get('https://backstage.io/loop0', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/loop1' },
+          });
         }),
-        rest.get('https://backstage.io/loop1', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/loop2'));
+        http.get('https://backstage.io/loop1', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/loop2' },
+          });
         }),
-        rest.get('https://backstage.io/loop2', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/loop3'));
+        http.get('https://backstage.io/loop2', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/loop3' },
+          });
         }),
-        rest.get('https://backstage.io/loop3', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/loop4'));
+        http.get('https://backstage.io/loop3', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/loop4' },
+          });
         }),
-        rest.get('https://backstage.io/loop4', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/loop5'));
+        http.get('https://backstage.io/loop4', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/loop5' },
+          });
         }),
-        rest.get('https://backstage.io/loop5', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/loop6'));
+        http.get('https://backstage.io/loop5', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/loop6' },
+          });
         }),
       );
 
@@ -543,14 +575,17 @@ describe('FetchUrlReader', () => {
       );
 
       worker.use(
-        rest.get('https://backstage.io/hop1', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/hop2'));
+        http.get('https://backstage.io/hop1', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/hop2' },
+          });
         }),
-        rest.get('https://backstage.io/hop2', (_req, res, ctx) => {
-          return res(
-            ctx.status(302),
-            ctx.set('location', 'https://evil.com/steal'),
-          );
+        http.get('https://backstage.io/hop2', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: 'https://evil.com/steal' },
+          });
         }),
       );
 
@@ -571,8 +606,11 @@ describe('FetchUrlReader', () => {
       );
 
       worker.use(
-        rest.get('https://backstage.io/temp-redirect', (_req, res, ctx) => {
-          return res(ctx.status(307), ctx.set('location', '/some-resource'));
+        http.get('https://backstage.io/temp-redirect', () => {
+          return new HttpResponse(null, {
+            status: 307,
+            headers: { location: '/some-resource' },
+          });
         }),
       );
 
@@ -594,8 +632,11 @@ describe('FetchUrlReader', () => {
       );
 
       worker.use(
-        rest.get('https://backstage.io/allowed/start', (_req, res, ctx) => {
-          return res(ctx.status(302), ctx.set('location', '/forbidden/path'));
+        http.get('https://backstage.io/allowed/start', () => {
+          return new HttpResponse(null, {
+            status: 302,
+            headers: { location: '/forbidden/path' },
+          });
         }),
       );
 
