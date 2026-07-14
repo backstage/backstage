@@ -1,8 +1,8 @@
 ---
-id: troubleshooting-visualizer
-title: Install App Visualizer Plugin
-sidebar_label: App Visualizer Plugin for troubleshooting
-description: How to install the  app-visualizer plugin in the frontend system for troubleshooting
+id: app-visualizer
+title: App Visualizer
+sidebar_label: App Visualizer
+description: How to install and use the App Visualizer plugin in the frontend system for feature and extension discovery
 ---
 
 ## Overview
@@ -21,6 +21,8 @@ The plugin is available starting with Backstage v1.22.0.
 
 #### Installation
 
+This plugin could already be installed, please check packages/app/package.json file and look under dependencis.
+
 Install the plugin in your app package:
 
 ```bash
@@ -38,3 +40,6 @@ The `app-visualizer` provides three views, each accessible via tabs at the top o
 - **Detailed** — Shows a list of all extensions with additional metadata. Use this view to inspect individual extension properties, configuration, and attachment points. It is helpful for debugging configuration overrides and understanding how extensions are resolved.
 
 - **Text** — Renders the extension tree as plain text. This is useful for copying and pasting into GitHub issues or Discord when asking for help, since it provides a compact, readable snapshot of your app's structure.
+
+An example of the tree view:
+![From demo site](visualizer.png)
