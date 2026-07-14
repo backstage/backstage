@@ -16,6 +16,7 @@
 
 import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
+import { keyValueStoreServiceFactory } from '@backstage/backend-defaults/keyValueStore';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
@@ -355,6 +356,19 @@ export namespace mockServices {
       });
     export const mock = createServiceMock(coreServices.userInfo, () => ({
       getUserInfo: jest.fn(),
+    }));
+  }
+
+  export namespace keyValueStore {
+    export const factory = () => keyValueStoreServiceFactory;
+    export const mock = createServiceMock(coreServices.keyValueStore, () => ({
+      withSchema: jest.fn().mockReturnValue({
+        get: jest.fn(),
+        set: jest.fn(),
+        delete: jest.fn(),
+        list: jest.fn(),
+        subscribe: jest.fn(),
+      }),
     }));
   }
 

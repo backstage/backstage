@@ -27,6 +27,7 @@
     "./discovery": "./src/entrypoints/discovery/index.ts",
     "./httpAuth": "./src/entrypoints/httpAuth/index.ts",
     "./httpRouter": "./src/entrypoints/httpRouter/index.ts",
+    "./keyValueStore": "./src/entrypoints/keyValueStore/index.ts",
     "./lifecycle": "./src/entrypoints/lifecycle/index.ts",
     "./logger": "./src/entrypoints/logger/index.ts",
     "./permissionsRegistry": "./src/entrypoints/permissionsRegistry/index.ts",
@@ -66,6 +67,9 @@
       ],
       "httpRouter": [
         "src/entrypoints/httpRouter/index.ts"
+      ],
+      "keyValueStore": [
+        "src/entrypoints/keyValueStore/index.ts"
       ],
       "lifecycle": [
         "src/entrypoints/lifecycle/index.ts"

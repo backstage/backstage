@@ -266,6 +266,19 @@ export namespace coreServices {
   >({ id: 'core.scheduler' });
 
   /**
+   * Persistent key-value store for backend plugins.
+   *
+   * See {@link KeyValueStoreService}
+   * and {@link https://backstage.io/docs/backend-system/core-services/key-value-store | the service docs}
+   * for more information.
+   *
+   * @public
+   */
+  export const keyValueStore = createServiceRef<
+    import('./KeyValueStoreService').KeyValueStoreService
+  >({ id: 'core.keyValueStore' });
+
+  /**
    * Reading content from external systems.
    *
    * See {@link UrlReaderService}
