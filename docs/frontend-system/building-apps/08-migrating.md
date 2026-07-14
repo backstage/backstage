@@ -916,7 +916,7 @@ The `yarn new` command now defaults to the new frontend system templates for fro
 
 We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting.
 
-For installation instructions, please read [App Visualizer](./09-troubleshooting-app-visualizer.md).
+For installation instructions, please read [App Visualizer](./09-app-visualizer.md).
 
 #### Using the Visualizer During Migration
 
