@@ -21,7 +21,11 @@ import {
 import { InputError } from '@backstage/errors';
 import express, { Request } from 'express';
 import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuditorService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { requirePermission } from '../auth/requirePermission';
 import { kubernetesResourcesReadPermission } from '@backstage/plugin-kubernetes-common';
@@ -33,9 +37,11 @@ export const addResourceRoutesToRouter = (
   objectsProvider: KubernetesObjectsProvider,
   httpAuth: HttpAuthService,
   permissionApi: PermissionEvaluator,
+  auditor: AuditorService,
+  logger: LoggerService,
 ) => {
   const getEntityByReq = async (req: Request<any>) => {
-    const rawEntityRef = req.body.entityRef;
+    const rawEntityRef = req.body?.entityRef;
     if (rawEntityRef && typeof rawEntityRef !== 'string') {
       throw new InputError(`entity query must be a string`);
     } else if (!rawEntityRef) {
@@ -62,48 +68,94 @@ export const addResourceRoutesToRouter = (
   };
 
   router.post('/resources/workloads/query', async (req, res) => {
-    await requirePermission(
-      permissionApi,
-      kubernetesResourcesReadPermission,
-      httpAuth,
-      req,
-    );
-    const entity = await getEntityByReq(req);
-    const response = await objectsProvider.getKubernetesObjectsByEntity(
-      {
-        entity,
-        auth: req.body.auth,
-      },
-      { credentials: await httpAuth.credentials(req) },
-    );
-    res.json(response);
+    const entityRef =
+      typeof req.body?.entityRef === 'string' ? req.body.entityRef : undefined;
+
+    const auditorEvent = await auditor.createEvent({
+      eventId: 'resource-fetch',
+      request: req,
+      meta: { queryType: 'workloads', entityRef },
+    });
+
+    try {
+      await requirePermission(
+        permissionApi,
+        kubernetesResourcesReadPermission,
+        httpAuth,
+        req,
+      );
+      const entity = await getEntityByReq(req);
+      const response = await objectsProvider.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: req.body.auth,
+        },
+        { credentials: await httpAuth.credentials(req) },
+      );
+      res.json(response);
+      auditorEvent
+        .success()
+        .catch(error =>
+          logger.error(
+            'Failed to emit audit event resource-fetch (workloads)',
+            error,
+          ),
+        );
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      await auditorEvent.fail({ error: err });
+      throw error;
+    }
   });
 
   router.post('/resources/custom/query', async (req, res) => {
-    await requirePermission(
-      permissionApi,
-      kubernetesResourcesReadPermission,
-      httpAuth,
-      req,
-    );
-    const entity = await getEntityByReq(req);
+    const entityRef =
+      typeof req.body?.entityRef === 'string' ? req.body.entityRef : undefined;
 
-    if (!req.body.customResources) {
-      throw new InputError('customResources is a required field');
-    } else if (!Array.isArray(req.body.customResources)) {
-      throw new InputError('customResources must be an array');
-    } else if (req.body.customResources.length === 0) {
-      throw new InputError('at least 1 customResource is required');
+    const auditorEvent = await auditor.createEvent({
+      eventId: 'resource-fetch',
+      request: req,
+      meta: { queryType: 'custom', entityRef },
+    });
+
+    try {
+      await requirePermission(
+        permissionApi,
+        kubernetesResourcesReadPermission,
+        httpAuth,
+        req,
+      );
+      const entity = await getEntityByReq(req);
+
+      if (!req.body.customResources) {
+        throw new InputError('customResources is a required field');
+      } else if (!Array.isArray(req.body.customResources)) {
+        throw new InputError('customResources must be an array');
+      } else if (req.body.customResources.length === 0) {
+        throw new InputError('at least 1 customResource is required');
+      }
+
+      const response = await objectsProvider.getCustomResourcesByEntity(
+        {
+          entity,
+          customResources: req.body.customResources,
+          auth: req.body.auth,
+        },
+        { credentials: await httpAuth.credentials(req) },
+      );
+      res.json(response);
+      auditorEvent
+        .success()
+        .catch(error =>
+          logger.error(
+            'Failed to emit audit event resource-fetch (custom)',
+            error,
+          ),
+        );
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      await auditorEvent.fail({ error: err });
+      throw error;
     }
-
-    const response = await objectsProvider.getCustomResourcesByEntity(
-      {
-        entity,
-        customResources: req.body.customResources,
-        auth: req.body.auth,
-      },
-      { credentials: await httpAuth.credentials(req) },
-    );
-    res.json(response);
   });
 };

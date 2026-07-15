@@ -72,6 +72,7 @@ nav:
           - Configuration: 'features/kubernetes/configuration.md'
           - Authentication: 'features/kubernetes/authentication.md'
           - Troubleshooting: 'features/kubernetes/troubleshooting.md'
+          - Audit Events: 'features/kubernetes/audit-events.md'
       - Software Templates:
           - Overview: 'features/software-templates/index.md'
           - Configuration: 'features/software-templates/configuration.md'

@@ -209,6 +209,7 @@ export default {
             'features/kubernetes/authentication-strategies',
             'features/kubernetes/troubleshooting',
             'features/kubernetes/proxy',
+            'features/kubernetes/audit-events',
           ],
         ),
         sidebarElementWithIndex(
