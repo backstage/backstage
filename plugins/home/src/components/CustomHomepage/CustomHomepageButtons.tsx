@@ -110,18 +110,16 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
           >
             {t('customHomepageButtons.addWidget')}
           </Button>
-          {numWidgets > 0 && (
-            <Button
-              className={styles.contentHeaderBtn}
-              variant="contained"
-              color="primary"
-              onClick={() => changeEditMode(false)}
-              size="small"
-              startIcon={<SaveIcon />}
-            >
-              {t('customHomepageButtons.save')}
-            </Button>
-          )}
+          <Button
+            className={styles.contentHeaderBtn}
+            variant="contained"
+            color="primary"
+            onClick={() => changeEditMode(false)}
+            size="small"
+            startIcon={<SaveIcon />}
+          >
+            {t('customHomepageButtons.save')}
+          </Button>
         </>
       )}
     </>

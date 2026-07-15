@@ -266,4 +266,111 @@ describe('CustomHomepageGrid', () => {
       ),
     ).toBeInTheDocument();
   });
+
+  it('should show save button immediately when adding first widget to empty layout', async () => {
+    const mockStorage = mockApis.storage();
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[storageApiRef, mockStorage]]}>
+        <CustomHomepageGrid config={[]}>
+          <ComponentA />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    const addWidgetButton = screen.getByRole('button', { name: 'Add widget' });
+    await userEvent.click(addWidgetButton);
+
+    const addButton = screen.getByText('A');
+    await userEvent.click(addButton);
+
+    const saveButton = await screen.findByRole('button', { name: 'Save' });
+    expect(saveButton).toBeVisible();
+
+    await userEvent.click(saveButton);
+
+    expect(
+      mockStorage.forBucket('home.customHomepage').snapshot('home'),
+    ).toEqual({
+      key: 'home',
+      presence: 'present',
+      value: expect.any(String),
+    });
+  });
+
+  it('should keep save button visible when removing last widget and persist empty layout', async () => {
+    const mockStorage = mockApis.storage();
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[storageApiRef, mockStorage]]}>
+        <CustomHomepageGrid config={defaultConfig.slice(0, 1)}>
+          <ComponentA />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    expect(screen.getByText('A')).toBeInTheDocument();
+
+    const editButton = screen.getByRole('button', { name: 'Edit' });
+    await userEvent.click(editButton);
+
+    const deleteButton = screen.getByRole('button', { name: 'Delete widget' });
+    await userEvent.click(deleteButton);
+
+    const saveButton = await screen.findByRole('button', { name: 'Save' });
+    expect(saveButton).toBeVisible();
+
+    await userEvent.click(saveButton);
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+
+    expect(
+      mockStorage.forBucket('home.customHomepage').snapshot('home'),
+    ).toEqual({
+      key: 'home',
+      presence: 'present',
+      value: expect.stringMatching(/"default":\[\]/),
+    });
+  });
+
+  it('should keep save button visible when clearing all widgets and persist empty layout', async () => {
+    const mockStorage = mockApis.storage();
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[storageApiRef, mockStorage]]}>
+        <CustomHomepageGrid config={defaultConfig}>
+          <ComponentA />
+          <ComponentB />
+          <ComponentC />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    expect(screen.getByText('A')).toBeInTheDocument();
+    expect(screen.getByText('B')).toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+
+    const editButton = screen.getByRole('button', { name: 'Edit' });
+    await userEvent.click(editButton);
+
+    const clearAllButton = screen.getByRole('button', { name: 'Clear all' });
+    await userEvent.click(clearAllButton);
+
+    const saveButton = await screen.findByRole('button', { name: 'Save' });
+    expect(saveButton).toBeVisible();
+
+    await userEvent.click(saveButton);
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.queryByText('C')).not.toBeInTheDocument();
+
+    expect(
+      mockStorage.forBucket('home.customHomepage').snapshot('home'),
+    ).toEqual({
+      key: 'home',
+      presence: 'present',
+      value: expect.stringMatching(/"default":\[\]/),
+    });
+  });
 });
