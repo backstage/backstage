@@ -1259,7 +1259,23 @@ describe('createRouter readonly disabled', () => {
 
         expect(response.status).toEqual(400);
         expect(response.body.errors.length).toEqual(1);
-        expect(response.body.errors[0].message).toContain('Malformed request:');
+        expect(response.body.errors[0].message).toContain(
+          'request/body/location must be string',
+        );
+        expect(orchestrator.process).toHaveBeenCalledTimes(0);
+      });
+    });
+
+    describe('malformed body', () => {
+      it('returns 400 with the errors shape', async () => {
+        const response = await request(app)
+          .post('/validate-entity')
+          .set('Content-Type', 'application/json')
+          .send('{not json');
+
+        expect(response.status).toEqual(400);
+        expect(response.body.errors.length).toEqual(1);
+        expect(response.body.errors[0].name).toEqual('InputError');
         expect(orchestrator.process).toHaveBeenCalledTimes(0);
       });
     });
@@ -1273,7 +1289,7 @@ describe('createRouter readonly disabled', () => {
         expect(response.status).toEqual(400);
         expect(response.body.errors.length).toEqual(1);
         expect(response.body.errors[0].message).toContain(
-          '<root> must be object - type: object',
+          'request/body/entity must be object',
         );
       });
     });
