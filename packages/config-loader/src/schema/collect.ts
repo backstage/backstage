@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import { toError } from '@backstage/errors';
 import type * as TsJsonSchemaGenerator from 'ts-json-schema-generator';
 import type * as TypeScript from 'typescript';
 import { createHash } from 'node:crypto';
@@ -262,6 +263,18 @@ function parseNestedSchemaAnnotation(annotation: unknown) {
   return { key, value };
 }
 
+function reportSchemaWarning(
+  options: CollectConfigSchemasOptions | undefined,
+  message: string,
+) {
+  const warning = new Error(message);
+  if (options?.onSchemaError) {
+    options.onSchemaError(warning);
+  } else {
+    console.warn(warning.message);
+  }
+}
+
 // This handles the support of TypeScript .d.ts config schema declarations.
 // We collect all TypeScript schema definitions and compile them in one shared
 // program, which avoids repeatedly resolving and parsing imported types.
@@ -278,6 +291,7 @@ async function compileTsSchemas(
   const ts: typeof TypeScript = require('typescript');
   const {
     AnnotatedTypeFormatter,
+    AnyType,
     createFormatter,
     createParser,
     DEFAULT_CONFIG,
@@ -324,14 +338,10 @@ async function compileTsSchemas(
       throw new Error(`Invalid TypeScript configuration schema:\n${message}`);
     }
 
-    const warning = new Error(
+    reportSchemaWarning(
+      options,
       `TypeScript configuration schema contains errors; using a best-effort schema:\n${message}`,
     );
-    if (options?.onSchemaError) {
-      options.onSchemaError(warning);
-    } else {
-      console.warn(warning.message);
-    }
   }
 
   const generatorConfig = {
@@ -344,7 +354,26 @@ async function compileTsSchemas(
     topRef: false,
     tsProgram: program,
   };
-  const parser = createParser(program, generatorConfig);
+  const typeChecker = program.getTypeChecker();
+  const parser = createParser(program, generatorConfig, mutableParser => {
+    if (options?.schemaErrorMode === 'error') {
+      return;
+    }
+
+    // Preserve the rest of a schema by treating unresolved references as unconstrained values.
+    mutableParser.addNodeParser({
+      supportsNode(node) {
+        if (!ts.isTypeReferenceNode(node)) {
+          return false;
+        }
+        const symbol = typeChecker.getSymbolAtLocation(node.typeName);
+        return !symbol?.declarations?.length;
+      },
+      createType() {
+        return new AnyType();
+      },
+    });
+  });
   class NestedAnnotationsFormatter extends AnnotatedTypeFormatter {
     override getDefinition(type: TsJsonSchemaGenerator.AnnotatedType) {
       const annotations = type.getAnnotations();
@@ -382,7 +411,7 @@ async function compileTsSchemas(
     generatorConfig,
   );
 
-  const tsSchemas = entries.map(({ path, packageName }, index) => {
+  const tsSchemas = entries.flatMap(({ path, packageName }, index) => {
     const sourceFile = program.getSourceFile(rootNames[index]);
     if (!sourceFile) {
       throw new Error(`Invalid schema in ${path}, missing Config export`);
@@ -402,14 +431,27 @@ async function compileTsSchemas(
       .update('\0')
       .update(path.split(sep).join('/'))
       .digest('hex');
-    const value = namespaceSchemaDefinitions(
-      structuredClone(
-        generator.createSchemaFromNodes([configNode]),
-      ) as JsonObject,
-      namespace,
-    );
+    try {
+      const value = namespaceSchemaDefinitions(
+        structuredClone(
+          generator.createSchemaFromNodes([configNode]),
+        ) as JsonObject,
+        namespace,
+      );
 
-    return { path, value, packageName };
+      return [{ path, value, packageName }];
+    } catch (error) {
+      if (options?.schemaErrorMode === 'error') {
+        throw error;
+      }
+
+      const detail = toError(error).message;
+      reportSchemaWarning(
+        options,
+        `Skipping TypeScript configuration schema at ${path} because it could not be generated: ${detail}`,
+      );
+      return [];
+    }
   });
 
   return tsSchemas;

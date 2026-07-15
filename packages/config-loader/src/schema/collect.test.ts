@@ -632,7 +632,7 @@ describe('collectConfigSchemas', () => {
     });
   });
 
-  it('should warn about unresolved imports by default and support strict checking', async () => {
+  it('should use best-effort schemas for unresolved types and support strict checking', async () => {
     mockDir.setContent({
       node_modules: {
         unresolved: {
@@ -643,7 +643,10 @@ describe('collectConfigSchemas', () => {
           }),
           'schema.d.ts': `
             import { Missing } from './missing';
-            export interface Config { value?: Missing }
+            export interface Config {
+              value?: Missing;
+              duration?: HumanDuration;
+            }
           `,
         },
       },
@@ -660,10 +663,21 @@ describe('collectConfigSchemas', () => {
         message: expect.stringContaining("Cannot find module './missing'"),
       }),
     );
+    expect(onSchemaError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining("Cannot find name 'HumanDuration'"),
+      }),
+    );
     expect(schemas).toEqual([
       expect.objectContaining({
         packageName: 'unresolved',
         path: path.join('node_modules', 'unresolved', 'schema.d.ts'),
+        value: expect.objectContaining({
+          properties: {
+            value: {},
+            duration: {},
+          },
+        }),
       }),
     ]);
     expect(() => compileConfigSchemas(schemas)).not.toThrow();
