@@ -99,6 +99,10 @@
     "rejectFrontendNetworkRequests": true
   },
   "resolutions": {
+    "@asyncapi/generator": "3.3.0",
+    "@asyncapi/generator-helpers": "1.1.0",
+    "@asyncapi/generator-components": "0.7.0",
+    "@asyncapi/specs": "6.11.1",
     "@remixicon/react": ">=4.6.0 <4.9.0",
     "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
