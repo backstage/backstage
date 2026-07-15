@@ -340,7 +340,7 @@ async function compileTsSchemas(
 
     reportSchemaWarning(
       options,
-      `TypeScript configuration schema contains errors; using a best-effort schema:\n${message}`,
+      `TypeScript configuration schema contains errors:\n${message}`,
     );
   }
 
