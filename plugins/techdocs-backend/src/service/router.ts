@@ -132,7 +132,7 @@ async function authorizeTechDocsReadPermission(options: {
     { credentials },
   );
 
-  if (decision[0].result === AuthorizeResult.DENY) {
+  if (decision[0].result !== AuthorizeResult.ALLOW) {
     throw new NotAllowedError(
       `Access to TechDocs for '${entityRef}' is not permitted`,
     );
@@ -162,6 +162,11 @@ export async function createRouter(
   const docsBuildStrategy =
     options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
   const buildLogTransport = options.buildLogTransport;
+
+  // TechDocs permission checks only run when the permission framework is
+  // enabled, keeping behavior unchanged for deployments that don't use it.
+  const permissionEnabled =
+    config.getOptionalBoolean('permission.enabled') ?? false;
 
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.
@@ -212,11 +217,13 @@ export async function createRouter(
     }
 
     // Check TechDocs-specific read permission
-    await authorizeTechDocsReadPermission({
-      permissions,
-      credentials,
-      entityRef,
-    });
+    if (permissionEnabled) {
+      await authorizeTechDocsReadPermission({
+        permissions,
+        credentials,
+        entityRef,
+      });
+    }
 
     try {
       const techdocsMetadata = await publisher.fetchTechDocsMetadata(
@@ -248,11 +255,13 @@ export async function createRouter(
     }
 
     // Check TechDocs-specific read permission
-    await authorizeTechDocsReadPermission({
-      permissions,
-      credentials,
-      entityRef,
-    });
+    if (permissionEnabled) {
+      await authorizeTechDocsReadPermission({
+        permissions,
+        credentials,
+        entityRef,
+      });
+    }
 
     try {
       const locationMetadata = getLocationForEntity(entity, scmIntegrations);
@@ -285,11 +294,13 @@ export async function createRouter(
     }
 
     // Check TechDocs-specific read permission
-    await authorizeTechDocsReadPermission({
-      permissions,
-      credentials,
-      entityRef,
-    });
+    if (permissionEnabled) {
+      await authorizeTechDocsReadPermission({
+        permissions,
+        credentials,
+        entityRef,
+      });
+    }
 
     const responseHandler: DocsSynchronizerSyncOpts = createEventStream(res);
 
@@ -343,7 +354,7 @@ export async function createRouter(
   // Note: The entityLoader.load() call checks catalog.entity.read permission under the hood.
   // This middleware adds TechDocs-specific permission checking via techdocs.entity.read.
   // Only enabled when permission.enabled is true to avoid changing behavior for existing deployments.
-  if (config.getOptionalBoolean('permission.enabled')) {
+  if (permissionEnabled) {
     router.use(
       '/static/docs/:namespace/:kind/:name',
       async (req, _res, next) => {

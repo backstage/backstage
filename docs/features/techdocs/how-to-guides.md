@@ -907,9 +907,10 @@ import {
 class MyPermissionPolicy implements PermissionPolicy {
   async handle(request: PolicyQuery): Promise<PolicyDecision> {
     if (request.permission.name === techDocsEntityReadPermission.name) {
-      // Your authorization logic here
-      // For example, check if user is an owner of the entity
-      return { result: AuthorizeResult.CONDITIONAL /* conditions */ };
+      // Your authorization logic here. Return a plain ALLOW or DENY, or a
+      // CONDITIONAL decision to restrict access based on entity properties
+      // (see the owner-based example below).
+      return { result: AuthorizeResult.DENY };
     }
 
     return { result: AuthorizeResult.ALLOW };
@@ -942,9 +943,15 @@ Your permission policy can then read this annotation and restrict access to
 entity owners only, while leaving all other documentation open by default:
 
 ```typescript
-import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
-import { TECHDOCS_VISIBILITY_ANNOTATION } from '@backstage/plugin-techdocs-common';
-import { isPermission } from '@backstage/plugin-permission-common';
+import {
+  techDocsEntityReadPermission,
+  TECHDOCS_VISIBILITY_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
+import {
+  AuthorizeResult,
+  PolicyDecision,
+  isPermission,
+} from '@backstage/plugin-permission-common';
 import {
   catalogConditions,
   createCatalogConditionalDecision,
@@ -987,5 +994,24 @@ With this policy, documentation stays open by default, and only entities marked
 with `backstage.io/techdocs-visibility: restricted` are limited to their owners.
 The annotation is only a signal — the permission policy is what enforces access,
 so you remain free to define what "restricted" means for your organization.
+
+### Using the RBAC plugin
+
+If you manage permissions with the community RBAC plugin instead of a custom
+policy, add `techdocs` to the list of plugins it evaluates so that the
+`techdocs.entity.read` permission is discovered:
+
+```yaml title="app-config.yaml"
+permission:
+  enabled: true
+  rbac:
+    pluginsWithPermission:
+      - catalog
+      - techdocs
+```
+
+Because `techdocs.entity.read` uses the `catalog-entity` resource type, the same
+catalog conditions (such as owner or annotation rules) are available when
+building RBAC conditional policies for TechDocs.
 
 For more details on writing permission policies, see the [permission documentation](../../permissions/writing-a-policy.md).

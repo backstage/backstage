@@ -315,6 +315,9 @@ data: {"updated":true}
         const app = await createApp({
           ...outOfTheBoxOptions,
           permissions,
+          config: new ConfigReader({
+            permission: { enabled: true },
+          }),
         });
 
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
@@ -325,6 +328,38 @@ data: {"updated":true}
           .send();
 
         expect(response.status).toBe(403);
+      });
+
+      it('should authorize and sync when TechDocs permission is allowed', async () => {
+        const permissions = mockServices.permissions.mock({
+          authorize: jest
+            .fn()
+            .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+        });
+
+        const app = await createApp({
+          ...outOfTheBoxOptions,
+          permissions,
+          config: new ConfigReader({
+            permission: { enabled: true },
+          }),
+        });
+
+        docsBuildStrategy.shouldBuild.mockResolvedValue(true);
+        MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+        MockDocsSynchronizer.prototype.doSync.mockImplementation(
+          async ({ responseHandler }) =>
+            responseHandler.finish({ updated: true }),
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
+          .send();
+
+        expect(response.status).toBe(200);
+        expect(permissions.authorize).toHaveBeenCalled();
+        expect(MockDocsSynchronizer.prototype.doSync).toHaveBeenCalledTimes(1);
       });
     });
   });
@@ -448,6 +483,9 @@ data: {"updated":true}
       const app = await createApp({
         ...outOfTheBoxOptions,
         permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
       });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
@@ -476,6 +514,9 @@ data: {"updated":true}
       const app = await createApp({
         ...outOfTheBoxOptions,
         permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
       });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
@@ -499,6 +540,9 @@ data: {"updated":true}
       const app = await createApp({
         ...outOfTheBoxOptions,
         permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
       });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue({
@@ -530,6 +574,9 @@ data: {"updated":true}
       const app = await createApp({
         ...outOfTheBoxOptions,
         permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
       });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);

@@ -15,7 +15,6 @@
  */
 
 import { createPermission } from '@backstage/plugin-permission-common';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
 
 /**
  * This permission is used to authorize actions that involve reading TechDocs
@@ -32,7 +31,10 @@ export const techDocsEntityReadPermission = createPermission({
   attributes: {
     action: 'read',
   },
-  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+  // Matches the catalog's `catalog-entity` resource type so that catalog
+  // permission conditions can be reused when authorizing TechDocs access. The
+  // literal is inlined to avoid coupling this public API to an alpha export.
+  resourceType: 'catalog-entity',
 });
 
 /**
