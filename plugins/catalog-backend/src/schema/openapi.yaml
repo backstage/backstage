@@ -1567,11 +1567,5 @@ paths:
             schema:
               type: object
               properties:
-                location:
-                  type: string
-                entity:
-                  type: object
-                  additionalProperties: {}
-              required:
-                - location
-                - entity
+                location: {}
+                entity: {}
