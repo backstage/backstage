@@ -126,6 +126,48 @@ describe('loadConfigSchema', () => {
     );
   });
 
+  it('should use onSchemaError to opt into recovery', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        name: 'a',
+        configSchema: 'config.d.ts',
+      }),
+      'config.d.ts': `
+        export interface Config {
+          value?: Missing;
+        }
+      `,
+    });
+    process.chdir(mockDir.path);
+
+    const onSchemaError = jest.fn();
+    const schema = await loadConfigSchema({
+      dependencies: [],
+      packagePaths: ['package.json'],
+      onSchemaError,
+    });
+
+    expect(onSchemaError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining("Cannot find name 'Missing'"),
+      }),
+    );
+    expect(schema.serialize().schemas).toEqual([
+      expect.objectContaining({
+        value: expect.objectContaining({
+          properties: { value: {} },
+        }),
+      }),
+    ]);
+
+    await expect(
+      loadConfigSchema({
+        dependencies: [],
+        packagePaths: ['package.json'],
+      }),
+    ).rejects.toThrow("Cannot find name 'Missing'");
+  });
+
   describe('should consider schema', () => {
     it('when filtering simple config', async () => {
       mockDir.setContent({

@@ -46,7 +46,6 @@ export async function buildFrontend(options: BuildAppOptions) {
     ...(await loadCliConfig({
       args: configPaths,
       fromPackage: packageJson.name,
-      schemaErrorMode: 'error',
     })),
     webpack,
   });

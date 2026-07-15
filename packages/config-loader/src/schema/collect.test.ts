@@ -632,7 +632,7 @@ describe('collectConfigSchemas', () => {
     });
   });
 
-  it('should use best-effort schemas for unresolved types and support strict checking', async () => {
+  it('should handle unresolved types when an error handler is provided', async () => {
     mockDir.setContent({
       node_modules: {
         unresolved: {
@@ -682,16 +682,8 @@ describe('collectConfigSchemas', () => {
     ]);
     expect(() => compileConfigSchemas(schemas)).not.toThrow();
 
-    const consoleWarn = jest.spyOn(console, 'warn').mockImplementation();
-    await collectConfigSchemas(['unresolved'], []);
-    expect(consoleWarn).toHaveBeenCalledWith(
-      expect.stringContaining("Cannot find module './missing'"),
+    await expect(collectConfigSchemas(['unresolved'], [])).rejects.toThrow(
+      "Cannot find module './missing'",
     );
-
-    await expect(
-      collectConfigSchemas(['unresolved'], [], {
-        schemaErrorMode: 'error',
-      }),
-    ).rejects.toThrow("Cannot find module './missing'");
   });
 });

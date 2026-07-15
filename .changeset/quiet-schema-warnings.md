@@ -2,4 +2,4 @@
 '@backstage/config-loader': minor
 ---
 
-TypeScript configuration schema errors are now reported as warnings while a best-effort schema is generated. Set `schemaErrorMode` to `'error'` to retain strict loading, and use `onSchemaError` to route warnings to a custom handler.
+Added an `onSchemaError` callback that allows callers to report TypeScript configuration schema errors and continue loading. Without a handler, schema errors are thrown.

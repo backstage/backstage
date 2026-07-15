@@ -36,7 +36,6 @@ type Item = {
 
 type CollectConfigSchemasOptions = {
   excludePackageDependencies?: boolean;
-  schemaErrorMode?: 'warn' | 'error';
   onSchemaError?: (error: Error) => void;
 };
 
@@ -263,16 +262,14 @@ function parseNestedSchemaAnnotation(annotation: unknown) {
   return { key, value };
 }
 
-function reportSchemaWarning(
+function handleSchemaError(
   options: CollectConfigSchemasOptions | undefined,
-  message: string,
+  error: Error,
 ) {
-  const warning = new Error(message);
-  if (options?.onSchemaError) {
-    options.onSchemaError(warning);
-  } else {
-    console.warn(warning.message);
+  if (!options?.onSchemaError) {
+    throw error;
   }
+  options.onSchemaError(error);
 }
 
 // This handles the support of TypeScript .d.ts config schema declarations.
@@ -334,13 +331,9 @@ async function compileTsSchemas(
       getCurrentDirectory: () => currentDir,
       getNewLine: () => '\n',
     });
-    if (options?.schemaErrorMode === 'error') {
-      throw new Error(`Invalid TypeScript configuration schema:\n${message}`);
-    }
-
-    reportSchemaWarning(
+    handleSchemaError(
       options,
-      `TypeScript configuration schema contains errors:\n${message}`,
+      new Error(`TypeScript configuration schema contains errors:\n${message}`),
     );
   }
 
@@ -356,7 +349,7 @@ async function compileTsSchemas(
   };
   const typeChecker = program.getTypeChecker();
   const parser = createParser(program, generatorConfig, mutableParser => {
-    if (options?.schemaErrorMode === 'error') {
+    if (!options?.onSchemaError) {
       return;
     }
 
@@ -441,14 +434,13 @@ async function compileTsSchemas(
 
       return [{ path, value, packageName }];
     } catch (error) {
-      if (options?.schemaErrorMode === 'error') {
-        throw error;
-      }
-
-      const detail = toError(error).message;
-      reportSchemaWarning(
+      const cause = toError(error);
+      handleSchemaError(
         options,
-        `Skipping TypeScript configuration schema at ${path} because it could not be generated: ${detail}`,
+        new Error(
+          `Unable to generate TypeScript configuration schema at ${path}: ${cause.message}`,
+          { cause },
+        ),
       );
       return [];
     }

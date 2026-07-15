@@ -70,7 +70,6 @@ export async function compilePackageConfigSchemas(
       resolvePath(pkg.dir, 'package.json'),
     ),
     excludePackageDependencies: true,
-    schemaErrorMode: 'error',
   });
   const serialized = schema.serialize() as {
     schemas: Array<{

@@ -28,7 +28,7 @@ type Options = {
   fromPackage?: string;
   withFilteredKeys?: boolean;
   watch?: (newFrontendAppConfigs: AppConfig[]) => void;
-  schemaErrorMode?: 'warn' | 'error';
+  onSchemaError?: (error: Error) => void;
 };
 
 export async function loadCliConfig(options: Options) {
@@ -59,7 +59,7 @@ export async function loadCliConfig(options: Options) {
   const schema = await loadConfigSchema({
     dependencies: localPackageNames,
     packagePaths: [targetPaths.resolveRoot('package.json')],
-    schemaErrorMode: options.schemaErrorMode,
+    onSchemaError: options.onSchemaError,
   });
 
   const source = ConfigSources.default({

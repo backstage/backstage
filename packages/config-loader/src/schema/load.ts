@@ -44,19 +44,12 @@ export type LoadConfigSchemaOptions =
            */
           excludePackageDependencies?: boolean;
           /**
-           * How to handle errors encountered when compiling TypeScript
-           * configuration schemas.
+           * Receives TypeScript configuration schema errors and allows schema
+           * loading to continue. Unresolved types are treated as unconstrained
+           * values, while schemas that cannot be generated are omitted.
            *
-           * Defaults to `'warn'`, which reports the error and continues with a
-           * best-effort schema. Set to `'error'` to make schema compilation
-           * errors fatal.
-           */
-          schemaErrorMode?: 'warn' | 'error';
-          /**
-           * Receives TypeScript configuration schema errors when
-           * `schemaErrorMode` is `'warn'`.
-           *
-           * Defaults to logging the error to the console.
+           * Without this callback, TypeScript configuration schema errors are
+           * thrown.
            */
           onSchemaError?: (error: Error) => void;
         }
@@ -97,7 +90,6 @@ export async function loadConfigSchema(
       options.packagePaths ?? [],
       {
         excludePackageDependencies: options.excludePackageDependencies,
-        schemaErrorMode: options.schemaErrorMode,
         onSchemaError: options.onSchemaError,
       },
     );

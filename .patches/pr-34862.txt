@@ -1,1 +1,1 @@
-Warn on TypeScript configuration schema errors by default while keeping production artifact generation strict
+Allow callers to warn and continue on TypeScript configuration schema errors while keeping strict loading by default
