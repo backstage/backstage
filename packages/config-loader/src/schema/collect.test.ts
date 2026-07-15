@@ -65,6 +65,7 @@ describe('collectConfigSchemas', () => {
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     mockDir.clear();
   });
 
@@ -631,7 +632,7 @@ describe('collectConfigSchemas', () => {
     });
   });
 
-  it('should reject unresolved imports', async () => {
+  it('should warn about unresolved imports by default and support strict checking', async () => {
     mockDir.setContent({
       node_modules: {
         unresolved: {
@@ -649,8 +650,34 @@ describe('collectConfigSchemas', () => {
     });
     process.chdir(mockDir.path);
 
-    await expect(collectConfigSchemas(['unresolved'], [])).rejects.toThrow(
-      "Cannot find module './missing'",
+    const onSchemaError = jest.fn();
+    const schemas = await collectConfigSchemas(['unresolved'], [], {
+      onSchemaError,
+    });
+
+    expect(onSchemaError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining("Cannot find module './missing'"),
+      }),
     );
+    expect(schemas).toEqual([
+      expect.objectContaining({
+        packageName: 'unresolved',
+        path: path.join('node_modules', 'unresolved', 'schema.d.ts'),
+      }),
+    ]);
+    expect(() => compileConfigSchemas(schemas)).not.toThrow();
+
+    const consoleWarn = jest.spyOn(console, 'warn').mockImplementation();
+    await collectConfigSchemas(['unresolved'], []);
+    expect(consoleWarn).toHaveBeenCalledWith(
+      expect.stringContaining("Cannot find module './missing'"),
+    );
+
+    await expect(
+      collectConfigSchemas(['unresolved'], [], {
+        schemaErrorMode: 'error',
+      }),
+    ).rejects.toThrow("Cannot find module './missing'");
   });
 });

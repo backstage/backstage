@@ -43,6 +43,22 @@ export type LoadConfigSchemaOptions =
            * Defaults to `false`.
            */
           excludePackageDependencies?: boolean;
+          /**
+           * How to handle errors encountered when compiling TypeScript
+           * configuration schemas.
+           *
+           * Defaults to `'warn'`, which reports the error and continues with a
+           * best-effort schema. Set to `'error'` to make schema compilation
+           * errors fatal.
+           */
+          schemaErrorMode?: 'warn' | 'error';
+          /**
+           * Receives TypeScript configuration schema errors when
+           * `schemaErrorMode` is `'warn'`.
+           *
+           * Defaults to logging the error to the console.
+           */
+          onSchemaError?: (error: Error) => void;
         }
       | {
           serialized: JsonObject;
@@ -81,6 +97,8 @@ export async function loadConfigSchema(
       options.packagePaths ?? [],
       {
         excludePackageDependencies: options.excludePackageDependencies,
+        schemaErrorMode: options.schemaErrorMode,
+        onSchemaError: options.onSchemaError,
       },
     );
   } else {

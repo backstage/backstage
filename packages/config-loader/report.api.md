@@ -189,6 +189,8 @@ export type LoadConfigSchemaOptions = (
       dependencies: string[];
       packagePaths?: string[];
       excludePackageDependencies?: boolean;
+      schemaErrorMode?: 'warn' | 'error';
+      onSchemaError?: (error: Error) => void;
     }
   | {
       serialized: JsonObject;

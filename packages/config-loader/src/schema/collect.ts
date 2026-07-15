@@ -33,6 +33,12 @@ type Item = {
   packagePath?: string;
 };
 
+type CollectConfigSchemasOptions = {
+  excludePackageDependencies?: boolean;
+  schemaErrorMode?: 'warn' | 'error';
+  onSchemaError?: (error: Error) => void;
+};
+
 const req =
   typeof __non_webpack_require__ === 'undefined'
     ? require
@@ -55,7 +61,7 @@ export const internal = {
 export async function collectConfigSchemas(
   packageNames: string[],
   packagePaths: string[],
-  options?: { excludePackageDependencies?: boolean },
+  options?: CollectConfigSchemasOptions,
 ): Promise<ConfigSchemaPackageEntry[]> {
   const schemas = new Array<ConfigSchemaPackageEntry>();
   const tsSchemaPaths = new Array<{ packageName: string; path: string }>();
@@ -165,7 +171,7 @@ export async function collectConfigSchemas(
     ...packagePaths.map(path => processItem({ name: path, packagePath: path })),
   ]);
 
-  const tsSchemas = await compileTsSchemas(tsSchemaPaths);
+  const tsSchemas = await compileTsSchemas(tsSchemaPaths, options);
   const allSchemas = schemas.concat(tsSchemas);
 
   const hasBackendDefaults = allSchemas.some(
@@ -261,6 +267,7 @@ function parseNestedSchemaAnnotation(annotation: unknown) {
 // program, which avoids repeatedly resolving and parsing imported types.
 async function compileTsSchemas(
   entries: { path: string; packageName: string }[],
+  options?: CollectConfigSchemasOptions,
 ) {
   if (entries.length === 0) {
     return [];
@@ -313,7 +320,18 @@ async function compileTsSchemas(
       getCurrentDirectory: () => currentDir,
       getNewLine: () => '\n',
     });
-    throw new Error(`Invalid TypeScript configuration schema:\n${message}`);
+    if (options?.schemaErrorMode === 'error') {
+      throw new Error(`Invalid TypeScript configuration schema:\n${message}`);
+    }
+
+    const warning = new Error(
+      `TypeScript configuration schema contains errors; using a best-effort schema:\n${message}`,
+    );
+    if (options?.onSchemaError) {
+      options.onSchemaError(warning);
+    } else {
+      console.warn(warning.message);
+    }
   }
 
   const generatorConfig = {

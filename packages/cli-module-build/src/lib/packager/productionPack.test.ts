@@ -195,4 +195,27 @@ describe('productionPack', () => {
       properties: { b: { type: 'number' } },
     });
   });
+
+  it('should reject invalid TypeScript schemas during package preparation', async () => {
+    mockDir.setContent({
+      package: {
+        'package.json': JSON.stringify(packageJson),
+        'config.d.ts': `
+          import { Missing } from './missing';
+          export interface Config { value?: Missing }
+        `,
+      },
+    });
+    process.chdir(mockDir.path);
+
+    await expect(
+      compilePackageConfigSchemas([
+        {
+          name: packageJson.name,
+          dir: mockDir.resolve('package'),
+          packageJson,
+        },
+      ]),
+    ).rejects.toThrow("Cannot find module './missing'");
+  });
 });

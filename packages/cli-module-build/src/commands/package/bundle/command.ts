@@ -434,6 +434,7 @@ export async function bundleCommand(opts: BundleOptions): Promise<void> {
     const configSchema = await loadConfigSchema({
       dependencies: [],
       packagePaths: ['package.json'],
+      schemaErrorMode: 'error',
     });
     const serialized = configSchema.serialize() as {
       schemas: typeof schemas;
