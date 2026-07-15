@@ -422,7 +422,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
       expect(logger.warn).toHaveBeenCalledWith(
         expect.stringContaining(
-          "No GitHub App installation found for org 'orgB'",
+          "No GitHub credentials available for org 'orgB'",
         ),
       );
       // orgA and orgC are still ingested
@@ -473,13 +473,13 @@ describe('GithubMultiOrgEntityProvider', () => {
 
       expect(logger.warn).toHaveBeenCalledWith(
         expect.stringContaining(
-          "No GitHub App installation found for org 'orgB'",
+          "No GitHub credentials available for org 'orgB'",
         ),
       );
     });
 
     it('should throw if all orgs are skipped due to missing credentials', async () => {
-      mockGetCredentials.mockImplementation(({ url }: { url: string }) => {
+      mockGetCredentials.mockImplementation(() => {
         const error = new Error(
           'No app installation found for org in 123',
         ) as Error & { name?: string };
@@ -501,7 +501,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       await entityProvider.connect(entityProviderConnection);
 
       await expect(entityProvider.read()).rejects.toThrow(
-        'No GitHub orgs could be processed due to missing GitHub App installations',
+        'No GitHub orgs could be processed due to missing GitHub credentials',
       );
 
       expect(logger.warn).toHaveBeenCalledTimes(2);

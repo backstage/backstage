@@ -438,7 +438,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     if (!anyOrgProcessed) {
       throw new Error(
-        `No GitHub orgs could be processed due to missing GitHub App installations. ` +
+        `No GitHub orgs could be processed due to missing GitHub credentials. ` +
           `See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
       );
     }
@@ -469,13 +469,6 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       if (ans !== bns) return ans < bns ? -1 : 1;
       return 0;
     });
-
-    if (!anyOrgProcessed) {
-      throw new Error(
-        `No GitHub orgs could be processed due to missing GitHub App installations. ` +
-          `See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
-      );
-    }
 
     await this.connection.applyMutation({
       type: 'full',
@@ -1144,7 +1137,7 @@ function trackProgress(logger: LoggerService) {
 
 function logMissingCredentialsWarning(logger: LoggerService, org: string) {
   logger.warn(
-    `No GitHub App installation found for org '${org}'. If you do not have the Organization Owner role you may not be able to install the GitHub App. See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
+    `No GitHub credentials available for org '${org}'. This can happen if the GitHub App isn't installed for the org and no fallback token is configured. If you do not have the Organization Owner role you may not be able to install the GitHub App. See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
   );
 }
 
