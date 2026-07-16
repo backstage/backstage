@@ -19,11 +19,11 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { useTechDocsReader } from './TechDocsReaderProvider';
-import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 import { techdocsTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
@@ -140,7 +140,8 @@ export const TechDocsStateIndicator = () => {
           severity="warning"
           classes={{ root: classes.root, message: classes.message }}
         >
-          {t('reader.metadataMissing.message')}
+          {t('stateIndicator.contentMetadataError.message')}{' '}
+          {metadataError.toString()}
         </Alert>
       </>
     );

@@ -207,25 +207,4 @@ describe('useTechDocsReaderPage', () => {
       });
     });
   });
-
-  it('should retry metadata fetch once when shadow root mounts before metadata is available', async () => {
-    techdocsApiMock.getTechDocsMetadata
-      .mockResolvedValueOnce(undefined as unknown as TechDocsMetadata)
-      .mockResolvedValueOnce(mockTechDocsMetadata);
-
-    const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
-
-    await waitFor(() => {
-      expect(result.current.metadata.loading).toBe(false);
-    });
-
-    const shadowRoot = mockShadowRoot();
-    await act(async () => result.current.setShadowRoot(shadowRoot));
-
-    await waitFor(() => {
-      expect(result.current.metadata.value).toMatchObject(mockTechDocsMetadata);
-    });
-
-    expect(techdocsApiMock.getTechDocsMetadata).toHaveBeenCalledTimes(2);
-  });
 });

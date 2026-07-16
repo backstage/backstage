@@ -558,6 +558,7 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'stateIndicator.contentStaleReady.message': 'A newer version of this documentation is now available, please refresh to view.';
     readonly 'stateIndicator.contentStaleReady.refreshButton': 'Refresh';
     readonly 'stateIndicator.contentStaleError.message': 'Building a newer version of this documentation failed.';
+    readonly 'stateIndicator.contentMetadataError.message': 'Could not load documentation metadata.';
     readonly 'redirectNotification.redirectNow': 'Redirect now';
     readonly 'readerPageHeader.source': 'Source';
     readonly 'readerPageHeader.owner': 'Owner';
@@ -566,7 +567,6 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'pageWrapper.subtitle': 'Documentation available in {{orgName}}';
     readonly 'entityContent.title': 'TechDocs';
     readonly 'reader.settings': 'Settings';
-    readonly 'reader.metadataMissing.message': 'Documentation metadata could not be loaded. This may occur if the documentation was built without the TechDocs CLI, which can prevent features like cache invalidation from working correctly. Try rebuilding and publishing the docs using the TechDocs CLI.';
   }
 >;
 
