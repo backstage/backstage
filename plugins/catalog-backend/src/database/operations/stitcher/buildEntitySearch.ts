@@ -223,7 +223,7 @@ export function buildEntitySearch(
         difference.add(lower);
       }
     }
-const badKeys = `'${Array.from(difference).join("', '")}'`;
+    const badKeys = `'${Array.from(difference).join("', '")}'`;
     throw new InputError(
       `Entity has duplicate keys that vary only in casing, ${badKeys}`,
     );
