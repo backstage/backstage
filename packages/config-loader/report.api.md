@@ -48,11 +48,10 @@ export type ConfigSchema = {
 
 // @public
 export class ConfigSchemaError extends CustomErrorBase {
-  constructor(options: { source: string; path: string; cause: Error });
+  constructor(options: { source: string; cause: Error });
   readonly cause: Error;
   // (undocumented)
   name: 'ConfigSchemaError';
-  readonly path: string;
   readonly source: string;
 }
 

@@ -151,7 +151,6 @@ describe('loadConfigSchema', () => {
     expect(onSchemaError).toHaveBeenCalledWith(
       expect.objectContaining({
         source: 'a',
-        path: 'config.d.ts',
         cause: expect.objectContaining({
           message: expect.stringContaining("Cannot find name 'Missing'"),
         }),

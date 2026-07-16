@@ -317,7 +317,7 @@ async function compileTsSchemas(
     ...program.getOptionsDiagnostics(),
     ...program.getGlobalDiagnostics(),
   ];
-  entries.forEach(({ path, packageName }, index) => {
+  entries.forEach(({ packageName }, index) => {
     const sourceFile = program.getSourceFile(rootNames[index]);
     const diagnostics = [
       ...(index === 0 ? sharedDiagnostics : []),
@@ -332,37 +332,19 @@ async function compileTsSchemas(
       return;
     }
 
-    const diagnosticsByPath = new Map<string, TypeScript.Diagnostic[]>();
-    for (const diagnostic of diagnostics) {
-      const diagnosticPath = diagnostic.file
-        ? relativePath(currentDir, diagnostic.file.fileName)
-        : path;
-      const pathDiagnostics = diagnosticsByPath.get(diagnosticPath);
-      if (pathDiagnostics) {
-        pathDiagnostics.push(diagnostic);
-      } else {
-        diagnosticsByPath.set(diagnosticPath, [diagnostic]);
-      }
-    }
-    for (const [diagnosticPath, pathDiagnostics] of diagnosticsByPath) {
-      const cause = new Error(
-        ts
-          .formatDiagnostics(pathDiagnostics, {
-            getCanonicalFileName: fileName => fileName,
-            getCurrentDirectory: () => currentDir,
-            getNewLine: () => '\n',
-          })
-          .trimEnd(),
-      );
-      handleSchemaError(
-        options,
-        new ConfigSchemaError({
-          source: packageName,
-          path: diagnosticPath,
-          cause,
-        }),
-      );
-    }
+    const cause = new Error(
+      ts
+        .formatDiagnostics(diagnostics, {
+          getCanonicalFileName: fileName => fileName,
+          getCurrentDirectory: () => currentDir,
+          getNewLine: () => '\n',
+        })
+        .trimEnd(),
+    );
+    handleSchemaError(
+      options,
+      new ConfigSchemaError({ source: packageName, cause }),
+    );
   });
 
   const generatorConfig = {
@@ -437,7 +419,6 @@ async function compileTsSchemas(
     if (!sourceFile) {
       throw new ConfigSchemaError({
         source: packageName,
-        path,
         cause: new Error('The schema source file could not be loaded'),
       });
     }
@@ -450,7 +431,6 @@ async function compileTsSchemas(
     if (!configNode) {
       throw new ConfigSchemaError({
         source: packageName,
-        path,
         cause: new Error('The schema does not export a Config type'),
       });
     }
@@ -471,26 +451,9 @@ async function compileTsSchemas(
       return [{ path, value, packageName }];
     } catch (error) {
       const cause = toError(error);
-      let errorPath = path;
-      if (
-        'diagnostic' in cause &&
-        cause.diagnostic &&
-        typeof cause.diagnostic === 'object' &&
-        'file' in cause.diagnostic &&
-        cause.diagnostic.file &&
-        typeof cause.diagnostic.file === 'object' &&
-        'fileName' in cause.diagnostic.file &&
-        typeof cause.diagnostic.file.fileName === 'string'
-      ) {
-        errorPath = relativePath(currentDir, cause.diagnostic.file.fileName);
-      }
       handleSchemaError(
         options,
-        new ConfigSchemaError({
-          source: packageName,
-          path: errorPath,
-          cause,
-        }),
+        new ConfigSchemaError({ source: packageName, cause }),
       );
       return [];
     }

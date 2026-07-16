@@ -466,7 +466,6 @@ describe('collectConfigSchemas', () => {
     await expect(collectConfigSchemas(['a'], [])).rejects.toMatchObject({
       name: 'ConfigSchemaError',
       source: 'a',
-      path: path.join('node_modules', 'a', 'schema.d.ts'),
       message: expect.stringContaining(
         'The schema does not export a Config type',
       ),
@@ -670,19 +669,14 @@ describe('collectConfigSchemas', () => {
     expect(schemaError).toMatchObject({
       name: 'ConfigSchemaError',
       source: 'unresolved',
-      path: path.join('node_modules', 'unresolved', 'schema.d.ts'),
       message: expect.stringContaining(
-        "TypeScript configuration schema for package 'unresolved' at " +
-          `${path.join(
-            'node_modules',
-            'unresolved',
-            'schema.d.ts',
-          )} contains errors`,
+        "TypeScript configuration schema for package 'unresolved' contains errors",
       ),
       cause: expect.objectContaining({
         message: expect.stringContaining("Cannot find module './missing'"),
       }),
     });
+    expect(schemaError).not.toHaveProperty('path');
     expect(schemaError.cause.message).toContain(
       "Cannot find name 'HumanDuration'",
     );
@@ -705,7 +699,7 @@ describe('collectConfigSchemas', () => {
     );
   });
 
-  it('should report schema generation errors with their source location', async () => {
+  it('should report schema generation errors with their source and cause', async () => {
     mockDir.setContent({
       node_modules: {
         a: {
@@ -720,18 +714,7 @@ describe('collectConfigSchemas', () => {
     });
     process.chdir(mockDir.path);
 
-    const cause = Object.assign(new Error('Failed to generate schema'), {
-      diagnostic: {
-        file: {
-          fileName: path.join(
-            process.cwd(),
-            'node_modules',
-            'a',
-            'imported.d.ts',
-          ),
-        },
-      },
-    });
+    const cause = new Error('Failed to generate schema');
     jest
       .spyOn(SchemaGenerator.prototype, 'createSchemaFromNodes')
       .mockImplementation(() => {
@@ -746,7 +729,6 @@ describe('collectConfigSchemas', () => {
       expect.objectContaining({
         name: 'ConfigSchemaError',
         source: 'a',
-        path: path.join('node_modules', 'a', 'imported.d.ts'),
         cause,
       }),
     );

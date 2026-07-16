@@ -27,20 +27,16 @@ export class ConfigSchemaError extends CustomErrorBase {
   /** The package that provided the configuration schema. */
   readonly source: string;
 
-  /** The schema file path, relative to the current working directory. */
-  readonly path: string;
-
   /** The underlying error that caused schema loading to fail. */
   declare readonly cause: Error;
 
-  constructor(options: { source: string; path: string; cause: Error }) {
-    const { source, path, cause } = options;
+  constructor(options: { source: string; cause: Error }) {
+    const { source, cause } = options;
     super(
-      `TypeScript configuration schema for package '${source}' at ${path} contains errors`,
+      `TypeScript configuration schema for package '${source}' contains errors`,
       cause,
     );
 
     this.source = source;
-    this.path = path;
   }
 }
