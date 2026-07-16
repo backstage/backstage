@@ -30,8 +30,9 @@ export class ConfigSchemaError extends Error {
 
   constructor(options: { source: string; cause: Error }) {
     const { source, cause } = options;
+    const causeMessage = cause.message.replace(/\s*\r?\n\s*/g, ' ').trim();
     super(
-      `The TypeScript configuration schema for package '${source}' contains errors:\n${cause.message}`,
+      `The TypeScript configuration schema for package '${source}' contains an error: ${causeMessage}`,
       { cause },
     );
 

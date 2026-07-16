@@ -332,19 +332,21 @@ async function compileTsSchemas(
       return;
     }
 
-    const cause = new Error(
-      ts
-        .formatDiagnostics(diagnostics, {
-          getCanonicalFileName: fileName => fileName,
-          getCurrentDirectory: () => currentDir,
-          getNewLine: () => '\n',
-        })
-        .trimEnd(),
-    );
-    handleSchemaError(
-      options,
-      new ConfigSchemaError({ source: packageName, cause }),
-    );
+    for (const diagnostic of diagnostics) {
+      const cause = new Error(
+        ts
+          .formatDiagnostics([diagnostic], {
+            getCanonicalFileName: fileName => fileName,
+            getCurrentDirectory: () => currentDir,
+            getNewLine: () => '\n',
+          })
+          .trimEnd(),
+      );
+      handleSchemaError(
+        options,
+        new ConfigSchemaError({ source: packageName, cause }),
+      );
+    }
   });
 
   const generatorConfig = {

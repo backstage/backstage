@@ -663,26 +663,25 @@ describe('collectConfigSchemas', () => {
       onSchemaError,
     });
 
-    expect(onSchemaError).toHaveBeenCalledTimes(1);
-    const schemaError = onSchemaError.mock.calls[0][0];
-    expect(schemaError).toBeInstanceOf(ConfigSchemaError);
-    expect(schemaError).toMatchObject({
-      name: 'ConfigSchemaError',
-      source: 'unresolved',
-      message: expect.stringContaining(
-        "TypeScript configuration schema for package 'unresolved' contains errors",
-      ),
-      cause: expect.objectContaining({
-        message: expect.stringContaining("Cannot find module './missing'"),
-      }),
-    });
-    expect(schemaError).not.toHaveProperty('path');
-    expect(schemaError.message).toBe(
-      `The TypeScript configuration schema for package 'unresolved' contains errors:\n${schemaError.cause.message}`,
-    );
-    expect(schemaError.cause.message).toContain(
-      "Cannot find name 'HumanDuration'",
-    );
+    expect(onSchemaError).toHaveBeenCalledTimes(2);
+    const schemaErrors = onSchemaError.mock.calls.map(([error]) => error);
+    for (const schemaError of schemaErrors) {
+      expect(schemaError).toBeInstanceOf(ConfigSchemaError);
+      expect(schemaError).toMatchObject({
+        name: 'ConfigSchemaError',
+        source: 'unresolved',
+      });
+      expect(schemaError).not.toHaveProperty('path');
+      expect(schemaError.message).toBe(
+        `The TypeScript configuration schema for package 'unresolved' contains an error: ${schemaError.cause.message}`,
+      );
+      expect(schemaError.message).not.toContain('\n');
+    }
+    const causeMessages = schemaErrors.map(error => error.cause.message);
+    expect(causeMessages).toEqual([
+      expect.stringContaining("Cannot find module './missing'"),
+      expect.stringContaining("Cannot find name 'HumanDuration'"),
+    ]);
     expect(schemas).toEqual([
       expect.objectContaining({
         packageName: 'unresolved',
@@ -717,7 +716,7 @@ describe('collectConfigSchemas', () => {
     });
     process.chdir(mockDir.path);
 
-    const cause = new Error('Failed to generate schema');
+    const cause = new Error('Failed to\ngenerate schema');
     jest
       .spyOn(SchemaGenerator.prototype, 'createSchemaFromNodes')
       .mockImplementation(() => {
@@ -728,12 +727,13 @@ describe('collectConfigSchemas', () => {
     await expect(
       collectConfigSchemas(['a'], [], { onSchemaError }),
     ).resolves.toEqual([]);
-    expect(onSchemaError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'ConfigSchemaError',
-        source: 'a',
-        cause,
-      }),
-    );
+    const schemaError = onSchemaError.mock.calls[0][0];
+    expect(schemaError).toMatchObject({
+      name: 'ConfigSchemaError',
+      source: 'a',
+      cause,
+      message:
+        "The TypeScript configuration schema for package 'a' contains an error: Failed to generate schema",
+    });
   });
 });
