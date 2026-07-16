@@ -16,6 +16,7 @@
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { Notification } from '@backstage/plugin-notifications-common';
 import { NotificationsApi, notificationsApiRef } from '../../api';
 import { NotificationsPage } from './NotificationsPage';
@@ -57,7 +58,12 @@ describe('NotificationsPage deep linking', () => {
 
   it('loads and focuses a notification from the id query param', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[notificationsApiRef, notificationsApi]]}>
+      <TestApiProvider
+        apis={[
+          [notificationsApiRef, notificationsApi],
+          [toastApiRef, { post: jest.fn() }],
+        ]}
+      >
         <NotificationsPage />
       </TestApiProvider>,
       {
