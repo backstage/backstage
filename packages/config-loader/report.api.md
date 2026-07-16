@@ -5,6 +5,7 @@
 ```ts
 import { AppConfig } from '@backstage/config';
 import { Config } from '@backstage/config';
+import { CustomErrorBase } from '@backstage/errors';
 import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import type { JSONSchema7 } from 'json-schema';
@@ -46,9 +47,11 @@ export type ConfigSchema = {
 };
 
 // @public
-export class ConfigSchemaError extends Error {
+export class ConfigSchemaError extends CustomErrorBase {
   constructor(options: { source: string; path: string; cause: Error });
   readonly cause: Error;
+  // (undocumented)
+  name: 'ConfigSchemaError';
   readonly path: string;
   readonly source: string;
 }
