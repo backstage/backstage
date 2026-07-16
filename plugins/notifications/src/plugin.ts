@@ -15,6 +15,7 @@
  */
 import {
   createApiFactory,
+  createComponentExtension,
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
@@ -48,5 +49,22 @@ export const NotificationsPage = notificationsPlugin.provide(
     component: () =>
       import('./components/NotificationsPage').then(m => m.NotificationsPage),
     mountPoint: rootRouteRef,
+  }),
+);
+
+/**
+ * A home page card for displaying unread notifications.
+ *
+ * @public
+ */
+export const UnreadNotificationsCard = notificationsPlugin.provide(
+  createComponentExtension({
+    name: 'UnreadNotificationsCard',
+    component: {
+      lazy: () =>
+        import('./components/UnreadNotificationsCard').then(
+          m => m.UnreadNotificationsCardWithProvider,
+        ),
+    },
   }),
 );

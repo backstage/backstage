@@ -132,14 +132,12 @@ export function CardExtension<T>(props: CardExtensionComponentProps<T>) {
     title,
     ...childProps
   } = props;
-  const app = useApp();
-  const { Progress } = app.getComponents();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { t } = useTranslationRef(homeReactTranslationRef);
 
   if (Renderer) {
     return (
-      <Suspense fallback={<Progress />}>
+      <Suspense fallback={<CircularProgress />}>
         <Renderer
           {...(title && { title })}
           {...{
@@ -153,6 +151,9 @@ export function CardExtension<T>(props: CardExtensionComponentProps<T>) {
       </Suspense>
     );
   }
+
+  const app = useApp();
+  const { Progress } = app.getComponents();
 
   const cardProps = {
     divider: !!title,

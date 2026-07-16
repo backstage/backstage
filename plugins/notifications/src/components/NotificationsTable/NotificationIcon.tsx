@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { Notification } from '@backstage/plugin-notifications-common';
-import { useApp } from '@backstage/core-plugin-api';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import { iconsApiRef, useApi } from '@backstage/frontend-plugin-api';
 import { SeverityIcon } from './SeverityIcon';
 
 export const NotificationIcon = ({
@@ -22,13 +23,12 @@ export const NotificationIcon = ({
 }: {
   notification: Notification;
 }) => {
-  const app = useApp();
+  const iconsApi = useApi(iconsApiRef);
 
-  if (notification.payload.icon) {
-    const Icon = app.getSystemIcon(notification.payload.icon);
-    if (Icon) {
-      return <Icon />;
-    }
+  if (!notification.payload.icon) {
+    return <SeverityIcon severity={notification.payload.severity} />;
   }
-  return <SeverityIcon severity={notification.payload.severity} />;
+
+  const Icon = iconsApi.getIcon(notification.payload.icon) ?? SvgIcon;
+  return <Icon />;
 };

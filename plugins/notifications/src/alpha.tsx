@@ -59,6 +59,8 @@ export default createFrontendPlugin({
   extensions: [page, api],
 });
 
+export { notificationsHomeModule } from './alpha/notificationsHomeModule';
+
 import { notificationsTranslationRef as _notificationsTranslationRef } from './translation';
 
 /**
