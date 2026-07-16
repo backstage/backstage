@@ -5971,11 +5971,13 @@ __metadata:
   resolution: "@backstage/plugin-notifications@workspace:plugins/notifications"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/plugin-home-react": "workspace:^"
     "@backstage/plugin-notifications-common": "workspace:^"
     "@backstage/plugin-signals": "workspace:^"
     "@backstage/plugin-signals-react": "workspace:^"
