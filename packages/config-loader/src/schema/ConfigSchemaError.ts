@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { CustomErrorBase } from '@backstage/errors';
-
 /**
  * An error encountered while loading a TypeScript configuration schema.
  *
  * @public
  */
-export class ConfigSchemaError extends CustomErrorBase {
+export class ConfigSchemaError extends Error {
   name = 'ConfigSchemaError' as const;
 
   /** The package that provided the configuration schema. */
@@ -33,10 +31,11 @@ export class ConfigSchemaError extends CustomErrorBase {
   constructor(options: { source: string; cause: Error }) {
     const { source, cause } = options;
     super(
-      `TypeScript configuration schema for package '${source}' contains errors`,
-      cause,
+      `The TypeScript configuration schema for package '${source}' contains errors:\n${cause.message}`,
+      { cause },
     );
 
     this.source = source;
+    Error.captureStackTrace?.(this, this.constructor);
   }
 }

@@ -677,6 +677,9 @@ describe('collectConfigSchemas', () => {
       }),
     });
     expect(schemaError).not.toHaveProperty('path');
+    expect(schemaError.message).toBe(
+      `The TypeScript configuration schema for package 'unresolved' contains errors:\n${schemaError.cause.message}`,
+    );
     expect(schemaError.cause.message).toContain(
       "Cannot find name 'HumanDuration'",
     );
