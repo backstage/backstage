@@ -157,6 +157,16 @@ describe('AiResourceV1alpha1 skill validator', () => {
     await expect(skillValidator.check(entity)).resolves.toBe(true);
   });
 
+  it('accepts skill with allowedTools, license, and compatibility', async () => {
+    entity.spec = {
+      ...entity.spec,
+      allowedTools: ['Read', 'Write', 'Bash'],
+      license: 'Apache-2.0',
+      compatibility: 'Node.js 20+, macOS/Linux',
+    };
+    await expect(skillValidator.check(entity)).resolves.toBe(true);
+  });
+
   it('rejects non-skill type', async () => {
     (entity as any).spec.type = 'rule';
     await expect(skillValidator.check(entity)).rejects.toThrow(/type/);
@@ -199,6 +209,51 @@ describe('AiResourceV1alpha1 skill validator', () => {
   it('rejects dependsOn with empty strings', async () => {
     (entity as any).spec.dependsOn = [''];
     await expect(skillValidator.check(entity)).rejects.toThrow(/dependsOn/);
+  });
+
+  it('accepts missing allowedTools', async () => {
+    delete (entity as any).spec.allowedTools;
+    await expect(skillValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects allowedTools with empty strings', async () => {
+    (entity as any).spec.allowedTools = [''];
+    await expect(skillValidator.check(entity)).rejects.toThrow(/allowedTools/);
+  });
+
+  it('rejects allowedTools with wrong type', async () => {
+    (entity as any).spec.allowedTools = 'not-an-array';
+    await expect(skillValidator.check(entity)).rejects.toThrow(/allowedTools/);
+  });
+
+  it('accepts missing license', async () => {
+    delete (entity as any).spec.license;
+    await expect(skillValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty license', async () => {
+    (entity as any).spec.license = '';
+    await expect(skillValidator.check(entity)).rejects.toThrow(/license/);
+  });
+
+  it('rejects wrong license type', async () => {
+    (entity as any).spec.license = 42;
+    await expect(skillValidator.check(entity)).rejects.toThrow(/license/);
+  });
+
+  it('accepts missing compatibility', async () => {
+    delete (entity as any).spec.compatibility;
+    await expect(skillValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty compatibility', async () => {
+    (entity as any).spec.compatibility = '';
+    await expect(skillValidator.check(entity)).rejects.toThrow(/compatibility/);
+  });
+
+  it('rejects wrong compatibility type', async () => {
+    (entity as any).spec.compatibility = 42;
+    await expect(skillValidator.check(entity)).rejects.toThrow(/compatibility/);
   });
 });
 
