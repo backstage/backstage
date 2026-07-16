@@ -10,9 +10,7 @@ Please mind installing the `@backstage/plugin-notifications-backend` and `@backs
 
 ## Homepage card
 
-See [UnreadNotificationsCard documentation](./docs/UnreadNotificationsCard.md) for configuring the unread notifications card on the RHDH Homepage Dashboard.
-
-For deep-link route parameter support, see [route parameter investigation](./docs/route-params-investigation.md).
+See [UnreadNotificationsCard documentation](./docs/UnreadNotificationsCard.md) for configuring the unread notifications card on the home page, including deep links to `/notifications?id=<notificationId>`.
 
 ## Real-time notifications
 

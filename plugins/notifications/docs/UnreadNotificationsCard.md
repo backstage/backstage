@@ -171,9 +171,9 @@ Notification titles are always rendered as plain text. Any markdown or HTML in t
 - Falls back to polling every 30 seconds when the signals API is unavailable (for example in module federation setups without shared signals)
 - Refreshes when the user returns to the homepage tab (document visibility change)
 
-## Route parameter support
+## Deep linking
 
-See [route-params-investigation.md](./route-params-investigation.md) for the technical investigation of `/notifications?id=<notificationId>` deep-linking.
+Card notification titles link to `/notifications?id=<notificationId>`. The notifications page reads that query parameter, fetches the target notification when needed, and the table highlights, expands, scrolls to, and focuses the matching row.
 
 ## Troubleshooting
 

@@ -25,13 +25,15 @@ const HTML_ENTITY_MAP: Record<string, string> = {
 
 /** @public */
 export function toPlainText(text: string): string {
-  const withoutHtml = text.replace(/<[^>]*>/g, ' ');
-  const withoutEntities = withoutHtml.replace(
+  // Decode entities before stripping tags so encoded markup like
+  // `&lt;b&gt;...&lt;/b&gt;` does not reappear as HTML in the result.
+  const withoutEntities = text.replace(
     /&(?:amp|lt|gt|quot|#39|nbsp);/g,
     entity => HTML_ENTITY_MAP[entity] ?? entity,
   );
+  const withoutHtml = withoutEntities.replace(/<[^>]*>/g, ' ');
 
-  return withoutEntities
+  return withoutHtml
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
     .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
     .replace(/(\*\*|__)(.*?)\1/g, '$2')

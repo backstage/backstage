@@ -30,6 +30,10 @@ describe('toPlainText', () => {
   it('converts markdown links to plain text', () => {
     expect(toPlainText('[Open docs](https://example.com)')).toBe('Open docs');
   });
+
+  it('strips HTML tags introduced by decoding entities', () => {
+    expect(toPlainText('&lt;b&gt;Hello&lt;/b&gt; world')).toBe('Hello world');
+  });
 });
 
 describe('truncateText', () => {

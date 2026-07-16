@@ -16,5 +16,7 @@
 export * from './NotificationsSideBarItem';
 export * from './NotificationsTable';
 export * from './UserNotificationSettingsCard';
-export * from './UnreadNotificationsCard/UnreadNotificationsCard';
+// Keep UnreadNotificationsCard name for the plugin extension in ../plugin.
+export type { UnreadNotificationsCardProps } from './UnreadNotificationsCard';
+export { UnreadNotificationsCardWithProvider } from './UnreadNotificationsCard';
 export type { NotificationsPageProps } from './NotificationsPage';
