@@ -30,7 +30,7 @@ import { useSearchResultListItemExtensions } from '../../extensions';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResultState, SearchResultStateProps } from '../SearchResult';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import { useSearch } from '../../context';
+import { useOptionalSearch } from '../../context';
 import { searchReactTranslationRef } from '../../translation';
 
 /**
@@ -131,7 +131,7 @@ export const SearchResultList = (props: SearchResultListProps) => {
   const { query, renderResultItem, children, ...rest } = props;
 
   const defaultRenderResultItem = useSearchResultListItemExtensions(children);
-  const contextSearch = useSearch();
+  const contextSearch = useOptionalSearch();
   const effectiveTerm = query?.term ?? contextSearch?.term ?? '';
   const effectiveTypes = query?.types ?? contextSearch?.types ?? [];
   const effectiveFilters = query?.filters ?? contextSearch?.filters ?? {};

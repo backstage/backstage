@@ -1,0 +1,73 @@
+{
+  "name": "app",
+  "version": "0.0.0",
+  "private": true,
+  "bundled": true,
+  "backstage": {
+    "role": "frontend"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "test": "backstage-cli package test",
+    "lint": "backstage-cli package lint"
+  },
+  "dependencies": {
+    "@backstage/cli": "^0.36.4",
+    "@backstage/core-components": "^0.18.12",
+    "@backstage/core-plugin-api": "^1.12.8",
+    "@backstage/frontend-defaults": "^0.5.4",
+    "@backstage/frontend-plugin-api": "^0.17.3",
+    "@backstage/integration-react": "^1.2.20",
+    "@backstage/plugin-api-docs": "^0.14.3",
+    "@backstage/plugin-app-module-user-settings": "^0.1.0",
+    "@backstage/plugin-app-react": "^0.2.5",
+    "@backstage/plugin-app-visualizer": "^0.2.6",
+    "@backstage/plugin-auth": "^0.1.10",
+    "@backstage/plugin-catalog": "^2.0.7",
+    "@backstage/plugin-catalog-graph": "^0.6.6",
+    "@backstage/plugin-catalog-import": "^0.13.15",
+    "@backstage/plugin-kubernetes": "^0.12.21",
+    "@backstage/plugin-notifications": "^0.5.19",
+    "@backstage/plugin-org": "^0.7.6",
+    "@backstage/plugin-scaffolder": "^1.38.1",
+    "@backstage/plugin-search": "^1.7.6",
+    "@backstage/plugin-signals": "^0.0.33",
+    "@backstage/plugin-techdocs": "^1.17.8",
+    "@backstage/plugin-techdocs-module-addons-contrib": "^1.1.38",
+    "@backstage/plugin-user-settings": "^0.9.5",
+    "@backstage/ui": "^0.17.0",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router": "^6.30.2",
+    "react-router-dom": "^6.30.2"
+  },
+  "devDependencies": {
+    "@backstage/frontend-test-utils": "^0.6.2",
+    "@playwright/test": "^1.32.3",
+    "@testing-library/dom": "^9.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/react-dom": "*",
+    "cross-env": "^7.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "files": [
+    "dist"
+  ]
+}

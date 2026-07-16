@@ -104,6 +104,20 @@ export const useSearchContextCheck = () => {
 };
 
 /**
+ * @public
+ *
+ * React hook which provides the search context if available, without
+ * throwing when used outside a SearchContextProvider.
+ */
+export const useOptionalSearch = (): SearchContextValue | undefined => {
+  const context = useContext(SearchContext);
+  if (!context) {
+    return undefined;
+  }
+  return context.atVersion(1);
+};
+
+/**
  * The initial state of `SearchContextProvider`.
  *
  */

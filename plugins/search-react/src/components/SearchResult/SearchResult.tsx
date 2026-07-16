@@ -27,7 +27,7 @@ import { useApi, AnalyticsContext } from '@backstage/core-plugin-api';
 import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-common';
 
 import { searchApiRef } from '../../api';
-import { useSearch } from '../../context';
+import { useOptionalSearch } from '../../context';
 import {
   SearchResultListItemExtensions,
   SearchResultListItemExtensionsProps,
@@ -71,8 +71,8 @@ export type SearchResultContextProps = {
  */
 export const SearchResultContext = (props: SearchResultContextProps) => {
   const { children } = props;
-  const context = useSearch();
-  const { result: state, ...query } = context;
+  const context = useOptionalSearch();
+  const { result: state = { loading: true }, ...query } = context ?? {};
   return children(state, query);
 };
 
@@ -198,10 +198,10 @@ export const SearchResultComponent = (props: SearchResultProps) => {
     ...rest
   } = props;
 
-  const context = useSearch();
-  const effectiveTerm = query?.term ?? context.term ?? '';
-  const effectiveTypes = query?.types ?? context.types ?? [];
-  const effectiveFilters = query?.filters ?? context.filters ?? {};
+  const context = useOptionalSearch();
+  const effectiveTerm = query?.term ?? context?.term ?? '';
+  const effectiveTypes = query?.types ?? context?.types ?? [];
+  const effectiveFilters = query?.filters ?? context?.filters ?? {};
   const hasQuery =
     Boolean(effectiveTerm) ||
     effectiveTypes.length > 0 ||
