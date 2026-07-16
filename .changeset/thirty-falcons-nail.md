@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Fixed duplicate key errors in catalog entity search
+Fixed duplicate casing-conflict key names in catalog entity search error messages.
