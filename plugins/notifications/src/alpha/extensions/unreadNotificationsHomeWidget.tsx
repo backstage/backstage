@@ -15,10 +15,8 @@
  */
 
 import { compatWrapper } from '@backstage/core-compat-api';
-import {
-  HomePageWidgetBlueprint,
-  type RendererProps,
-} from '@backstage/plugin-home-react/alpha';
+import { type RendererProps } from '@backstage/plugin-home-react';
+import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
 const defaultCardLayout = {
   width: {

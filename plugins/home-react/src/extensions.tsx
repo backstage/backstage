@@ -15,6 +15,7 @@
  */
 
 import { useState, Suspense } from 'react';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { InfoCard } from '@backstage/core-components';
@@ -121,7 +122,11 @@ type CardExtensionComponentProps<T> = CardExtensionProps<T> &
     overrideTitle?: string;
   };
 
-export function CardExtension<T>(props: CardExtensionComponentProps<T>) {
+function CardExtensionWithCustomRenderer<T>(
+  props: CardExtensionComponentProps<T> & {
+    Renderer: NonNullable<ComponentRenderer['Renderer']>;
+  },
+) {
   const {
     Renderer,
     Content,
@@ -132,28 +137,37 @@ export function CardExtension<T>(props: CardExtensionComponentProps<T>) {
     title,
     ...childProps
   } = props;
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const { t } = useTranslationRef(homeReactTranslationRef);
 
-  if (Renderer) {
-    return (
-      <Suspense fallback={<CircularProgress />}>
-        <Renderer
-          {...(title && { title })}
-          {...{
-            Content,
-            ...(Actions ? { Actions } : {}),
-            ...(Settings && !isCustomizable ? { Settings } : {}),
-            ...(ContextProvider ? { ContextProvider } : {}),
-            ...childProps,
-          }}
-        />
-      </Suspense>
-    );
-  }
+  return (
+    <Suspense fallback={<CircularProgress />}>
+      <Renderer
+        {...(title && { title })}
+        {...{
+          Content,
+          ...(Actions ? { Actions } : {}),
+          ...(Settings && !isCustomizable ? { Settings } : {}),
+          ...(ContextProvider ? { ContextProvider } : {}),
+          ...childProps,
+        }}
+      />
+    </Suspense>
+  );
+}
 
+function DefaultCardExtension<T>(props: CardExtensionComponentProps<T>) {
+  const {
+    Content,
+    Settings,
+    Actions,
+    ContextProvider,
+    isCustomizable,
+    title,
+    ...childProps
+  } = props;
   const app = useApp();
   const { Progress } = app.getComponents();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { t } = useTranslationRef(homeReactTranslationRef);
 
   const cardProps = {
     divider: !!title,
@@ -200,4 +214,14 @@ export function CardExtension<T>(props: CardExtensionComponentProps<T>) {
       )}
     </Suspense>
   );
+}
+
+export function CardExtension<T>(props: CardExtensionComponentProps<T>) {
+  if (props.Renderer) {
+    return (
+      <CardExtensionWithCustomRenderer {...props} Renderer={props.Renderer} />
+    );
+  }
+
+  return <DefaultCardExtension {...props} />;
 }
