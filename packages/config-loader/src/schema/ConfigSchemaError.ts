@@ -32,7 +32,7 @@ export class ConfigSchemaError extends Error {
     const { source, cause } = options;
     const causeMessage = cause.message.replace(/\s*\r?\n\s*/g, ' ').trim();
     super(
-      `The TypeScript configuration schema for package '${source}' contains an error — ${causeMessage}`,
+      `The TypeScript configuration schema for package '${source}' contains an error - ${causeMessage}`,
       { cause },
     );
 

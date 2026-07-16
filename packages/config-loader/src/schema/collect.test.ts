@@ -673,7 +673,7 @@ describe('collectConfigSchemas', () => {
       });
       expect(schemaError).not.toHaveProperty('path');
       expect(schemaError.message).toBe(
-        `The TypeScript configuration schema for package 'unresolved' contains an error — ${schemaError.cause.message}`,
+        `The TypeScript configuration schema for package 'unresolved' contains an error - ${schemaError.cause.message}`,
       );
       expect(schemaError.message).not.toContain('\n');
     }
@@ -733,7 +733,7 @@ describe('collectConfigSchemas', () => {
       source: 'a',
       cause,
       message:
-        "The TypeScript configuration schema for package 'a' contains an error — Failed to generate schema",
+        "The TypeScript configuration schema for package 'a' contains an error - Failed to generate schema",
     });
   });
 });
