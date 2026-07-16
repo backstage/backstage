@@ -42,6 +42,10 @@ interface ProductionPackOptions {
 
 type ConfigSchemaValue = Record<string, unknown>;
 
+type CompilePackageConfigSchemasOptions = {
+  onSchemaError?: (error: Error) => void;
+};
+
 type PackageJsonWithConfigSchema = BackstagePackageJson & {
   configSchema?: string | ConfigSchemaValue;
 };
@@ -55,6 +59,7 @@ function getTypeScriptConfigSchemaPath(pkg: BackstagePackageJson) {
 
 export async function compilePackageConfigSchemas(
   packages: Pick<PackageGraphNode, 'name' | 'dir' | 'packageJson'>[],
+  options: CompilePackageConfigSchemasOptions = {},
 ) {
   const schemaPackages = packages.flatMap(pkg => {
     const schemaPath = getTypeScriptConfigSchemaPath(pkg.packageJson);
@@ -70,6 +75,7 @@ export async function compilePackageConfigSchemas(
       resolvePath(pkg.dir, 'package.json'),
     ),
     excludePackageDependencies: true,
+    onSchemaError: options.onSchemaError,
   });
   const serialized = schema.serialize() as {
     schemas: Array<{
@@ -88,6 +94,13 @@ export async function compilePackageConfigSchemas(
       resolvePath(process.cwd(), entry.path)
     ) {
       result.set(entry.packageName, entry.value);
+    }
+  }
+  if (options.onSchemaError) {
+    for (const { name } of schemaPackages) {
+      if (!result.has(name)) {
+        result.set(name, {});
+      }
     }
   }
   return result;

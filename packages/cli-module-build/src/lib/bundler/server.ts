@@ -82,7 +82,6 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     targetDir: options.targetDir,
     fromPackage: name,
     withFilteredKeys: true,
-    onSchemaError: error => console.warn(error.message),
     watch(appConfigs) {
       latestFrontendAppConfigs = appConfigs;
 

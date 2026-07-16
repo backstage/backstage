@@ -218,4 +218,39 @@ describe('productionPack', () => {
       ]),
     ).rejects.toThrow("Cannot find module './missing'");
   });
+
+  it('should handle invalid TypeScript schemas when preparing a bundle', async () => {
+    mockDir.setContent({
+      package: {
+        'package.json': JSON.stringify(packageJson),
+        'config.d.ts': `
+          export interface Config { value?: Missing }
+        `,
+      },
+    });
+    process.chdir(mockDir.path);
+
+    const onSchemaError = jest.fn();
+    const schemas = await compilePackageConfigSchemas(
+      [
+        {
+          name: packageJson.name,
+          dir: mockDir.resolve('package'),
+          packageJson,
+        },
+      ],
+      { onSchemaError },
+    );
+
+    expect(onSchemaError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining("Cannot find name 'Missing'"),
+      }),
+    );
+    expect(schemas.get(packageJson.name)).toEqual({
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      type: 'object',
+      properties: { value: {} },
+    });
+  });
 });

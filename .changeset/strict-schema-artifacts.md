@@ -2,4 +2,4 @@
 '@backstage/cli-module-build': patch
 ---
 
-Frontend builds and packaged or bundled plugins continue to validate TypeScript configuration schemas strictly, preventing invalid schemas from being included in production artifacts.
+Package preparation for publishing validates TypeScript configuration schemas strictly, preventing invalid schemas from being published. Other build and bundle paths report schema errors as warnings.
