@@ -31,7 +31,7 @@ export class ConfigSchemaError extends CustomErrorBase {
   readonly path: string;
 
   /** The underlying error that caused schema loading to fail. */
-  override readonly cause: Error;
+  declare readonly cause: Error;
 
   constructor(options: { source: string; path: string; cause: Error }) {
     const { source, path, cause } = options;
@@ -42,6 +42,5 @@ export class ConfigSchemaError extends CustomErrorBase {
 
     this.source = source;
     this.path = path;
-    this.cause = cause;
   }
 }
