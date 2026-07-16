@@ -1,1 +1,1 @@
-Allow callers to warn and continue on TypeScript configuration schema errors while keeping strict loading by default
+Errors in TypeScript configuration schema definitions no longer prevent apps from building or starting and are logged as warnings instead
