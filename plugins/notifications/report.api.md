@@ -198,6 +198,7 @@ export type NotificationsTableProps = Pick<
   isLoading?: boolean;
   isUnread: boolean;
   notifications?: Notification_2[];
+  highlightedNotificationId?: string;
   onUpdate: () => void;
   setContainsText: (search: string) => void;
   pageSize: number;
@@ -268,6 +269,25 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'notificationsPage.tableTitle.read_other': 'Read notifications ({{count}})';
   }
 >;
+
+// @public
+export const UnreadNotificationsCard: (
+  props: UnreadNotificationsCardProps,
+) => JSX_2.Element;
+
+// @public (undocumented)
+export type UnreadNotificationsCardProps = {
+  maxMessages?: number;
+  charLimit?: number;
+  initialCount?: number;
+  maxChars?: number;
+  descriptionMaxChars?: number;
+};
+
+// @public
+export const UnreadNotificationsCardWithProvider: (
+  props: UnreadNotificationsCardProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type UpdateNotificationsOptions = {
