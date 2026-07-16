@@ -16,6 +16,7 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { loadConfigSchema } from './load';
+import { ConfigSchemaError } from './ConfigSchemaError';
 
 // cwd must be restored
 const origDir = process.cwd();
@@ -149,9 +150,14 @@ describe('loadConfigSchema', () => {
 
     expect(onSchemaError).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: expect.stringContaining("Cannot find name 'Missing'"),
+        source: 'a',
+        path: 'config.d.ts',
+        cause: expect.objectContaining({
+          message: expect.stringContaining("Cannot find name 'Missing'"),
+        }),
       }),
     );
+    expect(onSchemaError.mock.calls[0][0]).toBeInstanceOf(ConfigSchemaError);
     expect(schema.serialize().schemas).toEqual([
       expect.objectContaining({
         value: expect.objectContaining({

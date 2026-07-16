@@ -18,8 +18,10 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
 import { collectConfigSchemas, internal } from './collect';
 import { compileConfigSchemas } from './compile';
+import { ConfigSchemaError } from './ConfigSchemaError';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
+import { SchemaGenerator } from 'ts-json-schema-generator';
 
 const mockSchema = {
   type: 'object',
@@ -461,13 +463,17 @@ describe('collectConfigSchemas', () => {
     });
     process.chdir(mockDir.path);
 
-    await expect(collectConfigSchemas(['a'], [])).rejects.toThrow(
-      `Invalid schema in ${path.join(
-        'node_modules',
-        'a',
-        'schema.d.ts',
-      )}, missing Config export`,
-    );
+    await expect(collectConfigSchemas(['a'], [])).rejects.toMatchObject({
+      name: 'ConfigSchemaError',
+      source: 'a',
+      path: path.join('node_modules', 'a', 'schema.d.ts'),
+      message: expect.stringContaining(
+        'The schema does not export a Config type',
+      ),
+      cause: expect.objectContaining({
+        message: 'The schema does not export a Config type',
+      }),
+    });
   });
 
   it('should resolve imported types and namespace recursive definitions', async () => {
@@ -658,15 +664,27 @@ describe('collectConfigSchemas', () => {
       onSchemaError,
     });
 
-    expect(onSchemaError).toHaveBeenCalledWith(
-      expect.objectContaining({
+    expect(onSchemaError).toHaveBeenCalledTimes(1);
+    const schemaError = onSchemaError.mock.calls[0][0];
+    expect(schemaError).toBeInstanceOf(ConfigSchemaError);
+    expect(schemaError).toMatchObject({
+      name: 'ConfigSchemaError',
+      source: 'unresolved',
+      path: path.join('node_modules', 'unresolved', 'schema.d.ts'),
+      message: expect.stringContaining(
+        "TypeScript configuration schema for package 'unresolved' at " +
+          `${path.join(
+            'node_modules',
+            'unresolved',
+            'schema.d.ts',
+          )} contains errors`,
+      ),
+      cause: expect.objectContaining({
         message: expect.stringContaining("Cannot find module './missing'"),
       }),
-    );
-    expect(onSchemaError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: expect.stringContaining("Cannot find name 'HumanDuration'"),
-      }),
+    });
+    expect(schemaError.cause.message).toContain(
+      "Cannot find name 'HumanDuration'",
     );
     expect(schemas).toEqual([
       expect.objectContaining({
@@ -684,6 +702,53 @@ describe('collectConfigSchemas', () => {
 
     await expect(collectConfigSchemas(['unresolved'], [])).rejects.toThrow(
       "Cannot find module './missing'",
+    );
+  });
+
+  it('should report schema generation errors with their source location', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            version: '1.0.0',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `export interface Config { value?: string }`,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    const cause = Object.assign(new Error('Failed to generate schema'), {
+      diagnostic: {
+        file: {
+          fileName: path.join(
+            process.cwd(),
+            'node_modules',
+            'a',
+            'imported.d.ts',
+          ),
+        },
+      },
+    });
+    jest
+      .spyOn(SchemaGenerator.prototype, 'createSchemaFromNodes')
+      .mockImplementation(() => {
+        throw cause;
+      });
+    const onSchemaError = jest.fn();
+
+    await expect(
+      collectConfigSchemas(['a'], [], { onSchemaError }),
+    ).resolves.toEqual([]);
+    expect(onSchemaError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'ConfigSchemaError',
+        source: 'a',
+        path: path.join('node_modules', 'a', 'imported.d.ts'),
+        cause,
+      }),
     );
   });
 });

@@ -26,6 +26,7 @@ import {
   CONFIG_VISIBILITIES,
 } from './types';
 import { normalizeAjvPath } from './utils';
+import type { ConfigSchemaError } from './ConfigSchemaError';
 
 /**
  * Options that control the loading of configuration schema files in the backend.
@@ -44,14 +45,14 @@ export type LoadConfigSchemaOptions =
            */
           excludePackageDependencies?: boolean;
           /**
-           * Receives TypeScript configuration schema errors and allows schema
+           * Receives `ConfigSchemaError` instances and allows TypeScript schema
            * loading to continue. Unresolved types are treated as unconstrained
            * values, while schemas that cannot be generated are omitted.
            *
            * Without this callback, TypeScript configuration schema errors are
            * thrown.
            */
-          onSchemaError?: (error: Error) => void;
+          onSchemaError?: (error: ConfigSchemaError) => void;
         }
       | {
           serialized: JsonObject;

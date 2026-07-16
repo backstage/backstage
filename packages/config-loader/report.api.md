@@ -46,6 +46,14 @@ export type ConfigSchema = {
 };
 
 // @public
+export class ConfigSchemaError extends Error {
+  constructor(options: { source: string; path: string; cause: Error });
+  readonly cause: Error;
+  readonly path: string;
+  readonly source: string;
+}
+
+// @public
 export type ConfigSchemaProcessingOptions = {
   visibility?: ConfigVisibility[];
   ignoreSchemaErrors?: boolean;
@@ -189,7 +197,7 @@ export type LoadConfigSchemaOptions = (
       dependencies: string[];
       packagePaths?: string[];
       excludePackageDependencies?: boolean;
-      onSchemaError?: (error: Error) => void;
+      onSchemaError?: (error: ConfigSchemaError) => void;
     }
   | {
       serialized: JsonObject;

@@ -19,6 +19,7 @@ import npmPackList from 'npm-packlist';
 import { resolve as resolvePath, posix as posixPath } from 'node:path';
 import { BackstagePackageJson, PackageGraphNode } from '@backstage/cli-node';
 import { loadConfigSchema } from '@backstage/config-loader';
+import type { ConfigSchemaError } from '@backstage/config-loader';
 import { readEntryPoints } from '../entryPoints';
 import { getEntryPointDefaultFeatureType } from '../typeDistProject';
 import { Project } from 'ts-morph';
@@ -43,7 +44,7 @@ interface ProductionPackOptions {
 type ConfigSchemaValue = Record<string, unknown>;
 
 type CompilePackageConfigSchemasOptions = {
-  onSchemaError?: (error: Error) => void;
+  onSchemaError?: (error: ConfigSchemaError) => void;
 };
 
 type PackageJsonWithConfigSchema = BackstagePackageJson & {

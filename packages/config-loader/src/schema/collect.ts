@@ -27,6 +27,7 @@ import {
 } from 'node:path';
 import { ConfigSchemaPackageEntry } from './types';
 import type { JsonObject } from '@backstage/types';
+import { ConfigSchemaError } from './ConfigSchemaError';
 
 type Item = {
   name?: string;
@@ -36,7 +37,7 @@ type Item = {
 
 type CollectConfigSchemasOptions = {
   excludePackageDependencies?: boolean;
-  onSchemaError?: (error: Error) => void;
+  onSchemaError?: (error: ConfigSchemaError) => void;
 };
 
 const req =
@@ -264,7 +265,7 @@ function parseNestedSchemaAnnotation(annotation: unknown) {
 
 function handleSchemaError(
   options: CollectConfigSchemasOptions | undefined,
-  error: Error,
+  error: ConfigSchemaError,
 ) {
   if (!options?.onSchemaError) {
     throw error;
@@ -312,30 +313,57 @@ async function compileTsSchemas(
   };
 
   const program = ts.createProgram(rootNames, compilerOptions);
-  const diagnostics = [
+  const sharedDiagnostics = [
     ...program.getOptionsDiagnostics(),
     ...program.getGlobalDiagnostics(),
-    ...rootNames.flatMap(rootName => {
-      const sourceFile = program.getSourceFile(rootName);
-      return sourceFile
+  ];
+  entries.forEach(({ path, packageName }, index) => {
+    const sourceFile = program.getSourceFile(rootNames[index]);
+    const diagnostics = [
+      ...(index === 0 ? sharedDiagnostics : []),
+      ...(sourceFile
         ? [
             ...program.getSyntacticDiagnostics(sourceFile),
             ...program.getSemanticDiagnostics(sourceFile),
           ]
-        : [];
-    }),
-  ];
-  if (diagnostics.length > 0) {
-    const message = ts.formatDiagnostics(diagnostics, {
-      getCanonicalFileName: fileName => fileName,
-      getCurrentDirectory: () => currentDir,
-      getNewLine: () => '\n',
-    });
-    handleSchemaError(
-      options,
-      new Error(`TypeScript configuration schema contains errors:\n${message}`),
-    );
-  }
+        : []),
+    ];
+    if (diagnostics.length === 0) {
+      return;
+    }
+
+    const diagnosticsByPath = new Map<string, TypeScript.Diagnostic[]>();
+    for (const diagnostic of diagnostics) {
+      const diagnosticPath = diagnostic.file
+        ? relativePath(currentDir, diagnostic.file.fileName)
+        : path;
+      const pathDiagnostics = diagnosticsByPath.get(diagnosticPath);
+      if (pathDiagnostics) {
+        pathDiagnostics.push(diagnostic);
+      } else {
+        diagnosticsByPath.set(diagnosticPath, [diagnostic]);
+      }
+    }
+    for (const [diagnosticPath, pathDiagnostics] of diagnosticsByPath) {
+      const cause = new Error(
+        ts
+          .formatDiagnostics(pathDiagnostics, {
+            getCanonicalFileName: fileName => fileName,
+            getCurrentDirectory: () => currentDir,
+            getNewLine: () => '\n',
+          })
+          .trimEnd(),
+      );
+      handleSchemaError(
+        options,
+        new ConfigSchemaError({
+          source: packageName,
+          path: diagnosticPath,
+          cause,
+        }),
+      );
+    }
+  });
 
   const generatorConfig = {
     ...DEFAULT_CONFIG,
@@ -407,7 +435,11 @@ async function compileTsSchemas(
   const tsSchemas = entries.flatMap(({ path, packageName }, index) => {
     const sourceFile = program.getSourceFile(rootNames[index]);
     if (!sourceFile) {
-      throw new Error(`Invalid schema in ${path}, missing Config export`);
+      throw new ConfigSchemaError({
+        source: packageName,
+        path,
+        cause: new Error('The schema source file could not be loaded'),
+      });
     }
     const configNode = sourceFile.statements.find(
       statement =>
@@ -416,7 +448,11 @@ async function compileTsSchemas(
         statement.name.text === 'Config',
     );
     if (!configNode) {
-      throw new Error(`Invalid schema in ${path}, missing Config export`);
+      throw new ConfigSchemaError({
+        source: packageName,
+        path,
+        cause: new Error('The schema does not export a Config type'),
+      });
     }
 
     const namespace = createHash('sha256')
@@ -435,12 +471,26 @@ async function compileTsSchemas(
       return [{ path, value, packageName }];
     } catch (error) {
       const cause = toError(error);
+      let errorPath = path;
+      if (
+        'diagnostic' in cause &&
+        cause.diagnostic &&
+        typeof cause.diagnostic === 'object' &&
+        'file' in cause.diagnostic &&
+        cause.diagnostic.file &&
+        typeof cause.diagnostic.file === 'object' &&
+        'fileName' in cause.diagnostic.file &&
+        typeof cause.diagnostic.file.fileName === 'string'
+      ) {
+        errorPath = relativePath(currentDir, cause.diagnostic.file.fileName);
+      }
       handleSchemaError(
         options,
-        new Error(
-          `Unable to generate TypeScript configuration schema at ${path}: ${cause.message}`,
-          { cause },
-        ),
+        new ConfigSchemaError({
+          source: packageName,
+          path: errorPath,
+          cause,
+        }),
       );
       return [];
     }
