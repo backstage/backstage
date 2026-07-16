@@ -37,6 +37,7 @@ export class ConfigSchemaError extends Error {
     );
 
     this.source = source;
+    this.cause = cause;
     Error.captureStackTrace?.(this, this.constructor);
   }
 }
