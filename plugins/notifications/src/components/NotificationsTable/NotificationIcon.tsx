@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { Notification } from '@backstage/plugin-notifications-common';
-
 import { iconsApiRef, useApi } from '@backstage/frontend-plugin-api';
 import { SeverityIcon } from './SeverityIcon';
 
@@ -24,8 +23,11 @@ function NotificationIconWithCustomIcon({
   notification: Notification;
 }) {
   const iconsApi = useApi(iconsApiRef);
-  const Icon = iconsApi.getIcon(notification.payload.icon!) ?? SvgIcon;
-  return <Icon />;
+  const Icon = iconsApi.getIcon(notification.payload.icon!);
+  if (Icon) {
+    return <Icon />;
+  }
+  return <SeverityIcon severity={notification.payload.severity} />;
 }
 
 export const NotificationIcon = ({

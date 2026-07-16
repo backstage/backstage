@@ -65,6 +65,8 @@
     "@backstage/plugin-signals-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/ui": "workspace:^",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
     "@remixicon/react": ">=4.6.0 <4.9.0",
     "lodash": "^4.17.21",
     "notistack": "^3.0.1",
