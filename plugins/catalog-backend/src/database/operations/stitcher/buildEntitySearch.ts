@@ -216,10 +216,10 @@ export function buildEntitySearch(
   const keys = new Set(raw.map(r => r.key));
   const lowerKeys = new Set(raw.map(r => r.key.toLocaleLowerCase('en-US')));
   if (keys.size !== lowerKeys.size) {
-    const difference = [];
+    const difference: string[] = [];
     for (const key of keys) {
       const lower = key.toLocaleLowerCase('en-US');
-      if (!lowerKeys.delete(lower)) {
+      if (!lowerKeys.delete(lower) && !difference.includes(lower)) {
         difference.push(lower);
       }
     }
