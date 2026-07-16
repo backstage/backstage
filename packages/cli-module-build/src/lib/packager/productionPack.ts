@@ -97,6 +97,7 @@ export async function compilePackageConfigSchemas(
       result.set(entry.packageName, entry.value);
     }
   }
+  // Use an unconstrained fallback so productionPack doesn't retry omitted schemas in strict mode.
   if (options.onSchemaError) {
     for (const { name } of schemaPackages) {
       if (!result.has(name)) {
