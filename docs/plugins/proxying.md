@@ -136,7 +136,7 @@ To fix the issue with missing request body passed by proxy to the target, set `p
 
 In that case, mind setting the `Content-Type` header to either `application/json` or `application/x-www-form-urlencoded`.
 
-### Proxy Extension Endpoint
+### Proxy Endpoints Extension Point
 
 The proxy plugin additionally supports a `proxyEndpointsExtensionPoint` which a
 proxy plugin module can utilize in order to programmatically register
@@ -163,7 +163,8 @@ export const proxyModuleDemoAdditionalEndpoints = createBackendModule({
         proxyEndpoints: proxyEndpointsExtensionPoint,
       },
       async init({ proxyEndpoints }) {
-        const largerExampleAuth: string = /* exercise for the reader */;
+        // Replace with however your setup obtains the credential.
+        const largerExampleAuth = 'Bearer <token>';
         proxyEndpoints.addProxyEndpoints({
           '/simple-example': 'http://simple.example.com:8080',
           '/larger-example/v1': {
