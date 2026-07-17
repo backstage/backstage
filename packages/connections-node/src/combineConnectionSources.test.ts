@@ -15,7 +15,7 @@
  */
 import { mockServices } from '@backstage/backend-test-utils';
 import { combineConnectionSources } from './combineConnectionSources';
-import { RootConnection } from '../api/Connection';
+import type { RootConnection } from './types';
 
 const githubTokenAuth = (token: string) =>
   ({ method: 'token', token } as unknown as RootConnection['auth'][number]);

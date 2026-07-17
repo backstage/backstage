@@ -19,15 +19,14 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { DefaultRootSystemMetadataService } from './lib/DefaultRootSystemMetadataService';
-import { rootSystemMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * Metadata about an entire Backstage system, a collection of Backstage instances.
  *
- * @alpha
+ * @public
  */
 export const rootSystemMetadataServiceFactory = createServiceFactory({
-  service: rootSystemMetadataServiceRef,
+  service: coreServices.rootSystemMetadata,
   deps: {
     logger: coreServices.rootLogger,
     config: coreServices.rootConfig,

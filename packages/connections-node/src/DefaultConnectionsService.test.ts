@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { mockServices } from '@backstage/backend-test-utils';
-import { DefaultConnectionsService } from './DefaultConnectionService';
+import { DefaultConnectionsService } from './DefaultConnectionsService';
 import { JsonArray } from '@backstage/types';
 
 const mockConnectionsConfig = (connections: JsonArray) =>

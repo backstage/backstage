@@ -2118,6 +2118,7 @@ __metadata:
     "@backstage/connections": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
+    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -2943,17 +2944,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/connections@workspace:^, @backstage/connections@workspace:packages/connections":
+"@backstage/connections-node@workspace:packages/connections-node":
   version: 0.0.0-use.local
-  resolution: "@backstage/connections@workspace:packages/connections"
+  resolution: "@backstage/connections-node@workspace:packages/connections-node"
   dependencies:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/connections": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     zod: "npm:^3.25.76 || ^4.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/connections@workspace:^, @backstage/connections@workspace:packages/connections":
+  version: 0.0.0-use.local
+  resolution: "@backstage/connections@workspace:packages/connections"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5191,8 +5204,11 @@ __metadata:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
     "@backstage/connections": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
+    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5205,13 +5221,16 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
     "@backstage/connections": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": "npm:^4.17.6"
+    "@types/supertest": "npm:^2.0.8"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
+    supertest: "npm:^7.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft

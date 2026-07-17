@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { z } from 'zod/v4';
+import { InputError } from '@backstage/errors';
 import { createConnectionType } from './createConnectionType';
 
 describe('createConnectionType', () => {
@@ -32,19 +33,47 @@ describe('createConnectionType', () => {
     });
 
     expect(SingleAuthType.type).toBe('single');
-    expect(SingleAuthType.authMethods).toEqual([tokenAuth]);
+    expect(SingleAuthType.authMethods).toEqual([
+      expect.objectContaining({ method: 'token', title: 'Token' }),
+    ]);
+    expect(
+      SingleAuthType.authMethods[0].configSchema.schema().schema,
+    ).toMatchObject({
+      type: 'object',
+      properties: { token: { type: 'string' } },
+    });
+    expect(
+      SingleAuthType.authMethods[0].configSchema.parse({ token: 'abc' }).token,
+    ).toBe('abc');
+    expect(SingleAuthType.configSchema.schema().schema).toMatchObject({
+      type: 'object',
+      properties: {
+        type: { const: 'single' },
+        host: { type: 'string' },
+        auth: { type: 'array' },
+      },
+      additionalProperties: false,
+    });
+    expect(SingleAuthType.configSchema.schema().schema.required).toEqual(
+      expect.arrayContaining(['host', 'type', 'auth']),
+    );
+    expect(SingleAuthType.configSchema.schema().schema.required).toHaveLength(
+      3,
+    );
+    expect(SingleAuthType.configSchema.parse).toBeInstanceOf(Function);
 
-    expect(() =>
-      SingleAuthType.schema.parse({
-        type: 'single',
-        host: 'example.com',
-        auth: [{ method: 'token', token: 'abc' }],
-      }),
-    ).not.toThrow();
+    const parsed = SingleAuthType.configSchema.parse({
+      type: 'single',
+      host: 'example.com',
+      auth: [{ method: 'token', token: 'abc' }],
+    });
+    expect(parsed.type).toBe('single');
+    expect(parsed.host).toBe('example.com');
+    expect(parsed.auth[0].token).toBe('abc');
 
     // Wrong literal type should fail.
     expect(() =>
-      SingleAuthType.schema.parse({
+      SingleAuthType.configSchema.parse({
         type: 'other',
         host: 'example.com',
         auth: [{ method: 'token', token: 'abc' }],
@@ -53,7 +82,7 @@ describe('createConnectionType', () => {
 
     // Missing required config field should fail.
     expect(() =>
-      SingleAuthType.schema.parse({
+      SingleAuthType.configSchema.parse({
         type: 'single',
         auth: [{ method: 'token', token: 'abc' }],
       }),
@@ -61,7 +90,7 @@ describe('createConnectionType', () => {
 
     // Auth method not in the list should fail.
     expect(() =>
-      SingleAuthType.schema.parse({
+      SingleAuthType.configSchema.parse({
         type: 'single',
         host: 'example.com',
         auth: [{ method: 'other', token: 'abc' }],
@@ -70,7 +99,7 @@ describe('createConnectionType', () => {
 
     // Unknown top-level fields should fail.
     expect(() =>
-      SingleAuthType.schema.parse({
+      SingleAuthType.configSchema.parse({
         type: 'single',
         host: 'example.com',
         host2: 'example.com',
@@ -80,7 +109,7 @@ describe('createConnectionType', () => {
 
     // Optional title field should be accepted.
     expect(
-      SingleAuthType.schema.parse({
+      SingleAuthType.configSchema.parse({
         type: 'single',
         host: 'example.com',
         title: 'My Production Instance',
@@ -90,7 +119,7 @@ describe('createConnectionType', () => {
 
     // Omitting title should still work.
     expect(
-      SingleAuthType.schema.parse({
+      SingleAuthType.configSchema.parse({
         type: 'single',
         host: 'example.com',
         auth: [{ method: 'token', token: 'abc' }],
@@ -99,7 +128,7 @@ describe('createConnectionType', () => {
 
     // Optional auth method title field should be accepted.
     expect(
-      SingleAuthType.schema.parse({
+      SingleAuthType.configSchema.parse({
         type: 'single',
         host: 'example.com',
         auth: [{ method: 'token', title: 'Production Token', token: 'abc' }],
@@ -108,7 +137,7 @@ describe('createConnectionType', () => {
 
     // Auth method title must not be empty when provided.
     expect(() =>
-      SingleAuthType.schema.parse({
+      SingleAuthType.configSchema.parse({
         type: 'single',
         host: 'example.com',
         auth: [{ method: 'token', title: '', token: 'abc' }],
@@ -136,6 +165,72 @@ describe('createConnectionType', () => {
     });
   });
 
+  it('wraps schema validation failures in an InputError', () => {
+    const connectionType = createConnectionType({
+      type: 'wrapped-error',
+      title: 'Wrapped Error',
+      configSchema: z.object({ host: z.string() }),
+      authMethods: [
+        {
+          method: 'none',
+          title: 'None',
+          configSchema: z.object({}),
+        },
+      ],
+    });
+
+    let error: unknown;
+    try {
+      connectionType.configSchema.parse({
+        type: 'wrapped-error',
+        auth: [{ method: 'none' }],
+      });
+    } catch (caughtError) {
+      error = caughtError;
+    }
+
+    expect(error).toBeInstanceOf(InputError);
+    expect(error).toMatchObject({
+      message: expect.stringContaining(
+        'Invalid configuration for connection type "wrapped-error"',
+      ),
+      cause: expect.any(z.ZodError),
+    });
+  });
+
+  it('does not wrap unexpected schema errors', () => {
+    const expectedError = new Error('Unexpected schema error');
+    const connectionType = createConnectionType({
+      type: 'unexpected-error',
+      title: 'Unexpected Error',
+      configSchema: z.object({
+        host: z.string().transform(() => {
+          throw expectedError;
+        }),
+      }),
+      authMethods: [
+        {
+          method: 'none',
+          title: 'None',
+          configSchema: z.object({}),
+        },
+      ],
+    });
+
+    let error: unknown;
+    try {
+      connectionType.configSchema.parse({
+        type: 'unexpected-error',
+        host: 'example.com',
+        auth: [{ method: 'none' }],
+      });
+    } catch (caughtError) {
+      error = caughtError;
+    }
+
+    expect(error).toBe(expectedError);
+  });
+
   it('builds a multi-auth-method connection type that discriminates on method', () => {
     const MultiAuthType = createConnectionType({
       type: 'multi',
@@ -158,9 +253,26 @@ describe('createConnectionType', () => {
       ],
     });
 
+    const tokenAuthMethod = MultiAuthType.authMethods.find(
+      authMethod => authMethod.method === 'token',
+    );
+    expect(tokenAuthMethod?.configSchema.parse({ token: 'abc' }).token).toBe(
+      'abc',
+    );
+
+    const appAuthMethod = MultiAuthType.authMethods.find(
+      authMethod => authMethod.method === 'app',
+    );
+    expect(
+      appAuthMethod?.configSchema.parse({
+        appId: 1,
+        privateKey: 'pk',
+      }).appId,
+    ).toBe(1);
+
     // Both auth methods accepted in the same connection.
     expect(() =>
-      MultiAuthType.schema.parse({
+      MultiAuthType.configSchema.parse({
         type: 'multi',
         host: 'example.com',
         auth: [
@@ -172,7 +284,7 @@ describe('createConnectionType', () => {
 
     // Auth config must match the discriminator.
     expect(() =>
-      MultiAuthType.schema.parse({
+      MultiAuthType.configSchema.parse({
         type: 'multi',
         host: 'example.com',
         auth: [{ method: 'app', token: 'abc' }],
@@ -181,7 +293,7 @@ describe('createConnectionType', () => {
 
     // Unknown discriminator should fail.
     expect(() =>
-      MultiAuthType.schema.parse({
+      MultiAuthType.configSchema.parse({
         type: 'multi',
         host: 'example.com',
         auth: [{ method: 'oauth' }],
@@ -190,7 +302,7 @@ describe('createConnectionType', () => {
 
     // Empty auth array is allowed by the array schema.
     expect(() =>
-      MultiAuthType.schema.parse({
+      MultiAuthType.configSchema.parse({
         type: 'multi',
         host: 'example.com',
         auth: [],

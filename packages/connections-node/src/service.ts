@@ -20,7 +20,8 @@ import {
   createServiceRef,
   type ServiceRef,
 } from '@backstage/backend-plugin-api';
-import { ConnectionsService, DefaultConnectionsService } from './api';
+import type { ConnectionsService } from '@backstage/connections';
+import { DefaultConnectionsService } from './DefaultConnectionsService';
 
 function createConnectionsServiceFactory<
   TInstances extends 'singleton' | 'multiton',

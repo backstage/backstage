@@ -14,7 +14,16 @@ high-quality code quickly — without compromising autonomy.
 Backstage unifies all your infrastructure tooling, services, and documentation
 to create a streamlined development environment from end to end.
 
-<iframe width="672" height="378" src="https://www.youtube.com/embed/85TQEpNCaU0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div style="position: relative; width: 100%; max-width: 672px; padding-bottom: 56.25%; height: 0; margin: 0 auto;">
+  <iframe
+    src="https://www.youtube.com/embed/85TQEpNCaU0"
+    title="What is Backstage?"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="position: absolute; inset: 0; width: 100%; height: 100%;"
+  ></iframe>
+</div>
 
 Out of the box, Backstage includes:
 

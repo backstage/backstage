@@ -18,12 +18,10 @@ import {
   LoggerService,
   RootConfigService,
   RootInstanceMetadataService,
-} from '@backstage/backend-plugin-api';
-import {
   RootSystemMetadataService,
   RootSystemMetadataServicePluginInfo,
-} from '@backstage/backend-plugin-api/alpha';
-import { getEndpoints } from '../../../../entrypoints/discovery/parsing';
+} from '@backstage/backend-plugin-api';
+import { getEndpoints } from '../../discovery/parsing';
 import { Config } from '@backstage/config';
 
 function getPlugins(config: Config): string[] {
@@ -32,7 +30,7 @@ function getPlugins(config: Config): string[] {
 }
 
 /**
- * @alpha
+ * @public
  */
 export class DefaultRootSystemMetadataService
   implements RootSystemMetadataService

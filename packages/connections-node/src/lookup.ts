@@ -17,7 +17,7 @@ import {
   LookupConnectionType,
   ConnectionTypeKey,
   connectionTypes,
-} from './types';
+} from '@backstage/connections';
 
 const connectionTypesMap = new Map(Object.entries(connectionTypes));
 

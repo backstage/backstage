@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GithubConnectionType } from '../schema/github';
+import { connectionTypes } from '@backstage/connections';
 import { getConnectionType, isConnectionTypeKey } from './lookup';
 
-describe('definitions/lookup', () => {
+describe('lookup', () => {
   describe('getConnectionType', () => {
     it('returns the github connection type for "github"', () => {
-      expect(getConnectionType('github')).toBe(GithubConnectionType);
+      expect(getConnectionType('github')).toBe(connectionTypes.github);
     });
   });
 

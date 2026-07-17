@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { RootConnection } from '../api/Connection';
+import type { RootConnection } from './types';
 
 /**
  * Merges connections derived from legacy `integrations.*` config with

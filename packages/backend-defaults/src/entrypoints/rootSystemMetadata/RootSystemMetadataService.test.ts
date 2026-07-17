@@ -23,7 +23,6 @@ import {
 import Router from 'express-promise-router';
 import request from 'supertest';
 import { rootSystemMetadataServiceFactory } from './rootSystemMetadataServiceFactory';
-import { rootSystemMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 describe('SystemMetadataService', () => {
   describe('returns plugins from config', () => {
@@ -32,7 +31,7 @@ describe('SystemMetadataService', () => {
       register(reg) {
         reg.registerInit({
           deps: {
-            systemMetadata: rootSystemMetadataServiceRef,
+            systemMetadata: coreServices.rootSystemMetadata,
             rootHttpRouter: coreServices.rootHttpRouter,
           },
           init: async ({ systemMetadata, rootHttpRouter }) => {

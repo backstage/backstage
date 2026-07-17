@@ -146,16 +146,21 @@ const techDocsSearchFilterResultTypeExtension =
  *
  * @alpha
  */
-const techDocsPage = PageBlueprint.make({
-  params: {
-    path: '/docs',
-    routeRef: rootRouteRef,
-    title: 'Docs',
-    icon: <RiArticleLine />,
-    loader: () =>
-      import('./components/TechDocsIndexPageContent').then(m => (
-        <m.TechDocsIndexPageContent />
-      )),
+const techDocsPage = PageBlueprint.makeWithOverrides({
+  configSchema: {
+    initialFilter: z.enum(['all', 'owned', 'starred']).default('owned'),
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      path: '/docs',
+      routeRef: rootRouteRef,
+      title: 'Docs',
+      icon: <RiArticleLine />,
+      loader: () =>
+        import('./components/TechDocsIndexPageContent').then(m => (
+          <m.TechDocsIndexPageContent initialFilter={config.initialFilter} />
+        )),
+    });
   },
 });
 

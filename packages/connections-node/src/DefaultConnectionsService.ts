@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConnectionsService } from './ConnectionsService';
 import {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import {
+import type {
+  Connection,
+  ConnectionAuthMethodKey,
+  ConnectionsService,
   ConnectionTypeKey,
-  getConnectionType,
-  isConnectionTypeKey,
-} from '../definitions';
-import { ConnectionAuthMethodKey } from './ConnectionType';
-import { Connection, RootConnection } from './Connection';
+} from '@backstage/connections';
+import { getConnectionType, isConnectionTypeKey } from './lookup';
+import type { RootConnection } from './types';
 import { JsonObject } from '@backstage/types';
 import {
   InputError,
@@ -33,13 +33,19 @@ import {
   toError,
 } from '@backstage/errors';
 import { z } from 'zod/v4';
-import { getLegacyIntegrations } from '../system/getLegacyIntegrations';
-import { combineConnectionSources } from '../system/combineConnectionSources';
+import { getLegacyIntegrations } from './getLegacyIntegrations';
+import { combineConnectionSources } from './combineConnectionSources';
 
 function describeError(error: unknown): string {
   const e = toError(error);
   if (e.name === 'ZodError') {
     return z.prettifyError(e as unknown as z.ZodError);
+  }
+  if (e.cause !== undefined) {
+    const cause = toError(e.cause);
+    if (cause.name === 'ZodError') {
+      return z.prettifyError(cause as unknown as z.ZodError);
+    }
   }
   return e.message;
 }
@@ -241,9 +247,7 @@ export class DefaultConnectionsService {
       throw new InputError(`Unrecognised connection type ${connection.type}`);
     }
 
-    return getConnectionType(connection.type).schema.parse(
-      connection,
-    ) as RootConnection;
+    return getConnectionType(connection.type).configSchema.parse(connection);
   }
 
   #assignDefaultTitles(): void {

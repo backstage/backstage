@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { mockServices } from '@backstage/backend-test-utils';
-import { DefaultConnectionsService } from '../api';
+import { DefaultConnectionsService } from './DefaultConnectionsService';
 
 describe('matchAuth', () => {
   it('picks the app whose orgs contains the URL org', async () => {

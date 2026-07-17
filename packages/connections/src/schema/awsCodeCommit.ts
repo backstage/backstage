@@ -26,11 +26,6 @@ export const AwsCodeCommitConnectionType = createConnectionType({
   }),
   authMethods: [
     {
-      method: 'none',
-      title: 'None',
-      configSchema: z.object({}),
-    },
-    {
       method: 'accessKey',
       title: 'Access Key',
       configSchema: z.object({

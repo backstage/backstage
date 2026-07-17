@@ -261,13 +261,13 @@ const _default: OverridableFrontendPlugin<
       };
     }>;
     'page:techdocs': OverridableExtensionDefinition<{
-      kind: 'page';
-      name: undefined;
       config: {
+        initialFilter: 'all' | 'owned' | 'starred';
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
+        initialFilter?: 'all' | 'owned' | 'starred' | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };
@@ -327,6 +327,8 @@ const _default: OverridableFrontendPlugin<
           }
         >;
       };
+      kind: 'page';
+      name: undefined;
       params: {
         path: string;
         title?: string;

@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 import { mockServices } from '@backstage/backend-test-utils';
+import { connectionTypes } from '@backstage/connections';
 import { getLegacyIntegrations } from './getLegacyIntegrations';
-import { AwsCodeCommitConnectionType } from '../schema/awsCodeCommit';
-import { AwsS3ConnectionType } from '../schema/awsS3';
-import { AzureBlobStorageConnectionType } from '../schema/azureBlobStorage';
-import { AzureConnectionType } from '../schema/azure';
-import { BitbucketCloudConnectionType } from '../schema/bitbucketCloud';
-import { BitbucketServerConnectionType } from '../schema/bitbucketServer';
-import { GerritConnectionType } from '../schema/gerrit';
-import { GiteaConnectionType } from '../schema/gitea';
-import { GithubConnectionType } from '../schema/github';
-import { GitlabConnectionType } from '../schema/gitlab';
-import { GoogleGcsConnectionType } from '../schema/googleGcs';
-import { HarnessConnectionType } from '../schema/harness';
+
+const AwsCodeCommitConnectionType = connectionTypes['aws-codecommit'];
+const AwsS3ConnectionType = connectionTypes['aws-s3'];
+const AzureBlobStorageConnectionType = connectionTypes['azure-blob-storage'];
+const AzureConnectionType = connectionTypes.azure;
+const BitbucketCloudConnectionType = connectionTypes['bitbucket-cloud'];
+const BitbucketServerConnectionType = connectionTypes['bitbucket-server'];
+const GerritConnectionType = connectionTypes.gerrit;
+const GiteaConnectionType = connectionTypes.gitea;
+const GithubConnectionType = connectionTypes.github;
+const GitlabConnectionType = connectionTypes.gitlab;
+const GoogleGcsConnectionType = connectionTypes['google-gcs'];
+const HarnessConnectionType = connectionTypes.harness;
 
 describe('getLegacyIntegrations', () => {
   it('returns an empty list when no integrations are configured', () => {
@@ -202,7 +204,9 @@ describe('getLegacyIntegrations', () => {
       });
 
       const [converted] = getLegacyIntegrations(config);
-      expect(() => GithubConnectionType.schema.parse(converted)).not.toThrow();
+      expect(() =>
+        GithubConnectionType.configSchema.parse(converted),
+      ).not.toThrow();
     });
   });
 
@@ -317,7 +321,9 @@ describe('getLegacyIntegrations', () => {
       });
 
       const [converted] = getLegacyIntegrations(config);
-      expect(() => GitlabConnectionType.schema.parse(converted)).not.toThrow();
+      expect(() =>
+        GitlabConnectionType.configSchema.parse(converted),
+      ).not.toThrow();
     });
   });
 
@@ -392,7 +398,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        BitbucketCloudConnectionType.schema.parse(converted),
+        BitbucketCloudConnectionType.configSchema.parse(converted),
       ).not.toThrow();
     });
   });
@@ -470,7 +476,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        BitbucketServerConnectionType.schema.parse(converted),
+        BitbucketServerConnectionType.configSchema.parse(converted),
       ).not.toThrow();
     });
   });
@@ -574,7 +580,9 @@ describe('getLegacyIntegrations', () => {
       });
 
       const [converted] = getLegacyIntegrations(config);
-      expect(() => AzureConnectionType.schema.parse(converted)).not.toThrow();
+      expect(() =>
+        AzureConnectionType.configSchema.parse(converted),
+      ).not.toThrow();
     });
   });
 
@@ -627,7 +635,9 @@ describe('getLegacyIntegrations', () => {
       });
 
       const [converted] = getLegacyIntegrations(config);
-      expect(() => GerritConnectionType.schema.parse(converted)).not.toThrow();
+      expect(() =>
+        GerritConnectionType.configSchema.parse(converted),
+      ).not.toThrow();
     });
   });
 
@@ -674,7 +684,9 @@ describe('getLegacyIntegrations', () => {
       });
 
       const [converted] = getLegacyIntegrations(config);
-      expect(() => GiteaConnectionType.schema.parse(converted)).not.toThrow();
+      expect(() =>
+        GiteaConnectionType.configSchema.parse(converted),
+      ).not.toThrow();
     });
   });
 
@@ -773,7 +785,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        AwsCodeCommitConnectionType.schema.parse(converted),
+        AwsCodeCommitConnectionType.configSchema.parse(converted),
       ).not.toThrow();
     });
   });
@@ -856,7 +868,9 @@ describe('getLegacyIntegrations', () => {
       });
 
       const [converted] = getLegacyIntegrations(config);
-      expect(() => AwsS3ConnectionType.schema.parse(converted)).not.toThrow();
+      expect(() =>
+        AwsS3ConnectionType.configSchema.parse(converted),
+      ).not.toThrow();
     });
   });
 
@@ -922,7 +936,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        GoogleGcsConnectionType.schema.parse(converted),
+        GoogleGcsConnectionType.configSchema.parse(converted),
       ).not.toThrow();
     });
   });
@@ -1070,7 +1084,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        AzureBlobStorageConnectionType.schema.parse(converted),
+        AzureBlobStorageConnectionType.configSchema.parse(converted),
       ).not.toThrow();
     });
   });
@@ -1110,7 +1124,9 @@ describe('getLegacyIntegrations', () => {
       });
 
       const [converted] = getLegacyIntegrations(config);
-      expect(() => HarnessConnectionType.schema.parse(converted)).not.toThrow();
+      expect(() =>
+        HarnessConnectionType.configSchema.parse(converted),
+      ).not.toThrow();
     });
   });
 });

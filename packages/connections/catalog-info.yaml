@@ -8,5 +8,5 @@ metadata:
     connections used by integrations and plugins
 spec:
   lifecycle: experimental
-  type: backstage-node-library
+  type: backstage-common-library
   owner: framework-maintainers
