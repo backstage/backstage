@@ -150,8 +150,7 @@ fill out the prompts with `proxy` as the plugin ID. This will create
 `src/index.ts` files. Replace the generated `src/module.ts` with the example
 below:
 
-```ts
-// plugins/proxy-backend-module-demo-additional-endpoints/src/module.ts
+```ts title="plugins/proxy-backend-module-demo-additional-endpoints/src/module.ts"
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node/alpha';
 
@@ -181,15 +180,14 @@ export const proxyModuleDemoAdditionalEndpoints = createBackendModule({
 });
 ```
 
-```ts
-// plugins/proxy-backend-module-demo-additional-endpoints/src/index.ts
+```ts title="plugins/proxy-backend-module-demo-additional-endpoints/src/index.ts"
 export { proxyModuleDemoAdditionalEndpoints as default } from './module';
 ```
 
 Then install the module alongside the proxy plugin in your backend entry
 point (usually `packages/backend/src/index.ts`):
 
-```ts
+```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-proxy-backend'));
 backend.add(
   import('@internal/plugin-proxy-backend-module-demo-additional-endpoints'),
