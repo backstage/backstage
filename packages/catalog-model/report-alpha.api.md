@@ -16,7 +16,8 @@ export type AiResourceEntityV1alpha1 =
   | AiResourceEntityV1alpha1Default
   | SkillAiResourceEntityV1alpha1
   | RuleAiResourceEntityV1alpha1
-  | PluginAiResourceEntityV1alpha1;
+  | PluginAiResourceEntityV1alpha1
+  | MarketplaceAiResourceEntityV1alpha1;
 
 // @alpha
 export interface AiResourceEntityV1alpha1Default extends Entity {
@@ -512,6 +513,11 @@ export const isAiResourceEntity: (
 ) => entity is AiResourceEntityV1alpha1;
 
 // @alpha
+export const isMarketplaceAiResourceEntity: (
+  entity: Entity,
+) => entity is MarketplaceAiResourceEntityV1alpha1;
+
+// @alpha
 export function isMcpServerApiEntity(
   entity: ApiEntityV1alpha1 | McpServerApiEntity,
 ): entity is McpServerApiEntity;
@@ -535,6 +541,23 @@ export const isSkillAiResourceEntity: (
 export type KindValidator = {
   check(entity: Entity): Promise<boolean>;
 };
+
+// @alpha
+export interface MarketplaceAiResourceEntityV1alpha1
+  extends AiResourceEntityV1alpha1Default {
+  // (undocumented)
+  spec: {
+    type: 'marketplace';
+    lifecycle: string;
+    owner: string;
+    system?: string;
+    plugins: string[];
+    version?: string;
+  };
+}
+
+// @alpha
+export const marketplaceAiResourceEntityV1alpha1Validator: KindValidator;
 
 // @alpha
 export interface McpServerApiEntity extends Omit<ApiEntityV1alpha1, 'spec'> {
