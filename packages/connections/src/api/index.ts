@@ -18,8 +18,7 @@ export type { ConnectionsService } from './ConnectionsService';
 export type { Connection, AnyConnection, AuthValue } from './Connection';
 export type {
   ConnectionType,
-  ConnectionAuthMethod,
   ConnectionAuthMethodKey,
   ConnectionAuthValue,
+  PortableSchema,
 } from './ConnectionType';
-export { DefaultConnectionsService } from './DefaultConnectionService';

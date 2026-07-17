@@ -28,10 +28,12 @@ export const GitlabConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'token',
+      title: 'Token',
       configSchema: z.object({
         token: z.string(),
       }),

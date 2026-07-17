@@ -128,6 +128,25 @@ Valid values are:
 
 - `catalogRelation` - This configuration assumes that the current component runs only on all clusters it is dependant on.
 
+### `clusterLocatorContinueOnError` (optional)
+
+Controls whether the Kubernetes backend continues returning clusters when one
+or more cluster locators fail. When set to `true`, errors from individual
+locators are logged and clusters from the remaining successful locators are
+still returned. When set to `false` (the default), a single locator failure
+causes the entire cluster list request to fail.
+
+This is useful when you have multiple cluster locators configured and want to
+avoid a problem with one source (for example, a permission error in a single GKE
+project) from blocking all other clusters.
+
+```yaml
+kubernetes:
+  clusterLocatorContinueOnError: true
+```
+
+The default value is `false`.
+
 ### `clusterLocatorMethods`
 
 This is an array used to determine where to retrieve cluster configuration from.

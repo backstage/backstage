@@ -1,5 +1,28 @@
 # @backstage/ui
 
+## 0.17.0
+
+### Minor Changes
+
+- 503ba32: Added re-exports from `react-aria-components`. The types `Selection`, `SortDirection`, and `Key` are available as type-only exports (use `import type`), while `Focusable` is a runtime export. Consumers can now import these directly from `@backstage/ui` instead of depending on `react-aria-components`, avoiding version mismatches.
+
+### Patch Changes
+
+- 2341682: Make PluginHeader > Breadcrumbs separator align with rest of text
+
+  **Affected components:** PluginHeader
+
+- 791703e: Add `breadcrumbs` prop & breadcrumbs to `PluginHeader`. When passed `breadcrumbs`, `PluginHeader` renders a `nav` with breadcrumbs & visually hides the plugin title.
+
+  These breadcrumbs:
+
+  - Collapses middle segments if 5 or more segments
+  - Shows tooltip if text is truncated
+
+  **Affected components:** PluginHeader
+
+- 066c7ac: Added a new `TextAreaField` component for multi-line text input, following the same conventions as `TextField` with support for a label, secondary label, and description.
+
 ## 0.17.0-next.1
 
 ### Patch Changes

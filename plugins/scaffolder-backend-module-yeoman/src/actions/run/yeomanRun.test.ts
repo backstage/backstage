@@ -15,6 +15,7 @@
  */
 
 import { fileURLToPath } from 'node:url';
+import { yeomanRun } from './yeomanRun';
 
 const mockRegister = jest.fn();
 const mockRun = jest.fn();
@@ -31,13 +32,6 @@ jest.unstable_mockModule('yeoman-environment', () => ({
 }));
 
 describe('yeomanRun', () => {
-  let yeomanRun: typeof import('./yeomanRun')['yeomanRun'];
-
-  beforeAll(async () => {
-    const module = await import('./yeomanRun');
-    yeomanRun = module.yeomanRun;
-  });
-
   beforeEach(() => {
     jest.resetAllMocks();
     mockCreateEnv.mockReturnValue({ register: mockRegister, run: mockRun });

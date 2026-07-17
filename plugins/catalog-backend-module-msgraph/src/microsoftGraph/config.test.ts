@@ -235,6 +235,25 @@ describe('readProviderConfigs', () => {
     );
   });
 
+  it('should reject userFilter combined with userGroupMemberPath', () => {
+    const config = {
+      catalog: {
+        providers: {
+          microsoftGraphOrg: {
+            customProviderId: {
+              tenantId: 'tenantId',
+              user: { filter: "userType eq 'member'" },
+              userGroupMember: { path: 'some-path' },
+            },
+          },
+        },
+      },
+    };
+    expect(() => readProviderConfigs(new ConfigReader(config))).toThrow(
+      'userGroupMemberPath cannot be specified',
+    );
+  });
+
   it('should fail if clientId is set without clientSecret', () => {
     const config = {
       catalog: {

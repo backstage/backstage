@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs-react
 
+## 1.3.13
+
+### Patch Changes
+
+- 0b02d4c: Fixed the TechDocs reader requesting the documentation metadata in a tight loop when the request fails permanently (for example when the metadata returns a 404). The reader now stops after a failed request, which previously flooded the backend with requests and caused the page to flicker.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/core-components@0.18.12
+  - @backstage/core-plugin-api@1.12.8
+
 ## 1.3.13-next.0
 
 ### Patch Changes

@@ -355,6 +355,11 @@ export function readProviderConfig(
       `userGroupMemberSearch cannot be specified when userFilter is defined.`,
     );
   }
+  if (userFilter && userGroupMemberPath) {
+    throw new Error(
+      `userGroupMemberPath cannot be specified when userFilter is defined.`,
+    );
+  }
 
   if (clientId && !clientSecret) {
     throw new Error(`clientSecret must be provided when clientId is defined.`);

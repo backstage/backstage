@@ -117,13 +117,13 @@ export const mcpPlugin = createBackendPlugin({
 
         httpRouter.use(router);
 
+        const cimdConfigPath = config.has('auth.clientIdMetadataDocuments')
+          ? 'auth.clientIdMetadataDocuments'
+          : 'auth.experimentalClientIdMetadataDocuments';
         const oauthEnabled =
           config.getOptionalBoolean(
             'auth.experimentalDynamicClientRegistration.enabled',
-          ) ||
-          config.getOptionalBoolean(
-            'auth.experimentalClientIdMetadataDocuments.enabled',
-          );
+          ) || config.getOptionalBoolean(`${cimdConfigPath}.enabled`);
 
         if (oauthEnabled) {
           // OAuth Authorization Server Metadata (RFC 8414)

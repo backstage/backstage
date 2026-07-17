@@ -22,7 +22,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 import {
   connectionsServiceRef,
   declareConnection,
-} from '@backstage/connections';
+} from '@backstage/connections-node';
 
 describe('connections-example-backend-module-gitlab', () => {
   const testConfig = mockServices.rootConfig.factory({

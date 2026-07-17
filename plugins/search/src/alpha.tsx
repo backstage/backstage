@@ -23,7 +23,6 @@ import { z } from 'zod/v4';
 import {
   CatalogIcon,
   Content,
-  DocsIcon,
   useSidebarPinState,
 } from '@backstage/core-components';
 import {
@@ -160,11 +159,6 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                           name: 'Software Catalog',
                           icon: <CatalogIcon />,
                         },
-                        {
-                          value: 'techdocs',
-                          name: 'Documentation',
-                          icon: <DocsIcon />,
-                        },
                       ].concat(resultTypes)}
                     />
                     <Paper className={classes.filters}>
@@ -195,17 +189,14 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                         className={classes.filter}
                         label="Kind"
                         name="kind"
-                        values={[
-                          'API',
-                          'Component',
-                          'Domain',
-                          'Group',
-                          'Location',
-                          'Resource',
-                          'System',
-                          'Template',
-                          'User',
-                        ]}
+                        values={async () => {
+                          const { facets } = await catalogApi.getEntityFacets({
+                            facets: ['kind'],
+                          });
+                          return (facets.kind ?? [])
+                            .map(facet => facet.value)
+                            .sort((a, b) => a.localeCompare(b));
+                        }}
                       />
                       <SearchFilter.Checkbox
                         className={classes.filter}

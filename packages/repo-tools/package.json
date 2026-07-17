@@ -1,6 +1,6 @@
 {
   "name": "@backstage/repo-tools",
-  "version": "0.17.4-next.0",
+  "version": "0.18.0",
   "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"
@@ -71,7 +71,7 @@
     "glob": "^13.0.0",
     "globby": "^11.0.0",
     "is-glob": "^4.0.3",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.2.0",
     "just-diff": "^6.0.2",
     "knex": "^3.0.0",
     "knex-pglite": "^0.11.0",

@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.4.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.5
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-catalog-node@2.2.3
+
 ## 0.4.25-next.0
 
 ### Patch Changes

@@ -35,7 +35,10 @@ import {
   EntityContentBlueprint,
   EntityIconLinkBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
-import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
+import {
+  SearchFilterResultTypeBlueprint,
+  SearchResultListItemBlueprint,
+} from '@backstage/plugin-search-react/alpha';
 import {
   AddonBlueprint,
   attachTechDocsAddonComponentData,
@@ -129,21 +132,35 @@ export const techDocsSearchResultListItemExtension =
     },
   });
 
+const techDocsSearchFilterResultTypeExtension =
+  SearchFilterResultTypeBlueprint.make({
+    params: {
+      value: 'techdocs',
+      name: 'Documentation',
+      icon: <DocsIcon />,
+    },
+  });
+
 /**
  * Responsible for rendering the provided router element
  *
  * @alpha
  */
-const techDocsPage = PageBlueprint.make({
-  params: {
-    path: '/docs',
-    routeRef: rootRouteRef,
-    title: 'Docs',
-    icon: <RiArticleLine />,
-    loader: () =>
-      import('./components/TechDocsIndexPageContent').then(m => (
-        <m.TechDocsIndexPageContent />
-      )),
+const techDocsPage = PageBlueprint.makeWithOverrides({
+  configSchema: {
+    initialFilter: z.enum(['all', 'owned', 'starred']).default('owned'),
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      path: '/docs',
+      routeRef: rootRouteRef,
+      title: 'Docs',
+      icon: <RiArticleLine />,
+      loader: () =>
+        import('./components/TechDocsIndexPageContent').then(m => (
+          <m.TechDocsIndexPageContent initialFilter={config.initialFilter} />
+        )),
+    });
   },
 });
 
@@ -291,6 +308,7 @@ export default createFrontendPlugin({
     techdocsEntityIconLink,
     techDocsEntityContent,
     techDocsEntityContentEmptyState,
+    techDocsSearchFilterResultTypeExtension,
     techDocsSearchResultListItemExtension,
   ],
   routes: {

@@ -386,7 +386,7 @@ describe('Mcp Backend', () => {
                 },
               },
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                 },
               },
@@ -402,6 +402,27 @@ describe('Mcp Backend', () => {
       expect(response.body.resource).toMatch(/\/api\/mcp-actions\/v1$/);
       expect(response.body.authorization_servers).toHaveLength(1);
       expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
+    });
+
+    it('should support the deprecated experimental CIMD configuration', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: { actions: { pluginSources: ['local'] } },
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          }),
+        ],
+      });
+
+      await request(server)
+        .get('/.well-known/oauth-protected-resource/api/mcp-actions/v1')
+        .expect(200);
     });
   });
 });

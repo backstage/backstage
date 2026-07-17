@@ -1,5 +1,16 @@
 # @backstage/core-compat-api
 
+## 0.5.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/plugin-catalog-react@3.2.0
+  - @backstage/filter-predicates@0.1.4
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/plugin-app-react@0.2.5
+
 ## 0.5.13-next.0
 
 ### Patch Changes

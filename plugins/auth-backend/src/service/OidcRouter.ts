@@ -202,6 +202,8 @@ export class OidcRouter {
 
     router.use(json());
 
+    const cimdEnabled = this.oidc.isCimdEnabled();
+
     // OpenID Provider Configuration endpoint
     // https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
     // Returns the OpenID Provider Configuration document containing metadata about the provider
@@ -220,10 +222,6 @@ export class OidcRouter {
     // CIMD metadata endpoint for the Backstage CLI
     // Automatically available when CIMD is enabled
     router.get('/.well-known/oauth-client/cli.json', (_req, res) => {
-      const cimdEnabled = this.config.getOptionalBoolean(
-        'auth.experimentalClientIdMetadataDocuments.enabled',
-      );
-
       if (!cimdEnabled) {
         res.status(404).json({
           error: 'not_found',
@@ -263,12 +261,16 @@ export class OidcRouter {
       res.json(userInfo);
     });
 
-    const dcrEnabled = this.config.getOptionalBoolean(
-      'auth.experimentalDynamicClientRegistration.enabled',
-    );
-    const cimdEnabled = this.config.getOptionalBoolean(
-      'auth.experimentalClientIdMetadataDocuments.enabled',
-    );
+    const dcrEnabled =
+      this.config.getOptionalBoolean(
+        'auth.experimentalDynamicClientRegistration.enabled',
+      ) ?? false;
+
+    if (dcrEnabled) {
+      this.logger.warn(
+        "DEPRECATION WARNING: The 'auth.experimentalDynamicClientRegistration' configuration is deprecated. Migrate to Client ID Metadata Documents (CIMD) using 'auth.clientIdMetadataDocuments'.",
+      );
+    }
 
     if (dcrEnabled || cimdEnabled) {
       // Authorization endpoint

@@ -25,7 +25,8 @@ import { STATIC_ASSET_HASH_LENGTH } from './staticAssetHash';
 export const optimization = (
   options: BundlingOptions,
 ): RspackOptionsNormalized['optimization'] => {
-  const { isDev, webpack } = options;
+  const { isDev, moduleFederationRemote, webpack } = options;
+  const dependencyChunks = moduleFederationRemote ? 'async' : 'initial';
 
   const MinifyPlugin = webpack
     ? require('esbuild-loader').EsbuildPlugin
@@ -52,10 +53,11 @@ export const optimization = (
       automaticNameDelimiter: '-',
       cacheGroups: {
         default: false,
-        // Put all vendor code needed for initial page load in individual files if they're big
-        // enough, if they're smaller they end up in the main
+        // Put large dependencies in individual files. App builds extract them
+        // from the initial page load, while module federation remotes extract
+        // them from their async exposed module graph.
         packages: {
-          chunks: 'initial',
+          chunks: dependencyChunks,
           test(module: any) {
             return Boolean(
               module?.resource?.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/),
@@ -71,9 +73,11 @@ export const optimization = (
             // npm package names are URL-safe, but some servers don't like @ symbols
             return packageName.replace('@', '');
           },
-          filename: isDev
-            ? 'module-[name].js'
-            : `static/module-[name].[contenthash:${STATIC_ASSET_HASH_LENGTH}].js`,
+          ...(!moduleFederationRemote && {
+            filename: isDev
+              ? 'module-[name].js'
+              : `static/module-[name].[contenthash:${STATIC_ASSET_HASH_LENGTH}].js`,
+          }),
           priority: 10,
           minSize: 100000,
           minChunks: 1,
@@ -84,7 +88,7 @@ export const optimization = (
         }, // filename is not included in type, but we need it
         // Group together the smallest modules
         vendor: {
-          chunks: 'initial',
+          chunks: dependencyChunks,
           test: /[\\/]node_modules[\\/]/,
           name: 'vendor',
           priority: 5,

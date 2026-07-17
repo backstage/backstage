@@ -22,9 +22,12 @@ export interface Config {
        */
       backstageOpenapi?: {
         /**
-         * A list of plugins, whose OpenAPI specs you want to collate in `InternalOpenApiDocumentationProvider`.
+         * A list of plugins whose OpenAPI specs you want to collate in `InternalOpenApiDocumentationProvider`.
+         *
+         * @deprecated Plugins are now discovered automatically via the system metadata service.
+         *   Set this only to override the automatically discovered list.
          */
-        plugins: string[];
+        plugins?: string[];
         /**
          * Properties to override on the final entity object.
          */

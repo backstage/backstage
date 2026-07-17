@@ -609,3 +609,35 @@ Entity content extensions can also declare an `icon` parameter. When provided as
 
 - The entity page must have `showNavItemIcons: true` (see configuration above).
 - The icon id must be available in the app's enabled icon bundles.
+
+### Entity Context Menu
+
+You can configure the context menu items using `EntityContextMenuItemBlueprint`. The current items are defined [here](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/alpha/contextMenuItems.tsx#L54-L151).
+
+To add a new context item you can do something like this:
+
+```tsx
+import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
+const customEntityMenuItem = EntityContextMenuItemBlueprint.make({
+  name: 'open-dialog',
+  params: {
+    icon: <ExampleIcon />,
+    useProps() {
+      const dialogApi = useApi(dialogApiRef);
+      const { entity } = useEntity();
+      return {
+        title: 'Open Custom Dialog',
+        disabled: false,
+        // you can also use href: '/example-path'
+        onClick: async () => {
+          dialogApi.open(({ dialog }) => (
+            <AsyncEntityProvider entity={entity} loading={false}>
+              <CustomDialog open onClose={() => dialog.close()} />
+            </AsyncEntityProvider>
+          ));
+        },
+      };
+    },
+  },
+});
+```

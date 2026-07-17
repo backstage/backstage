@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.17.5-next.1",
+  "version": "0.17.5",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -36,6 +36,7 @@
     "./rootHttpRouter": "./src/entrypoints/rootHttpRouter/index.ts",
     "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
     "./rootLogger": "./src/entrypoints/rootLogger/index.ts",
+    "./rootSystemMetadata": "./src/entrypoints/rootSystemMetadata/index.ts",
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
@@ -93,6 +94,9 @@
       ],
       "rootLogger": [
         "src/entrypoints/rootLogger/index.ts"
+      ],
+      "rootSystemMetadata": [
+        "src/entrypoints/rootSystemMetadata/index.ts"
       ],
       "scheduler": [
         "src/entrypoints/scheduler/index.ts"
@@ -218,7 +222,7 @@
     "better-sqlite3": "^12.0.0",
     "get-port": "^5.1.1",
     "http-errors": "^2.0.0",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "node-mocks-http": "^1.0.0",
     "supertest": "^7.0.0",
     "wait-for-expect": "^4.0.0"

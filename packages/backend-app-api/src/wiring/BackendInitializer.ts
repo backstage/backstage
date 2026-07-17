@@ -52,10 +52,8 @@ import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-p
 import { BackendStartupResult } from './types';
 import { BackendStartupError } from './BackendStartupError';
 import { createAllowBootFailurePredicate } from './createAllowBootFailurePredicate';
-import {
-  connectionsServiceRef,
-  type ConnectionsService,
-} from '@backstage/connections';
+import type { ConnectionsService } from '@backstage/connections';
+import { connectionsServiceRef } from '@backstage/connections-node';
 import { withDeclaredConnections } from './withDeclaredConnections';
 
 export interface BackendRegisterInit {

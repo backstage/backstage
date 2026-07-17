@@ -132,6 +132,18 @@ const myWidget = HomePageWidgetBlueprint.make({
 
 > **Example**: See [dev/index.tsx](dev/index.tsx) for a comprehensive example of creating multiple homepage widgets and layouts.
 
+### Preventing Duplicate Widgets
+
+The `CustomHomepageGrid` supports preventing duplicate widgets from being added to the homepage via the `preventDuplicateWidgets` prop (default: `false`):
+
+```tsx
+<CustomHomepageGrid preventDuplicateWidgets={true}>
+  <HomePageSearchBar />
+  <HomePageRandomJoke />
+  <HomePageStarredEntities />
+</CustomHomepageGrid>
+```
+
 ## Contributing
 
 ### Homepage Components
