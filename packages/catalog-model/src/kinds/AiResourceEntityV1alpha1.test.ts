@@ -21,13 +21,16 @@ import {
   type AiResourceEntityV1alpha1Default,
   type SkillAiResourceEntityV1alpha1,
   type RuleAiResourceEntityV1alpha1,
+  type PluginAiResourceEntityV1alpha1,
   aiResourceEntityModel,
   aiResourceEntityV1alpha1Validator as defaultValidator,
   skillAiResourceEntityV1alpha1Validator as skillValidator,
   ruleAiResourceEntityV1alpha1Validator as ruleValidator,
+  pluginAiResourceEntityV1alpha1Validator as pluginValidator,
   isAiResourceEntity,
   isSkillAiResourceEntity,
   isRuleAiResourceEntity,
+  isPluginAiResourceEntity,
 } from './AiResourceEntityV1alpha1';
 
 describe('AiResourceV1alpha1 default validator', () => {
@@ -398,6 +401,7 @@ describe('aiResourceEntityModel', () => {
     ]);
     expect(relations?.find(r => r.forward.type === 'partOf')?.toKind).toEqual([
       'System',
+      'AiResource',
     ]);
     expect(
       relations?.find(r => r.forward.type === 'dependsOn')?.toKind,
@@ -413,5 +417,129 @@ describe('aiResourceEntityModel', () => {
         .getRelations({ kind: 'AiResource' })
         ?.find(r => r.forward.type === 'dependencyOf')?.toKind,
     ).toEqual(['AiResource']);
+  });
+});
+
+describe('AiResourceV1alpha1 plugin validator', () => {
+  let entity: PluginAiResourceEntityV1alpha1;
+
+  beforeEach(() => {
+    entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'AiResource',
+      metadata: {
+        name: 'code-review-plugin',
+      },
+      spec: {
+        type: 'plugin',
+        lifecycle: 'production',
+        owner: 'ai-platform-team',
+        system: 'ai-tooling',
+        skills: ['airesource:default/typescript-best-practices'],
+        version: '1.0.0',
+      },
+    };
+  });
+
+  it('accepts valid plugin data with all fields', async () => {
+    await expect(pluginValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts plugin with only required fields', async () => {
+    entity.spec = {
+      type: 'plugin',
+      lifecycle: 'production',
+      owner: 'team-a',
+      skills: ['airesource:default/some-skill'],
+    };
+    await expect(pluginValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects non-plugin type', async () => {
+    (entity as any).spec.type = 'skill';
+    await expect(pluginValidator.check(entity)).rejects.toThrow(/type/);
+  });
+
+  it('rejects missing lifecycle', async () => {
+    delete (entity as any).spec.lifecycle;
+    await expect(pluginValidator.check(entity)).rejects.toThrow(/lifecycle/);
+  });
+
+  it('rejects missing owner', async () => {
+    delete (entity as any).spec.owner;
+    await expect(pluginValidator.check(entity)).rejects.toThrow(/owner/);
+  });
+
+  it('rejects missing skills', async () => {
+    delete (entity as any).spec.skills;
+    await expect(pluginValidator.check(entity)).rejects.toThrow(/skills/);
+  });
+
+  it('accepts empty skills array', async () => {
+    entity.spec.skills = [];
+    await expect(pluginValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects skills with empty strings', async () => {
+    (entity as any).spec.skills = [''];
+    await expect(pluginValidator.check(entity)).rejects.toThrow(/skills/);
+  });
+
+  it('rejects skills with wrong type', async () => {
+    (entity as any).spec.skills = 'not-an-array';
+    await expect(pluginValidator.check(entity)).rejects.toThrow(/skills/);
+  });
+
+  it('rejects skills with wrong item type', async () => {
+    (entity as any).spec.skills = [42];
+    await expect(pluginValidator.check(entity)).rejects.toThrow(/skills/);
+  });
+
+  it('accepts missing optional fields', async () => {
+    delete (entity as any).spec.system;
+    delete (entity as any).spec.version;
+    await expect(pluginValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty version', async () => {
+    (entity as any).spec.version = '';
+    await expect(pluginValidator.check(entity)).rejects.toThrow(/version/);
+  });
+
+  it('rejects wrong version type', async () => {
+    (entity as any).spec.version = 42;
+    await expect(pluginValidator.check(entity)).rejects.toThrow(/version/);
+  });
+});
+
+describe('isPluginAiResourceEntity', () => {
+  it('returns true for a plugin AiResource', () => {
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'AiResource',
+      metadata: { name: 'test' },
+      spec: { type: 'plugin' },
+    };
+    expect(isPluginAiResourceEntity(entity)).toBe(true);
+  });
+
+  it('returns false for a non-plugin AiResource', () => {
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'AiResource',
+      metadata: { name: 'test' },
+      spec: { type: 'skill' },
+    };
+    expect(isPluginAiResourceEntity(entity)).toBe(false);
+  });
+
+  it('returns false for a different kind', () => {
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: { name: 'test' },
+      spec: { type: 'plugin' },
+    };
+    expect(isPluginAiResourceEntity(entity)).toBe(false);
   });
 });
