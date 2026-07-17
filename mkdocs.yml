@@ -82,7 +82,6 @@ nav:
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
           - Templating Extensions: 'features/software-templates/templating-extensions.md'
-          - Writing Custom Template Output Redirects: 'features/software-templates/writing-custom-template-output-redirects.md'
           - Dry Run Testing: 'features/software-templates/dry-run-testing.md'
       - Backstage Search:
           - Overview: 'features/search/README.md'
