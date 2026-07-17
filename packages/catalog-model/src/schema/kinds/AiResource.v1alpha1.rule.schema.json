@@ -82,6 +82,7 @@
             "activation": {
               "type": "array",
               "description": "Describes how the rule is activated in agent harnesses. Each entry targets a specific harness and carries its native activation fields.",
+              "minItems": 1,
               "items": {
                 "type": "object",
                 "required": ["harness"],

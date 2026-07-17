@@ -302,6 +302,11 @@ describe('AiResourceV1alpha1 rule validator', () => {
     await expect(ruleValidator.check(entity)).rejects.toThrow(/harness/);
   });
 
+  it('rejects empty activation array', async () => {
+    (entity as any).spec.activation = [];
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/activation/);
+  });
+
   it('rejects activation with wrong type', async () => {
     (entity as any).spec.activation = 'not-an-array';
     await expect(ruleValidator.check(entity)).rejects.toThrow(/activation/);
