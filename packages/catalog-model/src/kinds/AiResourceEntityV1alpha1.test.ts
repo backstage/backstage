@@ -200,6 +200,66 @@ describe('AiResourceV1alpha1 skill validator', () => {
     (entity as any).spec.dependsOn = [''];
     await expect(skillValidator.check(entity)).rejects.toThrow(/dependsOn/);
   });
+
+  it('accepts valid allowedTools', async () => {
+    entity.spec = {
+      type: 'skill',
+      lifecycle: 'production',
+      owner: 'team-a',
+      allowedTools: ['Read', 'Write', 'Bash'],
+    };
+    await expect(skillValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects allowedTools with empty strings', async () => {
+    (entity as any).spec.allowedTools = [''];
+    await expect(skillValidator.check(entity)).rejects.toThrow(/allowedTools/);
+  });
+
+  it('rejects allowedTools with wrong type', async () => {
+    (entity as any).spec.allowedTools = 'not-an-array';
+    await expect(skillValidator.check(entity)).rejects.toThrow(/allowedTools/);
+  });
+
+  it('accepts valid license', async () => {
+    entity.spec = {
+      type: 'skill',
+      lifecycle: 'production',
+      owner: 'team-a',
+      license: 'Apache-2.0',
+    };
+    await expect(skillValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty license', async () => {
+    (entity as any).spec.license = '';
+    await expect(skillValidator.check(entity)).rejects.toThrow(/license/);
+  });
+
+  it('rejects wrong license type', async () => {
+    (entity as any).spec.license = 42;
+    await expect(skillValidator.check(entity)).rejects.toThrow(/license/);
+  });
+
+  it('accepts valid compatibility', async () => {
+    entity.spec = {
+      type: 'skill',
+      lifecycle: 'production',
+      owner: 'team-a',
+      compatibility: 'Node.js 20+, macOS/Linux',
+    };
+    await expect(skillValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty compatibility', async () => {
+    (entity as any).spec.compatibility = '';
+    await expect(skillValidator.check(entity)).rejects.toThrow(/compatibility/);
+  });
+
+  it('rejects wrong compatibility type', async () => {
+    (entity as any).spec.compatibility = 42;
+    await expect(skillValidator.check(entity)).rejects.toThrow(/compatibility/);
+  });
 });
 
 describe('AiResourceV1alpha1 rule validator', () => {

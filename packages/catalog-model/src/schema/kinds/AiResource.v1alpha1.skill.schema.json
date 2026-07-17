@@ -92,6 +92,26 @@
                 "type": "string",
                 "minLength": 1
               }
+            },
+            "allowedTools": {
+              "type": "array",
+              "description": "Tools or capabilities the skill is designed to use, as defined by the agentskills.io specification.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "license": {
+              "type": "string",
+              "description": "An SPDX license identifier or free-text license for the skill content, as defined by the agentskills.io specification.",
+              "examples": ["MIT", "Apache-2.0", "UNLICENSED"],
+              "minLength": 1
+            },
+            "compatibility": {
+              "type": "string",
+              "description": "Intended product, system packages, network access, or other environmental requirements, as defined by the agentskills.io specification.",
+              "examples": ["Node.js 20+, macOS/Linux", "Python 3.11+, Docker"],
+              "minLength": 1
             }
           }
         }
