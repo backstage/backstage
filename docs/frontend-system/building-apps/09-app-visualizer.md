@@ -15,9 +15,7 @@ The `app-visualizer` plugin can help with troubleshooting. It provides a visual 
 
 #### Installation
 
-This plugin is in most cases automatically installed.
-
-Install the plugin in your app package:
+The default Backstage app template already includes this plugin. If it is not present in your app, add it as a dependency:
 
 ```bash
 yarn --cwd packages/app add @backstage/plugin-app-visualizer
@@ -35,7 +33,7 @@ The `app-visualizer` provides three views, each accessible via tabs at the top o
 
 - **Text** — Renders the extension tree as plain text. This is useful for copying and pasting into GitHub issues or Discord when asking for help, since it provides a compact, readable snapshot of your app's structure.
 
-For examples of the views, check the [Demo Site](https://demo.backstage.io/visualizer) or check the following screen shots.
+For examples of the views, check the [Demo Site](https://demo.backstage.io/visualizer) or check the following screenshots.
 
 ##### Tree
 
