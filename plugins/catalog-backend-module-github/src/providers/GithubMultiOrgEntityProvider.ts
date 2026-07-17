@@ -1024,7 +1024,15 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         result.metadata.namespace = ctx.org.toLocaleLowerCase('en-US');
       }
 
-      if (result.spec && !this.options.teamTransformer) {
+      if (isGroupEntity(result) && result.spec.members) {
+        result.spec.members = result.spec.members.map(m => {
+          const { namespace, name } = parseEntityRef(m, {
+            defaultKind: 'user',
+            defaultNamespace: DEFAULT_NAMESPACE,
+          });
+          return `${namespace}/${name}`;
+        });
+      } else if (result.spec && !this.options.teamTransformer) {
         // Group `spec.members` inherits the namespace of it's group so need to explicitly specify refs here
         result.spec.members = team.members.map(
           user => `${DEFAULT_NAMESPACE}/${user.login}`,
