@@ -912,13 +912,13 @@ The `yarn new` command now defaults to the new frontend system templates for fro
 
 ## Troubleshooting
 
-### Using the Visualizer Plugin
+### Using the App Visualizer Plugin
 
 We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting.
 
 For installation instructions, please read [App Visualizer](./09-app-visualizer.md).
 
-#### Using the Visualizer During Migration
+#### Using the App Visualizer During Migration
 
 During migration, the tree view is particularly helpful for:
 

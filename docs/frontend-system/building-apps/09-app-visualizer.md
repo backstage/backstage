@@ -9,7 +9,7 @@ description: How to install and use the App Visualizer plugin in the frontend sy
 
 This section describes how to install the `app-visualizer` plugin in the frontend system. It also describes which views are available. It can be used during normal usage of the frontend system or during migration.
 
-### Visualizer Plugin
+### App Visualizer Plugin
 
 The `app-visualizer` plugin can help with troubleshooting. It provides a visual overview of your app's extension tree, making it easy to verify that plugins are installed correctly, see how extensions are wired together, and identify issues during migration.
 
