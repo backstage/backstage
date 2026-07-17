@@ -1,5 +1,77 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.8.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.5
+  - @backstage/config-loader@1.11.0
+  - @backstage/backend-openapi-utils@0.7.0
+  - @backstage/cli-common@0.3.0
+  - @backstage/plugin-catalog-backend@3.8.1
+  - @backstage/plugin-auth-node@0.7.3
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/cli-node@0.3.4
+  - @backstage/plugin-app-node@0.1.47
+  - @backstage/plugin-events-backend@0.6.4
+  - @backstage/plugin-events-node@0.4.24
+  - @backstage/plugin-permission-node@0.11.2
+  - @backstage/plugin-scaffolder-node@0.13.5
+  - @backstage/plugin-search-backend-node@1.4.6
+
+## 0.8.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.0-next.1
+  - @backstage/cli-common@0.3.0-next.0
+  - @backstage/backend-defaults@0.17.5-next.2
+  - @backstage/plugin-catalog-backend@3.8.1-next.1
+  - @backstage/plugin-events-backend@0.6.4-next.1
+  - @backstage/backend-plugin-api@1.9.3-next.1
+  - @backstage/cli-node@0.3.4-next.0
+  - @backstage/config-loader@1.11.0-next.2
+
+## 0.8.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.4-next.0
+  - @backstage/config-loader@1.11.0-next.0
+  - @backstage/plugin-catalog-backend@3.8.1-next.0
+  - @backstage/plugin-auth-node@0.7.3-next.0
+  - @backstage/plugin-events-backend@0.6.4-next.0
+  - @backstage/plugin-permission-node@0.11.2-next.0
+  - @backstage/plugin-search-backend-node@1.4.6-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-events-node@0.4.24-next.0
+  - @backstage/plugin-scaffolder-node@0.13.5-next.0
+  - @backstage/plugin-app-node@0.1.47-next.0
+  - @backstage/backend-openapi-utils@0.6.11-next.0
+
+## 0.8.3
+
+### Patch Changes
+
+- 7005478: Fixed dynamic backend plugin loading to fall back to the main package export when an alpha `package.json` is present but does not provide a plugin entrypoint. Previously, plugins whose alpha export only exposed supplementary APIs (such as permissions) could fail to load even though the main export was valid. The loader now tries the alpha entry first and uses the main export when the alpha module does not export a `BackendFeature`, `BackendFeatureFactory`, or `dynamicPluginInstaller`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/plugin-catalog-backend@3.8.0
+  - @backstage/cli-node@0.3.3
+  - @backstage/backend-defaults@0.17.3
+  - @backstage/plugin-events-backend@0.6.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/config-loader@1.10.12
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-app-node@0.1.46
+  - @backstage/plugin-auth-node@0.7.2
+  - @backstage/plugin-events-node@0.4.23
+  - @backstage/plugin-permission-node@0.11.1
+  - @backstage/plugin-search-backend-node@1.4.5
+
 ## 0.8.3-next.0
 
 ### Patch Changes

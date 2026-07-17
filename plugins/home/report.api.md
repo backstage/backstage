@@ -102,6 +102,7 @@ export type CustomHomepageGridProps = {
   compactType?: 'vertical' | 'horizontal' | null;
   allowOverlap?: boolean;
   preventCollision?: boolean;
+  preventDuplicateWidgets?: boolean;
 };
 
 // @public
@@ -183,6 +184,7 @@ export const homeTranslationRef: TranslationRef<
   {
     readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
+    readonly 'addWidgetDialog.noAvailableWidgets': 'All available widgets have been added to the dashboard.';
     readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
     readonly 'customHomepageButtons.edit': 'Edit';

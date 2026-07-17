@@ -1,6 +1,6 @@
 {
   "name": "@internal/backend",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "backstage": {
     "role": "node-library",
     "inline": true
@@ -21,6 +21,9 @@
   "scripts": {
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

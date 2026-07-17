@@ -12,7 +12,12 @@ import {
   AllowsCustomValue,
   WithSections,
 } from './components';
-import { comboboxPropDefs } from './props-definition';
+import {
+  comboboxPropDefs,
+  comboboxItemPropDefs,
+  comboboxItemTextPropDefs,
+  comboboxItemProfilePropDefs,
+} from './props-definition';
 import {
   optionPropDefs,
   optionSectionPropDefs,
@@ -25,9 +30,13 @@ import {
   comboboxDisabledSnippet,
   comboboxResponsiveSnippet,
   comboboxIconSnippet,
+  comboboxCustomSearchSnippet,
   comboboxDisabledOptionsSnippet,
   comboboxCustomValueSnippet,
   comboboxSectionsSnippet,
+  comboboxCustomItemsSnippet,
+  comboboxAsyncSnippet,
+  comboboxManualLoadingSnippet,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -36,6 +45,7 @@ import { ComboboxDefinition } from '../../../utils/definitions';
 
 export const reactAriaUrls = {
   combobox: 'https://react-aria.adobe.com/ComboBox',
+  listBoxItem: 'https://react-aria.adobe.com/ListBox#listboxitem',
 };
 
 <PageTitle
@@ -54,6 +64,61 @@ export const reactAriaUrls = {
 
 <CodeBlock code={comboboxUsageSnippet} />
 
+Provide a visible `label` whenever possible, or use `aria-label` or
+`aria-labelledby` when the field is labeled elsewhere.
+
+## Collections
+
+Combobox accepts one collection source at a time:
+
+- Pass an `options` array for standard text rows with optional descriptions,
+  icons, or sections.
+- Pass `items` with a child render function for domain objects or custom rows.
+- Compose item children directly for a short, fixed collection.
+- Pass a `useAsyncList` result to `options` or `items` for asynchronous data
+  and incremental loading.
+
+The prop types prevent mixing collection sources and incompatible search or
+loading configurations.
+
+Every option or item passed through `options` or `items` needs a stable `id`.
+Dynamic render functions receive the full source item, and React Aria supplies
+its identity to the rendered item component. Statically composed items may
+provide their own `id`.
+
+Use `ComboboxItemText` and `ComboboxItemProfile` for standard rich rows. Use
+the low-level `ComboboxItem` for fully custom content, and provide its
+`textValue` for filtering and accessibility.
+
+Option sections are supported only in static `options` arrays.
+
+## Search and selection
+
+Combobox filters loaded items with a client-side contains match by default.
+Pass `search.filter` to match against the full option or item. Custom filters
+require an `options` or `items` source; static composition uses the default
+text-value match. Pass `search={{ mode: 'server' }}` with a `useAsyncList`
+source to forward the input query to the source instead. To control a client
+query, pass `search.inputValue` together with `search.onInputChange`. Use
+`search.defaultInputValue` to set an initial uncontrolled query.
+
+Regular collections use item keys for `value`, `defaultValue`, and `onChange`.
+Direct async server collections use the full option or item instead. This lets
+the Combobox retain the selected item while the current server results change.
+Custom async server items require a canonical `textValue`; plain options use
+their `label`.
+
+While the user edits a direct async server Combobox, the selected item remains
+committed. Leaving the field restores its canonical text and queries the source
+with that text. With `allowsCustomValue`, unmatched text remains in the input
+and no option is selected.
+
+If server data is managed elsewhere, control `search.inputValue` and
+`search.onInputChange` yourself. This manual mode keeps key-based selection.
+Pass `loading` to report loading state and optionally load more results.
+In server mode, direct `useAsyncList` sources provide their own query and
+loading state and cannot be combined with these manual props.
+
 ## API reference
 
 <PropsTable data={comboboxPropDefs} />
@@ -63,6 +128,8 @@ export const reactAriaUrls = {
 ### Option types
 
 The `options` prop accepts an array containing either of the following shapes.
+Use `id` for new code. The deprecated `value` identity remains supported for
+static arrays.
 
 #### `Option`
 
@@ -71,6 +138,30 @@ The `options` prop accepts an array containing either of the following shapes.
 #### `OptionSection`
 
 <PropsTable data={optionSectionPropDefs} />
+
+### ComboboxItem
+
+Low-level item wrapper for fully custom item content.
+
+<PropsTable data={comboboxItemPropDefs} />
+
+<ReactAriaLink component="ListBoxItem" href={reactAriaUrls.listBoxItem} />
+
+### ComboboxItemText
+
+Preset item with a title, optional description, and optional leading icon.
+
+<PropsTable data={comboboxItemTextPropDefs} />
+
+<ReactAriaLink component="ListBoxItem" href={reactAriaUrls.listBoxItem} />
+
+### ComboboxItemProfile
+
+Preset item with an avatar and profile name.
+
+<PropsTable data={comboboxItemProfilePropDefs} />
+
+<ReactAriaLink component="ListBoxItem" href={reactAriaUrls.listBoxItem} />
 
 ## Examples
 
@@ -82,6 +173,43 @@ The `options` prop accepts an array containing either of the following shapes.
   preview={<WithLabelAndDescription />}
   code={comboboxDescriptionSnippet}
 />
+
+### Search
+
+Pass `search.filter` to replace the default contains match.
+
+<CodeBlock code={comboboxCustomSearchSnippet} />
+
+### Custom items
+
+Use item presets or low-level items for fixed rich rows, or pass domain objects
+through `items` with a child render function. Pass `dependencies` when that
+render function also depends on values outside each item. Presets include the
+standard BUI selection indicator. Low-level items own their internal layout and
+selection treatment; set `showSelectionIndicator` to use the standard
+indicator and content layout.
+
+<CodeBlock code={comboboxCustomItemsSnippet} />
+
+### Server search and loading
+
+Import `useAsyncList` from `@backstage/ui` and pass its result directly to
+`options` or `items`. The Combobox derives query state, loading state, and
+incremental loading from the list.
+
+Direct async server collections use the full selected option or item for
+`value`, `defaultValue`, and `onChange`. Custom items need an `id` and a
+canonical `textValue`; plain options use their `label`. The selected item
+remains committed while the user edits the query. Leaving the field restores
+its canonical text unless `allowsCustomValue` keeps unmatched text.
+
+<CodeBlock code={comboboxAsyncSnippet} />
+
+If data fetching is managed elsewhere, control the server query through
+`search` and pass `loading` with the current state and optional load-more
+callback. This manual mode keeps the regular key-based selection API.
+
+<CodeBlock code={comboboxManualLoadingSnippet} />
 
 ### Sizes
 
@@ -121,7 +249,8 @@ The `options` prop accepts an array containing either of the following shapes.
 
 ### Custom values
 
-Allow the user to type a value that is not in the option list by setting `allowsCustomValue`.
+Set `allowsCustomValue` to keep text that does not match an option. Custom text
+does not create a selected option.
 
 <Snippet
   layout="side-by-side"

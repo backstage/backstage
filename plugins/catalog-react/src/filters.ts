@@ -110,10 +110,13 @@ export class EntityTextFilter implements EntityFilter {
   filterEntity(entity: Entity): boolean {
     const words = this.toUpperArray(this.value.split(/\s/));
     const exactMatch = this.toUpperArray([entity.metadata.tags]);
+    const targets = (entity.spec as { targets?: unknown })?.targets;
     const partialMatch = this.toUpperArray([
       entity.metadata.name,
       entity.metadata.title,
       (entity.spec?.profile as { displayName?: string })?.displayName,
+      (entity.spec as { target?: string })?.target,
+      ...(Array.isArray(targets) ? targets : []),
     ]);
 
     for (const word of words) {
@@ -132,7 +135,13 @@ export class EntityTextFilter implements EntityFilter {
     return {
       term: this.value,
       // Update this to be more dynamic based on table columns.
-      fields: ['metadata.name', 'metadata.title', 'spec.profile.displayName'],
+      fields: [
+        'metadata.name',
+        'metadata.title',
+        'spec.profile.displayName',
+        'spec.target',
+        'spec.targets',
+      ],
     };
   }
 
@@ -145,7 +154,7 @@ export class EntityTextFilter implements EntityFilter {
   ): Array<string> {
     return value
       .flat()
-      .filter((m): m is string => Boolean(m))
+      .filter((m): m is string => Boolean(m) && typeof m === 'string')
       .map(m => m.toLocaleUpperCase('en-US'));
   }
 }

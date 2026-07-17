@@ -784,10 +784,24 @@ export interface Config {
       | {
           store: 'redis';
           /**
-           * A redis connection string in the form `redis://user:pass@host:port`.
+           * A redis connection string in the form `redis://user:pass@host:port`,
+           * or an object with connection options passed directly to the underlying
+           * client (e.g. `{ url: 'redis://localhost:6379', pingInterval: 60000 }`).
+           * The object form is only supported for the Redis store.
            * @visibility secret
            */
-          connection: string;
+          connection:
+            | string
+            | {
+                /**
+                 * The Redis connection URL.
+                 */
+                url: string;
+                /**
+                 * Other connection settings
+                 */
+                [key: string]: unknown;
+              };
           /** An optional default TTL (in milliseconds, if given as a number). */
           defaultTtl?: number | HumanDuration | string;
           redis?: {

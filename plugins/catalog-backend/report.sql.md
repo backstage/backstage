@@ -127,7 +127,6 @@
 
 ### Indices
 
-- `search_entity_id_idx` (`entity_id`)
 - `search_entity_key_value_idx` (`entity_id`, `key`, `value`) unique
 - `search_facets_covering_idx` (`key`, `original_value`, `entity_id`)
 - `search_key_value_entity_idx` (`key`, `value`, `entity_id`)

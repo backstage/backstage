@@ -45,6 +45,7 @@ function sidebarElementWithIndex(
 
 export default {
   docs: [
+    'landing-page/doc-landing-page',
     sidebarElementWithIndex({ label: 'Overview' }, [
       'overview/what-is-backstage',
       'overview/technical-overview',
@@ -79,6 +80,7 @@ export default {
           'getting-started/update-a-component',
           'getting-started/unregister-delete-component',
         ]),
+        'features/techdocs/creating-and-publishing',
       ]),
       'overview/support',
       'getting-started/keeping-backstage-updated',
@@ -395,9 +397,11 @@ export default {
           'integrations/azure-blobStorage/locations',
           'integrations/azure-blobStorage/discovery',
         ]),
-        sidebarElementWithIndex({ label: 'Azure' }, [
+        sidebarElementWithIndex({ label: 'Azure DevOps' }, [
           'integrations/azure/locations',
           'integrations/azure/discovery',
+        ]),
+        sidebarElementWithIndex({ label: 'Microsoft Entra ID' }, [
           'integrations/azure/org',
         ]),
         sidebarElementWithIndex({ label: 'Bitbucket Cloud' }, [

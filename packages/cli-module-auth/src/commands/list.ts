@@ -19,7 +19,7 @@ import type { CliCommandContext } from '@backstage/cli-node';
 import { getAllInstances } from '../lib/storage';
 
 export default async ({ args, info }: CliCommandContext) => {
-  cli({ help: info }, undefined, args);
+  cli({ name: info.usage }, undefined, args);
 
   const { instances, selected } = await getAllInstances();
   if (!instances.length) {

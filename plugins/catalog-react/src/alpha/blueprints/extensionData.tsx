@@ -15,8 +15,37 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ReactElement } from 'react';
+import {
+  createExtensionDataRef,
+  type IconElement,
+} from '@backstage/frontend-plugin-api';
+import { ReactElement, type ReactNode } from 'react';
+
+/** @alpha */
+export type UseProps = () =>
+  | {
+      title: ReactNode;
+      href: string;
+      onClick?: () => void | Promise<void>;
+      disabled?: boolean;
+    }
+  | {
+      title: ReactNode;
+      onClick: () => void | Promise<void>;
+      disabled?: boolean;
+    };
+
+/** @alpha */
+export type EntityContextMenuItemData = {
+  icon: IconElement;
+  useProps: UseProps;
+};
+
+/** @internal */
+export const entityContextMenuItemDataRef =
+  createExtensionDataRef<EntityContextMenuItemData>().with({
+    id: 'catalog.entity-context-menu-item-data',
+  });
 
 /** @internal */
 export const entityContentTitleDataRef = createExtensionDataRef<string>().with({

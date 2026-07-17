@@ -37,7 +37,7 @@ export default async ({ args, info }: CliCommandContext) => {
     _: positionals,
   } = cli(
     {
-      help: { ...info, usage: `${info.usage} <workspace-dir> [packages...]` },
+      name: info.usage,
       booleanFlagNegation: true,
       parameters: ['<workspace-dir>', '[packages...]'],
       flags: {

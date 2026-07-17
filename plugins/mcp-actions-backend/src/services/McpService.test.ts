@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mockCredentials } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { McpService } from './McpService';
 import {
   actionsRegistryServiceMock,
@@ -156,6 +156,96 @@ describe('McpService', () => {
         'error.type': 'Error',
       }),
     );
+  });
+
+  it('should skip actions with invalid input schemas instead of failing the whole list', async () => {
+    const validAction = {
+      id: 'plugin:valid',
+      pluginId: 'plugin',
+      name: 'valid',
+      title: 'Valid',
+      description: 'Valid action',
+      schema: {
+        input: { type: 'object' as const },
+        output: { type: 'object' as const },
+      },
+      attributes: { destructive: false, readOnly: true, idempotent: true },
+    };
+    const badTypeAction = {
+      id: 'plugin:bad-type',
+      pluginId: 'plugin',
+      name: 'bad-type',
+      title: 'Bad Type',
+      description: 'inputSchema.type is not "object"',
+      schema: {
+        input: { type: 'string' as unknown as 'object' },
+        output: { type: 'object' as const },
+      },
+      attributes: { destructive: false, readOnly: true, idempotent: true },
+    };
+    const badRequiredAction = {
+      id: 'plugin:bad-required',
+      pluginId: 'plugin',
+      name: 'bad-required',
+      title: 'Bad Required',
+      description: 'inputSchema.required is not an array of strings',
+      schema: {
+        input: {
+          type: 'object' as const,
+          required: 'foo' as unknown as string[],
+        },
+        output: { type: 'object' as const },
+      },
+      attributes: { destructive: false, readOnly: true, idempotent: true },
+    };
+
+    const fakeActions: ActionsService = {
+      list: jest.fn(async () => ({
+        actions: [validAction, badTypeAction, badRequiredAction],
+      })),
+      invoke: jest.fn(async () => ({ output: {} })),
+    };
+
+    const logger = mockServices.logger.mock();
+    const mcpService = await McpService.create({
+      actions: fakeActions,
+      metrics: metricsServiceMock.mock(),
+      tracingService: tracingServiceMock.mock(),
+      logger,
+    });
+
+    const server = mcpService.getServer({
+      credentials: mockCredentials.user(),
+    });
+
+    const client = new Client({ name: 'test', version: '1.0' });
+    const [clientTransport, serverTransport] =
+      InMemoryTransport.createLinkedPair();
+    await Promise.all([
+      client.connect(clientTransport),
+      server.connect(serverTransport),
+    ]);
+
+    const first = await client.request(
+      { method: 'tools/list' },
+      ListToolsResultSchema,
+    );
+    const second = await client.request(
+      { method: 'tools/list' },
+      ListToolsResultSchema,
+    );
+
+    expect(first.tools).toHaveLength(1);
+    expect(first.tools[0].name).toBe('plugin.valid');
+    expect(second.tools).toHaveLength(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('plugin:bad-type'),
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('plugin:bad-required'),
+    );
+    // Each bad action should only log once across repeated listings.
+    expect(logger.warn).toHaveBeenCalledTimes(2);
   });
 
   it('should call the action when the tool is invoked', async () => {

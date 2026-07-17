@@ -102,6 +102,11 @@ export type CustomHomepageGridProps = {
    * @defaultValue true
    */
   preventCollision?: boolean;
+  /**
+   * Controls if widgets can be added to the grid if they already exist. If true, widgets already present on the grid are excluded from the Add Widget dialog (preventing duplicates)
+   * @defaultValue false
+   */
+  preventDuplicateWidgets?: boolean;
 };
 
 export const LayoutConfigurationSchema = z.object({

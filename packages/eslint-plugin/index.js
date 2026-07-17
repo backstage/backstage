@@ -25,6 +25,7 @@ module.exports = {
         '@backstage/no-mixed-plugin-imports': 'warn',
         '@backstage/no-ui-css-imports-in-non-frontend': 'error',
         '@backstage/no-self-package-imports': 'error',
+        '@backstage/no-deprecated-bui-tokens': 'warn',
       },
     },
   },
@@ -36,5 +37,6 @@ module.exports = {
     'no-mixed-plugin-imports': require('./rules/no-mixed-plugin-imports'),
     'no-ui-css-imports-in-non-frontend': require('./rules/no-ui-css-imports-in-non-frontend'),
     'no-self-package-imports': require('./rules/no-self-package-imports'),
+    'no-deprecated-bui-tokens': require('./rules/no-deprecated-bui-tokens'),
   },
 };

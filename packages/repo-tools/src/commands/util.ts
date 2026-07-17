@@ -19,6 +19,7 @@ import { randomUUID } from 'node:crypto';
 import { openSync, closeSync, readFileSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import commandExists from 'command-exists';
 
 // Matches ANSI SGR escape sequences (e.g. bold, color, reset)
 const ansiPattern = new RegExp(`${String.fromCharCode(0x1b)}\\[[0-9;]*m`, 'g');
@@ -85,4 +86,14 @@ export function createBinRunner(cwd: string, path: string) {
       });
     });
   };
+}
+
+export async function ensureOasdiffInstalled() {
+  try {
+    await commandExists('oasdiff');
+  } catch {
+    throw new Error(
+      `oasdiff is not installed. Please install it to use this command: https://github.com/oasdiff/oasdiff#installation`,
+    );
+  }
 }

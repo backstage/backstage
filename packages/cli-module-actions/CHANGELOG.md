@@ -1,5 +1,28 @@
 # @backstage/cli-module-actions
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.4
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.4-next.0
+
+## 0.1.2
+
+### Patch Changes
+
+- 696c78c: The `--help` output for commands now shows a generated usage line that lists the available flags and any positional arguments the command accepts.
+- 2e6ffe6: Updated the standalone CLI executable to use the new CLI module runner.
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+
 ## 0.1.1
 
 ### Patch Changes

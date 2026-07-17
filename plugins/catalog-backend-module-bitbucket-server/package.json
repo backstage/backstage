@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-bitbucket-server",
-  "version": "0.5.12-next.0",
+  "version": "0.5.13",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "catalog",
@@ -21,12 +21,16 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
       "package.json": [
         "package.json"
       ]
@@ -59,7 +63,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-events-backend-test-utils": "workspace:^",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"
 }

@@ -40,10 +40,6 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
     jest.resetAllMocks();
   });
 
-  afterEach(async () => {
-    await knex?.destroy();
-  });
-
   it('goes through the expected states', async () => {
     const fn = jest.fn(
       async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
@@ -205,6 +201,30 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
     await waitForExpect(() => {
       expect(fn).toHaveBeenCalledTimes(3);
     });
+  });
+
+  it('stops retrying when the abort signal is triggered', async () => {
+    const controller = new AbortController();
+    const fn = jest.fn().mockRejectedValue(new Error('always fails'));
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      initialDelayDuration: undefined,
+      cadence: '* * * * * *',
+      timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
+    };
+    const checkFrequency = Duration.fromObject({ milliseconds: 50 });
+    const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
+    worker.start(settings, { signal: controller.signal });
+
+    await waitForExpect(() => {
+      expect(fn).toHaveBeenCalled();
+    });
+
+    const callsBeforeAbort = fn.mock.calls.length;
+    controller.abort();
+
+    await new Promise(r => setTimeout(r, 500));
+    expect(fn.mock.calls.length).toBe(callsBeforeAbort);
   });
 
   it('does not clobber ticket lock when stolen', async () => {
@@ -564,5 +584,69 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
     await expect(TaskWorker.cancel(knex, 'task1')).rejects.toThrow(
       ConflictError,
     );
+  });
+
+  it('next_run_start_at is populated when transitioning from manual trigger to cadence-based schedule', async () => {
+    const fn = jest.fn(
+      async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+    );
+
+    const manualSettings: TaskSettingsV2 = {
+      version: 2,
+      cadence: 'manual',
+      timeoutAfterDuration: 'PT1M',
+    };
+
+    const worker = new TaskWorker('task99', fn, knex, logger);
+    await worker.persistTask(manualSettings);
+
+    const rowBeforeTransition = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(rowBeforeTransition.next_run_start_at).toBeNull();
+
+    const cadenceSettings: TaskSettingsV2 = {
+      version: 2,
+      cadence: 'PT4H',
+      timeoutAfterDuration: 'PT1M',
+    };
+
+    await worker.persistTask(cadenceSettings);
+
+    const rowAfterTransition = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(rowAfterTransition.next_run_start_at).not.toBeNull();
+
+    const nextStartAt = DateTime.fromJSDate(
+      new Date(rowAfterTransition.next_run_start_at!),
+    );
+    const now = DateTime.now();
+    expect(nextStartAt.diff(now).as('hours')).toBeCloseTo(4, 0);
+  });
+
+  it('next_run_start_at is populated when transitioning from manual trigger to cron schedule', async () => {
+    const fn = jest.fn(
+      async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+    );
+
+    const manualSettings: TaskSettingsV2 = {
+      version: 2,
+      cadence: 'manual',
+      timeoutAfterDuration: 'PT1M',
+    };
+
+    const worker = new TaskWorker('task99', fn, knex, logger);
+    await worker.persistTask(manualSettings);
+
+    const rowBeforeTransition = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(rowBeforeTransition.next_run_start_at).toBeNull();
+
+    const cronSettings: TaskSettingsV2 = {
+      version: 2,
+      cadence: '*/15 * * * *',
+      timeoutAfterDuration: 'PT1M',
+    };
+
+    await worker.persistTask(cronSettings);
+
+    const rowAfterTransition = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(rowAfterTransition.next_run_start_at).not.toBeNull();
   });
 });

@@ -91,4 +91,4 @@ backend.add(
 
 See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page and also make it work smoothly for local development. You'll use `cfaccess` as the provider name.
 
-If you [provide a custom sign-in resolver](https://backstage.io/docs/auth/identity-resolver#building-custom-resolvers), you can skip the `signIn` block entirely.
+If you [provide a custom sign-in resolver](../identity-resolver.md#building-custom-resolvers), you can skip the `signIn` block entirely.

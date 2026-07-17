@@ -1,5 +1,39 @@
 # @backstage/core-app-api
 
+## 1.20.3
+
+### Patch Changes
+
+- 3ef5974: Added support for wildcard plugin entries in frontend discovery endpoints, matching the backend discovery behavior.
+- 6172725: Fixed the default fetch API to support discovery endpoints that only define an internal target.
+- Updated dependencies
+  - @backstage/ui@0.17.0
+  - @backstage/core-plugin-api@1.12.8
+
+## 1.20.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.0-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+
+## 1.20.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+
+## 1.20.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.15.1-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+
 ## 1.20.1
 
 ### Patch Changes

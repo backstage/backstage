@@ -21,7 +21,7 @@ import {
 } from '../providers';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { ANNOTATION_PUPPET_CERTNAME, ENDPOINT_FACTSETS } from './constants';
 
@@ -41,11 +41,9 @@ describe('readPuppetNodes', () => {
 
     beforeEach(async () => {
       worker.use(
-        rest.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json([
+        http.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, () => {
+          return HttpResponse.json(
+            [
               {
                 certname: 'node1',
                 timestamp: 'time1',
@@ -112,7 +110,10 @@ describe('readPuppetNodes', () => {
                   ],
                 },
               },
-            ]),
+            ],
+            {
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         }),
       );
@@ -196,16 +197,11 @@ describe('readPuppetNodes', () => {
     describe('where no results are matched', () => {
       beforeEach(async () => {
         worker.use(
-          rest.get(
-            `${config.baseUrl}/${ENDPOINT_FACTSETS}`,
-            (_req, res, ctx) => {
-              return res(
-                ctx.status(200),
-                ctx.set('Content-Type', 'application/json'),
-                ctx.json([]),
-              );
-            },
-          ),
+          http.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, () => {
+            return HttpResponse.json([], {
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }),
         );
       });
 
@@ -218,25 +214,23 @@ describe('readPuppetNodes', () => {
     describe('where results are matched', () => {
       beforeEach(async () => {
         worker.use(
-          rest.get(
-            `${config.baseUrl}/${ENDPOINT_FACTSETS}`,
-            (_req, res, ctx) => {
-              return res(
-                ctx.status(200),
-                ctx.set('Content-Type', 'application/json'),
-                ctx.json([
-                  {
-                    certname: 'node1',
-                    timestamp: 'time1',
-                    hash: 'hash1',
-                    producer_timestamp: 'producer_time1',
-                    producer: 'producer1',
-                    environment: 'environment1',
-                  },
-                ]),
-              );
-            },
-          ),
+          http.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, () => {
+            return HttpResponse.json(
+              [
+                {
+                  certname: 'node1',
+                  timestamp: 'time1',
+                  hash: 'hash1',
+                  producer_timestamp: 'producer_time1',
+                  producer: 'producer1',
+                  environment: 'environment1',
+                },
+              ],
+              {
+                headers: { 'Content-Type': 'application/json' },
+              },
+            );
+          }),
         );
       });
 

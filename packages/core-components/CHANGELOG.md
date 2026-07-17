@@ -1,5 +1,56 @@
 # @backstage/core-components
 
+## 0.18.12
+
+### Patch Changes
+
+- 120e7c3: chore(deps): bump `js-yaml` from 4.1.1 to 4.2.0
+- 9efce7d: Fixed the table filters sidebar rendering a stray `0` when no filters are configured.
+- 7ceeaad: Migrated CopyTextButton component from Material-UI to Backstage UI (BUI). Replaced MUI IconButton and Tooltip with BUI ButtonIcon and TooltipTrigger/Tooltip components. This is an internal refactoring that maintains backward compatibility - the component API remains unchanged.
+- Updated dependencies
+  - @backstage/ui@0.17.0
+  - @backstage/core-plugin-api@1.12.8
+
+## 0.18.12-next.1
+
+### Patch Changes
+
+- 7ceeaad: Migrated CopyTextButton component from Material-UI to Backstage UI (BUI). Replaced MUI IconButton and Tooltip with BUI ButtonIcon and TooltipTrigger/Tooltip components. This is an internal refactoring that maintains backward compatibility - the component API remains unchanged.
+
+## 0.18.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.8-next.0
+
+## 0.18.11
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- a07e6a3: Added the correctly-spelled `'header'` literal to the `TableFiltersClassKey` union type and deprecated the previous typoed `'heder'` literal. The generated CSS class with the old key is preserved for backwards compatibility; switch to `'header'` to avoid future removal.
+- c161e1c: Lazy-load `react-syntax-highlighter` and `@dagrejs/dagre` so they are no longer pulled in eagerly through the barrel export. This reduces the upfront module cost of importing from `@backstage/core-components` by roughly 10 MB. The public API is unchanged.
+- dbe93a7: Fix autologout not working correctly when closing all tabs
+- 8add9b9: Fixed the proxy-based sign-in page failing to read the session token when the proxy issues a token whose payload is encoded using the URL-safe base64 alphabet. Such tokens are now decoded correctly so sign-in no longer breaks.
+- f35372d: Fixed text clipping in SidebarSubmenuItem by correcting line-height from 1 to 1.5
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.7
+
+## 0.18.11-next.2
+
+### Patch Changes
+
+- c161e1c: Lazy-load `react-syntax-highlighter` and `@dagrejs/dagre` so they are no longer pulled in eagerly through the barrel export. This reduces the upfront module cost of importing from `@backstage/core-components` by roughly 10 MB. The public API is unchanged.
+
+## 0.18.11-next.1
+
+### Patch Changes
+
+- dbe93a7: Fix autologout not working correctly when closing all tabs
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.7-next.0
+
 ## 0.18.11-next.0
 
 ### Patch Changes

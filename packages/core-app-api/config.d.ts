@@ -167,6 +167,7 @@ export interface Config {
           };
       /**
        * Array of plugins which use the target baseUrl.
+       * Use `'*'` to configure a fallback target for all plugins without an explicit target.
        *
        * @visibility frontend
        */

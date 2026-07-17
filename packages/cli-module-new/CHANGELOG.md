@@ -1,5 +1,44 @@
 # @backstage/cli-module-new
 
+## 0.1.5
+
+### Patch Changes
+
+- 28c1c1c: Synced zod-validation-error versions between packages
+- Updated dependencies
+  - @backstage/cli-common@0.3.0
+  - @backstage/cli-node@0.3.4
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+  - @backstage/cli-node@0.3.4-next.0
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 28c1c1c: Synced zod-validation-error versions between packages
+
+## 0.1.4
+
+### Patch Changes
+
+- 4014819: Added a new `scaffolder-field-extension-module` template for scaffolding custom Scaffolder form field extensions via `backstage-cli new`.
+- 696c78c: The `--help` output for commands now shows a generated usage line that lists the available flags and any positional arguments the command accepts.
+- 2e6ffe6: Updated the standalone CLI executable to use the new CLI module runner.
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 4014819: Added a new `scaffolder-field-extension-module` template for scaffolding custom Scaffolder form field extensions via `backstage-cli new`.
+
 ## 0.1.3
 
 ### Patch Changes

@@ -22,6 +22,7 @@ import { ConflictError } from '@backstage/errors';
 import {
   mockServices,
   createMockDirectory,
+  TestDatabases,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
@@ -588,3 +589,33 @@ describe('DatabaseTaskStore', () => {
     expect(fs.existsSync(`${workspaceDir.path}/app-config.yaml`)).toBeTruthy();
   });
 });
+
+// Regression coverage for the `totalTasks` count type. The rest of the suite
+// runs on better-sqlite3, where a `COUNT(*)` aggregate is returned as a number,
+// so the PostgreSQL behaviour (where knex returns it as a string) was never
+// exercised. These cases run against every supported database.
+//
+// `TestDatabases.create()` registers its own `afterAll` hook that shuts the
+// engines down, so no explicit teardown is needed here.
+const databases = TestDatabases.create();
+
+describe.each(databases.eachSupportedId())(
+  'DatabaseTaskStore totalTasks, %p',
+  databaseId => {
+    // The timeout is scoped to this single test (passed as the third argument
+    // to `it`) so the rest of the suite keeps the default timeout; spinning up
+    // a real database engine can take longer than the default.
+    it('returns list() totalTasks as a number', async () => {
+      const knex = await databases.init(databaseId);
+      const store = await DatabaseTaskStore.create({ database: knex });
+
+      await store.createTask({ spec: {} as TaskSpec, createdBy: 'me' });
+      await store.createTask({ spec: {} as TaskSpec, createdBy: 'me' });
+
+      const { totalTasks } = await store.list({});
+
+      expect(typeof totalTasks).toBe('number');
+      expect(totalTasks).toBe(2);
+    }, 60_000);
+  },
+);

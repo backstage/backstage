@@ -636,7 +636,7 @@ The `AlertDisplay` and `OAuthRequestDialog` are already provided as built-in ext
 const convertedRootFeatures = convertLegacyAppRoot(routes);
 ```
 
-But, if you have your own custom root elements you will need to migrate them to be extensions that you install in the app instead. Use `createAppRootElementExtension` to create said extension and then install it in the app.
+But, if you have your own custom root elements you will need to migrate them to be extensions that you install in the app instead. Use `AppRootElementBlueprint` from `@backstage/frontend-plugin-api` (for example `AppRootElementBlueprint.make({ ... })`) to create said extension and then install it in the app.
 
 Whether the element used to be rendered as a child of the `AppRouter` or not doesn't matter. All new root app elements will be rendered as a child of the app router.
 

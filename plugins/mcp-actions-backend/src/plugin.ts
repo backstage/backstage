@@ -21,7 +21,6 @@ import { json } from 'express';
 import Router from 'express-promise-router';
 import { McpService } from './services/McpService';
 import { createStreamableRouter } from './routers/createStreamableRouter';
-import { createSseRouter } from './routers/createSseRouter';
 import {
   actionsRegistryServiceRef,
   actionsServiceRef,
@@ -74,6 +73,7 @@ export const mcpPlugin = createBackendPlugin({
         const mcpService = await McpService.create({
           actions,
           metrics,
+          logger,
           namespacedToolNames,
           tracingService: tracing,
           captureToolPayloads,
@@ -103,13 +103,6 @@ export const mcpPlugin = createBackendPlugin({
             excludeRules: [],
           };
 
-          const sseRouter = createSseRouter({
-            mcpService,
-            httpAuth,
-            tracing,
-            serverConfig,
-          });
-
           const streamableRouter = createStreamableRouter({
             mcpService,
             httpAuth,
@@ -119,19 +112,18 @@ export const mcpPlugin = createBackendPlugin({
             serverConfig,
           });
 
-          router.use('/v1/sse', sseRouter);
           router.use('/v1', streamableRouter);
         }
 
         httpRouter.use(router);
 
+        const cimdConfigPath = config.has('auth.clientIdMetadataDocuments')
+          ? 'auth.clientIdMetadataDocuments'
+          : 'auth.experimentalClientIdMetadataDocuments';
         const oauthEnabled =
           config.getOptionalBoolean(
             'auth.experimentalDynamicClientRegistration.enabled',
-          ) ||
-          config.getOptionalBoolean(
-            'auth.experimentalClientIdMetadataDocuments.enabled',
-          );
+          ) || config.getOptionalBoolean(`${cimdConfigPath}.enabled`);
 
         if (oauthEnabled) {
           // OAuth Authorization Server Metadata (RFC 8414)

@@ -53,7 +53,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-          corepack: true
 
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
@@ -90,7 +89,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-          corepack: true
 
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
@@ -221,7 +219,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8
+        image: mysql:8.4
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-
@@ -264,7 +262,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-          corepack: true
 
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
@@ -306,10 +303,6 @@ jobs:
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
-
-      # We run the test cases before verifying the specs to prevent any failing tests from causing errors.
-      - name: verify openapi specs against test cases
-        run: yarn backstage-repo-tools repo schema openapi test
 
       - name: ensure clean working directory
         run: |

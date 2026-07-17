@@ -230,6 +230,8 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     useHomeStorage(defaultLayout);
   const [widgets, setWidgets] = useState(storedWidgets);
 
+  const preventDuplicateWidgets = props.preventDuplicateWidgets ?? false;
+
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
   const [editMode, setEditMode] = useState(editModeOn);
@@ -246,6 +248,16 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     return key.split('__')[0];
   };
   const { t } = useTranslationRef(homeTranslationRef);
+
+  const getAvailableWidgets = () => {
+    if (!preventDuplicateWidgets) {
+      return availableWidgets;
+    }
+    const usedWidgetNames = new Set(
+      widgets.map(w => getWidgetNameFromKey(w.id)),
+    );
+    return availableWidgets.filter(widget => !usedWidgetNames.has(widget.name));
+  };
 
   const handleAdd = (widget: Widget) => {
     const widgetId = `${widget.name}__${widgets.length + 1}${Math.random()
@@ -375,7 +387,13 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
         open={addWidgetDialogOpen}
         onClose={() => setAddWidgetDialogOpen(false)}
       >
-        <AddWidgetDialog widgets={availableWidgets} handleAdd={handleAdd} />
+        {/* Only mount when open so the list does not update (e.g. remove the added widget) before the modal closes */}
+        {addWidgetDialogOpen && (
+          <AddWidgetDialog
+            widgets={getAvailableWidgets()}
+            handleAdd={handleAdd}
+          />
+        )}
       </Dialog>
       {!editMode && widgets.length === 0 && (
         <Typography variant="h5" align="center">
