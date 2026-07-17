@@ -9,6 +9,7 @@ on:
       - 'microsite/**'
       - 'beps/**'
       - 'mkdocs.yml'
+      - 'mkdocs-ci.yml'
       - 'docs/**'
 
 permissions:
