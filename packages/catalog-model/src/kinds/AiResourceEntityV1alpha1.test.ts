@@ -221,6 +221,11 @@ describe('AiResourceV1alpha1 skill validator', () => {
     await expect(skillValidator.check(entity)).rejects.toThrow(/allowedTools/);
   });
 
+  it('rejects allowedTools with wrong item type', async () => {
+    (entity as any).spec.allowedTools = [42];
+    await expect(skillValidator.check(entity)).rejects.toThrow(/allowedTools/);
+  });
+
   it('accepts valid license', async () => {
     entity.spec = {
       type: 'skill',
