@@ -18,7 +18,7 @@ import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
 import { entityKindSchemaValidator } from '../validation';
 import type { KindValidator } from './types';
-import type { JsonObject } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 import defaultJsonSchema from '../schema/kinds/AiResource.v1alpha1.schema.json';
 import skillJsonSchema from '../schema/kinds/AiResource.v1alpha1.skill.schema.json';
 import ruleJsonSchema from '../schema/kinds/AiResource.v1alpha1.rule.schema.json';
@@ -82,6 +82,7 @@ export interface RuleAiResourceEntityV1alpha1
     disciplines?: string[];
     category: string;
     rationale: string;
+    activation?: Array<{ harness: string; [key: string]: JsonValue }>;
   };
 }
 

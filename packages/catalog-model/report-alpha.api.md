@@ -566,6 +566,10 @@ export interface RuleAiResourceEntityV1alpha1
     disciplines?: string[];
     category: string;
     rationale: string;
+    activation?: Array<{
+      harness: string;
+      [key: string]: JsonValue;
+    }>;
   };
 }
 

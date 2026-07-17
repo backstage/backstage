@@ -13,3 +13,12 @@ spec:
     - backend
   category: architecture
   rationale: Ensures consistent error handling, authentication, and observability across all service calls
+  activation:
+    - harness: claude
+      paths:
+        - 'src/**'
+      description: Apply when editing source files
+    - harness: cursor
+      alwaysApply: false
+      globs:
+        - 'src/**'

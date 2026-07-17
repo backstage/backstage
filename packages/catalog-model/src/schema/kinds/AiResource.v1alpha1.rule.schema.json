@@ -78,6 +78,22 @@
               "type": "string",
               "description": "Explanation of why this rule exists.",
               "minLength": 1
+            },
+            "activation": {
+              "type": "array",
+              "description": "Describes how the rule is activated in agent harnesses. Each entry targets a specific harness and carries its native activation fields.",
+              "items": {
+                "type": "object",
+                "required": ["harness"],
+                "properties": {
+                  "harness": {
+                    "type": "string",
+                    "description": "The agent harness type (e.g. claude, cursor, codex).",
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": true
+              }
             }
           }
         }

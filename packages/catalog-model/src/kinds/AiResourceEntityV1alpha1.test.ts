@@ -273,6 +273,39 @@ describe('AiResourceV1alpha1 rule validator', () => {
     (entity as any).spec.disciplines = [''];
     await expect(ruleValidator.check(entity)).rejects.toThrow(/disciplines/);
   });
+
+  it('accepts valid activation', async () => {
+    (entity as any).spec.activation = [
+      {
+        harness: 'claude',
+        paths: ['src/**'],
+        description: 'Apply when editing source',
+      },
+      { harness: 'cursor', alwaysApply: false, globs: ['src/**'] },
+      { harness: 'codex' },
+    ];
+    await expect(ruleValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts missing activation', async () => {
+    delete (entity as any).spec.activation;
+    await expect(ruleValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects activation items without harness', async () => {
+    (entity as any).spec.activation = [{ paths: ['src/**'] }];
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/harness/);
+  });
+
+  it('rejects activation with empty harness', async () => {
+    (entity as any).spec.activation = [{ harness: '' }];
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/harness/);
+  });
+
+  it('rejects activation with wrong type', async () => {
+    (entity as any).spec.activation = 'not-an-array';
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/activation/);
+  });
 });
 
 describe('isAiResourceEntity', () => {
