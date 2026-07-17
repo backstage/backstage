@@ -45,7 +45,7 @@
 
   .bui-ComboboxInput {
     box-sizing: border-box;
-    border-radius: var(--bui-radius-3);
+    border-radius: var(--bui-radius-2);
     border: none;
     outline: none;
     background-color: var(--bui-bg-neutral-1);
