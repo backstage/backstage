@@ -33,7 +33,7 @@ The `app-visualizer` provides three views, each accessible via tabs at the top o
 
 - **Text** — Renders the extension tree as plain text. This is useful for copying and pasting into GitHub issues or Discord when asking for help, since it provides a compact, readable snapshot of your app's structure.
 
-For examples of the views, check the [Demo Site](https://demo.backstage.io/visualizer) or check the following screenshots.
+For examples of the views, see the [Demo Site](https://demo.backstage.io/visualizer) or the screenshots below.
 
 ##### Tree
 
