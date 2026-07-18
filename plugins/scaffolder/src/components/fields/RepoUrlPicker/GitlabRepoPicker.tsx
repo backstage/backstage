@@ -36,6 +36,8 @@ export const GitlabRepoPicker = (
     allowedOwners?: string[];
     allowedRepos?: string[];
     accessToken?: string;
+    ownerLabel?: string;
+    ownerDescription?: string;
   }>,
 ) => {
   const theme = useScaffolderTheme();
@@ -46,6 +48,8 @@ export const GitlabRepoPicker = (
     rawErrors,
     accessToken,
     isDisabled,
+    ownerLabel,
+    ownerDescription,
   } = props;
   const [availableGroups, setAvailableGroups] = useState<
     { title: string; id: string }[]
@@ -122,8 +126,10 @@ export const GitlabRepoPicker = (
       return (
         <BuiSelect
           className={overrides.select}
-          label={t('fields.gitlabRepoPicker.owner.title')}
-          description={t('fields.gitlabRepoPicker.owner.description')}
+          label={ownerLabel ?? t('fields.gitlabRepoPicker.owner.title')}
+          description={
+            ownerDescription ?? t('fields.gitlabRepoPicker.owner.description')
+          }
           isDisabled={isDisabled || allowedOwners.length === 1}
           isInvalid={rawErrors?.length > 0 && !owner}
           selectedKey={owner ?? null}
@@ -143,8 +149,10 @@ export const GitlabRepoPicker = (
 
     return (
       <BuiAutocomplete
-        label={t('fields.gitlabRepoPicker.owner.inputTitle')}
-        description={t('fields.gitlabRepoPicker.owner.description')}
+        label={ownerLabel ?? t('fields.gitlabRepoPicker.owner.inputTitle')}
+        description={
+          ownerDescription ?? t('fields.gitlabRepoPicker.owner.description')
+        }
         inputValue={owner ?? ''}
         onInputChange={value => onChange({ owner: value })}
         onSelectionChange={(key: Key | null) => {
@@ -175,7 +183,7 @@ export const GitlabRepoPicker = (
           <>
             <MuiSelect
               native
-              label={t('fields.gitlabRepoPicker.owner.title')}
+              label={ownerLabel ?? t('fields.gitlabRepoPicker.owner.title')}
               onChange={selected =>
                 onChange({
                   owner: String(
@@ -198,7 +206,9 @@ export const GitlabRepoPicker = (
             renderInput={params => (
               <MuiTextField
                 {...params}
-                label={t('fields.gitlabRepoPicker.owner.inputTitle')}
+                label={
+                  ownerLabel ?? t('fields.gitlabRepoPicker.owner.inputTitle')
+                }
                 disabled={isDisabled}
                 required
               />
@@ -209,7 +219,7 @@ export const GitlabRepoPicker = (
           />
         )}
         <FormHelperText>
-          {t('fields.gitlabRepoPicker.owner.description')}
+          {ownerDescription ?? t('fields.gitlabRepoPicker.owner.description')}
         </FormHelperText>
       </FormControl>
     </>

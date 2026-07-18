@@ -35,6 +35,9 @@ export const RepoUrlPickerRepoName = (props: {
   rawErrors: string[];
   availableRepos?: AvailableRepositories[];
   isDisabled?: boolean;
+  repoLabel?: string;
+  repoDescription?: string;
+  disableRepoAutocomplete?: boolean;
 }) => {
   const theme = useScaffolderTheme();
   const {
@@ -44,6 +47,9 @@ export const RepoUrlPickerRepoName = (props: {
     rawErrors,
     availableRepos,
     isDisabled,
+    repoLabel,
+    repoDescription,
+    disableRepoAutocomplete,
   } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -64,8 +70,10 @@ export const RepoUrlPickerRepoName = (props: {
       return (
         <BuiSelect
           className={overrides.select}
-          label={t('fields.repoUrlPicker.repository.title')}
-          description={t('fields.repoUrlPicker.repository.description')}
+          label={repoLabel ?? t('fields.repoUrlPicker.repository.title')}
+          description={
+            repoDescription ?? t('fields.repoUrlPicker.repository.description')
+          }
           isDisabled={isDisabled || allowedRepos.length === 1}
           isInvalid={rawErrors?.length > 0 && !repoName}
           selectedKey={repoName ?? null}
@@ -78,6 +86,23 @@ export const RepoUrlPickerRepoName = (props: {
       );
     }
 
+    if (disableRepoAutocomplete) {
+      return (
+        <BuiAutocomplete
+          label={repoLabel ?? t('fields.repoUrlPicker.repository.inputTitle')}
+          description={
+            repoDescription ?? t('fields.repoUrlPicker.repository.description')
+          }
+          inputValue={repoName ?? ''}
+          onInputChange={value => onChange({ name: value })}
+          options={[]}
+          isDisabled={isDisabled}
+          isRequired
+          isInvalid={rawErrors?.length > 0 && !repoName}
+        />
+      );
+    }
+
     const options = (availableRepos || []).map(r => ({
       label: r.name,
       value: r.name,
@@ -85,8 +110,10 @@ export const RepoUrlPickerRepoName = (props: {
 
     return (
       <BuiAutocomplete
-        label={t('fields.repoUrlPicker.repository.inputTitle')}
-        description={t('fields.repoUrlPicker.repository.description')}
+        label={repoLabel ?? t('fields.repoUrlPicker.repository.inputTitle')}
+        description={
+          repoDescription ?? t('fields.repoUrlPicker.repository.description')
+        }
         inputValue={repoName ?? ''}
         onInputChange={value => {
           const selectedRepo = availableRepos?.find(r => r.name === value);
@@ -112,6 +139,59 @@ export const RepoUrlPickerRepoName = (props: {
     ? allowedRepos.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
 
+  const renderMuiInput = () => {
+    if (allowedRepos?.length) {
+      return (
+        <MuiSelect
+          native
+          label={repoLabel ?? t('fields.repoUrlPicker.repository.title')}
+          onChange={selected =>
+            onChange({
+              name: String(Array.isArray(selected) ? selected[0] : selected),
+            })
+          }
+          disabled={isDisabled || allowedRepos.length === 1}
+          selected={repoName}
+          items={repoItems}
+        />
+      );
+    }
+
+    if (disableRepoAutocomplete) {
+      return (
+        <MuiTextField
+          label={repoLabel ?? t('fields.repoUrlPicker.repository.inputTitle')}
+          value={repoName ?? ''}
+          onChange={e => onChange({ name: e.target.value })}
+          required
+          disabled={isDisabled}
+          error={rawErrors?.length > 0 && !repoName}
+        />
+      );
+    }
+
+    return (
+      <MuiAutocomplete
+        value={repoName}
+        onChange={(_, newValue) => {
+          const selectedRepo = availableRepos?.find(r => r.name === newValue);
+          onChange(selectedRepo || { name: newValue || '' });
+        }}
+        options={(availableRepos || []).map(r => r.name)}
+        renderInput={params => (
+          <MuiTextField
+            {...params}
+            label={repoLabel ?? t('fields.repoUrlPicker.repository.inputTitle')}
+            required
+          />
+        )}
+        freeSolo
+        autoSelect
+        disabled={isDisabled}
+      />
+    );
+  };
+
   return (
     <>
       <FormControl
@@ -119,43 +199,9 @@ export const RepoUrlPickerRepoName = (props: {
         required
         error={rawErrors?.length > 0 && !repoName}
       >
-        {allowedRepos?.length ? (
-          <MuiSelect
-            native
-            label={t('fields.repoUrlPicker.repository.title')}
-            onChange={selected =>
-              onChange({
-                name: String(Array.isArray(selected) ? selected[0] : selected),
-              })
-            }
-            disabled={isDisabled || allowedRepos.length === 1}
-            selected={repoName}
-            items={repoItems}
-          />
-        ) : (
-          <MuiAutocomplete
-            value={repoName}
-            onChange={(_, newValue) => {
-              const selectedRepo = availableRepos?.find(
-                r => r.name === newValue,
-              );
-              onChange(selectedRepo || { name: newValue || '' });
-            }}
-            options={(availableRepos || []).map(r => r.name)}
-            renderInput={params => (
-              <MuiTextField
-                {...params}
-                label={t('fields.repoUrlPicker.repository.inputTitle')}
-                required
-              />
-            )}
-            freeSolo
-            autoSelect
-            disabled={isDisabled}
-          />
-        )}
+        {renderMuiInput()}
         <FormHelperText>
-          {t('fields.repoUrlPicker.repository.description')}
+          {repoDescription ?? t('fields.repoUrlPicker.repository.description')}
         </FormHelperText>
       </FormControl>
     </>

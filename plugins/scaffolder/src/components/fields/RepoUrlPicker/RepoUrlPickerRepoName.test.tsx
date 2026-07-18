@@ -127,6 +127,51 @@ describe('RepoUrlPickerRepoName', () => {
     expect(selectElement).toBeDisabled();
   });
 
+  it('should render a plain text input when disableRepoAutocomplete is true', async () => {
+    const onChange = jest.fn();
+
+    const { getByRole, queryByRole } = await renderInTestApp(
+      <RepoUrlPickerRepoName
+        onChange={onChange}
+        rawErrors={[]}
+        disableRepoAutocomplete
+      />,
+    );
+
+    const textInput = getByRole('textbox');
+    expect(textInput).toBeVisible();
+
+    // Should not have autocomplete behavior
+    expect(queryByRole('combobox')).not.toBeInTheDocument();
+    expect(textInput).not.toHaveAttribute('aria-autocomplete');
+
+    act(() => {
+      textInput.focus();
+      fireEvent.change(textInput, { target: { value: 'new-repo' } });
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ name: 'new-repo' });
+  });
+
+  it('should render custom labels when repoLabel and repoDescription are provided', async () => {
+    const onChange = jest.fn();
+
+    const { getByText, getByRole } = await renderInTestApp(
+      <RepoUrlPickerRepoName
+        onChange={onChange}
+        rawErrors={[]}
+        repoLabel="New Repository Name"
+        repoDescription="Type a new repo name"
+        disableRepoAutocomplete
+      />,
+    );
+
+    const textInput = getByRole('textbox');
+    expect(textInput).toBeVisible();
+    expect(getByText('New Repository Name')).toBeVisible();
+    expect(getByText('Type a new repo name')).toBeVisible();
+  });
+
   it('should disable the text input when no options are passed and isDisabled is true', async () => {
     const onChange = jest.fn();
 
