@@ -134,19 +134,24 @@ export async function performStitching(options: {
     // Grab the processed entity and stitch all of the relevant data into
     // it
 
-    const entity = JSON.parse(processedEntity) as AlphaEntity;
+    const parsedEntity = JSON.parse(processedEntity) as unknown;
+    const metadata = (parsedEntity as any)?.metadata;
     if (
-      !entity ||
-      typeof entity !== 'object' ||
-      Array.isArray(entity) ||
-      !entity.kind ||
-      !entity.metadata ||
-      !entity.apiVersion
+      !parsedEntity ||
+      typeof parsedEntity !== 'object' ||
+      Array.isArray(parsedEntity) ||
+      typeof (parsedEntity as any).kind !== 'string' ||
+      typeof (parsedEntity as any).apiVersion !== 'string' ||
+      !metadata ||
+      typeof metadata !== 'object' ||
+      Array.isArray(metadata) ||
+      typeof (metadata as any).name !== 'string'
     ) {
       throw new Error(
-        `Unexpected entity shape found in processed_entity column`,
+        `Unexpected entity shape found in processed_entity column for ${entityRef} (${entityId})`,
       );
     }
+    const entity = parsedEntity as AlphaEntity;
     const isOrphan = Number(incomingReferenceCount) === 0;
     let statusItems: EntityStatusItem[] = [];
 

@@ -444,7 +444,7 @@ describe.each(databases.eachSupportedId())(
           entity_id: 'my-id',
           entity_ref: 'k:ns/n',
           unprocessed_entity: JSON.stringify({}),
-          processed_entity: '"null"', // simulate malformed JSON output from database
+          processed_entity: 'null', // simulate malformed JSON value from database
           errors: '[]',
           next_update_at: knex.fn.now(),
           last_discovery_at: knex.fn.now(),

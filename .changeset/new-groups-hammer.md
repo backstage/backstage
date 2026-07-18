@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend': minor
+'@backstage/plugin-catalog-backend': patch
 ---
 
-Added a structural check after JSON.parse in performStitching.ts to catch malformed entities
+Validate stored processed entities during stitching and fail fast with a clear error when the data is malformed.
