@@ -267,6 +267,12 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'notificationsPage.tableTitle.unread_other': 'Unread notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_one': 'Read notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_other': 'Read notifications ({{count}})';
+    readonly 'unreadCard.title': 'Last unread notifications ({{count}})';
+    readonly 'unreadCard.viewAll': 'View All';
+    readonly 'unreadCard.emptyState': 'All caught up!';
+    readonly 'unreadCard.columnNotification': 'Notification';
+    readonly 'unreadCard.columnActions': 'Actions';
+    readonly 'unreadCard.resultsCount': '{{displayed}} results out of {{total}}';
   }
 >;
 

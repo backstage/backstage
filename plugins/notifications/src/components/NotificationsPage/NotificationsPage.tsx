@@ -212,8 +212,12 @@ function NotificationsPageContent(
       return notifications;
     }
 
-    return [highlightedNotification, ...(notifications ?? [])];
-  }, [notifications, highlightedNotification]);
+    // Keep the table at pageSize when injecting a deep-linked notification.
+    return [highlightedNotification, ...(notifications ?? [])].slice(
+      0,
+      pageSize,
+    );
+  }, [notifications, highlightedNotification, pageSize]);
 
   if (error) {
     return <ResponseErrorPanel error={error} />;

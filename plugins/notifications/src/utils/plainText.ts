@@ -31,7 +31,9 @@ export function toPlainText(text: string): string {
     /&(?:amp|lt|gt|quot|#39|nbsp);/g,
     entity => HTML_ENTITY_MAP[entity] ?? entity,
   );
-  const withoutHtml = withoutEntities.replace(/<[^>]*>/g, ' ');
+  // Only strip real HTML tags (names starting with a letter), so text like
+  // "<3" or placeholders is preserved after entity decoding.
+  const withoutHtml = withoutEntities.replace(/<\/?[a-zA-Z][^>]*>/g, ' ');
 
   return withoutHtml
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')

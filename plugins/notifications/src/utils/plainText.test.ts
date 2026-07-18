@@ -34,6 +34,10 @@ describe('toPlainText', () => {
   it('strips HTML tags introduced by decoding entities', () => {
     expect(toPlainText('&lt;b&gt;Hello&lt;/b&gt; world')).toBe('Hello world');
   });
+
+  it('preserves non-tag angle-bracket text like <3', () => {
+    expect(toPlainText('We &lt;3 Backstage')).toBe('We <3 Backstage');
+  });
 });
 
 describe('truncateText', () => {

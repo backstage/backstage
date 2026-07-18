@@ -18,11 +18,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import BroadcastIcon from '@material-ui/icons/RssFeed';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
+import { RiCheckDoubleLine, RiRssFill } from '@remixicon/react';
 import { Notification } from '@backstage/plugin-notifications-common';
 import {
   ErrorPanel,
@@ -31,102 +27,20 @@ import {
   LinkButton,
   Progress,
 } from '@backstage/core-components';
+import { Text } from '@backstage/ui';
 import { useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { notificationsApiRef } from '../../api';
 import { useNotificationsApi, useNotificationsRefresh } from '../../hooks';
+import { notificationsTranslationRef } from '../../translation';
 import { getNotificationsPageLink } from '../../utils/notificationLinks';
 import { truncateText } from '../../utils/plainText';
 import { BulkActions } from '../NotificationsTable/BulkActions';
 import { NotificationIcon } from '../NotificationsTable/NotificationIcon';
+import styles from './UnreadNotificationsCard.module.css';
 
 const ThrottleDelayMs = 2000;
-
-const useStyles = makeStyles(theme => ({
-  content: {
-    minHeight: theme.spacing(18),
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  columnHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: theme.palette.action.hover,
-    borderRadius: theme.shape.borderRadius,
-    padding: theme.spacing(1, 3, 1, 4.5),
-    marginBottom: theme.spacing(1),
-  },
-  columnHeaderActions: {
-    minWidth: theme.spacing(10),
-    textAlign: 'right',
-  },
-  notificationRow: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: theme.spacing(1),
-    padding: theme.spacing(1.5, 0),
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    '&:last-child': {
-      borderBottom: 'none',
-    },
-  },
-  notificationContent: {
-    display: 'flex',
-    flex: 1,
-    minWidth: 0,
-    gap: theme.spacing(1.5),
-  },
-  severityItem: {
-    alignContent: 'center',
-    flexShrink: 0,
-  },
-  notificationText: {
-    minWidth: 0,
-  },
-  notificationTitle: {
-    fontWeight: theme.typography.fontWeightMedium,
-  },
-  notificationDescription: {
-    color: theme.palette.text.secondary,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    display: '-webkit-box',
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: 'vertical',
-  },
-  notificationInfoRow: {
-    marginLeft: theme.spacing(0.5),
-    marginRight: theme.spacing(0.5),
-  },
-  broadcastIcon: {
-    fontSize: '1rem',
-    verticalAlign: 'text-bottom',
-  },
-  actionsColumn: {
-    flexShrink: 0,
-  },
-  emptyState: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    padding: theme.spacing(4, 0),
-    gap: theme.spacing(1),
-  },
-  emptyStateIcon: {
-    fontSize: theme.spacing(4),
-    color: theme.palette.text.disabled,
-  },
-  resultsCount: {
-    marginTop: theme.spacing(2),
-    textAlign: 'right',
-    color: theme.palette.text.secondary,
-  },
-}));
 
 /** @public */
 export type UnreadNotificationsCardProps = {
@@ -171,7 +85,6 @@ const NotificationListItem = ({
   onSwitchReadStatus: (ids: Notification['id'][], newStatus: boolean) => void;
   onSwitchSavedStatus: (ids: Notification['id'][], newStatus: boolean) => void;
 }) => {
-  const classes = useStyles();
   const {
     display: titleDisplay,
     truncated: titleTruncated,
@@ -182,76 +95,72 @@ const NotificationListItem = ({
     : undefined;
 
   return (
-    <Box className={classes.notificationRow}>
-      <Box className={classes.notificationContent}>
-        <Box className={classes.severityItem}>
+    <div className={styles.notificationRow}>
+      <div className={styles.notificationContent}>
+        <div className={styles.severityItem}>
           <NotificationIcon notification={notification} />
-        </Box>
-        <Box className={classes.notificationText}>
-          <Typography
-            variant="body2"
-            className={classes.notificationTitle}
-            component={Link}
-            to={getNotificationsPageLink(notification.id)}
-            title={titleTruncated ? titleFull : undefined}
-          >
-            {titleDisplay}
-          </Typography>
+        </div>
+        <div className={styles.notificationText}>
+          <Text variant="body-medium" className={styles.notificationTitle}>
+            <Link
+              to={getNotificationsPageLink(notification.id)}
+              title={titleTruncated ? titleFull : undefined}
+            >
+              {titleDisplay}
+            </Link>
+          </Text>
           {description ? (
-            <Typography
-              variant="body2"
-              className={classes.notificationDescription}
+            <Text
+              variant="body-small"
+              color="secondary"
+              className={styles.notificationDescription}
               title={description.truncated ? description.full : undefined}
             >
               {description.display}
-            </Typography>
+            </Text>
           ) : null}
-          <Typography variant="caption" color="textSecondary">
+          <Text
+            variant="body-small"
+            color="secondary"
+            className={styles.metaRow}
+          >
             {!notification.user && (
-              <BroadcastIcon className={classes.broadcastIcon} />
+              <RiRssFill size={14} className={styles.broadcastIcon} />
             )}
             {notification.origin && (
               <>
-                <Typography
-                  variant="inherit"
-                  component="span"
-                  className={classes.notificationInfoRow}
-                >
+                <span className={styles.notificationInfoRow}>
                   {notification.origin}
-                </Typography>
+                </span>
                 &bull;
               </>
             )}
             {notification.payload.topic && (
               <>
-                <Typography
-                  variant="inherit"
-                  component="span"
-                  className={classes.notificationInfoRow}
-                >
+                <span className={styles.notificationInfoRow}>
                   {notification.payload.topic}
-                </Typography>
+                </span>
                 &bull;
               </>
             )}
             {notification.created && (
               <RelativeTime
                 value={notification.created}
-                className={classes.notificationInfoRow}
+                className={styles.notificationInfoRow}
               />
             )}
-          </Typography>
-        </Box>
-      </Box>
-      <Box className={classes.actionsColumn}>
+          </Text>
+        </div>
+      </div>
+      <div className={styles.actionsColumn}>
         <BulkActions
           notifications={[notification]}
           selectedNotifications={new Set([notification.id])}
           onSwitchReadStatus={onSwitchReadStatus}
           onSwitchSavedStatus={onSwitchSavedStatus}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
@@ -263,7 +172,7 @@ export const UnreadNotificationsCard = ({
   maxChars,
   descriptionMaxChars = 120,
 }: UnreadNotificationsCardProps) => {
-  const classes = useStyles();
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const resolvedMaxMessages = resolveMaxMessages({ maxMessages, initialCount });
   const resolvedCharLimit = resolveCharLimit({ charLimit, maxChars });
   const [refresh, setRefresh] = useState(false);
@@ -285,6 +194,12 @@ export const UnreadNotificationsCard = ({
     () => throttle(() => setRefresh(true), ThrottleDelayMs),
     [],
   );
+
+  useEffect(() => {
+    return () => {
+      throttledSetRefresh.cancel();
+    };
+  }, [throttledSetRefresh]);
 
   const onUpdate = useCallback(() => {
     retry();
@@ -360,42 +275,43 @@ export const UnreadNotificationsCard = ({
 
   return (
     <InfoCard
-      title={`Last unread notifications (${totalCount})`}
+      title={t('unreadCard.title', { count: totalCount })}
       action={
         <LinkButton to={getNotificationsPageLink()} color="primary">
-          View All
+          {t('unreadCard.viewAll')}
         </LinkButton>
       }
       variant="gridItem"
     >
-      <Box className={classes.content}>
+      <div className={styles.content}>
         {loading && <Progress />}
         {error && <ErrorPanel error={error} />}
         {!loading && !error && (
           <>
             {notifications.length === 0 ? (
-              <Box className={classes.emptyState}>
-                <DoneAllIcon
-                  className={classes.emptyStateIcon}
+              <div className={styles.emptyState}>
+                <RiCheckDoubleLine
+                  size={32}
+                  className={styles.emptyStateIcon}
                   aria-hidden
                   data-testid="unread-notifications-empty-icon"
                 />
-                <Typography variant="body1">All caught up!</Typography>
-              </Box>
+                <Text variant="body-medium">{t('unreadCard.emptyState')}</Text>
+              </div>
             ) : (
               <>
-                <Box className={classes.columnHeader}>
-                  <Typography variant="caption" color="textSecondary">
-                    NOTIFICATION
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    color="textSecondary"
-                    className={classes.columnHeaderActions}
+                <div className={styles.columnHeader}>
+                  <Text variant="body-x-small" color="secondary">
+                    {t('unreadCard.columnNotification')}
+                  </Text>
+                  <Text
+                    variant="body-x-small"
+                    color="secondary"
+                    className={styles.columnHeaderActions}
                   >
-                    ACTIONS
-                  </Typography>
-                </Box>
+                    {t('unreadCard.columnActions')}
+                  </Text>
+                </div>
                 {notifications.map(notification => (
                   <NotificationListItem
                     key={notification.id}
@@ -406,14 +322,21 @@ export const UnreadNotificationsCard = ({
                     onSwitchSavedStatus={onSwitchSavedStatus}
                   />
                 ))}
-                <Typography variant="body2" className={classes.resultsCount}>
-                  {displayedCount} results out of {totalCount}
-                </Typography>
+                <Text
+                  variant="body-small"
+                  color="secondary"
+                  className={styles.resultsCount}
+                >
+                  {t('unreadCard.resultsCount', {
+                    displayed: displayedCount,
+                    total: totalCount,
+                  })}
+                </Text>
               </>
             )}
           </>
         )}
-      </Box>
+      </div>
     </InfoCard>
   );
 };

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
@@ -164,8 +164,16 @@ export const NotificationsTable = ({
     }
   }, [notifications, selectedNotifications]);
 
+  const focusedHighlightedIdRef = useRef<string | undefined>(undefined);
+
   useEffect(() => {
     if (!highlightedNotificationId) {
+      focusedHighlightedIdRef.current = undefined;
+      return;
+    }
+
+    // Only scroll/focus once per deep-linked id so refreshes don't steal focus.
+    if (focusedHighlightedIdRef.current === highlightedNotificationId) {
       return;
     }
 
@@ -176,11 +184,14 @@ export const NotificationsTable = ({
       return;
     }
 
-    highlightedElement.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-    });
+    if (typeof highlightedElement.scrollIntoView === 'function') {
+      highlightedElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
     highlightedElement.focus({ preventScroll: true });
+    focusedHighlightedIdRef.current = highlightedNotificationId;
   }, [highlightedNotificationId, notifications]);
 
   const compactColumns = useMemo((): TableColumn<Notification>[] => {
