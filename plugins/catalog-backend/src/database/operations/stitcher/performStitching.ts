@@ -134,7 +134,17 @@ export async function performStitching(options: {
     // Grab the processed entity and stitch all of the relevant data into
     // it
 
-    const parsedEntity = JSON.parse(processedEntity) as unknown;
+    const parsedEntity = (() => {
+      try {
+        return JSON.parse(processedEntity);
+      } catch (e) {
+        throw new Error(
+          `Failed to parse processed_entity column for ${entityRef} (${entityId}): ${
+            (e as Error).message
+          }`,
+        );
+      }
+    })();
     const metadata = (parsedEntity as any)?.metadata;
     if (
       !parsedEntity ||
@@ -145,7 +155,10 @@ export async function performStitching(options: {
       !metadata ||
       typeof metadata !== 'object' ||
       Array.isArray(metadata) ||
-      typeof (metadata as any).name !== 'string'
+      typeof (metadata as any).name !== 'string' ||
+      ((metadata as any).annotations &&
+        (typeof (metadata as any).annotations !== 'object' ||
+          Array.isArray((metadata as any).annotations)))
     ) {
       throw new Error(
         `Unexpected entity shape found in processed_entity column for ${entityRef} (${entityId})`,
