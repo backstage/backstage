@@ -334,16 +334,19 @@ export class CatalogClient implements CatalogApi {
       // produce a URL that risks exceeding safe length limits (e.g. for
       // users belonging to many groups, producing hundreds of `filter=`
       // params).
-      const estimatedFilterLength = filterValue.reduce(
-        (sum, f) => sum + encodeURIComponent(f).length + 'filter='.length + 1,
-        0,
-      );
       const MAX_FILTER_URL_LENGTH = 2000;
+      let estimatedFilterLength = 0;
+      let filterExceedsUrlLimit = false;
+      for (const f of filterValue) {
+        estimatedFilterLength +=
+          encodeURIComponent(f).length + 'filter='.length + 1;
+        if (estimatedFilterLength > MAX_FILTER_URL_LENGTH) {
+          filterExceedsUrlLimit = true;
+          break;
+        }
+      }
 
-      if (
-        filter !== undefined &&
-        estimatedFilterLength > MAX_FILTER_URL_LENGTH
-      ) {
+      if (filter !== undefined && filterExceedsUrlLimit) {
         return this.queryEntitiesByPredicate(request, options);
       }
 
