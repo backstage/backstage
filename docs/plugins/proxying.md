@@ -147,8 +147,15 @@ override those registered in this manner.
 To scaffold a module package, run `yarn new`, select `backend-module`, and
 fill out the prompts with `proxy` as the plugin ID. This will create
 `plugins/proxy-backend-module-<moduleId>` with `src/module.ts` and
-`src/index.ts` files. Replace the generated `src/module.ts` with the example
-below:
+`src/index.ts` files. The scaffolded package only depends on
+`@backstage/backend-plugin-api`, so add the `@backstage/plugin-proxy-node`
+package that provides the extension point:
+
+```bash
+yarn --cwd plugins/proxy-backend-module-demo-additional-endpoints add @backstage/plugin-proxy-node
+```
+
+Then replace the generated `src/module.ts` with the example below:
 
 ```ts title="plugins/proxy-backend-module-demo-additional-endpoints/src/module.ts"
 import { createBackendModule } from '@backstage/backend-plugin-api';
