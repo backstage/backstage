@@ -335,7 +335,7 @@ export class CatalogClient implements CatalogApi {
       // users belonging to many groups, producing hundreds of `filter=`
       // params).
       const estimatedFilterLength = filterValue.reduce(
-        (sum, f) => sum + f.length + 'filter='.length + 1,
+        (sum, f) => sum + encodeURIComponent(f).length + 'filter='.length + 1,
         0,
       );
       const MAX_FILTER_URL_LENGTH = 2000;
