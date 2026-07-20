@@ -158,6 +158,7 @@ export class DefaultCatalogProcessingOrchestrator
       entity = await this.runPreProcessStep(entity, context);
       entity = await this.runPolicyStep(entity);
       await this.runValidateStep(entity, context);
+      const isLocation = isLocationEntity(entity);
       if (isLocationEntity(entity)) {
         await this.runSpecialLocationStep(entity, context);
       }
@@ -185,11 +186,20 @@ export class DefaultCatalogProcessingOrchestrator
         }
       }
 
+      // For Location entities, partial success is acceptable: if at
+      // least one target produced deferred entities, persist them even
+      // though other targets may have errored. Errors from failed
+      // targets are still recorded and visible in the entity status.
+      const ok =
+        isLocation && collectorResults.deferredEntities.length > 0
+          ? true
+          : collectorResults.errors.length === 0;
+
       return {
         ...collectorResults,
         completedEntity: entity,
         state: { cache: cache.collect() },
-        ok: collectorResults.errors.length === 0,
+        ok,
       };
     } catch (error) {
       const err = toError(error);
@@ -375,44 +385,55 @@ export class DefaultCatalogProcessingOrchestrator
           maybeRelativeTarget,
         );
 
-        let didRead = false;
-        for (const processor of this.options.processors) {
-          if (processor.readLocation) {
-            try {
-              const read = await withActiveSpan(
-                tracer,
-                'ProcessingStep',
-                async span => {
-                  addEntityAttributes(span, entity);
-                  addProcessorAttributes(span, 'readLocation', processor);
-                  return await processor.readLocation!(
-                    {
-                      type,
-                      target,
-                      presence,
-                    },
-                    presence === 'optional',
-                    context.collector.forProcessor(processor),
-                    this.options.parser,
-                    context.cache.forProcessor(processor, target),
-                  );
-                },
-              );
-              if (read) {
-                didRead = true;
-                break;
+        try {
+          let didRead = false;
+          for (const processor of this.options.processors) {
+            if (processor.readLocation) {
+              try {
+                const read = await withActiveSpan(
+                  tracer,
+                  'ProcessingStep',
+                  async span => {
+                    addEntityAttributes(span, entity);
+                    addProcessorAttributes(span, 'readLocation', processor);
+                    return await processor.readLocation!(
+                      {
+                        type,
+                        target,
+                        presence,
+                      },
+                      presence === 'optional',
+                      context.collector.forProcessor(processor),
+                      this.options.parser,
+                      context.cache.forProcessor(processor, target),
+                    );
+                  },
+                );
+                if (read) {
+                  didRead = true;
+                  break;
+                }
+              } catch (e) {
+                throw new InputError(
+                  `Processor ${processor.constructor.name} threw an error while reading ${type}:${target}`,
+                  e,
+                );
               }
-            } catch (e) {
-              throw new InputError(
-                `Processor ${processor.constructor.name} threw an error while reading ${type}:${target}`,
-                e,
-              );
             }
           }
-        }
-        if (!didRead) {
-          throw new InputError(
-            `No processor was able to handle reading of ${type}:${target}`,
+          if (!didRead) {
+            throw new InputError(
+              `No processor was able to handle reading of ${type}:${target}`,
+            );
+          }
+        } catch (e) {
+          context.collector.generic()(
+            processingResult.generalError(
+              context.location,
+              `Failed to read location target ${type}:${target}, ${
+                toError(e).message
+              }`,
+            ),
           );
         }
       }
