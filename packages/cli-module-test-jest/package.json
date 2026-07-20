@@ -53,7 +53,7 @@
     "@jest/environment-jsdom-abstract": "^30.0.0",
     "jest": "^29.0.0 || ^30.0.0",
     "jest-environment-jsdom": "*",
-    "jsdom": "^27.1.0"
+    "jsdom": "^29.0.0"
   },
   "peerDependenciesMeta": {
     "@jest/environment-jsdom-abstract": {
