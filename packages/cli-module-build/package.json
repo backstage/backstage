@@ -92,7 +92,7 @@
     "shell-quote": "^1.8.1",
     "style-loader": "^3.3.1",
     "swc-loader": "^0.2.3",
-    "tar": "^7.5.6",
+    "tar": "^7.5.19",
     "ts-checker-rspack-plugin": "^1.1.5",
     "ts-morph": "^24.0.0",
     "util": "^0.12.3",
