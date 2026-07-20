@@ -42,6 +42,29 @@ export interface RouterOptions {
   auth: AuthService;
 }
 
+function rejectUpgrade(
+  socket: Duplex,
+  statusLine: string,
+  logger: LoggerService,
+  details: {
+    remoteAddress?: string;
+    reason: string;
+  },
+) {
+  logger.warn('WebSocket upgrade rejected', {
+    remoteAddress: details.remoteAddress,
+    timestamp: new Date().toISOString(),
+    reason: details.reason,
+  });
+  socket.write(
+    `${statusLine}\r\n` +
+      'Connection: close\r\n' +
+      'Content-Length: 0\r\n' +
+      '\r\n',
+  );
+  socket.destroy();
+}
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -73,27 +96,33 @@ export async function createRouter(
       return;
     }
 
-    let userIdentity: BackstageUserInfo | undefined = undefined;
-
     // Authentication token is passed in Sec-WebSocket-Protocol header as there
     // is no other way to pass the token with plain websockets
+    const token = request.headers['sec-websocket-protocol'];
+    if (!token || typeof token !== 'string') {
+      rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
+        remoteAddress: request.socket.remoteAddress,
+        reason: 'missing_token',
+      });
+      return;
+    }
+
+    let userIdentity: BackstageUserInfo;
     try {
-      const token = request.headers['sec-websocket-protocol'];
-      if (token) {
-        const credentials = await auth.authenticate(token);
-        if (auth.isPrincipal(credentials, 'user')) {
-          userIdentity = await userInfo.getUserInfo(credentials);
-        }
+      const credentials = await auth.authenticate(token);
+      if (!auth.isPrincipal(credentials, 'user')) {
+        rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
+          remoteAddress: request.socket.remoteAddress,
+          reason: 'non_user_principal',
+        });
+        return;
       }
+      userIdentity = await userInfo.getUserInfo(credentials);
     } catch (e) {
-      logger.error(`Failed to authenticate WebSocket connection: ${e}`);
-      socket.write(
-        'HTTP/1.1 401 Web Socket Protocol Handshake\r\n' +
-          'Upgrade: WebSocket\r\n' +
-          'Connection: Upgrade\r\n' +
-          '\r\n',
-      );
-      socket.destroy();
+      rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
+        remoteAddress: request.socket.remoteAddress,
+        reason: 'invalid_token',
+      });
       return;
     }
 
@@ -108,35 +137,28 @@ export async function createRouter(
       );
     } catch (e) {
       logger.error(`Failed to handle WebSocket upgrade: ${e}`);
-      socket.write(
-        'HTTP/1.1 500 Web Socket Protocol Handshake\r\n' +
-          'Upgrade: WebSocket\r\n' +
-          'Connection: Upgrade\r\n' +
-          '\r\n',
-      );
-      socket.destroy();
+      rejectUpgrade(socket, 'HTTP/1.1 500 Internal Server Error', logger, {
+        remoteAddress: request.socket.remoteAddress,
+        reason: 'upgrade_failed',
+      });
     }
   };
 
+  // Register the upgrade listener on the first request that reaches this
+  // router so WebSocket handshakes can be handled outside Express.
   const upgradeMiddleware = async (
     req: Request,
     _: Response,
     next: NextFunction,
   ) => {
-    const server: https.Server | http.Server = (req.socket as any)?.server;
-    if (
-      subscribedToUpgradeRequests ||
-      !server ||
-      !req.headers ||
-      req.headers.upgrade === undefined ||
-      req.headers.upgrade.toLowerCase() !== 'websocket'
-    ) {
-      next();
-      return;
+    if (!subscribedToUpgradeRequests) {
+      const server: https.Server | http.Server = (req.socket as any)?.server;
+      if (server) {
+        subscribedToUpgradeRequests = true;
+        server.on('upgrade', handleUpgrade);
+      }
     }
-
-    subscribedToUpgradeRequests = true;
-    server.on('upgrade', handleUpgrade);
+    next();
   };
 
   const router = Router();

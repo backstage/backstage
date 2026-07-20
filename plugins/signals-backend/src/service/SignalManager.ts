@@ -109,7 +109,7 @@ export class SignalManager {
     this.connections.clear();
   }
 
-  addConnection(ws: WebSocket, identity?: BackstageUserInfo) {
+  addConnection(ws: WebSocket, identity: BackstageUserInfo) {
     // Start pinging on first connection
     if (!this.pingInterval) {
       this.pingInterval = setInterval(() => this.ping(), 30000);
@@ -118,11 +118,9 @@ export class SignalManager {
     const id = uuid();
     const conn = {
       id,
-      user: identity?.userEntityRef ?? 'user:default/guest',
+      user: identity.userEntityRef,
       ws,
-      ownershipEntityRefs: identity?.ownershipEntityRefs ?? [
-        'user:default/guest',
-      ],
+      ownershipEntityRefs: identity.ownershipEntityRefs,
       subscriptions: new Set<string>(),
       isAlive: true,
     };
