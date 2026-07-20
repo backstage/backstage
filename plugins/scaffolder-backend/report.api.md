@@ -244,6 +244,46 @@ export function createWaitAction(options?: {
 >;
 
 // @public
+export function createWorkspaceTemplateAction(options: {
+  integrations: ScmIntegrations;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+}): TemplateAction<
+  {
+    sourcePath: string;
+    targetPath: string;
+    copyWithoutTemplating: string[];
+    values?: Record<string, any> | undefined;
+    cookiecutterCompat?: boolean | undefined;
+    templateFileExtension?: string | boolean | undefined;
+    replace?: boolean | undefined;
+  },
+  {
+    [x: string]: any;
+  },
+  'v2'
+>;
+
+// @public
+export function createWorkspaceTemplateFileAction(options: {
+  integrations: ScmIntegrations;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+}): TemplateAction<
+  {
+    sourcePath: string;
+    targetPath: string;
+    values?: Record<string, any> | undefined;
+    cookiecutterCompat?: boolean | undefined;
+    replace?: boolean | undefined;
+  },
+  {
+    [x: string]: any;
+  },
+  'v2'
+>;
+
+// @public
 const scaffolderPlugin: BackendFeature;
 export default scaffolderPlugin;
 
