@@ -15,18 +15,21 @@
  */
 import { ConfigReader } from '@backstage/config';
 import {
+  ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID,
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_CLUSTER_ID,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
 import { AwsIamStrategy } from './AwsIamStrategy';
 
+const getCredentialProvider = jest.fn().mockResolvedValue({
+  sdkCredentialProvider: {
+    AccessKeyId: 'asdf',
+  },
+});
+
 const credsManager = {
-  getCredentialProvider: async () => ({
-    sdkCredentialProvider: {
-      AccessKeyId: 'asdf',
-    },
-  }),
+  getCredentialProvider,
 };
 
 jest.mock('@backstage/integration-aws-node', () => ({
@@ -57,6 +60,10 @@ jest.mock('@aws-sdk/credential-providers', () => ({
 describe('AwsIamStrategy#getCredential', () => {
   const config = new ConfigReader({});
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('returns a presigned url', async () => {
     const strategy = new AwsIamStrategy({ config });
 
@@ -70,6 +77,7 @@ describe('AwsIamStrategy#getCredential', () => {
       type: 'bearer token',
       token: 'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     });
+    expect(getCredentialProvider).toHaveBeenCalledWith(undefined);
     expect(signer.presign).toHaveBeenCalledWith(
       expect.objectContaining({
         headers: expect.objectContaining({ 'x-k8s-aws-id': 'test-cluster' }),
@@ -155,6 +163,47 @@ describe('AwsIamStrategy#getCredential', () => {
       params: {
         ExternalId: 'external-id',
         RoleArn: 'SomeRole',
+      },
+    });
+  });
+
+  it('resolves credentials by account ID when specified', async () => {
+    const strategy = new AwsIamStrategy({ config });
+
+    await strategy.getCredential({
+      name: 'test-cluster',
+      url: '',
+      authMetadata: {
+        [ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID]: '123456789012',
+      },
+    });
+
+    expect(getCredentialProvider).toHaveBeenCalledWith({
+      accountId: '123456789012',
+    });
+  });
+
+  it('resolves credentials by account ID and assumes role on top', async () => {
+    const strategy = new AwsIamStrategy({ config });
+
+    await strategy.getCredential({
+      name: 'test-cluster',
+      url: '',
+      authMetadata: {
+        [ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID]: '123456789012',
+        [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeOtherRole',
+      },
+    });
+
+    expect(getCredentialProvider).toHaveBeenCalledWith({
+      accountId: '123456789012',
+    });
+    expect(fromTemporaryCredentials).toHaveBeenCalledWith({
+      clientConfig: { region: 'us-east-1' },
+      masterCredentials: { AccessKeyId: 'asdf' },
+      params: {
+        ExternalId: undefined,
+        RoleArn: 'SomeOtherRole',
       },
     });
   });

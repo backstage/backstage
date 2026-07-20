@@ -17,6 +17,7 @@
 import { Config } from '@backstage/config';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID,
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
@@ -119,14 +120,22 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
     const serviceAccountToken = clusterConfig.getOptionalString(
       'serviceAccountToken',
     );
+    const accountId = clusterConfig.getOptionalString('accountId');
     const assumeRole = clusterConfig.getOptionalString('assumeRole');
     const externalId = clusterConfig.getOptionalString('externalId');
     const oidcTokenProvider =
       clusterConfig.getOptionalString('oidcTokenProvider');
 
-    return serviceAccountToken || assumeRole || externalId || oidcTokenProvider
+    return serviceAccountToken ||
+      accountId ||
+      assumeRole ||
+      externalId ||
+      oidcTokenProvider
       ? {
           ...(serviceAccountToken && { serviceAccountToken }),
+          ...(accountId && {
+            [ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID]: accountId,
+          }),
           ...(assumeRole && {
             [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: assumeRole,
           }),

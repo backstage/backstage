@@ -131,3 +131,13 @@ export const ANNOTATION_KUBERNETES_AWS_CLUSTER_ID =
  */
 export const ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID =
   'kubernetes.io/aws-external-id';
+
+/**
+ * Annotation for specifying the AWS account ID to resolve credentials for.
+ * When set, credentials are looked up via the `aws.accounts` integration
+ * config instead of falling back to the main account or default chain.
+ *
+ * @public
+ */
+export const ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID =
+  'kubernetes.io/aws-account-id';

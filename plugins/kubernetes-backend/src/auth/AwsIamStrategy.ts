@@ -22,6 +22,7 @@ import {
 } from '@backstage/integration-aws-node';
 import { Config } from '@backstage/config';
 import {
+  ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID,
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_CLUSTER_ID,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
@@ -64,6 +65,7 @@ export class AwsIamStrategy implements AuthenticationStrategy {
       token: await this.getBearerToken(
         clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_CLUSTER_ID] ??
           clusterDetails.name,
+        clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID],
         clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE],
         clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID],
       ),
@@ -76,13 +78,16 @@ export class AwsIamStrategy implements AuthenticationStrategy {
 
   private async getBearerToken(
     clusterId: string,
+    accountId?: string,
     assumeRole?: string,
     externalId?: string,
   ): Promise<string> {
     const region = process.env.AWS_REGION ?? defaultRegion;
 
-    let credentials = (await this.credsManager.getCredentialProvider())
-      .sdkCredentialProvider;
+    const credProvider = await this.credsManager.getCredentialProvider(
+      accountId ? { accountId } : undefined,
+    );
+    let credentials = credProvider.sdkCredentialProvider;
     if (assumeRole) {
       credentials = fromTemporaryCredentials({
         masterCredentials: credentials,
