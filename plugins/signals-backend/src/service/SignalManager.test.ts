@@ -59,9 +59,9 @@ class MockWebSocket {
   }
 }
 
-const guestIdentity = {
-  userEntityRef: 'user:default/guest',
-  ownershipEntityRefs: ['user:default/guest'],
+const aliceIdentity = {
+  userEntityRef: 'user:default/alice',
+  ownershipEntityRefs: ['user:default/alice'],
 };
 
 const johnIdentity = {
@@ -96,15 +96,27 @@ describe('SignalManager', () => {
   });
 
   it('should close all connections when server is closed', () => {
+    const localHooks: Function[] = [];
+    const localManager = SignalManager.create({
+      events: {
+        publish: async () => {},
+        subscribe: async () => {},
+      },
+      logger: mockServices.logger.mock(),
+      config: mockServices.rootConfig(),
+      lifecycle: mockServices.lifecycle.mock({
+        addShutdownHook: (hook: Function) => localHooks.push(hook),
+      }),
+    });
     const ws = new MockWebSocket();
-    manager.addConnection(ws as unknown as WebSocket, guestIdentity);
-    shutdownHooks.forEach(hook => hook());
+    localManager.addConnection(ws as unknown as WebSocket, aliceIdentity);
+    localHooks.forEach(hook => hook());
     expect(ws.closed).toBeTruthy();
   });
 
   it('should close connection on error', () => {
     const ws = new MockWebSocket();
-    manager.addConnection(ws as unknown as WebSocket, guestIdentity);
+    manager.addConnection(ws as unknown as WebSocket, aliceIdentity);
 
     ws.trigger('error', new Error('error'));
     expect(ws.closed).toBeTruthy();
@@ -112,7 +124,7 @@ describe('SignalManager', () => {
 
   it('should allow subscribing and unsubscribing to events', async () => {
     const ws = new MockWebSocket();
-    manager.addConnection(ws as unknown as WebSocket, guestIdentity);
+    manager.addConnection(ws as unknown as WebSocket, aliceIdentity);
 
     ws.trigger(
       'message',
@@ -154,7 +166,7 @@ describe('SignalManager', () => {
 
   it('should only send to users from identity', async () => {
     const ws1 = new MockWebSocket();
-    manager.addConnection(ws1 as unknown as WebSocket, guestIdentity);
+    manager.addConnection(ws1 as unknown as WebSocket, aliceIdentity);
 
     const ws2 = new MockWebSocket();
     manager.addConnection(ws2 as unknown as WebSocket, johnIdentity);
