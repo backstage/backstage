@@ -57,6 +57,9 @@ async function connectWebSocket(
         return;
       }
       settled = true;
+      if (!result.ws) {
+        ws.terminate();
+      }
       resolve(result);
     };
 

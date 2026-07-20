@@ -69,12 +69,15 @@ function rejectUpgrade(
     timestamp: new Date().toISOString(),
     reason: details.reason,
   });
-  // Prefer end() so the HTTP response is flushed before the socket closes.
+  // Flush the HTTP response, then destroy so the socket cannot linger.
   socket.end(
     `${statusLine}\r\n` +
       'Connection: close\r\n' +
       'Content-Length: 0\r\n' +
       '\r\n',
+    () => {
+      socket.destroy();
+    },
   );
 }
 
@@ -132,6 +135,12 @@ export async function createRouter(
       }
       userIdentity = await userInfo.getUserInfo(credentials);
     } catch (e) {
+      logger.debug('WebSocket authentication failed', {
+        remoteAddress: request.socket.remoteAddress,
+        reason: 'invalid_token',
+        errorName: e instanceof Error ? e.name : undefined,
+        errorMessage: e instanceof Error ? e.message : String(e),
+      });
       rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
         remoteAddress: request.socket.remoteAddress,
         reason: 'invalid_token',
