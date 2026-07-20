@@ -18,19 +18,61 @@ import express from 'express';
 import http from 'node:http';
 import { PassThrough } from 'node:stream';
 import request from 'supertest';
+import { WebSocket, WebSocketServer } from 'ws';
 import { createRouter } from './router';
-import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockErrorHandler,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { AuthService } from '@backstage/backend-plugin-api';
-import { WebSocketServer } from 'ws';
 
 const eventsServiceMock = mockServices.events.mock();
 const discovery = mockServices.discovery.mock({
-  getBaseUrl: async () => '/api/signals',
+  getBaseUrl: async () => 'http://127.0.0.1/api/signals',
 });
-const userInfo = mockServices.userInfo.mock();
+const userInfo = mockServices.userInfo.mock({
+  getUserInfo: async () => ({
+    userEntityRef: 'user:default/test',
+    ownershipEntityRefs: ['user:default/test'],
+  }),
+});
+
+async function connectWebSocket(
+  server: http.Server,
+  protocols?: string | string[],
+): Promise<{ ws?: WebSocket; error?: Error; statusCode?: number }> {
+  const { port } = server.address() as { port: number };
+
+  return new Promise(resolve => {
+    const ws = new WebSocket(`ws://127.0.0.1:${port}/api/signals`, protocols);
+
+    ws.once('open', () => {
+      resolve({ ws });
+    });
+
+    ws.once('unexpected-response', (_req, res) => {
+      resolve({ statusCode: res.statusCode });
+      res.resume();
+    });
+
+    ws.once('error', error => {
+      // unexpected-response already handles HTTP errors; ignore follow-on errors
+      if ((error as NodeJS.ErrnoException).message.includes('401')) {
+        return;
+      }
+    });
+  });
+}
 
 describe('createRouter', () => {
-  let app: express.Express;
+  let server: http.Server;
+  const shutdownHooks: Array<() => void | Promise<void>> = [];
+  const lifecycle = mockServices.lifecycle.mock({
+    addShutdownHook: (hook: () => void | Promise<void>) => {
+      shutdownHooks.push(hook);
+    },
+  });
 
   beforeAll(async () => {
     const router = await createRouter({
@@ -39,22 +81,70 @@ describe('createRouter', () => {
       discovery,
       userInfo,
       config: mockServices.rootConfig(),
-      lifecycle: mockServices.lifecycle.mock(),
+      lifecycle,
       auth: mockServices.auth(),
     });
-    app = express().use(router).use(mockErrorHandler());
+    const app = express().use('/api/signals', router).use(mockErrorHandler());
+    server = http.createServer(app);
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+    // Register the upgrade handler via the first HTTP request
+    await request(server).get('/api/signals/health');
+  });
+
+  afterAll(async () => {
+    await Promise.all(shutdownHooks.map(hook => hook()));
+    await new Promise<void>((resolve, reject) =>
+      server.close(err => (err ? reject(err) : resolve())),
+    );
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('GET /health', () => {
     it('returns ok', async () => {
-      const response = await request(app).get('/health');
+      const response = await request(server).get('/api/signals/health');
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  describe('WebSocket authentication', () => {
+    it('rejects connections without a token', async () => {
+      const result = await connectWebSocket(server);
+      expect(result.statusCode).toEqual(401);
+      expect(result.ws).toBeUndefined();
+    });
+
+    it('rejects connections with an invalid token', async () => {
+      const result = await connectWebSocket(
+        server,
+        mockCredentials.user.invalidToken(),
+      );
+      expect(result.statusCode).toEqual(401);
+      expect(result.ws).toBeUndefined();
+    });
+
+    it('rejects connections with a service token', async () => {
+      const result = await connectWebSocket(
+        server,
+        mockCredentials.service.token(),
+      );
+      expect(result.statusCode).toEqual(401);
+      expect(result.ws).toBeUndefined();
+    });
+
+    it('accepts connections with a valid user token', async () => {
+      const result = await connectWebSocket(
+        server,
+        mockCredentials.user.token(),
+      );
+      expect(result.ws).toBeDefined();
+      expect(result.ws?.readyState).toEqual(WebSocket.OPEN);
+      expect(userInfo.getUserInfo).toHaveBeenCalled();
+      result.ws?.close();
     });
   });
 });
@@ -141,8 +231,8 @@ describe('handleUpgrade', () => {
 
       expect(response).toBe(
         'HTTP/1.1 401 Unauthorized\r\n' +
-          'Content-Length: 0\r\n' +
           'Connection: close\r\n' +
+          'Content-Length: 0\r\n' +
           '\r\n',
       );
     } finally {
@@ -165,8 +255,8 @@ describe('handleUpgrade', () => {
 
       expect(response).toBe(
         'HTTP/1.1 500 Internal Server Error\r\n' +
-          'Content-Length: 0\r\n' +
           'Connection: close\r\n' +
+          'Content-Length: 0\r\n' +
           '\r\n',
       );
     } finally {
