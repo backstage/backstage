@@ -158,7 +158,6 @@ export class DefaultCatalogProcessingOrchestrator
       entity = await this.runPreProcessStep(entity, context);
       entity = await this.runPolicyStep(entity);
       await this.runValidateStep(entity, context);
-      const isLocation = isLocationEntity(entity);
       if (isLocationEntity(entity)) {
         await this.runSpecialLocationStep(entity, context);
       }
@@ -191,7 +190,7 @@ export class DefaultCatalogProcessingOrchestrator
       // though other targets may have errored. Errors from failed
       // targets are still recorded and visible in the entity status.
       const ok =
-        isLocation && collectorResults.deferredEntities.length > 0
+        isLocationEntity(entity) && collectorResults.deferredEntities.length > 0
           ? true
           : collectorResults.errors.length === 0;
 
@@ -427,14 +426,16 @@ export class DefaultCatalogProcessingOrchestrator
             );
           }
         } catch (e) {
-          context.collector.generic()(
-            processingResult.generalError(
-              context.location,
-              `Failed to read location target ${type}:${target}, ${
-                toError(e).message
-              }`,
-            ),
+          const originalError = toError(e);
+          const error = new Error(
+            `Failed to read location target ${type}:${target}, ${originalError.message}`,
+            { cause: originalError },
           );
+          context.collector.generic()({
+            type: 'error',
+            location: context.location,
+            error,
+          });
         }
       }
     });
