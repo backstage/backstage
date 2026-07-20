@@ -42,6 +42,19 @@ export interface RouterOptions {
   auth: AuthService;
 }
 
+function readWebSocketToken(
+  header: string | string[] | undefined,
+): string | undefined {
+  const value = Array.isArray(header) ? header[0] : header;
+  if (!value) {
+    return undefined;
+  }
+  // Sec-WebSocket-Protocol may list multiple protocols; the Backstage token is
+  // expected to be the first (and typically only) value.
+  const token = value.split(',')[0]?.trim();
+  return token || undefined;
+}
+
 function rejectUpgrade(
   socket: Duplex,
   statusLine: string,
@@ -56,13 +69,13 @@ function rejectUpgrade(
     timestamp: new Date().toISOString(),
     reason: details.reason,
   });
-  socket.write(
+  // Prefer end() so the HTTP response is flushed before the socket closes.
+  socket.end(
     `${statusLine}\r\n` +
       'Connection: close\r\n' +
       'Content-Length: 0\r\n' +
       '\r\n',
   );
-  socket.destroy();
 }
 
 export async function createRouter(
@@ -98,8 +111,8 @@ export async function createRouter(
 
     // Authentication token is passed in Sec-WebSocket-Protocol header as there
     // is no other way to pass the token with plain websockets
-    const token = request.headers['sec-websocket-protocol'];
-    if (!token || typeof token !== 'string') {
+    const token = readWebSocketToken(request.headers['sec-websocket-protocol']);
+    if (!token) {
       rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
         remoteAddress: request.socket.remoteAddress,
         reason: 'missing_token',
@@ -144,8 +157,11 @@ export async function createRouter(
     }
   };
 
-  // Register the upgrade listener on the first request that reaches this
-  // router so WebSocket handshakes can be handled outside Express.
+  // The HTTP server is only available via the request socket, so the upgrade
+  // listener is registered on the first request that reaches this router.
+  // Until then, WebSocket upgrades for this plugin are not handled (same
+  // constraint as before; registering on any first request is slightly more
+  // reliable than waiting for an Upgrade request through Express).
   const upgradeMiddleware = async (
     req: Request,
     _: Response,

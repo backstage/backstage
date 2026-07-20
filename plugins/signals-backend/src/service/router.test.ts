@@ -44,21 +44,37 @@ async function connectWebSocket(
 
   return new Promise(resolve => {
     const ws = new WebSocket(`ws://127.0.0.1:${port}/api/signals`, protocols);
+    let settled = false;
+
+    const settle = (result: {
+      ws?: WebSocket;
+      error?: Error;
+      statusCode?: number;
+    }) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      resolve(result);
+    };
 
     ws.once('open', () => {
-      resolve({ ws });
+      settle({ ws });
     });
 
     ws.once('unexpected-response', (_req, res) => {
-      resolve({ statusCode: res.statusCode });
+      settle({ statusCode: res.statusCode });
       res.resume();
     });
 
     ws.once('error', error => {
-      // unexpected-response already handles HTTP errors; ignore follow-on errors
-      if ((error as NodeJS.ErrnoException).message.includes('401')) {
-        return;
-      }
+      // Prefer unexpected-response for HTTP upgrade failures; only fall back
+      // to the error event when no response was received.
+      setImmediate(() => {
+        if (!settled) {
+          settle({ error });
+        }
+      });
     });
   });
 }
