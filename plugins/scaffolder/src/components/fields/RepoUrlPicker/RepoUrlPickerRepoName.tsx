@@ -23,7 +23,7 @@ import { useEffect } from 'react';
 import { scaffolderTranslationRef } from '../../../translation';
 import { AvailableRepositories } from './types';
 import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
-import { Select as BuiSelect } from '@backstage/ui';
+import { TextField as BuiTextField, Select as BuiSelect } from '@backstage/ui';
 import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
 import overrides from '../scaffolderFieldOverrides.module.css';
 import type { Key } from 'react-aria-components';
@@ -88,14 +88,13 @@ export const RepoUrlPickerRepoName = (props: {
 
     if (disableRepoAutocomplete) {
       return (
-        <BuiAutocomplete
+        <BuiTextField
           label={repoLabel ?? t('fields.repoUrlPicker.repository.inputTitle')}
           description={
             repoDescription ?? t('fields.repoUrlPicker.repository.description')
           }
-          inputValue={repoName ?? ''}
-          onInputChange={value => onChange({ name: value })}
-          options={[]}
+          value={repoName ?? ''}
+          onChange={value => onChange({ name: value })}
           isDisabled={isDisabled}
           isRequired
           isInvalid={rawErrors?.length > 0 && !repoName}

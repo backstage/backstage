@@ -203,6 +203,7 @@ export const RepoUrlPicker = (
           accessToken={accessToken}
           ownerLabel={ownerLabel}
           ownerDescription={ownerDescription}
+          disableRepoAutocomplete={disableRepoAutocomplete}
         />
       )}
       {hostType === 'gitea' && (
@@ -227,6 +228,7 @@ export const RepoUrlPicker = (
           accessToken={accessToken}
           ownerLabel={ownerLabel}
           ownerDescription={ownerDescription}
+          disableRepoAutocomplete={disableRepoAutocomplete}
         />
       )}
       {(hostType === 'bitbucket' ||

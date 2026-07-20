@@ -38,6 +38,7 @@ export const GitlabRepoPicker = (
     accessToken?: string;
     ownerLabel?: string;
     ownerDescription?: string;
+    disableRepoAutocomplete?: boolean;
   }>,
 ) => {
   const theme = useScaffolderTheme();
@@ -50,6 +51,7 @@ export const GitlabRepoPicker = (
     isDisabled,
     ownerLabel,
     ownerDescription,
+    disableRepoAutocomplete,
   } = props;
   const [availableGroups, setAvailableGroups] = useState<
     { title: string; id: string }[]
@@ -88,9 +90,14 @@ export const GitlabRepoPicker = (
 
   useDebounce(updateAvailableGroups, 500, [updateAvailableGroups]);
 
-  // Update available repositories when client is available and group changes
   const updateAvailableRepositories = useCallback(() => {
-    if (!scaffolderApi.autocomplete || !accessToken || !host || !owner) {
+    if (
+      disableRepoAutocomplete ||
+      !scaffolderApi.autocomplete ||
+      !accessToken ||
+      !host ||
+      !owner
+    ) {
       onChange({ availableRepos: [] });
       return;
     }
@@ -115,7 +122,15 @@ export const GitlabRepoPicker = (
       .catch(() => {
         onChange({ availableRepos: [] });
       });
-  }, [scaffolderApi, accessToken, host, owner, onChange, availableGroups]);
+  }, [
+    disableRepoAutocomplete,
+    scaffolderApi,
+    accessToken,
+    host,
+    owner,
+    onChange,
+    availableGroups,
+  ]);
 
   useDebounce(updateAvailableRepositories, 500, [updateAvailableRepositories]);
 

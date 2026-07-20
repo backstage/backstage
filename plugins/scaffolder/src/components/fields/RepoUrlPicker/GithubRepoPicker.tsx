@@ -39,6 +39,7 @@ export const GithubRepoPicker = (
     accessToken?: string;
     ownerLabel?: string;
     ownerDescription?: string;
+    disableRepoAutocomplete?: boolean;
   }>,
 ) => {
   const theme = useScaffolderTheme();
@@ -51,6 +52,7 @@ export const GithubRepoPicker = (
     isDisabled,
     ownerLabel,
     ownerDescription,
+    disableRepoAutocomplete,
   } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -61,9 +63,13 @@ export const GithubRepoPicker = (
   const [availableRepositoriesWithOwner, setAvailableRepositoriesWithOwner] =
     useState<{ owner: string; name: string }[]>([]);
 
-  // Update available repositories with owner when client is available
   const updateAvailableRepositoriesWithOwner = useCallback(() => {
-    if (!scaffolderApi.autocomplete || !accessToken || !host) {
+    if (
+      disableRepoAutocomplete ||
+      !scaffolderApi.autocomplete ||
+      !accessToken ||
+      !host
+    ) {
       setAvailableRepositoriesWithOwner([]);
       return;
     }
@@ -86,7 +92,7 @@ export const GithubRepoPicker = (
       .catch(() => {
         setAvailableRepositoriesWithOwner([]);
       });
-  }, [scaffolderApi, accessToken, host]);
+  }, [disableRepoAutocomplete, scaffolderApi, accessToken, host]);
 
   useDebounce(updateAvailableRepositoriesWithOwner, 500, [
     updateAvailableRepositoriesWithOwner,

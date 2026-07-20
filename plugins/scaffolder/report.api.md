@@ -438,10 +438,10 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
     ownerDescription?: string | undefined;
+    disableRepoAutocomplete?: boolean | undefined;
     allowedRepos?: string[] | undefined;
     repoLabel?: string | undefined;
     repoDescription?: string | undefined;
-    disableRepoAutocomplete?: boolean | undefined;
     allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
@@ -470,10 +470,10 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
     ownerDescription?: string | undefined;
+    disableRepoAutocomplete?: boolean | undefined;
     allowedRepos?: string[] | undefined;
     repoLabel?: string | undefined;
     repoDescription?: string | undefined;
-    disableRepoAutocomplete?: boolean | undefined;
     allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
