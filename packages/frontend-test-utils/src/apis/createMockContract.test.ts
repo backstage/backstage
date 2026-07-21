@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RoutingLocation } from '@backstage/frontend-plugin-api';
+import { FrameworkLocation } from '@backstage/frontend-plugin-api';
 import { createMockContract } from './createMockContract';
 
 describe('createMockContract', () => {
@@ -28,7 +28,7 @@ describe('createMockContract', () => {
       basePath: '/',
       initialLocation: '/foo',
     });
-    const locs: RoutingLocation[] = [];
+    const locs: FrameworkLocation[] = [];
     contract.location$.subscribe(l => locs.push(l));
     expect(locs).toHaveLength(1);
     expect(locs[0]).toEqual({
@@ -41,7 +41,7 @@ describe('createMockContract', () => {
 
   it('should default initial location to /', () => {
     const contract = createMockContract({ basePath: '/' });
-    const locs: RoutingLocation[] = [];
+    const locs: FrameworkLocation[] = [];
     contract.location$.subscribe(l => locs.push(l));
     expect(locs).toHaveLength(1);
     expect(locs[0]).toEqual({
@@ -64,7 +64,7 @@ describe('createMockContract', () => {
 
   it('should emit new location after navigate', () => {
     const contract = createMockContract({ basePath: '/' });
-    const locs: RoutingLocation[] = [];
+    const locs: FrameworkLocation[] = [];
     contract.location$.subscribe(l => locs.push(l));
     contract.navigate('/bar');
     expect(locs).toHaveLength(2);
@@ -81,7 +81,7 @@ describe('createMockContract', () => {
       basePath: '/',
       initialLocation: '/foo?bar=1#baz',
     });
-    const locs: RoutingLocation[] = [];
+    const locs: FrameworkLocation[] = [];
     contract.location$.subscribe(l => locs.push(l));
     expect(locs[0]).toEqual({
       pathname: '/foo',
@@ -107,7 +107,7 @@ describe('createMockContract', () => {
       state: { user: 1 },
       adapterState: { 'tanstack-router': { key: 'k' } },
     });
-    const locs: RoutingLocation[] = [];
+    const locs: FrameworkLocation[] = [];
     contract.location$.subscribe(l => locs.push(l));
     expect(locs[locs.length - 1].state).toEqual({ user: 1 });
     expect(contract.getAdapterState('tanstack-router')).toEqual({ key: 'k' });

@@ -47,7 +47,7 @@ import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 import { SwitchFilter } from './SwitchFilter';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 import {
-  useCompatNavigate,
+  useAppNavigate,
   useTranslationRef,
 } from '@backstage/frontend-plugin-api';
 
@@ -136,7 +136,7 @@ export const CatalogGraphPage = (
 ) => {
   const { relationPairs, initialState, entityFilter, showArrowHeads } = props;
   const { t } = useTranslationRef(catalogGraphTranslationRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const {

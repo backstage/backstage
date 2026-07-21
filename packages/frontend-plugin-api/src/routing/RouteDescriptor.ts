@@ -241,7 +241,7 @@ export function createRouteDescriptor(
  *
  * Used by page router adapters when compiling {@link RouteDescriptor} trees.
  *
- * @public
+ * @internal
  */
 export function resolveRouteDescriptorLoader(
   descriptor: RouteDescriptor,

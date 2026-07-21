@@ -15,7 +15,7 @@
  */
 
 import { render } from '@testing-library/react';
-import type { RoutingLocation } from '@backstage/frontend-plugin-api';
+import type { FrameworkLocation } from '@backstage/frontend-plugin-api';
 import {
   createMemoryHistoryBackend,
   createWindowHistoryBackend,
@@ -274,7 +274,7 @@ describe('NavigationController', () => {
     expect(controller.getAdapterState('tanstack-router')).toBeUndefined();
   });
 
-  it('should keep adapterState out of RoutingLocation.state', () => {
+  it('should keep adapterState out of FrameworkLocation.state', () => {
     const history = createMemoryHistoryBackend({ initialEntries: ['/'] });
     const memoryController = createNavigationController({ history });
     const userState = { wizardStep: 2 };
@@ -285,7 +285,7 @@ describe('NavigationController', () => {
       adapterState: { 'tanstack-router': adapterMeta },
     });
 
-    const locations: RoutingLocation[] = [];
+    const locations: FrameworkLocation[] = [];
     const sub = memoryController.location$.subscribe(loc =>
       locations.push(loc),
     );
@@ -329,7 +329,7 @@ describe('NavigationController', () => {
     });
     expect(memoryController.getAdapterState('other-adapter')).toBeUndefined();
 
-    const locations: RoutingLocation[] = [];
+    const locations: FrameworkLocation[] = [];
     memoryController.location$.subscribe(loc => locations.push(loc));
     expect(locations[locations.length - 1].state).toBeUndefined();
     memoryController.dispose();
@@ -345,7 +345,7 @@ describe('NavigationController', () => {
     });
     memoryController.navigate('/external-chrome');
 
-    const locations: RoutingLocation[] = [];
+    const locations: FrameworkLocation[] = [];
     memoryController.location$.subscribe(loc => locations.push(loc));
 
     expect(locations[locations.length - 1]).toEqual({

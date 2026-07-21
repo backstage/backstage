@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
@@ -257,7 +257,7 @@ export type ActionsPageProps = {
 };
 
 export const ActionsPage = (props: ActionsPageProps) => {
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);

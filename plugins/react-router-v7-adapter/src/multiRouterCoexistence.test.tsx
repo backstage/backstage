@@ -23,10 +23,11 @@ import {
   SubPageBlueprint,
   createFrontendPlugin,
   createRouteRef,
+  useAppNavigate,
   useFrameworkLocation,
-  useFrameworkNavigate,
-  useRoutingContract,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { useRoutingContract } from '../../../packages/frontend-plugin-api/src/routing/RoutingContractContext';
 import { Link, useLocation } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 
@@ -211,7 +212,7 @@ describe('multi-router coexistence', () => {
 
     const HomeV6Page = () => {
       const location = useFrameworkLocation();
-      const navigate = useFrameworkNavigate();
+      const navigate = useAppNavigate();
       return (
         <div data-testid="home-page">
           <div data-testid="adapter">v6-default</div>

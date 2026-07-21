@@ -20,9 +20,4 @@
  * @packageDocumentation
  */
 
-export { createScopedRouter } from './createScopedRouter';
-export type {
-  CreateScopedRouterOptions,
-  ScopedRouterResult,
-} from './createScopedRouter';
 export { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';

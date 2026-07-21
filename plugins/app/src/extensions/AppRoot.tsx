@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType, ReactNode, useState, JSX } from 'react';
+import { ComponentType, ReactNode, useCallback, useState, JSX } from 'react';
 import {
   ExtensionBoundary,
   coreExtensionData,
@@ -25,8 +25,8 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
   pluginWrapperApiRef,
+  navigationControllerApiRef,
   useAnalytics,
-  useFrameworkNavigate,
 } from '@backstage/frontend-plugin-api';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
@@ -239,7 +239,16 @@ export function AppRouter(props: AppRouterProps) {
   // navigation controller directly rather than through a scoped React
   // Router context, so it works regardless of which page (if any) chrome
   // happens to be rendered under.
-  const frameworkNavigate = useFrameworkNavigate();
+  const navigationController = useApi(navigationControllerApiRef);
+  const frameworkNavigate = useCallback(
+    (
+      path: string,
+      options?: Parameters<typeof navigationController.navigate>[1],
+    ) => {
+      navigationController.navigate(path, options);
+    },
+    [navigationController],
+  );
 
   // TODO: Private access for now, probably replace with path -> node lookup method on the API
   if (!('getRouteObjects' in routeResolutionsApi)) {

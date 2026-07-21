@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 import { useCallback } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
@@ -32,7 +32,7 @@ import { scaffolderTranslationRef } from '../../../translation';
 import { useTemplateDirectory } from './useTemplateDirectory';
 
 export function TemplateIntroPage() {
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const createLink = useRouteRef(rootRouteRef);
   const editorLink = useRouteRef(editorRouteRef);
   const templateFormLink = useRouteRef(templateFormRouteRef);

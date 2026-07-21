@@ -24,23 +24,28 @@ import {
 import {
   BreadcrumbEntry,
   ExtensionBoundary,
-  LazyDescriptorElement,
-  getRouteDescriptorParamName,
-  isRouteDescriptorParamSegment,
-  isRouteDescriptorSplatSegment,
-  resolveRouteDescriptorLoader,
-  splitRouteDescriptorPath,
   useAppNode,
   type RouteDescriptor,
 } from '@backstage/frontend-plugin-api';
-import { NestedRoutingContractProvider } from '@backstage/frontend-plugin-api/alpha';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { LazyDescriptorElement } from '../../../packages/frontend-plugin-api/src/routing/LazyDescriptorElement';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveRouteDescriptorLoader } from '../../../packages/frontend-plugin-api/src/routing/RouteDescriptor';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  getRouteDescriptorParamName,
+  isRouteDescriptorParamSegment,
+  isRouteDescriptorSplatSegment,
+  splitRouteDescriptorPath,
+} from '../../../packages/frontend-plugin-api/src/routing/routeDescriptorPath';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { NestedRoutingContractProvider } from '../../../packages/frontend-plugin-api/src/routing/NestedRoutingContractProvider';
 import {
   Outlet,
   createRootRoute,
   createRoute,
   type AnyRoute,
 } from '@tanstack/react-router';
-
 /**
  * Convert a RouteDescriptor path (`entities/:id`, `docs/*`, `*`) into a
  * TanStack path segment (`/entities/$id`, `/docs/$`, `/$`).

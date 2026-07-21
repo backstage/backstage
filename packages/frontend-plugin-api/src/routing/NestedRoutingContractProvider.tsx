@@ -23,7 +23,7 @@ import { joinRouteDescriptorPaths } from './routeDescriptorPath';
 /**
  * Props for {@link NestedRoutingContractProvider}.
  *
- * @alpha
+ * @internal
  */
 export interface NestedRoutingContractProviderProps {
   /** Relative path of the nested scope beneath the parent contract. */
@@ -42,7 +42,7 @@ export interface NestedRoutingContractProviderProps {
  * Renders `children` unchanged when there is no parent contract to nest
  * under (e.g. outside a `PageBlueprint` router).
  *
- * @alpha
+ * @internal
  */
 export function NestedRoutingContractProvider(
   props: NestedRoutingContractProviderProps,

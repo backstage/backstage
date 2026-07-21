@@ -15,10 +15,3 @@
  */
 
 export { type CreateAppRouteBinder } from './resolveRouteBindings';
-export {
-  AppRouteSwitch,
-  type AppRouteSwitchProps,
-  type AppRouteRedirect,
-  RouteTable,
-  type RouteTableMatch,
-} from '@backstage/frontend-plugin-api';

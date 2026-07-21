@@ -17,10 +17,11 @@
 import { type ReactNode, useEffect, useMemo, useRef } from 'react';
 import type { NavigationControllerApi } from '@backstage/frontend-plugin-api';
 import type { RenderResult } from '@testing-library/react';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   createScopedRouter,
   type ScopedRouterResult,
-} from '@backstage/plugin-react-router-v6-adapter';
+} from '../../../../plugins/react-router-v6-adapter/src/createScopedRouter';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   createMemoryHistoryBackend,

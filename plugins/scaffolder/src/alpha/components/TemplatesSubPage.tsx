@@ -62,7 +62,7 @@ import { scaffolderTranslationRef } from '../../translation';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
 import {
-  useCompatNavigate,
+  useAppNavigate,
   BreadcrumbEntry,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -78,7 +78,7 @@ function TemplateListContent({
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 

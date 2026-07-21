@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 import { ComponentType, useCallback, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
@@ -80,7 +80,7 @@ function useTemplateWizard(_props: TemplateWizardPageProps) {
   const scaffolderApi = useApi(scaffolderApiRef);
   const catalogApi = useApi(catalogApiRef);
   const [isCreating, setIsCreating] = useState(false);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
   );

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 import { useCallback, useState } from 'react';
 
@@ -62,7 +62,7 @@ export const TemplateEditor = (props: {
 }) => {
   const { layouts, formProps, fieldExtensions } = props;
   const [errorText, setErrorText] = useState<string>();
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const editLink = useRouteRef(editRouteRef);
   const {
     directory,

@@ -22,7 +22,7 @@ import { RiBugLine, RiDeleteBinLine, RiFileCopyLine } from '@remixicon/react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
-  useCompatNavigate,
+  useAppNavigate,
   dialogApiRef,
   useTranslationRef,
 } from '@backstage/frontend-plugin-api';
@@ -111,7 +111,7 @@ export const unregisterEntityContextMenuItem =
       useProps: () => {
         const { entity } = useEntity();
         const dialogApi = useApi(dialogApiRef);
-        const navigate = useCompatNavigate();
+        const navigate = useAppNavigate();
         const catalogRoute = useRouteRef(rootRouteRef);
 
         const { t } = useTranslationRef(catalogTranslationRef);

@@ -41,6 +41,7 @@ export {
   createMockRouteResolutionApi,
   type MockRouteResolutionApi,
   type MockRouteResolutionApiOptions,
+  type MockRouteResolutionRouteRef,
 } from './createMockRouteResolutionApi';
 
 /**

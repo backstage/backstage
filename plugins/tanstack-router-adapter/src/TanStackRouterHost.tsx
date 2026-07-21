@@ -30,7 +30,7 @@ import { createContractHistory } from './createContractHistory';
 /**
  * Options for creating a TanStack scoped router bound to a contract.
  *
- * @public
+ * @internal
  */
 export interface CreateTanStackScopedRouterOptions {
   /**
@@ -59,7 +59,7 @@ export interface CreateTanStackScopedRouterOptions {
 /**
  * Result of creating a TanStack scoped router for a page contract.
  *
- * @public
+ * @internal
  */
 export interface TanStackScopedRouterResult {
   /**
@@ -76,7 +76,7 @@ export interface TanStackScopedRouterResult {
  * Creates a TanStack router whose history projects the given routing contract.
  * Never writes `window.history`.
  *
- * @public
+ * @internal
  */
 export function createTanStackScopedRouter(
   contract: RoutingContract,

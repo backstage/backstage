@@ -17,8 +17,8 @@
 import {
   RoutingBlocker,
   RoutingContract,
-  RoutingLocation,
-  RoutingNavigateOptions,
+  FrameworkLocation,
+  FrameworkNavigateOptions,
 } from '@backstage/frontend-plugin-api';
 import {
   createSyncLocationObservable,
@@ -43,7 +43,7 @@ export interface MockContractOptions {
 export interface MockContract extends RoutingContract {
   navigateCalls: Array<{
     to: string;
-    options?: RoutingNavigateOptions;
+    options?: FrameworkNavigateOptions;
   }>;
   goCalls: number[];
 }
@@ -68,7 +68,7 @@ export interface MockContract extends RoutingContract {
 export function createMockContract(options: MockContractOptions): MockContract {
   const { basePath, initialLocation = '/' } = options;
 
-  const subscribers = new Set<(value: RoutingLocation) => void>();
+  const subscribers = new Set<(value: FrameworkLocation) => void>();
   let currentLocation = parseRoutingLocation(initialLocation);
   const adapterStates = new Map<string, unknown>();
   let historyLength = 1;
@@ -88,7 +88,7 @@ export function createMockContract(options: MockContractOptions): MockContract {
     location$,
     navigateCalls,
     goCalls,
-    navigate(to: string, navOptions?: RoutingNavigateOptions) {
+    navigate(to: string, navOptions?: FrameworkNavigateOptions) {
       navigateCalls.push({ to, options: navOptions });
       const nextLocation = parseRoutingLocation(to, navOptions?.state);
       const performNavigate = () => {

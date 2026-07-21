@@ -20,7 +20,7 @@ import type { RouteDescriptorLoader } from './RouteDescriptor';
 /**
  * Props for {@link LazyDescriptorElement}.
  *
- * @public
+ * @internal
  */
 export interface LazyDescriptorElementProps {
   loader: RouteDescriptorLoader;
@@ -34,7 +34,7 @@ export interface LazyDescriptorElementProps {
  * {@link RouteDescriptor} loader when there is no owning `AppNode` (e.g. an
  * opaque adapter subtree) to lazy-load via `ExtensionBoundary.lazy` instead.
  *
- * @public
+ * @internal
  */
 export function LazyDescriptorElement(props: LazyDescriptorElementProps) {
   const { loader } = props;

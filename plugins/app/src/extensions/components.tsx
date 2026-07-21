@@ -28,9 +28,10 @@ import {
 } from '@backstage/core-components';
 import {
   BreadcrumbEntry,
-  RoutingContractContext,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { RoutingContractContext } from '../../../../packages/frontend-plugin-api/src/routing/RoutingContractContext';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useContext, useMemo } from 'react';

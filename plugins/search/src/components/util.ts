@@ -18,11 +18,11 @@ import { useCallback } from 'react';
 import { rootRouteRef } from '../plugin';
 
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 export const useNavigateToQuery = () => {
   const searchRoute = useRouteRef(rootRouteRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   return useCallback(
     ({ query }: { query: string }): void => {
       const queryString = qs.stringify({ query }, { addQueryPrefix: true });

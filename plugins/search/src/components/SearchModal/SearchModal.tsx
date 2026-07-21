@@ -39,7 +39,7 @@ import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { rootRouteRef } from '../../plugin';
 import { SearchResultSet } from '@backstage/plugin-search-common';
 import {
-  useCompatNavigate,
+  useAppNavigate,
   useTranslationRef,
 } from '@backstage/frontend-plugin-api';
 
@@ -123,7 +123,7 @@ export const Modal = ({
   resultItemComponents,
 }: SearchModalChildrenProps) => {
   const classes = useStyles();
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const { transitions } = useTheme();
   const { focusContent } = useContent();
   const { t } = useTranslationRef(searchTranslationRef);

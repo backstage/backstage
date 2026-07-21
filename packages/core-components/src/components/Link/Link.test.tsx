@@ -32,10 +32,9 @@ import {
   createMockNavigationController,
 } from '@backstage/frontend-test-utils';
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
-import {
-  navigationControllerApiRef,
-  RoutingContractContext,
-} from '@backstage/frontend-plugin-api';
+import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { RoutingContractContext } from '../../../../frontend-plugin-api/src/routing/RoutingContractContext';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ConfigReader } from '@backstage/config';

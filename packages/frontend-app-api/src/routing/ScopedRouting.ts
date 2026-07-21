@@ -24,21 +24,21 @@
 import type {
   RoutingBlocker,
   RoutingContract,
-  RoutingLocation,
-  RoutingNavigateOptions,
+  FrameworkLocation,
+  FrameworkNavigateOptions,
 } from '@backstage/frontend-plugin-api';
 import type { Observable, Subscription } from '@backstage/types';
 import { joinPaths } from './joinPaths';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { matchPath } from '../../../frontend-plugin-api/src/routing/routePattern';
 
-type LocationHandler = (location: RoutingLocation) => void;
+type LocationHandler = (location: FrameworkLocation) => void;
 
 /**
  * Empty scoped location emitted when a contract has never been in scope.
  * Pathname `'/'` is the scoped root (not the app root); search/hash are empty.
  */
-const OUT_OF_SCOPE_SENTINEL: RoutingLocation = {
+const OUT_OF_SCOPE_SENTINEL: FrameworkLocation = {
   pathname: '/',
   search: '',
   hash: '',
@@ -48,8 +48,8 @@ const OUT_OF_SCOPE_SENTINEL: RoutingLocation = {
 
 /** @internal */
 export interface ScopedRoutingHost {
-  getLocation(): RoutingLocation;
-  navigate(to: string, options?: RoutingNavigateOptions): void;
+  getLocation(): FrameworkLocation;
+  navigate(to: string, options?: FrameworkNavigateOptions): void;
   go(delta: number): void;
   canGoBack(): boolean;
   canGoForward(): boolean;
@@ -108,7 +108,7 @@ export function createScopedContract(
 ): RoutingContract {
   const routePattern = options?.routePattern ?? basePath;
   let lastBasePath = basePath;
-  let lastInScope: RoutingLocation = OUT_OF_SCOPE_SENTINEL;
+  let lastInScope: FrameworkLocation = OUT_OF_SCOPE_SENTINEL;
 
   const resolveBasePath = (pathname: string): string | undefined => {
     return matchConcreteBasePath(routePattern, pathname);
@@ -123,7 +123,7 @@ export function createScopedContract(
     return lastBasePath;
   };
 
-  const toScoped = (loc: RoutingLocation): RoutingLocation | undefined => {
+  const toScoped = (loc: FrameworkLocation): FrameworkLocation | undefined => {
     const concrete = resolveBasePath(loc.pathname);
     if (!concrete) {
       return undefined;
@@ -148,11 +148,11 @@ export function createScopedContract(
     lastInScope = initialScoped;
   }
 
-  const contractLocation$: Observable<RoutingLocation> = {
+  const contractLocation$: Observable<FrameworkLocation> = {
     subscribe: (
       observerOrOnNext?:
-        | { next?: (value: RoutingLocation) => void }
-        | ((value: RoutingLocation) => void),
+        | { next?: (value: FrameworkLocation) => void }
+        | ((value: FrameworkLocation) => void),
       _onError?: (error: Error) => void,
       _onComplete?: () => void,
     ): Subscription => {
@@ -162,7 +162,7 @@ export function createScopedContract(
           ? observerOrOnNext
           : observerOrOnNext?.next?.bind(observerOrOnNext);
 
-      const handler: LocationHandler = (loc: RoutingLocation) => {
+      const handler: LocationHandler = (loc: FrameworkLocation) => {
         if (isClosed || !onNext) {
           return;
         }
@@ -209,7 +209,10 @@ export function createScopedContract(
     },
     routePattern,
     location$: contractLocation$,
-    navigate: (to: string, navigateOptions?: RoutingNavigateOptions): void => {
+    navigate: (
+      to: string,
+      navigateOptions?: FrameworkNavigateOptions,
+    ): void => {
       if (to.startsWith('//') || to.includes('://')) {
         throw new Error(
           'RoutingContract.navigate does not support absolute or protocol-relative URLs',

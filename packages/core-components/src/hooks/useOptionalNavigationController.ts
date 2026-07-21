@@ -18,10 +18,11 @@ import { useContext } from 'react';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import {
   navigationControllerApiRef,
-  RoutingContractContext,
   type NavigationControllerApi,
   type RoutingContract,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { RoutingContractContext } from '../../../frontend-plugin-api/src/routing/RoutingContractContext';
 
 /**
  * Returns the framework navigation controller when the new frontend system

@@ -21,7 +21,7 @@ import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { useRouteRef } from './useRouteRef';
 import { useFrameworkNavigate } from './useFrameworkNavigation';
-import type { RoutingNavigateOptions } from './RoutingContract';
+import type { FrameworkNavigateOptions } from './RoutingContract';
 
 /**
  * A function that resolves a {@link RouteRef} to a path and navigates via the
@@ -31,12 +31,12 @@ import type { RoutingNavigateOptions } from './RoutingContract';
  */
 export type NavigateRouteRefFunc<TParams extends AnyRouteRefParams> = (
   ...[paramsOrOptions, options]: TParams extends undefined
-    ? readonly [options?: RoutingNavigateOptions]
-    : readonly [params: TParams, options?: RoutingNavigateOptions]
+    ? readonly [options?: FrameworkNavigateOptions]
+    : readonly [params: TParams, options?: FrameworkNavigateOptions]
 ) => void;
 
 /**
- * Combines {@link useRouteRef} with {@link useFrameworkNavigate} for
+ * Combines {@link useRouteRef} with framework navigation for
  * cross-plugin programmatic navigation.
  *
  * Prefer this (or {@link RouteLink}) over React Router's `useNavigate` with an
@@ -63,13 +63,13 @@ export function useNavigateRouteRef<TParams extends AnyRouteRefParams>(
       }
       if (routeFunc.length > 0) {
         const params = args[0] as TParams;
-        const options = args[1] as RoutingNavigateOptions | undefined;
+        const options = args[1] as FrameworkNavigateOptions | undefined;
         navigate(
           (routeFunc as unknown as (p: TParams) => string)(params),
           options,
         );
       } else {
-        const options = args[0] as RoutingNavigateOptions | undefined;
+        const options = args[0] as FrameworkNavigateOptions | undefined;
         navigate((routeFunc as unknown as () => string)(), options);
       }
     },

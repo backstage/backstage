@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RoutingLocation } from '@backstage/frontend-plugin-api';
+import { FrameworkLocation } from '@backstage/frontend-plugin-api';
 import { createMockNavigationController } from './createMockNavigationController';
 
 describe('createMockNavigationController', () => {
@@ -22,7 +22,7 @@ describe('createMockNavigationController', () => {
     const controller = createMockNavigationController({
       initialLocation: '/catalog?q=1#hash',
     });
-    const locs: RoutingLocation[] = [];
+    const locs: FrameworkLocation[] = [];
     controller.location$.subscribe(l => locs.push(l));
     expect(locs).toEqual([
       {
@@ -37,7 +37,7 @@ describe('createMockNavigationController', () => {
   it('should update location$ and record navigate calls', () => {
     const navigate = jest.fn();
     const controller = createMockNavigationController({ navigate });
-    const locs: RoutingLocation[] = [];
+    const locs: FrameworkLocation[] = [];
     controller.location$.subscribe(l => locs.push(l));
 
     controller.navigate('/tools', { state: { step: 1 } });

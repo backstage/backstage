@@ -28,7 +28,12 @@ import {
   OpaqueSubRouteRef,
 } from '@internal/frontend';
 
-type AnyRouteRef =
+/**
+ * Route ref types accepted by {@link MockRouteResolutionApiOptions.routes}.
+ *
+ * @public
+ */
+export type MockRouteResolutionRouteRef =
   | RouteRef<AnyRouteRefParams>
   | SubRouteRef<AnyRouteRefParams>
   | ExternalRouteRef<AnyRouteRefParams>;
@@ -48,8 +53,8 @@ export interface MockRouteResolutionApiOptions {
    * refs.
    */
   routes?:
-    | ReadonlyMap<AnyRouteRef, string>
-    | ReadonlyArray<[AnyRouteRef, string]>;
+    | ReadonlyMap<MockRouteResolutionRouteRef, string>
+    | ReadonlyArray<[MockRouteResolutionRouteRef, string]>;
   /**
    * Optional full `resolve` implementation. When set, it takes precedence
    * over {@link MockRouteResolutionApiOptions.routes}.
@@ -66,8 +71,7 @@ export interface MockRouteResolutionApiOptions {
  */
 export interface MockRouteResolutionApi extends RouteResolutionApi {
   /**
-   * The underlying jest mock for {@link RouteResolutionApi.resolve}, useful
-   * for call assertions.
+   * The underlying jest mock for `resolve`, useful for call assertions.
    */
   resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
 }
@@ -90,7 +94,7 @@ function substitutePath(
   });
 }
 
-function getRouteParamCount(ref: AnyRouteRef): number {
+function getRouteParamCount(ref: MockRouteResolutionRouteRef): number {
   if (ref.$$type === '@backstage/RouteRef') {
     return OpaqueRouteRef.toInternal(ref).getParams().length;
   }
@@ -114,10 +118,9 @@ function getRouteParamCount(ref: AnyRouteRef): number {
  * maps. Pass {@link MockRouteResolutionApiOptions.resolve} when you need a
  * custom implementation (including always returning `undefined`).
  *
- * Also available as {@link mockApis.routeResolution}. Pair with
+ * Also available as `mockApis.routeResolution()`. Pair with
  * {@link createMockNavigationController} and optionally
- * {@link createMockContract} under `RoutingContractContext` for NFS
- * `RouteLink` / `useNavigateRouteRef` tests.
+ * {@link createMockContract} for NFS `RouteLink` / `useNavigateRouteRef` tests.
  *
  * @public
  * @example
@@ -150,7 +153,7 @@ function getRouteParamCount(ref: AnyRouteRef): number {
 export function createMockRouteResolutionApi(
   options: MockRouteResolutionApiOptions = {},
 ): MockRouteResolutionApi {
-  let routeMap: Map<AnyRouteRef, string> | undefined;
+  let routeMap: Map<MockRouteResolutionRouteRef, string> | undefined;
   if (options.routes) {
     routeMap = new Map(options.routes);
   }
@@ -158,11 +161,14 @@ export function createMockRouteResolutionApi(
   const resolveImpl: RouteResolutionApi['resolve'] =
     options.resolve ??
     ((anyRouteRef, _resolveOptions) => {
-      const template = routeMap?.get(anyRouteRef as AnyRouteRef);
+      const template = routeMap?.get(
+        anyRouteRef as MockRouteResolutionRouteRef,
+      );
       if (template === undefined) {
         return undefined;
       }
-      const hasParams = getRouteParamCount(anyRouteRef as AnyRouteRef) > 0;
+      const hasParams =
+        getRouteParamCount(anyRouteRef as MockRouteResolutionRouteRef) > 0;
       const routeFunc = (
         hasParams
           ? (params: Record<string, string>) => substitutePath(template, params)

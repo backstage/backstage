@@ -19,25 +19,25 @@ import { TANSTACK_ADAPTER_ID } from './constants';
 import type {
   RoutingBlocker,
   RoutingContract,
-  RoutingLocation,
-  RoutingNavigateOptions,
+  FrameworkLocation,
+  FrameworkNavigateOptions,
 } from '@backstage/frontend-plugin-api';
 import type { Observable } from '@backstage/types';
 
 function createMockContract(options?: {
   basePath?: string;
-  initial?: RoutingLocation;
+  initial?: FrameworkLocation;
 }): {
   contract: RoutingContract;
   entries: Array<{
-    location: RoutingLocation;
+    location: FrameworkLocation;
     adapterState?: Record<string, unknown>;
   }>;
   index: { current: number };
 } {
   const basePath = options?.basePath ?? '/tools';
   const entries: Array<{
-    location: RoutingLocation;
+    location: FrameworkLocation;
     adapterState?: Record<string, unknown>;
   }> = [
     {
@@ -50,7 +50,7 @@ function createMockContract(options?: {
     },
   ];
   const index = { current: 0 };
-  const listeners = new Set<(loc: RoutingLocation) => void>();
+  const listeners = new Set<(loc: FrameworkLocation) => void>();
   let blockers: RoutingBlocker[] = [];
 
   const emit = () => {
@@ -59,13 +59,13 @@ function createMockContract(options?: {
     }
   };
 
-  const location$: Observable<RoutingLocation> = {
+  const location$: Observable<FrameworkLocation> = {
     subscribe: observerOrOnNext => {
       const onNext =
         typeof observerOrOnNext === 'function'
           ? observerOrOnNext
           : observerOrOnNext?.next?.bind(observerOrOnNext);
-      const handler = (loc: RoutingLocation) => onNext?.(loc);
+      const handler = (loc: FrameworkLocation) => onNext?.(loc);
       listeners.add(handler);
       handler(entries[index.current].location);
       return {
@@ -82,9 +82,9 @@ function createMockContract(options?: {
     basePath,
     routePattern: basePath,
     location$,
-    navigate(to: string, navigateOptions?: RoutingNavigateOptions) {
+    navigate(to: string, navigateOptions?: FrameworkNavigateOptions) {
       const url = new URL(to, 'http://localhost');
-      const nextLocation: RoutingLocation = {
+      const nextLocation: FrameworkLocation = {
         pathname: url.pathname,
         search: url.search,
         hash: url.hash,

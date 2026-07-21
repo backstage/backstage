@@ -19,9 +19,10 @@ import { render, screen, act } from '@testing-library/react';
 import {
   AppRouteSwitch,
   RouteTable,
-  useRoutingContract,
   type RoutingContract,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { useRoutingContract } from '../../../frontend-plugin-api/src/routing/RoutingContractContext';
 import { createNavigationController } from './NavigationController';
 import type { NavigationController } from './NavigationController';
 

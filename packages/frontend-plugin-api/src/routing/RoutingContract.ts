@@ -17,7 +17,7 @@
 import { Observable } from '@backstage/types';
 
 /** @public */
-export interface RoutingLocation {
+export interface FrameworkLocation {
   pathname: string;
   search: string;
   hash: string;
@@ -25,7 +25,7 @@ export interface RoutingLocation {
    * User-visible navigation state for this location.
    *
    * Adapter metadata must not appear here — use
-   * {@link RoutingNavigateOptions.adapterState} when writing and
+   * {@link FrameworkNavigateOptions.adapterState} when writing and
    * {@link RoutingContract.getAdapterState} when reading.
    */
   state: unknown;
@@ -36,13 +36,13 @@ export interface RoutingLocation {
  *
  * @public
  */
-export interface RoutingNavigateOptions {
+export interface FrameworkNavigateOptions {
   replace?: boolean;
-  /** User-visible navigation state (exposed on {@link RoutingLocation.state}). */
+  /** User-visible navigation state (exposed on {@link FrameworkLocation.state}). */
   state?: unknown;
   /**
    * Namespaced adapter metadata keyed by adapter id (e.g. `tanstack-router`).
-   * Stored on the history entry separately from {@link RoutingLocation.state}.
+   * Stored on the history entry separately from {@link FrameworkLocation.state}.
    *
    * @remarks
    * Adapter/chrome support — not required for ordinary plugin navigation.
@@ -71,8 +71,8 @@ export type RoutingBlockerAction = 'PUSH' | 'REPLACE';
  * @public
  */
 export interface RoutingBlockerTransition {
-  currentLocation: RoutingLocation;
-  nextLocation: RoutingLocation;
+  currentLocation: FrameworkLocation;
+  nextLocation: FrameworkLocation;
   action: RoutingBlockerAction;
 }
 
@@ -140,8 +140,8 @@ export interface RoutingContract {
    * Emitted locations expose only the user state slice — never adapter
    * namespaces.
    */
-  readonly location$: Observable<RoutingLocation>;
-  navigate(to: string, options?: RoutingNavigateOptions): void;
+  readonly location$: Observable<FrameworkLocation>;
+  navigate(to: string, options?: FrameworkNavigateOptions): void;
   /**
    * Move forward or back in the app history stack by `delta` entries
    * (same semantics as `history.go`).

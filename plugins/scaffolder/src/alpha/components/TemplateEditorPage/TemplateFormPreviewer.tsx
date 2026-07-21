@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 import yaml from 'yaml';
 import { useCallback, useState } from 'react';
@@ -141,7 +141,7 @@ export const TemplateFormPreviewer = ({
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const editLink = useRouteRef(editRouteRef);
 
   const [errorText, setErrorText] = useState<string>();

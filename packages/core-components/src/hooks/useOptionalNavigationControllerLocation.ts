@@ -17,10 +17,13 @@
 import { useCallback, useRef, useSyncExternalStore } from 'react';
 import {
   type NavigationControllerApi,
-  type RoutingLocation,
+  type FrameworkLocation,
 } from '@backstage/frontend-plugin-api';
 
-function routingLocationEqual(a: RoutingLocation, b: RoutingLocation): boolean {
+function routingLocationEqual(
+  a: FrameworkLocation,
+  b: FrameworkLocation,
+): boolean {
   return (
     a.pathname === b.pathname &&
     a.search === b.search &&
@@ -41,8 +44,8 @@ function routingLocationEqual(a: RoutingLocation, b: RoutingLocation): boolean {
  */
 export function useOptionalNavigationControllerLocation(
   navigationController: NavigationControllerApi | undefined,
-): RoutingLocation | undefined {
-  const snapshotRef = useRef<RoutingLocation | undefined>(undefined);
+): FrameworkLocation | undefined {
+  const snapshotRef = useRef<FrameworkLocation | undefined>(undefined);
 
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
@@ -65,7 +68,7 @@ export function useOptionalNavigationControllerLocation(
     [navigationController],
   );
 
-  const getSnapshot = useCallback((): RoutingLocation | undefined => {
+  const getSnapshot = useCallback((): FrameworkLocation | undefined => {
     if (!navigationController) {
       return undefined;
     }

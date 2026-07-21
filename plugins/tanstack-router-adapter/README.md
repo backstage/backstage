@@ -63,5 +63,5 @@ React Router page adapter (or migrate to descriptors).
 - Opaque React Router children under a TanStack default are unsupported by
   policy � pages must use route descriptors (or keep a React Router adapter).
   There is no TanStack opaque-children bridge package.
-- The public surface matches sibling page adapters: `TanStackPageRouter` and
-  `createTanStackScopedRouter`.
+- The public surface matches sibling page adapters: `TanStackPageRouter` via
+  `PageRouterBlueprint` / `pageRouterApiRef`.

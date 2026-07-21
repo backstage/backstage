@@ -33,7 +33,7 @@
  * Splits a {@link RouteDescriptor} `path` into its `/`-delimited segments.
  * Returns an empty array for an undefined or empty path (e.g. index routes).
  *
- * @public
+ * @internal
  */
 export function splitRouteDescriptorPath(path: string | undefined): string[] {
   return path ? path.split('/') : [];
@@ -42,7 +42,7 @@ export function splitRouteDescriptorPath(path: string | undefined): string[] {
 /**
  * True when a single path segment is the splat / catch-all token (`*`).
  *
- * @public
+ * @internal
  */
 export function isRouteDescriptorSplatSegment(segment: string): boolean {
   return segment === '*';
@@ -51,7 +51,7 @@ export function isRouteDescriptorSplatSegment(segment: string): boolean {
 /**
  * True when a single path segment declares a path param (e.g. `:id`).
  *
- * @public
+ * @internal
  */
 export function isRouteDescriptorParamSegment(segment: string): boolean {
   return segment.startsWith(':');
@@ -60,7 +60,7 @@ export function isRouteDescriptorParamSegment(segment: string): boolean {
 /**
  * Extracts the param name from a `:param` path segment.
  *
- * @public
+ * @internal
  */
 export function getRouteDescriptorParamName(segment: string): string {
   return segment.substring(1);
@@ -70,7 +70,7 @@ export function getRouteDescriptorParamName(segment: string): string {
  * True when a {@link RouteDescriptor} `path` is a splat / catch-all route
  * (`*`, or a path whose last segment is `*`, e.g. `docs/*`).
  *
- * @public
+ * @internal
  */
 export function isSplatRouteDescriptorPath(path: string | undefined): boolean {
   const segments = splitRouteDescriptorPath(path);
@@ -84,7 +84,7 @@ export function isSplatRouteDescriptorPath(path: string | undefined): boolean {
  * Collects the param names declared by `:param` segments in a
  * {@link RouteDescriptor} `path`, in path order.
  *
- * @public
+ * @internal
  */
 export function collectRouteDescriptorParams(
   path: string | undefined,
@@ -100,7 +100,7 @@ export function collectRouteDescriptorParams(
  * `path`), normalizing slashes so every caller derives the same nested path
  * regardless of the underlying router library.
  *
- * @public
+ * @internal
  */
 function stripLeadingSlashes(path: string): string {
   let start = 0;

@@ -20,10 +20,11 @@ import {
   useApi,
   type RoutingContract,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   createScopedRouter,
   type ScopedRouterResult,
-} from '@backstage/plugin-react-router-v6-adapter';
+} from '../../../react-router-v6-adapter/src/createScopedRouter';
 import { configApiRef } from '@backstage/core-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';

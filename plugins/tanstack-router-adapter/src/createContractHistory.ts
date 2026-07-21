@@ -17,7 +17,7 @@
 import type {
   RoutingBlockerTransition,
   RoutingContract,
-  RoutingLocation,
+  FrameworkLocation,
 } from '@backstage/frontend-plugin-api';
 import { parseHref } from '@tanstack/history';
 import type {
@@ -139,15 +139,15 @@ function mergeUserState(
 
 function toHistoryLocation(
   contract: RoutingContract,
-  scoped: RoutingLocation,
+  scoped: FrameworkLocation,
 ): HistoryLocation {
   const adapterMeta = readAdapterMeta(contract);
   const href = `${scoped.pathname}${scoped.search}${scoped.hash}`;
   return parseHref(href, mergeUserState(adapterMeta, scoped.state));
 }
 
-function readCurrentScoped(contract: RoutingContract): RoutingLocation {
-  let current: RoutingLocation = {
+function readCurrentScoped(contract: RoutingContract): FrameworkLocation {
+  let current: FrameworkLocation = {
     pathname: '/',
     search: '',
     hash: '',
@@ -259,9 +259,9 @@ export function createContractHistory(
     return appPath;
   };
 
-  // Reverse of toContractPath: project an app-rooted RoutingLocation (as
+  // Reverse of toContractPath: project an app-rooted FrameworkLocation (as
   // seen by shared framework blockers) into this router's scoped location.
-  const toScopedLocation = (location: RoutingLocation): RoutingLocation => {
+  const toScopedLocation = (location: FrameworkLocation): FrameworkLocation => {
     const scopedPath = toContractPath(
       `${location.pathname}${location.search}${location.hash}`,
     );
@@ -275,7 +275,7 @@ export function createContractHistory(
   };
 
   const toBlockerHistoryLocation = (
-    location: RoutingLocation,
+    location: FrameworkLocation,
   ): HistoryLocation => {
     const scoped = toScopedLocation(location);
     const state = isRecord(scoped.state) ? scoped.state : {};

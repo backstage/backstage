@@ -17,8 +17,8 @@
 import {
   NavigationControllerApi,
   RoutingBlocker,
-  RoutingLocation,
-  RoutingNavigateOptions,
+  FrameworkLocation,
+  FrameworkNavigateOptions,
   type RoutingContract,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -33,19 +33,17 @@ import {
  */
 export interface MockNavigationControllerOptions {
   /**
-   * Initial location for {@link NavigationControllerApi.location$}.
+   * Initial location for the mock controller's `location$`.
    * Defaults to `'/'`.
    */
   initialLocation?: string;
   /**
-   * Optional jest mock (or function) invoked by
-   * {@link NavigationControllerApi.navigate}. Location emission still
-   * happens before this is called.
+   * Optional jest mock (or function) invoked by `navigate`. Location
+   * emission still happens before this is called.
    */
   navigate?: jest.Mock | NavigationControllerApi['navigate'];
   /**
-   * Optional jest mock (or function) invoked by
-   * {@link NavigationControllerApi.go}.
+   * Optional jest mock (or function) invoked by `go`.
    */
   go?: jest.Mock | NavigationControllerApi['go'];
 }
@@ -58,14 +56,14 @@ export interface MockNavigationControllerOptions {
  */
 export interface MockNavigationController extends NavigationControllerApi {
   /**
-   * Recorded {@link NavigationControllerApi.navigate} calls, in order.
+   * Recorded `navigate` calls, in order.
    */
   navigateCalls: Array<{
     to: string;
-    options?: RoutingNavigateOptions;
+    options?: FrameworkNavigateOptions;
   }>;
   /**
-   * Recorded {@link NavigationControllerApi.go} deltas, in order.
+   * Recorded `go` deltas, in order.
    */
   goCalls: number[];
 }
@@ -75,14 +73,13 @@ export interface MockNavigationController extends NavigationControllerApi {
  *
  * Always emits synchronously on `location$` subscribe. `navigate` updates
  * the current location and notifies subscribers, matching the real
- * controller's sync-emission invariant. Prefer a real
- * {@link @backstage/frontend-app-api#NavigationController} with memory
- * history when asserting back/forward stack behavior.
+ * controller's sync-emission invariant. Prefer `renderInTestApp` /
+ * `renderTestApp` (and the returned `navigationController`) when asserting
+ * back/forward stack behavior.
  *
- * Also available as {@link mockApis.navigationController}. Pair with
+ * Also available as `mockApis.navigationController()`. Pair with
  * {@link createMockRouteResolutionApi} and optionally
- * {@link createMockContract} under `RoutingContractContext` for NFS
- * `RouteLink` / `useNavigateRouteRef` tests.
+ * {@link createMockContract} for NFS `RouteLink` / `useNavigateRouteRef` tests.
  *
  * @public
  * @example
@@ -96,7 +93,7 @@ export function createMockNavigationController(
 ): MockNavigationController {
   const { initialLocation = '/', navigate: navigateImpl, go: goImpl } = options;
 
-  const subscribers = new Set<(value: RoutingLocation) => void>();
+  const subscribers = new Set<(value: FrameworkLocation) => void>();
   let current = parseRoutingLocation(initialLocation);
   const adapterStates = new Map<string, unknown>();
   const navigateCalls: MockNavigationController['navigateCalls'] = [];
@@ -108,7 +105,7 @@ export function createMockNavigationController(
     location$,
     navigateCalls,
     goCalls,
-    navigate(to: string, navOptions?: RoutingNavigateOptions) {
+    navigate(to: string, navOptions?: FrameworkNavigateOptions) {
       navigateCalls.push({ to, options: navOptions });
       current = parseRoutingLocation(to, navOptions?.state);
       adapterStates.clear();

@@ -66,7 +66,7 @@ export function useObservableAsState<T>(
 }
 
 /**
- * Default equality check for RoutingLocation-shaped objects.
+ * Default equality check for FrameworkLocation-shaped objects.
  * @internal
  */
 export function routingLocationEqual(

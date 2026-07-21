@@ -500,12 +500,12 @@ Prefer the dual-path helpers from `@backstage/frontend-plugin-api` so the same p
 
 ```tsx
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
 
 export function useNavigateToSearchQuery() {
   const searchRoute = useRouteRef(rootRouteRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
 
   return (query: string) => {
     navigate(`${searchRoute()}?query=${encodeURIComponent(query)}`);
@@ -513,7 +513,7 @@ export function useNavigateToSearchQuery() {
 }
 ```
 
-`useCompatNavigate` uses the navigation controller when one is registered, and falls back to React Router when it is not.
+`useAppNavigate` uses the navigation controller when one is registered, and falls back to React Router when it is not.
 
 For declarative cross-plugin links, use `RouteLink` instead of building absolute `to` strings:
 

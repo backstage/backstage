@@ -17,7 +17,7 @@
 import type {
   RoutingBlocker,
   RoutingBlockerAction,
-  RoutingLocation,
+  FrameworkLocation,
 } from '@backstage/frontend-plugin-api';
 
 /**
@@ -27,17 +27,17 @@ import type {
  * @internal
  */
 export interface HistoryStateEnvelope {
-  /** User-visible navigation state (exposed on {@link RoutingLocation.state}). */
+  /** User-visible navigation state (exposed on {@link FrameworkLocation.state}). */
   state?: unknown;
   /**
    * Adapter metadata keyed by adapter id (e.g. `tanstack-router`).
-   * Never exposed on {@link RoutingLocation.state}.
+   * Never exposed on {@link FrameworkLocation.state}.
    */
   adapterState?: Record<string, unknown>;
   /**
    * Session-relative stack index used by the window backend for
    * {@link HistoryBackend.canGoBack} / {@link HistoryBackend.canGoForward}.
-   * Not exposed on {@link RoutingLocation}.
+   * Not exposed on {@link FrameworkLocation}.
    */
   index?: number;
 }
@@ -67,7 +67,7 @@ export interface HistoryWriteOptions {
  */
 export interface HistoryBackend {
   /** Current location including pathname, search, hash, and user state only. */
-  getLocation(): RoutingLocation;
+  getLocation(): FrameworkLocation;
   /**
    * Read namespaced adapter metadata for the current entry.
    * Returns `undefined` when the adapter has not stored state on this entry.
@@ -138,8 +138,8 @@ function createBlockerGate() {
       return blockers.length > 0;
     },
     async isBlocked(transition: {
-      currentLocation: RoutingLocation;
-      nextLocation: RoutingLocation;
+      currentLocation: FrameworkLocation;
+      nextLocation: FrameworkLocation;
       action: RoutingBlockerAction;
     }): Promise<boolean> {
       for (const blocker of blockers) {
@@ -153,7 +153,7 @@ function createBlockerGate() {
   };
 }
 
-function parseRoutingLocation(url: string, state?: unknown): RoutingLocation {
+function parseRoutingLocation(url: string, state?: unknown): FrameworkLocation {
   const parsed = new URL(url, 'http://localhost');
   return {
     pathname: parsed.pathname,
@@ -293,7 +293,7 @@ export function createWindowHistoryBackend(): HistoryBackend {
     window.history[method](packHistoryState({ ...options, index }), '', url);
   };
 
-  const readLocation = (): RoutingLocation => {
+  const readLocation = (): FrameworkLocation => {
     const { state } = readWindowEnvelope();
     return {
       pathname: window.location.pathname,
@@ -462,7 +462,7 @@ export function createMemoryHistoryBackend(
     }
   };
 
-  const readLocation = (): RoutingLocation => {
+  const readLocation = (): FrameworkLocation => {
     const entry = entries[index];
     return {
       pathname: entry.pathname,

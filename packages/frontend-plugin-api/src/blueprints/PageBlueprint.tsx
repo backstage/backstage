@@ -18,11 +18,13 @@ import { JSX, ReactNode, useContext, useEffect, useMemo } from 'react';
 import { IconElement } from '../icons/types';
 import {
   RouteRef,
-  RoutingContractContext,
-  useRoutingContract,
   type RouteDescriptor,
   createRouteDescriptor,
 } from '../routing';
+import {
+  RoutingContractContext,
+  useRoutingContract,
+} from '../routing/RoutingContractContext';
 import {
   coreExtensionData,
   createExtensionBlueprint,

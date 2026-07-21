@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
@@ -310,7 +310,7 @@ export type TemplatingExtensionsPageProps = {
 export const TemplatingExtensionsPage = (
   props: TemplatingExtensionsPageProps,
 ) => {
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);

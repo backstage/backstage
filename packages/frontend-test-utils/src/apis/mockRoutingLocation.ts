@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { RoutingLocation } from '@backstage/frontend-plugin-api';
+import { FrameworkLocation } from '@backstage/frontend-plugin-api';
 import { Observable, Subscription } from '@backstage/types';
 
 /** @internal */
 export function parseRoutingLocation(
   path: string,
   state?: unknown,
-): RoutingLocation {
+): FrameworkLocation {
   const url = new URL(path, 'http://localhost');
   return {
     pathname: url.pathname,
@@ -38,9 +38,9 @@ export function parseRoutingLocation(
  * @internal
  */
 export function createSyncLocationObservable(
-  getCurrent: () => RoutingLocation,
-  subscribers: Set<(value: RoutingLocation) => void>,
-): Observable<RoutingLocation> {
+  getCurrent: () => FrameworkLocation,
+  subscribers: Set<(value: FrameworkLocation) => void>,
+): Observable<FrameworkLocation> {
   return {
     [Symbol.observable]() {
       return this;

@@ -19,8 +19,8 @@ import type { Observable } from '@backstage/types';
 import type {
   RoutingBlocker,
   RoutingContract,
-  RoutingLocation,
-  RoutingNavigateOptions,
+  FrameworkLocation,
+  FrameworkNavigateOptions,
 } from './RoutingContract';
 
 /**
@@ -42,7 +42,7 @@ export interface CreateContractOptions {
 
 /** @public */
 export interface NavigationControllerApi {
-  navigate(path: string, options?: RoutingNavigateOptions): void;
+  navigate(path: string, options?: FrameworkNavigateOptions): void;
   /**
    * Move forward or back in the history stack by `delta` entries
    * (same semantics as `history.go`).
@@ -81,7 +81,7 @@ export interface NavigationControllerApi {
    * Adapter/chrome support.
    */
   getAdapterState(adapterId: string): unknown;
-  readonly location$: Observable<RoutingLocation>;
+  readonly location$: Observable<FrameworkLocation>;
   /**
    * Register a pre-navigation blocker shared with every adapter's
    * {@link RoutingContract.block}. Only runs for {@link NavigationControllerApi.navigate}

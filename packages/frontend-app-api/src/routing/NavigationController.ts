@@ -17,8 +17,8 @@
 import type {
   RoutingBlocker,
   RoutingContract,
-  RoutingLocation,
-  RoutingNavigateOptions,
+  FrameworkLocation,
+  FrameworkNavigateOptions,
 } from '@backstage/frontend-plugin-api';
 import type { Observable, Subscription } from '@backstage/types';
 import {
@@ -27,7 +27,7 @@ import {
 } from './HistoryBackend';
 import { createScopedContract } from './ScopedRouting';
 
-type LocationHandler = (location: RoutingLocation) => void;
+type LocationHandler = (location: FrameworkLocation) => void;
 
 /**
  * Options for constructing a {@link NavigationController}.
@@ -78,11 +78,11 @@ export class NavigationController {
   }
 
   /** Observable of the current location (basename-stripped). */
-  readonly location$: Observable<RoutingLocation> = {
+  readonly location$: Observable<FrameworkLocation> = {
     subscribe: (
       observerOrOnNext?:
-        | { next?: (value: RoutingLocation) => void }
-        | ((value: RoutingLocation) => void),
+        | { next?: (value: FrameworkLocation) => void }
+        | ((value: FrameworkLocation) => void),
       _onError?: (error: Error) => void,
       _onComplete?: () => void,
     ): Subscription => {
@@ -92,7 +92,7 @@ export class NavigationController {
           ? observerOrOnNext
           : observerOrOnNext?.next?.bind(observerOrOnNext);
 
-      const handler: LocationHandler = (loc: RoutingLocation) => {
+      const handler: LocationHandler = (loc: FrameworkLocation) => {
         if (!isClosed && onNext) {
           onNext(loc);
         }
@@ -127,7 +127,7 @@ export class NavigationController {
    * by the history backend's `listen` notification (see
    * {@link HistoryBackend.push}).
    */
-  navigate(to: string, options?: RoutingNavigateOptions): void {
+  navigate(to: string, options?: FrameworkNavigateOptions): void {
     if (to.startsWith('//') || to.includes('://')) {
       throw new Error(
         'NavigationController.navigate does not support absolute or protocol-relative URLs',
@@ -248,7 +248,7 @@ export class NavigationController {
     this.subscribers.clear();
   }
 
-  private getCurrentLocation(): RoutingLocation {
+  private getCurrentLocation(): FrameworkLocation {
     const raw = this.history.getLocation();
     return {
       pathname: this.stripBasename(raw.pathname),
@@ -270,8 +270,8 @@ export class NavigationController {
   }
 
   private stripBasenameFromLocation(
-    location: RoutingLocation,
-  ): RoutingLocation {
+    location: FrameworkLocation,
+  ): FrameworkLocation {
     return { ...location, pathname: this.stripBasename(location.pathname) };
   }
 

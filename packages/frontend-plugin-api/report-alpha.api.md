@@ -9,7 +9,6 @@ import { Expand } from '@backstage/types';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
-import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { ReactNode } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 
@@ -448,18 +447,6 @@ export interface FrontendPluginInfo {
 
 // @public
 export type IconElement = JSX_2.Element | null;
-
-// @alpha
-export function NestedRoutingContractProvider(
-  props: NestedRoutingContractProviderProps,
-): JSX_3.Element;
-
-// @alpha
-export interface NestedRoutingContractProviderProps {
-  // (undocumented)
-  children: ReactNode;
-  subPath: string;
-}
 
 // @public (undocumented)
 export interface OverridableExtensionDefinition<

@@ -25,12 +25,15 @@ import {
 import {
   BreadcrumbEntry,
   ExtensionBoundary,
-  LazyDescriptorElement,
-  resolveRouteDescriptorLoader,
   useAppNode,
   type RouteDescriptor,
 } from '@backstage/frontend-plugin-api';
-import { NestedRoutingContractProvider } from '@backstage/frontend-plugin-api/alpha';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { LazyDescriptorElement } from '../../../packages/frontend-plugin-api/src/routing/LazyDescriptorElement';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveRouteDescriptorLoader } from '../../../packages/frontend-plugin-api/src/routing/RouteDescriptor';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { NestedRoutingContractProvider } from '../../../packages/frontend-plugin-api/src/routing/NestedRoutingContractProvider';
 import { Route, Routes } from 'react-router-dom';
 import type {
   CompileRouteDescriptorsApi,

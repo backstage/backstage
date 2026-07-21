@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 import { useCallback } from 'react';
 
@@ -49,7 +49,7 @@ interface TemplateFormPageProps {
 
 export function TemplateFormPage(props: TemplateFormPageProps) {
   const classes = useStyles();
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const editLink = useRouteRef(editRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 

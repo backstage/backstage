@@ -58,7 +58,7 @@ import { scaffolderTranslationRef } from '../../translation';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import { default as reactUseAsync } from 'react-use/esm/useAsync';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 import { OngoingTaskContextMenu } from './OngoingTaskContextMenu';
 
 const useStyles = makeStyles(theme => ({
@@ -174,7 +174,7 @@ export function OngoingTaskBody(props: {
   }, [entityPresentationApi, taskStream.task?.spec.templateInfo?.entityRef]);
 
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
 
@@ -295,7 +295,7 @@ function OngoingTaskChrome(props: {
   }, [entityPresentationApi, taskStream.task?.spec.templateInfo?.entityRef]);
 
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
 
@@ -398,7 +398,7 @@ function OngoingTaskContent(props: {
 }) {
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
   const taskStream = useTaskEventStream(taskId!);

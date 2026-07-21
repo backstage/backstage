@@ -20,9 +20,4 @@
  * @packageDocumentation
  */
 
-export { createTanStackScopedRouter } from './TanStackRouterHost';
-export type {
-  CreateTanStackScopedRouterOptions,
-  TanStackScopedRouterResult,
-} from './TanStackRouterHost';
 export { TanStackPageRouter } from './TanStackPageRouter';

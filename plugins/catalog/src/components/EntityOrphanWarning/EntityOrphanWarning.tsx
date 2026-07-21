@@ -22,7 +22,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 import { Alert, Button } from '@backstage/ui';
 
@@ -43,7 +43,7 @@ export function isOrphan(entity: Entity): boolean {
  * @public
  */
 export function EntityOrphanWarning() {
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const catalogLink = useRouteRef(rootRouteRef);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const { entity } = useEntity();

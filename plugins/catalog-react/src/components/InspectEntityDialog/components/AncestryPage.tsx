@@ -38,7 +38,7 @@ import { useEntityPresentation } from '../../../apis';
 import { EntityKindIcon } from './EntityKindIcon';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   node: {
@@ -106,7 +106,7 @@ function useAncestry(root: Entity): {
 
 function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
   const classes = useStyles();
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const entityRoute = useRouteRef(entityRouteRef);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);

@@ -37,7 +37,7 @@ import {
   EntityRelationsGraphProps,
 } from '../EntityRelationsGraph';
 import {
-  useCompatNavigate,
+  useAppNavigate,
   useTranslationRef,
 } from '@backstage/frontend-plugin-api';
 
@@ -89,7 +89,7 @@ export const CatalogGraphCard = (
   const entityName = useMemo(() => getCompoundEntityRef(entity), [entity]);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const catalogGraphRoute = useRouteRef(catalogGraphRouteRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const classes = useStyles({ height });
   const analytics = useAnalytics();
 

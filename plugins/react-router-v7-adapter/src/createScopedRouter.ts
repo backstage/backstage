@@ -38,7 +38,7 @@ import type { Location, NavigateFunction } from 'react-router';
 
 /** Options for {@link createScopedRouter}.
  *
- * @public
+ * @internal
  */
 export interface CreateScopedRouterOptions {
   /**
@@ -64,7 +64,7 @@ export interface CreateScopedRouterOptions {
 /**
  * Result of {@link createScopedRouter}.
  *
- * @public
+ * @internal
  */
 export interface ScopedRouterResult {
   /** React component that provides React Router v7 context for its children. */
@@ -113,7 +113,7 @@ const v7Bindings: ReactRouterAdapterBindings = {
  * did under a root router. `contract.navigate` still receives paths scoped to
  * `basePath`.
  *
- * @public
+ * @internal
  */
 export function createScopedRouter(
   contract: RoutingContract,

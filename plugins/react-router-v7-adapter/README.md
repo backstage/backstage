@@ -28,18 +28,6 @@ const myV7Router = PageRouterBlueprint.make({
 });
 ```
 
-Or build a scoped router directly:
-
-```tsx
-import { createScopedRouter } from '@backstage/plugin-react-router-v7-adapter';
-
-const { Router } = createScopedRouter(contract, {
-  routePattern: '/settings',
-  appBasename: '/backstage',
-  go: delta => navigationController.go(delta),
-});
-```
-
 ## Multi-router coexistence
 
 This package is the React Router v7 adapter used in the multi-router coexistence

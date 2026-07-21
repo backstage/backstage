@@ -7,7 +7,6 @@ import { AnchorHTMLAttributes } from 'react';
 import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import type { Config } from '@backstage/config';
-import { Context } from 'react';
 import { Expand } from '@backstage/types';
 import { ExpandRecursive } from '@backstage/types';
 import { FilterPredicate } from '@backstage/filter-predicates';
@@ -17,6 +16,7 @@ import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
@@ -274,6 +274,27 @@ export const AppRootElementBlueprint: ExtensionBlueprint<{
 }>;
 
 // @public
+export interface AppRouteRedirect {
+  from: string;
+  to: string;
+}
+
+// @public
+export function AppRouteSwitch(
+  props: AppRouteSwitchProps,
+): JSX_3.Element | null;
+
+// @public
+export interface AppRouteSwitchProps {
+  contracts?: Map<string, RoutingContract>;
+  controller: NavigationControllerApi;
+  fallback: ReactElement;
+  pages: Map<string, ComponentType>;
+  redirects?: AppRouteRedirect[];
+  routeTable: RouteTable;
+}
+
+// @public
 export type AppTheme = {
   id: string;
   title: string;
@@ -391,11 +412,6 @@ export interface BreadcrumbEntryData {
   // (undocumented)
   label: string;
 }
-
-// @public
-export function collectRouteDescriptorParams(
-  path: string | undefined,
-): string[];
 
 // @public
 export type ConfigApi = Config;
@@ -719,28 +735,6 @@ export type CreateExtensionOptions<
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Iterable<UFactoryOutput>;
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
-
-
-// @public
-export interface AppRouteRedirect {
-  from: string;
-  to: string;
-}
-
-// @public
-export function AppRouteSwitch(
-  props: AppRouteSwitchProps,
-): JSX_2.Element | null;
-
-// @public
-export interface AppRouteSwitchProps {
-  contracts?: Map<string, RoutingContract>;
-  controller: NavigationControllerApi;
-  fallback: ReactElement;
-  pages: Map<string, ComponentType>;
-  redirects?: AppRouteRedirect[];
-  routeTable: RouteTable;
-}
 
 // @public
 export function createExternalRouteRef<
@@ -1475,6 +1469,25 @@ export const fetchApiRef: ApiRef_2<FetchApi, 'core.fetch'> & {
 };
 
 // @public (undocumented)
+export interface FrameworkLocation {
+  // (undocumented)
+  hash: string;
+  // (undocumented)
+  pathname: string;
+  // (undocumented)
+  search: string;
+  state: unknown;
+}
+
+// @public
+export interface FrameworkNavigateOptions {
+  adapterState?: Record<string, unknown>;
+  // (undocumented)
+  replace?: boolean;
+  state?: unknown;
+}
+
+// @public (undocumented)
 export type FrontendFeature =
   | (Omit<FrontendPlugin, 'pluginId'> & {
       pluginId?: string;
@@ -1543,9 +1556,6 @@ export type FrontendPluginInfoOptions = {
   >;
   manifest?: () => Promise<JsonObject>;
 };
-
-// @public
-export function getRouteDescriptorParamName(segment: string): string;
 
 // @public
 export const githubAuthApiRef: ApiRef_2<
@@ -1617,32 +1627,6 @@ export const identityApiRef: ApiRef_2<IdentityApi, 'core.identity'> & {
 };
 
 // @public
-export function isRouteDescriptorParamSegment(segment: string): boolean;
-
-// @public
-export function isRouteDescriptorSplatSegment(segment: string): boolean;
-
-// @public
-export function isSplatRouteDescriptorPath(path: string | undefined): boolean;
-
-// @public
-export function joinRouteDescriptorPaths(
-  parentPath: string,
-  subPath: string,
-): string;
-
-// @public
-export function LazyDescriptorElement(
-  props: LazyDescriptorElementProps,
-): JSX_3.Element;
-
-// @public
-export interface LazyDescriptorElementProps {
-  // (undocumented)
-  loader: RouteDescriptorLoader;
-}
-
-// @public
 export const microsoftAuthApiRef: ApiRef_2<
   OAuthApi &
     OpenIdConnectApi &
@@ -1657,8 +1641,8 @@ export const microsoftAuthApiRef: ApiRef_2<
 // @public
 export type NavigateRouteRefFunc<TParams extends AnyRouteRefParams> = (
   ...input: TParams extends undefined
-    ? readonly [options?: RoutingNavigateOptions]
-    : readonly [params: TParams, options?: RoutingNavigateOptions]
+    ? readonly [options?: FrameworkNavigateOptions]
+    : readonly [params: TParams, options?: FrameworkNavigateOptions]
 ) => void;
 
 // @public (undocumented)
@@ -1674,9 +1658,9 @@ export interface NavigationControllerApi {
   go(delta: number): void;
   readonly historyLength: number;
   // (undocumented)
-  readonly location$: Observable<RoutingLocation>;
+  readonly location$: Observable<FrameworkLocation>;
   // (undocumented)
-  navigate(path: string, options?: RoutingNavigateOptions): void;
+  navigate(path: string, options?: FrameworkNavigateOptions): void;
 }
 
 // @public
@@ -2213,11 +2197,6 @@ export const Progress: {
 export type ProgressProps = {};
 
 // @public
-export function resolveRouteDescriptorLoader(
-  descriptor: RouteDescriptor,
-): RouteDescriptorLoader | undefined;
-
-// @public
 export interface RouteDescriptor {
   // (undocumented)
   readonly $$type: '@backstage/RouteDescriptor';
@@ -2292,6 +2271,18 @@ export const routeResolutionApiRef: ApiRef_2<
 };
 
 // @public
+export class RouteTable {
+  constructor(basePaths: string[]);
+  match(pathname: string): RouteTableMatch | undefined;
+}
+
+// @public
+export interface RouteTableMatch {
+  basePath: string;
+  path: string;
+}
+
+// @public
 export type RoutingBlocker = (
   transition: RoutingBlockerTransition,
 ) => boolean | Promise<boolean>;
@@ -2304,9 +2295,9 @@ export interface RoutingBlockerTransition {
   // (undocumented)
   action: RoutingBlockerAction;
   // (undocumented)
-  currentLocation: RoutingLocation;
+  currentLocation: FrameworkLocation;
   // (undocumented)
-  nextLocation: RoutingLocation;
+  nextLocation: FrameworkLocation;
 }
 
 // @public
@@ -2318,32 +2309,10 @@ export interface RoutingContract {
   getAdapterState(adapterId: string): unknown;
   go(delta: number): void;
   readonly historyLength: number;
-  readonly location$: Observable<RoutingLocation>;
+  readonly location$: Observable<FrameworkLocation>;
   // (undocumented)
-  navigate(to: string, options?: RoutingNavigateOptions): void;
+  navigate(to: string, options?: FrameworkNavigateOptions): void;
   readonly routePattern?: string;
-}
-
-// @public
-export const RoutingContractContext: Context<RoutingContract | undefined>;
-
-// @public (undocumented)
-export interface RoutingLocation {
-  // (undocumented)
-  hash: string;
-  // (undocumented)
-  pathname: string;
-  // (undocumented)
-  search: string;
-  state: unknown;
-}
-
-// @public
-export interface RoutingNavigateOptions {
-  adapterState?: Record<string, unknown>;
-  // (undocumented)
-  replace?: boolean;
-  state?: unknown;
 }
 
 // @public
@@ -2369,9 +2338,6 @@ export namespace SessionState {
   // (undocumented)
   export type SignedOut = typeof SessionState.SignedOut;
 }
-
-// @public
-export function splitRouteDescriptorPath(path: string | undefined): string[];
 
 export { StandardSchemaV1 };
 
@@ -2711,6 +2677,12 @@ export function useApi<T>(apiRef: ApiRef<T>): T;
 export function useApiHolder(): ApiHolder;
 
 // @public
+export function useAppNavigate(): (
+  path: string,
+  options?: FrameworkNavigateOptions,
+) => void;
+
+// @public
 export function useAppNode(): AppNode | undefined;
 
 // @public
@@ -2718,33 +2690,8 @@ export function useBreadcrumbEntries(): {
   items: BreadcrumbEntryData[];
 };
 
-
 // @public
-export class RouteTable {
-  constructor(basePaths: string[]);
-  match(pathname: string): RouteTableMatch | undefined;
-}
-
-// @public
-export interface RouteTableMatch {
-  basePath: string;
-  path: string;
-}
-
-// @public
-export function useCompatNavigate(): (
-  path: string,
-  options?: RoutingNavigateOptions,
-) => void;
-
-// @public
-export function useFrameworkLocation(): RoutingLocation;
-
-// @public
-export function useFrameworkNavigate(): (
-  path: string,
-  options?: RoutingNavigateOptions,
-) => void;
+export function useFrameworkLocation(): FrameworkLocation;
 
 // @public
 export function useNavigateRouteRef<TParams extends AnyRouteRefParams>(
@@ -2756,7 +2703,7 @@ export function useNavigateRouteRef<TParams extends AnyRouteRefParams>(
 
 // @public
 export function useOptionalFrameworkNavigate():
-  | ((path: string, options?: RoutingNavigateOptions) => void)
+  | ((path: string, options?: FrameworkNavigateOptions) => void)
   | undefined;
 
 // @public
@@ -2771,9 +2718,6 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 export function useRouteRefParams<Params extends AnyRouteRefParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
-
-// @public (undocumented)
-export function useRoutingContract(): RoutingContract;
 
 // @public (undocumented)
 export const useTranslationRef: <TMessages extends { [key in string]: string }>(

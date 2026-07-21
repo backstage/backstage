@@ -6,7 +6,6 @@
 import { ApiHolder } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppTree } from '@backstage/frontend-plugin-api';
-import { ComponentType } from 'react';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { ExtensionDataContainer } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
@@ -17,11 +16,7 @@ import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { JSX as JSX_2 } from 'react/jsx-runtime';
-import { NavigationControllerApi } from '@backstage/frontend-plugin-api';
-import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { RoutingContract } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
@@ -177,35 +172,6 @@ export type AppErrorTypes = {
   };
 };
 
-// @public (undocumented)
-export interface AppRouteRedirect {
-  // (undocumented)
-  from: string;
-  // (undocumented)
-  to: string;
-}
-
-// @public
-export function AppRouteSwitch(
-  props: AppRouteSwitchProps,
-): JSX_2.Element | null;
-
-// @public (undocumented)
-export interface AppRouteSwitchProps {
-  // (undocumented)
-  contracts?: Map<string, RoutingContract>;
-  // (undocumented)
-  controller: NavigationControllerApi;
-  // (undocumented)
-  fallback: ReactElement;
-  // (undocumented)
-  pages: Map<string, ComponentType>;
-  // (undocumented)
-  redirects?: AppRouteRedirect[];
-  // (undocumented)
-  routeTable: RouteTable;
-}
-
 // @public
 export type BootstrapSpecializedApp = {
   apis: ApiHolder;
@@ -305,19 +271,6 @@ export type PrepareSpecializedAppOptions = {
     pluginInfoResolver?: FrontendPluginInfoResolver;
   };
 };
-
-// @public (undocumented)
-export class RouteTable {
-  constructor(basePaths: string[]);
-  // (undocumented)
-  match(pathname: string): RouteTableMatch | undefined;
-}
-
-// @public (undocumented)
-export interface RouteTableMatch {
-  basePath: string;
-  path: string;
-}
 
 // @public
 export type SpecializedAppSessionState = {

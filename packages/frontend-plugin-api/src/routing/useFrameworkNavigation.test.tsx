@@ -20,19 +20,19 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { Observable, Subscription } from '@backstage/types';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import {
-  useCompatNavigate,
+  useAppNavigate,
   useFrameworkLocation,
   useFrameworkNavigate,
   useOptionalFrameworkNavigate,
 } from './useFrameworkNavigation';
 import { navigationControllerApiRef } from './NavigationControllerApi';
-import type { RoutingLocation } from './RoutingContract';
+import type { FrameworkLocation } from './RoutingContract';
 
-function createLocationObservable(initial: RoutingLocation): {
-  location$: Observable<RoutingLocation>;
-  emit: (location: RoutingLocation) => void;
+function createLocationObservable(initial: FrameworkLocation): {
+  location$: Observable<FrameworkLocation>;
+  emit: (location: FrameworkLocation) => void;
 } {
-  const subscribers = new Set<(value: RoutingLocation) => void>();
+  const subscribers = new Set<(value: FrameworkLocation) => void>();
   let current = initial;
 
   return {
@@ -166,7 +166,7 @@ describe('useOptionalFrameworkNavigate', () => {
   });
 });
 
-describe('useCompatNavigate', () => {
+describe('useAppNavigate', () => {
   it('uses the framework navigation controller when registered', () => {
     const navigate = jest.fn();
     const { location$ } = createLocationObservable({
@@ -176,7 +176,7 @@ describe('useCompatNavigate', () => {
       state: undefined,
     });
 
-    const { result } = renderHook(() => useCompatNavigate(), {
+    const { result } = renderHook(() => useAppNavigate(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <MemoryRouter>
           <TestApiProvider
@@ -209,7 +209,7 @@ describe('useCompatNavigate', () => {
     let locationPathname = '/start';
     const { result } = renderHook(
       () => {
-        const navigate = useCompatNavigate();
+        const navigate = useAppNavigate();
         const location = useLocation();
         locationPathname = location.pathname;
         return navigate;

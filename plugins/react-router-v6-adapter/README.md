@@ -12,12 +12,17 @@ The app plugin registers `ReactRouterV6PageRouter` as the default page router vi
 `pageRouterApiRef`. Pages without a `router` input override receive this adapter
 automatically.
 
-```tsx
-import { createScopedRouter } from '@backstage/plugin-react-router-v6-adapter';
+To override the default for a specific page, attach `ReactRouterV6PageRouter` via
+`PageRouterBlueprint`:
 
-const { Router } = createScopedRouter(contract, {
-  routePattern: '/catalog/:namespace/:kind/:name',
-  appBasename: '/backstage',
-  go: delta => navigationController.go(delta),
+```tsx
+import { PageRouterBlueprint } from '@backstage/frontend-plugin-api';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-react-router-v6-adapter';
+
+const myV6Router = PageRouterBlueprint.make({
+  attachTo: { id: 'page:my-plugin', input: 'router' },
+  params: {
+    component: ReactRouterV6PageRouter,
+  },
 });
 ```

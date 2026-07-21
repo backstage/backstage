@@ -23,7 +23,7 @@ import {
 import { SearchContextProvider } from '@backstage/plugin-search-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 import { useTechDocsSearch } from '../../hooks/useTechDocsSearch';
 
 type TechDocsReaderSearchBarProps = {
@@ -32,7 +32,7 @@ type TechDocsReaderSearchBarProps = {
 
 const TechDocsReaderSearchBar = (props: TechDocsReaderSearchBarProps) => {
   const { entityId } = props;
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const { results, term, setTerm, deferredLoading } =
     useTechDocsSearch(entityId);
 

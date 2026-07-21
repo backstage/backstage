@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 import { useCallback, useRef } from 'react';
 
 /**
@@ -52,7 +52,7 @@ export function resolveUrlToRelative(url: string, baseUrl: string) {
  * @public
  */
 export function useNavigateUrl() {
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   // useRef prevents navigate identity churn from causing unnecessary re-renders
   const navigateRef = useRef(navigate);
   navigateRef.current = navigate;

@@ -24,7 +24,7 @@ import {
 } from '@backstage/catalog-model';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 import { rootDocsRouteRef } from '../../../routes';
 
@@ -43,7 +43,7 @@ export function useExternalRedirect(entityRef: CompoundEntityRef): {
   shouldShowProgress: boolean;
 } {
   const catalogApi = useApi(catalogApiRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const viewTechdocLink = useRouteRef(rootDocsRouteRef);
 
   // Create a stable string key for the entity to use as a dependency.

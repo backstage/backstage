@@ -22,14 +22,14 @@ import type { RoutingContract } from './RoutingContract';
  * A global singleton React context for the routing contract, shared between
  * packages via `@backstage/version-bridge`.
  *
- * @public
+ * @internal
  */
 export const RoutingContractContext = getOrCreateGlobalSingleton(
   'routing-contract-context',
   () => createContext<RoutingContract | undefined>(undefined),
 );
 
-/** @public */
+/** @internal */
 export function useRoutingContract(): RoutingContract {
   const contract = useContext(RoutingContractContext);
   if (!contract) {

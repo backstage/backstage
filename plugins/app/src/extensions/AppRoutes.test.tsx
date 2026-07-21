@@ -16,10 +16,9 @@
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
-import {
-  PageBlueprint,
-  useRoutingContract,
-} from '@backstage/frontend-plugin-api';
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { useRoutingContract } from '../../../../packages/frontend-plugin-api/src/routing/RoutingContractContext';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { Link as BuiLink } from '@backstage/ui';
 

@@ -22,11 +22,14 @@ import {
   type NavigationControllerApi,
 } from './NavigationControllerApi';
 import type {
-  RoutingLocation,
-  RoutingNavigateOptions,
+  FrameworkLocation,
+  FrameworkNavigateOptions,
 } from './RoutingContract';
 
-function routingLocationEqual(a: RoutingLocation, b: RoutingLocation): boolean {
+function routingLocationEqual(
+  a: FrameworkLocation,
+  b: FrameworkLocation,
+): boolean {
   return (
     a.pathname === b.pathname &&
     a.search === b.search &&
@@ -41,8 +44,8 @@ function routingLocationEqual(a: RoutingLocation, b: RoutingLocation): boolean {
  */
 function useNavigationControllerLocation(
   navigationController: NavigationControllerApi | undefined,
-): RoutingLocation | undefined {
-  const snapshotRef = useRef<RoutingLocation | undefined>(undefined);
+): FrameworkLocation | undefined {
+  const snapshotRef = useRef<FrameworkLocation | undefined>(undefined);
 
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
@@ -65,7 +68,7 @@ function useNavigationControllerLocation(
     [navigationController],
   );
 
-  const getSnapshot = useCallback((): RoutingLocation | undefined => {
+  const getSnapshot = useCallback((): FrameworkLocation | undefined => {
     if (!navigationController) {
       return undefined;
     }
@@ -91,7 +94,7 @@ function useNavigationControllerLocation(
  *
  * @public
  */
-export function useFrameworkLocation(): RoutingLocation {
+export function useFrameworkLocation(): FrameworkLocation {
   const navigationController = useApi(navigationControllerApiRef);
   return useNavigationControllerLocation(navigationController)!;
 }
@@ -99,23 +102,19 @@ export function useFrameworkLocation(): RoutingLocation {
 /**
  * Returns a navigate function backed by the framework navigation controller.
  *
- * Prefer this over React Router's `useNavigate` for app chrome and
- * cross-plugin navigation. Paths are app-absolute (basename-stripped).
+ * Package-internal helper for NFS-only call sites (e.g. {@link RouteLink}).
+ * App shell code should use {@link navigationControllerApiRef} directly.
+ * Plugin code should prefer {@link useAppNavigate}.
  *
- * Requires a registered navigation controller (new frontend system). For
- * plugin code that must also run under the old frontend system, prefer
- * {@link useCompatNavigate}, or use {@link useOptionalFrameworkNavigate}
- * and fall back to React Router yourself.
- *
- * @public
+ * @internal
  */
 export function useFrameworkNavigate(): (
   path: string,
-  options?: RoutingNavigateOptions,
+  options?: FrameworkNavigateOptions,
 ) => void {
   const navigationController = useApi(navigationControllerApiRef);
   return useCallback(
-    (path: string, options?: RoutingNavigateOptions) => {
+    (path: string, options?: FrameworkNavigateOptions) => {
       navigationController.navigate(path, options);
     },
     [navigationController],
@@ -123,21 +122,21 @@ export function useFrameworkNavigate(): (
 }
 
 /**
- * Like {@link useFrameworkNavigate}, but returns `undefined` when no
- * navigation controller is registered (old frontend system / OFS).
+ * Returns a navigate function backed by the framework navigation controller,
+ * or `undefined` when no controller is registered (old frontend system / OFS).
  *
- * Prefer {@link useCompatNavigate} in shared plugin code — it applies the
+ * Prefer {@link useAppNavigate} in shared plugin code — it applies the
  * React Router fallback for you. Use this hook only when you need the
  * optional controller navigate function itself.
  *
  * @public
  */
 export function useOptionalFrameworkNavigate():
-  | ((path: string, options?: RoutingNavigateOptions) => void)
+  | ((path: string, options?: FrameworkNavigateOptions) => void)
   | undefined {
   const navigationController = useApiHolder().get(navigationControllerApiRef);
   const navigate = useCallback(
-    (path: string, options?: RoutingNavigateOptions) => {
+    (path: string, options?: FrameworkNavigateOptions) => {
       navigationController?.navigate(path, options);
     },
     [navigationController],
@@ -154,16 +153,16 @@ export function useOptionalFrameworkNavigate():
  *
  * @public
  */
-export function useCompatNavigate(): (
+export function useAppNavigate(): (
   path: string,
-  options?: RoutingNavigateOptions,
+  options?: FrameworkNavigateOptions,
 ) => void {
   const frameworkNavigate = useOptionalFrameworkNavigate();
   const reactRouterNavigate = useNavigate();
   return useMemo(
     () =>
       frameworkNavigate ??
-      ((to: string, options?: RoutingNavigateOptions) => {
+      ((to: string, options?: FrameworkNavigateOptions) => {
         if (options) {
           reactRouterNavigate(to, options);
         } else {

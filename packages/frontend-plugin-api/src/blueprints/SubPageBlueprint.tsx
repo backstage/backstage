@@ -16,7 +16,8 @@
 
 import { ReactNode, useContext, useMemo } from 'react';
 import { IconElement } from '../icons/types';
-import { RouteRef, RoutingContractContext } from '../routing';
+import { RouteRef } from '../routing';
+import { RoutingContractContext } from '../routing/RoutingContractContext';
 import {
   coreExtensionData,
   createExtensionBlueprint,

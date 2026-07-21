@@ -15,21 +15,21 @@
  */
 
 import type {
-  RoutingLocation,
+  FrameworkLocation,
   RoutingContract,
-  RoutingNavigateOptions,
+  FrameworkNavigateOptions,
 } from './RoutingContract';
 
 describe('RoutingContract types', () => {
   it('should allow creating a valid RoutingContract', () => {
-    const location: RoutingLocation = {
+    const location: FrameworkLocation = {
       pathname: '/entity/foo',
       search: '?filter=active',
       hash: '#details',
       state: undefined,
     };
 
-    const navigateOptions: RoutingNavigateOptions = {
+    const navigateOptions: FrameworkNavigateOptions = {
       replace: true,
       state: { step: 1 },
       adapterState: { 'tanstack-router': { key: 'abc' } },
@@ -49,7 +49,7 @@ describe('RoutingContract types', () => {
           return this;
         },
       },
-      navigate: (_to: string, _options?: RoutingNavigateOptions) => {},
+      navigate: (_to: string, _options?: FrameworkNavigateOptions) => {},
       go: (_delta: number) => {},
       canGoBack: () => false,
       canGoForward: () => false,

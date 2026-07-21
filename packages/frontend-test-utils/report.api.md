@@ -34,12 +34,13 @@ import { FeatureFlagsSaveOptions } from '@backstage/frontend-plugin-api';
 import { FeatureFlagState } from '@backstage/frontend-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FetchApi as FetchApi_2 } from '@backstage/frontend-plugin-api';
+import { FrameworkNavigateOptions } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import type { NavigationControllerApi } from '@backstage/frontend-plugin-api';
+import { NavigationControllerApi } from '@backstage/frontend-plugin-api';
 import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactNode } from 'react';
@@ -48,7 +49,6 @@ import type { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { RouteResolutionApi } from '@backstage/frontend-plugin-api';
 import { RoutingContract } from '@backstage/frontend-plugin-api';
-import { RoutingNavigateOptions } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
@@ -338,7 +338,7 @@ export interface MockContract extends RoutingContract {
   // (undocumented)
   navigateCalls: Array<{
     to: string;
-    options?: RoutingNavigateOptions;
+    options?: FrameworkNavigateOptions;
   }>;
 }
 
@@ -427,22 +427,17 @@ export interface MockFetchApiOptions {
 
 // @public
 export interface MockNavigationController extends NavigationControllerApi {
-  // (undocumented)
   goCalls: number[];
-  // (undocumented)
   navigateCalls: Array<{
     to: string;
-    options?: RoutingNavigateOptions;
+    options?: FrameworkNavigateOptions;
   }>;
 }
 
 // @public
 export interface MockNavigationControllerOptions {
-  // (undocumented)
   go?: jest.Mock | NavigationControllerApi['go'];
-  // (undocumented)
   initialLocation?: string;
-  // (undocumented)
   navigate?: jest.Mock | NavigationControllerApi['navigate'];
 }
 
@@ -461,33 +456,22 @@ export class MockPermissionApi implements PermissionApi {
 
 // @public
 export interface MockRouteResolutionApi extends RouteResolutionApi {
-  // (undocumented)
   resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
 }
 
 // @public
 export interface MockRouteResolutionApiOptions {
-  // (undocumented)
   resolve?: RouteResolutionApi['resolve'];
-  // (undocumented)
   routes?:
-    | ReadonlyMap<
-        | RouteRef<AnyRouteRefParams>
-        | SubRouteRef<AnyRouteRefParams>
-        | ExternalRouteRef<AnyRouteRefParams>,
-        string
-      >
-    | ReadonlyArray<
-        [
-          (
-            | RouteRef<AnyRouteRefParams>
-            | SubRouteRef<AnyRouteRefParams>
-            | ExternalRouteRef<AnyRouteRefParams>
-          ),
-          string,
-        ]
-      >;
+    | ReadonlyMap<MockRouteResolutionRouteRef, string>
+    | ReadonlyArray<[MockRouteResolutionRouteRef, string]>;
 }
+
+// @public
+export type MockRouteResolutionRouteRef =
+  | RouteRef<AnyRouteRefParams>
+  | SubRouteRef<AnyRouteRefParams>
+  | ExternalRouteRef<AnyRouteRefParams>;
 
 // @public @deprecated
 export class MockStorageApi implements StorageApi {

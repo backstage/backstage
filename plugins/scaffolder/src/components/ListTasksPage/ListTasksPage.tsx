@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 import {
   Content,
@@ -175,7 +175,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
 };
 
 export const ListTasksPage = (props: MyTaskPageProps) => {
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const actionsLink = useRouteRef(actionsRouteRef);
   const createLink = useRouteRef(rootRouteRef);

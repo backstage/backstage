@@ -19,7 +19,7 @@ import {
   useApi,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { useCompatNavigate } from '@backstage/frontend-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 import {
   catalogApiRef,
   EntityLoadingStatus,
@@ -31,7 +31,7 @@ import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 
 export const useEntityFromUrl = (): EntityLoadingStatus => {
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
-  const navigate = useCompatNavigate();
+  const navigate = useAppNavigate();
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
 
