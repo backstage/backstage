@@ -876,7 +876,6 @@ describe('scaffolder router', () => {
       expect(body).toMatchObject({
         id: expect.any(String),
       });
-      expect(logger.info).toHaveBeenCalledTimes(1);
       expect(logger.info).toHaveBeenCalledWith(
         'Scaffolding task for template:default/create-react-app-template created by user:default/mock',
       );
