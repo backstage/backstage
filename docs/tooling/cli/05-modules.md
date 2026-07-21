@@ -41,8 +41,10 @@ package's own `package.json` contains `backstage.role` set to `"cli-module"`. If
 it does, the module is loaded and its commands become available.
 
 If no CLI modules are found among the project's dependencies, the CLI falls back
-to importing `@backstage/cli-defaults`, which provides the full default set of
-modules listed above.
+to importing `@backstage/cli-defaults` and prints a deprecation warning. This
+fallback will be removed in a future release. To avoid the warning, add
+`@backstage/cli-defaults` as a `devDependency` in your root `package.json`, or
+install individual `@backstage/cli-module-*` packages.
 
 ## Customizing the Default Modules
 

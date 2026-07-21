@@ -241,7 +241,7 @@ The bundle command supports packages with the following roles:
 
 ## package clean
 
-Remove cache and output directories.
+Remove cache directories.
 
 ```text
 Usage: backstage-cli package clean [options]
@@ -252,7 +252,7 @@ Delete cache directories
 ## package prepack
 
 This command should be added as `scripts.prepack` in all packages. It enables
-packaging- and publish-time overrides for fields inside `packages.json`. For
+packaging- and publish-time overrides for fields inside `package.json`. For
 more details, see the build system
 [publishing](./02-build-system.md#publishing) section.
 

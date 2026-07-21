@@ -70,8 +70,8 @@ monorepo. The configuration sets the `src` as the root directory, enforces the
 `.test.` infix for tests, and uses `src/setupTests.ts` as the test setup
 location. The included configuration also supports test execution at the root of
 a Yarn workspaces monorepo by automatically creating one grouped configuration
-that includes all packages that have `backstage-cli test` in their package
-`test` script.
+that includes all packages that have `backstage-cli test` or
+`backstage-cli package test` in their package `test` script.
 
 ```text
 Usage: backstage-cli package test [options]
