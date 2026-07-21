@@ -150,7 +150,7 @@ describe('AwsIamStrategy#getCredential', () => {
     });
   });
 
-  it('uses account-specific credentials directly when account config exists for the assume role ARN', async () => {
+  it('uses account-specific credentials as master credentials when account config exists for the assume role ARN', async () => {
     const strategy = new AwsIamStrategy({ config });
 
     const accountCreds = { AccessKeyId: 'account-specific' };
@@ -182,7 +182,16 @@ describe('AwsIamStrategy#getCredential', () => {
     expect(credsManager.getCredentialProvider).toHaveBeenCalledWith({
       arn: 'arn:aws:iam::123456789012:role/MyRole',
     });
-    expect(fromTemporaryCredentials).not.toHaveBeenCalled();
+    expect(fromTemporaryCredentials).toHaveBeenCalledWith({
+      clientConfig: {
+        region: 'us-east-1',
+      },
+      masterCredentials: accountCreds,
+      params: {
+        ExternalId: undefined,
+        RoleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      },
+    });
   });
 
   it('returns a presigned url for AWS credentials and passes the external id', async () => {

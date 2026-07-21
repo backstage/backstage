@@ -94,10 +94,10 @@ aws:
       webIdentityTokenFile: <path-to-token-file>
 ```
 
-When using `webIdentityTokenFile`, the `kubernetes.io/aws-assume-role`
-annotation on the cluster configuration is used to resolve the target AWS
-account. If a matching `accounts` entry or `accountDefaults` configuration
-exists, those credentials are used directly.
+When `kubernetes.io/aws-assume-role` is set, the account ID from the role ARN is
+used to look up matching `accounts` or `accountDefaults` configuration. If
+found, those credentials are used as the source credentials for assuming the
+role specified in the annotation.
 
 Either of these sections needs to be present for the Kubernetes configuration to
 use the `aws` `authProvider`. The Kubernetes configuration looks like this:

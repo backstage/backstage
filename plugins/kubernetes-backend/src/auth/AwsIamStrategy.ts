@@ -81,16 +81,24 @@ export class AwsIamStrategy implements AuthenticationStrategy {
   ): Promise<string> {
     const region = process.env.AWS_REGION ?? defaultRegion;
 
-    let credentials;
+    let masterCredentials;
     if (assumeRole) {
       try {
-        credentials = (
+        masterCredentials = (
           await this.credsManager.getCredentialProvider({ arn: assumeRole })
         ).sdkCredentialProvider;
       } catch {
-        credentials = fromTemporaryCredentials({
-          masterCredentials: (await this.credsManager.getCredentialProvider())
-            .sdkCredentialProvider,
+        masterCredentials = (await this.credsManager.getCredentialProvider())
+          .sdkCredentialProvider;
+      }
+    } else {
+      masterCredentials = (await this.credsManager.getCredentialProvider())
+        .sdkCredentialProvider;
+    }
+
+    const credentials = assumeRole
+      ? fromTemporaryCredentials({
+          masterCredentials,
           clientConfig: {
             region,
           },
@@ -98,12 +106,8 @@ export class AwsIamStrategy implements AuthenticationStrategy {
             RoleArn: assumeRole,
             ExternalId: externalId,
           },
-        });
-      }
-    } else {
-      credentials = (await this.credsManager.getCredentialProvider())
-        .sdkCredentialProvider;
-    }
+        })
+      : masterCredentials;
 
     const signer = new SignatureV4({
       credentials,
