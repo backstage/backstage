@@ -124,7 +124,7 @@ A short string shown in the help output next to the command name.
 ### Deprecated and experimental flags
 
 Commands can be marked with `deprecated: true` or `experimental: true`. These
-commands are hidden from the `--help` output but remain invocable.
+commands are hidden from the `--help` output but can still be used.
 
 ### Execute function
 
