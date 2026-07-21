@@ -29,9 +29,7 @@ ENV NODE_ENV=production
 RUN --mount=type=cache,target=/var/cache/apk,sharing=locked,uid=65532,gid=65532 \
     --mount=type=cache,target=/var/lib/apk,sharing=locked,uid=65532,gid=65532 \
     apk update && \
-    apk add nodejs-$NODE_VERSION yarn \
-    # Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
-    openssl-dev brotli-dev c-ares-dev nghttp2-dev icu-dev zlib-dev gcc-12 libuv-dev build-base
+    apk add nodejs-$NODE_VERSION yarn
 
 WORKDIR /app
 RUN chown -R nonroot:nonroot /app
