@@ -117,8 +117,10 @@ describe('handleUpgrade', () => {
     );
     return new Promise(resolve => {
       const chunks: Buffer[] = [];
+      const done = () => resolve(Buffer.concat(chunks).toString());
       socket.on('data', chunk => chunks.push(chunk));
-      socket.on('end', () => resolve(Buffer.concat(chunks).toString()));
+      socket.on('end', done);
+      socket.on('close', done);
     });
   }
 
