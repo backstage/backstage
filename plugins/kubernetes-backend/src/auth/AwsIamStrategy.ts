@@ -87,7 +87,13 @@ export class AwsIamStrategy implements AuthenticationStrategy {
         masterCredentials = (
           await this.credsManager.getCredentialProvider({ arn: assumeRole })
         ).sdkCredentialProvider;
-      } catch {
+      } catch (error) {
+        if (
+          !(error instanceof Error) ||
+          !error.message.includes('There is no AWS integration that matches')
+        ) {
+          throw error;
+        }
         masterCredentials = (await this.credsManager.getCredentialProvider())
           .sdkCredentialProvider;
       }
