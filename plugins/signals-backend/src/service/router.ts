@@ -92,6 +92,7 @@ export async function createRouter(
           'Content-Length: 0\r\n' +
           'Connection: close\r\n' +
           '\r\n',
+        () => socket.destroy(),
       );
       return;
     }
@@ -112,6 +113,7 @@ export async function createRouter(
           'Content-Length: 0\r\n' +
           'Connection: close\r\n' +
           '\r\n',
+        () => socket.destroy(),
       );
     }
   };
