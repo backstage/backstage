@@ -122,7 +122,7 @@ export function CopyTextButton(props: CopyTextButtonProps) {
   }, []);
 
   return (
-    <TooltipTrigger isOpen={open} onOpenChange={setOpen}>
+    <TooltipTrigger isOpen={open} onOpenChange={isOpen => !isOpen && setOpen(false)}>
       <ButtonIcon
         icon={<CopyIcon />}
         onPress={handleCopyClick}
