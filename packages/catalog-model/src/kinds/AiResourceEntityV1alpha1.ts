@@ -71,7 +71,7 @@ export interface SkillAiResourceEntityV1alpha1
  *
  * @alpha
  */
-export type ClaudeCodeActivationV1 = {
+export type ClaudeActivationV1 = {
   harness: 'claude';
   paths?: string[];
   description?: string;
@@ -112,7 +112,7 @@ export type CursorActivationV1 = {
  * @alpha
  */
 export type ActivationConstraint<T extends string> = T extends 'claude'
-  ? ClaudeCodeActivationV1
+  ? ClaudeActivationV1
   : T extends 'cursor'
   ? CursorActivationV1
   : { harness: T } & { [key: string]: JsonValue };

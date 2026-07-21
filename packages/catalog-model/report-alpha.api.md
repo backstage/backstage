@@ -10,7 +10,7 @@ import { SerializedError } from '@backstage/errors';
 
 // @alpha
 export type ActivationConstraint<T extends string> = T extends 'claude'
-  ? ClaudeCodeActivationV1
+  ? ClaudeActivationV1
   : T extends 'cursor'
   ? CursorActivationV1
   : {
@@ -443,7 +443,7 @@ export interface CatalogModelUpdateTagDefinition {
 }
 
 // @alpha
-export type ClaudeCodeActivationV1 = {
+export type ClaudeActivationV1 = {
   harness: 'claude';
   paths?: string[];
   description?: string;

@@ -31,7 +31,7 @@ export type {
   AiResourceEntityV1alpha1,
   AiResourceEntityV1alpha1Default,
   ActivationConstraint,
-  ClaudeCodeActivationV1,
+  ClaudeActivationV1,
   CursorActivationV1,
   SkillAiResourceEntityV1alpha1,
   RuleAiResourceEntityV1alpha1,
