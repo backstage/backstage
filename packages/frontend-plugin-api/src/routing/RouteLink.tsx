@@ -25,7 +25,7 @@ import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { useRouteRef } from './useRouteRef';
-import { useFrameworkNavigate } from './useFrameworkNavigation';
+import { useOptionalFrameworkNavigate } from './useFrameworkNavigation';
 
 /**
  * Props for {@link RouteLink}.
@@ -52,9 +52,10 @@ function isModifiedEvent(event: ReactMouseEvent): boolean {
 }
 
 /**
- * A framework-owned link that resolves a {@link RouteRef} and navigates via
- * the navigation controller. Prefer this for cross-plugin navigation instead
- * of React Router's `Link` or a scoped `useNavigate` with an absolute path.
+ * A link that resolves a {@link RouteRef} and navigates via the framework
+ * navigation controller when registered, otherwise falls through to a normal
+ * anchor navigation. Prefer this for cross-plugin navigation instead of React
+ * Router's `Link` or a scoped `useNavigate` with an absolute path.
  *
  * @public
  */
@@ -63,7 +64,7 @@ export const RouteLink = forwardRef(function RouteLink<
 >(props: RouteLinkProps<TParams>, ref: React.ForwardedRef<HTMLAnchorElement>) {
   const { routeRef, params, replace, children, onClick, ...rest } = props;
   const routeFunc = useRouteRef(routeRef);
-  const navigate = useFrameworkNavigate();
+  const frameworkNavigate = useOptionalFrameworkNavigate();
 
   if (!routeFunc) {
     return <>{children}</>;
@@ -84,8 +85,12 @@ export const RouteLink = forwardRef(function RouteLink<
     ) {
       return;
     }
+    if (!frameworkNavigate) {
+      // Old frontend / no controller: let the browser follow href.
+      return;
+    }
     event.preventDefault();
-    navigate(to, replace ? { replace: true } : undefined);
+    frameworkNavigate(to, replace ? { replace: true } : undefined);
   };
 
   return (

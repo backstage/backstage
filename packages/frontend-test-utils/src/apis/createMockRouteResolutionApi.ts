@@ -142,11 +142,7 @@ function getRouteParamCount(ref: MockRouteResolutionRouteRef): number {
  *     ],
  *   ]}
  * >
- *   <RoutingContractContext.Provider
- *     value={createMockContract({ basePath: '/create' })}
- *   >
- *     {children}
- *   </RoutingContractContext.Provider>
+ *   {children}
  * </TestApiProvider>
  * ```
  */

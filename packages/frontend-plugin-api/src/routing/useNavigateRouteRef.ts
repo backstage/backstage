@@ -20,12 +20,12 @@ import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { useRouteRef } from './useRouteRef';
-import { useFrameworkNavigate } from './useFrameworkNavigation';
+import { useAppNavigate } from './useFrameworkNavigation';
 import type { FrameworkNavigateOptions } from './RoutingContract';
 
 /**
- * A function that resolves a {@link RouteRef} to a path and navigates via the
- * framework navigation controller.
+ * A function that resolves a {@link RouteRef} to a path and navigates via
+ * {@link useAppNavigate}.
  *
  * @public
  */
@@ -36,12 +36,13 @@ export type NavigateRouteRefFunc<TParams extends AnyRouteRefParams> = (
 ) => void;
 
 /**
- * Combines {@link useRouteRef} with framework navigation for
- * cross-plugin programmatic navigation.
+ * Combines {@link useRouteRef} with {@link useAppNavigate} for cross-plugin
+ * programmatic navigation (framework controller when present, React Router
+ * otherwise).
  *
  * Prefer this (or {@link RouteLink}) over React Router's `useNavigate` with an
  * absolute path resolved from a route ref, so navigation is not blocked by a
- * scoped routing contract.
+ * scoped routing contract under the new frontend system.
  *
  * Returns `undefined` when the route cannot be resolved.
  *
@@ -54,7 +55,7 @@ export function useNavigateRouteRef<TParams extends AnyRouteRefParams>(
     | ExternalRouteRef<TParams>,
 ): NavigateRouteRefFunc<TParams> | undefined {
   const routeFunc = useRouteRef(routeRef);
-  const navigate = useFrameworkNavigate();
+  const navigate = useAppNavigate();
 
   const navigateRouteRef = useCallback(
     (...args: unknown[]) => {
