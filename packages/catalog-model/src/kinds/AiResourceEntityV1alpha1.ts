@@ -67,6 +67,57 @@ export interface SkillAiResourceEntityV1alpha1
 }
 
 /**
+ * Activation entry for the Claude Code harness.
+ *
+ * @alpha
+ */
+export type ClaudeCodeActivationV1 = {
+  harness: 'claude';
+  paths?: string[];
+  description?: string;
+};
+
+/**
+ * Activation entry for the Cursor harness.
+ *
+ * @alpha
+ */
+export type CursorActivationV1 = {
+  harness: 'cursor';
+  alwaysApply?: boolean;
+  globs?: string[];
+  description?: string;
+};
+
+/**
+ * Resolves the activation entry type for a given harness. Known harnesses
+ * resolve to their strict native shape; unknown harnesses fall back to an
+ * open shape that only requires the `harness` discriminator.
+ *
+ * @remarks
+ *
+ * The strict branches only apply when the harness is known at compile time,
+ * e.g. in code that constructs activation entries:
+ *
+ * ```ts
+ * const entry: ActivationConstraint<'claude'> = {
+ *   harness: 'claude',
+ *   paths: ['src/**'],
+ * };
+ * ```
+ *
+ * When reading entities from the catalog the harness is only known at
+ * runtime, so `ActivationConstraint<string>` resolves to the open fallback.
+ *
+ * @alpha
+ */
+export type ActivationConstraint<T extends string> = T extends 'claude'
+  ? ClaudeCodeActivationV1
+  : T extends 'cursor'
+  ? CursorActivationV1
+  : { harness: T } & { [key: string]: JsonValue };
+
+/**
  * AiResource entity with spec.type 'rule'. Represents a governance rule
  * or constraint for AI coding tools.
  *
@@ -82,7 +133,7 @@ export interface RuleAiResourceEntityV1alpha1
     disciplines?: string[];
     category: string;
     rationale: string;
-    activation?: Array<{ harness: string; [key: string]: JsonValue }>;
+    activation?: Array<ActivationConstraint<string>>;
   };
 }
 

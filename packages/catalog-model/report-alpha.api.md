@@ -9,6 +9,17 @@ import { JsonValue } from '@backstage/types';
 import { SerializedError } from '@backstage/errors';
 
 // @alpha
+export type ActivationConstraint<T extends string> = T extends 'claude'
+  ? ClaudeCodeActivationV1
+  : T extends 'cursor'
+  ? CursorActivationV1
+  : {
+      harness: T;
+    } & {
+      [key: string]: JsonValue;
+    };
+
+// @alpha
 export const aiResourceEntityModel: CatalogModelLayer;
 
 // @alpha
@@ -432,6 +443,13 @@ export interface CatalogModelUpdateTagDefinition {
 }
 
 // @alpha
+export type ClaudeCodeActivationV1 = {
+  harness: 'claude';
+  paths?: string[];
+  description?: string;
+};
+
+// @alpha
 export function compileCatalogModel(
   inputs: Iterable<CatalogModelLayer>,
 ): CatalogModel;
@@ -447,6 +465,14 @@ export function createCatalogModelLayerBuilder(options: {
   layerId: string;
 }): CatalogModelLayerBuilder & {
   build(): CatalogModelLayer;
+};
+
+// @alpha
+export type CursorActivationV1 = {
+  harness: 'cursor';
+  alwaysApply?: boolean;
+  globs?: string[];
+  description?: string;
 };
 
 // @alpha
@@ -566,10 +592,7 @@ export interface RuleAiResourceEntityV1alpha1
     disciplines?: string[];
     category: string;
     rationale: string;
-    activation?: Array<{
-      harness: string;
-      [key: string]: JsonValue;
-    }>;
+    activation?: Array<ActivationConstraint<string>>;
   };
 }
 
