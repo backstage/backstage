@@ -37,7 +37,7 @@
     "@jest/environment-jsdom-abstract": "^30",
     "@types/jest": "^30",
     "jest": "^30",
-    "jsdom": "^27",
+    "jsdom": "^29.0.0",
     "node-gyp": "^12.0.0",
     "prettier": "^2.3.2",
     "typescript": "~5.8.0"
