@@ -45,14 +45,25 @@ CLI identifies the package as a module during dependency scanning.
 {
   "name": "@mycompany/cli-module-example",
   "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
   "backstage": {
     "role": "cli-module"
   },
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-example",
+  "files": ["dist", "bin"],
   "dependencies": {
+    "@backstage/cli-common": "...",
     "@backstage/cli-node": "...",
     "cleye": "..."
+  },
+  "devDependencies": {
+    "@backstage/cli": "..."
   }
 }
 ```
@@ -220,20 +231,27 @@ scaffolded template includes a bin script that does this:
 
 ```js title="bin/backstage-cli-module-example"
 #!/usr/bin/env node
-const { runCli } = require('@backstage/cli-node');
-const cliModule = require('../src').default;
-const pkg = require('../package.json');
+const path = require('node:path');
 
-runCli({
-  modules: [cliModule],
-  name: pkg.name,
-  version: pkg.version,
-});
+/* eslint-disable-next-line no-restricted-syntax */
+const isLocal = require('node:fs').existsSync(
+  path.resolve(__dirname, '../src'),
+);
+
+if (isLocal) {
+  require('@backstage/cli-node/config/nodeTransform.cjs');
+}
+
+const { runCli } = require('@backstage/cli-node');
+const cliModule = require(isLocal ? '../src/index' : '..').default;
+const pkg = require('../package.json');
+runCli({ modules: [cliModule], name: pkg.name, version: pkg.version });
 ```
 
-The `runCli` function builds a command tree from the provided modules and
-dispatches commands based on the process arguments. It also generates help
-output automatically.
+The `isLocal` check detects whether a `src/` directory exists next to the bin
+script. When running from source during development, it registers a Node.js
+transform so TypeScript files can be loaded directly. When running from a
+published package, it loads the compiled output instead.
 
 ## Installing Your Module
 
