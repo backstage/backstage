@@ -232,5 +232,27 @@
     "@backstage/plugin-user-settings-backend": "0.4.5",
     "@backstage/plugin-user-settings-common": "0.1.0"
   },
-  "changesets": []
+  "changesets": [
+    "azure-url-reader-abort-signal",
+    "backend-app-connections-package",
+    "bright-tools-listen",
+    "connections-common-library",
+    "dependabot-5b2cea0",
+    "fix-docker-node-version-alignment-docs",
+    "fix-oauth-start-500-error",
+    "fix-scaffolder-janitor",
+    "fix-table-resizable-overflow",
+    "itchy-sloths-bathe",
+    "k8s-aws-account-credentials",
+    "mcp-audit-logging",
+    "metal-connections-schema",
+    "quiet-connections-auth",
+    "resilient-cluster-supplier",
+    "secure-redirect-uris",
+    "strong-pandas-authenticate",
+    "system-metadata-catalog-openapi-module",
+    "system-metadata-stable-backend-defaults",
+    "system-metadata-stable-backend-plugin-api",
+    "system-metadata-stable-backend-test-utils"
+  ]
 }

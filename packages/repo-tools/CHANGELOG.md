@@ -1,5 +1,13 @@
 # @backstage/repo-tools
 
+## 0.18.1-next.0
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
 ## 0.18.0
 
 ### Minor Changes

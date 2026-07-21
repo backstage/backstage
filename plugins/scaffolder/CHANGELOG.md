@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder
 
+## 1.38.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/ui@0.17.1-next.0
+  - @backstage/plugin-catalog-react@3.2.1-next.0
+  - @backstage/plugin-scaffolder-react@2.0.3-next.0
+  - @backstage/plugin-techdocs-react@1.3.14-next.0
+
 ## 1.38.1
 
 ### Patch Changes

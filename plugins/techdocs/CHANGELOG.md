@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs
 
+## 1.18.0-next.0
+
+### Minor Changes
+
+- 4f9ce5e: Add `initialFilter` config for `page:techdocs`. Valid options are `all`, `owned` and `starred`. Defaults to `owned`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/ui@0.17.1-next.0
+  - @backstage/plugin-auth-react@0.1.30-next.0
+  - @backstage/plugin-catalog-react@3.2.1-next.0
+  - @backstage/plugin-search-react@1.11.7-next.0
+  - @backstage/plugin-techdocs-react@1.3.14-next.0
+
 ## 1.17.8
 
 ### Patch Changes

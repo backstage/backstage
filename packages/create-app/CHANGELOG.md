@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.9.1-next.0
+
+### Patch Changes
+
+- 0b8573f: Clarified that the host build steps must use the same Node version as the Docker base image in the Dockerfile.
+
 ## 0.9.0
 
 ### Minor Changes

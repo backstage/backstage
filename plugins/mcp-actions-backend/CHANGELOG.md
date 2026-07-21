@@ -1,5 +1,15 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- ec2b90f: Added support for configuring MCP server instructions for both default and named servers.
+- e4983fd: Added audit logging for MCP server operations using the Backstage Auditor Service. The plugin now emits `connection`, `tool-discovery`, and `tool-execution` audit events, allowing adopters to monitor and audit MCP server activity.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+
 ## 0.2.0
 
 ### Minor Changes

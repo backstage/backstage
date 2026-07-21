@@ -1,5 +1,14 @@
 # @backstage/backend-app-api
 
+## 1.7.3-next.0
+
+### Patch Changes
+
+- 64cea29: Updated the backend runtime to use the internal connection service implementation after the shared connection contract moved into `@backstage/connections`.
+- Updated dependencies
+  - @backstage/connections@0.3.0-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
 ## 1.7.2
 
 ### Patch Changes

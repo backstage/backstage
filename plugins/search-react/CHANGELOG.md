@@ -1,5 +1,12 @@
 # @backstage/plugin-search-react
 
+## 1.11.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+
 ## 1.11.6
 
 ### Patch Changes

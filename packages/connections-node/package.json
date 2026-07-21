@@ -1,6 +1,6 @@
 {
   "name": "@backstage/connections-node",
-  "version": "0.2.1",
+  "version": "0.2.2-next.0",
   "description": "Node.js service implementation for the Backstage connections framework",
   "backstage": {
     "role": "node-library",

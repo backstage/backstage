@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.7-next.0
+
+### Patch Changes
+
+- 684c9b9: Fixed `AwsIamStrategy` to resolve account-specific AWS credentials when an assume role ARN is configured, enabling support for `webIdentityTokenFile` and `accountDefaults` in environments without default AWS credentials.
+- f0834bd: Added a `kubernetes.clusterLocatorContinueOnError` configuration option. When set to `true`, a failing cluster locator no longer causes the entire cluster list request to fail — errors are logged and clusters from the remaining successful locators are still returned. The default is `false`, preserving the existing behavior.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-kubernetes-node@0.4.7-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+
 ## 0.21.6
 
 ### Patch Changes

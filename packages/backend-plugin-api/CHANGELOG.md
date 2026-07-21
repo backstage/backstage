@@ -1,5 +1,17 @@
 # @backstage/backend-plugin-api
 
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 74d8cbf: Added `coreServices.rootSystemMetadata`, a new stable public service for reading metadata about the running Backstage system, including a list of installed plugins. Previously only available as an alpha API, it is now part of the standard `coreServices` namespace.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.4-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+
 ## 1.9.3
 
 ### Patch Changes

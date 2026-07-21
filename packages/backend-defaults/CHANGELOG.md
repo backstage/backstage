@@ -1,5 +1,18 @@
 # @backstage/backend-defaults
 
+## 0.17.6-next.0
+
+### Patch Changes
+
+- 79c1d58: Fixed a bug in the Azure DevOps URL reader where the abort signal was not forwarded to the commits API fetch, causing the fetch to hang indefinitely when a build timeout or cancellation was triggered.
+- 74d8cbf: Added a new public `@backstage/backend-defaults/rootSystemMetadata` entrypoint, exporting `rootSystemMetadataServiceFactory` and `DefaultRootSystemMetadataService`. The system metadata service is now registered automatically as a default service, so backends no longer need to add it manually.
+- Updated dependencies
+  - @backstage/backend-app-api@1.7.3-next.0
+  - @backstage/plugin-auth-node@0.7.4-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+  - @backstage/plugin-events-node@0.4.25-next.0
+
 ## 0.17.5
 
 ### Patch Changes

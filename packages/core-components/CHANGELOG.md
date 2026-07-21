@@ -1,5 +1,13 @@
 # @backstage/core-components
 
+## 0.18.13-next.0
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/ui@0.17.1-next.0
+
 ## 0.18.12
 
 ### Patch Changes
