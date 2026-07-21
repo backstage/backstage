@@ -29,7 +29,7 @@ import type { RoutingContract } from './RoutingContract';
 import { RouteTable } from './RouteTable';
 import {
   useObservableAsState,
-  routingLocationEqual,
+  frameworkLocationEqual,
 } from './useObservableAsState';
 import { matchPath, substitutePathParams } from './routePattern';
 
@@ -164,7 +164,7 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
 
   const location = useObservableAsState(
     controller.location$,
-    routingLocationEqual,
+    frameworkLocationEqual,
   );
 
   const redirectTarget = resolveRedirectTarget(redirects, location.pathname);

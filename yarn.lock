@@ -3234,7 +3234,6 @@ __metadata:
     "@backstage/plugin-app-react": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
-    "@backstage/plugin-react-router-v6-adapter": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"

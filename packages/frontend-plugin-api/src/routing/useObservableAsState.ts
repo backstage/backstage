@@ -69,7 +69,7 @@ export function useObservableAsState<T>(
  * Default equality check for FrameworkLocation-shaped objects.
  * @internal
  */
-export function routingLocationEqual(
+export function frameworkLocationEqual(
   a: { pathname: string; search: string; hash: string; state?: unknown },
   b: { pathname: string; search: string; hash: string; state?: unknown },
 ): boolean {

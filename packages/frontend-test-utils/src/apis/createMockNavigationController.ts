@@ -23,8 +23,8 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   createSyncLocationObservable,
-  parseRoutingLocation,
-} from './mockRoutingLocation';
+  parseFrameworkLocation,
+} from './mockFrameworkLocation';
 
 /**
  * Options for {@link createMockNavigationController}.
@@ -94,7 +94,7 @@ export function createMockNavigationController(
   const { initialLocation = '/', navigate: navigateImpl, go: goImpl } = options;
 
   const subscribers = new Set<(value: FrameworkLocation) => void>();
-  let current = parseRoutingLocation(initialLocation);
+  let current = parseFrameworkLocation(initialLocation);
   const adapterStates = new Map<string, unknown>();
   const navigateCalls: MockNavigationController['navigateCalls'] = [];
   const goCalls: MockNavigationController['goCalls'] = [];
@@ -107,7 +107,7 @@ export function createMockNavigationController(
     goCalls,
     navigate(to: string, navOptions?: FrameworkNavigateOptions) {
       navigateCalls.push({ to, options: navOptions });
-      current = parseRoutingLocation(to, navOptions?.state);
+      current = parseFrameworkLocation(to, navOptions?.state);
       adapterStates.clear();
       if (navOptions?.adapterState) {
         for (const [id, value] of Object.entries(navOptions.adapterState)) {

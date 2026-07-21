@@ -18,7 +18,7 @@ import { FrameworkLocation } from '@backstage/frontend-plugin-api';
 import { Observable, Subscription } from '@backstage/types';
 
 /** @internal */
-export function parseRoutingLocation(
+export function parseFrameworkLocation(
   path: string,
   state?: unknown,
 ): FrameworkLocation {

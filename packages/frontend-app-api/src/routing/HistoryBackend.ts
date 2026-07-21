@@ -153,7 +153,10 @@ function createBlockerGate() {
   };
 }
 
-function parseRoutingLocation(url: string, state?: unknown): FrameworkLocation {
+function parseFrameworkLocation(
+  url: string,
+  state?: unknown,
+): FrameworkLocation {
   const parsed = new URL(url, 'http://localhost');
   return {
     pathname: parsed.pathname,
@@ -321,7 +324,7 @@ export function createWindowHistoryBackend(): HistoryBackend {
     }
     const transition = {
       currentLocation: readLocation(),
-      nextLocation: parseRoutingLocation(url, options?.state),
+      nextLocation: parseFrameworkLocation(url, options?.state),
       action,
     };
     void gate.isBlocked(transition).then(blocked => {
@@ -484,7 +487,7 @@ export function createMemoryHistoryBackend(
     }
     const transition = {
       currentLocation: readLocation(),
-      nextLocation: parseRoutingLocation(url, writeOptions?.state),
+      nextLocation: parseFrameworkLocation(url, writeOptions?.state),
       action,
     };
     void gate.isBlocked(transition).then(blocked => {

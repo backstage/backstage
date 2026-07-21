@@ -515,6 +515,8 @@ export function useNavigateToSearchQuery() {
 
 `useAppNavigate` uses the navigation controller when one is registered, and falls back to React Router when it is not.
 
+`useFrameworkLocation` is for app shell and chrome under the new frontend system only — it requires a registered navigation controller and does not fall back to React Router. Plugin page code that only needs to navigate should prefer `useAppNavigate` / `RouteLink`.
+
 For declarative cross-plugin links, use `RouteLink` instead of building absolute `to` strings:
 
 ```tsx

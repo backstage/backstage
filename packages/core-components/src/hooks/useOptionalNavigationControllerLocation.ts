@@ -15,22 +15,12 @@
  */
 
 import { useCallback, useRef, useSyncExternalStore } from 'react';
-import {
-  type NavigationControllerApi,
-  type FrameworkLocation,
+import type {
+  FrameworkLocation,
+  NavigationControllerApi,
 } from '@backstage/frontend-plugin-api';
-
-function routingLocationEqual(
-  a: FrameworkLocation,
-  b: FrameworkLocation,
-): boolean {
-  return (
-    a.pathname === b.pathname &&
-    a.search === b.search &&
-    a.hash === b.hash &&
-    a.state === b.state
-  );
-}
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { frameworkLocationEqual } from '../../../frontend-plugin-api/src/routing/useObservableAsState';
 
 /**
  * Subscribes to a navigation controller's `location$` when one is provided.
@@ -56,7 +46,7 @@ export function useOptionalNavigationControllerLocation(
         location => {
           if (
             !snapshotRef.current ||
-            !routingLocationEqual(snapshotRef.current, location)
+            !frameworkLocationEqual(snapshotRef.current, location)
           ) {
             snapshotRef.current = location;
             onStoreChange();

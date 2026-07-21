@@ -22,8 +22,8 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   createSyncLocationObservable,
-  parseRoutingLocation,
-} from './mockRoutingLocation';
+  parseFrameworkLocation,
+} from './mockFrameworkLocation';
 
 /**
  * Options for creating a mock routing contract.
@@ -69,7 +69,7 @@ export function createMockContract(options: MockContractOptions): MockContract {
   const { basePath, initialLocation = '/' } = options;
 
   const subscribers = new Set<(value: FrameworkLocation) => void>();
-  let currentLocation = parseRoutingLocation(initialLocation);
+  let currentLocation = parseFrameworkLocation(initialLocation);
   const adapterStates = new Map<string, unknown>();
   let historyLength = 1;
   let historyIndex = 0;
@@ -90,7 +90,7 @@ export function createMockContract(options: MockContractOptions): MockContract {
     goCalls,
     navigate(to: string, navOptions?: FrameworkNavigateOptions) {
       navigateCalls.push({ to, options: navOptions });
-      const nextLocation = parseRoutingLocation(to, navOptions?.state);
+      const nextLocation = parseFrameworkLocation(to, navOptions?.state);
       const performNavigate = () => {
         currentLocation = nextLocation;
         adapterStates.clear();

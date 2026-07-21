@@ -25,18 +25,7 @@ import type {
   FrameworkLocation,
   FrameworkNavigateOptions,
 } from './RoutingContract';
-
-function routingLocationEqual(
-  a: FrameworkLocation,
-  b: FrameworkLocation,
-): boolean {
-  return (
-    a.pathname === b.pathname &&
-    a.search === b.search &&
-    a.hash === b.hash &&
-    a.state === b.state
-  );
-}
+import { frameworkLocationEqual } from './useObservableAsState';
 
 /**
  * Subscribes to a navigation controller's `location$` when one is provided.
@@ -56,7 +45,7 @@ function useNavigationControllerLocation(
         location => {
           if (
             !snapshotRef.current ||
-            !routingLocationEqual(snapshotRef.current, location)
+            !frameworkLocationEqual(snapshotRef.current, location)
           ) {
             snapshotRef.current = location;
             onStoreChange();
