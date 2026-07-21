@@ -624,6 +624,29 @@ export default {
             'tooling/cli/templates',
             sidebarElementWithIndex(
               {
+                label: 'CLI Modules',
+                description:
+                  'Documentation for each CLI module and its commands.',
+              },
+              [
+                'tooling/cli/modules',
+                'tooling/cli/module-auth',
+                'tooling/cli/module-actions',
+                'tooling/cli/module-build',
+                'tooling/cli/module-config',
+                'tooling/cli/module-github',
+                'tooling/cli/module-info',
+                'tooling/cli/module-lint',
+                'tooling/cli/module-maintenance',
+                'tooling/cli/module-migrate',
+                'tooling/cli/module-new',
+                'tooling/cli/module-test',
+                'tooling/cli/module-translations',
+              ],
+            ),
+            'tooling/cli/building-cli-modules',
+            sidebarElementWithIndex(
+              {
                 label: 'Local Development',
                 description:
                   'Guides for local development using Backstage CLI.',

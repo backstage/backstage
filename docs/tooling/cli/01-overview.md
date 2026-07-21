@@ -37,3 +37,31 @@ The Backstage CLI intentionally does not provide many hooks for overriding or
 customizing the build process. This is to allow for evolution of the CLI without
 having to take a wide API surface into account. This allows us to iterate and
 improve the tooling, as well as to more easily keep the system up to date.
+
+## Modular Architecture
+
+The CLI is built from a set of independent **CLI modules**, each providing a
+group of related commands. The default set of modules is provided by the
+[`@backstage/cli-defaults`](https://www.npmjs.com/package/@backstage/cli-defaults)
+package, which includes the following 12 modules:
+
+- **Auth** (`@backstage/cli-module-auth`) — Authentication with Backstage instances
+- **Actions** (`@backstage/cli-module-actions`) — Discovering and executing Backstage actions
+- **Build** (`@backstage/cli-module-build`) — Building, starting, and packaging
+- **Config** (`@backstage/cli-module-config`) — Configuration inspection
+- **GitHub** (`@backstage/cli-module-github`) — GitHub App creation
+- **Info** (`@backstage/cli-module-info`) — Environment and dependency information
+- **Lint** (`@backstage/cli-module-lint`) — Linting
+- **Maintenance** (`@backstage/cli-module-maintenance`) — Repository maintenance and deprecation tracking
+- **Migrate** (`@backstage/cli-module-migrate`) — Migration and version management
+- **New** (`@backstage/cli-module-new`) — Scaffolding new plugins and packages
+- **Test** (`@backstage/cli-module-test-jest`) — Jest-based testing
+- **Translations** (`@backstage/cli-module-translations`) — Translation message management
+
+You can customize the CLI by adding, removing, or replacing modules. The CLI
+automatically discovers modules from your project's dependencies based on the
+`backstage.role` field in each package's `package.json`. You can also build your
+own modules to extend the CLI with custom commands for your organization.
+
+For more details, see the [CLI Modules](./05-modules.md) page and the
+[Building Custom CLI Modules](./building-cli-modules.md) guide.
