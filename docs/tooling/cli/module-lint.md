@@ -4,10 +4,9 @@ title: Lint Module
 description: CLI commands for linting Backstage packages.
 ---
 
-The lint module (`@backstage/cli-module-lint`) provides commands for linting
-individual packages and entire repositories. For more information on the
-linting setup, see the build system [linting](./02-build-system.md#linting)
-section.
+The lint module (`@backstage/cli-module-lint`) runs linting on individual
+packages or across the entire repository. For more on the linting setup, see
+the build system [linting](./02-build-system.md#linting) section.
 
 ## package lint
 

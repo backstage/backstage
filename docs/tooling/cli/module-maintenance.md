@@ -4,9 +4,8 @@ title: Maintenance Module
 description: CLI commands for repository maintenance and deprecation tracking.
 ---
 
-The maintenance module (`@backstage/cli-module-maintenance`) provides commands
-for automatically fixing common issues in packages and tracking deprecations
-across the project.
+The maintenance module (`@backstage/cli-module-maintenance`) fixes common
+package issues and tracks deprecations across the project.
 
 ## repo fix
 
@@ -22,8 +21,8 @@ Automatically fix packages in the project
 
 ## repo list-deprecations
 
-List deprecations found across all packages in the project. This is useful for
-tracking usage of deprecated APIs and planning migration work.
+List deprecations found across all packages in the project. Use the output to
+track deprecated API usage and plan migration work.
 
 ```text
 Usage: backstage-cli repo list-deprecations [options]

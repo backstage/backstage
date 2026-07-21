@@ -6,8 +6,8 @@ description: CLI commands for authenticating with Backstage instances.
 
 The auth module (`@backstage/cli-module-auth`) provides commands for
 authenticating the CLI with Backstage instances. It uses OAuth 2.0 with PKCE to
-securely obtain and manage access tokens, which are then used by other CLI
-commands such as [actions](./module-actions.md).
+obtain access tokens, which are then used by other CLI commands such as
+[actions](./module-actions.md).
 
 ## Prerequisites
 
@@ -122,7 +122,7 @@ Options:
 ```
 
 The command fetches user information from the instance's `/api/auth/v1/userinfo`
-endpoint, automatically refreshing the access token if needed.
+endpoint and refreshes the access token if needed.
 
 ### Examples
 
@@ -140,8 +140,8 @@ yarn backstage-cli auth show --instance production
 
 ## auth list
 
-List all authenticated instances. The currently selected default instance is
-marked with an asterisk (`*`).
+List all authenticated instances. The selected default instance is marked with
+an asterisk (`*`).
 
 ```text
 Usage: backstage-cli auth list
@@ -165,8 +165,8 @@ Example output:
 ## auth print-token
 
 Print an access token to stdout. If the token has expired or is about to expire,
-it is refreshed automatically before printing. This command is designed for use
-in scripts and pipelines.
+it is refreshed automatically before printing. Useful for scripting and
+pipelines.
 
 ```text
 Usage: backstage-cli auth print-token [options]

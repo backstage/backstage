@@ -58,10 +58,9 @@ package, which includes the following 12 modules:
 - **Test** (`@backstage/cli-module-test-jest`) — Jest-based testing
 - **Translations** (`@backstage/cli-module-translations`) — Translation message management
 
-You can customize the CLI by adding, removing, or replacing modules. The CLI
-automatically discovers modules from your project's dependencies based on the
-`backstage.role` field in each package's `package.json`. You can also build your
-own modules to extend the CLI with custom commands for your organization.
+You can customize the CLI by replacing default modules or adding your own. The
+CLI discovers modules from your project's dependencies based on the
+`backstage.role` field in each package's `package.json`.
 
 For more details, see the [CLI Modules](./05-modules.md) page and the
 [Building Custom CLI Modules](./building-cli-modules.md) guide.

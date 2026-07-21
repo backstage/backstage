@@ -25,17 +25,17 @@ the `test` script in the root `package.json` in your project:
 }
 ```
 
-If run without any arguments it will default to running changed tests in watch
-mode, unless the `CI` environment flag is set, in which case it will run all
-tests without watching:
+If run without any arguments it defaults to running changed tests in watch
+mode, unless the `CI` environment flag is set, in which case it runs all tests
+without watching:
 
 ```sh title="Run changed tests from repo root"
 yarn test
 ```
 
-If arguments are provided, they will be forwarded to Jest and used to filter
-tests to execute. If full paths to tests are provided, only those tests will be
-included, for example:
+If arguments are provided, they are forwarded to Jest and used to filter tests
+to execute. If full paths to tests are provided, only those tests are included,
+for example:
 
 ```sh title="Run specific tests from repo root"
 yarn test packages/app/src/App.test.tsx
@@ -62,7 +62,7 @@ Options:
 ## package test
 
 Run tests, forwarding all unknown options to Jest, and defaulting to watch mode.
-When executing the tests, `process.env.NODE_ENV` will be set to `"test"`.
+When executing the tests, `process.env.NODE_ENV` is set to `"test"`.
 
 This command uses a default Jest configuration that is included in the CLI,
 which is set up with similar goals for speed, scale, and working within a

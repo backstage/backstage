@@ -13,7 +13,7 @@ translation workflow, see the
 ## translations export
 
 Export translation messages from an app and all of its frontend plugins to JSON
-files. This command must be run from within a package directory (e.g.
+files. This command must be run from within a package directory (for example
 `packages/app`), not from the repository root.
 
 The command discovers all `TranslationRef` definitions in the dependency tree,

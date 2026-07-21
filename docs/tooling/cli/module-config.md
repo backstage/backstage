@@ -10,10 +10,9 @@ resolved values.
 
 ## config\:docs
 
-This command opens up the reference documentation of your app's local
-configuration schema in the browser. This is useful to get an overview of what
-configuration values are available to use, a description of what they do and
-their format, and where they get sent.
+Opens the reference documentation of your app's local configuration schema in
+the browser. Use it to see what configuration values are available, what they
+do, and where they get sent.
 
 ```text
 Usage: backstage-cli config:docs [options]

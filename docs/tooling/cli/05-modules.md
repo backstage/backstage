@@ -6,8 +6,7 @@ description: Overview of the Backstage CLI module system and the default set of 
 
 The Backstage CLI is built from a set of independent **CLI modules**, each
 providing a group of related commands. This modular architecture lets you
-customize which commands are available, override default behavior, or extend the
-CLI with your own commands.
+choose which commands are available and add your own.
 
 ## Default Modules
 
@@ -57,7 +56,7 @@ is silently skipped.
 
 For example, if you publish an internal `@mycompany/cli-module-build` that
 registers the same command paths as `@backstage/cli-module-build`, adding it to
-your root `package.json` will cause it to be used instead of the default build
+your root `package.json` causes it to be used instead of the default build
 module:
 
 ```json title="package.json"
@@ -72,8 +71,8 @@ module:
 ### Using a subset of modules
 
 If you only need certain modules, you can install them individually instead of
-relying on `@backstage/cli-defaults`. The CLI will discover them through the
-same dependency scanning mechanism:
+relying on `@backstage/cli-defaults`. The CLI discovers them through the same
+dependency scanning mechanism:
 
 ```json title="package.json"
 {
@@ -92,7 +91,7 @@ In this example only the build, lint, and test commands would be available.
 
 You can add your own CLI modules alongside the defaults. Any package with
 `backstage.role` set to `"cli-module"` in its `package.json` that is listed as a
-dependency will be discovered automatically. See
+dependency is discovered automatically. See
 [Building Custom CLI Modules](./building-cli-modules.md) for a full guide.
 
 ## Architecture

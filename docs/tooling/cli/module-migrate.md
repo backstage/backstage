@@ -4,15 +4,14 @@ title: Migrate Module
 description: CLI commands for version management and package migrations.
 ---
 
-The migrate module (`@backstage/cli-module-migrate`) provides commands for
-bumping Backstage package versions, migrating moved packages, and running
-various package migration utilities.
+The migrate module (`@backstage/cli-module-migrate`) bumps Backstage package
+versions, migrates moved packages, and runs package migration utilities.
 
 ## versions\:bump
 
 Bump all `@backstage` packages to the latest versions. This checks for updates
-in the package registry, and will update entries in `package.json` files when
-necessary. See more about how this command can be configured and used
+in the package registry and updates `package.json` files when necessary. See
+more about how this command can be configured and used
 [for keeping Backstage updated](../../getting-started/keeping-backstage-updated.md).
 
 ```text

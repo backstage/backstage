@@ -4,9 +4,8 @@ title: Actions Module
 description: CLI commands for discovering and executing Backstage actions.
 ---
 
-The actions module (`@backstage/cli-module-actions`) provides commands for
-discovering and executing Backstage actions directly from the command line. This
-lets you interact with backend plugin actions without using the Backstage UI.
+The actions module (`@backstage/cli-module-actions`) lets you discover and run
+Backstage actions from the command line, without going through the Backstage UI.
 
 For a list of actions that Backstage plugins can expose, see the
 [Well-Known Actions](../../ai/well-known-actions.md) documentation.
@@ -17,7 +16,7 @@ Before using actions commands you must authenticate with a Backstage instance
 using [`auth login`](./module-auth.md#auth-login). Actions commands use the
 stored credentials to communicate with the backend.
 
-All actions commands operate against the currently selected instance by default.
+All actions commands operate against the selected instance by default.
 If you have multiple authenticated instances, use the `--instance` flag with the
 instance name to target a specific one. See
 [Instance Names](./module-auth.md#instance-names) for details on how instance
@@ -177,7 +176,7 @@ yarn backstage-cli actions sources remove scaffolder catalog
 
 ## Workflow Example
 
-Here is a typical workflow for using the actions module:
+A typical workflow looks like this:
 
 ```bash
 # 1. Log in to your Backstage instance

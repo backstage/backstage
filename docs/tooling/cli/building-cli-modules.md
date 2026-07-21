@@ -11,7 +11,7 @@ in your project, the CLI discovers and loads it automatically.
 
 ## Scaffolding a New Module
 
-The quickest way to get started is to use the built-in template:
+To scaffold a module, use the built-in template:
 
 ```bash
 yarn new
@@ -174,7 +174,8 @@ The execute function receives a `CliCommandContext` with two fields:
   `backstage-cli greet --name World`, the `args` array would be
   `['--name', 'World']`.
 - **`info`** — An object with `usage` (the full command path as shown in help,
-  e.g. `"backstage-cli greet"`) and `name` (the command name, e.g. `"greet"`).
+  for example `"backstage-cli greet"`) and `name` (the command name, for
+  example `"greet"`).
 
 ## Parsing Flags
 

@@ -4,11 +4,10 @@ title: Build Module
 description: CLI commands for building, starting, and packaging Backstage packages.
 ---
 
-The build module (`@backstage/cli-module-build`) provides commands for building,
-starting, and packaging Backstage packages. It covers both individual package
-operations and repo-wide builds.
+The build module (`@backstage/cli-module-build`) handles building, starting,
+and packaging Backstage packages, both individually and across the repo.
 
-For a deeper understanding of the underlying build system, see the
+For details on the build system itself, see the
 [Build System](./02-build-system.md) documentation.
 
 ## repo start
@@ -48,8 +47,8 @@ Options:
 
 ## repo build
 
-Builds all packages in the project, excluding bundled packages by default, i.e.
-ones with the role `'frontend'` or `'backend'`.
+Builds all packages in the project, excluding bundled packages by default, that
+is, ones with the role `'frontend'` or `'backend'`.
 
 ```text
 Usage: backstage-cli repo build [options]
