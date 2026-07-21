@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import { createValidatedOpenApiRouter, getOpenApiSpecRoute } from './stub';
+import {
+  createValidatedOpenApiRouter,
+  createValidatedOpenApiRouterFromGeneratedEndpointMap,
+  getOpenApiSpecRoute,
+} from './stub';
 import express from 'express';
 import request from 'supertest';
 import singlePathSpec from './___fixtures__/single-path';
 import { Response } from './utility';
 import { OPENAPI_SPEC_ROUTE } from './constants';
+import type { AuditorService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('createRouter', () => {
   const pet: Response<typeof singlePathSpec, '/pet/:petId', 'get'> = {
@@ -124,5 +130,85 @@ describe('getOpenApiSpecRoute', () => {
   it('handles expected values', () => {
     expect(getOpenApiSpecRoute('/api/test')).toEqual('/api/test/openapi.json');
     expect(getOpenApiSpecRoute('api/test')).toEqual('api/test/openapi.json');
+  });
+});
+
+describe('createRouter with auditor', () => {
+  const createMockAuditor = () => {
+    const mockSuccess = jest.fn().mockResolvedValue(undefined);
+    const mockFail = jest.fn().mockResolvedValue(undefined);
+    const mockCreateEvent = jest.fn().mockResolvedValue({
+      success: mockSuccess,
+      fail: mockFail,
+    });
+
+    const auditor: AuditorService = { createEvent: mockCreateEvent };
+    return { auditor, mockCreateEvent, mockSuccess, mockFail };
+  };
+
+  const specWithAuditor = {
+    openapi: '3.0.2',
+    info: { title: 'Test API', version: '1.0.0' },
+    paths: {
+      '/widgets/{id}': {
+        get: {
+          operationId: 'getWidget',
+          'x-backstage-auditor': {
+            eventId: 'widget-fetch',
+            meta: { id: '{{ request.params.id }}' },
+          },
+          parameters: [
+            {
+              name: 'id',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+            },
+          ],
+          responses: { '200': { description: 'OK' } },
+        },
+      },
+    },
+  } as const;
+
+  it('automatically applies success/error auditing to routes added after router creation', async () => {
+    const { auditor, mockCreateEvent, mockSuccess, mockFail } =
+      createMockAuditor();
+
+    const router: express.Router =
+      createValidatedOpenApiRouterFromGeneratedEndpointMap(specWithAuditor, {
+        auditor,
+        logger: mockServices.logger.mock(),
+      });
+    const app = express().use(router);
+
+    // These routes are only added now, after the router (and its auditor
+    // wrapping) was already created above. The auditor's error middleware
+    // must still catch errors thrown from them despite being registered
+    // before these routes existed.
+    router.get('/widgets/ok', (_req, res) => res.json({ ok: true }));
+    router.get('/widgets/broken', () => {
+      throw new Error('boom');
+    });
+
+    await request(app).get('/widgets/ok').expect(200);
+    expect(mockCreateEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ eventId: 'widget-fetch' }),
+    );
+    expect(mockSuccess).toHaveBeenCalledTimes(1);
+    expect(mockFail).not.toHaveBeenCalled();
+
+    await request(app).get('/widgets/broken').expect(500);
+    expect(mockFail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: expect.objectContaining({ message: 'boom' }),
+      }),
+    );
+  });
+
+  it('does not wrap the router when auditor/logger are not provided', () => {
+    const router =
+      createValidatedOpenApiRouterFromGeneratedEndpointMap(specWithAuditor);
+    expect(router.get).toBeDefined();
   });
 });

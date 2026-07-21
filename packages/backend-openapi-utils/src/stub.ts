@@ -30,6 +30,31 @@ import { InputError } from '@backstage/errors';
 import { middleware as OpenApiValidator } from 'express-openapi-validator';
 import { OPENAPI_SPEC_ROUTE } from './constants';
 import { isErrorResult, merge } from 'openapi-merge';
+import type {
+  AuditorService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import { auditorMiddlewareFactory } from './middlewares/auditor';
+
+// Router methods that register routes/middleware. Forwarded from the outer
+// auditor wrapper to the inner router so callers' routes land before the
+// `error` middleware. `stack`/`handle` are deliberately not forwarded:
+// Router.prototype.handle reads `this.stack` while dispatching, so the
+// wrapper's own `stack`/`handle` must stay untouched for it to still run
+// its success->router->error chain when mounted.
+const FORWARDED_ROUTER_PROPERTIES = [
+  'get',
+  'post',
+  'put',
+  'delete',
+  'patch',
+  'options',
+  'head',
+  'all',
+  'use',
+  'param',
+  'route',
+] as const;
 
 function validatorErrorTransformer(): ErrorRequestHandler {
   return (error: Error, _: Request, _2: Response, next: NextFunction) => {
@@ -64,6 +89,8 @@ function createRouterWithValidation(
   options?: {
     validatorOptions?: Partial<Parameters<typeof OpenApiValidator>['0']>;
     middleware?: RequestHandler[];
+    auditor?: AuditorService;
+    logger?: LoggerService;
   },
 ): Router {
   const router = PromiseRouter();
@@ -111,7 +138,36 @@ function createRouterWithValidation(
     }
     res.json(mergeOutput.output);
   });
-  return router;
+
+  if (!options?.auditor || !options?.logger) {
+    return router;
+  }
+
+  const { success, error } = auditorMiddlewareFactory({
+    auditor: options.auditor,
+    logger: options.logger,
+  });
+
+  // `success` just needs to run after the OpenApiValidator middleware above
+  // (so `req.openapi` is populated) and before route handlers, so it's safe
+  // to register directly on `router`.
+  router.use(success);
+
+  // `error` must be the very last middleware registered so it can observe
+  // errors from routes the caller adds after this function returns. Since
+  // callers keep adding routes to the returned object, wrap `router` in an
+  // outer router and forward route-registration calls through to `router`,
+  // so those routes land before `error` on the outer wrapper rather than
+  // after it.
+  const wrapper = PromiseRouter();
+  wrapper.use(router);
+  wrapper.use(error);
+
+  for (const method of FORWARDED_ROUTER_PROPERTIES) {
+    (wrapper as any)[method] = (router as any)[method].bind(router);
+  }
+
+  return wrapper;
 }
 
 /**
@@ -119,6 +175,9 @@ function createRouterWithValidation(
  * Only supports OpenAPI 3.1 specifications.
  * @param spec - Your OpenAPI spec imported as a JSON object.
  * @param validatorOptions - `openapi-express-validator` options to override the defaults.
+ * @param auditor - When provided along with `logger`, automatically audits requests and
+ *  responses for operations annotated with `x-backstage-auditor` in the spec.
+ * @param logger - See `auditor`.
  * @returns A new express router with validation middleware.
  * @public
  */
@@ -127,6 +186,8 @@ export function createValidatedOpenApiRouter<T extends RequiredDoc>(
   options?: {
     validatorOptions?: Partial<Parameters<typeof OpenApiValidator>['0']>;
     middleware?: RequestHandler[];
+    auditor?: AuditorService;
+    logger?: LoggerService;
   },
 ) {
   return createRouterWithValidation(spec, options) as ApiRouter<typeof spec>;
@@ -137,6 +198,9 @@ export function createValidatedOpenApiRouter<T extends RequiredDoc>(
  * Only supports OpenAPI 3.1 specifications.
  * @param spec - Your OpenAPI spec imported as a JSON object.
  * @param validatorOptions - `openapi-express-validator` options to override the defaults.
+ * @param auditor - When provided along with `logger`, automatically audits requests and
+ *  responses for operations annotated with `x-backstage-auditor` in the spec.
+ * @param logger - See `auditor`.
  * @returns A new express router with validation middleware.
  * @public
  */
@@ -147,6 +211,8 @@ export function createValidatedOpenApiRouterFromGeneratedEndpointMap<
   options?: {
     validatorOptions?: Partial<Parameters<typeof OpenApiValidator>['0']>;
     middleware?: RequestHandler[];
+    auditor?: AuditorService;
+    logger?: LoggerService;
   },
 ) {
   return createRouterWithValidation(spec, options) as TypedRouter<T>;

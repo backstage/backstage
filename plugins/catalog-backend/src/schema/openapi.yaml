@@ -998,6 +998,8 @@ paths:
       x-backstage-auditor:
         eventId: entity-fetch
         meta:
+          # Note: built from the raw path params, not canonicalized via stringifyEntityRef,
+          # so casing reflects exactly what was requested rather than the catalog's canonical form.
           entityRef: '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}'
       responses:
         '200':
@@ -1026,6 +1028,8 @@ paths:
       x-backstage-auditor:
         eventId: entity-fetch
         meta:
+          # Note: built from the raw path params, not canonicalized via stringifyEntityRef,
+          # so casing reflects exactly what was requested rather than the catalog's canonical form.
           entityRef: '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}'
       responses:
         '200':
@@ -1536,6 +1540,8 @@ paths:
       x-backstage-auditor:
         eventId: location-fetch
         meta:
+          # Note: built from the raw path params, not canonicalized via stringifyEntityRef,
+          # so casing reflects exactly what was requested rather than the catalog's canonical form.
           entityRef: '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}'
       responses:
         '200':

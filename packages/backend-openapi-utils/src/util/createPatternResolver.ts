@@ -58,7 +58,7 @@ export function createPatternResolver<TContext extends object = object>(
           Number.isFinite(value)
         ) {
           return value as JsonPrimitive;
-        } else if (!value) {
+        } else if (value === undefined || value === null) {
           throw new InputError(`No value for selector '${placeholderPart}'`);
         } else {
           throw new InputError(

@@ -39,7 +39,6 @@ import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import { createOpenApiRouter } from '../schema/openapi';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
-import { auditorMiddlewareFactory } from '@backstage/backend-openapi-utils';
 import {
   basicEntityFilter,
   entitiesBatchRequest,
@@ -94,13 +93,6 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = await createOpenApiRouter({
-    validatorOptions: {
-      // We want the spec to be up to date with the expected value, but the return type needs
-      //  to be controlled by the router implementation not the request validator.
-      ignorePaths: /^\/validate-entity\/?$/,
-    },
-  });
   const {
     entitiesCatalog,
     locationAnalyzer,
@@ -116,9 +108,17 @@ export async function createRouter(
     enableRelationsCompatibility = false,
   } = options;
 
-  const { success, error } = auditorMiddlewareFactory({ auditor, logger });
-  // Apply auditor middleware for automatic auditing based on OpenAPI annotations
-  router.use(success);
+  // Auditing for operations annotated with x-backstage-auditor in the spec
+  // is applied automatically by createOpenApiRouter below.
+  const router = await createOpenApiRouter({
+    validatorOptions: {
+      // We want the spec to be up to date with the expected value, but the return type needs
+      //  to be controlled by the router implementation not the request validator.
+      ignorePaths: /^\/validate-entity\/?$/,
+    },
+    auditor,
+    logger,
+  });
 
   const readonlyEnabled =
     config.getOptionalBoolean('catalog.readonly') || false;
@@ -588,8 +588,6 @@ export async function createRouter(
       throw err;
     }
   });
-
-  router.use(error);
 
   return router;
 }

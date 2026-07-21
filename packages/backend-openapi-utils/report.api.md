@@ -10,14 +10,11 @@ import { FromSchema } from 'json-schema-to-ts';
 import { JSONSchema } from 'json-schema-to-ts';
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import { middleware } from 'express-openapi-validator';
-import { NextFunction } from 'express';
 import type { OpenAPIObject } from 'openapi3-ts';
 import type { ParameterObject } from 'openapi3-ts';
 import type { ReferenceObject } from 'openapi3-ts';
-import { Request as Request_3 } from 'express';
 import type { RequestBodyObject } from 'openapi3-ts';
 import { RequestHandler } from 'express';
-import { Response as Response_4 } from 'express';
 import type { ResponseObject } from 'openapi3-ts';
 import { Router } from 'express';
 import type { SchemaObject } from 'openapi3-ts';
@@ -41,24 +38,6 @@ export interface ApiRouter<Doc extends RequiredDoc> extends Router {
   // (undocumented)
   put: DocRequestMatcher<Doc, this, 'put'>;
 }
-
-// @public
-export function auditorMiddlewareFactory(dependencies: {
-  auditor: AuditorService;
-  logger: LoggerService;
-}): {
-  success: (
-    _req: Request_3,
-    res: Response_4,
-    next: NextFunction,
-  ) => Promise<void>;
-  error: (
-    err: Error,
-    _req: Request_3,
-    _res: Response_4,
-    next: NextFunction,
-  ) => Promise<void>;
-};
 
 // @public (undocumented)
 type ComponentRef<
@@ -118,6 +97,8 @@ export function createValidatedOpenApiRouter<T extends RequiredDoc>(
   options?: {
     validatorOptions?: Partial<Parameters<typeof middleware>['0']>;
     middleware?: RequestHandler[];
+    auditor?: AuditorService;
+    logger?: LoggerService;
   },
 ): ApiRouter<typeof spec>;
 
@@ -129,6 +110,8 @@ export function createValidatedOpenApiRouterFromGeneratedEndpointMap<
   options?: {
     validatorOptions?: Partial<Parameters<typeof middleware>['0']>;
     middleware?: RequestHandler[];
+    auditor?: AuditorService;
+    logger?: LoggerService;
   },
 ): TypedRouter<T>;
 

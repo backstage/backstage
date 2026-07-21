@@ -30,9 +30,13 @@ type AuditorExtension = {
   meta?: Record<string, string>;
 };
 
-function waitForResponseToFinish(res: Response): Promise<void> {
+function waitForResponseToFinish(res: Response): Promise<{ aborted: boolean }> {
   return new Promise(resolve => {
-    res.on('finish', () => resolve());
+    // If the response finishes normally, 'close' also fires afterwards, but
+    // by then the promise is already settled and the second resolve() is a
+    // no-op.
+    res.once('finish', () => resolve({ aborted: false }));
+    res.once('close', () => resolve({ aborted: true }));
   });
 }
 
@@ -70,9 +74,11 @@ const VARIANT_LOOKUP: Record<string, string> = {
 
 /**
  *
- * Middleware factory for auditing OpenAPI requests and responses.
+ * Middleware factory for auditing OpenAPI requests and responses. Wired up
+ * automatically by `createValidatedOpenApiRouter(FromGeneratedEndpointMap)`
+ * when given an `auditor` and `logger`.
  *
- * @public
+ * @internal
  */
 export function auditorMiddlewareFactory(dependencies: {
   auditor: AuditorService;
@@ -138,7 +144,8 @@ export function auditorMiddlewareFactory(dependencies: {
         const usesResponse = pattern.includes('{{ response.');
         if (usesRequest && usesResponse) {
           throw new Error(
-            'Pattern cannot contain both request and response placeholders',
+            `Pattern for meta field "${key}" cannot contain both request and response placeholders. ` +
+              'Split into separate meta fields or use only one context type (either request or response) in this pattern.',
           );
         }
         const patternResolver = {
@@ -255,12 +262,12 @@ export function auditorMiddlewareFactory(dependencies: {
 
       const locals = res.locals as Response['locals'] &
         WithCapturedResponseBody;
-      res.json = function overriddenJson(body: JsonObject) {
+      res.json = function jsonWithCapture(body: JsonObject) {
         locals[CAPTURED_RESPONSE_BODY_SYMBOL] = body;
         return originalJson(body);
       };
 
-      res.send = function overriddenSend(body: JsonValue) {
+      res.send = function sendWithCapture(body: JsonValue) {
         if (body && typeof body === 'object' && !Array.isArray(body)) {
           locals[CAPTURED_RESPONSE_BODY_SYMBOL] = body;
         } else {
@@ -290,7 +297,7 @@ export function auditorMiddlewareFactory(dependencies: {
     next();
 
     // Wait for response to finish (res.send/res.json)
-    await responseFinished;
+    const { aborted } = await responseFinished;
 
     if (!req[AUDITOR_SYMBOL]) {
       return;
@@ -300,7 +307,14 @@ export function auditorMiddlewareFactory(dependencies: {
 
     // Create audit event after response finishes so captureMetadata can access response body
     try {
-      if (res.statusCode >= 200 && res.statusCode < 300) {
+      if (aborted) {
+        await auditorEvent.fail({
+          error: new Error(
+            'Client aborted the connection before the response finished',
+          ),
+          meta: captureResponseMetadata(),
+        });
+      } else if (res.statusCode >= 200 && res.statusCode < 300) {
         await auditorEvent.success({ meta: captureResponseMetadata() });
       } else {
         await auditorEvent.fail({
