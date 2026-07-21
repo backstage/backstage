@@ -2549,7 +2549,7 @@ __metadata:
     rollup-plugin-esbuild: "npm:^6.1.1"
     rollup-plugin-postcss: "npm:^4.0.0"
     rollup-pluginutils: "npm:^2.8.2"
-    shell-quote: "npm:^1.8.1"
+    shell-quote: "npm:^1.9.0"
     style-loader: "npm:^3.3.1"
     swc-loader: "npm:^0.2.3"
     tar: "npm:^7.5.6"
@@ -2645,7 +2645,7 @@ __metadata:
     eslint-formatter-friendly: "npm:^7.0.0"
     fs-extra: "npm:^11.2.0"
     globby: "npm:^11.1.0"
-    shell-quote: "npm:^1.8.1"
+    shell-quote: "npm:^1.9.0"
   bin:
     cli-module-lint: bin/backstage-cli-module-lint
   languageName: unknown
@@ -42630,10 +42630,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shell-quote@npm:^1.6.1, shell-quote@npm:^1.7.3, shell-quote@npm:^1.8.1":
-  version: 1.8.4
-  resolution: "shell-quote@npm:1.8.4"
-  checksum: 10/a3e3796385f2cd5cf0b78207a4439f0c7395c0833fc75b2473084b5d298c109c5c0fa687fcd1c04e4b4484866e5bb8eaae7efae443b80fff71ea7e29baf11f0c
+"shell-quote@npm:^1.6.1, shell-quote@npm:^1.7.3, shell-quote@npm:^1.8.1, shell-quote@npm:^1.9.0":
+  version: 1.9.0
+  resolution: "shell-quote@npm:1.9.0"
+  checksum: 10/c3bc91e74a469c4f96b6fd13b0c777fff16bcbda202692a4e5402d3d6b78fc6e02fe92fdf8dc0bddf992a9c6758e43207bfc5bdbefbf8a58190b1c885cbcc171
   languageName: node
   linkType: hard
 
