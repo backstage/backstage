@@ -29,7 +29,7 @@ The frontend feature loader provided in this package works hand-in-hand with the
 <h2 id="how-to-add-a-frontend-plugin-for-dynamic-loading" class="tsd-anchor-link">How to add a frontend plugin for dynamic loading<a href="#how-to-add-a-frontend-plugin-for-dynamic-loading" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>Adding a frontend plugin (with new frontend system support, possibly in alpha support), is straightforward and consists in:</p>
 <ul>
-<li>bundling the frontend plugin with the <a href="../../docs/tooling/cli/03-commands.md#package-bundle"><code>backstage-cli package bundle</code></a> command, thus producing a self-contained bundle based on Module Federation.</li>
+<li>bundling the frontend plugin with the <a href="../../docs/tooling/cli/module-build.md#package-bundle"><code>backstage-cli package bundle</code></a> command, thus producing a self-contained bundle based on Module Federation.</li>
 <li>copying the bundle folder into the Backstage installation dynamic plugins root folder for dynamic loading.</li>
 </ul>
 <p>So from a <code>my-backstage-plugin</code> frontend plugin package folder, you would use the following command:</p>

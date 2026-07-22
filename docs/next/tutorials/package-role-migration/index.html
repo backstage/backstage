@@ -32,8 +32,8 @@
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script>
 <script src="https://widget.kapa.ai/kapa-widget.bundle.js" data-website-id="4f3b7b51-4ea6-4a5b-aede-44fbe128c0f2" data-project-name="Backstage" data-project-color="#36baa2" data-project-logo="https://backstage.io/img/favicon.svg" data-launcher-button-image="https://backstage.io/img/favicon.svg" data-button-position-bottom="4rem" data-button-position-right="0.75rem" data-color-scheme-selector="[data-theme=&#39;dark&#39;]" data-example-questions="What is Backstage?,How do I get started?" async></script><link rel="stylesheet" href="/assets/css/styles.a3f04945.css">
-<script src="/assets/js/runtime~main.7aaf3d88.js" defer="defer"></script>
-<script src="/assets/js/main.19503496.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.bbe9d1e6.js" defer="defer"></script>
+<script src="/assets/js/main.823f567f.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -84,7 +84,7 @@ Each command under the <code>package</code> category is designed to be mapped di
 <div class="language-sh codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-sh codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token function" style="color:rgb(220, 220, 170)">yarn</span><span class="token plain"> backstage-cli migrate package-lint-configs</span><br></span></code></pre></div></div>
 <p>This will migrate all existing <code>.eslintrc.js</code> that extend the old configuration from <code>@backstage/cli</code>, as well as carry over any additional configuration.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-4---use-backstage-cli-repo">Step 4 - Use <code>backstage-cli repo</code><a href="#step-4---use-backstage-cli-repo" class="hash-link" aria-label="Direct link to step-4---use-backstage-cli-repo" title="Direct link to step-4---use-backstage-cli-repo" translate="no">​</a></h3>
-<p>The Backstage CLI recently introduced a new <code>repo</code> command category, which houses commands that operate on an entire monorepo at once. These commands work particularly well once packages have been migrated to use roles, as that allows for some very effective optimizations. It is typically much faster to use these commands compared to using tools like <code>lerna</code>, as they&#x27;re able to avoid the overhead of calling package scripts through <code>yarn</code> and can operate on multiple packages at once. You can read more about the <code>repo</code> command in the <a class="" href="/docs/next/tooling/cli/commands#repo-build">CLI command documentation</a>.</p>
+<p>The Backstage CLI recently introduced a new <code>repo</code> command category, which houses commands that operate on an entire monorepo at once. These commands work particularly well once packages have been migrated to use roles, as that allows for some very effective optimizations. It is typically much faster to use these commands compared to using tools like <code>lerna</code>, as they&#x27;re able to avoid the overhead of calling package scripts through <code>yarn</code> and can operate on multiple packages at once. You can read more about the <code>repo</code> command in the <a class="" href="/docs/next/tooling/cli/module-build#repo-build">CLI command documentation</a>.</p>
 <p>The way to execute this step of the migration is not as well defined as the previous steps, as it depends on what your development and CI/CD setup looks like. Look for the following patterns to replace in your root <code>package.json</code> as well as CI/CD setup:</p>
 <ul>
 <li class="">
