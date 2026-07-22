@@ -23,7 +23,7 @@ config:print [options]                         Print the app configuration for t
 config:check [options]                         Validate that the given configuration loads and matches
                                                 schema
 config:schema [options]                        Print configuration schema
-repo [command]                                 Command that run across an entire Backstage project
+repo [command]                                 Commands that run across an entire Backstage project
 package [command]                              Lifecycle scripts for individual packages
 migrate [command]                              Migration utilities
 versions:bump [options]                        Bump Backstage packages to the latest versions
