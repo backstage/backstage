@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-export { InfoCard, type Props as InfoCardProps } from './InfoCard';
+export {
+  goldenPathEntityV1beta1Validator,
+  isGoldenPathEntityV1beta1,
+} from './GoldenPathEntityV1beta1';
+
+export * from './permissions';
+export * from './types';
+
 export type {
-  InfoCardVariants,
-  InfoCardClassKey,
-  CardActionsTopRightClassKey,
-} from './InfoCard';
+  GoldenPathEntityV1beta1,
+  GoldenPathEntityStepV1beta1,
+  GoldenPathParametersV1beta1,
+  GoldenPathPermissionsV1beta1,
+} from './GoldenPathEntityV1beta1';

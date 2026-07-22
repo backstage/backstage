@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { GoldenPathEntityV1beta1 } from '@backstage/plugin-golden-paths-common';
 
-export { InfoCard, type Props as InfoCardProps } from './InfoCard';
-export type {
-  InfoCardVariants,
-  InfoCardClassKey,
-  CardActionsTopRightClassKey,
-} from './InfoCard';
+export const getRegionsText = (entity: GoldenPathEntityV1beta1) => {
+  const {
+    metadata: { availability },
+  } = entity;
+
+  const regions =
+    Array.isArray(availability) && availability.length > 0
+      ? availability.join(', ')
+      : null;
+
+  return regions;
+};
+
+export const getNumberOfTemplatesText = ({
+  spec: { steps },
+}: GoldenPathEntityV1beta1) =>
+  `${steps.length} ${steps.length === 1 ? 'template' : 'templates'}`;

@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-golden-paths-entity-model
+  title: '@backstage/plugin-catalog-backend-module-golden-paths-entity-model'
+  description: >-
+    Adds support for the golden paths specific entity model (e.g. the GoldenPath
+    kind) to the catalog backend plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { GoldenPathEntityV1beta1 } from '@backstage/plugin-golden-paths-common';
 
-export { InfoCard, type Props as InfoCardProps } from './InfoCard';
-export type {
-  InfoCardVariants,
-  InfoCardClassKey,
-  CardActionsTopRightClassKey,
-} from './InfoCard';
+/** @public */
+export const useGoldenPathRef = () => {
+  const {
+    entity: { metadata },
+  } = useEntity<GoldenPathEntityV1beta1>();
+
+  return stringifyEntityRef({
+    kind: 'GoldenPath',
+    namespace: metadata.namespace,
+    name: metadata.name,
+  });
+};

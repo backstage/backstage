@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createDevApp } from '@backstage/frontend-dev-utils';
+import goldenPathsPlugin from '../src/plugin';
 
-export { InfoCard, type Props as InfoCardProps } from './InfoCard';
-export type {
-  InfoCardVariants,
-  InfoCardClassKey,
-  CardActionsTopRightClassKey,
-} from './InfoCard';
+createDevApp({
+  features: [goldenPathsPlugin],
+});

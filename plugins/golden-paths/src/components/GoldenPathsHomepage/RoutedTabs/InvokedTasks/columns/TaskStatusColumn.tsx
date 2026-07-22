@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  StatusError,
+  StatusOK,
+  StatusPending,
+} from '@backstage/core-components';
 
-export { InfoCard, type Props as InfoCardProps } from './InfoCard';
-export type {
-  InfoCardVariants,
-  InfoCardClassKey,
-  CardActionsTopRightClassKey,
-} from './InfoCard';
+export const TaskStatusColumn = ({ status }: { status: string }) => {
+  switch (status) {
+    case 'processing':
+      return <StatusPending>{status}</StatusPending>;
+    case 'completed':
+      return <StatusOK>{status}</StatusOK>;
+    case 'cancelled':
+    default:
+      return <StatusError>{status}</StatusError>;
+  }
+};

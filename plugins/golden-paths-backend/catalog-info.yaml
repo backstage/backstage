@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-golden-paths-backend
+  title: '@backstage/plugin-golden-paths-backend'
+  description: >-
+    The Backstage backend plugin that helps you combine Scaffolder Templates
+    into sequence
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin
+  owner: maintainers

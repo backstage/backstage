@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-golden-paths-react
+  title: '@backstage/plugin-golden-paths-react'
+  description: Shared code of the frontend part of the default Golden Paths plugin
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: maintainers

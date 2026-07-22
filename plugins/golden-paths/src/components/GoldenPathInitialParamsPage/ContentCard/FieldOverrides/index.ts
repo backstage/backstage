@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-export { InfoCard, type Props as InfoCardProps } from './InfoCard';
-export type {
-  InfoCardVariants,
-  InfoCardClassKey,
-  CardActionsTopRightClassKey,
-} from './InfoCard';
+/*
+ * Component copied from Backstage.io
+ * checked: 2026-06-26
+ * version: v1.52.0
+ * sync: none
+ * state: 1to1copy
+ * path: plugins/scaffolder-react/src/next/components/Stepper/FieldOverrides/index.ts
+ */
+
+export { DescriptionField } from './DescriptionField';

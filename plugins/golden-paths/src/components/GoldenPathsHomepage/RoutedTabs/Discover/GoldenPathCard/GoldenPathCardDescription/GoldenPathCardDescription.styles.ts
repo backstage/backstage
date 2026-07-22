@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { MarkdownContent } from '@backstage/core-components';
+import { styled } from '@material-ui/core';
+import type { ComponentProps, ComponentType } from 'react';
 
-export { InfoCard, type Props as InfoCardProps } from './InfoCard';
-export type {
-  InfoCardVariants,
-  InfoCardClassKey,
-  CardActionsTopRightClassKey,
-} from './InfoCard';
+export const Container = styled('div')({
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  display: '-webkit-box',
+  '-webkit-line-clamp': 5,
+  '-webkit-box-orient': 'vertical',
+});
+
+export const StyledMarkdown: ComponentType<
+  ComponentProps<typeof MarkdownContent>
+> = styled(MarkdownContent)({
+  '& :first-child': {
+    margin: 0,
+  },
+});

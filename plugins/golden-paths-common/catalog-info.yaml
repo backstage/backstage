@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-golden-paths-common
+  title: '@backstage/plugin-golden-paths-common'
+  description: >-
+    Common functionalities for the golden paths, to be shared between
+    golden-paths and golden-paths-backend plugins
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: maintainers

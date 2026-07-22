@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "GoldenPathV1beta1",
+  "description": "A GoldenPath describes a sequence of Templates for use with the Scaffolder. It describes the required parameters as well as a series of steps representing particular Templates.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1beta1",
+      "kind": "GoldenPath",
+      "metadata": {
+        "name": "onboarding-golden-path",
+        "title": "Onboarding Golden Path",
+        "description": "Example of Golden Path",
+        "availability": "global",
+        "tags": ["onboarding", "example"]
+      },
+      "spec": {
+        "owner": "artist-relations-team",
+        "type": "onboarding",
+        "parameters": {
+          "required": ["name", "description"],
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "description": "Unique name of the team"
+            },
+            "description": {
+              "title": "Description",
+              "type": "string",
+              "description": "Description of the team"
+            }
+          }
+        },
+        "steps": [
+          {
+            "id": "creation",
+            "name": "Team Creation",
+            "template": "template:default/team-creation",
+            "parameters": {
+              "name": "New team"
+            }
+          },
+          {
+            "id": "configuration",
+            "name": "Configure Team",
+            "template": "template:default/team-configuration",
+            "parameters": {
+              "description": "This team is awesome."
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1beta1"]
+        },
+        "kind": {
+          "enum": ["GoldenPath"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["type", "steps"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "The purpose of the golden path. The software catalog accepts any type value, but an organization should take great care to establish a proper taxonomy for these. Tools including Backstage itself may read this field and behave differently depending on its value.",
+              "examples": ["migration", "onboarding"],
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "description": "The user (or group) owner of the golden path",
+              "minLength": 1
+            },
+            "parameters": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "description": "The JSONSchema describing the inputs for the golden path.",
+                  "properties": {
+                    "backstage:permissions": {
+                      "type": "object",
+                      "description": "Object used for authorizing the parameter",
+                      "properties": {
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "array",
+                  "description": "A list of separate forms to collect parameters.",
+                  "items": {
+                    "type": "object",
+                    "description": "The JSONSchema describing the inputs for the golden path.",
+                    "properties": {
+                      "backstage:permissions": {
+                        "type": "object",
+                        "description": "Object used for authorizing the parameter",
+                        "properties": {
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "steps": {
+              "type": "array",
+              "description": "A list of templates to execute.",
+              "items": {
+                "type": "object",
+                "description": "A description of the template to execute.",
+                "required": ["template"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The ID of the template, which can be used to refer to its outputs."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the template, which will be displayed in the UI during the golden path process."
+                  },
+                  "template": {
+                    "type": "string",
+                    "description": "The reference of the template to execute."
+                  },
+                  "input": {
+                    "type": "object",
+                    "description": "A templated object describing the inputs to the template."
+                  },
+                  "if": {
+                    "type": ["string", "boolean"],
+                    "description": "A templated condition that skips the template when evaluated to false. If the condition is true or not defined, the template is executed. The condition is true, if the input is not `false`, `undefined`, `null`, `\"\"`, `0`, or `[]`."
+                  },
+                  "backstage:permissions": {
+                    "type": "object",
+                    "description": "Object used for authorizing the template",
+                    "properties": {
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

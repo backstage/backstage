@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  DialogContent,
+  DialogTitle,
+  styled,
+  Typography,
+} from '@material-ui/core';
 
-export { InfoCard, type Props as InfoCardProps } from './InfoCard';
-export type {
-  InfoCardVariants,
-  InfoCardClassKey,
-  CardActionsTopRightClassKey,
-} from './InfoCard';
+export const StyledDialogContent = styled(DialogContent)({
+  paddingBottom: 24,
+});
+
+export const StyledDialogTitle = styled(DialogTitle)({
+  '&>h2': {
+    fontSize: 32,
+  },
+});
+
+export const StyledTypography = styled(Typography)({
+  padding: '24px 0',
+  fontWeight: 'bold',
+});

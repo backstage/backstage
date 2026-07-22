@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { styled } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 
-export { InfoCard, type Props as InfoCardProps } from './InfoCard';
-export type {
-  InfoCardVariants,
-  InfoCardClassKey,
-  CardActionsTopRightClassKey,
-} from './InfoCard';
+export const Wrapper = styled('div')({
+  position: 'relative',
+  '& > article': {
+    padding: 0,
+  },
+});
+
+export const Positioner = styled('div')({
+  position: 'absolute',
+  right: 30,
+  top: 20,
+});
+
+export const AlertInfo = styled(props => <Alert severity="info" {...props} />)({
+  marginBlock: 16,
+  fontWeight: 700,
+});

@@ -1,0 +1,60 @@
+{
+  "name": "@backstage/plugin-golden-paths-common",
+  "version": "0.1.0",
+  "description": "Common functionalities for the golden paths, to be shared between golden-paths and golden-paths-backend plugins",
+  "backstage": {
+    "role": "common-library",
+    "pluginId": "golden-paths",
+    "pluginPackages": [
+      "@backstage/plugin-golden-paths",
+      "@backstage/plugin-golden-paths-backend",
+      "@backstage/plugin-golden-paths-common",
+      "@backstage/plugin-golden-paths-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "golden-paths"
+  ],
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-scaffolder-common": "workspace:^",
+    "@backstage/types": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  }
+}

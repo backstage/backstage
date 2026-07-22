@@ -1,0 +1,41 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { styled } from '@material-ui/core';
+import PublicIcon from '@material-ui/icons/Public';
+import ListIcon from '@material-ui/icons/List';
+
+export const StyledRegionsIcon = styled(PublicIcon)({
+  height: '1.125rem',
+  width: '1.125rem',
+});
+
+export const StyledTemplatesIcon = styled(ListIcon)({
+  height: '1.375rem',
+  width: '1.375rem',
+});
+
+export const Container = styled('div')({
+  display: 'flex',
+  gap: 8,
+  alignItems: 'center',
+  '&, & *': {
+    fontSize: '0.75rem',
+  },
+});
+
+export const RegionsContainer = styled(Container)({
+  maxWidth: 150,
+});
