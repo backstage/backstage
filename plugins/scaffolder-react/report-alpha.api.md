@@ -340,11 +340,17 @@ export const scaffolderReactTranslationRef: TranslationRef<
 export const scaffolderTemplateOutputsBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-template-outputs';
   params: ScaffolderTemplateOutputsBlueprintParams;
-  output: ExtensionDataRef<
-    ScaffolderTemplateOutputsComponent,
-    'scaffolder.template-outputs-component',
-    {}
-  >;
+  output:
+    | ExtensionDataRef<
+        ScaffolderTemplateOutputsComponent,
+        'scaffolder.template-outputs-component',
+        {}
+      >
+    | ExtensionDataRef<
+        string[],
+        'scaffolder.template-output-template-refs',
+        {}
+      >;
   inputs: {};
   config: {};
   configInput: {};
@@ -354,6 +360,11 @@ export const scaffolderTemplateOutputsBlueprint: ExtensionBlueprint<{
       'scaffolder.template-outputs-component',
       {}
     >;
+    templateRefs: ConfigurableExtensionDataRef<
+      string[],
+      'scaffolder.template-output-template-refs',
+      {}
+    >;
   };
 }>;
 
@@ -361,6 +372,8 @@ export const scaffolderTemplateOutputsBlueprint: ExtensionBlueprint<{
 export interface ScaffolderTemplateOutputsBlueprintParams {
   // (undocumented)
   component: ScaffolderTemplateOutputsComponent;
+  // (undocumented)
+  templateRefs: string[];
 }
 
 // @alpha (undocumented)
@@ -372,6 +385,13 @@ export type ScaffolderTemplateOutputsComponent = ComponentType<{
 export const scaffolderTemplateOutputsComponentRef: ConfigurableExtensionDataRef<
   ScaffolderTemplateOutputsComponent,
   'scaffolder.template-outputs-component',
+  {}
+>;
+
+// @alpha (undocumented)
+export const scaffolderTemplateOutputTemplateRefsRef: ConfigurableExtensionDataRef<
+  string[],
+  'scaffolder.template-output-template-refs',
   {}
 >;
 

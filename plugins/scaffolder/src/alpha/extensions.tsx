@@ -34,6 +34,7 @@ import {
   FormFieldBlueprint,
   formFieldsApiRef,
   scaffolderTemplateOutputsComponentRef,
+  scaffolderTemplateOutputTemplateRefsRef,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
@@ -105,21 +106,28 @@ export const scaffolderTasksSubPage = SubPageBlueprint.makeWithOverrides({
   name: 'tasks',
   inputs: {
     templateOutputsComponents: createExtensionInput(
-      [scaffolderTemplateOutputsComponentRef],
+      [
+        scaffolderTemplateOutputsComponentRef,
+        scaffolderTemplateOutputTemplateRefsRef,
+      ],
       { optional: true },
     ),
   },
   factory(originalFactory, { inputs }) {
     return originalFactory({
-      path: '/tasks',
+      path: 'tasks',
       title: 'Tasks',
       loader: async () => {
-        const TemplateOutputsComponent =
-          inputs.templateOutputsComponents?.[0].get(
-            scaffolderTemplateOutputsComponentRef,
-          );
+        const templateOutputsComponents = inputs.templateOutputsComponents?.map(
+          input => ({
+            component: input.get(scaffolderTemplateOutputsComponentRef),
+            templateRefs: input.get(scaffolderTemplateOutputTemplateRefsRef),
+          }),
+        );
         return import('./components/TasksSubPage').then(m => (
-          <m.TasksSubPage TemplateOutputsComponent={TemplateOutputsComponent} />
+          <m.TasksSubPage
+            templateOutputsComponents={templateOutputsComponents}
+          />
         ));
       },
     });

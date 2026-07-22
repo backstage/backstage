@@ -38,8 +38,18 @@ export const scaffolderTemplateOutputsComponentRef =
 /**
  * @alpha
  */
+export const scaffolderTemplateOutputTemplateRefsRef = createExtensionDataRef<
+  string[]
+>().with({
+  id: 'scaffolder.template-output-template-refs',
+});
+
+/**
+ * @alpha
+ */
 export interface ScaffolderTemplateOutputsBlueprintParams {
   component: ScaffolderTemplateOutputsComponent;
+  templateRefs: string[];
 }
 
 /**
@@ -51,11 +61,18 @@ export const scaffolderTemplateOutputsBlueprint = createExtensionBlueprint({
     id: 'sub-page:scaffolder/tasks',
     input: 'templateOutputsComponents',
   },
-  output: [scaffolderTemplateOutputsComponentRef],
+  output: [
+    scaffolderTemplateOutputsComponentRef,
+    scaffolderTemplateOutputTemplateRefsRef,
+  ],
   dataRefs: {
     component: scaffolderTemplateOutputsComponentRef,
+    templateRefs: scaffolderTemplateOutputTemplateRefsRef,
   },
   factory: (params: ScaffolderTemplateOutputsBlueprintParams) => {
-    return [scaffolderTemplateOutputsComponentRef(params.component)];
+    return [
+      scaffolderTemplateOutputsComponentRef(params.component),
+      scaffolderTemplateOutputTemplateRefsRef(params.templateRefs),
+    ];
   },
 });

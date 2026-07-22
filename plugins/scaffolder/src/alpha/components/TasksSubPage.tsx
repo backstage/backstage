@@ -19,27 +19,32 @@ import { Content } from '@backstage/core-components';
 import { BreadcrumbEntry } from '@backstage/frontend-plugin-api';
 import { OngoingTaskBody } from '../../components/OngoingTask';
 import { ListTaskPageContent } from '../../components/ListTasksPage';
-import { ComponentType } from 'react';
-import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderTemplateOutputsComponent } from '@backstage/plugin-scaffolder-react/alpha';
+import { useTaskEventStream } from '@backstage/plugin-scaffolder-react';
+
+type TemplateOutputsRegistration = {
+  component: ScaffolderTemplateOutputsComponent;
+  templateRefs: string[];
+};
 
 function TaskDetailWithBreadcrumb(props: {
-  TemplateOutputsComponent?: ComponentType<{
-    output?: ScaffolderTaskOutput;
-  }>;
+  templateOutputsComponents?: TemplateOutputsRegistration[];
 }) {
   const { taskId } = useParams<{ taskId: string }>();
+  const taskStream = useTaskEventStream(taskId!);
+  const templateRef = taskStream.task?.spec.templateInfo?.entityRef;
+  const TemplateOutputsComponent = props.templateOutputsComponents?.find(
+    registration => registration.templateRefs.includes(templateRef ?? ''),
+  )?.component;
+
   if (!taskId) {
     return (
-      <OngoingTaskBody
-        TemplateOutputsComponent={props.TemplateOutputsComponent}
-      />
+      <OngoingTaskBody TemplateOutputsComponent={TemplateOutputsComponent} />
     );
   }
   return (
     <BreadcrumbEntry entry={{ label: taskId, href: taskId }}>
-      <OngoingTaskBody
-        TemplateOutputsComponent={props.TemplateOutputsComponent}
-      />
+      <OngoingTaskBody TemplateOutputsComponent={TemplateOutputsComponent} />
     </BreadcrumbEntry>
   );
 }
@@ -51,9 +56,7 @@ function TaskDetailWithBreadcrumb(props: {
  * @internal
  */
 export function TasksSubPage(props: {
-  TemplateOutputsComponent?: ComponentType<{
-    output?: ScaffolderTaskOutput;
-  }>;
+  templateOutputsComponents?: TemplateOutputsRegistration[];
 }) {
   return (
     <Routes>
@@ -69,7 +72,7 @@ export function TasksSubPage(props: {
         path=":taskId"
         element={
           <TaskDetailWithBreadcrumb
-            TemplateOutputsComponent={props.TemplateOutputsComponent}
+            templateOutputsComponents={props.templateOutputsComponents}
           />
         }
       />
