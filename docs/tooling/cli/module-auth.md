@@ -16,7 +16,7 @@ support enabled. The CLI checks for this by fetching the OAuth client metadata
 from the instance's well-known endpoint at
 `/api/auth/.well-known/oauth-client/cli.json`.
 
-## Instance Names
+## Instance names
 
 Each authenticated Backstage instance is stored under a name that you choose.
 This name is a short label used to refer to the instance in other commands (for
@@ -229,7 +229,7 @@ Select interactively:
 yarn backstage-cli auth select
 ```
 
-## Instance Storage
+## Instance storage
 
 Authentication state is stored in two places:
 

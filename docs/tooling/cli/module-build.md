@@ -191,7 +191,7 @@ Options:
                               plugins, this also enables yarn.lock generation for SBOM.
 ```
 
-### Output Contract
+### Output contract
 
 The bundle output is a directory that can be deployed as a standalone unit.
 Consumers of the bundle (such as `@backstage/backend-dynamic-feature-service`
@@ -224,7 +224,7 @@ guarantees:
   available.
 - No embedded `node_modules/` directory.
 
-### Environment Variables
+### Environment variables
 
 The bundle command supports the same environment variables as the Backstage yarn
 plugin for resolving `backstage:^` version specifiers:
@@ -232,7 +232,7 @@ plugin for resolving `backstage:^` version specifiers:
 - `BACKSTAGE_MANIFEST_FILE`: Path to a local manifest file (for offline usage)
 - `BACKSTAGE_VERSIONS_BASE_URL`: Custom base URL for fetching release manifests
 
-### Supported Package Roles
+### Supported package roles
 
 The bundle command supports packages with the following roles:
 

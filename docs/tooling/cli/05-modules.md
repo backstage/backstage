@@ -8,11 +8,11 @@ The Backstage CLI is built from a set of independent **CLI modules**, each
 providing a group of related commands. This modular architecture lets you
 choose which commands are available and add your own.
 
-## Default Modules
+## Default modules
 
 Out of the box the CLI ships with
 [`@backstage/cli-defaults`](https://www.npmjs.com/package/@backstage/cli-defaults),
-which bundles the following 12 modules:
+which bundles the following modules:
 
 | Module                                   | Package                              | Commands                                                                                                                                                                        |
 | ---------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -33,7 +33,7 @@ Each module name links to its dedicated page with full command documentation
 including options and examples. See the [commands](./03-commands.md) page for a
 quick reference index of all commands.
 
-## How Module Discovery Works
+## How module discovery works
 
 When the CLI starts it scans the project root's `package.json` for all
 dependencies and devDependencies. For each dependency it checks whether the
@@ -46,7 +46,7 @@ fallback will be removed in a future release. To avoid the warning, add
 `@backstage/cli-defaults` as a `devDependency` in your root `package.json`, or
 install individual `@backstage/cli-module-*` packages.
 
-## Customizing the Default Modules
+## Customizing the default modules
 
 ### Overriding a module
 

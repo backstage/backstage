@@ -9,7 +9,7 @@ modules. A CLI module is a package that registers one or more commands using the
 `createCliModule` API from `@backstage/cli-node`. Once installed as a dependency
 in your project, the CLI discovers and loads it automatically.
 
-## Scaffolding a New Module
+## Scaffolding a new module
 
 To scaffold a module, use the built-in template:
 
@@ -21,7 +21,7 @@ Select the `cli-module` template from the interactive menu. This creates a new
 package with the correct structure, including a sample command, a standalone bin
 script, and all the required configuration.
 
-## Module Structure
+## Module structure
 
 A CLI module package has the following structure:
 
@@ -102,7 +102,7 @@ The `init` callback runs when the module is loaded, not when a command is
 executed. Keep it lightweight and use the deferred loader pattern for commands
 with heavy dependencies.
 
-## Defining Commands
+## Defining commands
 
 Each command is defined by a `CliCommand` object passed to `reg.addCommand`:
 
@@ -176,7 +176,7 @@ export default async ({ args, info }: CliCommandContext) => {
 };
 ```
 
-## Command Context
+## Command context
 
 The execute function receives a `CliCommandContext` with two fields:
 
@@ -188,7 +188,7 @@ The execute function receives a `CliCommandContext` with two fields:
   for example `"backstage-cli greet"`) and `name` (the command name, for
   example `"greet"`).
 
-## Parsing Flags
+## Parsing flags
 
 Commands typically use [`cleye`](https://github.com/privatenumber/cleye) to
 parse flags from the `args` array. This is the same library used by all built-in
@@ -223,7 +223,7 @@ export default async ({ args, info }: CliCommandContext) => {
 };
 ```
 
-## Standalone Execution
+## Standalone execution
 
 Each CLI module can also run as a standalone program, without the full
 `@backstage/cli`. This is useful for distributing a module independently. The
@@ -253,7 +253,7 @@ script. When running from source during development, it registers a Node.js
 transform so TypeScript files can be loaded directly. When running from a
 published package, it loads the compiled output instead.
 
-## Installing Your Module
+## Installing your module
 
 Once your module is published or available as a workspace package, add it as a
 dependency in your project root's `package.json`:

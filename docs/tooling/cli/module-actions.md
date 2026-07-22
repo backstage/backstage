@@ -22,7 +22,7 @@ instance name to target a specific one. See
 [Instance Names](./module-auth.md#instance-names) for details on how instance
 names work.
 
-## Plugin Sources
+## Plugin sources
 
 The actions module needs to know which backend plugins to discover actions from.
 These are called **plugin sources** and are stored as metadata on the
@@ -174,7 +174,7 @@ Remove multiple plugin sources at once:
 yarn backstage-cli actions sources remove scaffolder catalog
 ```
 
-## Workflow Example
+## Workflow example
 
 A typical workflow looks like this:
 

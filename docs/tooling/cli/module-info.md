@@ -60,7 +60,7 @@ Combine options to include custom packages and export to JSON:
 yarn backstage-cli info --include "@mycompany/backstage-*" --include "@internal/*" --format json > debug-info.json
 ```
 
-### JSON Output Format
+### JSON output format
 
 When using `--format json`, the output is structured as follows:
 
