@@ -15,7 +15,7 @@ is possible to pre-select what you want to create using the `--select` flag, and
 provide options using `--option`, for example:
 
 ```bash
-backstage-cli new --select frontend-plugin --option pluginId=foo
+yarn backstage-cli new --select frontend-plugin --option pluginId=foo
 ```
 
 This command is typically added as a script in the root `package.json` to be
