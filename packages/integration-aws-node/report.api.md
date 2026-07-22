@@ -5,6 +5,7 @@
 ```ts
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { Config } from '@backstage/config';
+import type { ConnectionsService } from '@backstage/connections';
 
 // @public
 export type AwsCredentialProvider = {
@@ -27,9 +28,19 @@ export interface AwsCredentialsManager {
 }
 
 // @public
+export type AwsCredentialsManagerConnectionOptions = {
+  type: 'aws-codecommit' | 'aws-s3';
+  url: string;
+};
+
+// @public
 export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
   // (undocumented)
   static fromConfig(config: Config): DefaultAwsCredentialsManager;
+  static fromConnections(
+    connections: ConnectionsService,
+    options: AwsCredentialsManagerConnectionOptions,
+  ): DefaultAwsCredentialsManager;
   getCredentialProvider(
     opts?: AwsCredentialProviderOptions,
   ): Promise<AwsCredentialProvider>;

@@ -42,6 +42,7 @@
     "@aws-sdk/types": "^3.347.0",
     "@aws-sdk/util-arn-parser": "^3.310.0",
     "@backstage/config": "workspace:^",
+    "@backstage/connections": "workspace:^",
     "@backstage/errors": "workspace:^"
   },
   "devDependencies": {

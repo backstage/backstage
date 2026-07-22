@@ -62,6 +62,7 @@ export class AwsS3EntityProvider implements EntityProvider {
       logger: LoggerService;
       schedule?: SchedulerServiceTaskRunner;
       scheduler?: SchedulerService;
+      awsCredentialsManager?: AwsCredentialsManager;
     },
   ): AwsS3EntityProvider[] {
     const providerConfigs = readAwsS3Configs(configRoot);
@@ -90,6 +91,7 @@ export class AwsS3EntityProvider implements EntityProvider {
         );
       }
       const awsCredentialsManager =
+        options.awsCredentialsManager ??
         DefaultAwsCredentialsManager.fromConfig(configRoot);
       const taskRunner =
         options.schedule ??

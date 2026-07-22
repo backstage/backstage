@@ -19,8 +19,13 @@ import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { catalogModuleAwsS3EntityProvider } from './catalogModuleAwsS3EntityProvider';
 import { AwsS3EntityProvider } from '../providers';
+import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 
 describe('catalogModuleAwsS3EntityProvider', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should register provider at the catalog extension point', async () => {
     let addedProviders: Array<AwsS3EntityProvider> | undefined;
     let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
@@ -37,6 +42,10 @@ describe('catalogModuleAwsS3EntityProvider', () => {
         return { run: runner };
       },
     });
+    const fromConnections = jest.spyOn(
+      DefaultAwsCredentialsManager,
+      'fromConnections',
+    );
 
     const config = {
       catalog: {
@@ -68,5 +77,9 @@ describe('catalogModuleAwsS3EntityProvider', () => {
       'awsS3-provider:default',
     );
     expect(runner).not.toHaveBeenCalled();
+    expect(fromConnections).toHaveBeenCalledWith(expect.anything(), {
+      type: 'aws-s3',
+      url: 'https://amazonaws.com',
+    });
   });
 });

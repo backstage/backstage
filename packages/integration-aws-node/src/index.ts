@@ -17,6 +17,7 @@
 export { DefaultAwsCredentialsManager } from './DefaultAwsCredentialsManager';
 export type {
   AwsCredentialsManager,
+  AwsCredentialsManagerConnectionOptions,
   AwsCredentialProvider,
   AwsCredentialProviderOptions,
 } from './types';

@@ -26,6 +26,20 @@ following order of precedence:
 See more about the AWS SDK default credentials chain in the
 [AWS SDK for Javascript Developer Guide](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html).
 
+Backend plugins can also create a credentials manager backed by the connections
+service. This resolves access keys, assumed roles, or the AWS SDK default
+credentials chain from an `aws-s3` or `aws-codecommit` connection:
+
+```typescript
+const awsCredentialsManager = DefaultAwsCredentialsManager.fromConnections(
+  connections,
+  {
+    type: 'aws-s3',
+    url: 'https://amazonaws.com',
+  },
+);
+```
+
 Configuration examples:
 
 ```yaml

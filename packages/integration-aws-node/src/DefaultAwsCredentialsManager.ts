@@ -22,6 +22,7 @@ import {
 } from './config';
 import {
   AwsCredentialsManager,
+  AwsCredentialsManagerConnectionOptions,
   AwsCredentialProvider,
   AwsCredentialProviderOptions,
 } from './types';
@@ -35,6 +36,12 @@ import {
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { parse } from '@aws-sdk/util-arn-parser';
 import { Config } from '@backstage/config';
+import type { Connection, ConnectionsService } from '@backstage/connections';
+
+type AwsConnectionCredentialSource = {
+  connections: ConnectionsService;
+  options: AwsCredentialsManagerConnectionOptions;
+};
 
 /**
  * Retrieves the account ID for the given credential provider from STS.
@@ -230,6 +237,27 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
     );
   }
 
+  /**
+   * Creates a credentials manager backed by the connections service.
+   *
+   * @param connections - The connections service used to resolve AWS credentials.
+   * @param options - The AWS connection type and resource URL to resolve.
+   * @public
+   */
+  static fromConnections(
+    connections: ConnectionsService,
+    options: AwsCredentialsManagerConnectionOptions,
+  ): DefaultAwsCredentialsManager {
+    return new DefaultAwsCredentialsManager(
+      new Map(),
+      {},
+      {
+        sdkCredentialProvider: getDefaultCredentialsChain(),
+      },
+      { connections, options },
+    );
+  }
+
   private readonly accountCredentialProviders: Map<
     string,
     AwsCredentialProvider
@@ -241,6 +269,7 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
     accountCredentialProviders: Map<string, AwsCredentialProvider>,
     accountDefaults: AwsIntegrationDefaultAccountConfig,
     mainAccountCredentialProvider: AwsCredentialProvider,
+    private readonly connectionCredentialSource?: AwsConnectionCredentialSource,
   ) {
     this.accountCredentialProviders = accountCredentialProviders;
     this.accountDefaults = accountDefaults;
@@ -267,6 +296,10 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
   async getCredentialProvider(
     opts?: AwsCredentialProviderOptions,
   ): Promise<AwsCredentialProvider> {
+    if (this.connectionCredentialSource) {
+      return this.getConnectionCredentialProvider(opts);
+    }
+
     // If no options provided, fall back to the main account
     if (!opts) {
       return this.mainAccountCredentialProvider;
@@ -323,5 +356,82 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
     throw new Error(
       `There is no AWS integration that matches ${accountId}. Please add a configuration for this AWS account.`,
     );
+  }
+
+  private async getConnectionCredentialProvider(
+    opts?: AwsCredentialProviderOptions,
+  ): Promise<AwsCredentialProvider> {
+    const { connections, options } = this.connectionCredentialSource!;
+    let connection:
+      | Connection<'aws-codecommit', 'accessKey' | 'assumeRole'>
+      | Connection<'aws-s3', 'accessKey' | 'assumeRole' | 'none'>;
+
+    if (options.type === 'aws-codecommit') {
+      connection = await connections.find({
+        type: 'aws-codecommit',
+        url: options.url,
+        authMethods: ['accessKey', 'assumeRole'],
+      });
+    } else {
+      connection = await connections.find({
+        type: 'aws-s3',
+        url: options.url,
+        authMethods: ['accessKey', 'assumeRole', 'none'],
+      });
+    }
+
+    const { auth } = connection;
+    const requestedAccountId =
+      opts?.accountId ?? (opts?.arn ? parse(opts.arn).accountId : undefined);
+    let authIdentifier = '';
+    if (auth.method === 'accessKey') {
+      authIdentifier = auth.accessKeyId;
+    } else if (auth.method === 'assumeRole') {
+      authIdentifier = auth.roleArn;
+    }
+    const providerKey = `${connection.type}:${connection.host}:${
+      auth.method
+    }:${authIdentifier}:${requestedAccountId ?? ''}`;
+    const cachedProvider = this.accountCredentialProviders.get(providerKey);
+    if (cachedProvider) {
+      return cachedProvider;
+    }
+
+    let credentialProvider: AwsCredentialProvider;
+    if (auth.method === 'accessKey') {
+      credentialProvider = {
+        accountId: requestedAccountId,
+        sdkCredentialProvider: getStaticCredentials(
+          auth.accessKeyId,
+          auth.secretAccessKey,
+        ),
+      };
+    } else if (auth.method === 'assumeRole') {
+      const role = parse(auth.roleArn);
+      const stsRegion =
+        connection.type === 'aws-codecommit' ? connection.region : undefined;
+      credentialProvider = {
+        accountId: role.accountId,
+        stsRegion,
+        sdkCredentialProvider: fromTemporaryCredentials({
+          masterCredentials:
+            this.mainAccountCredentialProvider.sdkCredentialProvider,
+          params: {
+            RoleArn: auth.roleArn,
+            RoleSessionName: 'backstage',
+            ExternalId: auth.externalId,
+          },
+          clientConfig: {
+            region: stsRegion ?? 'us-east-1',
+            customUserAgent: 'backstage-aws-credentials-manager',
+          },
+        }),
+      };
+    } else {
+      credentialProvider = this.mainAccountCredentialProvider;
+    }
+
+    this.accountCredentialProviders.set(providerKey, credentialProvider);
+    return credentialProvider;
   }
 }
