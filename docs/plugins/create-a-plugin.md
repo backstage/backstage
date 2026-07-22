@@ -17,7 +17,7 @@ A Backstage Plugin adds functionality to Backstage.
 To create a new frontend plugin, make sure you've run `yarn install` and installed
 dependencies, then run the following on your command line (a shortcut to
 invoking the
-[`backstage-cli new --select plugin`](../tooling/cli/03-commands.md#new))
+[`backstage-cli new --select plugin`](../tooling/cli/module-new.md#new))
 from the root of your project.
 
 ```bash

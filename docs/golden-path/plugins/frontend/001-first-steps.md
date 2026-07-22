@@ -17,7 +17,7 @@ yarn new --select frontend-plugin --option pluginId=todo --option owner=
 This creates a new NPM package named something like `@internal/plugin-todo`,
 depending on the flags passed to the `new` command and your settings in the root
 `package.json`. For more options, see
-[the CLI docs](../../../tooling/cli/03-commands.md#new).
+[the CLI docs](../../../tooling/cli/module-new.md#new).
 
 Creating the plugin takes a moment. Once the command finishes, a new folder
 appears at `plugins/todo` (the path depends on the plugin ID you chose) with

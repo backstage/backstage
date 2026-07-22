@@ -21,7 +21,7 @@ starting point that's meant to be evolved.
 
 The Backstage CLI has a command to bump all `@backstage` packages and
 dependencies you're using to the latest versions:
-[versions:bump](../tooling/cli/03-commands.md#versionsbump).
+[versions:bump](../tooling/cli/module-migrate.md#versionsbump).
 
 ```bash
 yarn backstage-cli versions:bump
