@@ -41,7 +41,7 @@ Options:
   --config <path>       Config files to load instead of app-config.yaml (default: [])
   --inspect [host]      Enable debugger in Node.js environments. Applies to backend package only
   --inspect-brk [host]  Enable debugger in Node.js environments, breaking before code starts. Applies to backend package only
-  --require <path...>   Add a --require argument to the node process. Applies to backend package only
+  --require <path>      Add a --require argument to the node process. Applies to backend package only
   --link <path>         Link an external workspace for module resolution
 ```
 
@@ -85,9 +85,11 @@ Options:
   --config <path>     Config files to load instead of app-config.yaml (default: [])
   --role <name>       Run the command with an explicit package role
   --check             Enable type checking and linting if available
-  --inspect           Enable debugger in Node.js environments
-  --inspect-brk       Enable debugger in Node.js environments, breaking before code starts
+  --require <path>    Add a --require argument to the node process
+  --link <path>       Link an external workspace for module resolution
   --entrypoint <path> Entry directory path (uses index file) or entry file path (without extension). Defaults to "dev"
+  --inspect [host]    Enable the Node.js inspector, optionally at a specific host:port
+  --inspect-brk [host] Enable the Node.js inspector and break before user code starts
 ```
 
 ## package build
