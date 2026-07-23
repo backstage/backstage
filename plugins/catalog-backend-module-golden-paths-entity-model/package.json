@@ -46,9 +46,5 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"
-  },
-  "peerDependencies": {
-    "react-router": "^6.3.0",
-    "react-router-dom": "^6.3.0"
   }
 }
