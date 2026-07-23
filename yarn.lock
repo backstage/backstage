@@ -5747,20 +5747,19 @@ __metadata:
     "@types/express": "npm:4.17.25"
     "@types/lodash": "npm:^4.14.151"
     "@types/qs": "npm:^6"
-    "@types/supertest": "npm:^7.2.0"
+    "@types/supertest": "npm:^2.0.8"
     "@types/zen-observable": "npm:^0.8.7"
-    axios: "npm:^1.13.5"
+    axios: "npm:^1.15.0"
     express: "npm:4.22.2"
     express-promise-router: "npm:4.1.1"
     jsonschema: "npm:^1.5.0"
     knex: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
-    luxon: "npm:^3.7.2"
+    luxon: "npm:^3.0.0"
     qs: "npm:^6.15.2"
     supertest: "npm:^7.2.2"
-    uuid: "npm:^14.0.1"
     zen-observable: "npm:^0.10.0"
-    zod: "npm:^4.4.3"
+    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5796,7 +5795,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.6.1"
     "@types/lodash": "npm:^4.17.24"
     lodash: "npm:^4.18.1"
-    react-use: "npm:^17.6.1"
+    react-use: "npm:^17.2.4"
   peerDependencies:
     "@testing-library/dom": ^10.0.0
     "@types/react": ^17.0.0 || ^18.0.0
@@ -5846,9 +5845,9 @@ __metadata:
     ajv-errors: "npm:^3.0.0"
     immer: "npm:^9.0.6"
     lodash: "npm:^4.17.21"
-    luxon: "npm:^3.7.2"
+    luxon: "npm:^3.0.0"
     qs: "npm:^6.15.2"
-    react-use: "npm:^17.6.1"
+    react-use: "npm:^17.2.4"
     use-immer: "npm:^0.11.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   peerDependencies:
@@ -20533,7 +20532,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/superagent@npm:*, @types/superagent@npm:^8.1.0":
+"@types/superagent@npm:*":
   version: 8.1.11
   resolution: "@types/superagent@npm:8.1.11"
   dependencies:
@@ -20551,16 +20550,6 @@ __metadata:
   dependencies:
     "@types/superagent": "npm:*"
   checksum: 10/2fc998ea698e0467cdbe3bea0ebce2027ea3a45a13e51a6cecb0435f44b486faecf99c34d8702d2d7fe033e6e09fdd2b374af52ecc8d0c69a1deec66b8c0dd52
-  languageName: node
-  linkType: hard
-
-"@types/supertest@npm:^7.2.0":
-  version: 7.2.1
-  resolution: "@types/supertest@npm:7.2.1"
-  dependencies:
-    "@types/methods": "npm:^1.1.4"
-    "@types/superagent": "npm:^8.1.0"
-  checksum: 10/d2b505d4c21ebaea360b71cfcbdcb2d36f00551ee5ef1df947eb888d3929156327cef58f8e004c2c8a6af6763dbc21fb22edc3b34496862b2cdeae8db40d43fa
   languageName: node
   linkType: hard
 
@@ -23249,7 +23238,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.0.0, axios@npm:^1.13.5, axios@npm:^1.15.0, axios@npm:^1.16.0, axios@npm:^1.16.1, axios@npm:^1.7.4":
+"axios@npm:^1.0.0, axios@npm:^1.15.0, axios@npm:^1.16.0, axios@npm:^1.16.1, axios@npm:^1.7.4":
   version: 1.18.1
   resolution: "axios@npm:1.18.1"
   dependencies:
@@ -34926,7 +34915,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.0.0, luxon@npm:^3.2.1, luxon@npm:^3.4.3, luxon@npm:^3.5.0, luxon@npm:^3.7.2":
+"luxon@npm:^3.0.0, luxon@npm:^3.2.1, luxon@npm:^3.4.3, luxon@npm:^3.5.0":
   version: 3.7.2
   resolution: "luxon@npm:3.7.2"
   checksum: 10/b24cd205ed306ce7415991687897dcc4027921ae413c9116590bc33a95f93b86ce52cf74ba72b4f5c5ab1c10090517f54ac8edfb127c049e0bf55b90dc2260be
@@ -41192,7 +41181,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-use@npm:^17.2.4, react-use@npm:^17.3.2, react-use@npm:^17.4.0, react-use@npm:^17.6.1":
+"react-use@npm:^17.2.4, react-use@npm:^17.3.2, react-use@npm:^17.4.0":
   version: 17.6.1
   resolution: "react-use@npm:17.6.1"
   dependencies:
@@ -46529,15 +46518,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^14.0.1":
-  version: 14.0.1
-  resolution: "uuid@npm:14.0.1"
-  bin:
-    uuid: dist-node/bin/uuid
-  checksum: 10/0f978fd5b0269d7acb615342aeb131f0b8d85eeb8ec34f2915d906baa3befcc14a079a430d0f8116aec6fd20c850cbfab65d1b3d1643fa81ed373c0cf9574f18
-  languageName: node
-  linkType: hard
-
 "uuid@npm:^3.4.0":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
@@ -47718,7 +47698,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.25 || ^4.0, zod@npm:^3.25.76 || ^4.0.0, zod@npm:^4.0.0, zod@npm:^4.1.11, zod@npm:^4.4.3":
+"zod@npm:^3.25 || ^4.0, zod@npm:^3.25.76 || ^4.0.0, zod@npm:^4.0.0, zod@npm:^4.1.11":
   version: 4.4.3
   resolution: "zod@npm:4.4.3"
   checksum: 10/804b9a42aa8f35f2b3c5a8dff906291cb749115f83ee2afe3576d70b5b5c53c965365c7f4967690647a9c54af9838ff232a85ff9577a0a36c44b68bc6cdefe36
