@@ -45,5 +45,65 @@ export default createCliModule({
       description: 'Remove a plugin source',
       execute: { loader: () => import('./commands/sourcesRemove') },
     });
+
+    // Intent-based commands — domain subcommands wrapping actions
+    reg.addCommand({
+      path: ['catalog', 'list'],
+      description: 'List catalog entities with optional kind/type filter',
+      execute: { loader: () => import('./commands/catalogList') },
+    });
+    reg.addCommand({
+      path: ['catalog', 'get'],
+      description: 'Get a specific catalog entity by name',
+      execute: { loader: () => import('./commands/catalogGet') },
+    });
+    reg.addCommand({
+      path: ['catalog', 'validate'],
+      description: 'Validate entity YAML against the catalog schema',
+      execute: { loader: () => import('./commands/catalogValidate') },
+    });
+    reg.addCommand({
+      path: ['catalog', 'register'],
+      description: 'Register a catalog entity from a location URL',
+      execute: { loader: () => import('./commands/catalogRegister') },
+    });
+    reg.addCommand({
+      path: ['catalog', 'unregister'],
+      description: 'Unregister a catalog entity by location',
+      execute: { loader: () => import('./commands/catalogUnregister') },
+    });
+    reg.addCommand({
+      path: ['api', 'list'],
+      description: 'List API entities in the catalog',
+      execute: { loader: () => import('./commands/apiList') },
+    });
+    reg.addCommand({
+      path: ['api', 'get-spec'],
+      description:
+        'Get the full API specification (OpenAPI, AsyncAPI, GraphQL, gRPC)',
+      execute: { loader: () => import('./commands/apiGetSpec') },
+    });
+    reg.addCommand({
+      path: ['search'],
+      description:
+        'Search across all content types (catalog, TechDocs, templates)',
+      execute: { loader: () => import('./commands/search') },
+    });
+    reg.addCommand({
+      path: ['docs', 'search'],
+      description: 'Search TechDocs content',
+      execute: { loader: () => import('./commands/docsSearch') },
+    });
+    reg.addCommand({
+      path: ['template', 'list'],
+      description: 'List available software templates',
+      execute: { loader: () => import('./commands/templateList') },
+    });
+    reg.addCommand({
+      path: ['template', 'execute'],
+      description:
+        'Execute a software template (dry-run by default, --confirm for real)',
+      execute: { loader: () => import('./commands/templateExecute') },
+    });
   },
 });
