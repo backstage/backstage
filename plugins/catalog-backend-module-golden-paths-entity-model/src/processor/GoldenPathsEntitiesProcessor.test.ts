@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { GoldenPathEntityV1beta1 } from '@backstage/plugin-golden-paths-common';
-import { GoldenPathsEntitiesProcessor } from './GoldenPathsEntitesProcessor';
+import { GoldenPathsEntitiesProcessor } from './GoldenPathsEntitiesProcessor';
 
 const mockLocation = { type: 'a', target: 'b' };
 const mockEntity: GoldenPathEntityV1beta1 = {
