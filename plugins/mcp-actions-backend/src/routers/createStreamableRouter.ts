@@ -23,6 +23,7 @@ import { toError } from '@backstage/errors';
 import { TracingService } from '@backstage/backend-plugin-api/alpha';
 import {
   AuditorService,
+  AuditorServiceEvent,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -38,6 +39,7 @@ export const createStreamableRouter = ({
   tracing,
   auditor,
   serverConfig,
+  resourceMetadataUrl,
 }: {
   mcpService: McpService;
   logger: LoggerService;
@@ -46,6 +48,7 @@ export const createStreamableRouter = ({
   tracing: TracingService;
   auditor: AuditorService;
   serverConfig?: McpServerConfig;
+  resourceMetadataUrl?: string;
 }): Router => {
   const router = PromiseRouter();
 
@@ -68,15 +71,23 @@ export const createStreamableRouter = ({
       'network.protocol.name': 'http',
     };
 
-    const connectionEvent = await auditor.createEvent({
-      eventId: 'connection',
-      request: req,
-      meta: { transport: 'streamable', actionType: 'established' },
-    });
+    let connectionEvent: AuditorServiceEvent | undefined;
+    let authenticating = true;
 
     try {
+      connectionEvent = await auditor.createEvent({
+        eventId: 'connection',
+        request: req,
+        meta: { transport: 'streamable', actionType: 'established' },
+      });
+
+      const credentials = await httpAuth.credentials(req, {
+        allow: ['user', 'service'],
+      });
+      authenticating = false;
+
       const server = mcpService.getServer({
-        credentials: await httpAuth.credentials(req),
+        credentials,
         serverConfig,
         req,
       });
@@ -121,14 +132,38 @@ export const createStreamableRouter = ({
       logger.error(err.message);
 
       if (!res.headersSent) {
-        res.status(500).json({
-          jsonrpc: '2.0',
-          error: {
-            code: -32603,
-            message: 'Internal server error',
-          },
-          id: null,
-        });
+        if (
+          authenticating &&
+          err.name === 'AuthenticationError' &&
+          resourceMetadataUrl
+        ) {
+          const hasBearerToken =
+            typeof req.headers.authorization === 'string' &&
+            /^Bearer[ ]+\S+$/i.test(req.headers.authorization);
+          res.setHeader(
+            'WWW-Authenticate',
+            `Bearer resource_metadata="${resourceMetadataUrl}"${
+              hasBearerToken ? ', error="invalid_token"' : ''
+            }`,
+          );
+          res.status(401).json({
+            jsonrpc: '2.0',
+            error: {
+              code: -32001,
+              message: 'Authentication required',
+            },
+            id: null,
+          });
+        } else {
+          res.status(500).json({
+            jsonrpc: '2.0',
+            error: {
+              code: -32603,
+              message: 'Internal server error',
+            },
+            id: null,
+          });
+        }
       }
 
       const durationSeconds = (performance.now() - sessionStart) / 1000;
@@ -138,7 +173,7 @@ export const createStreamableRouter = ({
         'error.type': errorType,
       });
 
-      await connectionEvent.fail({ error: toError(error) });
+      await connectionEvent?.fail({ error: toError(error) });
     }
   });
 

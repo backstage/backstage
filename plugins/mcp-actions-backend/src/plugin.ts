@@ -71,6 +71,26 @@ export const mcpPlugin = createBackendPlugin({
         const captureToolPayloads =
           config.getOptionalBoolean('mcpActions.tracing.capture.toolPayload') ??
           false;
+        const cimdConfigPath = config.has('auth.clientIdMetadataDocuments')
+          ? 'auth.clientIdMetadataDocuments'
+          : 'auth.experimentalClientIdMetadataDocuments';
+        const oauthEnabled =
+          config.getOptionalBoolean(
+            'auth.experimentalDynamicClientRegistration.enabled',
+          ) || config.getOptionalBoolean(`${cimdConfigPath}.enabled`);
+        const externalMcpBaseUrl = oauthEnabled
+          ? new URL(await discovery.getExternalBaseUrl('mcp-actions'))
+          : undefined;
+        const getResourceMetadataUrl = (suffix: string) =>
+          externalMcpBaseUrl
+            ? new URL(
+                `/.well-known/oauth-protected-resource${externalMcpBaseUrl.pathname.replace(
+                  /\/$/,
+                  '',
+                )}${suffix}`,
+                externalMcpBaseUrl.origin,
+              ).href
+            : undefined;
 
         const mcpService = await McpService.create({
           actions,
@@ -87,6 +107,14 @@ export const mcpPlugin = createBackendPlugin({
 
         if (serverConfigs && serverConfigs.size > 0) {
           for (const [key, serverConfig] of serverConfigs) {
+            const suffix = `/v1/${key}`;
+            if (oauthEnabled) {
+              httpRouter.addAuthPolicy({
+                path: suffix,
+                allow: 'unauthenticated',
+              });
+            }
+
             const streamableRouter = createStreamableRouter({
               mcpService,
               httpAuth,
@@ -95,11 +123,20 @@ export const mcpPlugin = createBackendPlugin({
               tracing,
               auditor,
               serverConfig,
+              resourceMetadataUrl: getResourceMetadataUrl(suffix),
             });
 
-            router.use(`/v1/${key}`, streamableRouter);
+            router.use(suffix, streamableRouter);
           }
         } else {
+          const suffix = '/v1';
+          if (oauthEnabled) {
+            httpRouter.addAuthPolicy({
+              path: suffix,
+              allow: 'unauthenticated',
+            });
+          }
+
           const serverConfig = {
             name: config.getOptionalString('mcpActions.name') ?? 'backstage',
             description: config.getOptionalString('mcpActions.description'),
@@ -116,20 +153,13 @@ export const mcpPlugin = createBackendPlugin({
             tracing,
             auditor,
             serverConfig,
+            resourceMetadataUrl: getResourceMetadataUrl(suffix),
           });
 
-          router.use('/v1', streamableRouter);
+          router.use(suffix, streamableRouter);
         }
 
         httpRouter.use(router);
-
-        const cimdConfigPath = config.has('auth.clientIdMetadataDocuments')
-          ? 'auth.clientIdMetadataDocuments'
-          : 'auth.experimentalClientIdMetadataDocuments';
-        const oauthEnabled =
-          config.getOptionalBoolean(
-            'auth.experimentalDynamicClientRegistration.enabled',
-          ) || config.getOptionalBoolean(`${cimdConfigPath}.enabled`);
 
         if (oauthEnabled) {
           // OAuth Authorization Server Metadata (RFC 8414)
