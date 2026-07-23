@@ -53,12 +53,18 @@ describe('OidcService', () => {
 
   interface CreateOidcServiceOptions {
     databaseId: TestDatabaseId;
+    baseUrl?: string;
     config?: JsonObject;
     offlineAccess?: OfflineAccessService;
   }
 
   async function createOidcService(options: CreateOidcServiceOptions) {
-    const { databaseId, config: configData = {}, offlineAccess } = options;
+    const {
+      databaseId,
+      baseUrl = 'http://mock-base-url',
+      config: configData = {},
+      offlineAccess,
+    } = options;
 
     const knex = await databases.init(databaseId);
 
@@ -92,7 +98,7 @@ describe('OidcService', () => {
       service: OidcService.create({
         auth: mockAuth,
         tokenIssuer: mockTokenIssuer,
-        baseUrl: 'http://mock-base-url',
+        baseUrl,
         userInfo: mockUserInfo,
         oidc: oidcDatabase,
         config,
@@ -1217,6 +1223,47 @@ describe('OidcService', () => {
       });
 
       describe('createAuthorizationSession with CIMD', () => {
+        it('should accept the built-in Codex client with default CIMD patterns', async () => {
+          const baseUrl = 'https://backstage.example.com/api/auth';
+          const clientId = `${baseUrl}/.well-known/oauth-client/codex`;
+          const redirectUri = 'http://127.0.0.1:54321/callback/tTgaGrtgqoQ1';
+          mockFetchCimdMetadata.mockResolvedValue({
+            clientId,
+            clientName: 'Codex',
+            redirectUris: ['http://127.0.0.1/callback/tTgaGrtgqoQ1'],
+            responseTypes: ['code'],
+            grantTypes: ['authorization_code'],
+            scope: 'openid offline_access',
+          });
+
+          const { service } = await createOidcService({
+            databaseId,
+            baseUrl,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: {
+                  enabled: true,
+                },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId,
+            redirectUri,
+            responseType: 'code',
+            scope: 'openid',
+            ...pkceParams,
+          });
+
+          expect(authSession).toEqual({
+            id: expect.any(String),
+            clientName: 'Codex',
+            scope: 'openid',
+            redirectUri,
+          });
+        });
+
         it('should accept loopback redirect URIs with default CIMD patterns', async () => {
           const { service } = await createOidcService({
             databaseId,

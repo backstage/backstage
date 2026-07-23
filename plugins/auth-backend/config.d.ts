@@ -194,8 +194,9 @@ export interface Config {
       /**
        * A list of allowed URI patterns for client_id URLs.
        * Uses glob-style pattern matching where `*` matches any characters.
-       * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', '{baseUrl}/.well-known/oauth-client/cli.json']`
-       * where `{baseUrl}` is the auth backend's base URL.
+       * Defaults to Claude, VS Code, and the built-in Backstage CLI and Codex
+       * metadata documents. The built-in documents are derived from the auth
+       * backend's base URL.
        *
        * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
        */

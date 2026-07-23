@@ -192,7 +192,11 @@ Follow these steps to install and configure the new `@backstage/plugin-auth` fro
 
 The [November 2025 MCP specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization) outlined a new authorization method to replace Dynamic Client Registration called [Client ID Metadata Documents (CIMD)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#client-id-metadata-documents).
 
-Using Client ID Metadata Documents means you do not need to manually configure a token in your MCP client settings. Instead, a client can request a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup requiring your approval will open in your Backstage instance (powered by the `auth` plugin).
+Using Client ID Metadata Documents means you do not need to manually configure
+a token in your MCP client settings. Instead, a client can request a token on
+your behalf. When adding the MCP server to an MCP client like Codex or Claude,
+a popup requiring your approval opens in your Backstage instance (powered by
+the `auth` plugin).
 
 This can be enabled in the `auth-backend` plugin by using the `auth.clientIdMetadataDocuments.enabled` flag in config:
 
@@ -201,10 +205,11 @@ auth:
   clientIdMetadataDocuments:
     enabled: true
     # Optional: override which client_id URLs are allowed.
-    # Defaults to Claude, VS Code, and the built-in Backstage CLI.
+    # Defaults to Claude, VS Code, and the built-in Backstage CLI and Codex
+    # metadata documents.
     # Note: setting this replaces the defaults entirely. The built-in
-    # CLI pattern is derived from your auth backend's base URL and
-    # must be re-added manually if you override this list.
+    # CLI and Codex patterns are derived from your auth backend's base URL
+    # and must be re-added manually if you override this list.
     # allowedClientIdPatterns:
     #   - 'https://claude.ai/*'
     #   - 'https://vscode.dev/*'
@@ -262,6 +267,26 @@ The default endpoint is `http://localhost:7007/api/mcp-actions/v1`.
 ```
 
 The `${MCP_TOKEN}` environment variable would be an [external access static token](#external-access-with-static-tokens).
+
+### Connect from Codex
+
+When Client ID Metadata Documents are enabled, configure Codex with the
+built-in client metadata URL:
+
+```shell
+codex mcp add backstage-actions \
+  --url https://backstage.example.com/api/mcp-actions/v1 \
+  --oauth-client-id https://backstage.example.com/api/auth/.well-known/oauth-client/codex
+```
+
+Replace `https://backstage.example.com` with the external URL of your Backstage
+instance. Codex opens the Backstage authorization page so that you can approve
+the requested access. To restart authorization for an existing entry, run
+`codex mcp login backstage-actions`.
+
+For a named MCP server, append the server key to both the MCP URL and client
+metadata URL. For example, use `/api/mcp-actions/v1/catalog` with
+`/api/auth/.well-known/oauth-client/codex/catalog`.
 
 ### Multiple Servers
 

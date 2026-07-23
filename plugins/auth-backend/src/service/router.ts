@@ -75,6 +75,7 @@ export async function createRouter(
 
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
+  const mcpActionsBaseUrl = await discovery.getExternalBaseUrl('mcp-actions');
   const backstageTokenExpiration = readBackstageTokenExpiration(config);
   const database = AuthDatabase.create(db);
 
@@ -158,6 +159,7 @@ export async function createRouter(
     auth: options.auth,
     tokenIssuer,
     baseUrl: authUrl,
+    mcpActionsBaseUrl,
     appUrl,
     userInfo,
     oidc,

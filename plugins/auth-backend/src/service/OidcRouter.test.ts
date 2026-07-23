@@ -1623,11 +1623,20 @@ describe('OidcRouter', () => {
           ],
         });
 
-        const response = await request(server)
+        const cliResponse = await request(server)
           .get('/api/auth/.well-known/oauth-client/cli.json')
           .expect(404);
 
-        expect(response.body).toEqual({
+        expect(cliResponse.body).toEqual({
+          error: 'not_found',
+          error_description: 'Client ID metadata documents not enabled',
+        });
+
+        const codexResponse = await request(server)
+          .get('/api/auth/.well-known/oauth-client/codex')
+          .expect(404);
+
+        expect(codexResponse.body).toEqual({
           error: 'not_found',
           error_description: 'Client ID metadata documents not enabled',
         });
@@ -1664,6 +1673,7 @@ describe('OidcRouter', () => {
           auth: mockServices.auth.mock(),
           tokenIssuer: mockTokenIssuer,
           baseUrl: 'http://localhost:7007/api/auth',
+          mcpActionsBaseUrl: 'http://localhost:7007/api/mcp-actions',
           appUrl: 'http://localhost:3000',
           logger: mockServices.logger.mock(),
           userInfo: userInfoDatabase,
@@ -1702,15 +1712,45 @@ describe('OidcRouter', () => {
           ],
         });
 
-        const response = await request(server)
+        const cliResponse = await request(server)
           .get('/api/auth/.well-known/oauth-client/cli.json')
           .expect(200);
 
-        expect(response.body).toEqual({
+        expect(cliResponse.body).toEqual({
           client_id:
             'http://localhost:7007/api/auth/.well-known/oauth-client/cli.json',
           client_name: 'Backstage CLI',
           redirect_uris: ['http://127.0.0.1:8055/callback'],
+          response_types: ['code'],
+          grant_types: ['authorization_code'],
+          token_endpoint_auth_method: 'none',
+          scope: 'openid offline_access',
+        });
+
+        const codexResponse = await request(server)
+          .get('/api/auth/.well-known/oauth-client/codex')
+          .expect(200);
+
+        expect(codexResponse.body).toEqual({
+          client_id:
+            'http://localhost:7007/api/auth/.well-known/oauth-client/codex',
+          client_name: 'Codex',
+          redirect_uris: ['http://127.0.0.1/callback/tTgaGrtgqoQ1'],
+          response_types: ['code'],
+          grant_types: ['authorization_code'],
+          token_endpoint_auth_method: 'none',
+          scope: 'openid offline_access',
+        });
+
+        const namedCodexResponse = await request(server)
+          .get('/api/auth/.well-known/oauth-client/codex/catalog')
+          .expect(200);
+
+        expect(namedCodexResponse.body).toEqual({
+          client_id:
+            'http://localhost:7007/api/auth/.well-known/oauth-client/codex/catalog',
+          client_name: 'Codex',
+          redirect_uris: ['http://127.0.0.1/callback/mcRpJqaqysHB'],
           response_types: ['code'],
           grant_types: ['authorization_code'],
           token_endpoint_auth_method: 'none',
