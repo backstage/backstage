@@ -377,12 +377,19 @@ export class OidcService {
       this.config.getOptionalBoolean(`${configPath}.enabled`) ?? false;
 
     const cliClientId = `${this.baseUrl}/.well-known/oauth-client/cli.json`;
+    const codexClientId = `${this.baseUrl}/.well-known/oauth-client/codex`;
 
     return {
       enabled,
       allowedClientIdPatterns: this.config.getOptionalStringArray(
         `${configPath}.allowedClientIdPatterns`,
-      ) ?? ['https://claude.ai/*', 'https://vscode.dev/*', cliClientId],
+      ) ?? [
+        'https://claude.ai/*',
+        'https://vscode.dev/*',
+        cliClientId,
+        codexClientId,
+        `${codexClientId}/*`,
+      ],
       allowedRedirectUriPatterns:
         this.config.getOptionalStringArray(
           `${configPath}.allowedRedirectUriPatterns`,

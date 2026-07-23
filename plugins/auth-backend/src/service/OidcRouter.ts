@@ -27,12 +27,26 @@ import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
 import { json } from 'express';
+import type { Response } from 'express';
 import { z } from 'zod/v4';
 import { fromZodError } from 'zod-validation-error/v4';
 import { OidcError } from './OidcError';
+import crypto from 'node:crypto';
 
 function ensureTrailingSlash(url: string): string {
   return url.endsWith('/') ? url : `${url}/`;
+}
+
+function codexCallbackId(serverUrl: string): string {
+  const normalizedUrl = new URL(serverUrl);
+  normalizedUrl.hash = '';
+
+  return crypto
+    .createHash('sha256')
+    .update(normalizedUrl.toString())
+    .digest()
+    .subarray(0, 9)
+    .toString('base64url');
 }
 
 const authorizeQuerySchema = z.object({
@@ -155,6 +169,7 @@ export class OidcRouter {
   private readonly httpAuth: HttpAuthService;
   private readonly config: RootConfigService;
   private readonly baseUrl: string;
+  private readonly mcpActionsBaseUrl: string;
 
   private constructor(
     oidc: OidcService,
@@ -164,6 +179,7 @@ export class OidcRouter {
     httpAuth: HttpAuthService,
     config: RootConfigService,
     baseUrl: string,
+    mcpActionsBaseUrl: string,
   ) {
     this.oidc = oidc;
     this.logger = logger;
@@ -172,12 +188,14 @@ export class OidcRouter {
     this.httpAuth = httpAuth;
     this.config = config;
     this.baseUrl = baseUrl;
+    this.mcpActionsBaseUrl = mcpActionsBaseUrl;
   }
 
   static create(options: {
     auth: AuthService;
     tokenIssuer: TokenIssuer;
     baseUrl: string;
+    mcpActionsBaseUrl?: string;
     appUrl: string;
     logger: LoggerService;
     userInfo: UserInfoDatabase;
@@ -194,6 +212,8 @@ export class OidcRouter {
       options.httpAuth,
       options.config,
       options.baseUrl,
+      options.mcpActionsBaseUrl ??
+        `${new URL(options.baseUrl).origin}/api/mcp-actions`,
     );
   }
 
@@ -239,6 +259,49 @@ export class OidcRouter {
         token_endpoint_auth_method: 'none',
         scope: 'openid offline_access',
       });
+    });
+
+    const baseUrl = this.baseUrl;
+    const mcpActionsBaseUrl = this.mcpActionsBaseUrl;
+
+    function sendCodexClientMetadata(res: Response, serverName?: string): void {
+      if (!cimdEnabled) {
+        res.status(404).json({
+          error: 'not_found',
+          error_description: 'Client ID metadata documents not enabled',
+        });
+        return;
+      }
+
+      const suffix = serverName ? `/${encodeURIComponent(serverName)}` : '';
+      const clientId = new URL(
+        `.well-known/oauth-client/codex${suffix}`,
+        ensureTrailingSlash(baseUrl),
+      ).toString();
+      const mcpServerUrl = new URL(
+        `v1${suffix}`,
+        ensureTrailingSlash(mcpActionsBaseUrl),
+      ).toString();
+
+      res.json({
+        client_id: clientId,
+        client_name: 'Codex',
+        redirect_uris: [
+          `http://127.0.0.1/callback/${codexCallbackId(mcpServerUrl)}`,
+        ],
+        response_types: ['code'],
+        grant_types: ['authorization_code'],
+        token_endpoint_auth_method: 'none',
+        scope: 'openid offline_access',
+      });
+    }
+
+    router.get('/.well-known/oauth-client/codex', (_req, res) => {
+      sendCodexClientMetadata(res);
+    });
+
+    router.get('/.well-known/oauth-client/codex/:serverName', (req, res) => {
+      sendCodexClientMetadata(res, req.params.serverName);
     });
 
     // UserInfo endpoint
