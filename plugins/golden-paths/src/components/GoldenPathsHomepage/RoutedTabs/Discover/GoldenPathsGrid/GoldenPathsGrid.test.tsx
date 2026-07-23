@@ -29,6 +29,7 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   EntityProvider: jest.fn(() => <div>{MOCK_TEXT}</div>),
   catalogApiRef: jest.fn(),
   StarredEntitiesApi: jest.fn(),
+  MockStarredEntitiesApi: jest.fn(),
   starredEntitiesApiRef: jest.fn(),
 }));
 

@@ -19,9 +19,9 @@ import {
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
+import { MockStarredEntitiesApi } from '@backstage/plugin-catalog-react';
 // eslint-disable-next-line @backstage/no-undeclared-imports
-import { mockApis, TestApiRegistry } from '@backstage/test-utils';
+import { TestApiRegistry } from '@backstage/test-utils';
 import {
   entityNoRegions,
   entityWithRegions,
@@ -39,10 +39,7 @@ const mockedListTasks = { listTasks: () => Promise.resolve({ tasks: [] }) };
 const starredEntitiesApi: [
   typeof starredEntitiesApiRef,
   Partial<StarredEntitiesApi>,
-] = [
-  starredEntitiesApiRef,
-  new DefaultStarredEntitiesApi({ storageApi: mockApis.storage() }),
-];
+] = [starredEntitiesApiRef, new MockStarredEntitiesApi()];
 
 export const apisWithEntities = TestApiRegistry.from(
   [catalogApiRef, mockCatalogApi],

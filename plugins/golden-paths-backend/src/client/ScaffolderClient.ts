@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ScaffolderApi } from './ScaffolderApi';
 import {
   ScaffolderClientCancelTaskOptions,
@@ -33,6 +32,7 @@ import {
   ScaffolderTaskOutput,
   ScaffolderTaskStatus,
 } from '@backstage/plugin-scaffolder-common';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -40,9 +40,9 @@ import {
  * @public
  */
 export class ScaffolderClient implements ScaffolderApi {
-  private readonly discoveryApi: DiscoveryApi;
+  private readonly discoveryApi: DiscoveryService;
 
-  constructor(options: { discoveryApi: DiscoveryApi }) {
+  constructor(options: { discoveryApi: DiscoveryService }) {
     this.discoveryApi = options.discoveryApi;
   }
 

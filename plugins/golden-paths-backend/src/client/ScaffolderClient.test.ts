@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ScaffolderClient } from './ScaffolderClient';
 import {
   ScaffolderClientCancelTaskOptions,
@@ -22,13 +21,15 @@ import {
 import { JsonObject } from '@backstage/types';
 import { IncomingHttpHeaders } from 'node:http';
 import axios from 'axios';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 jest.mock('axios');
 const mockedAxios = axios as any;
 
 describe('ScaffolderClient', () => {
-  const discoveryApi: DiscoveryApi = {
+  const discoveryApi: DiscoveryService = {
     getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
+    getExternalBaseUrl: jest.fn(),
   };
 
   const client = new ScaffolderClient({ discoveryApi });

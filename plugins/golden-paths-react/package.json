@@ -38,7 +38,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/plugin-catalog-react": "^3.1.0",
+    "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-golden-paths-common": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",
     "@backstage/types": "workspace:^",
@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/test-utils": "^1.7.19",
+    "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
