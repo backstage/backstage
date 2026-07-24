@@ -66,6 +66,7 @@ const roleRules = [
       '@backstage/frontend-test-utils',
       '@backstage/plugin-api-docs',
       '@backstage/plugin-techdocs-addons-test-utils',
+      '@backstage/plugin-golden-paths',
     ],
     message: `Package SOURCE_NAME with role SOURCE_ROLE has a dependency on another plugin package TARGET_NAME with role TARGET_ROLE, which is not permitted`,
   },
