@@ -387,6 +387,10 @@ export class OidcService {
         this.config.getOptionalStringArray(
           `${configPath}.allowedRedirectUriPatterns`,
         ) ?? LOOPBACK_REDIRECT_PATTERNS,
+      dangerouslyAllowPrivateNetworkAccess:
+        this.config.getOptionalBoolean(
+          `${configPath}.dangerouslyAllowPrivateNetworkAccess`,
+        ) ?? false,
     };
   }
 
@@ -428,6 +432,8 @@ export class OidcService {
     const cimdClient = await fetchCimdMetadata({
       clientId: opts.clientId,
       validatedUrl: opts.cimdUrl,
+      dangerouslyAllowPrivateNetworkAccess:
+        cimd.dangerouslyAllowPrivateNetworkAccess,
     });
 
     if (opts.redirectUri) {
