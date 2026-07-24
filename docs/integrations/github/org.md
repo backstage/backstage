@@ -93,7 +93,7 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 
 - `id`: A stable id for this provider. Entities from this provider will be associated with this ID, so you should take care not to change it over time since that may lead to orphaned entities and/or conflicts.
 - `githubUrl`: The target that this provider should consume
-- `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
+- `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only). When consuming multiple organizations, if a GitHub App installation is missing for an organization (or credentials cannot be resolved), the provider logs a warning and skips that organization rather than failing the entire ingestion run.
 - `schedule`: The refresh schedule to use, matches the structure of [`SchedulerServiceTaskScheduleDefinitionConfig`](https://backstage.io/api/stable/interfaces/_backstage_backend-plugin-api.index.SchedulerServiceTaskScheduleDefinition.html)
 - `pageSizes` (optional): Configure page sizes for GitHub GraphQL API queries to prevent `RESOURCE_LIMITS_EXCEEDED` errors. You can configure the following page sizes:
 
