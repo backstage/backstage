@@ -107,6 +107,8 @@ export default definePreview({
       modes: {
         'light backstage': allModes['light backstage'],
         'light spotify': allModes['light spotify'],
+        // 'dark backstage': allModes['dark backstage'],
+        // 'dark spotify': allModes['dark spotify'],
       },
     },
 
