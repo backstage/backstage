@@ -1833,6 +1833,7 @@ describe('OidcRouter', () => {
         expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
           clientId: cimdClientId,
           validatedUrl: expect.any(URL),
+          dangerouslyAllowPrivateNetworkAccess: false,
         });
         const location = new URL(authorizeResponse.header.location);
         expect(location.origin).toBe('http://localhost:3000');
