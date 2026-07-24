@@ -25,7 +25,9 @@ import { SlackNotificationProcessor } from './lib/SlackNotificationProcessor';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import {
   notificationsSlackBlockKitExtensionPoint,
+  notificationsSlackTargetResolverExtensionPoint,
   SlackBlockKitRenderer,
+  SlackNotificationTargetResolver,
 } from './extensions';
 
 const MIGRATIONS_DIR = resolvePackagePath(
@@ -65,6 +67,18 @@ export const notificationsModuleSlack = createBackendModule({
       },
     });
 
+    let targetResolver: SlackNotificationTargetResolver | undefined;
+    reg.registerExtensionPoint(notificationsSlackTargetResolverExtensionPoint, {
+      setTargetResolver(resolver) {
+        if (targetResolver) {
+          throw new Error(
+            `Slack notification target resolver was already registered`,
+          );
+        }
+        targetResolver = resolver;
+      },
+    });
+
     reg.registerInit({
       deps: {
         auth: coreServices.auth,
@@ -92,6 +106,7 @@ export const notificationsModuleSlack = createBackendModule({
           catalog,
           metrics,
           blockKitRenderer,
+          targetResolver,
         });
 
         if (processors.length === 0) {

@@ -156,6 +156,62 @@ describe('SlackNotificationProcessor', () => {
     mockedPThrottle.mockClear();
   });
 
+  describe('target resolver', () => {
+    it('routes to the channel returned by the resolver, overriding bot-notify', async () => {
+      const slack = new WebClient();
+      const targetResolver = jest.fn(async () => 'C_DEPLOYS');
+
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        metrics,
+        slack,
+        targetResolver,
+      })[0];
+
+      await processor.processOptions({
+        recipients: { type: 'entity', entityRef: 'group:default/mock' },
+        payload: { title: 'notification', topic: 'deployment:deploy' },
+      });
+
+      expect(targetResolver).toHaveBeenCalledWith('group:default/mock', {
+        payload: expect.objectContaining({ topic: 'deployment:deploy' }),
+      });
+      expect(slack.chat.postMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ channel: 'C_DEPLOYS' }),
+      );
+    });
+
+    it('falls back to the bot-notify annotation when the resolver returns undefined', async () => {
+      const slack = new WebClient();
+      const targetResolver = jest.fn(async () => undefined);
+
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        metrics,
+        slack,
+        targetResolver,
+      })[0];
+
+      await processor.processOptions({
+        recipients: { type: 'entity', entityRef: 'group:default/mock' },
+        payload: { title: 'notification', topic: 'unknown:topic' },
+      });
+
+      expect(targetResolver).toHaveBeenCalled();
+      expect(slack.chat.postMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ channel: 'C12345678' }),
+      );
+    });
+  });
+
   it('should send a notification to a group', async () => {
     const slack = new WebClient();
 
