@@ -37,15 +37,44 @@ export async function fetchProfile(options: {
   }
 
   // A response.ok check here would be worthless as the Bitbucket API always returns 200 OK for this call
-  const username = whoAmIResponse.headers.get('X-Ausername');
+  const username = decodeURIComponent(
+    whoAmIResponse.headers.get('X-Ausername') ?? '',
+  ).trim();
   if (!username) {
     throw new Error(`Failed to retrieve the username of the logged in user`);
+  }
+
+  // Resolve slug that might be different from the username
+  let userLookupResponse;
+  try {
+    userLookupResponse = await fetch(
+      `https://${host}/rest/api/latest/users?filter=${username}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+  } catch (e) {
+    throw new Error(`Failed to lookup the user '${username}'`);
+  }
+
+  if (!userLookupResponse.ok) {
+    throw new Error(`Failed to lookup the user '${username}'`);
+  }
+
+  const userLookup = await userLookupResponse.json();
+  const userSlug = userLookup.values.find(
+    (u: { name: string; slug: string }) => u.name === username,
+  )?.slug;
+  if (!userSlug) {
+    throw new Error(`Failed to lookup the user '${username}'`);
   }
 
   let userResponse;
   try {
     userResponse = await fetch(
-      `https://${host}/rest/api/latest/users/${username}?avatarSize=256`,
+      `https://${host}/rest/api/latest/users/${userSlug}?avatarSize=256`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
