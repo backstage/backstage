@@ -5594,7 +5594,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     luxon: "npm:^3.0.0"
     qs: "npm:^6.15.2"
-    supertest: "npm:^7.2.2"
+    supertest: "npm:^7.0.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
@@ -5668,6 +5668,7 @@ __metadata:
     "@backstage/plugin-golden-paths-common": "workspace:^"
     "@backstage/plugin-golden-paths-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
+    "@backstage/plugin-scaffolder": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
@@ -44166,7 +44167,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supertest@npm:^7.0.0, supertest@npm:^7.1.0, supertest@npm:^7.2.2":
+"supertest@npm:^7.0.0, supertest@npm:^7.1.0":
   version: 7.2.2
   resolution: "supertest@npm:7.2.2"
   dependencies:

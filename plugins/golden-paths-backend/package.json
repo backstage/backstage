@@ -68,6 +68,6 @@
     "@types/qs": "^6",
     "@types/supertest": "^2.0.8",
     "@types/zen-observable": "^0.8.7",
-    "supertest": "^7.2.2"
+    "supertest": "^7.0.0"
   }
 }

@@ -29,12 +29,13 @@ import {
   useApi,
   useApiHolder,
 } from '@backstage/core-plugin-api';
+// eslint-disable-next-line @backstage/no-mixed-plugin-imports
 import { formDecoratorsApiRef } from '@backstage/plugin-scaffolder/alpha';
 import useAsync from 'react-use/esm/useAsync';
 import { useCallback, useMemo } from 'react';
 import { ScaffolderFormDecoratorContext } from '@backstage/plugin-scaffolder-react/alpha';
 import { OpaqueFormDecorator } from '../utilities/InternalFormDecorator';
-import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
+import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-common';
 import { JsonValue } from '@backstage/types';
 
 /** @internal */

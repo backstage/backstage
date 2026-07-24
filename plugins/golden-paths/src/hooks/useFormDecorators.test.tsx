@@ -23,6 +23,7 @@
  * path: plugins/scaffolder/src/alpha/hooks/useFormDecorators.test.tsx
  */
 
+// eslint-disable-next-line @backstage/no-mixed-plugin-imports
 import {
   DefaultScaffolderFormDecoratorsApi,
   formDecoratorsApiRef,

@@ -43,6 +43,7 @@
     "@backstage/plugin-golden-paths-common": "workspace:^",
     "@backstage/plugin-golden-paths-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
+    "@backstage/plugin-scaffolder": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",
     "@backstage/theme": "workspace:^",
