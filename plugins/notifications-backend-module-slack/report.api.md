@@ -24,8 +24,29 @@ export interface NotificationsSlackBlockKitExtensionPoint {
 // @public (undocumented)
 export const notificationsSlackBlockKitExtensionPoint: ExtensionPoint<NotificationsSlackBlockKitExtensionPoint>;
 
+// @public
+export interface NotificationsSlackTargetResolverExtensionPoint {
+  // (undocumented)
+  setTargetResolver(resolver: SlackNotificationTargetResolver): void;
+}
+
+// @public (undocumented)
+export const notificationsSlackTargetResolverExtensionPoint: ExtensionPoint<NotificationsSlackTargetResolverExtensionPoint>;
+
 // @public (undocumented)
 export type SlackBlockKitRenderer = (
   payload: NotificationPayload,
 ) => KnownBlock[];
+
+// @public
+export interface SlackNotificationTargetContext {
+  // (undocumented)
+  payload: NotificationPayload;
+}
+
+// @public
+export type SlackNotificationTargetResolver = (
+  entityRef: string,
+  context: SlackNotificationTargetContext,
+) => Promise<string | undefined>;
 ```

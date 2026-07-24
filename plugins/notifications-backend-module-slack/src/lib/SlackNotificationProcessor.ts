@@ -46,7 +46,11 @@ import { ANNOTATION_SLACK_BOT_NOTIFY } from './constants';
 import { BroadcastRoute } from './types';
 import { ExpiryMap, toChatPostMessageArgs } from './util';
 import { CatalogService } from '@backstage/plugin-catalog-node';
-import { SlackBlockKitRenderer } from '../extensions';
+import {
+  SlackBlockKitRenderer,
+  SlackNotificationTargetContext,
+  SlackNotificationTargetResolver,
+} from '../extensions';
 
 interface ScopeContext {
   origin: string;
@@ -74,6 +78,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
   private readonly blockKitRenderer?: SlackBlockKitRenderer;
+  private readonly targetResolver?: SlackNotificationTargetResolver;
 
   static fromConfig(
     config: Config,
@@ -85,6 +90,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       slack?: WebClient;
       broadcastChannels?: string[];
       blockKitRenderer?: SlackBlockKitRenderer;
+      targetResolver?: SlackNotificationTargetResolver;
     },
   ): SlackNotificationProcessor[] {
     const slackConfig =
@@ -128,6 +134,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     concurrencyLimit?: number;
     throttleInterval?: number;
     blockKitRenderer?: SlackBlockKitRenderer;
+    targetResolver?: SlackNotificationTargetResolver;
   }) {
     const {
       auth,
@@ -141,6 +148,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       concurrencyLimit,
       throttleInterval,
       blockKitRenderer,
+      targetResolver,
     } = options;
     this.logger = logger;
     this.catalog = catalog;
@@ -153,6 +161,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     this.throttleInterval =
       throttleInterval ?? durationToMilliseconds({ minutes: 1 });
     this.blockKitRenderer = blockKitRenderer;
+    this.targetResolver = targetResolver;
 
     this.entityLoader = new DataLoader<string, Entity | undefined>(
       async entityRefs => {
@@ -271,7 +280,9 @@ export class SlackNotificationProcessor implements NotificationProcessor {
 
         let channel;
         try {
-          channel = await this.getSlackNotificationTarget(entityRef);
+          channel = await this.getSlackNotificationTarget(entityRef, {
+            payload: options.payload,
+          });
         } catch (error) {
           this.logger.error(
             `Failed to get Slack channel for entity: ${toError(error).message}`,
@@ -427,7 +438,15 @@ export class SlackNotificationProcessor implements NotificationProcessor {
 
   async getSlackNotificationTarget(
     entityRef: string,
+    context?: SlackNotificationTargetContext,
   ): Promise<string | undefined> {
+    if (this.targetResolver && context) {
+      const resolved = await this.targetResolver(entityRef, context);
+      if (resolved) {
+        return resolved;
+      }
+    }
+
     const entity = await this.entityLoader.load(entityRef);
     if (!entity) {
       throw new NotFoundError(`Entity not found: ${entityRef}`);
