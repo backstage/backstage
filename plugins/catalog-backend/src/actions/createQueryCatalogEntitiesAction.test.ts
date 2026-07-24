@@ -289,7 +289,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     expect(output.nextPageCursor).toBeDefined();
   });
 
-  it('should reject non-numeric-string limit and offset values', async () => {
+  it('should reject invalid limit and offset values', async () => {
     const { invoke } = createCatalogQueryAction();
 
     for (const badInput of [
@@ -298,6 +298,8 @@ describe('createQueryCatalogEntitiesAction', () => {
       { limit: 'abc' },
       { offset: null },
       { offset: false },
+      { offset: '' },
+      { offset: 'abc' },
     ]) {
       await expect(
         invoke({
