@@ -17,6 +17,11 @@
     "types": "dist/index.d.ts"
   },
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/golden-paths"
+  },
   "license": "Apache-2.0",
   "sideEffects": false,
   "main": "src/index.ts",

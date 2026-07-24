@@ -10,6 +10,11 @@
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-golden-paths-entity-model"
+  },
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
