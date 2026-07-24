@@ -78,7 +78,7 @@
     "npm-packlist": "^5.0.0",
     "p-queue": "^6.6.2",
     "portfinder": "^1.0.32",
-    "postcss": "^8.1.0",
+    "postcss": "^8.5.18",
     "postcss-import": "^16.1.0",
     "process": "^0.11.10",
     "raw-loader": "^4.0.2",
