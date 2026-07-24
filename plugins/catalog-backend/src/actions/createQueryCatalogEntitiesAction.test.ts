@@ -306,7 +306,7 @@ describe('createQueryCatalogEntitiesAction', () => {
           id: 'test:query-catalog-entities',
           input: badInput as any,
         }),
-      ).rejects.toThrow();
+      ).rejects.toThrow('Invalid input to action');
     }
   });
 

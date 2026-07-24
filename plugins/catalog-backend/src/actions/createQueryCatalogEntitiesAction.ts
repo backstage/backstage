@@ -129,13 +129,17 @@ export const createQueryCatalogEntitiesAction = ({
       : INLINE_MODEL_DESCRIPTION,
     schema: {
       input: z => {
-        // MCP/LLM clients often send numeric arguments as strings. Coerce numeric
-        // strings to numbers, but leave other types untouched so they still fail
-        // validation instead of being silently converted (e.g. true -> 1, '' -> 0).
-        const numericFromString = (value: unknown) =>
-          typeof value === 'string' && value.trim() !== ''
-            ? Number(value)
-            : value;
+        // MCP/LLM clients often send numeric arguments as strings. Convert numeric
+        // strings to numbers, but leave everything else untouched so Zod rejects the
+        // original value (e.g. reports "received string" for 'abc' rather than
+        // "received NaN", and doesn't silently turn true/null/'' into 1/0/0).
+        const numericFromString = (value: unknown) => {
+          if (typeof value === 'string' && value.trim() !== '') {
+            const parsed = Number(value);
+            return Number.isFinite(parsed) ? parsed : value;
+          }
+          return value;
+        };
 
         return z.object({
           query: createZodV3FilterPredicateSchema(z)
