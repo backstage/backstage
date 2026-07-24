@@ -141,13 +141,13 @@ export const createQueryCatalogEntitiesAction = ({
             .describe(
               'Specific fields to include in the response. If not provided, all fields are returned. Each entry is a dot separated path into an entity, e.g. `spec.type`.',
             ),
-          limit: z
+          limit: z.coerce
             .number()
             .int()
             .positive()
             .optional()
             .describe('Maximum number of entities to return at a time.'),
-          offset: z
+          offset: z.coerce
             .number()
             .int()
             .min(0)

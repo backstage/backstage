@@ -275,6 +275,20 @@ describe('createQueryCatalogEntitiesAction', () => {
     expect(output.nextPageCursor).toBeDefined();
   });
 
+  it('should coerce string limit and offset into numbers', async () => {
+    const { invoke } = createCatalogQueryAction();
+    const result = await invoke({
+      id: 'test:query-catalog-entities',
+      input: { limit: '2', offset: '0' } as any,
+    });
+
+    const output = result.output as any;
+    expect(output.items).toHaveLength(2);
+    expect(output.totalItems).toBe(4);
+    expect(output.hasMoreEntities).toBe(true);
+    expect(output.nextPageCursor).toBeDefined();
+  });
+
   it('should support cursor-based pagination', async () => {
     const { invoke } = createCatalogQueryAction();
 
