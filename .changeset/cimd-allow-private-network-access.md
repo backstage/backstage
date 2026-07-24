@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-backend': patch
 ---
 
-Added `dangerouslyAllowPrivateNetworkAccess` option to the CIMD configuration. When enabled, CIMD metadata fetches are allowed to resolve to private network addresses (RFC 1918), which is needed for CIMD clients hosted on internal networks. The `allowedClientIdPatterns` allowlist still applies.
+Skip SSRF protection for CIMD metadata fetches when the `client_id` matches an exact (non-wildcard) entry in `allowedClientIdPatterns`. Exact patterns mean the administrator explicitly listed a specific URL, so the DNS resolution is trusted. Wildcard patterns still enforce the SSRF check to protect against attacker-controlled subdomains resolving to internal addresses.

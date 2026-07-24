@@ -234,7 +234,7 @@ describe('CimdClient', () => {
         ).rejects.toThrow('Invalid client_id URL');
       });
 
-      it('should allow private IPs when dangerouslyAllowPrivateNetworkAccess is set', async () => {
+      it('should allow private IPs when skipSsrfCheck is set', async () => {
         mockDnsLookup.mockResolvedValue([
           { address: '10.0.0.1', family: 4 },
         ] as any);
@@ -253,14 +253,14 @@ describe('CimdClient', () => {
 
         const result = await fetchCimdMetadata({
           clientId: 'https://internal.example.com/metadata',
-          dangerouslyAllowPrivateNetworkAccess: true,
+          skipSsrfCheck: true,
         });
 
         expect(result.clientId).toBe('https://internal.example.com/metadata');
         expect(result.clientName).toBe('Internal Client');
       });
 
-      it('should still block private IPs when dangerouslyAllowPrivateNetworkAccess is false', async () => {
+      it('should still block private IPs when skipSsrfCheck is false', async () => {
         mockDnsLookup.mockResolvedValue([
           { address: '10.0.0.1', family: 4 },
         ] as any);
@@ -268,7 +268,7 @@ describe('CimdClient', () => {
         await expect(
           fetchCimdMetadata({
             clientId: 'https://internal.example.com/metadata',
-            dangerouslyAllowPrivateNetworkAccess: false,
+            skipSsrfCheck: false,
           }),
         ).rejects.toThrow('Invalid client_id URL');
       });

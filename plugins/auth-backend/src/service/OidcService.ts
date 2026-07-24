@@ -387,10 +387,6 @@ export class OidcService {
         this.config.getOptionalStringArray(
           `${configPath}.allowedRedirectUriPatterns`,
         ) ?? LOOPBACK_REDIRECT_PATTERNS,
-      dangerouslyAllowPrivateNetworkAccess:
-        this.config.getOptionalBoolean(
-          `${configPath}.dangerouslyAllowPrivateNetworkAccess`,
-        ) ?? false,
     };
   }
 
@@ -422,18 +418,24 @@ export class OidcService {
       throw new InputError('Client ID metadata documents not enabled');
     }
 
-    const clientIdMatchers = cimd.allowedClientIdPatterns.map(
-      createUrlPatternMatcher,
-    );
-    if (!clientIdMatchers.some(matches => matches(opts.cimdUrl))) {
+    const matchingPattern = cimd.allowedClientIdPatterns.find(pattern => {
+      const matches = createUrlPatternMatcher(pattern);
+      return matches(opts.cimdUrl);
+    });
+    if (!matchingPattern) {
       throw new InputError(`Invalid client_id '${opts.clientId}'`);
     }
+
+    // Exact patterns (no wildcards) mean the admin explicitly listed this
+    // URL, so we can skip the SSRF check. Wildcard patterns could match
+    // attacker-controlled subdomains that resolve to internal IPs.
+    const isExactPattern =
+      !matchingPattern.includes('*') && !matchingPattern.includes('?');
 
     const cimdClient = await fetchCimdMetadata({
       clientId: opts.clientId,
       validatedUrl: opts.cimdUrl,
-      dangerouslyAllowPrivateNetworkAccess:
-        cimd.dangerouslyAllowPrivateNetworkAccess,
+      skipSsrfCheck: isExactPattern,
     });
 
     if (opts.redirectUri) {

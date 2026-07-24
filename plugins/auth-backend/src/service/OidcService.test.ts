@@ -1300,20 +1300,19 @@ describe('OidcService', () => {
           expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
             clientId: cimdClientId,
             validatedUrl: expect.any(URL),
-            dangerouslyAllowPrivateNetworkAccess: false,
+            skipSsrfCheck: false,
           });
         });
 
-        it('should pass dangerouslyAllowPrivateNetworkAccess to fetchCimdMetadata', async () => {
+        it('should skip SSRF check for exact (non-wildcard) client_id patterns', async () => {
           const { service } = await createOidcService({
             databaseId,
             config: {
               auth: {
                 clientIdMetadataDocuments: {
                   enabled: true,
-                  allowedClientIdPatterns: ['*'],
+                  allowedClientIdPatterns: [cimdClientId],
                   allowedRedirectUriPatterns: ['*'],
-                  dangerouslyAllowPrivateNetworkAccess: true,
                 },
               },
             },
@@ -1330,7 +1329,7 @@ describe('OidcService', () => {
           expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
             clientId: cimdClientId,
             validatedUrl: expect.any(URL),
-            dangerouslyAllowPrivateNetworkAccess: true,
+            skipSsrfCheck: true,
           });
         });
 
@@ -1900,7 +1899,7 @@ describe('OidcService', () => {
           expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
             clientId: cimdClientId,
             validatedUrl: expect.any(URL),
-            dangerouslyAllowPrivateNetworkAccess: false,
+            skipSsrfCheck: false,
           });
         });
       });

@@ -209,19 +209,6 @@ export interface Config {
        * @example ['http://localhost:*', 'http://127.0.0.1:*\/callback']
        */
       allowedRedirectUriPatterns?: string[];
-
-      /**
-       * Disables SSRF protection for CIMD metadata fetches, allowing
-       * client_id URLs that resolve to private network addresses
-       * (10.x.x.x, 172.16-31.x.x, 192.168.x.x, etc.).
-       *
-       * Only enable this if you need CIMD clients hosted on your
-       * internal network. The `allowedClientIdPatterns` allowlist
-       * still applies when this is enabled.
-       *
-       * @default false
-       */
-      dangerouslyAllowPrivateNetworkAccess?: boolean;
     };
 
     /**
@@ -263,19 +250,6 @@ export interface Config {
        * @example ['http://localhost:*\/*', 'http://127.0.0.1:*\/callback']
        */
       allowedRedirectUriPatterns?: string[];
-
-      /**
-       * Disables SSRF protection for CIMD metadata fetches, allowing
-       * client_id URLs that resolve to private network addresses
-       * (10.x.x.x, 172.16-31.x.x, 192.168.x.x, etc.).
-       *
-       * Only enable this if you need CIMD clients hosted on your
-       * internal network. The `allowedClientIdPatterns` allowlist
-       * still applies when this is enabled.
-       *
-       * @default false
-       */
-      dangerouslyAllowPrivateNetworkAccess?: boolean;
     };
   };
 }
