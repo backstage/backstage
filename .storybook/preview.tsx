@@ -106,10 +106,7 @@ export default definePreview({
     chromatic: {
       modes: {
         'light backstage': allModes['light backstage'],
-        // TODO: Enable these modes when we have more Chromatic snapshots.
-        // 'dark backstage': allModes['dark backstage'],
-        // 'light spotify': allModes['light spotify'],
-        // 'dark spotify': allModes['dark spotify'],
+        'light spotify': allModes['light spotify'],
       },
     },
 
