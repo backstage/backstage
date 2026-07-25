@@ -15,8 +15,6 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { z as zodV3, type ZodType } from 'zod/v3';
-import zodToJsonSchema from 'zod-to-json-schema';
 import { PortableSchema } from './types';
 
 /**
@@ -25,19 +23,6 @@ import { PortableSchema } from './types';
  */
 export type { StandardSchemaV1 } from '@standard-schema/spec';
 import { type StandardSchemaV1 } from '@standard-schema/spec';
-
-/** @internal */
-export function createDeprecatedConfigSchema(
-  fields: Record<string, (zImpl: typeof zodV3) => ZodType>,
-): MergeablePortableSchema {
-  const resolved: Record<string, ResolvedField> = {};
-
-  for (const [key, field] of Object.entries(fields)) {
-    resolved[key] = resolveZodField(key, field(zodV3));
-  }
-
-  return buildPortableSchema(resolved);
-}
 
 /**
  * Per-field resolved schema — validation is eager, JSON Schema is lazy.
@@ -193,25 +178,6 @@ function resolveField(key: string, schema: unknown): ResolvedField {
   );
 }
 
-function resolveZodField(key: string, schema: ZodType): ResolvedField {
-  const wrapper = zodV3.object({ [key]: schema });
-
-  return {
-    validate(value) {
-      const result = wrapper.safeParse({ [key]: value });
-      if (result.success) {
-        return { value: result.data[key] };
-      }
-      return { errors: result.error.issues.map(formatZodIssue) };
-    },
-    toJsonSchema() {
-      const wholeJsonSchema = zodToJsonSchema(wrapper) as Record<string, any>;
-      return (wholeJsonSchema.properties?.[key] ?? {}) as JsonObject;
-    },
-    required: !schema.isOptional(),
-  };
-}
-
 function resolveStandardField(
   key: string,
   schema: StandardSchemaV1 & {
@@ -273,7 +239,7 @@ function buildObjectJsonSchema(
   return schema as JsonObject;
 }
 
-function isZodV3Type(value: unknown): value is ZodType {
+function isZodV3Type(value: unknown): boolean {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -308,25 +274,6 @@ function isFieldRequired(schema: StandardSchemaV1): boolean {
   return (result.issues?.length ?? 0) > 0;
 }
 
-function formatZodIssue(issue: {
-  code: string;
-  message: string;
-  path: Array<string | number>;
-  unionErrors?: Array<{ issues: Array<any> }>;
-}): string {
-  if (issue.code === 'invalid_union' && issue.unionErrors?.[0]?.issues?.[0]) {
-    return formatZodIssue(issue.unionErrors[0].issues[0]);
-  }
-  let message = issue.message;
-  if (message === 'Required') {
-    message = 'Missing required value';
-  }
-  if (issue.path.length) {
-    message += ` at '${issue.path.join('.')}'`;
-  }
-  return message;
-}
-
 function formatStandardIssue(
   fieldKey: string,
   issue: StandardSchemaV1.Issue,
@@ -343,15 +290,4 @@ function formatStandardIssue(
         .join('.')}`
     : fieldKey;
   return `${message} at '${path}'`;
-}
-
-/** @internal */
-export function warnConfigSchemaPropDeprecation(callSite: string) {
-  // eslint-disable-next-line no-console
-  console.warn(
-    `DEPRECATION WARNING: The \`config.schema\` option for extension config is deprecated. ` +
-      `Use the \`configSchema\` option instead with Standard Schema values, for example ` +
-      `\`configSchema: { title: z.string() }\` using the \`zod\` v4 package ` +
-      `(\`zod@^4.0.0\`). Declared at ${callSite}`,
-  );
 }
