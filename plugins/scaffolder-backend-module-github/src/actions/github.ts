@@ -29,23 +29,10 @@ import {
   createGithubRepoWithCollaboratorsAndTopics,
   initRepoPushAndProtect,
 } from './helpers';
-import { getOctokitOptions } from '../util';
+import { getOctokitOptions, withoutProperties } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './github.examples';
-
-function withoutProperties<T extends object, K extends keyof T>(
-  object: T,
-  keys: K[],
-): Omit<T, K> {
-  const result: Partial<T> = { ...object };
-
-  keys.forEach(key => {
-    delete result[key];
-  });
-
-  return result as Omit<T, K>;
-}
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -66,13 +53,11 @@ export function createPublishGithubAction(options: {
       'Initializes a git repository of contents in workspace and publishes it to GitHub.',
     examples,
     schema: {
-      input: {
-        ...withoutProperties(inputProps, [
-          'autoInit',
-          'blockCreations',
-          'branch',
-        ]),
-      },
+      input: withoutProperties(inputProps, [
+        'autoInit',
+        'blockCreations',
+        'branch',
+      ]),
       output: {
         remoteUrl: outputProps.remoteUrl,
         repoContentsUrl: outputProps.repoContentsUrl,

@@ -17,7 +17,7 @@
 import { Octokit } from 'octokit';
 import { retry } from '@octokit/plugin-retry';
 import { mockServices } from '@backstage/backend-test-utils';
-import { isRetryEnabled, getOctokitClient } from './util';
+import { isRetryEnabled, getOctokitClient, withoutProperties } from './util';
 
 jest.mock('octokit', () => ({
   Octokit: Object.assign(jest.fn(), {
@@ -156,6 +156,30 @@ describe('getOctokitClient', () => {
         retryAfter: 1000,
       },
       log: logger,
+    });
+  });
+});
+
+describe('withoutProperties', () => {
+  const starterObject = {
+    catpants: true,
+    foo: 'bar',
+    milliseconds: 60_000,
+  } as const;
+
+  it('should remove known properties', () => {
+    expect(withoutProperties(starterObject, ['foo', 'milliseconds'])).toEqual({
+      catpants: true,
+    });
+  });
+
+  it('should not error with unknown properties even though tyepscript complains', () => {
+    expect(
+      // @ts-expect-error
+      withoutProperties(starterObject, ['baz', 'catpants', 'not-here']),
+    ).toEqual({
+      foo: 'bar',
+      milliseconds: 60_000,
     });
   });
 });
