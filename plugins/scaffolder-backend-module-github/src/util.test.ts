@@ -173,7 +173,7 @@ describe('withoutProperties', () => {
     });
   });
 
-  it('should not error with unknown properties even though tyepscript complains', () => {
+  it('should not error with unknown properties even though TypeScript complains', () => {
     expect(
       // @ts-expect-error
       withoutProperties(starterObject, ['baz', 'catpants', 'not-here']),
