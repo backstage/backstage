@@ -295,7 +295,9 @@ describe('createSpecializedApp', () => {
   });
 
   it('should select the API factory from the owning plugin on conflict', () => {
-    const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
+    const testApiRef = createApiRef<{ value: string }>().with({
+      id: 'test.api',
+    });
     const appRootPlugin = createFrontendPlugin({
       pluginId: 'app',
       extensions: [
@@ -372,7 +374,9 @@ describe('createSpecializedApp', () => {
   });
 
   it('should allow API overrides within the same plugin', () => {
-    const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
+    const testApiRef = createApiRef<{ value: string }>().with({
+      id: 'test.api',
+    });
     const appRootPlugin = createFrontendPlugin({
       pluginId: 'app',
       extensions: [
@@ -426,7 +430,9 @@ describe('createSpecializedApp', () => {
   });
 
   it('should reuse provided apis', async () => {
-    const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
+    const testApiRef = createApiRef<{ value: string }>().with({
+      id: 'test.api',
+    });
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
@@ -1025,7 +1031,9 @@ describe('createSpecializedApp', () => {
         name: 'visible-api',
         params: defineParams =>
           defineParams({
-            api: createApiRef<{ value: string }>({ id: 'test.visible-api' }),
+            api: createApiRef<{ value: string }>().with({
+              id: 'test.visible-api',
+            }),
             deps: {},
             factory: () => ({ value: 'visible' }),
           }),
@@ -1034,7 +1042,9 @@ describe('createSpecializedApp', () => {
         name: 'deferred-api',
         params: defineParams =>
           defineParams({
-            api: createApiRef<{ value: string }>({ id: 'test.deferred-api' }),
+            api: createApiRef<{ value: string }>().with({
+              id: 'test.deferred-api',
+            }),
             deps: {},
             factory: () => ({ value: 'deferred' }),
           }),
@@ -1084,7 +1094,7 @@ describe('createSpecializedApp', () => {
     });
 
     it('should ignore deferred overrides of materialized bootstrap APIs', () => {
-      const apiRef = createApiRef<{ value: string }>({
+      const apiRef = createApiRef<{ value: string }>().with({
         id: 'test.bootstrap-frozen-api',
       });
       let bootstrapApiValue: string | undefined;
@@ -1190,7 +1200,7 @@ describe('createSpecializedApp', () => {
     });
 
     it('should allow deferred overrides of bootstrap APIs that were not materialized', () => {
-      const apiRef = createApiRef<{ value: string }>({
+      const apiRef = createApiRef<{ value: string }>().with({
         id: 'test.bootstrap-overridable-api',
       });
       let finalApiValue: string | undefined;
@@ -1635,7 +1645,7 @@ describe('createSpecializedApp', () => {
         getCredentials: async () => ({ token: 'token' }),
         signOut: async () => {},
       };
-      const delayedApiRef = createApiRef<{ value: string }>({
+      const delayedApiRef = createApiRef<{ value: string }>().with({
         id: 'test.delayed-api',
       });
       const featureFlagsApi = {

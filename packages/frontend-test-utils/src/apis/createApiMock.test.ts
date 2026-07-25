@@ -24,7 +24,7 @@ describe('createApiMock', () => {
     count: number;
   };
 
-  const testApiRef = createApiRef<TestApi>({ id: 'test.create-mock' });
+  const testApiRef = createApiRef<TestApi>().with({ id: 'test.create-mock' });
 
   it('returns a factory function that produces jest mocks', () => {
     const mock = createApiMock(testApiRef, () => ({

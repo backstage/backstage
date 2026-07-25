@@ -65,7 +65,7 @@ function parsePermissionName(permissionName: string) {
   };
 }
 
-export const localPermissionApiRef = createApiRef<MinimalPermissionApi>({
+export const localPermissionApiRef = createApiRef<MinimalPermissionApi>().with({
   id: 'plugin.permission.api',
 });
 

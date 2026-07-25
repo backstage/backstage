@@ -24,7 +24,7 @@ import { withApis } from './withApis';
 
 describe('withApis', () => {
   type MyApi = () => string;
-  const myApiRef = createApiRef<MyApi>({ id: 'my-api' });
+  const myApiRef = createApiRef<MyApi>().with({ id: 'my-api' });
 
   const MyComponent = withApis({ getMessage: myApiRef })(({ getMessage }) => {
     return <p>message: {getMessage()}</p>;
@@ -42,7 +42,7 @@ describe('withApis', () => {
   });
 
   it('should ignore properties from the prototype', () => {
-    const otherRef = createApiRef<number>({ id: 'other' });
+    const otherRef = createApiRef<number>().with({ id: 'other' });
     const proto = { other: otherRef };
     const props = { getMessage: { enumerable: true, value: myApiRef } };
     const obj = Object.create(proto, props) as {

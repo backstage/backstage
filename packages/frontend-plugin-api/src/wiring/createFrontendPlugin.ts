@@ -150,12 +150,6 @@ export interface FrontendPlugin<
    */
   readonly pluginId: string;
   /**
-   * Deprecated alias for `pluginId`.
-   *
-   * @deprecated Use `pluginId` instead.
-   */
-  readonly id: string;
-  /**
    * The display title of the plugin, used in page headers and navigation.
    * Falls back to the plugin ID if not provided.
    */
@@ -201,17 +195,6 @@ export interface CreateFrontendPluginOptions<
   if?: FilterPredicate;
   info?: FrontendPluginInfoOptions;
 }
-
-/**
- * @deprecated Use {@link CreateFrontendPluginOptions} instead.
- * @public
- */
-export type PluginOptions<
-  TId extends string,
-  TRoutes extends { [name in string]: RouteRef | SubRouteRef },
-  TExternalRoutes extends { [name in string]: ExternalRouteRef },
-  TExtensions extends readonly ExtensionDefinition[],
-> = CreateFrontendPluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>;
 
 /**
  * Creates a new plugin that can be installed in a Backstage app.
@@ -279,7 +262,6 @@ export function createFrontendPlugin<
 
   return OpaqueFrontendPlugin.createInstance('v1', {
     pluginId,
-    id: pluginId,
     title: options.title,
     icon: options.icon,
     routes: options.routes ?? ({} as TRoutes),

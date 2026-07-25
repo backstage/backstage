@@ -20,17 +20,13 @@ import {
   type ApiRefConfig,
 } from '@backstage/frontend-plugin-api';
 
-const createFrontendApiRefCompat = createFrontendApiRef as <T>(
-  config: ApiRefConfig,
-) => ApiRef<T>;
-
 /**
  * Creates a reference to an API.
  *
  * @public
  */
 export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> {
-  return createFrontendApiRefCompat<T>(config);
+  return createFrontendApiRef<T>().with(config);
 }
 
 export type { ApiRefConfig };
