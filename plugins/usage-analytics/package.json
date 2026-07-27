@@ -1,0 +1,64 @@
+{
+  "name": "@backstage/plugin-usage-analytics",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "frontend-plugin",
+    "pluginId": "usage-analytics",
+    "pluginPackages": [
+      "@backstage/plugin-usage-analytics",
+      "@backstage/plugin-usage-analytics-backend",
+      "@backstage/plugin-usage-analytics-common"
+    ]
+  },
+  "sideEffects": false,
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
+    "@backstage/plugin-usage-analytics-common": "workspace:^",
+    "@material-ui/core": "^4.12.2",
+    "react-use": "^17.2.4"
+  },
+  "peerDependencies": {
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.30.2"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/dev-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.30.2"
+  },
+  "files": [
+    "dist"
+  ]
+}
