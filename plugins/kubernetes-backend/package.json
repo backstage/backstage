@@ -56,7 +56,6 @@
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/plugin-kubernetes-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
-    "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@google-cloud/container": "^5.0.0",
     "@jest-mock/express": "^2.0.1",
