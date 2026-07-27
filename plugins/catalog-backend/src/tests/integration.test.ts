@@ -209,7 +209,6 @@ class TestHarness {
   readonly #db: Knex;
 
   static async create(options: {
-    enableRelationsCompatibility?: boolean;
     logger?: LoggerService;
     db: Knex;
     permissions?: PermissionEvaluator;
@@ -283,7 +282,6 @@ class TestHarness {
     const catalog = new DefaultEntitiesCatalog({
       database: options.db,
       logger,
-      enableRelationsCompatibility: options?.enableRelationsCompatibility,
     });
     const proxyProgressTracker = new ProxyProgressTracker(
       new NoopProgressTracker(),
