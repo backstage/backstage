@@ -837,19 +837,14 @@ export async function createRouter(
     });
 
     try {
-      const body = await validateRequestBody(
+      const parsedBody = await validateRequestBody(
         req,
         z.object({
           location: locationInput,
           catalogFilename: z.string().optional(),
         }),
       );
-      const schema = z.object({
-        location: locationInput,
-        catalogFilename: z.string().optional(),
-      });
       const credentials = await httpAuth.credentials(req);
-      const parsedBody = schema.parse(body);
       try {
         const output = await locationAnalyzer.analyzeLocation(
           parsedBody,
