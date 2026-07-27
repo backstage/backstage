@@ -18,11 +18,9 @@ import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   kubernetesClustersReadPermission,
-  kubernetesPermissions,
   kubernetesResourcesReadPermission,
 } from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 
@@ -177,11 +175,6 @@ export class KubernetesRouter {
     const router = Router();
     router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
     router.use(express.json());
-    router.use(
-      createPermissionIntegrationRouter({
-        permissions: kubernetesPermissions,
-      }),
-    );
 
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
