@@ -101,9 +101,13 @@ export default createCliModule({
     });
     reg.addCommand({
       path: ['template', 'execute'],
-      description:
-        'Execute a software template (dry-run by default, --confirm for real)',
+      description: 'Execute a software template',
       execute: { loader: () => import('./commands/templateExecute') },
+    });
+    reg.addCommand({
+      path: ['template', 'dry-run'],
+      description: 'Validate a software template without making changes',
+      execute: { loader: () => import('./commands/templateDryRun') },
     });
   },
 });

@@ -32,11 +32,7 @@ export default async ({ args, info }: CliCommandContext) => {
         },
         values: {
           type: String,
-          description: 'Template input values (JSON string, required)',
-        },
-        secrets: {
-          type: String,
-          description: 'Template secrets (JSON string)',
+          description: 'Template input values (JSON string)',
         },
         instance: {
           type: String,
@@ -50,13 +46,7 @@ export default async ({ args, info }: CliCommandContext) => {
 
   if (!flags['template-ref']) {
     throw new Error(
-      '--template-ref is required. Usage: template execute --template-ref template:default/my-template --values \'{"name":"my-app"}\'',
-    );
-  }
-
-  if (!flags.values) {
-    throw new Error(
-      '--values is required. Usage: template execute --template-ref <ref> --values \'{"key":"value"}\'',
+      '--template-ref is required. Usage: template dry-run --template-ref template:default/my-template',
     );
   }
 
@@ -64,11 +54,10 @@ export default async ({ args, info }: CliCommandContext) => {
   const client = new ActionsClient(baseUrl, accessToken);
 
   const input: Record<string, unknown> = {
-    templateRef: flags['template-ref'],
-    values: JSON.parse(flags.values),
+    templateYaml: flags['template-ref'],
   };
-  if (flags.secrets) input.secrets = JSON.parse(flags.secrets);
+  if (flags.values) input.values = JSON.parse(flags.values);
 
-  const result = await client.execute('scaffolder:execute-template', input);
+  const result = await client.execute('scaffolder:dry-run-template', input);
   writeJson(result);
 };

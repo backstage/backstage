@@ -4,7 +4,7 @@ Intent-based wrapper around `backstage-cli actions execute`. Each subcommand map
 
 ## Prerequisites
 
-- Authenticated via `backstage-intent auth login --backend-url <URL>`
+- Authenticated via `backstage-cli auth login --backend-url <URL>`
 
 ## Intent → Action Mapping
 

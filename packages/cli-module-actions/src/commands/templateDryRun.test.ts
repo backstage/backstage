@@ -35,7 +35,7 @@ jest.mock('../lib/ActionsClient', () => ({
   })),
 }));
 
-import templateExecute from './templateExecute';
+import templateDryRun from './templateDryRun';
 import { cli } from 'cleye';
 
 const mockCli = cli as jest.MockedFunction<typeof cli>;
@@ -44,12 +44,12 @@ const ctx = (args: string[]): CliCommandContext =>
   ({
     args,
     info: {
-      name: 'template execute',
-      usage: 'backstage-cli template execute',
+      name: 'template dry-run',
+      usage: 'backstage-cli template dry-run',
     },
   } as unknown as CliCommandContext);
 
-describe('template execute', () => {
+describe('template dry-run', () => {
   let stdoutSpy: jest.SpiedFunction<typeof process.stdout.write>;
 
   beforeEach(() => {
@@ -66,54 +66,38 @@ describe('template execute', () => {
   it('throws when --template-ref is missing', async () => {
     (mockCli as jest.Mock).mockReturnValue({ flags: {} });
 
-    await expect(templateExecute(ctx([]))).rejects.toThrow(
+    await expect(templateDryRun(ctx([]))).rejects.toThrow(
       '--template-ref is required',
     );
   });
 
-  it('throws when --values is missing', async () => {
+  it('calls dry-run-template with template ref only', async () => {
     (mockCli as jest.Mock).mockReturnValue({
       flags: { 'template-ref': 'template:default/my-tpl' },
     });
+    mockExecute.mockResolvedValue({ steps: [], output: {} });
 
-    await expect(templateExecute(ctx([]))).rejects.toThrow(
-      '--values is required',
-    );
-  });
+    await templateDryRun(ctx([]));
 
-  it('executes template with --template-ref and --values', async () => {
-    (mockCli as jest.Mock).mockReturnValue({
-      flags: {
-        'template-ref': 'template:default/my-tpl',
-        values: '{"name":"my-app"}',
-      },
-    });
-    mockExecute.mockResolvedValue({ taskId: 'task-123' });
-
-    await templateExecute(ctx([]));
-
-    expect(mockExecute).toHaveBeenCalledWith('scaffolder:execute-template', {
-      templateRef: 'template:default/my-tpl',
-      values: { name: 'my-app' },
+    expect(mockExecute).toHaveBeenCalledWith('scaffolder:dry-run-template', {
+      templateYaml: 'template:default/my-tpl',
     });
   });
 
-  it('passes secrets when provided', async () => {
+  it('passes values when provided', async () => {
     (mockCli as jest.Mock).mockReturnValue({
       flags: {
         'template-ref': 'template:default/my-tpl',
         values: '{"name":"app"}',
-        secrets: '{"token":"secret"}',
       },
     });
-    mockExecute.mockResolvedValue({ taskId: 'task-456' });
+    mockExecute.mockResolvedValue({ steps: [] });
 
-    await templateExecute(ctx([]));
+    await templateDryRun(ctx([]));
 
-    expect(mockExecute).toHaveBeenCalledWith('scaffolder:execute-template', {
-      templateRef: 'template:default/my-tpl',
+    expect(mockExecute).toHaveBeenCalledWith('scaffolder:dry-run-template', {
+      templateYaml: 'template:default/my-tpl',
       values: { name: 'app' },
-      secrets: { token: 'secret' },
     });
   });
 });
