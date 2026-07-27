@@ -35,10 +35,74 @@ import {
 } from './lib/tasks';
 
 const DEFAULT_BRANCH = 'master';
-// Uses the same 'N.x' format as GitHub Actions node-version matrices for easy find-and-replace
+// Uses the same 'N.x' format as GitHub Actions node-version matrices for easy find-and-replace.
+// Keep in sync with the engines.node field in the root package.json.
 const SUPPORTED_NODE_VERSIONS = ['22.x', '24.x'];
 
 export default async (opts: OptionValues): Promise<void> => {
+  // Prerequisite check — runs before the interactive prompt to fail fast
+  let hasPrerequisiteError = false;
+  const supportedMajors = SUPPORTED_NODE_VERSIONS.map(v =>
+    parseInt(v.split('.')[0], 10),
+  );
+  const [major, minor, patch] = process.versions.node.split('.').map(Number);
+  const yarn = await tryCommandForVersion('yarn -v');
+  let python = await tryCommandForVersion('python3 --version');
+  if (python.error) {
+    python = await tryCommandForVersion('python --version');
+  }
+
+  Task.log();
+  Task.log('Prerequisites check...');
+  Task.log();
+  Task.log(`  Node version is: ${major}.${minor}.${patch}`);
+  Task.log(`  Yarn version is: ${yarn.version}`);
+  Task.log(`  Python version is: ${python.version.replace(/^Python\s+/, '')}`);
+
+  if (yarn.error) {
+    Task.error(
+      'Yarn was not found. Please install Yarn before creating a Backstage app.',
+    );
+    hasPrerequisiteError = true;
+  }
+
+  if (python.error) {
+    Task.log(
+      chalk.yellow(
+        'Warning: Python not found. Python is required by node-gyp for some native dependencies.',
+      ),
+    );
+  }
+
+  if (major % 2 !== 0) {
+    Task.error(
+      `Node version ${major} is an odd-numbered release and is not a supported LTS version. Please use an even-numbered LTS version (${SUPPORTED_NODE_VERSIONS.join(
+        ' or ',
+      )}).`,
+    );
+    hasPrerequisiteError = true;
+  } else if (!supportedMajors.includes(major)) {
+    Task.error(
+      `Node version ${major} is not a supported LTS version. Please use a supported version (${SUPPORTED_NODE_VERSIONS.join(
+        ' or ',
+      )}).`,
+    );
+    hasPrerequisiteError = true;
+  }
+
+  if (hasPrerequisiteError) {
+    Task.log(
+      'It seems that something went wrong when validating the prerequisites 🤔',
+    );
+    Task.log(
+      'For help with setting up prerequisites, see https://backstage.io/docs/getting-started/#prerequisites',
+    );
+
+    Task.error('🔥  Failed to validate needed prerequisites!');
+    Task.exit(1);
+    return;
+  }
+
   const answers: Answers = await inquirer.prompt([
     {
       type: 'input',
@@ -83,75 +147,6 @@ export default async (opts: OptionValues): Promise<void> => {
   const appDir = opts.path
     ? resolvePath(targetPaths.dir, opts.path)
     : resolvePath(targetPaths.dir, answers.name);
-
-  // Prerequisite check
-  let hasPrerequisiteError = false;
-  const supportedMajors = SUPPORTED_NODE_VERSIONS.map(v =>
-    parseInt(v.split('.')[0], 10),
-  );
-  const [major, minor, patch] = process.versions.node.split('.').map(Number);
-  const yarn = await tryCommandForVersion('yarn -v');
-  let python = await tryCommandForVersion('python3 --version');
-  if (python.error) {
-    python = await tryCommandForVersion('python --version');
-  }
-
-  Task.log();
-  Task.log('Prerequisites check...');
-  Task.log();
-  Task.log(`  Node version is: ${major}.${minor}.${patch}`);
-  Task.log(`  Yarn version is: ${yarn.version}`);
-  Task.log(`  Python version is: ${python.version}`);
-
-  if (yarn.error) {
-    Task.error(
-      'Yarn was not found. Please install Yarn before creating a Backstage app.',
-    );
-    hasPrerequisiteError = true;
-  }
-
-  if (python.error) {
-    Task.log(
-      chalk.yellow(
-        'Warning: Python not found. Python is required by node-gyp for some native dependencies.',
-      ),
-    );
-  }
-
-  if (major % 2 !== 0) {
-    Task.error(
-      `Node version ${major} is an odd-numbered release and is not a supported LTS version. Please use an even-numbered LTS version (${SUPPORTED_NODE_VERSIONS.join(
-        ' or ',
-      )}).`,
-    );
-    hasPrerequisiteError = true;
-  } else if (major < Math.min(...supportedMajors)) {
-    Task.error(
-      `Node version ${major} is older than the oldest supported LTS version (Node ${Math.min(
-        ...supportedMajors,
-      )}), please upgrade.`,
-    );
-    hasPrerequisiteError = true;
-  } else if (major > Math.max(...supportedMajors)) {
-    Task.error(
-      `Node version ${major} is newer than the latest supported LTS version (Node ${Math.max(
-        ...supportedMajors,
-      )}), please downgrade and try again.`,
-    );
-    hasPrerequisiteError = true;
-  }
-
-  if (hasPrerequisiteError) {
-    Task.log(
-      'It seems that something went wrong when validating the prerequisites 🤔',
-    );
-    Task.log(
-      'For help with setting up prerequisites, see https://backstage.io/docs/getting-started/#prerequisites',
-    );
-
-    Task.error('🔥  Failed to validate needed prerequisites!');
-    Task.exit(1);
-  }
 
   Task.log();
   Task.log('Creating the app...');
