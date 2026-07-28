@@ -6,6 +6,7 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
+import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DomainEntity } from '@backstage/catalog-model';
@@ -605,9 +606,7 @@ export interface EntityLinksCardProps {
 export type EntityLinksEmptyStateClassKey = 'code';
 
 // @public @deprecated (undocumented)
-export const EntityListContainer: (props: {
-  children: ReactNode;
-}) => JSX_2.Element;
+export const EntityListContainer: typeof CatalogFilterLayout.Content;
 
 // @public
 export function EntityOrphanWarning(): JSX_2.Element;
@@ -654,13 +653,7 @@ export interface EntitySwitchProps {
 }
 
 // @public @deprecated (undocumented)
-export const FilterContainer: (props: {
-  children: ReactNode;
-  options?: {
-    drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
-    drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
-  };
-}) => JSX_2.Element;
+export const FilterContainer: typeof CatalogFilterLayout.Filters;
 
 // @public @deprecated (undocumented)
 export const FilteredEntityLayout: (props: {
