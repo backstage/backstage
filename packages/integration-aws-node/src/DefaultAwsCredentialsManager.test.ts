@@ -19,6 +19,7 @@ import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { Config, ConfigReader } from '@backstage/config';
+import { ConnectionsService } from '@backstage/connections';
 import {
   fromNodeProviderChain,
   fromTemporaryCredentials,
@@ -176,6 +177,123 @@ describe('DefaultAwsCredentialsManager', () => {
     if (tmpDir) {
       rmSync(tmpDir, { recursive: true, force: true });
     }
+  });
+
+  describe('.fromConnections', () => {
+    it('creates and reuses access key providers from the connections service', async () => {
+      const find = jest.fn().mockResolvedValue({
+        type: 'aws-s3',
+        title: 'AWS S3',
+        host: 'amazonaws.com',
+        auth: {
+          method: 'accessKey',
+          title: 'Access Key',
+          accessKeyId: 'connection-access-key',
+          secretAccessKey: 'connection-secret-key',
+        },
+      });
+      const provider = DefaultAwsCredentialsManager.fromConnections(
+        { find: find as ConnectionsService['find'] },
+        { type: 'aws-s3', url: 'https://amazonaws.com' },
+      );
+
+      const first = await provider.getCredentialProvider({
+        accountId: '111111111111',
+      });
+      const second = await provider.getCredentialProvider({
+        accountId: '111111111111',
+      });
+
+      expect(find).toHaveBeenCalledWith({
+        type: 'aws-s3',
+        url: 'https://amazonaws.com',
+        authMethods: ['accessKey', 'assumeRole', 'none'],
+      });
+      expect(first).toBe(second);
+      await expect(first.sdkCredentialProvider()).resolves.toEqual({
+        accessKeyId: 'connection-access-key',
+        secretAccessKey: 'connection-secret-key',
+      });
+    });
+
+    it('creates and reuses assume role providers from the connections service', async () => {
+      const find = jest.fn().mockResolvedValue({
+        type: 'aws-codecommit',
+        title: 'AWS CodeCommit',
+        host: 'eu-west-1.console.aws.amazon.com',
+        region: 'eu-west-1',
+        auth: {
+          method: 'assumeRole',
+          title: 'Assume Role',
+          roleArn: 'arn:aws:iam::111111111111:role/hello',
+          externalId: 'connection-external-id',
+        },
+      });
+      const provider = DefaultAwsCredentialsManager.fromConnections(
+        { find: find as ConnectionsService['find'] },
+        {
+          type: 'aws-codecommit',
+          url: 'https://eu-west-1.console.aws.amazon.com',
+        },
+      );
+
+      const first = await provider.getCredentialProvider();
+      const second = await provider.getCredentialProvider();
+
+      expect(find).toHaveBeenCalledWith({
+        type: 'aws-codecommit',
+        url: 'https://eu-west-1.console.aws.amazon.com',
+        authMethods: ['accessKey', 'assumeRole'],
+      });
+      expect(first).toBe(second);
+      expect(first).toEqual(
+        expect.objectContaining({
+          accountId: '111111111111',
+          stsRegion: 'eu-west-1',
+        }),
+      );
+      expect(fromTemporaryCredentials).toHaveBeenCalledTimes(1);
+      expect(fromTemporaryCredentials).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: {
+            RoleArn: 'arn:aws:iam::111111111111:role/hello',
+            RoleSessionName: 'backstage',
+            ExternalId: 'connection-external-id',
+          },
+          clientConfig: {
+            region: 'eu-west-1',
+            customUserAgent: 'backstage-aws-credentials-manager',
+          },
+        }),
+      );
+    });
+
+    it('uses the default AWS credentials chain for unauthenticated S3 connections', async () => {
+      const find = jest.fn().mockResolvedValue({
+        type: 'aws-s3',
+        title: 'AWS S3',
+        host: 'amazonaws.com',
+        auth: {
+          method: 'none',
+          title: 'None',
+        },
+      });
+      const provider = DefaultAwsCredentialsManager.fromConnections(
+        { find: find as ConnectionsService['find'] },
+        { type: 'aws-s3', url: 'https://amazonaws.com' },
+      );
+
+      const result = await provider.getCredentialProvider();
+
+      await expect(result.sdkCredentialProvider()).resolves.toEqual(
+        expect.objectContaining({
+          accessKeyId: 'ACCESS_KEY_ID_10',
+          secretAccessKey: 'SECRET_ACCESS_KEY_10',
+          sessionToken: 'SESSION_TOKEN_10',
+          expiration: new Date('2022-01-10'),
+        }),
+      );
+    });
   });
 
   describe('#getCredentialProvider', () => {

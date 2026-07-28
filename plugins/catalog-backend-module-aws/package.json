@@ -60,13 +60,16 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/connections": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/integration-aws-node": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
-    "p-limit": "^3.0.2"
+    "@backstage/types": "workspace:^",
+    "p-limit": "^3.0.2",
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",

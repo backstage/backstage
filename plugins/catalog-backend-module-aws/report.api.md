@@ -98,6 +98,7 @@ export class AwsS3EntityProvider implements EntityProvider {
       logger: LoggerService;
       schedule?: SchedulerServiceTaskRunner;
       scheduler?: SchedulerService;
+      awsCredentialsManager?: AwsCredentialsManager;
     },
   ): AwsS3EntityProvider[];
   getProviderName(): string;

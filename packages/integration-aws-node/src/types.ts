@@ -54,6 +54,23 @@ export type AwsCredentialProviderOptions = {
 };
 
 /**
+ * The connection to use when resolving AWS credentials.
+ *
+ * @public
+ */
+export type AwsCredentialsManagerConnectionOptions = {
+  /**
+   * The AWS connection type to resolve.
+   */
+  type: 'aws-codecommit' | 'aws-s3';
+
+  /**
+   * The resource URL used to select the connection.
+   */
+  url: string;
+};
+
+/**
  * This allows implementations to be provided to retrieve AWS credentials.
  *
  * @public
