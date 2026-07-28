@@ -55,10 +55,16 @@ describe('OidcService', () => {
     databaseId: TestDatabaseId;
     config?: JsonObject;
     offlineAccess?: OfflineAccessService;
+    baseUrl?: string;
   }
 
   async function createOidcService(options: CreateOidcServiceOptions) {
-    const { databaseId, config: configData = {}, offlineAccess } = options;
+    const {
+      databaseId,
+      config: configData = {},
+      offlineAccess,
+      baseUrl = 'http://mock-base-url',
+    } = options;
 
     const knex = await databases.init(databaseId);
 
@@ -92,7 +98,7 @@ describe('OidcService', () => {
       service: OidcService.create({
         auth: mockAuth,
         tokenIssuer: mockTokenIssuer,
-        baseUrl: 'http://mock-base-url',
+        baseUrl,
         userInfo: mockUserInfo,
         oidc: oidcDatabase,
         config,
@@ -1374,6 +1380,46 @@ describe('OidcService', () => {
             expect.objectContaining({
               id: expect.any(String),
               clientName: 'CIMD Test Client',
+            }),
+          );
+        });
+
+        it('should allow the built-in CLI client_id when allowedClientIdPatterns is set', async () => {
+          const authBaseUrl = 'https://backstage.example.com/api/auth';
+          const cliClientId = `${authBaseUrl}/.well-known/oauth-client/cli.json`;
+
+          const { service } = await createOidcService({
+            databaseId,
+            baseUrl: authBaseUrl,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['https://*.trusted.com/*'],
+                },
+              },
+            },
+          });
+
+          mockFetchCimdMetadata.mockResolvedValue({
+            clientId: cliClientId,
+            clientName: 'Backstage CLI',
+            redirectUris: ['http://127.0.0.1:8055/callback'],
+            responseTypes: ['code'],
+            grantTypes: ['authorization_code'],
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cliClientId,
+            redirectUri: 'http://127.0.0.1:8055/callback',
+            responseType: 'code',
+            ...pkceParams,
+          });
+
+          expect(authSession).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              clientName: 'Backstage CLI',
             }),
           );
         });
