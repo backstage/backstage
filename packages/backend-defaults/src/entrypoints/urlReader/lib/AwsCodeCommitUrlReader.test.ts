@@ -660,4 +660,97 @@ describe('AwsCodeCommitUrlReader', () => {
       ).rejects.toThrow('Unsupported search pattern URL');
     });
   });
+
+  describe('buildCredentials with roleArn', () => {
+    const getCredProviderMock = jest.spyOn(
+      DefaultAwsCredentialsManager.prototype,
+      'getCredentialProvider',
+    );
+
+    beforeEach(() => {
+      codeCommitClient.reset();
+      getCredProviderMock.mockReset();
+
+      codeCommitClient.on(GetFileCommand).resolves({
+        fileContent: Buffer.from('site_name: Test\n'),
+        commitId: 'abc123',
+        filePath: 'catalog-info.yaml',
+        fileMode: 'NORMAL',
+        fileSize: 16,
+        blobId: 'blob1',
+      });
+    });
+
+    afterAll(() => {
+      getCredProviderMock.mockRestore();
+    });
+
+    it('uses account-specific credentials as master credentials when account config exists for the role ARN', async () => {
+      const accountCreds = { accessKeyId: 'account-key', secretAccessKey: 'account-secret' };
+      getCredProviderMock.mockImplementation(async (opts?: any) => {
+        if (opts?.arn) {
+          return {
+            accountId: '123456789012',
+            sdkCredentialProvider: async () => accountCreds,
+          };
+        }
+        return {
+          sdkCredentialProvider: async () => ({ accessKeyId: 'default-key', secretAccessKey: 'default-secret' }),
+        };
+      });
+
+      const config = new ConfigReader({
+        host: AMAZON_AWS_CODECOMMIT_HOST,
+        roleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+      const reader = new AwsCodeCommitUrlReader(
+        credsManager,
+        new AwsCodeCommitIntegration(readAwsCodeCommitIntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+
+      await reader.readUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml',
+      );
+
+      expect(getCredProviderMock).toHaveBeenCalledWith({
+        arn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+    });
+
+    it('falls back to default credentials when no account config exists for the role ARN', async () => {
+      const defaultCreds = { accessKeyId: 'default-key', secretAccessKey: 'default-secret' };
+      getCredProviderMock.mockImplementation(async (opts?: any) => {
+        if (opts?.arn) {
+          throw new Error('No matching account');
+        }
+        return {
+          sdkCredentialProvider: async () => defaultCreds,
+        };
+      });
+
+      const config = new ConfigReader({
+        host: AMAZON_AWS_CODECOMMIT_HOST,
+        roleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+      const reader = new AwsCodeCommitUrlReader(
+        credsManager,
+        new AwsCodeCommitIntegration(readAwsCodeCommitIntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+
+      await reader.readUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml',
+      );
+
+      expect(getCredProviderMock).toHaveBeenCalledWith({
+        arn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+      expect(getCredProviderMock).toHaveBeenCalledWith();
+    });
+  });
 });
