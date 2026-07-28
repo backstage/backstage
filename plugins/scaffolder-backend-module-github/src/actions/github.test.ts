@@ -1888,6 +1888,37 @@ describe('publish:github', () => {
     });
   });
 
+  it('waits for the configured delay before continuing', async () => {
+    jest.useFakeTimers();
+
+    try {
+      mockOctokit.rest.users.getByUsername.mockResolvedValue({
+        data: { type: 'User' },
+      });
+
+      mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+        data: {},
+      });
+
+      const handlerPromise = action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          delay: 1,
+        },
+      });
+
+      expect(initRepoAndPush).not.toHaveBeenCalled();
+
+      await jest.advanceTimersByTimeAsync(1000);
+      await handlerPromise;
+
+      expect(initRepoAndPush).toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   describe('GraphQL API fallback', () => {
     let readdirSpy: jest.SpyInstance;
     let readFileSpy: jest.SpyInstance;

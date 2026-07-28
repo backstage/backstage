@@ -429,6 +429,14 @@ const workflowAccess = (z: typeof zod) =>
     })
     .optional();
 
+const delay = (z: typeof zod) =>
+  z
+    .number({
+      description: `Delay in seconds to wait after creating the repository before performing other operations.  In some organizations adding delay can prevent failure of this action. It can happen after repository is created and when collaborators are being added. Default is 0.`,
+    })
+    .default(0)
+    .optional();
+
 export {
   access,
   allowAutoMerge,
@@ -476,4 +484,5 @@ export {
   token,
   topics,
   workflowAccess,
+  delay,
 };
