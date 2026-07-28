@@ -284,11 +284,15 @@ export type Cursor = {
    */
   orderFieldValues: Array<string | null>;
   /**
-   * A legacy EntityFilter to be applied to the full list of entities.
+   * A legacy EntityFilter carried over from older cursor formats. Converted to
+   * a FilterPredicate at query time. Not used by new code paths and may be
+   * removed in a future release.
    */
   filter?: EntityFilter;
   /**
-   * A predicate-based filter to be applied to the full list of entities.
+   * The primary filter applied to the full list of entities. Named "query"
+   * rather than "filter" to avoid colliding with the legacy EntityFilter field
+   * above.
    */
   query?: FilterPredicate;
   /**

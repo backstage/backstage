@@ -49,19 +49,19 @@ describe('parseEntityQuery', () => {
         ],
       };
       const result = parseEntityQuery({ query });
-      expect(result).toEqual(expect.objectContaining({ query }));
+      expect(result).toEqual(expect.objectContaining({ filter: query }));
     });
 
     it('parses query with $exists operator', () => {
       const query = { 'metadata.labels.team': { $exists: true } };
       const result = parseEntityQuery({ query });
-      expect(result).toEqual(expect.objectContaining({ query }));
+      expect(result).toEqual(expect.objectContaining({ filter: query }));
     });
 
     it('parses query with $in operator', () => {
       const query = { kind: { $in: ['component', 'api'] } };
       const result = parseEntityQuery({ query });
-      expect(result).toEqual(expect.objectContaining({ query }));
+      expect(result).toEqual(expect.objectContaining({ filter: query }));
     });
 
     it('passes through limit', () => {

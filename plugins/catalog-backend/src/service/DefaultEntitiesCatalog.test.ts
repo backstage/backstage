@@ -998,7 +998,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const limit = 2;
@@ -1171,7 +1171,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const limit = 2;
@@ -1345,7 +1345,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const request: QueryEntitiesInitialRequest = {
@@ -1451,7 +1451,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const request: QueryEntitiesInitialRequest = {
@@ -1546,7 +1546,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const request: QueryEntitiesInitialRequest = {
