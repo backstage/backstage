@@ -283,8 +283,9 @@ export function DependencyGraph<NodeData, EdgeData>(
   const [settled, setSettled] = useState(false);
   const [transitionsReady, setTransitionsReady] = useState(false);
   const settledRef = useRef(false);
+  const hasSettledOnceRef = useRef(false);
   const pendingInitialFlush = useRef(false);
-  const measuredLayoutCount = useRef(0);
+  const measurementsDirty = useRef(false);
 
   useEffect(() => {
     if (settled && !transitionsReady) {
@@ -296,6 +297,30 @@ export function DependencyGraph<NodeData, EdgeData>(
     return undefined;
   }, [settled, transitionsReady]);
 
+  // Settlement: after each render, useLayoutEffect in Node/Edge fires any
+  // measurements (setting measurementsDirty). This useEffect runs afterward.
+  // If no measurements happened, all nodes are measured, and we haven't
+  // settled yet, the layout is stable and we can settle.
+  useEffect(() => {
+    if (settledRef.current) return;
+    if (measurementsDirty.current) {
+      measurementsDirty.current = false;
+      return;
+    }
+    const nodeIds = graph.current.nodes();
+    const allMeasured =
+      nodeIds.length > 0 &&
+      nodeIds.every(id => {
+        const n = graph.current.node(id);
+        return n && n.width > 0 && n.height > 0;
+      });
+    if (allMeasured) {
+      settledRef.current = true;
+      hasSettledOnceRef.current = true;
+      setSettled(true);
+    }
+  }, [graphNodes, graphEdges]);
+
   // Fallback: if getBBox() returns zero dimensions (e.g. in jsdom or hidden
   // containers), setNode is never called and the normal settlement path never
   // triggers. This timeout ensures the graph still becomes visible.
@@ -304,6 +329,7 @@ export function DependencyGraph<NodeData, EdgeData>(
       const timeout = setTimeout(() => {
         if (!settledRef.current) {
           settledRef.current = true;
+          hasSettledOnceRef.current = true;
           setSettled(true);
         }
       }, 500);
@@ -439,11 +465,12 @@ export function DependencyGraph<NodeData, EdgeData>(
     });
 
     edges.forEach(e => {
+      const existing = graph.current.edge(e.from, e.to);
       graph.current.setEdge(e.from, e.to, {
         ...e,
         label: e.label,
-        width: 0,
-        height: 0,
+        width: (e.label && existing?.width) || 0,
+        height: (e.label && existing?.height) || 0,
         labelpos: labelPosition,
         labeloffset: labelOffset,
         weight: edgeWeight,
@@ -466,22 +493,7 @@ export function DependencyGraph<NodeData, EdgeData>(
           setGraphNodes(graph.current.nodes());
           setGraphEdges(graph.current.edges());
 
-          if (!settledRef.current) {
-            const nodeIds = graph.current.nodes();
-            const hasMeasuredNodes =
-              nodeIds.length > 0 &&
-              nodeIds.some(id => {
-                const n = graph.current.node(id);
-                return n && n.width > 0 && n.height > 0;
-              });
-            if (hasMeasuredNodes) {
-              measuredLayoutCount.current += 1;
-            }
-            if (measuredLayoutCount.current >= 2 || nodeIds.length === 0) {
-              settledRef.current = true;
-              setSettled(true);
-            }
-          }
+          // Settlement is handled by a useEffect — see below
         },
         250,
         { leading: true },
@@ -502,7 +514,35 @@ export function DependencyGraph<NodeData, EdgeData>(
       ranker,
     });
 
+    const nodesBefore = new Set(graph.current.nodes());
+    const edgesBefore = graph.current.edges().length;
     setNodesAndEdges();
+    const nodesAfter = new Set(graph.current.nodes());
+    const edgesAfter = graph.current.edges().length;
+
+    if (settledRef.current) {
+      const hasUnmeasured =
+        graph.current.nodes().some(id => {
+          const n = graph.current.node(id);
+          return n && n.width === 0 && n.height === 0;
+        }) ||
+        graph.current.edges().some(e => {
+          const edge = graph.current.edge(e);
+          return edge && edge.label && edge.width === 0 && edge.height === 0;
+        });
+      const topologyChanged =
+        hasUnmeasured ||
+        nodesAfter.size !== nodesBefore.size ||
+        edgesAfter !== edgesBefore ||
+        [...nodesAfter].some(id => !nodesBefore.has(id));
+
+      if (topologyChanged) {
+        settledRef.current = false;
+        setSettled(false);
+        setTransitionsReady(false);
+      }
+    }
+
     updateGraph();
 
     return updateGraph.cancel;
@@ -522,6 +562,7 @@ export function DependencyGraph<NodeData, EdgeData>(
 
   const setNode = useCallback(
     (id: string, node: Types.DependencyNode<NodeData>) => {
+      measurementsDirty.current = true;
       graph.current.setNode(id, node);
       updateGraph();
       if (!settledRef.current && !pendingInitialFlush.current) {
@@ -538,8 +579,16 @@ export function DependencyGraph<NodeData, EdgeData>(
 
   const setEdge = useCallback(
     (id: dagre.Edge, edge: Types.DependencyEdge<EdgeData>) => {
+      measurementsDirty.current = true;
       graph.current.setEdge(id, edge);
       updateGraph();
+      if (!settledRef.current && !pendingInitialFlush.current) {
+        pendingInitialFlush.current = true;
+        queueMicrotask(() => {
+          pendingInitialFlush.current = false;
+          updateGraph.flush();
+        });
+      }
       return graph.current;
     },
     [updateGraph],
