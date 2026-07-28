@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.22.0-next.1
+
+### Minor Changes
+
+- c6af8ac: Added audit logging for kubernetes-backend routes. The plugin now emits auditor events for cluster list, cluster proxy, entity workload queries, custom resource queries, and the deprecated services endpoint. Administrators can filter audit logs by `eventId` values `cluster-fetch` and `resource-fetch`, and by `queryType` in event metadata.
+
+  **BREAKING**: `KubernetesProxyOptions` now requires `AuditorService`.
+
 ## 0.21.7-next.0
 
 ### Patch Changes

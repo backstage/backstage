@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.3.2-next.0
+
+### Patch Changes
+
+- 1d026b0: Fixed `visitImports` to return an empty object instead of `undefined` for forward-compatibility with TypeScript 7's stricter return type checking.
+
 ## 0.3.1
 
 ### Patch Changes

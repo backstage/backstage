@@ -1,5 +1,21 @@
 # example-app-legacy
 
+## 0.2.124-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.18.0-next.1
+  - @backstage/plugin-catalog-react@3.2.1-next.1
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/plugin-catalog@2.0.8-next.1
+  - @backstage/integration-react@1.2.21-next.0
+  - @backstage/plugin-catalog-import@0.13.16-next.1
+  - @backstage/plugin-scaffolder@1.38.2-next.1
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.39-next.1
+  - @backstage/cli@0.36.5-next.0
+  - @backstage/plugin-scaffolder-react@2.0.3-next.1
+
 ## 0.2.124-next.0
 
 ### Patch Changes
