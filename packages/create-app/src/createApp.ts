@@ -61,7 +61,7 @@ export default async (opts: OptionValues): Promise<void> => {
 
   if (yarn.error) {
     Task.error(
-      'Yarn was not found. Please install Yarn before creating a Backstage app.',
+      'Yarn is not available. Please install Yarn before creating a Backstage app.',
     );
     hasPrerequisiteError = true;
   }
@@ -69,7 +69,7 @@ export default async (opts: OptionValues): Promise<void> => {
   if (python.error) {
     Task.log(
       chalk.yellow(
-        'Warning: Python not found. Python is required by node-gyp for some native dependencies.',
+        'Warning: Python is not available. Python is required by node-gyp for some native dependencies.',
       ),
     );
   }
