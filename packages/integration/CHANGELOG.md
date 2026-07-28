@@ -1,5 +1,16 @@
 # @backstage/integration
 
+## 2.1.0-next.0
+
+### Minor Changes
+
+- dc951d4: Added support for creating a GitHub credentials provider backed by the connections service.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.3.0-next.1
+
 ## 2.0.3
 
 ### Patch Changes
