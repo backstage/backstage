@@ -16,9 +16,6 @@ spec:
   agents:
     - claude-code
     - copilot
-  allowedTools:
-    - Read
-    - Edit
-    - WebSearch
+  allowedTools: Read Edit WebSearch
   license: Apache-2.0
   compatibility: Node.js 20+, macOS/Linux

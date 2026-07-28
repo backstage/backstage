@@ -94,12 +94,13 @@
               }
             },
             "allowedTools": {
-              "type": "array",
-              "description": "Tools or capabilities the skill is designed to use, as defined by the agentskills.io specification.",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              }
+              "type": "string",
+              "description": "Space-separated string of tools the skill is pre-approved to use, as defined by the agentskills.io specification.",
+              "examples": [
+                "Bash(git:*) Bash(jq:*) Read",
+                "Read Edit WebSearch"
+              ],
+              "minLength": 1
             },
             "license": {
               "type": "string",

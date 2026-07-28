@@ -206,23 +206,18 @@ describe('AiResourceV1alpha1 skill validator', () => {
       type: 'skill',
       lifecycle: 'production',
       owner: 'team-a',
-      allowedTools: ['Read', 'Write', 'Bash'],
+      allowedTools: 'Bash(git:*) Bash(jq:*) Read',
     };
     await expect(skillValidator.check(entity)).resolves.toBe(true);
   });
 
-  it('rejects allowedTools with empty strings', async () => {
-    (entity as any).spec.allowedTools = [''];
+  it('rejects empty allowedTools', async () => {
+    (entity as any).spec.allowedTools = '';
     await expect(skillValidator.check(entity)).rejects.toThrow(/allowedTools/);
   });
 
   it('rejects allowedTools with wrong type', async () => {
-    (entity as any).spec.allowedTools = 'not-an-array';
-    await expect(skillValidator.check(entity)).rejects.toThrow(/allowedTools/);
-  });
-
-  it('rejects allowedTools with wrong item type', async () => {
-    (entity as any).spec.allowedTools = [42];
+    (entity as any).spec.allowedTools = ['Read', 'Write'];
     await expect(skillValidator.check(entity)).rejects.toThrow(/allowedTools/);
   });
 
