@@ -185,7 +185,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
             ]);
           }
         });
-        entitiesQuery.orderBy('final_entities.entity_id', 'asc');
+        entitiesQuery.orderBy('final_entities.entity_ref', 'asc');
       } else {
         entitiesQuery = entitiesQuery.orderBy(
           'final_entities.entity_ref',
@@ -283,12 +283,12 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     withField = isPg
       ? withField.orderBy([
           { column: 'order_0.value', order: primaryOrder.order, nulls: 'last' },
-          { column: 'final_entities.entity_id', order: 'asc' },
+          { column: 'final_entities.entity_ref', order: 'asc' },
         ])
       : withField.orderBy([
           { column: 'order_0.value', order: undefined, nulls: 'last' },
           { column: 'order_0.value', order: primaryOrder.order },
-          { column: 'final_entities.entity_id', order: 'asc' },
+          { column: 'final_entities.entity_ref', order: 'asc' },
         ]);
     if (wantedRows < Number.MAX_SAFE_INTEGER) {
       withField = withField.limit(wantedRows);
@@ -316,7 +316,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       );
     withoutField = applyFilter(withoutField);
     withoutField = withoutField.orderBy(
-      'final_entities.entity_id',
+      'final_entities.entity_ref',
       'asc', // NULL group always stable-sorted ASC regardless of primary direction
     );
     if (limit !== undefined) {
@@ -468,7 +468,12 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // the set reachable through cursor pagination.
     const dbQuery = this.database.with(
       'filtered',
-      ['entity_id', 'final_entity', ...(sortField ? ['value'] : [])],
+      [
+        'entity_id',
+        'entity_ref',
+        'final_entity',
+        ...(sortField ? ['value'] : []),
+      ],
       inner => {
         if (sortField) {
           inner
@@ -483,6 +488,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
             .whereNotNull('final_entities.final_entity')
             .select({
               entity_id: 'final_entities.entity_id',
+              entity_ref: 'final_entities.entity_ref',
               final_entity: 'final_entities.final_entity',
               value: 'search.value',
             });
@@ -492,6 +498,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
             .whereNotNull('final_entity')
             .select({
               entity_id: 'final_entities.entity_id',
+              entity_ref: 'final_entities.entity_ref',
               final_entity: 'final_entities.final_entity',
             });
         }
@@ -530,7 +537,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // Move forward (or backward) in the set to the correct cursor position
     if (cursor.orderFieldValues) {
       if (cursor.orderFieldValues.length === 2) {
-        // The first will be the sortField value, the second the entity_id
+        // The first will be the sortField value, the second the entity_ref
         const [first, second] = cursor.orderFieldValues;
         dbQuery.andWhere(function nested() {
           this.where(
@@ -540,15 +547,15 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           )
             .orWhere('filtered.value', '=', first)
             .andWhere(
-              'filtered.entity_id',
+              'filtered.entity_ref',
               isFetchingBackwards !== isOrderingDescending ? '<' : '>',
               second,
             );
         });
       } else if (cursor.orderFieldValues.length === 1) {
-        // This will be the entity_id
+        // This will be the entity_ref
         const [first] = cursor.orderFieldValues;
-        dbQuery.andWhere('entity_id', isFetchingBackwards ? '<' : '>', first);
+        dbQuery.andWhere('entity_ref', isFetchingBackwards ? '<' : '>', first);
       }
     }
 
@@ -558,7 +565,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
     dbQuery.orderBy([
       ...(sortField ? [{ column: 'filtered.value', order }] : []),
-      { column: 'filtered.entity_id', order },
+      { column: 'filtered.entity_ref', order },
     ]);
 
     // Apply a manually set initial offset
@@ -901,5 +908,5 @@ function sortFieldsFromRow(
   row: DbSearchRow & DbFinalEntitiesRow,
   sortField?: EntityOrder | undefined,
 ) {
-  return sortField ? [row?.value, row?.entity_id] : [row?.entity_id];
+  return sortField ? [row?.value, row?.entity_ref] : [row?.entity_ref];
 }

@@ -20,6 +20,7 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import { randomUUID as uuid } from 'node:crypto';
 import {
@@ -1569,7 +1570,7 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const filter = {
+        const filter: EntityFilter = {
           key: 'spec.should_include_this',
         };
 
@@ -1585,10 +1586,10 @@ describe.each(databases.eachSupportedId())(
         const response = await catalog.queryEntities(request);
 
         expect(entitiesResponseToObjects(response.items)).toEqual([
-          entityFrom('KingOfTheJungle', { uid: 'id0', title: 'lion' }),
-          entityFrom('NotKingOfTheJungle', { uid: 'id1', title: 'cat' }),
-          entityFrom('NotACatKing', { uid: 'id2', title: 'atcatss' }),
           entityFrom('123', { uid: 'id3', title: 'king' }),
+          entityFrom('KingOfTheJungle', { uid: 'id0', title: 'lion' }),
+          entityFrom('NotACatKing', { uid: 'id2', title: 'atcatss' }),
+          entityFrom('NotKingOfTheJungle', { uid: 'id1', title: 'cat' }),
         ]);
         expect(response.pageInfo.nextCursor).toBeUndefined();
         expect(response.pageInfo.prevCursor).toBeUndefined();
@@ -1599,8 +1600,8 @@ describe.each(databases.eachSupportedId())(
           limit: 2,
         });
         expect(entitiesResponseToObjects(paginatedResponse.items)).toEqual([
+          entityFrom('123', { uid: 'id3', title: 'king' }),
           entityFrom('KingOfTheJungle', { uid: 'id0', title: 'lion' }),
-          entityFrom('NotKingOfTheJungle', { uid: 'id1', title: 'cat' }),
         ]);
         expect(paginatedResponse.pageInfo.nextCursor).not.toBeUndefined();
         expect(paginatedResponse.pageInfo.prevCursor).toBeUndefined();
@@ -1612,7 +1613,7 @@ describe.each(databases.eachSupportedId())(
         });
         expect(entitiesResponseToObjects(paginatedResponseNext.items)).toEqual([
           entityFrom('NotACatKing', { uid: 'id2', title: 'atcatss' }),
-          entityFrom('123', { uid: 'id3', title: 'king' }),
+          entityFrom('NotKingOfTheJungle', { uid: 'id1', title: 'cat' }),
         ]);
         expect(paginatedResponseNext.pageInfo.nextCursor).toBeUndefined();
         expect(paginatedResponseNext.pageInfo.prevCursor).not.toBeUndefined();
