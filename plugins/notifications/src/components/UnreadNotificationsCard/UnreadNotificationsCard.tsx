@@ -328,8 +328,8 @@ export const UnreadNotificationsCard = ({
                   className={styles.resultsCount}
                 >
                   {t('unreadCard.resultsCount', {
-                    displayed: displayedCount,
-                    total: totalCount,
+                    displayed: String(displayedCount),
+                    total: String(totalCount),
                   })}
                 </Text>
               </>

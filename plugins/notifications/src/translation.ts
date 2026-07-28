@@ -118,7 +118,8 @@ export const notificationsTranslationRef = createTranslationRef({
       },
     },
     unreadCard: {
-      title: 'Last unread notifications ({{count}})',
+      title_one: 'Last unread notifications ({{count}})',
+      title_other: 'Last unread notifications ({{count}})',
       viewAll: 'View All',
       emptyState: 'All caught up!',
       columnNotification: 'Notification',

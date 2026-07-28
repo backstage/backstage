@@ -187,7 +187,8 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'notificationsPage.tableTitle.unread_other': 'Unread notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_one': 'Read notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_other': 'Read notifications ({{count}})';
-    readonly 'unreadCard.title': 'Last unread notifications ({{count}})';
+    readonly 'unreadCard.title_one': 'Last unread notifications ({{count}})';
+    readonly 'unreadCard.title_other': 'Last unread notifications ({{count}})';
     readonly 'unreadCard.viewAll': 'View All';
     readonly 'unreadCard.emptyState': 'All caught up!';
     readonly 'unreadCard.columnNotification': 'Notification';
