@@ -23,7 +23,7 @@ import { FilterPredicate } from '@backstage/filter-predicates';
 function isEntitiesSearchFilter(
   filter: EntityFilter,
 ): filter is EntitiesSearchFilter {
-  return filter.hasOwnProperty('key');
+  return Object.prototype.hasOwnProperty.call(filter, 'key');
 }
 
 export function entityFilterToFilterPredicate(
