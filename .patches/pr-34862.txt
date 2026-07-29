@@ -1,0 +1,1 @@
+Errors in TypeScript configuration schema definitions no longer prevent apps from building or starting and are logged as warnings instead
