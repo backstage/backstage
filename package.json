@@ -125,7 +125,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:*",
     "@backstage/cli-defaults": "workspace:*",
-    "@backstage/codemods": "workspace:*",
     "@backstage/create-app": "workspace:*",
     "@backstage/e2e-test-utils": "workspace:*",
     "@backstage/eslint-plugin": "workspace:*",

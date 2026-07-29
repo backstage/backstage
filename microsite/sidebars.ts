@@ -729,7 +729,6 @@ export default {
             'tutorials/react-router-stable-migration',
             'tutorials/react18-migration',
             'tutorials/package-role-migration',
-            'tutorials/migrating-away-from-core',
             'tutorials/yarn-migration',
             'tutorials/migrate-to-mui5',
             'tutorials/auth-service-migration',
