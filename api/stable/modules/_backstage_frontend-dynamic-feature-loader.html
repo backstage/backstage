@@ -12,8 +12,14 @@ The frontend feature loader provided in this package works hand-in-hand with the
 <p>Enable the backend dynamic features in your backend application, as explained in the <a href="../backend-dynamic-feature-service/README.md#how-it-works"><code>backend-dynamic-feature-service</code> README.md file</a></p>
 </li>
 <li>
+<p>Install the <code>@backstage/frontend-dynamic-feature-loader</code> package in your frontend app:</p>
+<pre><code class="sh"><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-3">--cwd</span><span class="hl-2"> </span><span class="hl-4">packages/app</span><span class="hl-2"> </span><span class="hl-4">add</span><span class="hl-2"> </span><span class="hl-4">@backstage/frontend-dynamic-feature-loader</span>
+</code><button type="button">Copy</button></pre>
+
+</li>
+<li>
 <p>Add the frontend feature loader to the list of features when creating the frontend application:</p>
-<pre><code class="typescript"><span class="hl-3">const</span><span class="hl-2"> </span><span class="hl-5">app</span><span class="hl-2"> = </span><span class="hl-1">createApp</span><span class="hl-2">({</span><br/><span class="hl-2">  </span><span class="hl-6">features:</span><span class="hl-2"> [...</span><span class="hl-6">someOtherFeatures</span><span class="hl-2">, </span><span class="hl-1">dynamicFrontendFeaturesLoader</span><span class="hl-2">()],</span><br/><span class="hl-2">});</span>
+<pre><code class="typescript"><span class="hl-8">import</span><span class="hl-2"> { </span><span class="hl-6">dynamicFrontendFeaturesLoader</span><span class="hl-2"> } </span><span class="hl-8">from</span><span class="hl-2"> </span><span class="hl-4">&#39;@backstage/frontend-dynamic-feature-loader&#39;</span><span class="hl-2">;</span><br/><br/><span class="hl-3">const</span><span class="hl-2"> </span><span class="hl-5">app</span><span class="hl-2"> = </span><span class="hl-1">createApp</span><span class="hl-2">({</span><br/><span class="hl-2">  </span><span class="hl-6">features:</span><span class="hl-2"> [...</span><span class="hl-6">someOtherFeatures</span><span class="hl-2">, </span><span class="hl-1">dynamicFrontendFeaturesLoader</span><span class="hl-2">()],</span><br/><span class="hl-2">});</span>
 </code><button type="button">Copy</button></pre>
 
 </li>
