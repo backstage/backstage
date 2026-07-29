@@ -1,5 +1,11 @@
 # @backstage/config-loader
 
+## 1.11.1
+
+### Patch Changes
+
+- 60d2b50: Added an `onSchemaError` callback that allows callers to report TypeScript configuration schema errors and continue loading. The callback receives a `ConfigSchemaError` containing the source package and underlying cause. Without a handler, schema errors are thrown.
+
 ## 1.11.0
 
 ### Minor Changes

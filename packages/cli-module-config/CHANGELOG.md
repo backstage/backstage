@@ -1,5 +1,13 @@
 # @backstage/cli-module-config
 
+## 0.1.5
+
+### Patch Changes
+
+- 60d2b50: The `--strict` flag for `config:check` now treats TypeScript configuration schema errors as fatal. The same flag is now also available for `config:schema`.
+- Updated dependencies
+  - @backstage/config-loader@1.11.1
+
 ## 0.1.4
 
 ### Patch Changes

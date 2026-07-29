@@ -1,5 +1,13 @@
 # @backstage/backend-defaults
 
+## 0.17.6
+
+### Patch Changes
+
+- 60d2b50: TypeScript configuration schema warnings discovered while setting up secret redaction are now reported through the Backstage logger.
+- Updated dependencies
+  - @backstage/config-loader@1.11.1
+
 ## 0.17.5
 
 ### Patch Changes
