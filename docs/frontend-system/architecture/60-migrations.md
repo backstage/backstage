@@ -88,6 +88,13 @@ MyBlueprint.makeWithOverrides({
 
 Each field in the `configSchema` record is a standalone schema value rather than a factory function. This decouples the config schema declaration from any specific zod version, and lets you use any schema library that implements the Standard Schema interface with JSON Schema support.
 
+Extension definitions created by older versions of
+`@backstage/frontend-plugin-api` using `config.schema` remain compatible with
+newer frontend apps. Those versions resolve the callback schema to a portable
+schema before creating the extension definition. This means that
+`@backstage/frontend-app-api` consumes the portable schema without interpreting
+callback schemas or depending on Zod.
+
 ## 1.31
 
 ### `namespace` parameter should be removed

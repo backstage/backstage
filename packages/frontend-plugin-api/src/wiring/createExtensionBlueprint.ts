@@ -37,6 +37,7 @@ import {
 import { ExtensionDataContainer } from './types';
 import { PageBlueprint } from '../blueprints/PageBlueprint';
 import { FilterPredicate } from '@backstage/filter-predicates';
+import { assertNoLegacyConfigSchema } from '../schema/assertNoLegacyConfigSchema';
 
 /**
  * A function used to define a parameter mapping function in order to facilitate
@@ -513,6 +514,8 @@ export function createExtensionBlueprint<
 
 /** @internal */
 export function createExtensionBlueprint(options: any): any {
+  assertNoLegacyConfigSchema(options);
+
   const defineParams = options.defineParams as
     | ExtensionBlueprintDefineParams
     | undefined;
@@ -538,6 +541,8 @@ export function createExtensionBlueprint(options: any): any {
       }) as OverridableExtensionDefinition;
     },
     makeWithOverrides(args: any) {
+      assertNoLegacyConfigSchema(args);
+
       return createExtension({
         kind: options.kind,
         name: args.name,

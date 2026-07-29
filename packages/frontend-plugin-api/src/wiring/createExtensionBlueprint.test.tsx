@@ -337,6 +337,41 @@ describe('createExtensionBlueprint', () => {
     );
   });
 
+  it('should reject legacy config schemas during creation and override', () => {
+    const migrationError =
+      'The `config.schema` option is no longer supported. Migrate to the ' +
+      'top-level `configSchema` option with Standard Schema values.';
+    const options = {
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [coreExtensionData.reactElement],
+      factory: () => [coreExtensionData.reactElement(<div />)],
+    };
+
+    expect(() =>
+      (createExtensionBlueprint as any)({
+        ...options,
+        config: {
+          schema: {
+            value: (zImpl: typeof zodV4) => zImpl.string(),
+          },
+        },
+      }),
+    ).toThrow(migrationError);
+
+    const blueprint = createExtensionBlueprint(options);
+    expect(() =>
+      (blueprint.makeWithOverrides as any)({
+        config: {
+          schema: {
+            value: (zImpl: typeof zodV4) => zImpl.string(),
+          },
+        },
+        factory: () => [coreExtensionData.reactElement(<div />)],
+      }),
+    ).toThrow(migrationError);
+  });
+
   it('should allow getting inputs properly', () => {
     createExtensionBlueprint({
       kind: 'test-extension',

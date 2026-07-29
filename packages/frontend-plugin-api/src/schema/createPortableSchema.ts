@@ -35,24 +35,13 @@ interface ResolvedField {
 }
 
 /**
- * Internal representation that carries per-field resolvers alongside the
- * public PortableSchema surface, enabling schema merging.
- * @internal
- */
-export interface MergeablePortableSchema<TOutput = any, TInput = any>
-  extends PortableSchema<TOutput, TInput> {
-  /** @internal */
-  readonly _fields: Record<string, ResolvedField>;
-}
-
-/**
  * Resolves each field, eagerly validates JSON Schema support, and returns
  * a PortableSchema whose JSON Schema conversion is lazy.
  * @internal
  */
 export function createConfigSchema(
   fields: Record<string, StandardSchemaV1>,
-): MergeablePortableSchema {
+): PortableSchema {
   const resolved: Record<string, ResolvedField> = {};
 
   for (const [key, field] of Object.entries(fields)) {
@@ -63,39 +52,12 @@ export function createConfigSchema(
 }
 
 /**
- * Combines schemas from different sources for blueprint + override
- * composition. Each source may use a completely different schema library.
- * Because we track per-field resolvers, merging is just combining the
- * field maps.
- * @internal
- */
-export function mergePortableSchemas<A, B>(
-  a: MergeablePortableSchema<A> | undefined,
-  b: MergeablePortableSchema<B> | undefined,
-): MergeablePortableSchema<A & B> | undefined {
-  if (!a && !b) {
-    return undefined;
-  }
-  if (!a) {
-    return b as MergeablePortableSchema<A & B>;
-  }
-  if (!b) {
-    return a as MergeablePortableSchema<A & B>;
-  }
-
-  return buildPortableSchema<A & B>({
-    ...a._fields,
-    ...b._fields,
-  });
-}
-
-/**
  * Assembles resolved fields into a PortableSchema with per-field
  * validation (eager) and lazy JSON Schema generation.
  */
 function buildPortableSchema<TOutput = unknown>(
   fields: Record<string, ResolvedField>,
-): MergeablePortableSchema<TOutput> {
+): PortableSchema<TOutput> {
   function parse(input: unknown) {
     if (
       input !== undefined &&
@@ -130,7 +92,7 @@ function buildPortableSchema<TOutput = unknown>(
 
   let cached: { schema: JsonObject } | undefined;
 
-  const result: MergeablePortableSchema<TOutput> = {
+  return {
     parse,
     schema() {
       if (!cached) {
@@ -138,14 +100,7 @@ function buildPortableSchema<TOutput = unknown>(
       }
       return cached;
     },
-  } as MergeablePortableSchema<TOutput>;
-
-  Object.defineProperty(result, '_fields', {
-    value: fields,
-    enumerable: false,
-  });
-
-  return result;
+  };
 }
 
 /**

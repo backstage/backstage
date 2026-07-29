@@ -498,6 +498,39 @@ describe('createExtension', () => {
     }).toThrow("Invalid input: expected string, received undefined at 'foo'");
   });
 
+  it('should reject legacy config schemas during creation and override', () => {
+    const migrationError =
+      'The `config.schema` option is no longer supported. Migrate to the ' +
+      'top-level `configSchema` option with Standard Schema values.';
+    const options = {
+      attachTo: { id: 'root', input: 'default' },
+      output: [stringDataRef],
+      factory: () => [stringDataRef('value')],
+    };
+
+    expect(() =>
+      (createExtension as any)({
+        ...options,
+        config: {
+          schema: {
+            value: (zImpl: typeof z) => zImpl.string(),
+          },
+        },
+      }),
+    ).toThrow(migrationError);
+
+    const extension = createExtension(options);
+    expect(() =>
+      (extension.override as any)({
+        config: {
+          schema: {
+            value: (zImpl: typeof z) => zImpl.string(),
+          },
+        },
+      }),
+    ).toThrow(migrationError);
+  });
+
   it('should support new form of outputs', () => {
     expect(
       // @ts-expect-error

@@ -54,11 +54,11 @@ from `PageBlueprint.make` to `PageBlueprint.makeWithOverrides` and declare
 a config schema:
 
 ```tsx
+import { z } from 'zod';
+
 export const page = PageBlueprint.makeWithOverrides({
-  config: {
-    schema: {
-      subtitle: z => z.string().optional(),
-    },
+  configSchema: {
+    subtitle: z.string().optional(),
   },
   factory(origFactory, { config }) {
     return origFactory({
@@ -108,11 +108,12 @@ Each extension is registered with the app under a unique ID (for example,
 `page:todo`). The app reads the `app.extensions` section of the configuration
 to decide which extensions to enable, disable, or reconfigure.
 
-Extension blueprints declare a `config.schema` using
-[Zod](https://zod.dev/) validators. When the app starts, the framework
-parses and validates the configuration against the schema, then passes the
-result to the extension's factory function. This means your components
-receive typed, validated values instead of reading raw configuration
+Extension blueprints declare a `configSchema` using validators that support
+Standard Schema and JSON Schema. This example imports [Zod
+v4](https://zod.dev/) from the plugin package that owns the schema. When the app
+starts, the framework parses and validates the configuration against the schema,
+then passes the result to the extension's factory function. This means your
+components receive typed, validated values instead of reading raw configuration
 strings at runtime.
 
 This config-first approach means that adopters of your plugin can customize

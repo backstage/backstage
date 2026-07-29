@@ -16,10 +16,8 @@
 
 import { z as zodV3 } from 'zod/v3';
 import { z as zodV4 } from 'zod/v4';
-import {
-  createConfigSchema,
-  mergePortableSchemas,
-} from './createPortableSchema';
+import { createConfigSchema } from './createPortableSchema';
+import { optionalStringSchema } from './optionalStringSchema';
 
 describe('createConfigSchema', () => {
   describe('zod v4 schemas', () => {
@@ -154,88 +152,29 @@ describe('createConfigSchema', () => {
     });
   });
 
-  describe('merging schemas', () => {
-    it('should merge two zod v4 schemas and parse correctly', () => {
-      const a = createConfigSchema({ name: zodV4.string() });
-      const b = createConfigSchema({ count: zodV4.number().default(0) });
-
-      const merged = mergePortableSchemas(a, b)!;
-      expect(merged.parse({ name: 'hello' })).toEqual({
-        name: 'hello',
-        count: 0,
+  describe('Backstage schemas', () => {
+    it('should validate optional strings and generate JSON Schema', () => {
+      const schema = createConfigSchema({
+        path: optionalStringSchema,
+        title: optionalStringSchema,
       });
-    });
 
-    it('should merge schemas', () => {
-      const a = createConfigSchema({ name: zodV4.string() });
-      const b = createConfigSchema({ count: zodV4.number().default(0) });
-
-      const merged = mergePortableSchemas(a, b)!;
-      expect(merged.parse({ name: 'hello' })).toEqual({
-        name: 'hello',
-        count: 0,
+      expect(schema.parse({})).toEqual({});
+      expect(schema.parse({ path: '', title: 'Example' })).toEqual({
+        path: '',
+        title: 'Example',
       });
-    });
-
-    it('should produce combined errors after merge', () => {
-      const a = createConfigSchema({ name: zodV4.string() });
-      const b = createConfigSchema({ count: zodV4.number() });
-
-      const merged = mergePortableSchemas(a, b)!;
-
-      expect(() => merged.parse({})).toThrow(
-        "Invalid input: expected string, received undefined at 'name'; " +
-          "Invalid input: expected number, received undefined at 'count'",
+      expect(() => schema.parse({ path: null, title: 1 })).toThrow(
+        "Expected string at 'path'; Expected string at 'title'",
       );
-    });
-
-    it('should produce combined errors for type mismatches after merge', () => {
-      const a = createConfigSchema({ name: zodV4.string() });
-      const b = createConfigSchema({ count: zodV4.number() });
-
-      const merged = mergePortableSchemas(a, b)!;
-
-      expect(() => merged.parse({ name: 123, count: 'not a number' })).toThrow(
-        "Invalid input: expected string, received number at 'name'; " +
-          "Invalid input: expected number, received string at 'count'",
-      );
-    });
-
-    it('should produce correct JSON Schema after merge', () => {
-      const a = createConfigSchema({ name: zodV4.string() });
-      const b = createConfigSchema({ count: zodV4.number().optional() });
-
-      const merged = mergePortableSchemas(a, b)!;
-      const result = merged.schema();
-
-      expect(result.schema).toMatchObject({
+      expect(schema.schema().schema).toEqual({
         type: 'object',
         properties: {
-          name: { type: 'string' },
-          count: { type: 'number' },
+          path: { type: 'string' },
+          title: { type: 'string' },
         },
-        required: ['name'],
         additionalProperties: false,
       });
-    });
-
-    it('should handle merge with undefined', () => {
-      const a = createConfigSchema({ name: zodV4.string() });
-
-      expect(mergePortableSchemas(a, undefined)).toBe(a);
-      expect(mergePortableSchemas(undefined, a)).toBe(a);
-      expect(mergePortableSchemas(undefined, undefined)).toBeUndefined();
-    });
-
-    it('should let later fields win when merging overlapping keys', () => {
-      const a = createConfigSchema({ x: zodV4.string() });
-      const b = createConfigSchema({ x: zodV4.number() });
-
-      const merged = mergePortableSchemas(a, b)!;
-      expect(merged.parse({ x: 42 })).toEqual({ x: 42 });
-      expect(() => merged.parse({ x: 'hello' })).toThrow(
-        "Invalid input: expected number, received string at 'x'",
-      );
     });
   });
 

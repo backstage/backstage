@@ -37,6 +37,7 @@ import {
 import { FrontendPlugin } from './createFrontendPlugin';
 import { FrontendModule } from './createFrontendModule';
 import { FilterPredicate } from '@backstage/filter-predicates';
+import { assertNoLegacyConfigSchema } from '../schema/assertNoLegacyConfigSchema';
 
 /**
  * This symbol is used to pass parameter overrides from the extension override to the blueprint factory
@@ -439,6 +440,8 @@ export function createExtension<
 export function createExtension(
   options: any,
 ): OverridableExtensionDefinition<any> {
+  assertNoLegacyConfigSchema(options);
+
   const resolvedConfigSchema = options.configSchema
     ? createConfigSchema(options.configSchema)
     : undefined;
@@ -500,6 +503,8 @@ export function createExtension(
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
     override(overrideOptions: any) {
+      assertNoLegacyConfigSchema(overrideOptions);
+
       if (!Array.isArray(options.output)) {
         throw new Error(
           'Cannot override an extension that is not declared using the new format with outputs as an array',
