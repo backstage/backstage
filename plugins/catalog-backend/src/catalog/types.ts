@@ -16,8 +16,8 @@
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityFilter } from '@backstage/plugin-catalog-node';
-import { FilterPredicate } from '@backstage/filter-predicates';
+import type { EntityFilter } from '@backstage/plugin-catalog-node';
+import type { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * A pagination rule for entities.

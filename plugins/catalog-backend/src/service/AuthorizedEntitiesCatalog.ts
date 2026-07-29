@@ -157,6 +157,10 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
       let requestQuery: FilterPredicate | undefined;
 
       if (isQueryEntitiesCursorRequest(request)) {
+        // Cursor path: combine permission filter with the cursor's legacy
+        // EntityFilter field directly, since the downstream code converts it
+        // via entityFilterToFilterPredicate. Cannot use permissionPredicate()
+        // here because cursor.filter is EntityFilter, not FilterPredicate.
         requestFilter = request.cursor.filter;
         requestQuery = request.cursor.query;
         permissionedRequest = {
