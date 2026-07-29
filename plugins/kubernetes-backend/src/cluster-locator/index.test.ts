@@ -155,7 +155,7 @@ describe('getCombinedClusterSupplier', () => {
             metadata: {
               name: 'cluster',
               annotations: {
-                [ANNOTATION_KUBERNETES_API_SERVER]: 'mock',
+                [ANNOTATION_KUBERNETES_API_SERVER]: 'https://93.184.216.34',
                 [ANNOTATION_KUBERNETES_API_SERVER_CA]: 'mock',
                 [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'mock',
               },

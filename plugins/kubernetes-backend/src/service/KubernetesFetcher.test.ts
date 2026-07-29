@@ -179,6 +179,52 @@ describe('KubernetesFetcher', () => {
       });
     });
 
+    it('does not follow HTTP redirects when fetching resources', async () => {
+      let redirectTargetCalled = false;
+      worker.use(
+        rest.get('http://localhost:9999/api/v1/pods', (_, res, ctx) =>
+          res(
+            ctx.status(302),
+            ctx.set('Location', 'http://evil.example.com/api/v1/pods'),
+          ),
+        ),
+        rest.get('http://evil.example.com/api/v1/pods', () => {
+          redirectTargetCalled = true;
+          throw new Error('redirect target must not be requested');
+        }),
+        rest.get('http://localhost:9999/api/v1/services', (req, res, ctx) =>
+          res(
+            checkToken(req, ctx, 'token'),
+            withLabels(req, ctx, {
+              items: [{ metadata: { name: 'service-name' } }],
+            }),
+          ),
+        ),
+      );
+
+      const result = await sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        credential: { type: 'bearer token', token: 'token' },
+        objectTypesToFetch: OBJECTS_TO_FETCH,
+        labelSelector: '',
+        customResources: [],
+      });
+
+      expect(redirectTargetCalled).toBe(false);
+      expect(result.errors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            statusCode: 302,
+          }),
+        ]),
+      );
+    });
+
     it('should support clusters with a base path', async () => {
       worker.use(
         rest.get(
