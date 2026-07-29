@@ -17,6 +17,22 @@
 import { InputError } from '@backstage/errors';
 import { JsonPrimitive } from '@backstage/types';
 
+const PLACEHOLDER_PATTERN = /{{\s*([\w\[\]'"_.-]*)\s*}}/g;
+
+/**
+ * Returns the selector paths (e.g. `request.body.id`) referenced by
+ * `{{ ... }}` placeholders in the given pattern, in the same way that
+ * {@link createPatternResolver} parses them.
+ *
+ * @internal
+ */
+export function getPatternPlaceholders(pattern: string): string[] {
+  return Array.from(
+    pattern.matchAll(PLACEHOLDER_PATTERN),
+    match => match[1],
+  ).filter(Boolean);
+}
+
 /**
  * Takes a pattern string that may contain `{{ path.to.value }}` placeholders,
  * and returns a function that accepts a context object and returns strings that
@@ -36,7 +52,7 @@ export function createPatternResolver<TContext extends object = object>(
   //   "{{ foo }}-{{bar}}{{baz}}."
   // will result in:
   //   ['', 'foo', '-', 'bar', '', 'baz', '.']
-  const patternParts = pattern.split(/{{\s*([\w\[\]'"_.-]*)\s*}}/g);
+  const patternParts = pattern.split(PLACEHOLDER_PATTERN);
 
   const resolvers = new Array<(context: TContext) => JsonPrimitive>();
 
@@ -60,6 +76,10 @@ export function createPatternResolver<TContext extends object = object>(
           return value as JsonPrimitive;
         } else if (value === undefined || value === null) {
           throw new InputError(`No value for selector '${placeholderPart}'`);
+        } else if (typeof value === 'number' && Number.isNaN(value)) {
+          throw new InputError(
+            `Expected primitive value for selector '${placeholderPart}', got NaN`,
+          );
         } else {
           throw new InputError(
             `Expected primitive value for selector '${placeholderPart}', got ${typeof value}`,

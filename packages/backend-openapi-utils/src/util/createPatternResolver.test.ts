@@ -70,6 +70,11 @@ describe('createPatternResolver', () => {
     ).toThrowErrorMatchingInlineSnapshot(
       `"No value for selector 'a.b.length'"`,
     );
+    expect(() =>
+      createPatternResolver('{{a.b}}')({ a: { b: NaN } }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Expected primitive value for selector 'a.b', got NaN"`,
+    );
   });
 
   it('just passes down broken parts of patterns', () => {

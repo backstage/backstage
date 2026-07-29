@@ -157,6 +157,46 @@ describe('auditorMiddleware', () => {
           responses: { '200': { description: 'OK' } },
         },
       },
+
+      '/users-no-space/{userId}': {
+        get: {
+          operationId: 'getUserNoSpace',
+          'x-backstage-auditor': {
+            eventId: 'user-fetch',
+            meta: {
+              userId: '{{request.params.userId}}',
+            },
+          },
+          parameters: [
+            {
+              name: 'userId',
+              in: 'path',
+              required: true,
+              schema: {
+                type: 'string',
+              },
+            },
+          ],
+          responses: {
+            '200': {
+              description: 'Success',
+            },
+          },
+        },
+      },
+
+      '/invalid-pattern': {
+        get: {
+          operationId: 'invalidPattern',
+          'x-backstage-auditor': {
+            eventId: 'invalid-pattern-event',
+            meta: {
+              foo: '{{ foo.bar }}',
+            },
+          },
+          responses: { '200': { description: 'OK' } },
+        },
+      },
     },
   } as const;
 
@@ -334,5 +374,39 @@ describe('auditorMiddleware', () => {
         }),
       }),
     );
+  });
+
+  it('classifies placeholders without surrounding spaces as request patterns', async () => {
+    const { mockCreateEvent, mockSuccess } = mockAuditor;
+
+    router.get('/users-no-space/:userId', (req, res) => {
+      res.json({ id: req.params.userId });
+    });
+
+    router.use(errorMiddleware);
+
+    await request(app).get('/users-no-space/user123').expect(200);
+
+    expect(mockCreateEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventId: 'user-fetch',
+        meta: expect.objectContaining({ userId: 'user123' }),
+      }),
+    );
+    expect(mockSuccess).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects a meta pattern that references neither request nor response', async () => {
+    const { mockCreateEvent } = mockAuditor;
+
+    router.get('/invalid-pattern', (_req, res) => {
+      res.json({ success: true });
+    });
+    router.use(errorMiddleware);
+    router.use(middleware.error());
+
+    await request(app).get('/invalid-pattern').expect(500);
+
+    expect(mockCreateEvent).not.toHaveBeenCalled();
   });
 });

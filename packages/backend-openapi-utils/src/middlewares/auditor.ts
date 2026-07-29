@@ -22,7 +22,10 @@ import type {
 } from '@backstage/backend-plugin-api';
 import type { JsonObject, JsonPrimitive, JsonValue } from '@backstage/types';
 import { ForwardedError } from '@backstage/errors';
-import { createPatternResolver } from '../util/createPatternResolver';
+import {
+  createPatternResolver,
+  getPatternPlaceholders,
+} from '../util/createPatternResolver';
 
 type AuditorExtension = {
   eventId: string;
@@ -71,6 +74,27 @@ const VARIANT_LOOKUP: Record<string, string> = {
   PUT: 'update',
   DELETE: 'delete',
 };
+
+/** Returns the top-level context keys (e.g. "request", "response") referenced by a pattern's placeholders. */
+function getPatternContextRoots(pattern: string): Set<string> {
+  const roots = new Set<string>();
+  for (const placeholder of getPatternPlaceholders(pattern)) {
+    const [root] = placeholder.split(/[.[]/);
+    if (root) {
+      roots.add(root);
+    }
+  }
+  return roots;
+}
+
+function patternReferencesResponseBody(pattern: string): boolean {
+  return getPatternPlaceholders(pattern).some(
+    placeholder =>
+      placeholder === 'response.body' ||
+      placeholder.startsWith('response.body.') ||
+      placeholder.startsWith('response.body['),
+  );
+}
 
 /**
  *
@@ -140,12 +164,19 @@ export function auditorMiddlewareFactory(dependencies: {
     for (const [key, pattern] of Object.entries(metaPatterns)) {
       // Check if pattern contains placeholders
       if (pattern.includes('{{')) {
-        const usesRequest = pattern.includes('{{ request.');
-        const usesResponse = pattern.includes('{{ response.');
+        const roots = getPatternContextRoots(pattern);
+        const usesRequest = roots.has('request');
+        const usesResponse = roots.has('response');
         if (usesRequest && usesResponse) {
           throw new Error(
             `Pattern for meta field "${key}" cannot contain both request and response placeholders. ` +
               'Split into separate meta fields or use only one context type (either request or response) in this pattern.',
+          );
+        }
+        if (!usesRequest && !usesResponse) {
+          throw new Error(
+            `Pattern for meta field "${key}" must reference either "request" or "response" ` +
+              `(e.g. "{{ request.params.id }}"), got "${pattern}".`,
           );
         }
         const patternResolver = {
@@ -154,7 +185,7 @@ export function auditorMiddlewareFactory(dependencies: {
         } as const;
         if (usesRequest) {
           requestPatternResolvers.set(key, patternResolver);
-        } else if (usesResponse) {
+        } else {
           responsePatternResolvers.set(key, patternResolver);
         }
       } else {
@@ -254,7 +285,7 @@ export function auditorMiddlewareFactory(dependencies: {
 
     // Intercept response body if any pattern references response.body
     const needsResponseBody = Object.values(auditorConfig.meta ?? {}).some(
-      pattern => pattern.includes('{{ response.body'),
+      patternReferencesResponseBody,
     );
     if (needsResponseBody) {
       const originalJson = res.json.bind(res);
