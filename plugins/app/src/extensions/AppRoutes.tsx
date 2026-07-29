@@ -47,7 +47,11 @@ function RedirectWithParams({ to }: { to: string }) {
 
   return (
     <Navigate
-      to={`${path}${targetSearch || search}${targetHash || hash}`}
+      to={{
+        pathname: path,
+        search: targetSearch || search,
+        hash: targetHash || hash,
+      }}
       replace
     />
   );
