@@ -1,5 +1,14 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.8.5
+
+### Patch Changes
+
+- 60d2b50: TypeScript configuration schema warnings discovered while setting up secret redaction are now reported through the Backstage logger.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.6
+  - @backstage/config-loader@1.11.1
+
 ## 0.8.4
 
 ### Patch Changes

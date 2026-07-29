@@ -1,5 +1,13 @@
 # @backstage/cli-module-build
 
+## 0.1.6
+
+### Patch Changes
+
+- 60d2b50: Package preparation for publishing validates TypeScript configuration schemas strictly, preventing invalid schemas from being published. Other build and bundle paths report schema errors as warnings.
+- Updated dependencies
+  - @backstage/config-loader@1.11.1
+
 ## 0.1.5
 
 ### Patch Changes
