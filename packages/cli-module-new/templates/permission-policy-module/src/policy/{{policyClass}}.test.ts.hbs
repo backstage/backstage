@@ -1,0 +1,15 @@
+import { {{policyClass}} } from './{{policyClass}}';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+
+describe('{{policyClass}}', () => {
+  it('should allow all requests by default', async () => {
+    const policy = new {{policyClass}}();
+
+    const decision = await policy.handle(
+      { permission: { type: 'basic', name: 'test.permission', attributes: {} } },
+      undefined,
+    );
+
+    expect(decision).toEqual({ result: AuthorizeResult.ALLOW });
+  });
+});
