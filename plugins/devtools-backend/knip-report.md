@@ -1,10 +1,8 @@
 # Knip report
 
-## Unused dependencies (3)
+## Unused dependencies (1)
 
-| Name                              | Location     | Severity |
-| :-------------------------------- | :----------- | :------- |
-| @backstage/plugin-permission-node | plugins/devtools-backend/package.json | error    |
-| semver                            | plugins/devtools-backend/package.json | error    |
-| yn                                | plugins/devtools-backend/package.json | error    |
+| Name                              | Location          | Severity |
+| :-------------------------------- | :---------------- | :------- |
+| @backstage/plugin-permission-node | package.json:49:6 | error    |
 

@@ -269,6 +269,13 @@ export class PackageRoles {
 }
 
 // @public
+export function runCli(options: {
+  modules: ReadonlyArray<CliModule>;
+  name: string;
+  version?: string;
+}): Promise<void>;
+
+// @public @deprecated
 export function runCliModule(options: {
   module: CliModule;
   name: string;

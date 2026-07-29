@@ -14,13 +14,28 @@
  * limitations under the License.
  */
 
+import { z } from 'zod/v4';
 import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
   NotFoundErrorPage,
 } from '@backstage/frontend-plugin-api';
-import { Navigate, useRoutes } from 'react-router-dom';
+import { Navigate, useParams, useRoutes } from 'react-router-dom';
+
+function RedirectWithParams({ to }: { to: string }) {
+  const params = useParams() as Record<string, string>;
+  let target = to;
+  for (const [name, value] of Object.entries(params)) {
+    // Use \b (word boundary) for named params so that `:a` doesn't
+    // accidentally match inside `:ab` when both are present.
+    target = target.replace(
+      name === '*' ? /\*/g : new RegExp(`:${name}\\b`, 'g'),
+      value ?? '',
+    );
+  }
+  return <Navigate to={target} replace />;
+}
 
 export const AppRoutes = createExtension({
   name: 'routes',
@@ -32,18 +47,15 @@ export const AppRoutes = createExtension({
       coreExtensionData.reactElement,
     ]),
   },
-  config: {
-    schema: {
-      redirects: z =>
-        z
-          .array(
-            z.object({
-              from: z.string(),
-              to: z.string(),
-            }),
-          )
-          .optional(),
-    },
+  configSchema: {
+    redirects: z
+      .array(
+        z.object({
+          from: z.string(),
+          to: z.string(),
+        }),
+      )
+      .optional(),
   },
   output: [coreExtensionData.reactElement],
   factory({ inputs, config }) {
@@ -56,7 +68,7 @@ export const AppRoutes = createExtension({
             redirect.from === '/'
               ? redirect.from
               : `${redirect.from.replace(/\/$/, '')}/*`,
-          element: <Navigate to={redirect.to} replace />,
+          element: <RedirectWithParams to={redirect.to} />,
         })),
         ...inputs.routes.map(route => {
           const routePath = route.get(coreExtensionData.routePath);

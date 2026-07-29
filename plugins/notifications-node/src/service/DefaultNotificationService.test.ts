@@ -15,7 +15,7 @@
  */
 
 import { registerMswTestHooks } from '@backstage/test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
 import {
@@ -55,16 +55,16 @@ describe('DefaultNotificationService', () => {
       };
 
       server.use(
-        rest.post('http://example.com', async (req, res, ctx) => {
-          const json = await req.json();
+        http.post('http://example.com', async ({ request }) => {
+          const json = await request.json();
           expect(json).toEqual(body);
-          expect(req.headers.get('Authorization')).toBe(
+          expect(request.headers.get('Authorization')).toBe(
             mockCredentials.service.header({
               onBehalfOf: await auth.getOwnServiceCredentials(),
               targetPluginId: 'notifications',
             }),
           );
-          return res(ctx.status(200));
+          return new HttpResponse(null, { status: 200 });
         }),
       );
       await expect(service.send(body)).resolves.toBeUndefined();
@@ -77,16 +77,16 @@ describe('DefaultNotificationService', () => {
       };
 
       server.use(
-        rest.post('http://example.com', async (req, res, ctx) => {
-          const json = await req.json();
+        http.post('http://example.com', async ({ request }) => {
+          const json = await request.json();
           expect(json).toEqual(body);
-          expect(req.headers.get('Authorization')).toBe(
+          expect(request.headers.get('Authorization')).toBe(
             mockCredentials.service.header({
               onBehalfOf: await auth.getOwnServiceCredentials(),
               targetPluginId: 'notifications',
             }),
           );
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
       await expect(service.send(body)).rejects.toThrow(

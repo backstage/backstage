@@ -245,10 +245,10 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'signIn.title': 'Sign In';
     readonly 'signIn.loginFailed': 'Login failed';
     readonly 'signIn.customProvider.title': 'Custom User';
+    readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.subtitle': 'Enter your own User ID and credentials.\n This selection will not be stored.';
     readonly 'signIn.customProvider.userId': 'User ID';
     readonly 'signIn.customProvider.tokenInvalid': 'Token is not a valid OpenID Connect JWT Token';
-    readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.idToken': 'ID Token (optional)';
     readonly 'signIn.guestProvider.title': 'Guest';
     readonly 'signIn.guestProvider.enter': 'Enter';
@@ -1548,7 +1548,15 @@ export type TableFilter = {
 // Warning: (ae-missing-release-tag) "TableFiltersClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
+export type TableFiltersClassKey =
+  | 'root'
+  | 'value'
+  | 'header'
+  /**
+   * @deprecated Use `'header'` instead. This was a typo in the original class key.
+   */
+  | 'heder'
+  | 'filters';
 
 // Warning: (ae-missing-release-tag) "TableHeaderClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

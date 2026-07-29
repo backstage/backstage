@@ -181,4 +181,25 @@ describe('gitlab:repo:push', () => {
       );
     });
   });
+
+  describe('Push an empty commit to gitlab repository', () => {
+    it(`Should ${examples[3].description}`, async () => {
+      const input = yaml.parse(examples[3].example).steps[0].input;
+      mockDir.setContent({ [workspacePath]: {} });
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'feature-branch',
+        'Initial Commit',
+        [],
+        { allowEmpty: true },
+      );
+      expect(ctx.output).toHaveBeenCalledWith(
+        'commitHash',
+        'f8a2c9bd4e2915b0792b43235c779e82ddad54af',
+      );
+    });
+  });
 });

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-github",
-  "version": "0.1.1-next.0",
+  "version": "0.1.4",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -19,6 +19,7 @@
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-github",
   "files": [
     "dist",
     "bin"
@@ -36,7 +37,7 @@
     "@backstage/cli-node": "workspace:^",
     "@octokit/request": "^8.0.0",
     "chalk": "^4.0.0",
-    "cleye": "^2.3.0",
+    "cleye": "^2.6.0",
     "express": "^4.22.0",
     "fs-extra": "^11.2.0",
     "inquirer": "^8.2.0",
@@ -47,6 +48,5 @@
     "@backstage/cli": "workspace:^",
     "@types/express": "^4.17.6",
     "@types/fs-extra": "^11.0.0"
-  },
-  "bin": "bin/backstage-cli-module-github"
+  }
 }

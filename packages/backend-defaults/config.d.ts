@@ -784,10 +784,24 @@ export interface Config {
       | {
           store: 'redis';
           /**
-           * A redis connection string in the form `redis://user:pass@host:port`.
+           * A redis connection string in the form `redis://user:pass@host:port`,
+           * or an object with connection options passed directly to the underlying
+           * client (e.g. `{ url: 'redis://localhost:6379', pingInterval: 60000 }`).
+           * The object form is only supported for the Redis store.
            * @visibility secret
            */
-          connection: string;
+          connection:
+            | string
+            | {
+                /**
+                 * The Redis connection URL.
+                 */
+                url: string;
+                /**
+                 * Other connection settings
+                 */
+                [key: string]: unknown;
+              };
           /** An optional default TTL (in milliseconds, if given as a number). */
           defaultTtl?: number | HumanDuration | string;
           redis?: {
@@ -1179,6 +1193,52 @@ export interface Config {
             version?: string;
             /**
              * Schema URL for the meter.
+             */
+            schemaUrl?: string;
+          };
+        };
+      };
+    };
+
+    /**
+     * Tracing-related backend configuration. Honored by Backstage backend
+     * plugins that emit OpenTelemetry trace spans.
+     */
+    tracing?: {
+      /**
+       * Opt-in capture of attributes that may identify users or contain
+       * sensitive data on backend trace spans.
+       */
+      capture?: {
+        /**
+         * When true, backend plugins emitting trace spans for authenticated
+         * requests SHOULD include the authenticated principal's identity as
+         * `enduser.id` (the user entity ref for a user principal, or the
+         * service subject for a service principal). Defaults to false.
+         */
+        endUser?: boolean;
+      };
+      /**
+       * Plugin-specific tracing configuration. Each plugin can override
+       * tracer instrumentation scope metadata.
+       */
+      plugin?: {
+        [pluginId: string]: {
+          /**
+           * Tracer configuration for this plugin.
+           */
+          tracer?: {
+            /**
+             * Custom tracer name. If not set, defaults to
+             * backstage-plugin-{pluginId}.
+             */
+            name?: string;
+            /**
+             * Version for the tracer.
+             */
+            version?: string;
+            /**
+             * Schema URL for the tracer.
              */
             schemaUrl?: string;
           };

@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name                  | Location     | Severity |
-| :-------------------- | :----------- | :------- |
-| @backstage/create-app | packages/e2e-test/package.json | error    |
+| Name              | Location          | Severity |
+| :---------------- | :---------------- | :------- |
+| @backstage/errors | package.json:37:6 | error    |
 

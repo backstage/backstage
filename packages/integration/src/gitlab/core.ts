@@ -75,7 +75,7 @@ export function getGitLabRequestOptions(
 // Converts
 // from: https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
 // to:   https://gitlab.com/api/v4/projects/groupA%2Fteams%2FteamA%2FsubgroupA%2FrepoA/repository/files/filepath/raw?ref=branch
-export function buildProjectUrl(
+function buildProjectUrl(
   target: string,
   projectPathOrID: string | Number,
   config: GitLabIntegrationConfig,

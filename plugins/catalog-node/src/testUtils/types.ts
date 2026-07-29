@@ -134,6 +134,12 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<void>;
 
+  updateLocation(
+    id: string,
+    location: { type?: string; target: string },
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): Promise<Location>;
+
   getLocationByEntity(
     entityRef: string | CompoundEntityRef,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,

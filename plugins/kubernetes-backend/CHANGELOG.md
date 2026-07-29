@@ -1,5 +1,136 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.22.0-next.1
+
+### Minor Changes
+
+- c6af8ac: Added audit logging for kubernetes-backend routes. The plugin now emits auditor events for cluster list, cluster proxy, entity workload queries, custom resource queries, and the deprecated services endpoint. Administrators can filter audit logs by `eventId` values `cluster-fetch` and `resource-fetch`, and by `queryType` in event metadata.
+
+  **BREAKING**: `KubernetesProxyOptions` now requires `AuditorService`.
+
+## 0.21.7-next.0
+
+### Patch Changes
+
+- 684c9b9: Fixed `AwsIamStrategy` to resolve account-specific AWS credentials when an assume role ARN is configured, enabling support for `webIdentityTokenFile` and `accountDefaults` in environments without default AWS credentials.
+- f0834bd: Added a `kubernetes.clusterLocatorContinueOnError` configuration option. When set to `true`, a failing cluster locator no longer causes the entire cluster list request to fail — errors are logged and clusters from the remaining successful locators are still returned. The default is `false`, preserving the existing behavior.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-kubernetes-node@0.4.7-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+
+## 0.21.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/catalog-client@1.16.1
+  - @backstage/plugin-catalog-node@2.2.3
+  - @backstage/plugin-kubernetes-node@0.4.6
+  - @backstage/plugin-permission-node@0.11.2
+
+## 0.21.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.4.6-next.0
+  - @backstage/plugin-permission-node@0.11.2-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog-node@2.2.3-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+
+## 0.21.5
+
+### Patch Changes
+
+- 998664c: chore(deps): Bump `ws` from 8.20.0 to 8.20.1
+- c4f935b: pool HTTPS agents per cluster in KubernetesFetcher
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-kubernetes-node@0.4.5
+  - @backstage/plugin-permission-node@0.11.1
+
+## 0.21.5-next.0
+
+### Patch Changes
+
+- 998664c: chore(deps): Bump `ws` from 8.20.0 to 8.20.1
+- c4f935b: pool HTTPS agents per cluster in KubernetesFetcher
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0-next.0
+  - @backstage/plugin-catalog-node@2.2.2-next.0
+  - @backstage/plugin-kubernetes-node@0.4.5-next.0
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.21.4
+
+### Patch Changes
+
+- 1ecc3ca: Fixed spelling mistakes in internal code
+- Updated dependencies
+  - @backstage/catalog-model@1.9.0
+  - @backstage/errors@1.3.1
+  - @backstage/integration-aws-node@0.2.0
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-catalog-node@2.2.1
+  - @backstage/plugin-kubernetes-common@0.9.12
+  - @backstage/plugin-kubernetes-node@0.4.4
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/catalog-client@1.15.1
+  - @backstage/config@1.3.8
+
+## 0.21.4-next.1
+
+### Patch Changes
+
+- 1ecc3ca: Fixed spelling mistakes in internal code
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.9.1-next.1
+
+## 0.21.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-kubernetes-node@0.4.4-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-client@1.15.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/integration-aws-node@0.1.22-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.12-next.0
+
+## 0.21.3
+
+### Patch Changes
+
+- ed6b53c: Removed bare catch-and-rethrow blocks that served no purpose.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/catalog-client@1.15.0
+  - @backstage/plugin-kubernetes-node@0.4.3
+  - @backstage/plugin-permission-node@0.10.12
+  - @backstage/config@1.3.7
+  - @backstage/integration-aws-node@0.1.21
+  - @backstage/plugin-kubernetes-common@0.9.11
+  - @backstage/plugin-permission-common@0.9.8
+
 ## 0.21.3-next.2
 
 ### Patch Changes

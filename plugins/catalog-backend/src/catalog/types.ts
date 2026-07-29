@@ -230,8 +230,21 @@ export interface QueryEntitiesInitialRequest {
     term: string;
     fields?: string[];
   };
-  skipTotalItems?: boolean;
+  /**
+   * Controls whether the response's `totalItems` is computed.
+   *
+   * `'include'` (default) — compute it. `'exclude'` — skip the count query
+   * entirely; the response `totalItems` will be `0`. Additional modes (e.g.
+   * approximate counts) may be added in the future.
+   */
+  totalItems?: TotalItemsMode;
 }
+
+/**
+ * Controls whether {@link EntitiesCatalog.queryEntities} computes the
+ * `totalItems` field on the response.
+ */
+export type TotalItemsMode = 'include' | 'exclude';
 
 /**
  * Request for {@link EntitiesCatalog.queryEntities} used to

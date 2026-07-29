@@ -35,7 +35,7 @@ describe('TemplateCategoryPicker', () => {
 
   it('should post the error to errorApi if an errors is returned', async () => {
     (useEntityTypeFilter as jest.Mock).mockReturnValue({
-      error: new Error('something broked'),
+      error: new Error('something broken'),
     });
 
     mockAlertApi.clearAlerts();
@@ -48,7 +48,7 @@ describe('TemplateCategoryPicker', () => {
 
     expect(mockAlertApi.getAlerts().length).toBeGreaterThanOrEqual(1);
     expect(mockAlertApi.getAlerts()[0]).toMatchObject({
-      message: expect.stringContaining('something broked'),
+      message: expect.stringContaining('something broken'),
       severity: 'error',
     });
   });

@@ -37,6 +37,10 @@ The required steps in the host build are to install dependencies with
 `yarn install`, generate type definitions using `yarn tsc`, and build the backend
 package with `yarn build:backend`.
 
+:::note
+Run these commands with the same Node version as the Docker base image. Using a different version will cause native modules to fail at runtime.
+:::
+
 In a CI workflow it might look something like this, from the root:
 
 ```bash
@@ -113,7 +117,7 @@ CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app
 
 For more details on how the `backend:bundle` command and the `skeleton.tar.gz`
 file works, see the
-[`backend:bundle` command docs](../tooling/cli/03-commands.md#package-bundle).
+[`backend:bundle` command docs](../tooling/cli/module-build.md#package-bundle).
 
 The `Dockerfile` is located at `packages/backend/Dockerfile`, but needs to be
 executed with the root of the repo as the build context, in order to get access

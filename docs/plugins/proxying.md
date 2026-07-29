@@ -136,44 +136,68 @@ To fix the issue with missing request body passed by proxy to the target, set `p
 
 In that case, mind setting the `Content-Type` header to either `application/json` or `application/x-www-form-urlencoded`.
 
-### Proxy Extension Endpoint
+### Proxy Endpoints Extension Point
 
-The proxy plugin additionally supports a `proxyExtensionEndpoint` which a proxy
-plugin module can utilize in order to programmatically register additional
-endpoints, whose payloads are specified exactly as in app-config (described
-above). Note that endpoints configured in app-config will always override those
-registered in this manner.
+The proxy plugin additionally supports a `proxyEndpointsExtensionPoint` which a
+proxy plugin module can utilize in order to programmatically register
+additional endpoints, whose payloads are specified exactly as in app-config
+(described above). Note that endpoints configured in app-config will always
+override those registered in this manner.
 
-Example:
+To scaffold a module package, run `yarn new`, select `backend-module`, and
+fill out the prompts with `proxy` as the plugin ID. This will create
+`plugins/proxy-backend-module-<moduleId>` with `src/module.ts` and
+`src/index.ts` files. The scaffolded package only depends on
+`@backstage/backend-plugin-api`, so add the `@backstage/plugin-proxy-node`
+package that provides the extension point:
 
-```ts
+```bash
+yarn --cwd plugins/proxy-backend-module-demo-additional-endpoints add @backstage/plugin-proxy-node
+```
+
+Then replace the generated `src/module.ts` with the example below:
+
+```ts title="plugins/proxy-backend-module-demo-additional-endpoints/src/module.ts"
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node/alpha';
 
-backend.add(
-  createBackendModule({
-    pluginId: 'proxy',
-    moduleId: 'demo-additional-endpoints',
-    register: reg => {
-      reg.registerInit({
-        deps: {
-          proxyEndpoints: proxyEndpointsExtensionPoint,
-        },
-        init: async ({ proxyEndpoints }) => {
-          let largerExampleAuth: string = /* exercise for the reader */;
-          proxyEndpoints.addProxyEndpoints({
-            "/simple-example": "http://simple.example.com:8080",
-            "/larger-example/v1": {
-              target: "http://larger.example.com:8080/svc.v1",
-              credentials: "require",
-              headers: {
-                Authorization: largerExampleAuth
-              },
+export const proxyModuleDemoAdditionalEndpoints = createBackendModule({
+  pluginId: 'proxy',
+  moduleId: 'demo-additional-endpoints',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        proxyEndpoints: proxyEndpointsExtensionPoint,
+      },
+      async init({ proxyEndpoints }) {
+        // Replace with however your setup obtains the credential.
+        const largerExampleAuth = 'Bearer <token>';
+        proxyEndpoints.addProxyEndpoints({
+          '/simple-example': 'http://simple.example.com:8080',
+          '/larger-example/v1': {
+            target: 'http://larger.example.com:8080/svc.v1',
+            credentials: 'require',
+            headers: {
+              Authorization: largerExampleAuth,
             },
-          });
-        },
-      });
-    },
-  }),
+          },
+        });
+      },
+    });
+  },
+});
+```
+
+```ts title="plugins/proxy-backend-module-demo-additional-endpoints/src/index.ts"
+export { proxyModuleDemoAdditionalEndpoints as default } from './module';
+```
+
+Then install the module alongside the proxy plugin in your backend entry
+point (usually `packages/backend/src/index.ts`):
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-proxy-backend'));
+backend.add(
+  import('@internal/plugin-proxy-backend-module-demo-additional-endpoints'),
 );
 ```

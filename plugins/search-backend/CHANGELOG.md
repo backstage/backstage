@@ -1,5 +1,117 @@
 # @backstage/plugin-search-backend
 
+## 2.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+  - @backstage/plugin-search-backend-node@1.4.7-next.0
+  - @backstage/backend-openapi-utils@0.7.1-next.0
+
+## 2.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.0
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-permission-node@0.11.2
+  - @backstage/plugin-search-backend-node@1.4.6
+
+## 2.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
+## 2.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.2-next.0
+  - @backstage/plugin-search-backend-node@1.4.6-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/backend-openapi-utils@0.6.11-next.0
+
+## 2.1.3
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-permission-node@0.11.1
+  - @backstage/plugin-search-backend-node@1.4.5
+
+## 2.1.3-next.0
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.1-next.0
+  - @backstage/plugin-search-backend-node@1.4.5-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/backend-openapi-utils@0.6.10-next.0
+
+## 2.1.2
+
+### Patch Changes
+
+- 303954b: Added action for search backend to query search engine using the actions registry
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-permission-node@0.11.0
+  - @backstage/plugin-permission-common@0.9.9
+  - @backstage/plugin-search-backend-node@1.4.4
+  - @backstage/backend-openapi-utils@0.6.9
+  - @backstage/config@1.3.8
+  - @backstage/plugin-search-common@1.2.24
+
+## 2.1.2-next.1
+
+### Patch Changes
+
+- 303954b: Added action for search backend to query search engine using the actions registry
+
+## 2.1.2-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-openapi-utils@0.6.9-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/plugin-search-backend-node@1.4.4-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-search-common@1.2.24-next.0
+
+## 2.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-search-backend-node@1.4.3
+  - @backstage/backend-openapi-utils@0.6.8
+  - @backstage/plugin-permission-node@0.10.12
+  - @backstage/config@1.3.7
+  - @backstage/plugin-permission-common@0.9.8
+  - @backstage/plugin-search-common@1.2.23
+
 ## 2.1.1-next.2
 
 ### Patch Changes

@@ -61,9 +61,11 @@ export type MicrosoftGraphProviderConfig = {
    */
   clientSecret?: string;
   /**
-   * The filter to apply to extract users.
+   * The filter to apply to extract users. Disabled users
+   * (`accountEnabled === false`) are always filtered out client-side
+   * regardless of this setting.
    *
-   * E.g. "accountEnabled eq true and userType eq 'member'"
+   * E.g. "userType eq 'member'"
    */
   userFilter?: string;
   /**
@@ -351,6 +353,11 @@ export function readProviderConfig(
   if (userFilter && userGroupMemberSearch) {
     throw new Error(
       `userGroupMemberSearch cannot be specified when userFilter is defined.`,
+    );
+  }
+  if (userFilter && userGroupMemberPath) {
+    throw new Error(
+      `userGroupMemberPath cannot be specified when userFilter is defined.`,
     );
   }
 

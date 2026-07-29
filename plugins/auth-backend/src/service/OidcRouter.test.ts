@@ -28,6 +28,7 @@ import {
 } from '@backstage/backend-test-utils';
 import request from 'supertest';
 import crypto from 'node:crypto';
+import type { JsonObject } from '@backstage/types';
 import { OidcRouter } from './OidcRouter';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
@@ -35,7 +36,8 @@ import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcService } from '../service/OidcService';
 import { TokenIssuer } from '../identity/types';
 import { OfflineAccessService } from './OfflineAccessService';
-import { CimdClientInfo, isCimdUrl } from './CimdClient';
+import { CimdClientInfo, validateCimdUrl } from './CimdClient';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 jest.mock('./CimdClient', () => {
   const actual = jest.requireActual('./CimdClient');
@@ -63,7 +65,15 @@ describe('OidcRouter', () => {
     mockFetchCimdMetadata.mockReset();
   });
 
-  async function createRouter(databaseId: TestDatabaseId) {
+  async function createRouter(
+    databaseId: TestDatabaseId,
+    authConfig: JsonObject = {
+      experimentalDynamicClientRegistration: {
+        enabled: true,
+        allowedRedirectUriPatterns: ['*'],
+      },
+    },
+  ) {
     const knex = await databases.init(databaseId);
 
     await knex.migrate.latest({
@@ -92,13 +102,10 @@ describe('OidcRouter', () => {
 
     const mockAuth = mockServices.auth.mock();
     const mockHttpAuth = mockServices.httpAuth.mock();
+    const mockLogger = mockServices.logger.mock();
     const mockConfig = mockServices.rootConfig({
       data: {
-        auth: {
-          experimentalDynamicClientRegistration: {
-            enabled: true,
-          },
-        },
+        auth: authConfig,
       },
     });
 
@@ -109,7 +116,7 @@ describe('OidcRouter', () => {
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       config: mockConfig,
-      logger: mockServices.logger.mock(),
+      logger: mockLogger,
     });
 
     const oidcRouter = OidcRouter.create({
@@ -117,7 +124,7 @@ describe('OidcRouter', () => {
       tokenIssuer: mockTokenIssuer,
       baseUrl: 'http://localhost:7000',
       appUrl: 'http://localhost:3000',
-      logger: mockServices.logger.mock(),
+      logger: mockLogger,
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       httpAuth: mockHttpAuth,
@@ -133,11 +140,16 @@ describe('OidcRouter', () => {
         userInfo: userInfoDatabase,
         service: oidcService,
         tokenIssuer: mockTokenIssuer,
+        logger: mockLogger,
       },
     };
   }
 
-  async function createRouterWithOfflineAccess(databaseId: TestDatabaseId) {
+  async function createRouterWithOfflineAccess(
+    databaseId: TestDatabaseId,
+    refreshTokenConfig?: Record<string, unknown>,
+    extraAuthConfig?: Record<string, unknown>,
+  ) {
     const knex = await databases.init(databaseId);
 
     await knex.migrate.latest({
@@ -166,15 +178,25 @@ describe('OidcRouter', () => {
 
     const mockAuth = mockServices.auth.mock();
     const mockHttpAuth = mockServices.httpAuth.mock();
+    const mockCatalog = catalogServiceMock.mock();
+    mockCatalog.getEntityByRef.mockResolvedValue({
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: { name: 'test-user', namespace: 'default' },
+      spec: {},
+    });
     const mockConfig = mockServices.rootConfig({
       data: {
         auth: {
           experimentalDynamicClientRegistration: {
             enabled: true,
+            allowedRedirectUriPatterns: ['*'],
           },
           experimentalRefreshToken: {
             enabled: true,
+            ...refreshTokenConfig,
           },
+          ...extraAuthConfig,
         },
       },
     });
@@ -186,6 +208,8 @@ describe('OidcRouter', () => {
       database: { getClient: async () => knex },
       logger: mockServices.logger.mock(),
       lifecycle: mockLifecycle,
+      catalog: mockCatalog,
+      auth: mockAuth,
     });
 
     const oidcService = OidcService.create({
@@ -221,11 +245,40 @@ describe('OidcRouter', () => {
         userInfo: userInfoDatabase,
         service: oidcService,
         tokenIssuer: mockTokenIssuer,
+        catalog: mockCatalog,
       },
     };
   }
 
   describe.each(databases.eachSupportedId())('%p', databaseId => {
+    describe('deprecation warnings', () => {
+      it('should warn when DCR is enabled', async () => {
+        const {
+          router,
+          mocks: { logger },
+        } = await createRouter(databaseId);
+
+        router.getRouter();
+
+        expect(logger.warn).toHaveBeenCalledWith(
+          "DEPRECATION WARNING: The 'auth.experimentalDynamicClientRegistration' configuration is deprecated. Migrate to Client ID Metadata Documents (CIMD) using 'auth.clientIdMetadataDocuments'.",
+        );
+      });
+
+      it('should not warn when only CIMD is enabled', async () => {
+        const {
+          router,
+          mocks: { logger },
+        } = await createRouter(databaseId, {
+          experimentalClientIdMetadataDocuments: { enabled: true },
+        });
+
+        router.getRouter();
+
+        expect(logger.warn).not.toHaveBeenCalled();
+      });
+    });
+
     describe('/v1/userinfo', () => {
       it('should return user info for full tokens', async () => {
         const {
@@ -378,6 +431,57 @@ describe('OidcRouter', () => {
         });
       });
 
+      it('should reject redirect_uri allowlist matches across URL components', async () => {
+        const { router } = await createRouter(databaseId, {
+          experimentalDynamicClientRegistration: {
+            enabled: true,
+            allowedRedirectUriPatterns: ['https://*.spotify.com/*'],
+          },
+        });
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(router.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        await request(server)
+          .post('/api/auth/v1/register')
+          .send({
+            client_name: 'Test Client',
+            redirect_uris: ['https://app.spotify.com/oauth/cb'],
+            response_types: ['code'],
+            grant_types: ['authorization_code'],
+            scope: 'openid',
+          })
+          .expect(201);
+
+        await request(server)
+          .post('/api/auth/v1/register')
+          .send({
+            client_name: 'Other Client',
+            redirect_uris: ['https://example.org/.spotify.com/cb'],
+            response_types: ['code'],
+            grant_types: ['authorization_code'],
+            scope: 'openid',
+          })
+          .expect(400);
+      });
+
       it('should create an authorization session via authorization endpoint', async () => {
         const {
           mocks: { service },
@@ -476,6 +580,7 @@ describe('OidcRouter', () => {
 
         expect(response.body).toEqual({
           id: authSession.id,
+          clientId: client.clientId,
           clientName: 'Test Client',
           scope: 'openid',
           redirectUri: 'https://example.com/callback',
@@ -920,78 +1025,84 @@ describe('OidcRouter', () => {
       });
     });
 
+    async function doAuthFlowWithOfflineAccess(
+      databaseId_: TestDatabaseId,
+      refreshTokenConfig?: Record<string, unknown>,
+    ) {
+      const result = await createRouterWithOfflineAccess(
+        databaseId_,
+        refreshTokenConfig,
+      );
+      const {
+        mocks: { auth, service, tokenIssuer, httpAuth },
+        router,
+      } = result;
+
+      tokenIssuer.issueToken.mockResolvedValue({
+        token: 'mock-access-token',
+      });
+
+      httpAuth.credentials.mockResolvedValueOnce(
+        mockCredentials.user(MOCK_USER_ENTITY_REF),
+      );
+      auth.isPrincipal.mockReturnValueOnce(true);
+
+      const client = await service.registerClient({
+        clientName: 'Test Client',
+        redirectUris: ['https://example.com/callback'],
+        responseTypes: ['code'],
+        grantTypes: ['authorization_code', 'refresh_token'],
+        scope: 'openid offline_access',
+      });
+
+      const authSession = await service.createAuthorizationSession({
+        clientId: client.clientId,
+        redirectUri: 'https://example.com/callback',
+        responseType: 'code',
+        scope: 'openid offline_access',
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          createBackendPlugin({
+            pluginId: 'auth',
+            register(reg) {
+              reg.registerInit({
+                deps: { httpRouter: coreServices.httpRouter },
+                async init({ httpRouter }) {
+                  httpRouter.use(router.getRouter());
+                  httpRouter.addAuthPolicy({
+                    path: '/',
+                    allow: 'unauthenticated',
+                  });
+                },
+              });
+            },
+          }),
+        ],
+      });
+
+      const approvalResponse = await request(server)
+        .post(`/api/auth/v1/sessions/${authSession.id}/approve`)
+        .set('Authorization', `Bearer ${MOCK_USER_TOKEN}`)
+        .expect(200);
+
+      const redirectUrl = new URL(approvalResponse.body.redirectUrl);
+      const authorizationCode = redirectUrl.searchParams.get('code')!;
+
+      const tokenResponse = await request(server)
+        .post('/api/auth/v1/token')
+        .send({
+          grant_type: 'authorization_code',
+          code: authorizationCode,
+          redirect_uri: 'https://example.com/callback',
+        })
+        .expect(200);
+
+      return { server, tokenResponse, client, ...result };
+    }
+
     describe('refresh tokens', () => {
-      async function doAuthFlowWithOfflineAccess(databaseId_: TestDatabaseId) {
-        const result = await createRouterWithOfflineAccess(databaseId_);
-        const {
-          mocks: { auth, service, tokenIssuer, httpAuth },
-          router,
-        } = result;
-
-        tokenIssuer.issueToken.mockResolvedValue({
-          token: 'mock-access-token',
-        });
-
-        httpAuth.credentials.mockResolvedValueOnce(
-          mockCredentials.user(MOCK_USER_ENTITY_REF),
-        );
-        auth.isPrincipal.mockReturnValueOnce(true);
-
-        const client = await service.registerClient({
-          clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
-          responseTypes: ['code'],
-          grantTypes: ['authorization_code', 'refresh_token'],
-          scope: 'openid offline_access',
-        });
-
-        const authSession = await service.createAuthorizationSession({
-          clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
-          responseType: 'code',
-          scope: 'openid offline_access',
-        });
-
-        const { server } = await startTestBackend({
-          features: [
-            createBackendPlugin({
-              pluginId: 'auth',
-              register(reg) {
-                reg.registerInit({
-                  deps: { httpRouter: coreServices.httpRouter },
-                  async init({ httpRouter }) {
-                    httpRouter.use(router.getRouter());
-                    httpRouter.addAuthPolicy({
-                      path: '/',
-                      allow: 'unauthenticated',
-                    });
-                  },
-                });
-              },
-            }),
-          ],
-        });
-
-        const approvalResponse = await request(server)
-          .post(`/api/auth/v1/sessions/${authSession.id}/approve`)
-          .set('Authorization', `Bearer ${MOCK_USER_TOKEN}`)
-          .expect(200);
-
-        const redirectUrl = new URL(approvalResponse.body.redirectUrl);
-        const authorizationCode = redirectUrl.searchParams.get('code')!;
-
-        const tokenResponse = await request(server)
-          .post('/api/auth/v1/token')
-          .send({
-            grant_type: 'authorization_code',
-            code: authorizationCode,
-            redirect_uri: 'https://example.com/callback',
-          })
-          .expect(200);
-
-        return { server, tokenResponse, client, ...result };
-      }
-
       it('should return a refresh token when offline_access scope is requested', async () => {
         const { tokenResponse } = await doAuthFlowWithOfflineAccess(databaseId);
 
@@ -1120,6 +1231,372 @@ describe('OidcRouter', () => {
           })
           .expect(400);
       });
+
+      describe('catalog user validation', () => {
+        it('should reject refresh when catalog user does not exist', async () => {
+          const { server, tokenResponse, mocks } =
+            await doAuthFlowWithOfflineAccess(databaseId);
+
+          mocks.catalog.getEntityByRef.mockResolvedValueOnce(undefined);
+
+          await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(400);
+        });
+
+        it('should reject refresh when catalog is unavailable', async () => {
+          const { server, tokenResponse, mocks } =
+            await doAuthFlowWithOfflineAccess(databaseId);
+
+          mocks.catalog.getEntityByRef.mockRejectedValueOnce(
+            new Error('Catalog unavailable'),
+          );
+
+          await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(400);
+        });
+
+        it('should allow retry after transient catalog failure', async () => {
+          const { server, tokenResponse, mocks } =
+            await doAuthFlowWithOfflineAccess(databaseId);
+
+          mocks.catalog.getEntityByRef.mockRejectedValueOnce(
+            new Error('Catalog unavailable'),
+          );
+
+          // First refresh fails due to catalog error
+          await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(400);
+
+          // Retry with same token succeeds because session was preserved
+          mocks.catalog.getEntityByRef.mockResolvedValueOnce({
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'test-user', namespace: 'default' },
+            spec: {},
+          });
+          mocks.tokenIssuer.issueToken.mockResolvedValue({
+            token: 'mock-refreshed-token',
+          });
+
+          const retryResponse = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(200);
+
+          expect(retryResponse.body.access_token).toBe('mock-refreshed-token');
+        });
+
+        it('should not allow retry after user entity not found', async () => {
+          const { server, tokenResponse, mocks } =
+            await doAuthFlowWithOfflineAccess(databaseId);
+
+          mocks.catalog.getEntityByRef.mockResolvedValueOnce(undefined);
+
+          // First refresh fails and session is revoked
+          await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(400);
+
+          // Retry fails because session was deleted
+          mocks.catalog.getEntityByRef.mockResolvedValueOnce({
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'test-user', namespace: 'default' },
+            spec: {},
+          });
+
+          await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(400);
+        });
+
+        it('should skip catalog check when dangerouslyDisableCatalogPresenceCheck is set', async () => {
+          const { server, tokenResponse, mocks } =
+            await doAuthFlowWithOfflineAccess(databaseId, {
+              dangerouslyDisableCatalogPresenceCheck: true,
+            });
+
+          mocks.catalog.getEntityByRef.mockResolvedValueOnce(undefined);
+          mocks.tokenIssuer.issueToken.mockResolvedValue({
+            token: 'mock-refreshed-token',
+          });
+
+          const refreshResponse = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              grant_type: 'refresh_token',
+              refresh_token: tokenResponse.body.refresh_token,
+            })
+            .expect(200);
+
+          expect(refreshResponse.body.access_token).toBe(
+            'mock-refreshed-token',
+          );
+          expect(mocks.catalog.getEntityByRef).not.toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('token revocation', () => {
+      async function doCimdAuthFlowWithOfflineAccess(
+        databaseId_: TestDatabaseId,
+      ) {
+        const cimdClientId = 'https://example.com/oauth-client';
+        mockFetchCimdMetadata.mockResolvedValue({
+          clientId: cimdClientId,
+          clientName: 'Test CIMD Client',
+          redirectUris: ['http://localhost:8080/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code', 'refresh_token'],
+          scope: 'openid offline_access',
+        });
+
+        // Only CIMD enabled, NOT DCR
+        const result = await createRouterWithOfflineAccess(
+          databaseId_,
+          undefined,
+          {
+            experimentalDynamicClientRegistration: { enabled: false },
+            clientIdMetadataDocuments: {
+              enabled: true,
+              allowedClientIdPatterns: ['https://example.com/*'],
+              allowedRedirectUriPatterns: ['*'],
+            },
+          },
+        );
+        const {
+          mocks: { auth, service, tokenIssuer, httpAuth },
+          router,
+        } = result;
+
+        tokenIssuer.issueToken.mockResolvedValue({
+          token: 'mock-access-token',
+        });
+
+        httpAuth.credentials.mockResolvedValueOnce(
+          mockCredentials.user(MOCK_USER_ENTITY_REF),
+        );
+        auth.isPrincipal.mockReturnValueOnce(true);
+
+        const codeVerifier = 'test-code-verifier-for-pkce';
+        const codeChallenge = crypto
+          .createHash('sha256')
+          .update(codeVerifier)
+          .digest('base64url');
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: cimdClientId,
+          redirectUri: 'http://localhost:8080/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+          codeChallenge,
+          codeChallengeMethod: 'S256',
+        });
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(router.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        const approvalResponse = await request(server)
+          .post(`/api/auth/v1/sessions/${authSession.id}/approve`)
+          .set('Authorization', `Bearer ${MOCK_USER_TOKEN}`)
+          .expect(200);
+
+        const redirectUrl = new URL(approvalResponse.body.redirectUrl);
+        const authorizationCode = redirectUrl.searchParams.get('code')!;
+
+        const tokenResponse = await request(server)
+          .post('/api/auth/v1/token')
+          .send({
+            grant_type: 'authorization_code',
+            code: authorizationCode,
+            redirect_uri: 'http://localhost:8080/callback',
+            code_verifier: codeVerifier,
+          })
+          .expect(200);
+
+        return { server, tokenResponse, cimdClientId, ...result };
+      }
+
+      it('should revoke a refresh token for a DCR client with valid client credentials', async () => {
+        const { server, tokenResponse, client } =
+          await doAuthFlowWithOfflineAccess(databaseId);
+
+        await request(server)
+          .post('/api/auth/v1/revoke')
+          .send({
+            token: tokenResponse.body.refresh_token,
+            client_id: client.clientId,
+            client_secret: client.clientSecret,
+          })
+          .expect(200);
+
+        // The revoked refresh token can no longer be used
+        await request(server)
+          .post('/api/auth/v1/token')
+          .send({
+            grant_type: 'refresh_token',
+            refresh_token: tokenResponse.body.refresh_token,
+          })
+          .expect(400);
+      });
+
+      it('should return 200 for an invalid token', async () => {
+        const { server, client } = await doAuthFlowWithOfflineAccess(
+          databaseId,
+        );
+
+        // RFC 7009 responds with 200 even when the token is unknown
+        await request(server)
+          .post('/api/auth/v1/revoke')
+          .send({
+            token: 'not-a-valid-token',
+            client_id: client.clientId,
+            client_secret: client.clientSecret,
+          })
+          .expect(200);
+      });
+
+      it('should reject revocation with missing or invalid DCR client credentials', async () => {
+        const { server, tokenResponse, client, mocks } =
+          await doAuthFlowWithOfflineAccess(databaseId);
+
+        // No client identification at all
+        await request(server)
+          .post('/api/auth/v1/revoke')
+          .send({ token: tokenResponse.body.refresh_token })
+          .expect(401);
+
+        // DCR clients are confidential and must provide their secret
+        await request(server)
+          .post('/api/auth/v1/revoke')
+          .send({
+            token: tokenResponse.body.refresh_token,
+            client_id: client.clientId,
+          })
+          .expect(401);
+
+        await request(server)
+          .post('/api/auth/v1/revoke')
+          .send({
+            token: tokenResponse.body.refresh_token,
+            client_id: client.clientId,
+            client_secret: 'wrong-secret',
+          })
+          .expect(401);
+
+        // The refresh token was not revoked by the failed attempts
+        mocks.tokenIssuer.issueToken.mockResolvedValue({
+          token: 'mock-refreshed-token',
+        });
+        await request(server)
+          .post('/api/auth/v1/token')
+          .send({
+            grant_type: 'refresh_token',
+            refresh_token: tokenResponse.body.refresh_token,
+          })
+          .expect(200);
+      });
+
+      it('should revoke a refresh token for a CIMD client without a client secret', async () => {
+        const { server, tokenResponse, cimdClientId } =
+          await doCimdAuthFlowWithOfflineAccess(databaseId);
+
+        expect(tokenResponse.body.refresh_token).toEqual(expect.any(String));
+
+        await request(server)
+          .post('/api/auth/v1/revoke')
+          .send({
+            token: tokenResponse.body.refresh_token,
+            client_id: cimdClientId,
+          })
+          .expect(200);
+
+        // The revoked refresh token can no longer be used
+        await request(server)
+          .post('/api/auth/v1/token')
+          .send({
+            grant_type: 'refresh_token',
+            refresh_token: tokenResponse.body.refresh_token,
+          })
+          .expect(400);
+      });
+
+      it('should reject revocation for client IDs outside the allowed CIMD patterns', async () => {
+        const { server, tokenResponse, mocks } =
+          await doCimdAuthFlowWithOfflineAccess(databaseId);
+
+        await request(server)
+          .post('/api/auth/v1/revoke')
+          .send({
+            token: tokenResponse.body.refresh_token,
+            client_id: 'https://evil.example.net/oauth-client',
+          })
+          .expect(401);
+
+        // Non-CIMD client IDs cannot authenticate without a secret either
+        await request(server)
+          .post('/api/auth/v1/revoke')
+          .send({
+            token: tokenResponse.body.refresh_token,
+            client_id: 'some-random-client',
+          })
+          .expect(401);
+
+        // The refresh token was not revoked by the failed attempts
+        mocks.tokenIssuer.issueToken.mockResolvedValue({
+          token: 'mock-refreshed-token',
+        });
+        await request(server)
+          .post('/api/auth/v1/token')
+          .send({
+            grant_type: 'refresh_token',
+            refresh_token: tokenResponse.body.refresh_token,
+          })
+          .expect(200);
+      });
     });
 
     describe('CIMD metadata endpoint', () => {
@@ -1195,8 +1672,10 @@ describe('OidcRouter', () => {
           config: mockServices.rootConfig({
             data: {
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
+                  allowedClientIdPatterns: ['*'],
+                  allowedRedirectUriPatterns: ['*'],
                 },
               },
             },
@@ -1253,8 +1732,7 @@ describe('OidcRouter', () => {
         };
         mockFetchCimdMetadata.mockResolvedValue(cimdMetadata);
 
-        // Verify isCimdUrl works correctly
-        expect(isCimdUrl(cimdClientId)).toBe(true);
+        expect(() => validateCimdUrl(cimdClientId)).not.toThrow();
 
         const knex = await databases.init(databaseId);
 
@@ -1288,8 +1766,10 @@ describe('OidcRouter', () => {
         const mockConfig = mockServices.rootConfig({
           data: {
             auth: {
-              experimentalClientIdMetadataDocuments: {
+              clientIdMetadataDocuments: {
                 enabled: true,
+                allowedClientIdPatterns: ['*'],
+                allowedRedirectUriPatterns: ['*'],
               },
               // DCR is NOT enabled
             },

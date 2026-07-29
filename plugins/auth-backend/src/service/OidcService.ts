@@ -33,6 +33,46 @@ import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 
+const WILDCARD_PORT = /:\*(?=\/|$)/;
+const EXPLICIT_PROTOCOL = /^[a-z][a-z0-9+.-]*:/i;
+
+function createUrlPatternMatcher(pattern: string): (url: URL) => boolean {
+  if (pattern === '*') {
+    return () => true;
+  }
+
+  if (!EXPLICIT_PROTOCOL.test(pattern)) {
+    throw new Error(
+      `Invalid URL pattern '${pattern}', an explicit protocol is required`,
+    );
+  }
+
+  // A ':*' port wildcard can only appear in patterns with an authority
+  // section; in patterns such as 'cursor:*' the '*' is part of the path
+  const hasWildcardPort =
+    pattern.includes('://') && WILDCARD_PORT.test(pattern);
+
+  let patternUrl: URL;
+  try {
+    patternUrl = new URL(
+      hasWildcardPort ? pattern.replace(WILDCARD_PORT, ':1') : pattern,
+    );
+  } catch {
+    throw new Error(`Invalid URL pattern '${pattern}'`);
+  }
+
+  const hostnamePattern = patternUrl.hostname || '*';
+  // The path is never empty for http(s) URLs, only for non-special
+  // schemes such as in 'cursor://*', where any path is matched instead
+  const pathPattern = patternUrl.pathname || '*';
+
+  return url =>
+    url.protocol === patternUrl.protocol &&
+    matcher.isMatch(url.hostname, hostnamePattern) &&
+    (hasWildcardPort || url.port === patternUrl.port) &&
+    matcher.isMatch(url.pathname, pathPattern);
+}
+
 function validateRedirectUri(
   redirectUri: string,
   allowedPatterns: string[],
@@ -40,12 +80,25 @@ function validateRedirectUri(
   const parsed = new URL(redirectUri);
   const normalized = `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
 
-  if (!allowedPatterns.some(pattern => matcher.isMatch(normalized, pattern))) {
-    throw new InputError('Invalid redirect_uri');
+  if (parsed.username || parsed.password) {
+    throw new InputError(`Invalid redirect_uri '${normalized}'`);
+  }
+
+  const allowedMatchers = allowedPatterns.map(createUrlPatternMatcher);
+  if (!allowedMatchers.some(matches => matches(parsed))) {
+    throw new InputError(`Invalid redirect_uri '${normalized}'`);
   }
 }
 
 const LOOPBACK_HOSTS = ['localhost', '127.0.0.1', '[::1]'];
+const LOOPBACK_REDIRECT_PATTERNS = [
+  'http://localhost:*/*',
+  'http://localhost/*',
+  'http://127.0.0.1:*/*',
+  'http://127.0.0.1/*',
+  'http://[::1]:*/*',
+  'http://[::1]/*',
+];
 
 /**
  * RFC 8252 Section 7.3: For loopback redirect URIs, the authorization server
@@ -77,6 +130,16 @@ function matchesRedirectUri(
     );
   });
 }
+
+/**
+ * Credentials presented by an OAuth client. Confidential clients authenticate
+ * with both a client ID and a client secret, while public clients identify
+ * themselves with a client ID alone.
+ */
+export type OidcClientCredentials = {
+  clientId: string;
+  clientSecret?: string;
+};
 
 export class OidcService {
   private readonly auth: AuthService;
@@ -134,7 +197,7 @@ export class OidcService {
     const dcrEnabled = this.config.getOptionalBoolean(
       'auth.experimentalDynamicClientRegistration.enabled',
     );
-    const { enabled: cimdEnabled } = this.getCimdConfig();
+    const cimdEnabled = this.isCimdEnabled();
 
     return {
       issuer: this.baseUrl,
@@ -173,10 +236,16 @@ export class OidcService {
       code_challenge_methods_supported: ['S256', 'plain'],
       ...(dcrEnabled && {
         registration_endpoint: `${this.baseUrl}/v1/register`,
+      }),
+      ...((dcrEnabled || cimdEnabled) && {
         revocation_endpoint: `${this.baseUrl}/v1/revoke`,
       }),
       ...(cimdEnabled && { client_id_metadata_document_supported: true }),
     };
+  }
+
+  public isCimdEnabled(): boolean {
+    return this.getCimdConfig().enabled;
   }
 
   public async listPublicKeys() {
@@ -213,7 +282,11 @@ export class OidcService {
 
     const allowedRedirectUriPatterns = this.config.getOptionalStringArray(
       'auth.experimentalDynamicClientRegistration.allowedRedirectUriPatterns',
-    ) ?? ['*'];
+    ) ?? [
+      'cursor://*',
+      'https://www.cursor.com/*',
+      ...LOOPBACK_REDIRECT_PATTERNS,
+    ];
 
     for (const redirectUri of opts.redirectUris ?? []) {
       validateRedirectUri(redirectUri, allowedRedirectUriPatterns);
@@ -297,17 +370,23 @@ export class OidcService {
   }
 
   private getCimdConfig() {
+    const configPath = this.config.has('auth.clientIdMetadataDocuments')
+      ? 'auth.clientIdMetadataDocuments'
+      : 'auth.experimentalClientIdMetadataDocuments';
+    const enabled =
+      this.config.getOptionalBoolean(`${configPath}.enabled`) ?? false;
+
+    const cliClientId = `${this.baseUrl}/.well-known/oauth-client/cli.json`;
+
     return {
-      enabled:
-        this.config.getOptionalBoolean(
-          'auth.experimentalClientIdMetadataDocuments.enabled',
-        ) ?? false,
+      enabled,
       allowedClientIdPatterns: this.config.getOptionalStringArray(
-        'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
-      ) ?? ['*'],
-      allowedRedirectUriPatterns: this.config.getOptionalStringArray(
-        'auth.experimentalClientIdMetadataDocuments.allowedRedirectUriPatterns',
-      ) ?? ['*'],
+        `${configPath}.allowedClientIdPatterns`,
+      ) ?? ['https://claude.ai/*', 'https://vscode.dev/*', cliClientId],
+      allowedRedirectUriPatterns:
+        this.config.getOptionalStringArray(
+          `${configPath}.allowedRedirectUriPatterns`,
+        ) ?? LOOPBACK_REDIRECT_PATTERNS,
     };
   }
 
@@ -339,12 +418,11 @@ export class OidcService {
       throw new InputError('Client ID metadata documents not enabled');
     }
 
-    if (
-      !cimd.allowedClientIdPatterns.some(pattern =>
-        matcher.isMatch(opts.clientId, pattern),
-      )
-    ) {
-      throw new InputError('Invalid client_id');
+    const clientIdMatchers = cimd.allowedClientIdPatterns.map(
+      createUrlPatternMatcher,
+    );
+    if (!clientIdMatchers.some(matches => matches(opts.cimdUrl))) {
+      throw new InputError(`Invalid client_id '${opts.clientId}'`);
     }
 
     const cimdClient = await fetchCimdMetadata({
@@ -356,7 +434,9 @@ export class OidcService {
       validateRedirectUri(opts.redirectUri, cimd.allowedRedirectUriPatterns);
 
       if (!matchesRedirectUri(opts.redirectUri, cimdClient.redirectUris)) {
-        throw new InputError('Redirect URI not registered');
+        throw new InputError(
+          `Invalid redirect_uri '${opts.redirectUri}', not registered in client metadata`,
+        );
       }
     }
 
@@ -377,7 +457,7 @@ export class OidcService {
     }
 
     if (opts.redirectUri && !client.redirectUris.includes(opts.redirectUri)) {
-      throw new InputError('Invalid redirect_uri');
+      throw new InputError(`Invalid redirect_uri '${opts.redirectUri}'`);
     }
 
     return {
@@ -606,10 +686,9 @@ export class OidcService {
   /**
    * Verifies client credentials against the registered OIDC clients
    */
-  public async verifyClientCredentials(options: {
-    clientId: string;
-    clientSecret: string;
-  }): Promise<boolean> {
+  public async verifyClientCredentials(
+    options: Required<OidcClientCredentials>,
+  ): Promise<boolean> {
     const { clientId, clientSecret } = options;
     const client = await this.oidc.getClient({ clientId });
     if (!client?.clientSecret) {
@@ -621,6 +700,42 @@ export class OidcService {
       return false;
     }
     return crypto.timingSafeEqual(expected, provided);
+  }
+
+  /**
+   * Verifies a client for token revocation. DCR clients are confidential
+   * clients and must present a valid client secret, while CIMD clients are
+   * public clients that are identified by their client ID alone. The CIMD
+   * metadata document is deliberately not fetched here, so that tokens can
+   * still be revoked when the document is unreachable or has been removed.
+   */
+  public async verifyRevocationClient(
+    options: OidcClientCredentials,
+  ): Promise<boolean> {
+    const { clientId, clientSecret } = options;
+
+    let cimdUrl: URL | undefined;
+    try {
+      cimdUrl = validateCimdUrl(clientId);
+    } catch {
+      // Not a valid CIMD URL, fall through to DCR
+    }
+
+    if (cimdUrl) {
+      const cimd = this.getCimdConfig();
+      return (
+        cimd.enabled &&
+        cimd.allowedClientIdPatterns.some(pattern =>
+          matcher.isMatch(clientId, pattern),
+        )
+      );
+    }
+
+    if (!clientSecret) {
+      return false;
+    }
+
+    return this.verifyClientCredentials({ clientId, clientSecret });
   }
 
   /**

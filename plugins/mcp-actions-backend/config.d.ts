@@ -29,12 +29,33 @@ export interface Config {
     description?: string;
 
     /**
+     * Instructions describing how clients should use the MCP server.
+     * Used when running a single bundled server without mcpActions.servers.
+     */
+    instructions?: string;
+
+    /**
      * When true, MCP tool names include the plugin ID prefix to avoid
      * collisions across plugins. For example an action registered as
      * "get-entity" by the catalog plugin becomes "catalog.get-entity".
      * Defaults to true.
      */
     namespacedToolNames?: boolean;
+
+    tracing?: {
+      capture?: {
+        /**
+         * When true, the MCP tool call's input arguments and output result
+         * are included on the MCP `tools/call` server span as
+         * `gen_ai.tool.call.arguments` and `gen_ai.tool.call.result`.
+         * These attributes are marked Opt-In by the OpenTelemetry GenAI
+         * semantic conventions because they may contain sensitive
+         * information (entity payloads, scaffolder inputs, free-form
+         * text). Defaults to false.
+         */
+        toolPayload?: boolean;
+      };
+    };
 
     /**
      * Named MCP servers, each exposed at /api/mcp-actions/v1/{key}.
@@ -46,6 +67,8 @@ export interface Config {
         name: string;
         /** Description of the MCP server. */
         description?: string;
+        /** Instructions describing how clients should use the MCP server. */
+        instructions?: string;
         /** Filter rules to include or exclude specific actions. */
         filter?: {
           include?: Array<{

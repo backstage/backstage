@@ -1,5 +1,11 @@
 # Knip report
 
+## Unused dependencies (1)
+
+| Name      | Location          | Severity |
+| :-------- | :---------------- | :------- |
+| react-use | package.json:55:6 | error    |
+
 ## Unused devDependencies (2)
 
 | Name                        | Location          | Severity |

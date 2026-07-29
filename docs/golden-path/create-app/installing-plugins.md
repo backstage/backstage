@@ -49,7 +49,7 @@ backend.import(`@scope/package`)
 
 to your `packages/backend/src/index.ts` file alongside the other entries. Saving the file will trigger a hot reload and just like that your new plugin is available and usable. For advanced cases, there may be required config for the plugin that you'll have to set. That config will (or should) be documented by the plugin in their `README`.
 
-You may also need to add backend modules to provide the additional functionality in the plugin that you're looking for. Backend modules are further extensions to backend code that can provide tailored functionality, good examples are catalog processor modules that add support for Github, LDAP and AWS software entities. Modules install the exact same way as backend plugins. Installing a module may also require additional configuration, which should also be documented in the plugin's `README`.
+You may also need to add backend modules to provide the additional functionality in the plugin that you're looking for. Backend modules are further extensions to backend code that can provide tailored functionality, good examples are catalog processor modules that add support for GitHub, LDAP and AWS software entities. Modules install the exact same way as backend plugins. Installing a module may also require additional configuration, which should also be documented in the plugin's `README`.
 
 ### Installing a Frontend Plugin
 

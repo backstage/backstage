@@ -41,10 +41,20 @@ export const BreakingBadge = () => <Badge variant="red">Breaking</Badge>;
 
 // Utility Functions
 export const toTitleCase = (kebabCase: string): string => {
+  // Hook slugs (e.g. "use-table") display as camelCase (e.g. "useTable")
+  if (/^use-[A-Za-z]/.test(kebabCase)) {
+    const [first, ...rest] = kebabCase.split('-');
+    return (
+      first +
+      rest
+        .map(word => word.charAt(0).toLocaleUpperCase('en-US') + word.slice(1))
+        .join('')
+    );
+  }
   return kebabCase
     .split('-')
     .map(word => word.charAt(0).toLocaleUpperCase('en-US') + word.slice(1))
-    .join(' ');
+    .join('');
 };
 
 export const groupByVersion = (

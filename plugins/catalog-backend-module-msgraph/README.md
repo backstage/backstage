@@ -52,8 +52,9 @@ catalog:
           # Optional filter for user, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
-          # This and userGroupMemberFilter are mutually exclusive, only one can be specified
-          filter: accountEnabled eq true and userType eq 'member'
+          # This is combined with the base `accountEnabled eq true` filter
+          # that is always applied automatically.
+          filter: userType eq 'member'
           # Set to false to not load user photos.
           loadPhotos: true
           # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
@@ -64,12 +65,10 @@ catalog:
         userGroupMember:
           # Optional filter for users, use group membership to get users.
           # (Filtered groups and fetch their members.)
-          # This and userFilter are mutually exclusive, only one can be specified
           # See https://docs.microsoft.com/en-us/graph/search-query-parameter
           filter: "displayName eq 'Backstage Users'"
           # Optional search for users, use group membership to get users.
           # (Search for groups and fetch their members.)
-          # This and userFilter are mutually exclusive, only one can be specified
           search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
           # Optional /groups by default but allow to query groups from different msgraph endpoints
           path: /groups
@@ -102,9 +101,7 @@ catalog:
           initialDelay: { seconds: 15},
 ```
 
-`user.filter` and `userGroupMember.filter` are mutually exclusive, only one can be provided. If both are provided, an error will be thrown.
-
-By default, all users are loaded. If you want to filter users based on their attributes, use `user.filter`. `userGroupMember.filter` can be used if you want to load users based on their group membership.
+By default, all enabled users are loaded (disabled accounts are automatically filtered out). If you want to further filter users based on their attributes, use `user.filter`. `userGroupMember.filter` can be used if you want to load users based on their group membership.
 
 3. The package is not installed by default, therefore you have to add a
    dependency to `@backstage/plugin-catalog-backend-module-msgraph` to your

@@ -17,7 +17,7 @@ listed below.
 ## Quick Start
 
 Backstage projects created with `npx @backstage/create-app` come configured with
-a [guest auth provider](https://backstage.io/docs/auth/guest/provider). This
+a [guest auth provider](./guest/provider.md). This
 provider makes all users share a single "guest" identity. This is useful for
 testing purposes and quickly getting started locally, but is not safe for use in
 production and that particular provider will refuse to work there.
@@ -496,6 +496,6 @@ This error can be caused by the following:
 
 The second common error is: "Failed to sign-in, unable to resolve user identity". Here is what this looks like for the GitHub Auth provider:
 
-![Failed to sign-in, unable to resolve user identity](../assets/auth/github-unable-to-reolve-identity.png)
+![Failed to sign-in, unable to resolve user identity](../assets/auth/github-unable-to-resolve-identity.png)
 
 This error is caused by the Sign-In Resolver you configured being unable to find a matching User in the Catalog. To fix this you need to import User, and Group, data from some source of truth for this data at your Organization. To do this you can use one of the existing Org Data providers like the ones for [Entra ID (Azure AD/MS Graph)](../integrations/azure/org.md), [GitHub](../integrations/github/org.md), [GitLab](../integrations/gitlab/org.md), etc. or if none of those fit your needs you can create a [Custom Entity Provider](../features/software-catalog/external-integrations.md#custom-entity-providers).

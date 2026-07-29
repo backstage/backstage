@@ -111,7 +111,7 @@ function getImportInfo(node) {
   return {
     path: pathNode.value,
     node: pathNode,
-    kind: anyNode.importKind ?? 'value',
+    kind: anyNode.importKind ?? anyNode.exportKind ?? 'value',
   };
 }
 
@@ -123,7 +123,7 @@ function getImportInfo(node) {
 module.exports = function visitImports(context, visitor) {
   const packages = getPackages(context.getCwd());
   if (!packages) {
-    return;
+    return {};
   }
 
   /**

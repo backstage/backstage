@@ -17,7 +17,7 @@ import { Express } from 'express';
 import { Server } from 'node:http';
 import { Proxy } from './proxy/setup';
 
-const proxiesToCleanup: Proxy[] = [];
+const proxiesToCleanup: Set<Proxy> = new Set();
 
 /**
  * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!
@@ -29,7 +29,7 @@ const proxiesToCleanup: Proxy[] = [];
  */
 export async function wrapServer(app: Express): Promise<Server> {
   const proxy = new Proxy();
-  proxiesToCleanup.push(proxy);
+  proxiesToCleanup.add(proxy);
   await proxy.setup();
 
   const server = app.listen(proxy.forwardTo.port);
@@ -48,30 +48,13 @@ function registerHooks() {
   }
   registered = true;
 
-  afterAll(() => {
-    for (const proxy of proxiesToCleanup) {
-      proxy.stop();
-    }
+  afterAll(async () => {
+    const stopPromises = Array.from(proxiesToCleanup).map(proxy =>
+      proxy.stop(),
+    );
+    await Promise.allSettled(stopPromises);
+    proxiesToCleanup.clear();
   });
 }
 
 registerHooks();
-
-/**
- * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!
- * Running against supertest, we need some way to hit the optic proxy. This ensures that
- *  that happens at runtime when in the context of a `yarn optic capture` command.
- * @param app - Express router that would be passed to supertest's `request`.
- * @returns A wrapper around the express router (or the router untouched) that still works with supertest.
- * @public
- */
-export const wrapInOpenApiTestServer = (app: Express): Server | Express => {
-  if (process.env.OPTIC_PROXY) {
-    const server = app.listen(+process.env.PORT!);
-    return {
-      ...server,
-      address: () => new URL(process.env.OPTIC_PROXY!),
-    } as any;
-  }
-  return app;
-};

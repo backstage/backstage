@@ -57,6 +57,11 @@ describe('createGitLabCommit', () => {
 
   beforeEach(() => {
     mockDir.clear();
+    jest.clearAllMocks();
+
+    mockGitlabClient.Commits.create.mockResolvedValue({
+      id: 'bb6bce457ed069a38ef8d16ef38602972c7735c5',
+    });
 
     const config = new ConfigReader({
       integrations: {
@@ -444,6 +449,97 @@ describe('createGitLabCommit', () => {
 
       await expect(instance.handler(ctx)).rejects.toThrow(
         "Committing the changes to some-branch failed. Please verify that all files you're trying to modify exist in the repository. Error: Commit failed",
+      );
+    });
+  });
+
+  describe('allowEmpty parameter', () => {
+    it('passes allowEmpty: true to Commits.create when specified', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Empty commit',
+        branchName: 'some-branch',
+        allowEmpty: true,
+      };
+      mockDir.setContent({
+        [workspacePath]: {},
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'some-branch',
+        'Empty commit',
+        [],
+        { allowEmpty: true },
+      );
+    });
+
+    it('does not pass 5th argument when allowEmpty is not specified', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Normal commit',
+        branchName: 'some-branch',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          'foo.txt': 'content',
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'some-branch',
+        'Normal commit',
+        [
+          {
+            action: 'create',
+            filePath: 'foo.txt',
+            content: 'Y29udGVudA==',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ],
+      );
+      // Verify only 4 arguments were passed (no 5th)
+      expect(mockGitlabClient.Commits.create.mock.calls[0]).toHaveLength(4);
+    });
+
+    it('passes allowEmpty: false to Commits.create when explicitly set', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Commit with files',
+        branchName: 'some-branch',
+        allowEmpty: false,
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          'foo.txt': 'content',
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'some-branch',
+        'Commit with files',
+        [
+          {
+            action: 'create',
+            filePath: 'foo.txt',
+            content: 'Y29udGVudA==',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ],
+        { allowEmpty: false },
       );
     });
   });

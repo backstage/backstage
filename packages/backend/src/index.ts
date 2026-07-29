@@ -15,7 +15,6 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { rootSystemMetadataServiceFactory } from '@backstage/backend-defaults/alpha';
 import {
   coreServices,
   createBackendFeatureLoader,
@@ -46,6 +45,7 @@ backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-openshift-provider'));
 backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
+backend.add(import('@backstage/plugin-catalog-backend-module-ai-model'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -71,8 +71,8 @@ backend.add(searchLoader);
 backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
-backend.add(rootSystemMetadataServiceFactory);
 
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
 backend.add(import('@backstage/plugin-mcp-actions-backend'));
+backend.add(import('@backstage/plugin-user-settings-backend'));
 backend.start();

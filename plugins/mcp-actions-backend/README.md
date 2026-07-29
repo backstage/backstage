@@ -51,6 +51,11 @@ export const myPlugin = createBackendPlugin({
           name: 'greet-user',
           title: 'Greet User',
           description: 'Generate a personalized greeting',
+          attributes: {
+            readOnly: true,
+            destructive: false,
+            idempotent: true,
+          },
           schema: {
             input: z =>
               z.object({
@@ -71,6 +76,14 @@ export const myPlugin = createBackendPlugin({
 });
 ```
 
+### Action Attributes
+
+When registering an action, set the `attributes` field to describe the action's behaviour. This allows clients to make informed decisions, for example: warning users before invoking a destructive action, or allowing a read-only action to run without confirmation.
+
+The defaults are conservative. When unset, an action is assumed to be destructive, non-idempotent, and not read-only. **Always set these explicitly so clients can correctly represent the action's capabilities.**
+
+See the [Action Attributes Reference](../../docs/backend-system/core-services/actions-registry.md#action-attributes-reference) for the full attribute definitions and defaults.
+
 ### Namespaced Tool Names
 
 By default, MCP tool names include the plugin ID prefix to avoid collisions across plugins. For example, an action registered as `greet-user` by `my-custom-plugin` is exposed as `my-custom-plugin.greet-user`.
@@ -82,6 +95,17 @@ mcpActions:
   namespacedToolNames: false
 ```
 
+### Server Instructions
+
+You can provide instructions that describe how MCP clients should use the server and its tools. The server returns these instructions to clients during initialization.
+
+```yaml
+mcpActions:
+  instructions: 'Inspect existing catalog entities before creating new components.'
+```
+
+For named servers, configure instructions separately for each server.
+
 ### Multiple MCP Servers
 
 By default, the plugin serves a single MCP server at `/api/mcp-actions/v1` that exposes all available actions. You can split actions into multiple focused servers by configuring `mcpActions.servers`, where each key becomes a separate MCP server endpoint.
@@ -92,12 +116,14 @@ mcpActions:
     catalog:
       name: 'Backstage Catalog'
       description: 'Tools for interacting with the software catalog'
+      instructions: 'Inspect catalog entities before making changes.'
       filter:
         include:
           - id: 'catalog:*'
     scaffolder:
       name: 'Backstage Scaffolder'
       description: 'Tools for creating new software from templates'
+      instructions: 'Use this server after checking the catalog.'
       filter:
         include:
           - id: 'scaffolder:*'
@@ -134,6 +160,10 @@ mcpActions:
 When errors are thrown from MCP actions, the backend will handle and surface error message for any error from `@backstage/errors`. Unknown errors will be handled by `@modelcontextprotocol/sdk`'s default error handling, which may result in a generic `500 Server Error` being returned. As a result, we recommend using errors from `@backstage/errors` when applicable.
 
 See [Backstage Errors](https://backstage.io/docs/reference/errors/) for a full list of supported errors.
+
+### Response Format
+
+Tool execution results are returned in a format compliant with the MCP specification, including both a plain-text representation in the `content` array and the raw JSON result in the `structuredContent` field. This ensures that AI clients can process the data either as text or as structured data for more precise tool use.
 
 When writing MCP tools, use the appropriate error from `@backstage/errors` when applicable:
 
@@ -186,12 +216,9 @@ node -p 'require("crypto").randomBytes(24).toString("base64")'
 
 Set the `MCP_TOKEN` environment variable with this token, and configure your MCP client to use it in the [Authorization header](#configuring-mcp-clients)
 
-#### Experimental: Dynamic Client Registration
+#### Client ID Metadata Documents
 
-> [!CAUTION]
-> This is highly experimental, proceed with caution.
-
-You can configure the `auth-backend` and install the `auth` frontend plugin in order to enable [Dynamic Client Registration](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization#dynamic-client-registration) with MCP Clients.
+You can configure the `auth-backend` and install the `auth` frontend plugin to enable [Client ID Metadata Documents](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#client-id-metadata-documents) with MCP clients.
 
 This means that there is no token required in your MCP settings, and a token will be given to a client that requests a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup that requires your approval will be opened in your Backstage instance, which is powered by the `auth` plugin.
 
@@ -199,28 +226,23 @@ You will need to add the `@backstage/plugin-auth` package to your `app` `package
 
 ```yaml
 auth:
-  experimentalDynamicClientRegistration:
-    # enable the feature
+  clientIdMetadataDocuments:
     enabled: true
-
-    # this is optional and will default to *, but you can limit the callback URLs which are valid for added security
-    allowedRedirectUriPatterns:
-      - cursor://*
 ```
+
+> [!CAUTION]
+> Dynamic Client Registration is deprecated. Existing DCR configurations continue to work, but should be migrated to Client ID Metadata Documents.
 
 > [!NOTE]
 > The `@backstage/plugin-auth` package is currently only available in the new frontend system.
 
 ## Configuring MCP Clients
 
-The MCP server supports both Server-Sent Events (SSE) and Streamable HTTP protocols.
-
-The SSE protocol is deprecated, and should be avoided as it will be removed in a future release.
+The MCP server uses the Streamable HTTP protocol.
 
 ### Single Server (default)
 
-- `Streamable HTTP`: `http://localhost:7007/api/mcp-actions/v1`
-- `SSE`: `http://localhost:7007/api/mcp-actions/v1/sse`
+Use `http://localhost:7007/api/mcp-actions/v1` for the default single server.
 
 ```json
 {

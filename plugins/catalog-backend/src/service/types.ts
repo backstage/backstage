@@ -52,6 +52,11 @@ export interface LocationService {
     id: string,
     options: { credentials: BackstageCredentials },
   ): Promise<Location>;
+  updateLocation(
+    id: string,
+    location: LocationInput,
+    options: { credentials: BackstageCredentials },
+  ): Promise<Location>;
   deleteLocation(
     id: string,
     options: { credentials: BackstageCredentials },
@@ -98,6 +103,7 @@ export interface LocationStore {
     query?: FilterPredicate;
   }): Promise<{ items: Location[]; totalItems: number }>;
   getLocation(id: string): Promise<Location>;
+  updateLocation(id: string, location: LocationInput): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
   getLocationByEntity(entityRef: CompoundEntityRef | string): Promise<Location>;
 }

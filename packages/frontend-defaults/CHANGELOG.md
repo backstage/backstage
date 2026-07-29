@@ -1,5 +1,110 @@
 # @backstage/frontend-defaults
 
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/plugin-app@0.5.2-next.0
+  - @backstage/frontend-app-api@0.16.7-next.0
+
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/plugin-app@0.5.1
+  - @backstage/core-components@0.18.12
+  - @backstage/frontend-app-api@0.16.6
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.16.5-next.0
+  - @backstage/plugin-app@0.5.1-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/core-components@0.18.12-next.0
+
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.5.0
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/frontend-app-api@0.16.4
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/frontend-app-api@0.16.4-next.1
+  - @backstage/plugin-app@0.4.7-next.1
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.0
+  - @backstage/plugin-app@0.4.7-next.0
+  - @backstage/frontend-app-api@0.16.4-next.0
+
+## 0.5.2
+
+### Patch Changes
+
+- 482cc59: Invalid feature flag declarations are now treated as warnings rather than errors, letting the app load normally.
+- Updated dependencies
+  - @backstage/core-components@0.18.10
+  - @backstage/errors@1.3.1
+  - @backstage/plugin-app@0.4.6
+  - @backstage/frontend-app-api@0.16.3
+  - @backstage/frontend-plugin-api@0.17.0
+  - @backstage/config@1.3.8
+
+## 0.5.2-next.1
+
+### Patch Changes
+
+- 482cc59: Invalid feature flag declarations are now treated as warnings rather than errors, letting the app load normally.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/frontend-app-api@0.16.3-next.1
+  - @backstage/plugin-app@0.4.6-next.1
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-app@0.4.6-next.0
+  - @backstage/frontend-app-api@0.16.3-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/config@1.3.8-next.0
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-app@0.4.3
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/frontend-app-api@0.16.2
+  - @backstage/config@1.3.7
+
 ## 0.5.1-next.2
 
 ### Patch Changes

@@ -1,0 +1,10 @@
+---
+title: Apache Airflow
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Orchestration
+description: A plugin providing a frontend interface to the Apache Airflow REST API for monitoring and managing DAGs within Backstage.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/apache-airflow/plugins/apache-airflow/README.md
+npmPackageName: '@backstage-community/plugin-apache-airflow'
+addedDate: '2026-02-21'
+status: active

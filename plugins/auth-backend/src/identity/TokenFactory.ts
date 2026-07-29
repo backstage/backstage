@@ -16,7 +16,7 @@
 
 import { exportJWK, generateKeyPair, JWK } from 'jose';
 import { DateTime } from 'luxon';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   BackstageSignInResult,

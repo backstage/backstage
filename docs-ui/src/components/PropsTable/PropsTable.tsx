@@ -52,7 +52,12 @@ export const PropsTable = <T extends Record<string, PropData>>({
 
     switch (column) {
       case 'prop':
-        return <Chip head>{propName}</Chip>;
+        return (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+            <Chip head>{propName}</Chip>
+            {propData.deprecated && <Chip deprecated>deprecated</Chip>}
+          </div>
+        );
 
       case 'type':
         return (

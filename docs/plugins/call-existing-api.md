@@ -26,13 +26,15 @@ such as `axios`.
 Example:
 
 ```ts title="plugins/my-awesome-plugin/src/components/AwesomeUsersTable.tsx"
-import useAsync from 'react-use/esm/useAsync';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 
 function AwesomeUsersTable() {
-  const { value, loading, error } = useAsync(async () => {
+  const [{ status, result, error }, { execute }] = useAsync(async () => {
     const response = await fetch('https://api.frobsco.com/v1/list');
     return response.json();
-  }, []);
+  });
+
+  useMountEffect(execute);
 
 
   ...
@@ -94,17 +96,19 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/esm/useAsync';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 
 function FrobsAggregator() {
   const fetchApi = useApi(fetchApiRef);
   const discoveryApi = useApi(discoveryApiRef);
 
-  const { value, loading, error } = useAsync(async () => {
+  const [{ status, result, error }, { execute }] = useAsync(async () => {
     const baseUrl = await discoveryApi.getBaseUrl('proxy');
     const response = await fetchApi.fetch(`${baseUrl}/frobs`);
     return response.json();
-  }, [fetchApi, discoveryApi]);
+  });
+
+  useMountEffect(execute);
 
   // ...
 }
@@ -171,19 +175,21 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/esm/useAsync';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 
 function FrobsAggregator() {
   const fetchApi = useApi(fetchApiRef);
   const discoveryApi = useApi(discoveryApiRef);
 
-  const { value, loading, error } = useAsync(async () => {
+  const [{ status, result, error }, { execute }] = useAsync(async () => {
     // highlight-next-line
     const baseUrl = await discoveryApi.getBaseUrl('frobs-aggregator');
     // highlight-next-line
     const response = await fetchApi.fetch(`${baseUrl}/summary`);
     return response.json();
-  }, [fetchApi, discoveryApi]);
+  });
+
+  useMountEffect(execute);
 
   // ...
 }

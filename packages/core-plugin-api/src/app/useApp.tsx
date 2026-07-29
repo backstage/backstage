@@ -27,7 +27,7 @@ import {
   FrontendPlugin,
   ApiHolder,
 } from '@backstage/frontend-plugin-api';
-import {
+import type {
   AppComponents,
   IconComponent,
   BackstagePlugin,

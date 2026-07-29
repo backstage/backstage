@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  $RefParser,
+import type {
   ParserOptions,
   ResolverOptions,
 } from '@apidevtools/json-schema-ref-parser';
 import { parse, stringify } from 'yaml';
-import * as path from 'node:path';
 
 const protocolPattern = /^(\w{2,}):\/\//i;
 const getProtocol = (refPath: string) => {
@@ -54,14 +52,25 @@ export async function bundleFileWithRefs(
   read: BundlerRead,
   resolveUrl: BundlerResolveUrl,
 ): Promise<string> {
+  // file.baseUrl from the parser is a filesystem path, not an SCM URL. For
+  // nested refs (depth > 1) we need the parent's SCM URL to resolve against,
+  // so we track the translation from each read file's internal URL to the
+  // SCM URL we computed for it.
+  const resolvedUrlMap = new Map<string, string>();
+
   const fileUrlReaderResolver: ResolverOptions = {
     canRead: file => {
       const protocol = getProtocol(file.url);
       return protocol === undefined || protocol === 'file';
     },
     read: async file => {
-      const relativePath = path.relative('.', file.url).replace(/\\/g, '/');
-      const url = resolveUrl(relativePath, baseUrl);
+      const ref = file.reference ?? file.url;
+      const parentBaseUrl = file.baseUrl?.split('#')[0];
+      const parentUrl = parentBaseUrl
+        ? resolvedUrlMap.get(parentBaseUrl) ?? baseUrl
+        : baseUrl;
+      const url = resolveUrl(ref, parentUrl);
+      resolvedUrlMap.set(file.url, url);
       return await read(url);
     },
   };
@@ -71,7 +80,13 @@ export async function bundleFileWithRefs(
       return protocol === 'http' || protocol === 'https';
     },
     read: async ref => {
-      const url = resolveUrl(ref.url, baseUrl);
+      const reference = ref.reference ?? ref.url;
+      const parentBaseUrl = ref.baseUrl?.split('#')[0];
+      const parentUrl = parentBaseUrl
+        ? resolvedUrlMap.get(parentBaseUrl) ?? baseUrl
+        : baseUrl;
+      const url = resolveUrl(reference, parentUrl);
+      resolvedUrlMap.set(ref.url, url);
       return await read(url);
     },
   };
@@ -97,7 +112,7 @@ export async function bundleFileWithRefs(
       };
     }
   }
-
+  const { $RefParser } = await import('@apidevtools/json-schema-ref-parser');
   const bundledObject = await $RefParser.bundle(fileObject, options);
   return stringify(bundledObject);
 }

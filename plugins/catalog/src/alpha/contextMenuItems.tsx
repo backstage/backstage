@@ -18,31 +18,44 @@ import {
   EntityContextMenuItemBlueprint,
   useEntityPermission,
 } from '@backstage/plugin-catalog-react/alpha';
-import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
-import BugReportIcon from '@material-ui/icons/BugReport';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { RiBugLine, RiDeleteBinLine, RiFileCopyLine } from '@remixicon/react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   dialogApiRef,
   useTranslationRef,
-  type DialogApiDialog,
 } from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from './translation';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   UnregisterEntityDialog,
   useEntity,
 } from '@backstage/plugin-catalog-react';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../routes';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
-import { useEffect } from 'react';
+import { type ComponentProps, useEffect, useRef } from 'react';
+
+function UnregisterEntityDialogWithCloseOnRouteChange(
+  props: ComponentProps<typeof UnregisterEntityDialog>,
+) {
+  const { pathname } = useLocation();
+  const initialPathname = useRef(pathname);
+  const { onClose } = props;
+
+  useEffect(() => {
+    if (pathname !== initialPathname.current) {
+      onClose();
+    }
+  }, [pathname, onClose]);
+
+  return <UnregisterEntityDialog {...props} />;
+}
 
 export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
   {
     name: 'copy-entity-url',
     params: {
-      icon: <FileCopyTwoToneIcon fontSize="small" />,
+      icon: <RiFileCopyLine size={16} />,
       useProps: () => {
         const [copyState, copyToClipboard] = useCopyToClipboard();
         const alertApi = useApi(alertApiRef);
@@ -73,7 +86,7 @@ export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
   {
     name: 'inspect-entity',
     params: {
-      icon: <BugReportIcon fontSize="small" />,
+      icon: <RiBugLine size={16} />,
       useProps: () => {
         const [_, setSearchParams] = useSearchParams();
         const { t } = useTranslationRef(catalogTranslationRef);
@@ -93,7 +106,7 @@ export const unregisterEntityContextMenuItem =
   EntityContextMenuItemBlueprint.make({
     name: 'unregister-entity',
     params: {
-      icon: <CancelIcon fontSize="small" />,
+      icon: <RiDeleteBinLine size={16} />,
       useProps: () => {
         const { entity } = useEntity();
         const dialogApi = useApi(dialogApiRef);
@@ -110,8 +123,8 @@ export const unregisterEntityContextMenuItem =
           title: t('entityContextMenu.unregisterMenuTitle'),
           disabled: !unregisterPermission.allowed,
           onClick: async () => {
-            dialogApi.showModal(({ dialog }: { dialog: DialogApiDialog }) => (
-              <UnregisterEntityDialog
+            dialogApi.open(({ dialog }) => (
+              <UnregisterEntityDialogWithCloseOnRouteChange
                 open
                 entity={entity}
                 onClose={() => dialog.close()}

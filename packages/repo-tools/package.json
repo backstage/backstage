@@ -1,6 +1,6 @@
 {
   "name": "@backstage/repo-tools",
-  "version": "0.17.1-next.2",
+  "version": "0.18.1-next.0",
   "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"
@@ -62,7 +62,6 @@
     "@stoplight/spectral-rulesets": "^1.18.0",
     "@stoplight/spectral-runtime": "^1.1.2",
     "@stoplight/types": "^14.0.0",
-    "@useoptic/openapi-utilities": "^0.55.0",
     "chalk": "^4.0.0",
     "chokidar": "^3.5.3",
     "codeowners-utils": "^1.0.2",
@@ -72,7 +71,7 @@
     "glob": "^13.0.0",
     "globby": "^11.0.0",
     "is-glob": "^4.0.3",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.3.0",
     "just-diff": "^6.0.2",
     "knex": "^3.0.0",
     "knex-pglite": "^0.11.0",
@@ -80,7 +79,6 @@
     "lodash": "^4.17.21",
     "minimatch": "^10.2.1",
     "p-limit": "^3.0.2",
-    "portfinder": "^1.0.32",
     "tar": "^7.5.6",
     "ts-morph": "^24.0.0",
     "yaml-diff-patch": "^2.0.0",
@@ -99,7 +97,6 @@
     "@microsoft/api-extractor-model": "*",
     "@microsoft/tsdoc": "*",
     "@microsoft/tsdoc-config": "*",
-    "@useoptic/optic": "^1.0.0",
     "prettier": "^2.8.1 || ^3.8.1",
     "typedoc": "^0.28.0",
     "typescript": "> 3.0.0"

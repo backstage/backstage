@@ -15,6 +15,7 @@
  */
 
 import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { z } from 'zod/v4';
 
 const catalogTagCatalogFilter = CatalogFilterBlueprint.make({
   name: 'tag',
@@ -30,10 +31,8 @@ const catalogTagCatalogFilter = CatalogFilterBlueprint.make({
 
 const catalogKindCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   name: 'kind',
-  config: {
-    schema: {
-      initialFilter: z => z.string().default('component'),
-    },
+  configSchema: {
+    initialFilter: z.string().default('component'),
   },
   factory(originalFactory, { config }) {
     return originalFactory({
@@ -61,10 +60,8 @@ const catalogTypeCatalogFilter = CatalogFilterBlueprint.make({
 
 const catalogModeCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   name: 'mode',
-  config: {
-    schema: {
-      mode: z => z.enum(['owners-only', 'all']).optional(),
-    },
+  configSchema: {
+    mode: z.enum(['owners-only', 'all']).optional(),
   },
   factory(originalFactory, { config }) {
     return originalFactory({
@@ -116,10 +113,8 @@ const catalogProcessingStatusCatalogFilter = CatalogFilterBlueprint.make({
 
 const catalogListCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   name: 'list',
-  config: {
-    schema: {
-      initialFilter: z => z.enum(['owned', 'starred', 'all']).default('owned'),
-    },
+  configSchema: {
+    initialFilter: z.enum(['owned', 'starred', 'all']).default('owned'),
   },
   factory(originalFactory, { config }) {
     return originalFactory({

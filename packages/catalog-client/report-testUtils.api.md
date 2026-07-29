@@ -84,6 +84,14 @@ export class InMemoryCatalogClient implements CatalogApi {
     _request?: QueryLocationsInitialRequest,
   ): AsyncIterable<Location_2[]>;
   // (undocumented)
+  updateLocation(
+    _id: string,
+    _location: {
+      type?: string;
+      target: string;
+    },
+  ): Promise<Location_2>;
+  // (undocumented)
   validateEntity(
     _entity: Entity,
     _locationRef: string,

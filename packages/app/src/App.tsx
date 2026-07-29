@@ -50,6 +50,7 @@ import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
+import { appModuleScaffolder } from './modules/appModuleScaffolder';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import InfoIcon from '@material-ui/icons/Info';
 
@@ -91,7 +92,7 @@ const customHomePageModule = createFrontendModule({
                   <HeaderWorldClock clockConfigs={clockConfigs} />
                 </Header>
                 <Content>
-                  <CustomHomepageGrid>
+                  <CustomHomepageGrid preventDuplicateWidgets>
                     {widgets.map((widget, index) => (
                       <Fragment key={widget.name ?? index}>
                         {widget.component}
@@ -140,6 +141,7 @@ const app = createApp({
     kubernetesPlugin,
     notFoundErrorPageModule,
     appModuleNav,
+    appModuleScaffolder,
     customHomePageModule,
     ...collectedLegacyPlugins,
   ],

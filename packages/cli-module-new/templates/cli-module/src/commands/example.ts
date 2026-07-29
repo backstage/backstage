@@ -4,7 +4,7 @@ import type { CliCommandContext } from '@backstage/cli-node';
 export default async ({ args, info }: CliCommandContext) => {
   const { flags } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         name: {

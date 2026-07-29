@@ -16,6 +16,16 @@
 import { createPermission } from '@backstage/plugin-permission-common';
 
 /**
+ * This permission is used to designate actions that involve reading
+ * unprocessed entity records from the refresh_state table.
+ * @public
+ */
+export const unprocessedEntitiesReadPermission = createPermission({
+  name: 'catalog.entities.unprocessed.read',
+  attributes: { action: 'read' },
+});
+
+/**
  * This permission is used to designate actions that involve removing an
  * unprocessed entity record from the refresh_state table.
  * @public
@@ -30,5 +40,6 @@ export const unprocessedEntitiesDeletePermission = createPermission({
  * @public
  */
 export const unprocessedEntitiesPermissions = {
+  unprocessedEntitiesReadPermission,
   unprocessedEntitiesDeletePermission,
 };

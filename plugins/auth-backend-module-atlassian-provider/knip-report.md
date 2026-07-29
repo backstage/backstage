@@ -2,8 +2,8 @@
 
 ## Unused dependencies (2)
 
-| Name     | Location     | Severity |
-| :------- | :----------- | :------- |
-| passport | plugins/auth-backend-module-atlassian-provider/package.json | error    |
-| express  | plugins/auth-backend-module-atlassian-provider/package.json | error    |
+| Name     | Location          | Severity |
+| :------- | :---------------- | :------- |
+| passport | package.json:40:6 | error    |
+| express  | package.json:39:6 | error    |
 

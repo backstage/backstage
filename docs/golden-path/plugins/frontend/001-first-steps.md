@@ -17,7 +17,7 @@ yarn new --select frontend-plugin --option pluginId=todo --option owner=
 This creates a new NPM package named something like `@internal/plugin-todo`,
 depending on the flags passed to the `new` command and your settings in the root
 `package.json`. For more options, see
-[the CLI docs](../../../tooling/cli/03-commands.md#new).
+[the CLI docs](../../../tooling/cli/module-new.md#new).
 
 Creating the plugin takes a moment. Once the command finishes, a new folder
 appears at `plugins/todo` (the path depends on the plugin ID you chose) with
@@ -88,12 +88,26 @@ yarn workspace @internal/plugin-todo start
 
 ## Common issues
 
-- **Plugin page not showing up.** Verify that `app.packages` is set to `all`
-  in your `app-config.yaml`. If you use include/exclude filters, make sure your
-  plugin package is not excluded.
-- **`yarn new --select frontend-plugin --option pluginId=todo --option owner=` fails during installation.** Make sure
-  you have run `yarn install` in the repository root first and that your
-  Node.js version matches the one required by the project.
-- **TypeScript errors after scaffolding.** Run `yarn tsc` from the repository
-  root to check for type errors. A fresh scaffold should compile cleanly — if
-  not, try running `yarn install` again.
+<details>
+  <summary>Plugin page not showing up</summary>
+
+Verify that `app.packages` is set to `all` in your `app-config.yaml`. If you
+use include/exclude filters, make sure your plugin package is not excluded.
+
+</details>
+
+<details>
+  <summary>`yarn new` fails during installation</summary>
+
+Make sure you have run `yarn install` in the repository root first and that
+your Node.js version matches the one required by the project.
+
+</details>
+
+<details>
+  <summary>TypeScript errors after scaffolding</summary>
+
+Run `yarn tsc` from the repository root to check for type errors. A fresh
+scaffold should compile cleanly — if not, try running `yarn install` again.
+
+</details>

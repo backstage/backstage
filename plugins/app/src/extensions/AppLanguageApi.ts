@@ -18,14 +18,13 @@
 import { AppLanguageSelector } from '../../../../packages/core-app-api/src/apis/implementations/AppLanguageApi';
 import { appLanguageApiRef } from '@backstage/frontend-plugin-api';
 import { ApiBlueprint } from '@backstage/frontend-plugin-api';
+import { z } from 'zod/v4';
 
 export const AppLanguageApi = ApiBlueprint.makeWithOverrides({
   name: 'app-language',
-  config: {
-    schema: {
-      defaultLanguage: z => z.string().optional(),
-      availableLanguages: z => z.array(z.string()).optional(),
-    },
+  configSchema: {
+    defaultLanguage: z.string().optional(),
+    availableLanguages: z.array(z.string()).optional(),
   },
   factory(originalFactory, { config }) {
     return originalFactory(defineParams =>

@@ -93,7 +93,7 @@ the source code hosting provider. Notice that instead of the `dir:` prefix, the
 `url:` prefix is used instead. For example:
 
 - **GitHub**: `url:https://githubhost.com/org/repo/tree/<branch_name>`
-- **GitLab**: `url:https://gitlabhost.com/org/repo/tree/<branch_name>`
+- **GitLab**: `url:https://gitlabhost.com/org/repo`
 - **Bitbucket**: `url:https://bitbuckethost.com/project/repo/src/<branch_name>`
 - **Azure**: `url:https://azurehost.com/organization/project/_git/repository`
 
@@ -373,9 +373,24 @@ on how you have configured your `template.yaml`.
 
 Done! You now have support for TechDocs in your own software template!
 
-### Prevent download of Google fonts
+### Disable external fonts
 
-If your Backstage instance does not have internet access, the generation will fail. TechDocs tries to download the Roboto font from Google. You can disable it by adding the following lines to mkdocs.yaml:
+`techdocs.generator.mkdocs.disableExternalFonts`
+
+(Optional) Use this when the generator cannot reach the internet (for example air-gapped or restricted networks). MkDocs Material otherwise tries to download the Roboto font from Google during generation.
+
+When `true`, TechDocs patches each `mkdocs.yml` during generation: if no `theme` section exists it adds `name: material` and `font: false`; if a `theme` exists but `font` is omitted, it sets `font: false`; if `font` is already set in the file, your value is left unchanged.
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    mkdocs:
+      disableExternalFonts: true
+```
+
+Alternatively, configure `mkdocs.yml` manually:
 
 ```yaml
 theme:
@@ -383,11 +398,19 @@ theme:
   font: false
 ```
 
-:::note Note
+**Note:** When using `theme.font` in `mkdocs.yml`, `theme.name: material` is required. If `font` is already set in the file, app-config patching does not override it; it only adds `font: false` when `font` was not configured.
 
-The addition `name: material` is necessary. Otherwise it will not work
+#### Using techdocs-cli in CI/CD
 
-:::
+When generating TechDocs sites in CI/CD workflows using `techdocs-cli`, you can
+use the `--disableExternalFonts` flag:
+
+```bash
+techdocs-cli generate --disableExternalFonts
+```
+
+This will automatically patch the `mkdocs.yml` file during the generation
+process, just like the `app-config.yaml` option does for local generation.
 
 ## How to enable iframes in TechDocs
 
@@ -805,7 +828,7 @@ metadata:
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: example-platfrom
+  name: example-platform
   title: Example Application Platform
   namespace: default
   description: This is the child entity

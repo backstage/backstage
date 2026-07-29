@@ -7,6 +7,9 @@
 # yarn tsc
 # yarn build:backend
 #
+# Host build steps (yarn install, yarn build:backend) must use the same
+# Node version as the FROM image below. Mismatched versions break native modules.
+#
 # Once the commands have been run, you can build the image using `yarn build-image`
 #
 # Alternatively, there is also a multi-stage Dockerfile documented here:

@@ -326,6 +326,7 @@ export class CatalogClient implements CatalogApi {
         offset,
         orderFields,
         fullTextFilter,
+        totalItems,
       } = request;
       params.filter = this.getFilterValue(filter);
 
@@ -342,6 +343,9 @@ export class CatalogClient implements CatalogApi {
       }
       if (fields.length) {
         params.fields = fields;
+      }
+      if (totalItems !== undefined) {
+        params.totalItems = totalItems;
       }
 
       const normalizedFullTextFilterTerm = fullTextFilter?.term?.trim();
@@ -387,6 +391,7 @@ export class CatalogClient implements CatalogApi {
         orderFields,
         fullTextFilter,
         fields,
+        totalItems,
       } = request;
 
       let filterPredicate: FilterPredicate | undefined;
@@ -424,6 +429,9 @@ export class CatalogClient implements CatalogApi {
       }
       if (fields?.length) {
         body.fields = fields;
+      }
+      if (totalItems !== undefined) {
+        body.totalItems = totalItems;
       }
     } else {
       body.cursor = request.cursor;
@@ -610,6 +618,27 @@ export class CatalogClient implements CatalogApi {
     return all
       .map(r => r.data)
       .find(l => locationRef === stringifyLocationRef(l));
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.updateLocation}
+   */
+  async updateLocation(
+    id: string,
+    location: { type?: string; target: string },
+    options?: CatalogRequestOptions,
+  ): Promise<Location> {
+    const { type = 'url', target } = location;
+    const response = await this.apiClient.updateLocation(
+      { path: { id }, body: { type, target } },
+      options,
+    );
+
+    if (response.status !== 200) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response.json();
   }
 
   /**

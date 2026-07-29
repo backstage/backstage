@@ -1,5 +1,82 @@
 # @backstage/backend-app-api
 
+## 1.7.3-next.0
+
+### Patch Changes
+
+- 64cea29: Updated the backend runtime to use the internal connection service implementation after the shared connection contract moved into `@backstage/connections`.
+- Updated dependencies
+  - @backstage/connections@0.3.0-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 1.7.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.2.0
+  - @backstage/backend-plugin-api@1.9.3
+
+## 1.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/connections@0.1.1-next.0
+
+## 1.7.1
+
+### Patch Changes
+
+- 2e895ea: Internal refactor.
+- Updated dependencies
+  - @backstage/connections@0.1.0
+  - @backstage/backend-plugin-api@1.9.2
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 1.7.0
+
+### Minor Changes
+
+- 3595c97: Added `ExtensionPointFactoryMiddleware` type and `createExtensionPointFactoryMiddleware` helper to reimplement extension point outputs at backend creation time.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/config@1.3.8
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 3595c97: Added `ExtensionPointFactoryMiddleware` type and `createExtensionPointFactoryMiddleware` helper to reimplement extension point outputs at backend creation time.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+
+## 1.6.1
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/config@1.3.7
+
 ## 1.6.1-next.2
 
 ### Patch Changes

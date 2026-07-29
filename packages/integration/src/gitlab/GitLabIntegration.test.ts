@@ -15,14 +15,15 @@
  */
 
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import {
   GitLabIntegration,
+  parseRetryAfterMs,
   replaceGitLabUrlType,
   sleep,
 } from './GitLabIntegration';
-import { registerMswTestHooks } from '../helpers';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 
 // Mock pThrottle to make testing easier
 jest.mock('p-throttle', () => {
@@ -93,9 +94,9 @@ describe('GitLabIntegration', () => {
 
       let calledUrl: string | undefined;
       worker.use(
-        rest.get('https://h.com/api/v4', (req, res, ctx) => {
-          calledUrl = req.url.href;
-          return res(ctx.status(200));
+        http.get('https://h.com/api/v4', ({ request }) => {
+          calledUrl = request.url;
+          return new HttpResponse(null, { status: 200 });
         }),
       );
 
@@ -106,12 +107,12 @@ describe('GitLabIntegration', () => {
     it('applies retry logic when maxRetries > 0', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
           if (callCount === 1) {
-            return res(ctx.status(429), ctx.json({}));
+            return new HttpResponse(null, { status: 429 });
           }
-          return res(ctx.status(200), ctx.json({}));
+          return HttpResponse.json({});
         }),
       );
 
@@ -137,9 +138,9 @@ describe('GitLabIntegration', () => {
     it('does not retry when status code is not in retryStatusCodes', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
-          return res(ctx.status(404));
+          return new HttpResponse(null, { status: 404 });
         }),
       );
 
@@ -164,9 +165,9 @@ describe('GitLabIntegration', () => {
     it('stops retrying after maxRetries attempts', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
-          return res(ctx.status(429));
+          return new HttpResponse(null, { status: 429 });
         }),
       );
 
@@ -221,12 +222,12 @@ describe('GitLabIntegration', () => {
 
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
           if (callCount === 1) {
-            return res(ctx.status(429), ctx.json({}));
+            return new HttpResponse(null, { status: 429 });
           }
-          return res(ctx.status(200), ctx.json({}));
+          return HttpResponse.json({});
         }),
       );
 
@@ -256,16 +257,15 @@ describe('GitLabIntegration', () => {
     it('retries based on configured status codes', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
           if (callCount === 1) {
-            return res(
-              ctx.status(429),
-              ctx.set('Retry-After', '1'),
-              ctx.json({}),
-            );
+            return new HttpResponse(null, {
+              status: 429,
+              headers: { 'Retry-After': '1' },
+            });
           }
-          return res(ctx.status(200), ctx.json({}));
+          return HttpResponse.json({});
         }),
       );
 
@@ -290,12 +290,12 @@ describe('GitLabIntegration', () => {
     it('retries multiple times for persistent failures', async () => {
       let callCount = 0;
       worker.use(
-        rest.get('https://h.com/api/v4', (_req, res, ctx) => {
+        http.get('https://h.com/api/v4', () => {
           callCount += 1;
           if (callCount < 3) {
-            return res(ctx.status(500), ctx.json({}));
+            return new HttpResponse(null, { status: 500 });
           }
-          return res(ctx.status(200), ctx.json({}));
+          return HttpResponse.json({});
         }),
       );
 
@@ -317,6 +317,69 @@ describe('GitLabIntegration', () => {
 
       expect(response.status).toBe(200);
       expect(callCount).toBe(3);
+    });
+
+    it('retries on transient network errors and returns once recovered', async () => {
+      let callCount = 0;
+      worker.use(
+        http.get('https://h.com/api/v4', () => {
+          callCount += 1;
+          if (callCount === 1) {
+            return HttpResponse.error();
+          }
+          return HttpResponse.json({});
+        }),
+      );
+
+      const integration = new GitLabIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'https://h.com/api/v4',
+        baseUrl: 'https://h.com',
+        retry: {
+          maxRetries: 3,
+          retryStatusCodes: [429],
+        },
+      });
+
+      const responsePromise = integration.fetch('https://h.com/api/v4');
+      await jest.advanceTimersByTimeAsync(100);
+      const response = await responsePromise;
+
+      expect(response.status).toBe(200);
+      expect(callCount).toBe(2);
+    });
+
+    it('surfaces the error after exhausting retries on persistent network errors', async () => {
+      let callCount = 0;
+      worker.use(
+        http.get('https://h.com/api/v4', () => {
+          callCount += 1;
+          return HttpResponse.error();
+        }),
+      );
+
+      const integration = new GitLabIntegration({
+        host: 'h.com',
+        apiBaseUrl: 'https://h.com/api/v4',
+        baseUrl: 'https://h.com',
+        retry: {
+          maxRetries: 2,
+          retryStatusCodes: [429],
+        },
+      });
+
+      // Attach the catch handler before advancing timers so the in-flight
+      // rejections don't surface as unhandled.
+      let didReject = false;
+      const settled = integration.fetch('https://h.com/api/v4').catch(() => {
+        didReject = true;
+      });
+      await jest.advanceTimersByTimeAsync(100);
+      await jest.advanceTimersByTimeAsync(200);
+      await settled;
+
+      expect(didReject).toBe(true);
+      expect(callCount).toBe(3); // initial + 2 retries
     });
   });
 });
@@ -411,6 +474,39 @@ describe('sleep', () => {
 
     // Verify the sleep function handled cleanup properly
     expect(jest.getTimerCount()).toBe(0);
+  });
+});
+
+describe('parseRetryAfterMs', () => {
+  it('parses delay-seconds', () => {
+    expect(parseRetryAfterMs('120', 5000)).toBe(120_000);
+    expect(parseRetryAfterMs('1', 5000)).toBe(1000);
+  });
+
+  it('parses an HTTP-date and computes a delta', () => {
+    const futureDate = new Date(Date.now() + 30_000).toUTCString();
+    const result = parseRetryAfterMs(futureDate, 5000);
+    expect(result).toBeGreaterThan(29_000);
+    expect(result).toBeLessThanOrEqual(30_000);
+  });
+
+  it('returns 0 for an HTTP-date in the past', () => {
+    const pastDate = new Date(Date.now() - 10_000).toUTCString();
+    expect(parseRetryAfterMs(pastDate, 5000)).toBe(0);
+  });
+
+  it('returns fallback for null or unparsable values', () => {
+    expect(parseRetryAfterMs(null, 5000)).toBe(5000);
+    expect(parseRetryAfterMs('', 5000)).toBe(5000);
+    expect(parseRetryAfterMs('not-a-date-or-number', 5000)).toBe(5000);
+  });
+
+  it('treats zero seconds as retry-immediately', () => {
+    expect(parseRetryAfterMs('0', 5000)).toBe(0);
+  });
+
+  it('returns fallback for negative seconds', () => {
+    expect(parseRetryAfterMs('-5', 5000)).toBe(5000);
   });
 });
 

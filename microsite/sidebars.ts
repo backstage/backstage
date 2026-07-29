@@ -45,6 +45,7 @@ function sidebarElementWithIndex(
 
 export default {
   docs: [
+    'landing-page/doc-landing-page',
     sidebarElementWithIndex({ label: 'Overview' }, [
       'overview/what-is-backstage',
       'overview/technical-overview',
@@ -79,6 +80,7 @@ export default {
           'getting-started/update-a-component',
           'getting-started/unregister-delete-component',
         ]),
+        'features/techdocs/creating-and-publishing',
       ]),
       'overview/support',
       'getting-started/keeping-backstage-updated',
@@ -108,9 +110,32 @@ export default {
               'golden-path/plugins/why-build-plugins',
               'golden-path/plugins/sustainable-plugin-development',
               sidebarElementWithIndex({ label: 'Backend Plugins' }, [
-                'golden-path/plugins/backend/001-first-steps',
-                'golden-path/plugins/backend/002-poking-around',
+                'golden-path/plugins/backend/first-steps',
+                'golden-path/plugins/backend/poking-around',
+                'golden-path/plugins/backend/persistence',
+                'golden-path/plugins/backend/reading-from-source',
+                'golden-path/plugins/backend/testing',
               ]),
+              sidebarElementWithIndex({ label: 'Frontend Plugins' }, [
+                'golden-path/plugins/frontend/first-steps',
+                'golden-path/plugins/frontend/poking-around',
+                'golden-path/plugins/frontend/dynamic-config',
+                'golden-path/plugins/frontend/http-client',
+                'golden-path/plugins/frontend/testing',
+              ]),
+            ]),
+            sidebarElementWithIndex({ label: '003 - Deployment' }, [
+              'golden-path/deployment/index',
+            ]),
+            sidebarElementWithIndex({ label: '004 - Adoption' }, [
+              'golden-path/adoption/getting-started',
+              'golden-path/adoption/leadership-buy-in',
+              'golden-path/adoption/setting-up-a-poc',
+              'golden-path/adoption/first-stakeholder-feedback',
+              'golden-path/adoption/customize-your-instance',
+              'golden-path/adoption/preparing-for-ga',
+              'golden-path/adoption/plugin-ownership',
+              'golden-path/adoption/full-catalog',
             ]),
           ]),
         ]
@@ -184,6 +209,7 @@ export default {
             'features/kubernetes/authentication-strategies',
             'features/kubernetes/troubleshooting',
             'features/kubernetes/proxy',
+            'features/kubernetes/audit-events',
           ],
         ),
         sidebarElementWithIndex(
@@ -372,9 +398,11 @@ export default {
           'integrations/azure-blobStorage/locations',
           'integrations/azure-blobStorage/discovery',
         ]),
-        sidebarElementWithIndex({ label: 'Azure' }, [
+        sidebarElementWithIndex({ label: 'Azure DevOps' }, [
           'integrations/azure/locations',
           'integrations/azure/discovery',
+        ]),
+        sidebarElementWithIndex({ label: 'Microsoft Entra ID' }, [
           'integrations/azure/org',
         ]),
         sidebarElementWithIndex({ label: 'Bitbucket Cloud' }, [
@@ -392,7 +420,7 @@ export default {
           'integrations/gerrit/locations',
           'integrations/gerrit/discovery',
         ]),
-        sidebarElementWithIndex({ label: 'Github' }, [
+        sidebarElementWithIndex({ label: 'GitHub' }, [
           'integrations/github/locations',
           'integrations/github/discovery',
           'integrations/github/org',
@@ -595,6 +623,29 @@ export default {
             'tooling/cli/build-system',
             'tooling/cli/commands',
             'tooling/cli/templates',
+            sidebarElementWithIndex(
+              {
+                label: 'CLI Modules',
+                description:
+                  'Documentation for each CLI module and its commands.',
+              },
+              [
+                'tooling/cli/modules',
+                'tooling/cli/module-auth',
+                'tooling/cli/module-actions',
+                'tooling/cli/module-build',
+                'tooling/cli/module-config',
+                'tooling/cli/module-github',
+                'tooling/cli/module-info',
+                'tooling/cli/module-lint',
+                'tooling/cli/module-maintenance',
+                'tooling/cli/module-migrate',
+                'tooling/cli/module-new',
+                'tooling/cli/module-test',
+                'tooling/cli/module-translations',
+              ],
+            ),
+            'tooling/cli/building-cli-modules',
             sidebarElementWithIndex(
               {
                 label: 'Local Development',

@@ -51,6 +51,9 @@ export const GridDefinition = defineComponent<GridOwnProps>()({
     'pt',
     'px',
     'py',
+    'grow',
+    'shrink',
+    'basis',
   ],
 });
 

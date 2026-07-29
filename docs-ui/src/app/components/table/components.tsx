@@ -473,6 +473,105 @@ export function CombinedExample() {
 }
 
 // =============================================================================
+// Column Widths With `fr` Example
+// =============================================================================
+
+const columnWidthsWithFr: ColumnConfig<CatalogItem>[] = [
+  {
+    id: 'name',
+    label: 'Name (3fr)',
+    isRowHeader: true,
+    width: '3fr',
+    cell: item => <CellText title={item.name} description={item.description} />,
+  },
+  {
+    id: 'owner',
+    label: 'Owner (2fr)',
+    width: '2fr',
+    cell: item => <CellText title={item.owner.name} />,
+  },
+  {
+    id: 'type',
+    label: 'Type (1fr)',
+    width: '1fr',
+    cell: item => <CellText title={item.type} />,
+  },
+  {
+    id: 'lifecycle',
+    label: 'Lifecycle (1fr)',
+    width: '1fr',
+    cell: item => <CellText title={item.lifecycle} />,
+  },
+];
+
+export function ColumnWidthsWithFrExample() {
+  const { tableProps } = useTable({
+    mode: 'complete',
+    getData: () => catalogData,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return (
+    <MemoryRouter>
+      <Table columnConfig={columnWidthsWithFr} {...tableProps} />
+    </MemoryRouter>
+  );
+}
+
+// =============================================================================
+// Column Widths With Constraints Example
+// =============================================================================
+
+const columnWidthsWithConstraints: ColumnConfig<CatalogItem>[] = [
+  {
+    id: 'name',
+    label: 'Name (3fr, min 200px)',
+    isRowHeader: true,
+    defaultWidth: '3fr',
+    minWidth: 200,
+    cell: item => <CellText title={item.name} description={item.description} />,
+  },
+  {
+    id: 'owner',
+    label: 'Owner (2fr, 120–300px)',
+    defaultWidth: '2fr',
+    minWidth: 120,
+    maxWidth: 300,
+    cell: item => <CellText title={item.owner.name} />,
+  },
+  {
+    id: 'type',
+    label: 'Type (1fr, 80–150px)',
+    defaultWidth: '1fr',
+    minWidth: 80,
+    maxWidth: 150,
+    cell: item => <CellText title={item.type} />,
+  },
+  {
+    id: 'lifecycle',
+    label: 'Lifecycle (1fr, 80–150px)',
+    defaultWidth: '1fr',
+    minWidth: 80,
+    maxWidth: 150,
+    cell: item => <CellText title={item.lifecycle} />,
+  },
+];
+
+export function ColumnWidthsWithConstraintsExample() {
+  const { tableProps } = useTable({
+    mode: 'complete',
+    getData: () => catalogData,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return (
+    <MemoryRouter>
+      <Table columnConfig={columnWidthsWithConstraints} {...tableProps} />
+    </MemoryRouter>
+  );
+}
+
+// =============================================================================
 // Custom Row Example
 // =============================================================================
 

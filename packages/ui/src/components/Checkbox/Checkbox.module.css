@@ -68,6 +68,19 @@
       color: var(--bui-fg-primary);
     }
 
+    .bui-Checkbox[data-invalid] & {
+      box-shadow: inset 0 0 0 1px var(--bui-border-danger);
+    }
+
+    .bui-Checkbox[data-invalid][data-selected] & {
+      background-color: var(--bui-border-danger);
+      box-shadow: none;
+    }
+
+    .bui-Checkbox[data-invalid][data-indeterminate] & {
+      box-shadow: inset 0 0 0 1px var(--bui-border-danger);
+    }
+
     @media (prefers-reduced-motion: reduce) {
       & {
         transition: none;

@@ -1,0 +1,10 @@
+---
+title: Explore
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Discovery
+description: Builds an exploration page of your software ecosystem, visualizing top-level entities such as domains, groups, and tools.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/explore/plugins/explore/README.md
+npmPackageName: '@backstage-community/plugin-explore'
+addedDate: '2026-02-21'
+status: active

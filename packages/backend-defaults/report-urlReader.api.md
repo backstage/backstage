@@ -5,13 +5,14 @@
 ```ts
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
-import { AzureBlobStorageIntergation } from '@backstage/integration';
+import { AzureBlobStorageIntegration } from '@backstage/integration';
 import { AzureCredentialsManager } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
+import { ContainerClient } from '@azure/storage-blob';
 import { GerritIntegration } from '@backstage/integration';
 import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -67,9 +68,12 @@ export class AwsS3UrlReader implements UrlReaderService {
 export class AzureBlobStorageUrlReader implements UrlReaderService {
   constructor(
     credsManager: AzureCredentialsManager,
-    integration: AzureBlobStorageIntergation,
+    integration: AzureBlobStorageIntegration,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
+      createContainerClient?: (
+        containerName: string,
+      ) => Promise<ContainerClient>;
     },
   );
   // (undocumented)

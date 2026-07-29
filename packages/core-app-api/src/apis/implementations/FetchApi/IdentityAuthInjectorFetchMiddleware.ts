@@ -18,6 +18,8 @@ import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { FetchMiddleware } from './types';
 
+const PLUGIN_ID_TEMPLATE = /\{\{\s*pluginId\s*\}\}/g;
+
 /**
  * A fetch middleware, which injects a Backstage token header when the user is
  * signed in.
@@ -53,14 +55,17 @@ export class IdentityAuthInjectorFetchMiddleware implements FetchMiddleware {
     const endpointConfigs =
       config.getOptionalConfigArray('discovery.endpoints') || [];
     return endpointConfigs.flatMap(c => {
-      const target =
-        typeof c.get('target') === 'object'
-          ? c.getString('target.external')
-          : c.getString('target');
+      const target = getExternalTarget(c);
+      if (!target) {
+        return [];
+      }
       const plugins = c.getStringArray('plugins');
-      return plugins.map(pluginId =>
-        target.replace(/\{\{\s*pluginId\s*\}\}/g, pluginId),
-      );
+      return plugins.flatMap(pluginId => {
+        if (pluginId === '*') {
+          return [];
+        }
+        return target.replace(PLUGIN_ID_TEMPLATE, pluginId);
+      });
     });
   }
 
@@ -116,14 +121,54 @@ function buildMatcher(options: {
   } else if (options.urlPrefixAllowlist) {
     return buildPrefixMatcher(options.urlPrefixAllowlist);
   } else if (options.config) {
-    return buildPrefixMatcher([
+    const prefixMatcher = buildPrefixMatcher([
       options.config.getString('backend.baseUrl'),
       ...IdentityAuthInjectorFetchMiddleware.getDiscoveryUrlPrefixes(
         options.config,
       ),
     ]);
+    const wildcardMatcher = buildWildcardDiscoveryMatcher(options.config);
+    return url => prefixMatcher(url) || wildcardMatcher(url);
   }
   return () => false;
+}
+
+function getExternalTarget(config: Config): string | undefined {
+  return typeof config.get('target') === 'object'
+    ? config.getOptionalString('target.external')
+    : config.getString('target');
+}
+
+function buildWildcardDiscoveryMatcher(
+  config: Config,
+): (url: string) => boolean {
+  const matchers =
+    config.getOptionalConfigArray('discovery.endpoints')?.flatMap(endpoint => {
+      if (!endpoint.getStringArray('plugins').includes('*')) {
+        return [];
+      }
+      const target = getExternalTarget(endpoint);
+      return target ? [buildUrlPatternMatcher(target)] : [];
+    }) ?? [];
+
+  return url => matchers.some(matcher => matcher(url));
+}
+
+function buildUrlPatternMatcher(pattern: string): (url: string) => boolean {
+  const parts = pattern.replace(/\/$/, '').split(PLUGIN_ID_TEMPLATE);
+  let source = escapeRegExp(parts[0]);
+
+  for (let i = 1; i < parts.length; i++) {
+    source += i === 1 ? '([^/?#]+)' : '\\1';
+    source += escapeRegExp(parts[i]);
+  }
+
+  const regex = new RegExp(`^${source}(?:/|$|[?#])`);
+  return url => regex.test(url);
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function buildPrefixMatcher(prefixes: string[]): (url: string) => boolean {

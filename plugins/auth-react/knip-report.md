@@ -1,8 +1,2 @@
 # Knip report
 
-## Unused devDependencies (1)
-
-| Name | Location     | Severity |
-| :-- | :----------- | :------- |
-| msw | plugins/auth-react/package.json | error    |
-

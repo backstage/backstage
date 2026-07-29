@@ -39,7 +39,7 @@ import { AwsCodeCommitIntegrationConfig } from './awsCodeCommit';
 import { HarnessIntegration, HarnessIntegrationConfig } from './harness';
 import {
   AzureBlobStorageIntegrationConfig,
-  AzureBlobStorageIntergation,
+  AzureBlobStorageIntegration,
 } from './azureBlobStorage';
 import { GoogleGcsIntegration, GoogleGcsIntegrationConfig } from './googleGcs';
 
@@ -56,7 +56,7 @@ describe('ScmIntegrations', () => {
     host: 'azure.local',
   } as AzureIntegrationConfig);
 
-  const azureBlob = new AzureBlobStorageIntergation({
+  const azureBlob = new AzureBlobStorageIntegration({
     host: 'azureblobstorage.local',
   } as AzureBlobStorageIntegrationConfig);
 

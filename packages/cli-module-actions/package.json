@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-actions",
-  "version": "0.0.2-next.1",
+  "version": "0.1.3",
   "description": "CLI module for executing distributed actions",
   "backstage": {
     "role": "cli-module"
@@ -19,11 +19,11 @@
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-actions",
   "files": [
     "dist",
     "bin"
   ],
-  "bin": "bin/backstage-cli-module-actions",
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
@@ -36,7 +36,7 @@
     "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
     "chalk": "^4.0.0",
-    "cleye": "^2.3.0",
+    "cleye": "^2.6.0",
     "marked": "^15.0.12",
     "marked-terminal": "^7.3.0",
     "strip-ansi": "^7.1.0",

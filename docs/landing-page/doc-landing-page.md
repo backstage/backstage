@@ -70,6 +70,7 @@ description: Documentation landing page.
     </td>
     <td valign='top'><i>Additional Backstage Features</i><br><br>
       <ul>
+        <li><a href='https://backstage.io/docs/ai/generated-index/'>AI</a></li>
         <li><a href='https://backstage.io/docs/features/search/'>Search</a></li>
         <li><a href='https://backstage.io/docs/features/software-catalog/'>Software Catalog</a></li>
         <li><a href='https://backstage.io/docs/features/software-templates/'>Software Templates (aka Scaffolder)</a></li>

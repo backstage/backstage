@@ -78,6 +78,7 @@ export namespace catalogApiMock {
     getLocationByRef: jest.fn(),
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
+    updateLocation: jest.fn(),
     getLocationByEntity: jest.fn(),
     validateEntity: jest.fn(),
     analyzeLocation: jest.fn(),

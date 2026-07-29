@@ -18,7 +18,6 @@ import Grid from '@material-ui/core/Grid';
 
 import {
   ApiBlueprint,
-  NavItemBlueprint,
   PageBlueprint,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
@@ -38,14 +37,6 @@ import {
   EntityCardBlueprint,
   EntityContentBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
-
-const apiDocsNavItem = NavItemBlueprint.make({
-  params: {
-    title: 'APIs',
-    routeRef: rootRoute,
-    icon: () => <AppIcon fontSize="inherit" id="kind:api" />,
-  },
-});
 
 const apiDocsConfigApi = ApiBlueprint.make({
   name: 'config',
@@ -76,6 +67,8 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
     return originalFactory({
       path: '/api-docs',
       routeRef: rootRoute,
+      title: 'APIs',
+      icon: <AppIcon fontSize="inherit" id="kind:api" />,
       loader: () =>
         import('./components/ApiExplorerPage/DefaultApiExplorerPage').then(
           m => (
@@ -222,7 +215,6 @@ export default createFrontendPlugin({
     registerApi: registerComponentRouteRef,
   },
   extensions: [
-    apiDocsNavItem,
     apiDocsConfigApi,
     apiDocsExplorerPage,
     apiDocsHasApisEntityCard,

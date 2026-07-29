@@ -818,18 +818,18 @@ const appPlugin: OverridableFrontendPlugin<
       config: {
         transientTimeoutMs: number;
         anchorOrigin: {
-          horizontal: 'center' | 'left' | 'right';
           vertical: 'top' | 'bottom';
+          horizontal: 'center' | 'left' | 'right';
         };
       };
       configInput: {
+        transientTimeoutMs?: number | undefined;
         anchorOrigin?:
           | {
-              horizontal?: 'center' | 'left' | 'right' | undefined;
               vertical?: 'top' | 'bottom' | undefined;
+              horizontal?: 'center' | 'left' | 'right' | undefined;
             }
           | undefined;
-        transientTimeoutMs?: number | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {};

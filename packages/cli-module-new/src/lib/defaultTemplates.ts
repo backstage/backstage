@@ -28,4 +28,5 @@ export const defaultTemplates = [
   '@backstage/cli-module-new/templates/cli-module',
   '@backstage/cli-module-new/templates/catalog-provider-module',
   '@backstage/cli-module-new/templates/scaffolder-backend-module',
+  '@backstage/cli-module-new/templates/scaffolder-field-extension-module',
 ];

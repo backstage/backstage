@@ -46,17 +46,7 @@ describe('SearchResultListItemBlueprint', () => {
         },
         "configSchema": {
           "parse": [Function],
-          "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "noTrack": {
-                "default": false,
-                "type": "boolean",
-              },
-            },
-            "type": "object",
-          },
+          "schema": [Function],
         },
         "disabled": false,
         "factory": [Function],

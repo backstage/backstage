@@ -42,6 +42,7 @@ This provider includes several resolvers out of the box that you can use:
 - `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 - `forwardedUserMatchingUserEntityName`: Matches the value in the `x-forwarded-user` header from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
+- `forwardedPreferredUsernameMatchingUserEntityName`: Matches the value in the `x-forwarded-preferred-username` header from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 
 :::note Note
 
@@ -74,4 +75,4 @@ backend.add(
 
 See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page, and to also make it work smoothly for local development. You'll use `oauth2Proxy` as the provider name.
 
-If you [provide a custom sign in resolver](https://backstage.io/docs/auth/identity-resolver#building-custom-resolvers), you can skip the `signIn` block entirely.
+If you [provide a custom sign in resolver](../identity-resolver.md#building-custom-resolvers), you can skip the `signIn` block entirely.

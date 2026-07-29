@@ -17,7 +17,7 @@
 import { createApiRef } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecoratorsApi } from './types';
 
-/** @alpha */
+/** @public */
 export const formDecoratorsApiRef = createApiRef<ScaffolderFormDecoratorsApi>({
   id: 'plugin.scaffolder.form-decorators',
 });

@@ -377,6 +377,299 @@ components:
   });
 });
 
+describe('bundleFileWithRefs - nested and cross-directory refs', () => {
+  const scmIntegrations = ScmIntegrations.fromConfig(mockServices.rootConfig());
+
+  const resolveUrl: BundlerResolveUrl = jest.fn(
+    (url: string, base: string): string => {
+      return scmIntegrations.resolveUrl({ url, base });
+    },
+  );
+
+  const read: BundlerRead = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve cross-directory refs like ./../../common/specs/common.yaml', async () => {
+    const spec = `
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Test
+paths:
+  /pets:
+    get:
+      $ref: "./../../common/specs/common.yaml"
+`;
+
+    const commonContent = `
+summary: List all pets
+operationId: listPets
+responses:
+  '200':
+    description: OK
+    content:
+      application/json:
+        schema:
+          type: string
+`;
+
+    (read as jest.Mock).mockResolvedValue(commonContent);
+
+    const baseUrl =
+      'https://github.com/owner/repo/blob/main/services/petstore/openapi.yaml';
+
+    await bundleFileWithRefs(spec, baseUrl, read, resolveUrl);
+
+    expect(resolveUrl).toHaveBeenCalledWith(
+      './../../common/specs/common.yaml',
+      baseUrl,
+    );
+    expect(read).toHaveBeenCalledWith(
+      'https://github.com/owner/repo/tree/main/common/specs/common.yaml',
+    );
+  });
+
+  it('should resolve depth-2 nested refs where a referenced file itself contains relative $refs', async () => {
+    const spec = `
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Test
+paths:
+  /pets:
+    get:
+      $ref: "./paths/pets.yaml"
+`;
+
+    const petsContent = `
+summary: List all pets
+operationId: listPets
+responses:
+  '200':
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/pet.yaml"
+`;
+
+    const petSchemaContent = `
+type: object
+properties:
+  name:
+    type: string
+`;
+
+    (read as jest.Mock)
+      .mockResolvedValueOnce(petsContent)
+      .mockResolvedValueOnce(petSchemaContent);
+
+    const baseUrl =
+      'https://github.com/owner/repo/blob/main/specs/openapi.yaml';
+
+    await bundleFileWithRefs(spec, baseUrl, read, resolveUrl);
+
+    expect(resolveUrl).toHaveBeenCalledWith('./paths/pets.yaml', baseUrl);
+    const petsUrl =
+      'https://github.com/owner/repo/tree/main/specs/paths/pets.yaml';
+    expect(read).toHaveBeenCalledWith(petsUrl);
+    expect(resolveUrl).toHaveBeenCalledWith('../schemas/pet.yaml', petsUrl);
+    expect(read).toHaveBeenCalledWith(
+      'https://github.com/owner/repo/tree/main/specs/schemas/pet.yaml',
+    );
+  });
+
+  it('should resolve multiple sibling refs inside a nested file', async () => {
+    const spec = `
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Test
+paths:
+  /pets:
+    get:
+      $ref: "./paths/pets.yaml"
+`;
+
+    const petsContent = `
+summary: List all pets
+operationId: listPets
+responses:
+  '200':
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/pet.yaml"
+  '400':
+    description: Error
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/error.yaml"
+`;
+
+    const petSchemaContent = `
+type: object
+properties:
+  name:
+    type: string
+`;
+
+    const errorSchemaContent = `
+type: object
+properties:
+  message:
+    type: string
+`;
+
+    (read as jest.Mock)
+      .mockResolvedValueOnce(petsContent)
+      .mockResolvedValueOnce(petSchemaContent)
+      .mockResolvedValueOnce(errorSchemaContent);
+
+    const baseUrl =
+      'https://github.com/owner/repo/blob/main/specs/openapi.yaml';
+
+    await bundleFileWithRefs(spec, baseUrl, read, resolveUrl);
+
+    expect(read).toHaveBeenCalledTimes(3);
+    const petsUrl =
+      'https://github.com/owner/repo/tree/main/specs/paths/pets.yaml';
+    expect(resolveUrl).toHaveBeenCalledWith('../schemas/pet.yaml', petsUrl);
+    expect(resolveUrl).toHaveBeenCalledWith('../schemas/error.yaml', petsUrl);
+    expect(read).toHaveBeenCalledWith(
+      'https://github.com/owner/repo/tree/main/specs/schemas/pet.yaml',
+    );
+    expect(read).toHaveBeenCalledWith(
+      'https://github.com/owner/repo/tree/main/specs/schemas/error.yaml',
+    );
+  });
+
+  it('should resolve the vj-goto/test-catalog scenario (issue #33076)', async () => {
+    // Mirrors https://github.com/vj-goto/test-catalog — cproc/specs/transcript-tester.yaml
+    // refs ./../../common/specs/common.yaml for shared responses.
+    const spec = `
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Transcription Tester API
+paths:
+  /tests/post-call-transcription:
+    post:
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: "./../../common/specs/common.yaml#/components/responses/400"
+        '404':
+          $ref: "./../../common/specs/common.yaml#/components/responses/404"
+        '500':
+          $ref: "./../../common/specs/common.yaml#/components/responses/500"
+`;
+
+    const commonContent = `
+openapi: 3.0.0
+info:
+  version: 2.0.0
+  title: Common Definitions
+paths: {}
+components:
+  responses:
+    "400":
+      description: Bad Request
+      content:
+        "*/*":
+          schema:
+            type: object
+    "404":
+      description: Not Found
+      content:
+        "*/*":
+          schema:
+            type: object
+    "500":
+      description: Server Error
+      content:
+        "*/*":
+          schema:
+            type: object
+`;
+
+    (read as jest.Mock).mockResolvedValue(commonContent);
+
+    const baseUrl =
+      'https://github.com/vj-goto/test-catalog/blob/main/cproc/specs/transcript-tester.yaml';
+
+    await bundleFileWithRefs(spec, baseUrl, read, resolveUrl);
+
+    expect(resolveUrl).toHaveBeenCalledWith(
+      './../../common/specs/common.yaml',
+      baseUrl,
+    );
+    expect(read).toHaveBeenCalledWith(
+      'https://github.com/vj-goto/test-catalog/tree/main/common/specs/common.yaml',
+    );
+    expect(read).toHaveBeenCalledTimes(1);
+  });
+
+  it('should resolve depth-2 nested refs through the http resolver', async () => {
+    const spec = `
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Test
+paths:
+  /pets:
+    get:
+      $ref: "https://external.example.com/specs/paths/pets.yaml"
+`;
+
+    const petsContent = `
+summary: List all pets
+operationId: listPets
+responses:
+  '200':
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/pet.yaml"
+`;
+
+    const petSchemaContent = `
+type: object
+properties:
+  name:
+    type: string
+`;
+
+    (read as jest.Mock)
+      .mockResolvedValueOnce(petsContent)
+      .mockResolvedValueOnce(petSchemaContent);
+
+    const baseUrl =
+      'https://github.com/owner/repo/blob/main/specs/openapi.yaml';
+
+    await bundleFileWithRefs(spec, baseUrl, read, resolveUrl);
+
+    const petsUrl = 'https://external.example.com/specs/paths/pets.yaml';
+    expect(resolveUrl).toHaveBeenCalledWith(petsUrl, baseUrl);
+    expect(read).toHaveBeenCalledWith(petsUrl);
+    expect(resolveUrl).toHaveBeenCalledWith('../schemas/pet.yaml', petsUrl);
+    expect(read).toHaveBeenCalledWith(
+      'https://external.example.com/specs/schemas/pet.yaml',
+    );
+  });
+});
+
 describe('bundleFileWithRefs - Testing getRelativePath scenarios', () => {
   beforeEach(() => {
     jest.clearAllMocks();

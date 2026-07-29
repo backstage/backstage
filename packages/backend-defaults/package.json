@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.16.1-next.2",
+  "version": "0.17.6-next.1",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -36,6 +36,7 @@
     "./rootHttpRouter": "./src/entrypoints/rootHttpRouter/index.ts",
     "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
     "./rootLogger": "./src/entrypoints/rootLogger/index.ts",
+    "./rootSystemMetadata": "./src/entrypoints/rootSystemMetadata/index.ts",
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
@@ -93,6 +94,9 @@
       ],
       "rootLogger": [
         "src/entrypoints/rootLogger/index.ts"
+      ],
+      "rootSystemMetadata": [
+        "src/entrypoints/rootSystemMetadata/index.ts"
       ],
       "scheduler": [
         "src/entrypoints/scheduler/index.ts"
@@ -170,7 +174,8 @@
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
     "helmet": "^6.0.0",
-    "infinispan": "^0.12.0",
+    "infinispan": "^0.13.0",
+    "iovalkey": "^0.3.3",
     "is-glob": "^4.0.3",
     "jose": "^5.0.0",
     "keyv": "^5.2.1",
@@ -192,7 +197,6 @@
     "selfsigned": "^2.0.0",
     "tar": "^7.5.6",
     "triple-beam": "^1.4.1",
-    "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0",
     "yauzl": "^3.2.1",
@@ -202,7 +206,6 @@
   },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",
-    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@google-cloud/cloud-sql-connector": "^1.4.0",
@@ -219,7 +222,7 @@
     "better-sqlite3": "^12.0.0",
     "get-port": "^5.1.1",
     "http-errors": "^2.0.0",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "node-mocks-http": "^1.0.0",
     "supertest": "^7.0.0",
     "wait-for-expect": "^4.0.0"

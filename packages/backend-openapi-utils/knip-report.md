@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name                          | Location     | Severity |
-| :---------------------------- | :----------- | :------- |
-| @backstage/backend-plugin-api | packages/backend-openapi-utils/package.json | error    |
+| Name                          | Location          | Severity |
+| :---------------------------- | :---------------- | :------- |
+| @backstage/backend-plugin-api | package.json:49:6 | error    |
 

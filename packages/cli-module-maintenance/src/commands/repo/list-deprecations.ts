@@ -27,7 +27,7 @@ export default async ({ args, info }: CliCommandContext) => {
     flags: { json },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         json: { type: Boolean, description: 'Output as JSON' },

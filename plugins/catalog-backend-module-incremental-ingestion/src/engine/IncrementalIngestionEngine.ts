@@ -20,7 +20,7 @@ import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { performance } from 'node:perf_hooks';
 import { Duration } from 'luxon';
-import { v4 } from 'uuid';
+import { randomUUID as v4 } from 'node:crypto';
 import { stringifyError, toError } from '@backstage/errors';
 import { EventParams } from '@backstage/plugin-events-node';
 import { HumanDuration } from '@backstage/types';

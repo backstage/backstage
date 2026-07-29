@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-node",
-  "version": "0.3.1-next.1",
+  "version": "0.3.4",
   "description": "Node.js library for Backstage CLIs",
   "backstage": {
     "role": "node-library"
@@ -39,7 +39,7 @@
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.0.0",
     "chalk": "^4.0.0",
-    "commander": "^12.0.0",
+    "cleye": "^2.6.0",
     "fs-extra": "^11.2.0",
     "pirates": "^4.0.6",
     "proper-lockfile": "^4.1.2",
@@ -54,9 +54,6 @@
     "@types/proper-lockfile": "^4",
     "@types/yarnpkg__lockfile": "^1.1.4"
   },
-  "optionalDependencies": {
-    "keytar": "^7.9.0"
-  },
   "peerDependencies": {
     "@swc/core": "^1.15.6"
   },
@@ -64,5 +61,8 @@
     "@swc/core": {
       "optional": true
     }
+  },
+  "optionalDependencies": {
+    "keytar": "^7.9.0"
   }
 }

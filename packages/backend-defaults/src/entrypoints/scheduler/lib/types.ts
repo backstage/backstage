@@ -45,29 +45,6 @@ function isValidTrigger(t: string): boolean {
   return t === 'manual';
 }
 
-export const taskSettingsV1Schema = z.object({
-  version: z.literal(1),
-  initialDelayDuration: z
-    .string()
-    .optional()
-    .refine(isValidOptionalDurationString, {
-      message: 'Invalid duration, expecting ISO Period',
-    }),
-  recurringAtMostEveryDuration: z
-    .string()
-    .refine(isValidOptionalDurationString, {
-      message: 'Invalid duration, expecting ISO Period',
-    }),
-  timeoutAfterDuration: z.string().refine(isValidOptionalDurationString, {
-    message: 'Invalid duration, expecting ISO Period',
-  }),
-});
-
-/**
- * The properties that control a scheduled task (version 1).
- */
-export type TaskSettingsV1 = z.infer<typeof taskSettingsV1Schema>;
-
 export const taskSettingsV2Schema = z.object({
   version: z.literal(2),
   cadence: z

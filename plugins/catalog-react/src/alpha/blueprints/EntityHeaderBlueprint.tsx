@@ -21,7 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   FilterPredicate,
-  createZodV3FilterPredicateSchema,
+  createZodV4FilterPredicateSchema,
 } from '@backstage/filter-predicates';
 import { Entity } from '@backstage/catalog-model';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
@@ -30,7 +30,12 @@ import {
   entityFilterFunctionDataRef,
 } from './extensionData';
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated Use {@link EntityHeaderLayoutBlueprint} instead. This legacy
+ * blueprint renders an opaque header element through the temporary Catalog
+ * entity-page fallback.
+ */
 export const EntityHeaderBlueprint = createExtensionBlueprint({
   kind: 'entity-header',
   attachTo: { id: 'page:catalog/entity', input: 'headers' },
@@ -38,10 +43,8 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
     filterFunction: entityFilterFunctionDataRef,
     element: coreExtensionData.reactElement,
   },
-  config: {
-    schema: {
-      filter: z => createZodV3FilterPredicateSchema(z).optional(),
-    },
+  configSchema: {
+    filter: createZodV4FilterPredicateSchema().optional(),
   },
   output: [
     entityFilterFunctionDataRef.optional(),

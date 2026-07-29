@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { TaskSpec, TaskStep } from './TaskSpec';
 import type {
   TemplateEntityV1beta3,
@@ -136,6 +136,7 @@ export type ListTemplatingExtensionsResponse = {
 
 /** @public */
 export type ScaffolderOutputLink = {
+  if?: string | boolean;
   title?: string;
   icon?: string;
   url?: string;
@@ -144,6 +145,7 @@ export type ScaffolderOutputLink = {
 
 /** @public */
 export type ScaffolderOutputText = {
+  if?: string | boolean;
   title?: string;
   icon?: string;
   content?: string;

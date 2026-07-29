@@ -78,6 +78,7 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
     autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -96,7 +97,6 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
             }
         >[]
       | undefined;
-    allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
   }
 >;
@@ -108,6 +108,7 @@ export const EntityPickerFieldSchema: FieldSchema_2<
     autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -126,7 +127,6 @@ export const EntityPickerFieldSchema: FieldSchema_2<
             }
         >[]
       | undefined;
-    allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
   }
 >;
@@ -255,6 +255,7 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
     autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -273,7 +274,6 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
             }
         >[]
       | undefined;
-    allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
   }
 >;
@@ -285,6 +285,7 @@ export const OwnedEntityPickerFieldSchema: FieldSchema_2<
     autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -303,7 +304,6 @@ export const OwnedEntityPickerFieldSchema: FieldSchema_2<
             }
         >[]
       | undefined;
-    allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
   }
 >;
@@ -318,6 +318,7 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
     defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -336,7 +337,6 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
             }
         >[]
       | undefined;
-    allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
   }
 >;
@@ -346,6 +346,7 @@ export const OwnerPickerFieldSchema: FieldSchema_2<
   string,
   {
     defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -364,7 +365,6 @@ export const OwnerPickerFieldSchema: FieldSchema_2<
             }
         >[]
       | undefined;
-    allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
   }
 >;

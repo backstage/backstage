@@ -58,7 +58,12 @@ describe('DefaultApiExplorerPage', () => {
         ],
       }),
     getLocationByRef: () =>
-      Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
+      Promise.resolve({
+        id: 'id',
+        type: 'url',
+        target: 'url',
+        entityRef: 'location:default/generated-id',
+      }),
     getEntitiesByRefs: () => Promise.resolve({ items: [] }),
     getEntityFacets: async () => ({
       facets: { 'relations.ownedBy': [] },

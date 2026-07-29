@@ -1,5 +1,97 @@
 # @backstage/plugin-auth-backend-module-auth0-provider
 
+## 0.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.4-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 0.4.3
+
+### Patch Changes
+
+- 5446838: Added an optional `prompt` setting for Auth0 authorization requests. Set it to
+  `auto` to let Auth0 determine whether the user needs to be prompted. Existing
+  configurations continue to use `consent` by default.
+- 9a07306: Added `screen_hint` and `login_hint` parameter forwarding for the Auth0 authentication provider.
+  When these parameters are present in the OAuth start request query string, they
+  are forwarded to Auth0's `/authorize` endpoint. This allows callers to guide
+  users to the signup or login screen (`screen_hint=signup`) and pre-fill the
+  email field (`login_hint=user@example.com`) during invitation flows.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.3
+  - @backstage/backend-plugin-api@1.9.3
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- 5446838: Added an optional `prompt` setting for Auth0 authorization requests. Set it to
+  `auto` to let Auth0 determine whether the user needs to be prompted. Existing
+  configurations continue to use `consent` by default.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.3-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-auth-node@0.7.2
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.2-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-auth-node@0.7.1
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 9244b70: Sign-out now redirects the browser to Auth0's `/v2/logout` endpoint, clearing the Auth0 session cookie so that the next sign-in creates a new Auth0 session. Previously, only the Backstage session was cleared, allowing users to sign back in without going through Auth0 logout first.
+
+  Set `federatedLogout: true` in the Auth0 provider config to additionally clear the upstream IdP session (e.g. Okta, Google). This is what guarantees a full re-login across the entire SSO chain and may require users to re-enter credentials.
+
+### Patch Changes
+
+- b3bbd42: Added `createAuth0Authenticator` factory function that accepts a `CacheService` to cache Auth0 profile API responses for 1 minute during token refreshes. This avoids hitting Auth0 rate limits on repeated page refreshes. The module now uses the cached variant by default. The existing `auth0Authenticator` export remains available for use without caching.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/plugin-auth-node@0.7.0
+
 ## 0.4.0-next.2
 
 ### Minor Changes

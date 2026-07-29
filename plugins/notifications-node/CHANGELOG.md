@@ -1,5 +1,70 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 0.2.28
+
+### Patch Changes
+
+- 73ea4d7: Migrated tests to msw version 2.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+
+## 0.2.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 0.2.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+
+## 0.2.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2-next.0
+
+## 0.2.26
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-notifications-common@0.2.3
+
+## 0.2.26-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.3-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+
+## 0.2.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/catalog-client@1.15.0
+  - @backstage/plugin-signals-node@0.2.0
+  - @backstage/plugin-notifications-common@0.2.2
+
 ## 0.2.25-next.2
 
 ### Patch Changes

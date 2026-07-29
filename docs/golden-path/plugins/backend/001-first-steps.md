@@ -23,7 +23,7 @@ will be part of the NPM package name, so make it short and containing only
 lowercase characters separated by dashes, for our example, you should provide `todo`. For plugins you may write in the future, this should be an easy to remember indicator of what this plugins does, like if it's a
 package that adds an integration with a system named Carmen, you would want to name it `carmen`.
 
-This will create a new NPM package with a package name something like `@internal/plugin-carmen-backend`, depending on the other flags passed to the `new` command, and your settings for the `new` command in your root `package.json`. For future reference, we also support additional flags and configuration. Learn more at [the CLI docs](../../../tooling/cli/03-commands.md#new).
+This will create a new NPM package with a package name something like `@internal/plugin-carmen-backend`, depending on the other flags passed to the `new` command, and your settings for the `new` command in your root `package.json`. For future reference, we also support additional flags and configuration. Learn more at [the CLI docs](../../../tooling/cli/module-new.md#new).
 
 Creating the plugin will take a little while, so be patient. If it runs with no issues, it will run the initial installation and build commands, so that your package is ready to be hacked on!
 

@@ -21,7 +21,12 @@ import { useBgProvider, useBgConsumer, BgProvider } from '../useBg';
 import { resolveDefinitionProps, processUtilityProps } from './helpers';
 import { useAnalytics } from '../../analytics/useAnalytics';
 import { noopTracker } from '../../analytics/useAnalytics';
-import { useInRouterContext, useHref } from 'react-router-dom';
+import {
+  useResolvedPath,
+  useInRouterContext,
+  createPath,
+} from 'react-router-dom';
+import { isExternalLink } from '../../utils/linkUtils';
 import type {
   ComponentConfig,
   UseDefinitionOptions,
@@ -39,17 +44,13 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
-  // Turn relative href into an absolute path using the current route
-  // context, so that client-side navigation works correctly.
   let hrefResolvedProps = props;
   const hasRouter = useInRouterContext();
-  // useHref throws outside a Router, so we guard with useInRouterContext.
-  // The guard is safe because a component's router context does not
-  // change during its lifetime, keeping the hook call count stable.
   if (hasRouter) {
-    const absoluteHref = useHref((props as any).href ?? '');
-    if ((props as any).href !== undefined) {
-      hrefResolvedProps = { ...props, href: absoluteHref } as P;
+    const rawHref = (props as any).href;
+    const resolved = useResolvedPath(rawHref ?? '');
+    if (rawHref !== undefined && !isExternalLink(rawHref)) {
+      hrefResolvedProps = { ...props, href: createPath(resolved) } as P;
     }
   }
 
@@ -106,8 +107,10 @@ export function useDefinition<
     analytics = ownPropsResolved.noTrack ? noopTracker : tracker;
   }
 
-  const utilityTarget = options?.utilityTarget ?? 'root';
-  const classNameTarget = options?.classNameTarget ?? 'root';
+  const utilityTarget =
+    options?.utilityTarget !== undefined ? options.utilityTarget : 'root';
+  const classNameTarget =
+    options?.classNameTarget !== undefined ? options.classNameTarget : 'root';
 
   const classes: Record<string, string> = {};
 

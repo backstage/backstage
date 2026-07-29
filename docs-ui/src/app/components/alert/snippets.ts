@@ -97,13 +97,13 @@ export const withActionsAndDescriptionsSnippet = `<Alert
   }
 />`;
 
-export const loadingStatesSnippet = `<Flex direction="column" gap="4">
-  <Alert status="info" icon={true} loading title="Processing your request..." />
-  <Alert status="success" icon={true} loading title="Saving changes..." />
+export const pendingStatesSnippet = `<Flex direction="column" gap="4">
+  <Alert status="info" icon={true} isPending title="Processing your request..." />
+  <Alert status="success" icon={true} isPending title="Saving changes..." />
   <Alert
     status="info"
     icon={true}
-    loading
+    isPending
     title="Processing your request"
     description="This may take a few moments. Please do not close this window."
   />

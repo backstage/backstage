@@ -32,6 +32,7 @@ import {
 
 import {
   patchMkdocsYmlPreBuild,
+  patchMkdocsYmlWithFontDisabled,
   patchMkdocsYmlWithPlugins,
   sanitizeMkdocsYml,
 } from './mkdocsPatchers';
@@ -121,11 +122,6 @@ export class TechdocsGenerator implements GeneratorBase {
       this.options.dangerouslyAllowAdditionalKeys,
     );
 
-    // Validate that no symlinks in the docs directory point outside the input directory
-    // This prevents path traversal attacks where malicious symlinks could leak host files
-    const resolvedDocsDir = path.join(inputDir, docsDir ?? 'docs');
-    await validateDocsDirectory(resolvedDocsDir, inputDir);
-
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
         mkdocsYmlPath,
@@ -139,6 +135,12 @@ export class TechdocsGenerator implements GeneratorBase {
       await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
     }
 
+    // Validate that no symlinks in the docs directory point outside the input directory
+    // This prevents path traversal attacks where malicious symlinks could leak host files
+    const resolvedDocsDir = path.join(inputDir, docsDir ?? 'docs');
+
+    await validateDocsDirectory(resolvedDocsDir, inputDir);
+
     // patch the list of mkdocs plugins
     const defaultPlugins = this.options.defaultPlugins ?? [];
 
@@ -150,6 +152,9 @@ export class TechdocsGenerator implements GeneratorBase {
     }
 
     await patchMkdocsYmlWithPlugins(mkdocsYmlPath, childLogger, defaultPlugins);
+    if (this.options.disableExternalFonts) {
+      await patchMkdocsYmlWithFontDisabled(mkdocsYmlPath, childLogger);
+    }
 
     // Directories to bind on container
     const mountDirs = {
@@ -263,6 +268,9 @@ export function readGeneratorConfig(
     ),
     dangerouslyAllowAdditionalKeys: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys',
+    ),
+    disableExternalFonts: config.getOptionalBoolean(
+      'techdocs.generator.mkdocs.disableExternalFonts',
     ),
   };
 }

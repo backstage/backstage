@@ -28,6 +28,7 @@ import {
 import { BackendInitializer } from './BackendInitializer';
 import { mockServices } from '@backstage/backend-test-utils';
 import { BackendStartupError } from './BackendStartupError';
+import { createExtensionPointFactoryMiddleware } from './types';
 
 const baseFactories = [
   mockServices.rootLifecycle.factory(),
@@ -2109,6 +2110,220 @@ describe('BackendInitializer', () => {
       expect(result.plugins[0].failure?.error.message).toContain(
         'Service factory failed',
       );
+    });
+  });
+
+  describe('extensionPointFactoryMiddleware', () => {
+    it('should apply middleware to matching extension points', async () => {
+      expect.assertions(1);
+
+      const extensionPoint = createExtensionPoint<{ values: string[] }>({
+        id: 'test.ext',
+      });
+
+      const init = new BackendInitializer(baseFactories, [
+        createExtensionPointFactoryMiddleware({
+          extensionPoint,
+          middleware: async original => ({
+            ...original,
+            values: [...original.values, 'from-middleware'],
+          }),
+        }),
+      ]);
+
+      init.add(testPlugin);
+      init.add(
+        createBackendModule({
+          pluginId: 'test',
+          moduleId: 'provider',
+          register(reg) {
+            reg.registerExtensionPoint(extensionPoint, {
+              values: ['original'],
+            });
+            reg.registerInit({ deps: {}, async init() {} });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'test',
+          moduleId: 'consumer',
+          register(reg) {
+            reg.registerInit({
+              deps: { ext: extensionPoint },
+              async init({ ext }) {
+                expect(ext.values).toEqual(['original', 'from-middleware']);
+              },
+            });
+          },
+        }),
+      );
+
+      await init.start();
+    });
+
+    it('should not affect non-matching extension points', async () => {
+      expect.assertions(1);
+
+      const extensionPointA = createExtensionPoint<{ values: string[] }>({
+        id: 'test.a',
+      });
+      const extensionPointB = createExtensionPoint<{ values: string[] }>({
+        id: 'test.b',
+      });
+
+      const init = new BackendInitializer(baseFactories, [
+        createExtensionPointFactoryMiddleware({
+          extensionPoint: extensionPointA,
+          middleware: async original => ({
+            ...original,
+            values: [...original.values, 'wrapped'],
+          }),
+        }),
+      ]);
+
+      init.add(testPlugin);
+      init.add(
+        createBackendModule({
+          pluginId: 'test',
+          moduleId: 'provider',
+          register(reg) {
+            reg.registerExtensionPoint(extensionPointB, {
+              values: ['untouched'],
+            });
+            reg.registerInit({ deps: {}, async init() {} });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'test',
+          moduleId: 'consumer',
+          register(reg) {
+            reg.registerInit({
+              deps: { ext: extensionPointB },
+              async init({ ext }) {
+                expect(ext.values).toEqual(['untouched']);
+              },
+            });
+          },
+        }),
+      );
+
+      await init.start();
+    });
+
+    it('should chain multiple middlewares for the same extension point', async () => {
+      expect.assertions(1);
+
+      const extensionPoint = createExtensionPoint<{ values: string[] }>({
+        id: 'test.ext',
+      });
+
+      const init = new BackendInitializer(baseFactories, [
+        createExtensionPointFactoryMiddleware({
+          extensionPoint,
+          middleware: async original => ({
+            ...original,
+            values: [...original.values, 'first'],
+          }),
+        }),
+        createExtensionPointFactoryMiddleware({
+          extensionPoint,
+          middleware: async original => ({
+            ...original,
+            values: [...original.values, 'second'],
+          }),
+        }),
+      ]);
+
+      init.add(testPlugin);
+      init.add(
+        createBackendModule({
+          pluginId: 'test',
+          moduleId: 'provider',
+          register(reg) {
+            reg.registerExtensionPoint(extensionPoint, { values: ['base'] });
+            reg.registerInit({ deps: {}, async init() {} });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'test',
+          moduleId: 'consumer',
+          register(reg) {
+            reg.registerInit({
+              deps: { ext: extensionPoint },
+              async init({ ext }) {
+                expect(ext.values).toEqual(['base', 'first', 'second']);
+              },
+            });
+          },
+        }),
+      );
+
+      await init.start();
+    });
+
+    it('should not fail when middleware targets an unregistered extension point', async () => {
+      const unregisteredExtensionPoint = createExtensionPoint<{
+        values: string[];
+      }>({
+        id: 'test.unregistered',
+      });
+
+      const init = new BackendInitializer(baseFactories, [
+        createExtensionPointFactoryMiddleware({
+          extensionPoint: unregisteredExtensionPoint,
+          middleware: async original => ({
+            ...original,
+            values: [...original.values, 'never-applied'],
+          }),
+        }),
+      ]);
+
+      init.add(testPlugin);
+      const { result } = await init.start();
+      expect(result.outcome).toBe('success');
+    });
+
+    it('should pass through when no middleware is provided', async () => {
+      expect.assertions(1);
+
+      const extensionPoint = createExtensionPoint<{ values: string[] }>({
+        id: 'test.ext',
+      });
+
+      const init = new BackendInitializer(baseFactories);
+
+      init.add(testPlugin);
+      init.add(
+        createBackendModule({
+          pluginId: 'test',
+          moduleId: 'provider',
+          register(reg) {
+            reg.registerExtensionPoint(extensionPoint, { values: ['orig'] });
+            reg.registerInit({ deps: {}, async init() {} });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'test',
+          moduleId: 'consumer',
+          register(reg) {
+            reg.registerInit({
+              deps: { ext: extensionPoint },
+              async init({ ext }) {
+                expect(ext.values).toEqual(['orig']);
+              },
+            });
+          },
+        }),
+      );
+
+      await init.start();
     });
   });
 });

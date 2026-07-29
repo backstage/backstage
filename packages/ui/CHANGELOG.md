@@ -1,5 +1,647 @@
 # @backstage/ui
 
+## 0.17.1-next.0
+
+### Patch Changes
+
+- 52a58be: Fixed Table not filling container width in Firefox when using `TableRoot` directly inside `ResizableTableContainer`. Changed `overflow: hidden` to `overflow: auto` on the resizable container so it handles scrolling for direct `TableRoot` usages.
+
+## 0.17.0
+
+### Minor Changes
+
+- 503ba32: Added re-exports from `react-aria-components`. The types `Selection`, `SortDirection`, and `Key` are available as type-only exports (use `import type`), while `Focusable` is a runtime export. Consumers can now import these directly from `@backstage/ui` instead of depending on `react-aria-components`, avoiding version mismatches.
+
+### Patch Changes
+
+- 2341682: Make PluginHeader > Breadcrumbs separator align with rest of text
+
+  **Affected components:** PluginHeader
+
+- 791703e: Add `breadcrumbs` prop & breadcrumbs to `PluginHeader`. When passed `breadcrumbs`, `PluginHeader` renders a `nav` with breadcrumbs & visually hides the plugin title.
+
+  These breadcrumbs:
+
+  - Collapses middle segments if 5 or more segments
+  - Shows tooltip if text is truncated
+
+  **Affected components:** PluginHeader
+
+- 066c7ac: Added a new `TextAreaField` component for multi-line text input, following the same conventions as `TextField` with support for a label, secondary label, and description.
+
+## 0.17.0-next.1
+
+### Patch Changes
+
+- 2341682: Make PluginHeader > Breadcrumbs separator align with rest of text
+
+  **Affected components:** PluginHeader
+
+## 0.17.0-next.0
+
+### Minor Changes
+
+- 503ba32: Added re-exports from `react-aria-components`. The types `Selection`, `SortDirection`, and `Key` are available as type-only exports (use `import type`), while `Focusable` is a runtime export. Consumers can now import these directly from `@backstage/ui` instead of depending on `react-aria-components`, avoiding version mismatches.
+
+### Patch Changes
+
+- 791703e: Add `breadcrumbs` prop & breadcrumbs to `PluginHeader`. When passed `breadcrumbs`, `PluginHeader` renders a `nav` with breadcrumbs & visually hides the plugin title.
+
+  These breadcrumbs:
+
+  - Collapses middle segments if 5 or more segments
+  - Shows tooltip if text is truncated
+
+  **Affected components:** PluginHeader
+
+- 066c7ac: Added a new `TextAreaField` component for multi-line text input, following the same conventions as `TextField` with support for a label, secondary label, and description.
+
+## 0.16.0
+
+### Minor Changes
+
+- fc4e624: `Combobox` now supports async collections, incremental loading, client and server search, and rich or custom item rendering. Loading placeholders expose `.bui-ComboboxLoading` and `.bui-ComboboxLoadingRow`, and stale visible results expose `data-stale` on `.bui-ComboboxList`.
+
+  **BREAKING**: The public `ComboboxProps` interface is now a union type.
+
+  **Migration:**
+
+  **Required on upgrade:**
+
+  Replace interfaces that extend `ComboboxProps` with type intersections.
+
+  ```diff
+  - interface MyComboboxProps extends ComboboxProps {
+  -   trackingId: string;
+  - }
+  + type MyComboboxProps = ComboboxProps & {
+  +   trackingId: string;
+  + };
+  ```
+
+  **Optional migration away from deprecated APIs:**
+
+  Prefer `id` instead of `value` for plain options. Existing array-valued options using `value` remain supported as a deprecated compatibility path, but new option content fields and async option sources require `id`.
+
+  Move input state and custom filtering into the nested `search` configuration:
+
+  ```diff
+  - <Combobox inputValue={query} onInputChange={setQuery} />
+  + <Combobox search={{ inputValue: query, onInputChange: setQuery }} />
+  ```
+
+  The existing top-level input state props remain supported as a deprecated compatibility path for plain-array `options`.
+
+  **Affected components:** Combobox
+
+- fc4e624: `Select` now supports async collections, incremental loading, client and server search, and rich or custom item rendering. Loading placeholders expose `.bui-SelectLoading` and `.bui-SelectLoadingRow`, and stale retained results expose `data-stale` on `.bui-SelectList`.
+
+  **BREAKING**: The public `SelectProps` interface is now a union type, and Select popover list content is no longer a direct child of `.bui-SelectPopover`.
+
+  **Migration:**
+
+  **Required on upgrade:**
+
+  Replace interfaces that extend `SelectProps` with type intersections.
+
+  ```diff
+  - interface MySelectProps extends SelectProps {
+  -   trackingId: string;
+  - }
+  + type MySelectProps = SelectProps & {
+  +   trackingId: string;
+  + };
+  ```
+
+  Update CSS selectors that rely on list content being a direct child of `.bui-SelectPopover`. Select popovers now use the standard BUI Popover content structure, with contents wrapped in `.bui-Box.bui-PopoverContent`. The existing `.bui-Popover.bui-SelectPopover` root classes are unchanged.
+
+  **Optional migration away from deprecated APIs:**
+
+  Prefer `id` instead of `value` for plain options. Existing array-valued options using `value` remain supported as a deprecated compatibility path, but new option content fields and async option sources require `id`.
+
+  Replace `searchable` and `searchPlaceholder` with nested `search` configuration:
+
+  ```diff
+  - <Select searchable searchPlaceholder="Search owners" />
+  + <Select search={{ placeholder: 'Search owners' }} />
+  ```
+
+  **Affected components:** Select
+
+### Patch Changes
+
+- 3d6c2e4: Updated the dark theme neutral background tokens to provide clearer contrast between neutral surfaces.
+- c86efcd: Fixed the Table component not filling its container width in Firefox. The `overflow` style is now applied to a wrapper element instead of the `<table>` element directly, which avoids a Firefox behavior where non-visible overflow on tables causes them to shrink-wrap to content size.
+- adf94f5: Make Skeleton component background aware, automatically adjusting its color to maintain visible contrast against neutral parent surfaces.
+
+  **Affected components:** Skeleton
+
+- b06b3c7: Fixed header tab links to respect the configured router `basename`.
+
+  **Affected components:** Header
+
+- 14a101f: Switch now adapts its track and thumb colors based on the background context of its parent container, and uses the accent token family when selected.
+
+  **Affected components:** Switch
+
+- 66c4e55: Fixed tab indicator not updating position when tab content changes width dynamically.
+- b33bb24: Added a new `NumberField` component for numeric input with support for min, max, step, and keyboard increment/decrement.
+
+  **Affected components:** NumberField
+
+- 350407d: Fixed async pagination in `Combobox` and `Select` popovers so additional pages load as users scroll instead of loading every page immediately. `Combobox` now uses `.bui-PopoverContent` as its scroll container, while all `Select` variants use the new `.bui-SelectResults` results container.
+
+  Searchable `Select` keeps its search field fixed while results scroll. The new public classes `.bui-SelectContent` and `.bui-SelectResults` expose this layout for theme customization.
+
+  **Affected components:** Combobox, Select
+
+- e989f95: Fixed `Combobox` client search crashing when used with plain options.
+
+  **Affected components:** Combobox
+
+- 1f709a3: Fixed Header breadcrumb typography so it remains consistent when component styles are loaded in different orders.
+
+  **Affected components:** Header
+
+- 5d80f77: Introduces a new set of semantic color token families — Accent, Announcement, Warning, Negative, and Positive — each providing a consistent set of background, foreground, and border tokens for both light and dark themes. A gray scale (`--bui-gray-1` through `--bui-gray-11`) and updated foreground tokens are also included.
+
+  The previous tokens remain in place for backward compatibility but are now deprecated and will be removed in a future release.
+
+  **Migration:**
+
+  **Neutral backgrounds**
+
+  The neutral background tokens keep their existing names (`--bui-bg-app`, `--bui-bg-neutral-1` through `--bui-bg-neutral-4`) but are updated with new solid-color values for both light and dark themes. No token renaming is required. The `-hover`, `-pressed`, and `-disabled` interaction variants of these tokens are deprecated and should be removed.
+
+  **Foreground**
+
+  | Deprecated         | Replacement             |
+  | ------------------ | ----------------------- |
+  | `--bui-fg-danger`  | `--bui-fg-negative`     |
+  | `--bui-fg-success` | `--bui-fg-positive`     |
+  | `--bui-fg-info`    | `--bui-fg-announcement` |
+
+  **Accent**
+
+  | Deprecated                | Replacement                |
+  | ------------------------- | -------------------------- |
+  | `--bui-bg-solid`          | `--bui-accent-bg`          |
+  | `--bui-bg-solid-hover`    | `--bui-accent-bg-hover`    |
+  | `--bui-bg-solid-disabled` | `--bui-accent-bg-disabled` |
+  | `--bui-fg-solid`          | `--bui-accent-fg`          |
+  | `--bui-fg-solid-disabled` | `--bui-accent-fg-disabled` |
+
+  **Positive**
+
+  | Deprecated               | Replacement                 |
+  | ------------------------ | --------------------------- |
+  | `--bui-bg-success`       | `--bui-positive-bg-subdued` |
+  | `--bui-fg-success-on-bg` | `--bui-positive-fg-subdued` |
+  | `--bui-border-success`   | `--bui-positive-border`     |
+
+  **Negative**
+
+  | Deprecated              | Replacement                 |
+  | ----------------------- | --------------------------- |
+  | `--bui-bg-danger`       | `--bui-negative-bg-subdued` |
+  | `--bui-fg-danger-on-bg` | `--bui-negative-fg-subdued` |
+  | `--bui-border-danger`   | `--bui-negative-border`     |
+
+  **Warning**
+
+  | Deprecated               | Replacement                |
+  | ------------------------ | -------------------------- |
+  | `--bui-bg-warning`       | `--bui-warning-bg-subdued` |
+  | `--bui-fg-warning-on-bg` | `--bui-warning-fg-subdued` |
+  | `--bui-border-warning`   | `--bui-warning-border`     |
+
+  **Announcement**
+
+  | Deprecated            | Replacement                     |
+  | --------------------- | ------------------------------- |
+  | `--bui-bg-info`       | `--bui-announcement-bg-subdued` |
+  | `--bui-fg-info-on-bg` | `--bui-announcement-fg-subdued` |
+  | `--bui-border-info`   | `--bui-announcement-border`     |
+
+## 0.15.1-next.0
+
+### Patch Changes
+
+- 14a101f: Switch now adapts its track and thumb colors based on the background context of its parent container, and uses the accent token family when selected.
+
+  **Affected components:** Switch
+
+- b33bb24: Added a new `NumberField` component for numeric input with support for min, max, step, and keyboard increment/decrement.
+
+  **Affected components:** NumberField
+
+- 1f709a3: Fixed Header breadcrumb typography so it remains consistent when component styles are loaded in different orders.
+
+  **Affected components:** Header
+
+- 5d80f77: Introduces a new set of semantic color token families — Accent, Announcement, Warning, Negative, and Positive — each providing a consistent set of background, foreground, and border tokens for both light and dark themes. A gray scale (`--bui-gray-1` through `--bui-gray-11`) and updated foreground tokens are also included.
+
+  The previous tokens remain in place for backward compatibility but are now deprecated and will be removed in a future release.
+
+  **Migration:**
+
+  **Neutral backgrounds**
+
+  The neutral background tokens keep their existing names (`--bui-bg-app`, `--bui-bg-neutral-1` through `--bui-bg-neutral-4`) but are updated with new solid-color values for both light and dark themes. No token renaming is required. The `-hover`, `-pressed`, and `-disabled` interaction variants of these tokens are deprecated and should be removed.
+
+  **Foreground**
+
+  | Deprecated         | Replacement             |
+  | ------------------ | ----------------------- |
+  | `--bui-fg-danger`  | `--bui-fg-negative`     |
+  | `--bui-fg-success` | `--bui-fg-positive`     |
+  | `--bui-fg-info`    | `--bui-fg-announcement` |
+
+  **Accent**
+
+  | Deprecated                | Replacement                |
+  | ------------------------- | -------------------------- |
+  | `--bui-bg-solid`          | `--bui-accent-bg`          |
+  | `--bui-bg-solid-hover`    | `--bui-accent-bg-hover`    |
+  | `--bui-bg-solid-disabled` | `--bui-accent-bg-disabled` |
+  | `--bui-fg-solid`          | `--bui-accent-fg`          |
+  | `--bui-fg-solid-disabled` | `--bui-accent-fg-disabled` |
+
+  **Positive**
+
+  | Deprecated               | Replacement                 |
+  | ------------------------ | --------------------------- |
+  | `--bui-bg-success`       | `--bui-positive-bg-subdued` |
+  | `--bui-fg-success-on-bg` | `--bui-positive-fg-subdued` |
+  | `--bui-border-success`   | `--bui-positive-border`     |
+
+  **Negative**
+
+  | Deprecated              | Replacement                 |
+  | ----------------------- | --------------------------- |
+  | `--bui-bg-danger`       | `--bui-negative-bg-subdued` |
+  | `--bui-fg-danger-on-bg` | `--bui-negative-fg-subdued` |
+  | `--bui-border-danger`   | `--bui-negative-border`     |
+
+  **Warning**
+
+  | Deprecated               | Replacement                |
+  | ------------------------ | -------------------------- |
+  | `--bui-bg-warning`       | `--bui-warning-bg-subdued` |
+  | `--bui-fg-warning-on-bg` | `--bui-warning-fg-subdued` |
+  | `--bui-border-warning`   | `--bui-warning-border`     |
+
+  **Announcement**
+
+  | Deprecated            | Replacement                     |
+  | --------------------- | ------------------------------- |
+  | `--bui-bg-info`       | `--bui-announcement-bg-subdued` |
+  | `--bui-fg-info-on-bg` | `--bui-announcement-fg-subdued` |
+  | `--bui-border-info`   | `--bui-announcement-border`     |
+
+## 0.15.0
+
+### Minor Changes
+
+- a281469: Add support for flex item props (`grow`, `shrink`, and `basis`) to `Box`, `Card`, `Grid`, and `Flex` itself.
+
+  **Affected components:** Box, Card, Grid, Flex
+
+- 5351d8a: Added a `sticky` prop to the `Header` component. When `true`, the title-and-actions bar stays fixed to the top of its scroll container while the rest of the header (tags, description, metadata) scrolls away. The sticky bar background color automatically matches the container surface using the bg-consumer system.
+
+  **BREAKING**: Removed the main header class from the `Header` component. Custom styles that target this class should be updated to target the component sections that remain.
+
+  **Affected components:** Header
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- e8a1a35: Added `isPending` prop to Alert, Button, ButtonIcon, Table, and TableRoot as a replacement for the `loading` prop, aligning with React Aria naming conventions. The `loading` prop is now deprecated but still supported as an alias. CSS selectors now use `data-ispending` instead of `data-loading` for styling pending states; `data-loading` is still emitted for backward compatibility but will be removed alongside the `loading` prop.
+
+  **Affected components:** Alert, Button, ButtonIcon, Table, TableRoot
+
+- 37535b2: Added a public `--bui-bg-inherit` CSS variable that resolves to the background
+  color of the nearest enclosing bg provider (`Box`, `Flex`, `Grid`, `Card`,
+  `Accordion`, or any element with a `data-bg` attribute), falling back to
+  `--bui-bg-app`. Use it from CSS for sticky or fixed elements that need to match
+  their surrounding surface without hardcoding a specific level.
+
+  ```css
+  .searchBarContainer {
+    position: sticky;
+    top: 0;
+    background-color: var(--bui-bg-inherit);
+  }
+  ```
+
+  As part of this change, the `data-bg` painting rules previously duplicated in
+  `Box`, `Flex`, `Grid`, `Accordion`, and `Card` have been centralized into a
+  single source in `core.css`. Painting and component behavior are unchanged for
+  all existing usages, with one minor expansion: any element with a `data-bg`
+  attribute (including provider elements and any element that sets it directly)
+  is now painted, not only `Box`/`Flex`/`Grid`/`Card`/`Accordion` elements.
+
+- e2d9831: Tightened React Aria dependency version ranges from `^` to `~` to prevent unintended minor version upgrades.
+- e7fc79f: Added support for grouping options into sections in the Select component. You can now pass section objects with a `title` and a nested `options` array alongside (or instead of) regular options to render grouped dropdowns with section headers.
+
+  **Affected components:** Select
+
+- 76635ae: Disabled `Card` scroll shadow in browsers that don't support `animation-timeline: scroll()`. Prevents the shadow from being always visible over the `CardBody` when there's nothing to scroll or the body is not scrolled.
+
+  **Affected components:** Card
+
+- de75f7c: Fixed `CardBody` showing an unwanted scrollbar when constrained below the scroll shadow height.
+
+  **Affected components:** Card
+
+- a42766e: Fixed dark mode background for Dialog component by correcting the theme attribute selector from `data-theme` to `data-theme-mode`.
+
+  **Affected components:** Dialog
+
+- c6fc76f: Fixed an issue where the active tab indicator would disappear shortly after page load for uncontrolled Tabs.
+
+  **Affected components:** Tabs
+
+- 5520e07: Updated field components to grow within flex layouts instead of forcing their width to remain fixed.
+- 11699ac: Updated `PasswordField` to visually match `TextField`, including consistent focus rings, error states, disabled appearance, and background colour behaviour.
+
+  **Affected components:** PasswordField
+
+- d1be10c: Updated React Aria dependencies to v1.17.0 and migrated imports from individual `@react-aria/*` and `@react-stately/*` packages to the monopackages (`react-aria`, `react-stately`). This fixes a type resolution error for `@react-types/table` that occurred in new app installations.
+- c96e2b3: Added `description`, `tags`, and `metadata` props to the `Header` component. The `description` prop accepts a markdown string with support for inline links. The `tags` prop renders a row of text or link items above the title. The `metadata` prop renders key-value pairs below the description. The `breadcrumbs` prop has been deprecated and will be removed in a future release.
+
+  **Affected components:** Header
+
+- 4bb649d: Fixed Table with row selection creating phantom scroll height on ancestor elements by establishing a containing block for visually-hidden checkbox inputs.
+
+  **Affected components:** Table, TableRoot
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- 5b85902: Fix `Card href=...` not showing a focus indicator on keyboard navigation. `Link` now composes `useFocusRing`, emits `data-focus-visible`, and renders a `--bui-ring` outline when keyboard-focused. The Card's existing focus-ring CSS matches when the trigger is focused.
+
+  _Affected components_: Card, Link
+
+- 23ee789: Added invalid-state styling for Checkbox and corresponding Storybook variants for verification.
+
+  **Affected components:** Checkbox, CheckboxGroup
+
+- 38bb056: Adjusted PluginHeader spacing and borders so headers with and without tabs align more consistently with surrounding page content, including when paired with page headers.
+
+  **Affected components:** PluginHeader, Header
+
+- df705bb: Fixed external URLs in BUI link components being rewritten as in-app paths when the app is served under a non-root base path. Absolute URLs (`http://`, `https://`, `//`, `mailto:`, `tel:`) are now passed through unchanged. Internal `href` values are resolved against the current `basename` exactly once, which also fixes a latent issue where internal link clicks under a non-root base path could navigate to a URL with the `basename` prefix doubled.
+
+  **Affected components:** ButtonLink, Card, Link, Menu, Tab, Table, Tag
+
+- 3e0ff6c: Added container alignment to `Header` sections so tags, title actions, descriptions, metadata, and tabs use the same width as surrounding page content.
+
+  **Affected components:** Header
+
+- b67a862: Updated Storybook development tooling for `@backstage/ui` to version 10.4.
+- d726bcd: Added new `DatePicker` component — combines a date field and a calendar popover for selecting a date, built on React Aria with full keyboard and screen reader accessibility. Uses BUI design tokens throughout, including auto-incremented backgrounds via the bg consumer pattern.
+
+  **Affected components:** DatePicker
+
+- 401916d: Added new `DateRangePicker` component — combines two date fields and a calendar popover for selecting a date range, built on React Aria with full keyboard and screen reader accessibility. Uses BUI design tokens throughout, including auto-incremented backgrounds via the bg consumer pattern.
+- 25909ba: Added `searchDebounceMs` and `filterDebounceMs` options to `useTable` in `complete` mode. Both default to `0` (no debounce, no observable change for existing consumers); set them to defer the client-side filter/search/sort pipeline on large datasets without reimplementing input-layer debouncing. The controlled `search` / `onSearchChange` and `filter` / `onFilterChange` callbacks continue to fire on every change.
+
+  **Affected components:** Table
+
+- ddca41f: Added a new `Combobox` component. It pairs a text input with a filterable dropdown of options and supports single selection, sectioned options, icons, sizes, and custom typed values via `allowsCustomValue`.
+
+  **Affected components:** Combobox
+
+## 0.15.0-next.3
+
+### Patch Changes
+
+- 4bb649d: Fixed Table with row selection creating phantom scroll height on ancestor elements by establishing a containing block for visually-hidden checkbox inputs.
+
+  **Affected components:** Table, TableRoot
+
+- d726bcd: Added new `DatePicker` component — combines a date field and a calendar popover for selecting a date, built on React Aria with full keyboard and screen reader accessibility. Uses BUI design tokens throughout, including auto-incremented backgrounds via the bg consumer pattern.
+
+  **Affected components:** DatePicker
+
+## 0.15.0-next.2
+
+### Patch Changes
+
+- 37535b2: Added a public `--bui-bg-inherit` CSS variable that resolves to the background
+  color of the nearest enclosing bg provider (`Box`, `Flex`, `Grid`, `Card`,
+  `Accordion`, or any element with a `data-bg` attribute), falling back to
+  `--bui-bg-app`. Use it from CSS for sticky or fixed elements that need to match
+  their surrounding surface without hardcoding a specific level.
+
+  ```css
+  .searchBarContainer {
+    position: sticky;
+    top: 0;
+    background-color: var(--bui-bg-inherit);
+  }
+  ```
+
+  As part of this change, the `data-bg` painting rules previously duplicated in
+  `Box`, `Flex`, `Grid`, `Accordion`, and `Card` have been centralized into a
+  single source in `core.css`. Painting and component behavior are unchanged for
+  all existing usages, with one minor expansion: any element with a `data-bg`
+  attribute (including provider elements and any element that sets it directly)
+  is now painted, not only `Box`/`Flex`/`Grid`/`Card`/`Accordion` elements.
+
+- 5b85902: Fix `Card href=...` not showing a focus indicator on keyboard navigation. `Link` now composes `useFocusRing`, emits `data-focus-visible`, and renders a `--bui-ring` outline when keyboard-focused. The Card's existing focus-ring CSS matches when the trigger is focused.
+
+  _Affected components_: Card, Link
+
+- 38bb056: Adjusted PluginHeader spacing and borders so headers with and without tabs align more consistently with surrounding page content, including when paired with page headers.
+
+  **Affected components:** PluginHeader, Header
+
+- 25909ba: Added `searchDebounceMs` and `filterDebounceMs` options to `useTable` in `complete` mode. Both default to `0` (no debounce, no observable change for existing consumers); set them to defer the client-side filter/search/sort pipeline on large datasets without reimplementing input-layer debouncing. The controlled `search` / `onSearchChange` and `filter` / `onFilterChange` callbacks continue to fire on every change.
+
+  **Affected components:** Table
+
+- ddca41f: Added a new `Combobox` component. It pairs a text input with a filterable dropdown of options and supports single selection, sectioned options, icons, sizes, and custom typed values via `allowsCustomValue`.
+
+  **Affected components:** Combobox
+
+## 0.15.0-next.1
+
+### Minor Changes
+
+- 5351d8a: Added a `sticky` prop to the `Header` component. When `true`, the title-and-actions bar stays fixed to the top of its scroll container while the rest of the header (tags, description, metadata) scrolls away. The sticky bar background color automatically matches the container surface using the bg-consumer system.
+
+  **BREAKING**: Removed the main header class from the `Header` component. Custom styles that target this class should be updated to target the component sections that remain.
+
+  **Affected components:** Header
+
+### Patch Changes
+
+- e7fc79f: Added support for grouping options into sections in the Select component. You can now pass section objects with a `title` and a nested `options` array alongside (or instead of) regular options to render grouped dropdowns with section headers.
+
+  **Affected components:** Select
+
+- 76635ae: Disabled `Card` scroll shadow in browsers that don't support `animation-timeline: scroll()`. Prevents the shadow from being always visible over the `CardBody` when there's nothing to scroll or the body is not scrolled.
+
+  **Affected components:** Card
+
+- de75f7c: Fixed `CardBody` showing an unwanted scrollbar when constrained below the scroll shadow height.
+
+  **Affected components:** Card
+
+- c96e2b3: Added `description`, `tags`, and `metadata` props to the `Header` component. The `description` prop accepts a markdown string with support for inline links. The `tags` prop renders a row of text or link items above the title. The `metadata` prop renders key-value pairs below the description. The `breadcrumbs` prop has been deprecated and will be removed in a future release.
+
+  **Affected components:** Header
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- 23ee789: Added invalid-state styling for Checkbox and corresponding Storybook variants for verification.
+
+  **Affected components:** Checkbox, CheckboxGroup
+
+- df705bb: Fixed external URLs in BUI link components being rewritten as in-app paths when the app is served under a non-root base path. Absolute URLs (`http://`, `https://`, `//`, `mailto:`, `tel:`) are now passed through unchanged. Internal `href` values are resolved against the current `basename` exactly once, which also fixes a latent issue where internal link clicks under a non-root base path could navigate to a URL with the `basename` prefix doubled.
+
+  **Affected components:** ButtonLink, Card, Link, Menu, Tab, Table, Tag
+
+## 0.15.0-next.0
+
+### Minor Changes
+
+- a281469: Add support for flex item props (`grow`, `shrink`, and `basis`) to `Box`, `Card`, `Grid`, and `Flex` itself.
+
+  **Affected components:** Box, Card, Grid, Flex
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- e8a1a35: Added `isPending` prop to Alert, Button, ButtonIcon, Table, and TableRoot as a replacement for the `loading` prop, aligning with React Aria naming conventions. The `loading` prop is now deprecated but still supported as an alias. CSS selectors now use `data-ispending` instead of `data-loading` for styling pending states; `data-loading` is still emitted for backward compatibility but will be removed alongside the `loading` prop.
+
+  **Affected components:** Alert, Button, ButtonIcon, Table, TableRoot
+
+- e2d9831: Tightened React Aria dependency version ranges from `^` to `~` to prevent unintended minor version upgrades.
+- a42766e: Fixed dark mode background for Dialog component by correcting the theme attribute selector from `data-theme` to `data-theme-mode`.
+
+  **Affected components:** Dialog
+
+- c6fc76f: Fixed an issue where the active tab indicator would disappear shortly after page load for uncontrolled Tabs.
+
+  **Affected components:** Tabs
+
+- d1be10c: Updated React Aria dependencies to v1.17.0 and migrated imports from individual `@react-aria/*` and `@react-stately/*` packages to the monopackages (`react-aria`, `react-stately`). This fixes a type resolution error for `@react-types/table` that occurred in new app installations.
+- 401916d: Added new `DateRangePicker` component — combines two date fields and a calendar popover for selecting a date range, built on React Aria with full keyboard and screen reader accessibility. Uses BUI design tokens throughout, including auto-incremented backgrounds via the bg consumer pattern.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12
+
+## 0.14.0
+
+### Minor Changes
+
+- 8659f33: **BREAKING**: The `Header` component's `tabs` prop now uses `HeaderNavTabItem[]` instead of `HeaderTab[]`. Tabs render as a `<nav>` element with links and optional dropdown menus instead of `role="tablist"`. A new `activeTabId` prop controls which tab is highlighted.
+
+  **Migration:**
+
+  ```diff
+  - import { Header, type HeaderTab } from '@backstage/ui';
+  + import { Header, type HeaderNavTabItem } from '@backstage/ui';
+
+    // Tabs no longer support matchStrategy — active state is controlled via activeTabId
+  - const tabs: HeaderTab[] = [
+  -   { id: 'overview', label: 'Overview', href: '/overview', matchStrategy: 'prefix' },
+  + const tabs: HeaderNavTabItem[] = [
+  +   { id: 'overview', label: 'Overview', href: '/overview' },
+    ];
+
+  - <Header title="My Page" tabs={tabs} />
+  + <Header title="My Page" tabs={tabs} activeTabId="overview" />
+  ```
+
+  **Affected components:** Header
+
+- bed3307: **BREAKING**: Dropped support for React 17. The minimum supported React version is now 18.
+- b4a1875: **BREAKING**: Tab `href` values in the Header component are now resolved through the router context instead of being passed raw to the `<a>` tag. This means relative `href` values (e.g. `sub3`, `./sub4`, `../catalog`) are now resolved against the current route, and absolute `href` values may be affected by the router's `basename` configuration.
+
+  **Migration:**
+
+  Tab navigation should work the same for absolute `href` values in most setups. If you use relative `href` values in tabs, verify they resolve as expected. If your app configures a router `basename`, check that absolute tab `href` values still navigate correctly.
+
+  **Affected components:** Header
+
+- 49ffe8a: **BREAKING**: Removed the `toolbarWrapper` element from `PluginHeader` and dropped `toolbarWrapper` from `PluginHeaderDefinition.classNames`. Toolbar layout styles now live on `toolbar` (`.bui-PluginHeaderToolbar`).
+
+  **Migration:** Update custom CSS that targeted `.bui-PluginHeaderToolbarWrapper` to use `.bui-PluginHeaderToolbar` instead.
+
+  **Affected components:** PluginHeader
+
+### Patch Changes
+
+- 4032ad7: Added new `Badge` component for non-interactive labeling and categorization of content. It shares the visual appearance of `Tag` but renders as a plain DOM element with no interactive states.
+
+  **Affected components:** Badge
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- 2840476: Resolved route-relative `href` props to absolute paths by default in all components, removing the need for the `resolveHref` option in component definitions.
+- b4a1875: Added automatic active tab detection to the Header component. When `activeTabId` is omitted, the active tab is now auto-detected from the current route using `matchRoutes`. Pass an explicit `activeTabId` to override, or `null` for no active tab.
+
+  **Affected components:** Header
+
+- 8d79835: Added RangeSlider component for selecting numeric ranges.
+
+  **Affected components:** Slider
+
+- bcbb6eb: Made `SearchAutocomplete` background-aware. The input now adapts its background color based on its parent container's background level.
+
+  **Affected components:** SearchAutocomplete
+
+- f73876a: Exported the `TableBodySkeleton` component as a public API for use outside of the built-in `Table` component. The component now accepts any column array whose items have an `id` property, making it compatible with custom column types.
+- 5081bcc: Fixed `Avatar` becoming elliptical in flex layouts by preventing it from shrinking.
+
+  **Affected components:** Avatar
+
+- d840ba9: Fixed relative `href` resolution for BUI link components. Relative paths like `../other` are now correctly turned into absolute paths before reaching the React Aria layer, ensuring client-side navigation goes to the right place.
+
+  **Affected components:** ButtonLink, Card, CellProfile, CellText, Link, ListRow, MenuItem, MenuListBoxItem, Row, SearchAutocompleteItem, Tab, Tag
+
+- 8c2e24e: Added `aria-hidden` to the `PluginHeader` icon to prevent screen readers from announcing decorative plugin icons.
+
+  **Affected components:** PluginHeader
+
+- 3bc23a5: Added support for disabling pagination in `useTable` complete mode by setting `paginationOptions: { type: 'none' }`. This skips data slicing and produces `pagination: { type: 'none' }` in `tableProps`, removing the need for consumers to manually override the pagination prop on `Table`. Also fixed complete mode not reacting to dynamic changes in `paginationOptions.pageSize`.
+
+  **Affected components:** `useTable`
+
+- 67b8881: Added `ModalOverlay` to `Dialog` so overlay styles are applied to the actual overlay rather than the modal content, and fixed dismissing via outside click in the process.
+
+  **Affected components:** Dialog
+
+- aa47a37: Add an initial CheckboxGroup component implementation and docs coverage.
+- 3d67aeb: Added `prefers-reduced-motion` support to Tab indicator animations. Users with reduced motion preferences will no longer see sliding transitions on the active and hover indicators.
+
+  **Affected components:** Tabs
+
+- c368cf3: Updated dependency `@types/use-sync-external-store` to `^1.0.0`.
+- d0f055f: Added `showPaginationLabel` prop to `TablePagination` and `useTable` pagination options. When set to `false`, the pagination label (e.g., "1 - 20 of 150") is hidden while navigation controls remain visible. Defaults to `true`.
+
+  **Affected components:** `TablePagination`, `useTable`
+
+- 17eb8e0: Fixed form field descriptions not being connected to inputs via `aria-describedby`, making them accessible to screen readers. Added a `descriptionSlot` prop to `FieldLabel` that uses React Aria's slot mechanism to automatically wire up the connection.
+
+  **Affected components:** FieldLabel, TextField, PasswordField, SearchField, Select, RadioGroup, CheckboxGroup
+
+- cc4a682: Fixed the ButtonIcon's loading spinner animation
+
+  **Affected components:** ButtonIcon
+
+- 386972f: Fixed the Tabs active indicator not hiding when no tab matches the current route.
+
+  **Affected components:** Tabs
+
+- adcdd2f: Simplified the `Menu` component's item structure by removing the inner wrapper element and applying styles directly to the menu item, improving DOM clarity.
+
+  **Affected components:** Menu
+
+- 0257ada: Added `react-aria`, `react-stately`, `@react-aria/interactions`, `@react-stately/layout`, and `@react-stately/overlays` as dependencies.
+- feaf3d1: Fixed HeaderNav hover indicator covering tab text when theme uses opaque background colors. Also fixed an incorrect CSS variable reference (`--bui-font-family` → `--bui-font-regular`).
+
+  **Affected components:** Header
+
 ## 0.14.0-next.2
 
 ### Minor Changes
@@ -34,7 +676,7 @@
 - 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
 - 8d79835: Added RangeSlider component for selecting numeric ranges.
 
-  **Affected components:** RangeSlider
+  **Affected components:** Slider
 
 - 5081bcc: Fixed `Avatar` becoming elliptical in flex layouts by preventing it from shrinking.
 

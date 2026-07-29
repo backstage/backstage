@@ -17,6 +17,9 @@
 import { GithubCredentials, GithubCredentialsProvider } from './types';
 import { ScmIntegrationRegistry } from '../registry';
 import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
+import type { ConnectionsService } from '@backstage/connections';
+import { ForwardedError, InputError } from '@backstage/errors';
+import type { GithubIntegrationConfig } from './config';
 
 /**
  * Handles the creation and caching of credentials for GitHub integrations.
@@ -41,9 +44,29 @@ export class DefaultGithubCredentialsProvider
     return new DefaultGithubCredentialsProvider(credentialsProviders);
   }
 
+  /**
+   * Creates a credentials provider backed by the connections service.
+   *
+   * @param connections - The connections service used to resolve GitHub credentials.
+   * @internal
+   */
+  static experimentalFromConnections(connections: ConnectionsService) {
+    return new DefaultGithubCredentialsProvider(
+      new Map<string, GithubCredentialsProvider>(),
+      connections,
+    );
+  }
+
+  private readonly providers: Map<string, GithubCredentialsProvider>;
+  readonly #connections?: ConnectionsService;
+
   private constructor(
-    private readonly providers: Map<string, GithubCredentialsProvider>,
-  ) {}
+    providers: Map<string, GithubCredentialsProvider>,
+    connections?: ConnectionsService,
+  ) {
+    this.providers = providers;
+    this.#connections = connections;
+  }
 
   /**
    * Returns {@link GithubCredentials} for a given URL.
@@ -70,6 +93,83 @@ export class DefaultGithubCredentialsProvider
    * @returns A promise of {@link GithubCredentials}.
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
+    if (this.#connections) {
+      // Ask the connections service to select auth for this URL. A host may
+      // have different GitHub Apps for different organizations, so this
+      // selection cannot be done once when the provider is created.
+
+      const connection = await this.#connections
+        .find({
+          type: 'github',
+          url: opts.url,
+          authMethods: ['app', 'token', 'none'],
+        })
+        .catch(error => {
+          throw new ForwardedError(
+            'Failed getting credentials from connection',
+            error,
+          );
+        });
+
+      const { auth } = connection;
+
+      // Adapt the connection schema to the existing provider configuration so
+      // credential creation and token caching stay in one implementation.
+      const config: GithubIntegrationConfig = {
+        host: connection.host,
+        apiBaseUrl: connection.apiBaseUrl,
+        rawBaseUrl: connection.rawBaseUrl,
+      };
+
+      // Reusing an App provider preserves its installation-token cache. App
+      // organizations are canonicalized because GitHub owner matching is
+      // case-insensitive and does not depend on ordering. Static token
+      // providers have no internal token cache, so they are recreated rather
+      // than placing their secret token in a cache key.
+      let providerKey: string | undefined;
+      if (auth.method === 'app') {
+        const appId = Number(auth.appId);
+        if (!Number.isSafeInteger(appId) || appId <= 0) {
+          throw new InputError(
+            `Invalid GitHub App ID "${auth.appId}", expected a positive safe integer`,
+          );
+        }
+        const normalizedOrgs = auth.orgs?.length
+          ? Array.from(
+              new Set(auth.orgs.map(org => org.toLocaleLowerCase('en-US'))),
+            ).sort()
+          : undefined;
+        config.apps = [
+          {
+            appId,
+            privateKey: auth.privateKey,
+            clientId: auth.clientId,
+            clientSecret: auth.clientSecret,
+            webhookSecret: auth.webhookSecret,
+            publicAccess: auth.publicAccess,
+            allowedInstallationOwners: normalizedOrgs,
+          },
+        ];
+        providerKey = `${connection.host}:app:${appId}:${JSON.stringify(
+          normalizedOrgs ?? [],
+        )}:${String(auth.publicAccess ?? false)}`;
+      } else if (auth.method === 'token') {
+        config.token = auth.token;
+      } else {
+        providerKey = `${connection.host}:none`;
+      }
+
+      let provider = providerKey ? this.providers.get(providerKey) : undefined;
+      if (!provider) {
+        provider = SingleInstanceGithubCredentialsProvider.create(config);
+        if (providerKey) {
+          this.providers.set(providerKey, provider);
+        }
+      }
+
+      return provider.getCredentials(opts);
+    }
+
     const parsed = new URL(opts.url);
     const provider = this.providers.get(parsed.host);
 

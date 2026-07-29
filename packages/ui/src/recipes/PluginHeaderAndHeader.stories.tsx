@@ -15,6 +15,10 @@
  */
 
 import preview from '../../../../.storybook/preview';
+import {
+  Header as CoreHeader,
+  Page as CorePage,
+} from '@backstage/core-components';
 import type { StoryFn } from '@storybook/react-vite';
 import { MemoryRouter } from 'react-router-dom';
 import { BUIProvider } from '../provider';
@@ -49,12 +53,25 @@ import {
 // ---------------------------------------------------------------------------
 
 const PageContent = () => (
-  <Container mt="6">
+  <Container style={{ gridArea: 'pageContent' }}>
     <Flex direction="row" gap="4">
       <Card style={{ minHeight: 120, flex: 1 }} />
       <Card style={{ minHeight: 120, flex: 1 }} />
       <Card style={{ minHeight: 120, flex: 1 }} />
     </Flex>
+  </Container>
+);
+
+const LongPageContent = () => (
+  <Container pb="3">
+    <Flex direction="row" gap="4" mb="4">
+      <Card style={{ minHeight: 200, flex: 1 }} />
+      <Card style={{ minHeight: 200, flex: 1 }} />
+      <Card style={{ minHeight: 200, flex: 1 }} />
+    </Flex>
+    {Array.from({ length: 40 }, (_, i) => (
+      <Card key={i} style={{ minHeight: 200, marginBottom: 16 }} />
+    ))}
   </Container>
 );
 
@@ -91,6 +108,28 @@ export const NoHeader = meta.story({
   ),
 });
 
+export const NoHeaderWithTabs = meta.story({
+  decorators: [withLayout],
+  render: () => (
+    <>
+      <PluginHeader
+        icon={<RiCodeSSlashLine />}
+        title="APIs"
+        tabs={[
+          { id: 'overview', label: 'Overview', href: '/apis' },
+          {
+            id: 'definitions',
+            label: 'Definitions',
+            href: '/apis/definitions',
+          },
+          { id: 'consumers', label: 'Consumers', href: '/apis/consumers' },
+        ]}
+      />
+      <PageContent />
+    </>
+  ),
+});
+
 export const SimpleHeader = meta.story({
   decorators: [withLayout],
   render: () => (
@@ -98,6 +137,44 @@ export const SimpleHeader = meta.story({
       <PluginHeader icon={<RiCodeSSlashLine />} title="APIs" />
       <Header title="payments-api" />
       <PageContent />
+    </>
+  ),
+});
+
+export const CoreComponentsHeader = meta.story({
+  decorators: [withLayout],
+  render: () => (
+    <>
+      <PluginHeader icon={<RiCodeSSlashLine />} title="APIs" />
+      <CorePage themeId="home">
+        <CoreHeader title="payments-api" />
+        <PageContent />
+      </CorePage>
+    </>
+  ),
+});
+
+export const CoreComponentsHeaderWithTabs = meta.story({
+  decorators: [withLayout],
+  render: () => (
+    <>
+      <PluginHeader
+        icon={<RiCodeSSlashLine />}
+        title="APIs"
+        tabs={[
+          { id: 'overview', label: 'Overview', href: '/apis' },
+          {
+            id: 'definitions',
+            label: 'Definitions',
+            href: '/apis/definitions',
+          },
+          { id: 'consumers', label: 'Consumers', href: '/apis/consumers' },
+        ]}
+      />
+      <CorePage themeId="home">
+        <CoreHeader title="payments-api" />
+        <PageContent />
+      </CorePage>
     </>
   ),
 });
@@ -157,52 +234,6 @@ export const WithTabs = meta.story({
   ),
 });
 
-export const WithBreadcrumb = meta.story({
-  decorators: [withLayout],
-  render: () => (
-    <>
-      <PluginHeader
-        icon={<RiGitBranchLine />}
-        title="CI/CD"
-        titleLink="/"
-        tabs={[
-          { id: 'builds', label: 'Builds', href: '/builds' },
-          { id: 'pipelines', label: 'Pipelines', href: '/pipelines' },
-          { id: 'deployments', label: 'Deployments', href: '/deployments' },
-          { id: 'settings', label: 'Settings', href: '/settings' },
-        ]}
-        customActions={
-          <>
-            <ButtonIcon
-              variant="secondary"
-              icon={<RiRefreshLine />}
-              aria-label="Refresh"
-            />
-          </>
-        }
-      />
-      <Header
-        title="main · #842"
-        breadcrumbs={[
-          { label: 'Catalog', href: '/catalog' },
-          { label: 'Services', href: '/catalog?kind=Component' },
-        ]}
-        customActions={
-          <>
-            <Button variant="secondary" iconStart={<RiDownloadLine />}>
-              Download logs
-            </Button>
-            <Button variant="primary" iconStart={<RiPlayLine />}>
-              Re-run pipeline
-            </Button>
-          </>
-        }
-      />
-      <PageContent />
-    </>
-  ),
-});
-
 const subTabs: HeaderNavTabItem[] = [
   { id: 'summary', label: 'Summary', href: '/summary' },
   { id: 'steps', label: 'Steps', href: '/steps' },
@@ -244,11 +275,65 @@ export const WithSubTabs = meta.story({
           }
         />
         <Header
-          title="main · #842"
+          title="Production deployment pipeline run"
           tabs={subTabs}
-          breadcrumbs={[
-            { label: 'Catalog', href: '/catalog' },
-            { label: 'Services', href: '/catalog?kind=Component' },
+          customActions={
+            <>
+              <Button variant="secondary" iconStart={<RiDownloadLine />}>
+                Download logs
+              </Button>
+              <Button variant="primary" iconStart={<RiPlayLine />}>
+                Re-run pipeline
+              </Button>
+            </>
+          }
+        />
+        <PageContent />
+      </>
+    );
+  },
+});
+
+export const WithSubTabsAndTags = meta.story({
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter initialEntries={['/summary']}>
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
+      </MemoryRouter>
+    ),
+  ],
+  render: () => {
+    return (
+      <>
+        <PluginHeader
+          icon={<RiGitBranchLine />}
+          title="CI/CD"
+          titleLink="/"
+          tabs={[
+            { id: 'builds', label: 'Builds', href: '/builds' },
+            { id: 'pipelines', label: 'Pipelines', href: '/pipelines' },
+            { id: 'deployments', label: 'Deployments', href: '/deployments' },
+            { id: 'settings', label: 'Settings', href: '/settings' },
+          ]}
+          customActions={
+            <>
+              <ButtonIcon
+                variant="secondary"
+                icon={<RiRefreshLine />}
+                aria-label="Refresh"
+              />
+            </>
+          }
+        />
+        <Header
+          title="Production deployment pipeline run"
+          tabs={subTabs}
+          tags={[
+            { label: 'Production' },
+            { label: 'Owner: Platform', href: '/catalog?owner=platform' },
+            { label: 'Tier 1' },
           ]}
           customActions={
             <>
@@ -262,6 +347,60 @@ export const WithSubTabs = meta.story({
           }
         />
         <PageContent />
+      </>
+    );
+  },
+});
+
+export const WithStickyHeader = meta.story({
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter initialEntries={['/summary']}>
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
+      </MemoryRouter>
+    ),
+  ],
+  render: () => {
+    return (
+      <>
+        <PluginHeader
+          icon={<RiGitBranchLine />}
+          title="CI/CD"
+          titleLink="/"
+          tabs={[
+            { id: 'builds', label: 'Builds', href: '/builds' },
+            { id: 'pipelines', label: 'Pipelines', href: '/pipelines' },
+            { id: 'deployments', label: 'Deployments', href: '/deployments' },
+            { id: 'settings', label: 'Settings', href: '/settings' },
+          ]}
+          customActions={
+            <>
+              <ButtonIcon
+                variant="secondary"
+                icon={<RiRefreshLine />}
+                aria-label="Refresh"
+              />
+            </>
+          }
+        />
+        <Header
+          title="Production deployment pipeline run"
+          sticky
+          tabs={subTabs}
+          customActions={
+            <>
+              <Button variant="secondary" iconStart={<RiDownloadLine />}>
+                Download logs
+              </Button>
+              <Button variant="primary" iconStart={<RiPlayLine />}>
+                Re-run pipeline
+              </Button>
+            </>
+          }
+        />
+        <LongPageContent />
       </>
     );
   },

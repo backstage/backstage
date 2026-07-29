@@ -14,66 +14,14 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import { useTheme } from '@material-ui/core/styles';
-import type {} from 'react-syntax-highlighter';
-import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
-import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
-import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
+import { Suspense, lazy } from 'react';
+import type { CodeSnippetProps } from './CodeSnippetContent';
 
-import { CopyTextButton } from '../CopyTextButton';
+export type { CodeSnippetProps } from './CodeSnippetContent';
 
-/**
- * Properties for {@link CodeSnippet}
- *
- * @public
- */
-export interface CodeSnippetProps {
-  /**
-   * Code Snippet text
-   */
-  text: string;
-  /**
-   * Language used by {@link CodeSnippetProps.text}
-   */
-  language: string;
-  /**
-   * Whether to show line number
-   *
-   * @remarks
-   *
-   * Default: false
-   */
-  showLineNumbers?: boolean;
-  /**
-   * Whether to show button to copy code snippet
-   *
-   * @remarks
-   *
-   * Default: false
-   */
-  showCopyCodeButton?: boolean;
-  /**
-   * Array of line numbers to highlight
-   */
-  highlightedNumbers?: number[];
-  /**
-   * Whether to style the `<code>` block with `white-space: pre-wrap` or `white-space: pre`
-   *
-   * @remarks
-   *
-   * Default: false (`white-space: pre`)
-   */
-  wrapLongLines?: boolean;
-  /**
-   * Custom styles applied to code
-   *
-   * @remarks
-   *
-   * Passed to {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/ | react-syntax-highlighter}
-   */
-  customStyle?: any;
-}
+const LazyCodeSnippetContent = lazy(() =>
+  import('./CodeSnippetContent').then(m => ({ default: m.CodeSnippet })),
+);
 
 /**
  * Thin wrapper on top of {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/ | react-syntax-highlighter}
@@ -82,46 +30,9 @@ export interface CodeSnippetProps {
  * @public
  */
 export function CodeSnippet(props: CodeSnippetProps) {
-  const {
-    text,
-    language,
-    showLineNumbers = false,
-    highlightedNumbers,
-    wrapLongLines,
-    customStyle,
-    showCopyCodeButton = false,
-  } = props;
-  const theme = useTheme();
-  const mode = theme.palette.type === 'dark' ? dark : docco;
-  const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
-
   return (
-    <Box position="relative">
-      <LightAsync
-        customStyle={customStyle}
-        language={language}
-        style={mode}
-        showLineNumbers={showLineNumbers}
-        wrapLines
-        wrapLongLines={wrapLongLines}
-        lineNumberStyle={{ color: theme.palette.textVerySubtle }}
-        lineProps={(lineNumber: number) =>
-          highlightedNumbers?.includes(lineNumber)
-            ? {
-                style: {
-                  backgroundColor: highlightColor,
-                },
-              }
-            : {}
-        }
-      >
-        {text}
-      </LightAsync>
-      {showCopyCodeButton && (
-        <Box position="absolute" top={0} right={0}>
-          <CopyTextButton text={text} />
-        </Box>
-      )}
-    </Box>
+    <Suspense fallback={<div />}>
+      <LazyCodeSnippetContent {...props} />
+    </Suspense>
   );
 }

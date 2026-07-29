@@ -6,12 +6,6 @@ app:
   packages: all
 
   extensions:
-    # Disable the nav items that we're manually rendering in packages/app/src/modules/nav/Sidebar.tsx
-    - nav-item:search: false
-    - nav-item:user-settings: false
-    - nav-item:catalog: false
-    - nav-item:scaffolder: false
-
     # Configure the catalog index page to be the root page, this is normally mounted on /catalog
     - page:catalog:
         config:
@@ -90,7 +84,7 @@ auth:
     guest: {}
   # see https://backstage.io/docs/ai/mcp-actions#client-id-metadata-documents
   # to learn more about client id metadata documents
-  experimentalClientIdMetadataDocuments:
+  clientIdMetadataDocuments:
     enabled: false
     # Optional: restrict which `client_id` URLs are allowed (defaults to ['*'])
     # allowedClientIdPatterns:

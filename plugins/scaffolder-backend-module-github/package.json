@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-github",
-  "version": "0.9.8-next.2",
+  "version": "0.9.12-next.1",
   "description": "The github module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "backend-plugin-module",
@@ -50,6 +50,8 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@octokit/core": "^5.0.0",
+    "@octokit/plugin-retry": "^6.0.0",
     "@octokit/webhooks": "^10.9.2",
     "libsodium-wrappers": "^0.8.0",
     "octokit": "^3.0.0",

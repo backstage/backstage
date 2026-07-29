@@ -20,6 +20,7 @@ describe('mockCredentials', () => {
   it('creates a mocked credentials object for a none principal', () => {
     expect(mockCredentials.none()).toEqual({
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: { type: 'none' },
     });
   });
@@ -27,11 +28,13 @@ describe('mockCredentials', () => {
   it('creates a mocked credentials object for a user principal', () => {
     expect(mockCredentials.user()).toEqual({
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: { type: 'user', userEntityRef: 'user:default/mock' },
     });
 
     expect(mockCredentials.user('user:default/other')).toEqual({
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: { type: 'user', userEntityRef: 'user:default/other' },
     });
   });
@@ -39,11 +42,13 @@ describe('mockCredentials', () => {
   it('creates a mocked credentials object for a limited user principal', () => {
     expect(mockCredentials.limitedUser()).toEqual({
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: { type: 'user', userEntityRef: 'user:default/mock' },
     });
 
     expect(mockCredentials.limitedUser('user:default/other')).toEqual({
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: { type: 'user', userEntityRef: 'user:default/other' },
     });
   });
@@ -51,11 +56,13 @@ describe('mockCredentials', () => {
   it('creates a mocked credentials object for a service principal', () => {
     expect(mockCredentials.service()).toEqual({
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: { type: 'service', subject: 'external:test-service' },
     });
 
     expect(mockCredentials.service('plugin:other')).toEqual({
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: { type: 'service', subject: 'plugin:other' },
     });
   });
@@ -138,6 +145,7 @@ describe('mockCredentials', () => {
       mockCredentials.service('test', { permissionNames: ['do.it'] }),
     ).toEqual({
       $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
       principal: {
         type: 'service',
         subject: 'test',

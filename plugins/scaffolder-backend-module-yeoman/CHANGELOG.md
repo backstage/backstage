@@ -1,5 +1,89 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.4.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.0
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.14-next.0
+
+## 0.4.24
+
+### Patch Changes
+
+- 5e92512: Fixed compatibility with yeoman-environment v4+, which is ESM-only. The previous require() call throws ERR_REQUIRE_ESM; replaced with dynamic import() and updated registration to match the v4+ API.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-scaffolder-node@0.13.5
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.13
+
+## 0.4.24-next.1
+
+### Patch Changes
+
+- 5e92512: Fixed compatibility with yeoman-environment v4+, which is ESM-only. The previous require() call throws ERR_REQUIRE_ESM; replaced with dynamic import() and updated registration to match the v4+ API.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
+## 0.4.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-scaffolder-node@0.13.5-next.0
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.13-next.0
+
+## 0.4.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.12
+
+## 0.4.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4-next.0
+  - @backstage/backend-plugin-api@1.9.2-next.0
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.12-next.0
+
+## 0.4.22
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1
+  - @backstage/plugin-scaffolder-node@0.13.3
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.11
+
+## 0.4.22-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.3-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.11-next.0
+
+## 0.4.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/plugin-scaffolder-node@0.13.2
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.10
+
 ## 0.4.21-next.1
 
 ### Patch Changes

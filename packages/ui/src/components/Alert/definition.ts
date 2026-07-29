@@ -36,6 +36,7 @@ export const AlertDefinition = defineComponent<AlertOwnProps>()({
   },
   propDefs: {
     status: { dataAttribute: true, default: 'info' },
+    isPending: { dataAttribute: true },
     loading: { dataAttribute: true },
     icon: {},
     customActions: {},

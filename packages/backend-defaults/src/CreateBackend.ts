@@ -15,6 +15,7 @@
  */
 
 import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 import { authServiceFactory } from '@backstage/backend-defaults/auth';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
@@ -31,6 +32,7 @@ import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { rootLoggerServiceFactory } from '@backstage/backend-defaults/rootLogger';
+import { rootSystemMetadataServiceFactory } from '@backstage/backend-defaults/rootSystemMetadata';
 import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import { userInfoServiceFactory } from '@backstage/backend-defaults/userInfo';
@@ -39,10 +41,12 @@ import {
   actionsRegistryServiceFactory,
   actionsServiceFactory,
   metricsServiceFactory,
+  tracingServiceFactory,
 } from '@backstage/backend-defaults/alpha';
 import { instanceMetadataServiceFactory } from './alpha/entrypoints/instanceMetadata/instanceMetadataServiceFactory';
 
-export const defaultServiceFactories = [
+/** @public */
+export const defaultServiceFactories: ServiceFactory[] = [
   auditorServiceFactory,
   authServiceFactory,
   cacheServiceFactory,
@@ -59,6 +63,7 @@ export const defaultServiceFactories = [
   rootHttpRouterServiceFactory,
   rootLifecycleServiceFactory,
   rootLoggerServiceFactory,
+  rootSystemMetadataServiceFactory,
   schedulerServiceFactory,
   userInfoServiceFactory,
   urlReaderServiceFactory,
@@ -68,6 +73,7 @@ export const defaultServiceFactories = [
   actionsRegistryServiceFactory,
   actionsServiceFactory,
   metricsServiceFactory,
+  tracingServiceFactory,
 
   // Unexported alpha services kept around for compatibility reasons
   instanceMetadataServiceFactory,
