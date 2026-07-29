@@ -697,9 +697,8 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         ]),
       });
       // Verify the failed target's entity is not present
-      const names = (result as any).deferredEntities.map(
-        (d: any) => d.entity.metadata.name,
-      );
+      expect(result.deferredEntities).toBeDefined();
+      const names = result.deferredEntities!.map(d => d.entity.metadata.name);
       expect(names).not.toContain('child2');
     });
 

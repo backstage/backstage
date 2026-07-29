@@ -158,6 +158,7 @@ export class DefaultCatalogProcessingOrchestrator
       entity = await this.runPreProcessStep(entity, context);
       entity = await this.runPolicyStep(entity);
       await this.runValidateStep(entity, context);
+
       if (isLocationEntity(entity)) {
         await this.runSpecialLocationStep(entity, context);
       }
@@ -185,10 +186,9 @@ export class DefaultCatalogProcessingOrchestrator
         }
       }
 
-      // For Location entities, partial success is acceptable: if at
-      // least one target produced deferred entities, persist them even
-      // though other targets may have errored. Errors from failed
-      // targets are still recorded and visible in the entity status.
+      // Location entities treat partial target success as ok; this covers
+      // all collector errors because results() marks the collector as done,
+      // preventing a before/after snapshot of just target-reading errors.
       const ok =
         isLocationEntity(entity) && collectorResults.deferredEntities.length > 0
           ? true
