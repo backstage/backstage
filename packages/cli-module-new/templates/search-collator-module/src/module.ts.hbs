@@ -25,7 +25,7 @@ export const {{moduleVar}} = createBackendModule({
       },
       async init({ config, logger, scheduler, indexRegistry }) {
         const scheduleConfig = config
-          .getOptionalConfig('search.collators.{{moduleId}}')
+          .getOptionalConfig('search.collators.{{camelCase moduleId}}')
           ?.getOptionalConfig('schedule');
 
         const schedule = scheduleConfig

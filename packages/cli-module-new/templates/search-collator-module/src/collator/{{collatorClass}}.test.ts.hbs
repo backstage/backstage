@@ -17,8 +17,9 @@ describe('{{collatorClass}}', () => {
     });
 
     const collator = await factory.getCollator();
-    const { documents } = await TestPipeline.fromCollator(collator).execute();
+    const { error, documents } = await TestPipeline.fromCollator(collator).execute();
 
+    expect(error).toBeUndefined();
     // TODO: Update this assertion once your collator yields real documents
     expect(documents).toEqual([]);
   });
