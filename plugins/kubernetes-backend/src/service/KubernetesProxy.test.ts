@@ -126,14 +126,17 @@ describe('KubernetesProxy', () => {
     proxyPath,
     requestPath,
     headers,
+    proxyOverride,
   }: {
     proxyPath: string;
     requestPath: string;
     headers?: Record<string, string>;
+    proxyOverride?: KubernetesProxy;
   }) => {
+    const activeProxy = proxyOverride ?? proxy;
     const app = express().use(
       Router()
-        .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
+        .use(proxyPath, activeProxy.createRequestHandler({ permissionApi }))
         .use(middleware.error()),
     );
 
@@ -686,6 +689,43 @@ describe('KubernetesProxy', () => {
         agent.destroy();
         server.close();
       }
+    });
+
+    it('works without an auditor configured', async () => {
+      const proxyWithoutAuditor = new KubernetesProxy({
+        logger,
+        clusterSupplier,
+        authStrategy,
+        discovery: mockDiscoveryApi,
+        httpAuth: mockServices.httpAuth.mock(),
+      });
+
+      clusterSupplier.getClusters.mockResolvedValue([
+        {
+          name: 'cluster1',
+          url: 'https://localhost:9999',
+          authMetadata: {},
+        },
+      ]);
+
+      worker.use(
+        rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
+          res(ctx.status(200), ctx.json({ ok: true })),
+        ),
+      );
+
+      auditor.createEvent.mockClear();
+
+      const requestPromise = setupProxyPromise({
+        proxyPath: '/mountpath',
+        requestPath: '/api',
+        headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+        proxyOverride: proxyWithoutAuditor,
+      });
+
+      await requestPromise.expect(200);
+
+      expect(auditor.createEvent).not.toHaveBeenCalled();
     });
   });
 
