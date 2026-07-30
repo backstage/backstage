@@ -930,6 +930,66 @@ describe('OidcService', () => {
         });
       });
 
+      it('should use configured expiration for access tokens', async () => {
+        const mockOfflineAccess = {
+          refreshAccessToken: jest.fn().mockResolvedValue({
+            accessToken: 'refreshed-access-token',
+            refreshToken: 'refreshed-refresh-token',
+          }),
+        } as unknown as OfflineAccessService;
+        const { service, mocks } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              backstageTokenExpiration: { hours: 2 },
+            },
+          },
+          offlineAccess: mockOfflineAccess,
+        });
+        mocks.tokenIssuer.issueToken.mockResolvedValue({
+          token: 'mock-jwt-token',
+        });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['http://localhost:8080/callback'],
+        });
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'http://localhost:8080/callback',
+          responseType: 'code',
+          scope: 'openid',
+        });
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'http://localhost:8080/callback',
+          grantType: 'authorization_code',
+        });
+        const refreshResult = await service.refreshAccessToken({
+          refreshToken: 'refresh-token',
+          clientId: client.clientId,
+        });
+
+        expect(tokenResult.expiresIn).toBe(7200);
+        expect(refreshResult).toEqual({
+          accessToken: 'refreshed-access-token',
+          tokenType: 'Bearer',
+          expiresIn: 7200,
+          refreshToken: 'refreshed-refresh-token',
+        });
+        expect(mockOfflineAccess.refreshAccessToken).toHaveBeenCalledWith({
+          refreshToken: 'refresh-token',
+          tokenIssuer: mocks.tokenIssuer,
+          clientId: client.clientId,
+        });
+      });
+
       it('should throw error for invalid grant type', async () => {
         const { service } = await createOidcService({ databaseId });
 
