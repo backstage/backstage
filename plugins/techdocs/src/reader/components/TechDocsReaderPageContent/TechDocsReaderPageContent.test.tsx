@@ -150,7 +150,6 @@ describe('<TechDocsReaderPageContent />', () => {
     const entityRef = getCompoundEntityRef(mockEntityMetadata);
     expect(useTechDocsReaderDom).toHaveBeenCalledWith(entityRef, {
       defaultPath,
-      withFeedbackLink: undefined,
     });
   });
 
