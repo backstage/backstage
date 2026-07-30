@@ -49,6 +49,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { ComponentType, Fragment, useEffect, useState } from 'react';
 import appPluginOriginal from '@backstage/plugin-app';
+import { z } from 'zod/v4';
 
 const signInPageComponentDataRef = createExtensionDataRef<
   ComponentType<{ onSignInSuccess(identity: IdentityApi): void }>
@@ -856,10 +857,8 @@ describe('createSpecializedApp', () => {
             createExtension({
               name: 'child',
               attachTo: { id: 'test', input: 'text' },
-              config: {
-                schema: {
-                  text: z => z.string().default('test'),
-                },
+              configSchema: {
+                text: z.string().default('test'),
               },
               output: [textDataRef],
               factory: ({ config }) => [textDataRef(config.text)],
