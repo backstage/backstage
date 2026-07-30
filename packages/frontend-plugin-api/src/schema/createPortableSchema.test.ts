@@ -165,7 +165,10 @@ describe('createConfigSchema', () => {
         title: 'Example',
       });
       expect(() => schema.parse({ path: null, title: 1 })).toThrow(
-        "Expected string at 'path'; Expected string at 'title'",
+        "Expected a string, but received null at 'path'; Expected a string, but received number at 'title'",
+      );
+      expect(() => schema.parse({ path: [], title: {} })).toThrow(
+        "Expected a string, but received array at 'path'; Expected a string, but received object at 'title'",
       );
       expect(schema.schema().schema).toEqual({
         type: 'object',

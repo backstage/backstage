@@ -28,7 +28,17 @@ export const optionalStringSchema: StandardSchemaV1<string | undefined> &
       if (typeof value === 'string' || value === undefined) {
         return { value };
       }
-      return { issues: [{ message: 'Expected string' }] };
+      let receivedType = typeof value;
+      if (value === null) {
+        receivedType = 'null';
+      } else if (Array.isArray(value)) {
+        receivedType = 'array';
+      }
+      return {
+        issues: [
+          { message: `Expected a string, but received ${receivedType}` },
+        ],
+      };
     },
     jsonSchema: {
       input() {
