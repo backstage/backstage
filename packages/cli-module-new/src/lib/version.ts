@@ -35,6 +35,7 @@ import { version as backendDefaults } from '../../../backend-defaults/package.js
 import { version as backendPluginApi } from '../../../backend-plugin-api/package.json';
 import { version as backendTestUtils } from '../../../backend-test-utils/package.json';
 import { version as catalogClient } from '../../../catalog-client/package.json';
+import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
 import { version as config } from '../../../config/package.json';
 import { version as coreAppApi } from '../../../core-app-api/package.json';
@@ -61,6 +62,7 @@ export const packageVersions: Record<string, string> = {
   '@backstage/backend-plugin-api': backendPluginApi,
   '@backstage/backend-test-utils': backendTestUtils,
   '@backstage/catalog-client': catalogClient,
+  '@backstage/catalog-model': catalogModel,
   '@backstage/cli': cli,
   '@backstage/config': config,
   '@backstage/core-app-api': coreAppApi,
