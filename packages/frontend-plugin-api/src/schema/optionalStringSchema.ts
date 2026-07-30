@@ -28,7 +28,7 @@ export const optionalStringSchema: StandardSchemaV1<string | undefined> &
       if (typeof value === 'string' || value === undefined) {
         return { value };
       }
-      let receivedType = typeof value;
+      let receivedType: string = typeof value;
       if (value === null) {
         receivedType = 'null';
       } else if (Array.isArray(value)) {
