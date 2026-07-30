@@ -71,7 +71,7 @@
     "@backstage/plugin-user-settings-backend": "workspace:^",
     "@opentelemetry/auto-instrumentations-node": "^0.71.0",
     "@opentelemetry/exporter-prometheus": "^0.213.0",
-    "@opentelemetry/sdk-node": "^0.213.0",
+    "@opentelemetry/sdk-node": "^0.217.0",
     "example-app": "link:../app"
   },
   "devDependencies": {
