@@ -2,4 +2,4 @@
 '@backstage/frontend-app-api': patch
 ---
 
-Adds the framework-owned navigation controller for scoped plugin routing under the new frontend system (RFC #33603). Production apps select top-level pages through the route table and navigation controller instead of a root react-router `useRoutes` tree. Shared pre-navigation blockers apply to chrome and page adapters. App wiring uses `AppRouteSwitch` and `RouteTable` from `@backstage/frontend-plugin-api`.
+Simplifies the framework-owned app history for scoped plugin routing (RFC #33603): the internal navigation controller no longer mints per-page routing contracts, and no longer tracks programmatic back/forward state, namespaced adapter history state, or pre-navigation blockers. It now implements the thinner `AppHistoryApi` (`navigate`, `location$`, `createHref`) from `@backstage/frontend-plugin-api`. App wiring still uses `AppRouteSwitch` and `RouteTable` from `@backstage/frontend-plugin-api`.

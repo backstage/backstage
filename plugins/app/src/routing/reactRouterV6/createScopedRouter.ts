@@ -15,7 +15,7 @@
  */
 
 import type { ComponentType, ReactNode } from 'react';
-import type { RoutingContract } from '@backstage/frontend-plugin-api';
+import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { createScopedRouterWithBindings } from './createScopedRouterWithBindings';
 import type {
   ReactRouterAdapterBindings,
@@ -27,10 +27,6 @@ import {
   UNSAFE_RouteContext,
   NavigationType,
   matchPath,
-} from 'react-router';
-import {
-  Route,
-  Routes,
   useLocation as useRRLocation,
   useNavigate as useRRNavigate,
   useParams as useRRParams,
@@ -55,10 +51,9 @@ export interface CreateScopedRouterOptions {
    */
   appBasename?: string;
   /**
-   * History stack navigation (back/forward). Prefer omitting this and using
-   * RoutingContract.go on the contract. When provided, overrides the
-   * contract. When neither is available, `go` is a no-op and a development
-   * warning is logged — never falls back to `window.history.go`.
+   * History stack navigation (back/forward). When omitted, `go` is a no-op
+   * and a development warning is logged — window.history.go is never used
+   * as a fallback.
    */
   go?: (delta: number) => void;
 }
@@ -81,7 +76,7 @@ export interface ScopedRouterResult {
   useSearchParams: (
     ...args: Parameters<typeof useRRSearchParams>
   ) => ReturnType<typeof useRRSearchParams>;
-  /** Unsubscribes from the contract's location$ observable. */
+  /** Unsubscribes from the app history's location$ observable. */
   dispose: () => void;
 }
 
@@ -98,33 +93,28 @@ const v6Bindings: ReactRouterAdapterBindings = {
   useNavigate: useRRNavigate as ReactRouterAdapterBindings['useNavigate'],
   useParams: useRRParams as ReactRouterAdapterBindings['useParams'],
   useSearchParams: useRRSearchParams,
-  Route: Route as ReactRouterAdapterBindings['Route'],
-  Routes,
 };
 
 /**
- * Creates a React Router v6 context adapter bound to a RoutingContract.
+ * Creates a React Router v6 context adapter projected from the framework's
+ * {@link AppHistoryApi}.
  *
  * Injects `UNSAFE_*` contexts directly (never nests `<Router>` / writes
  * `window.history` via push/replace). Navigation is delegated to
- * `contract.navigate`; back/forward uses `contract.go`, or the `go` option
- * when provided as an override.
- *
- * Location exposed to React Router is **app-absolute** (`basePath` + scoped
- * pathname) so relative Links and in-plugin `Routes` resolve the same way they
- * did under a root router. `contract.navigate` still receives paths scoped to
- * `basePath`.
+ * `appHistory.navigate`; back/forward uses the `go` option when provided.
  *
  * @internal
  */
 export function createScopedRouter(
-  contract: RoutingContract,
+  appHistory: AppHistoryApi,
+  basePath: string,
   options?: CreateScopedRouterOptions,
 ): ScopedRouterResult {
   const result: CommonScopedRouterResult = createScopedRouterWithBindings(
     v6Bindings,
-    contract,
+    appHistory,
     {
+      basePath,
       ...options,
       navigationContextExtras: {
         future: {

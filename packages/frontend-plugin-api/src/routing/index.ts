@@ -21,35 +21,21 @@ export {
   createExternalRouteRef,
   type ExternalRouteRef,
 } from './ExternalRouteRef';
-export {
-  createRouteDescriptor,
-  type CreateRouteDescriptorOptions,
-  type RouteDescriptor,
-  type RouteDescriptorLoader,
-} from './RouteDescriptor';
 export { useRouteRef } from './useRouteRef';
 export { useRouteRefParams } from './useRouteRefParams';
 // FrameworkLocation / FrameworkNavigateOptions are the adopter-facing types.
-// RoutingContract and blocker types remain public only because they appear on
-// NavigationControllerApi and AppRouteSwitchProps signatures.
 export type {
   FrameworkLocation,
   FrameworkNavigateOptions,
-  RoutingContract,
-  RoutingBlocker,
-  RoutingBlockerAction,
-  RoutingBlockerTransition,
-} from './RoutingContract';
-export type {
-  CreateContractOptions,
-  NavigationControllerApi,
-} from './NavigationControllerApi';
-export { navigationControllerApiRef } from './NavigationControllerApi';
+} from './FrameworkLocation';
+export type { AppHistoryApi } from './AppHistoryApi';
+export { appHistoryApiRef } from './AppHistoryApi';
 export {
   useFrameworkLocation,
   useOptionalFrameworkNavigate,
   useAppNavigate,
 } from './useFrameworkNavigation';
+export { useHref } from './useHref';
 export {
   useNavigateRouteRef,
   type NavigateRouteRefFunc,

@@ -21,22 +21,21 @@ import {
   PageRouterBlueprint,
   RouteLink,
   createFrontendPlugin,
-  createRouteDescriptor,
   createRouteRef,
   useFrameworkLocation,
 } from '@backstage/frontend-plugin-api';
-import { Link, useParams } from '@tanstack/react-router';
 import { TanStackPageRouter } from './TanStackPageRouter';
 
 /**
- * Pudding-style coexistence: default RR v6 page + TanStack page override with
- * the same descriptor shape, cross-plugin nav, and back/forward.
+ * Pudding-style coexistence: default RR v6 page + TanStack page override,
+ * both rendering opaque single-page content, with cross-plugin and
+ * controller-driven navigation.
  */
 describe('TanStack + RR v6 coexistence', () => {
   const catalogRouteRef = createRouteRef();
   const toolsRouteRef = createRouteRef();
 
-  it('should coexist v6 default + TanStack descriptor page with cross-plugin nav', async () => {
+  it('should coexist v6 default + TanStack page with cross-plugin and controller navigate', async () => {
     const CatalogV6Page = () => {
       const location = useFrameworkLocation();
       return (
@@ -50,28 +49,12 @@ describe('TanStack + RR v6 coexistence', () => {
       );
     };
 
-    const ToolsOverview = () => (
-      <div data-testid="tools-overview">
-        <div data-testid="adapter">tanstack</div>
-        <Link
-          to="/entities/$id"
-          params={{ id: 'beta' }}
-          data-testid="to-entity"
-        >
-          Entity
-        </Link>
-        <RouteLink routeRef={catalogRouteRef} data-testid="to-catalog">
-          Catalog (v6)
-        </RouteLink>
-      </div>
-    );
-
-    const EntityPage = () => {
-      const params = useParams({ strict: false }) as { id?: string };
+    const ToolsPage = () => {
+      const location = useFrameworkLocation();
       return (
-        <div data-testid="entity-page">
+        <div data-testid="tools-page">
           <div data-testid="adapter">tanstack</div>
-          <span data-testid="entity-id">{params.id}</span>
+          <div data-testid="pathname">{location.pathname}</div>
           <RouteLink routeRef={catalogRouteRef} data-testid="to-catalog">
             Catalog (v6)
           </RouteLink>
@@ -103,16 +86,7 @@ describe('TanStack + RR v6 coexistence', () => {
           params: {
             path: '/tools-pudding-ts',
             routeRef: toolsRouteRef,
-            routes: [
-              createRouteDescriptor({
-                index: true,
-                component: ToolsOverview,
-              }),
-              createRouteDescriptor({
-                path: 'entities/:id',
-                component: EntityPage,
-              }),
-            ],
+            loader: async () => <ToolsPage />,
           },
         }),
         PageRouterBlueprint.make({
@@ -140,17 +114,11 @@ describe('TanStack + RR v6 coexistence', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('tools-overview')).toBeInTheDocument();
+      expect(screen.getByTestId('tools-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('tanstack');
-    });
-
-    await act(async () => {
-      screen.getByTestId('to-entity').click();
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('entity-page')).toBeInTheDocument();
-      expect(screen.getByTestId('entity-id')).toHaveTextContent('beta');
+      expect(screen.getByTestId('pathname')).toHaveTextContent(
+        '/tools-pudding-ts',
+      );
     });
 
     await act(async () => {
@@ -162,21 +130,23 @@ describe('TanStack + RR v6 coexistence', () => {
       expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
     });
 
+    // AppHistoryApi has no programmatic `go` — navigate directly instead.
     await act(async () => {
-      navigationController.go(-1);
+      navigationController.navigate('/tools-pudding-ts');
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('entity-page')).toBeInTheDocument();
+      expect(screen.getByTestId('tools-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('tanstack');
     });
 
     await act(async () => {
-      navigationController.go(1);
+      navigationController.navigate('/catalog-pudding-ts');
     });
 
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
+      expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
     });
   });
 });

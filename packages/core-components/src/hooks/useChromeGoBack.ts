@@ -21,8 +21,12 @@ import { useOptionalNavigationController } from './useOptionalNavigationControll
 /**
  * Returns a go-back callback for app chrome / error pages.
  *
- * Prefers the framework navigation controller when present (NFS) and only
- * calls React Router's `useNavigate` when there is no controller (OFS).
+ * Prefers browser history when the framework app history is present (NFS)
+ * and only calls React Router's `useNavigate` when there is no controller
+ * (OFS). `AppHistoryApi` has no `go()` of its own — it listens for
+ * `popstate`, so going back through the browser (rather than the app
+ * history) is the supported way to navigate back (see `RootHistoryRouter`'s
+ * `navigator.go()`).
  *
  * @internal
  */
@@ -42,7 +46,7 @@ export function useChromeGoBack(): () => void {
 
   return useCallback(() => {
     if (navigationController) {
-      navigationController.go(-1);
+      window.history.back();
       return;
     }
     rrNavigate?.(-1);

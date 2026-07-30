@@ -25,7 +25,7 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
   pluginWrapperApiRef,
-  navigationControllerApiRef,
+  appHistoryApiRef,
   useAnalytics,
 } from '@backstage/frontend-plugin-api';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
@@ -235,19 +235,16 @@ export function AppRouter(props: AppRouterProps) {
   const appIdentityProxy = toAppIdentityProxy(useApi(identityApiRef));
   const routeResolutionsApi = useApi(routeResolutionApiRef);
   const basePath = getBasePath(configApi);
-  // Chrome navigation (BUI Link/Tabs/Menu clicks) goes through the
-  // navigation controller directly rather than through a scoped React
-  // Router context, so it works regardless of which page (if any) chrome
-  // happens to be rendered under.
-  const navigationController = useApi(navigationControllerApiRef);
+  // Chrome navigation (BUI Link/Tabs/Menu clicks) goes through the app
+  // history directly rather than through a scoped React Router context, so
+  // it works regardless of which page (if any) chrome happens to be
+  // rendered under.
+  const appHistory = useApi(appHistoryApiRef);
   const frameworkNavigate = useCallback(
-    (
-      path: string,
-      options?: Parameters<typeof navigationController.navigate>[1],
-    ) => {
-      navigationController.navigate(path, options);
+    (path: string, options?: Parameters<typeof appHistory.navigate>[1]) => {
+      appHistory.navigate(path, options);
     },
-    [navigationController],
+    [appHistory],
   );
 
   // TODO: Private access for now, probably replace with path -> node lookup method on the API

@@ -16,26 +16,20 @@
 
 import { useEffect, type ComponentType } from 'react';
 import { render, screen, act } from '@testing-library/react';
-import {
-  AppRouteSwitch,
-  RouteTable,
-  type RoutingContract,
-} from '@backstage/frontend-plugin-api';
+import { AppRouteSwitch, RouteTable } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { useRoutingContract } from '../../../frontend-plugin-api/src/routing/RoutingContractContext';
-import { createNavigationController } from './NavigationController';
-import type { NavigationController } from './NavigationController';
+import { usePageMount } from '../../../frontend-plugin-api/src/routing/PageMountContext';
+import { createAppHistory } from './AppHistory';
+import type { AppHistory } from './AppHistory';
 
 function CatalogPage() {
-  const contract = useRoutingContract();
-  return <div data-testid="catalog-page">Catalog: {contract.basePath}</div>;
+  const mount = usePageMount();
+  return <div data-testid="catalog-page">Catalog: {mount?.basePath}</div>;
 }
 
 function ScaffolderPage() {
-  const contract = useRoutingContract();
-  return (
-    <div data-testid="scaffolder-page">Scaffolder: {contract.basePath}</div>
-  );
+  const mount = usePageMount();
+  return <div data-testid="scaffolder-page">Scaffolder: {mount?.basePath}</div>;
 }
 
 function FallbackPage() {
@@ -43,15 +37,15 @@ function FallbackPage() {
 }
 
 describe('AppRouteSwitch', () => {
-  let controller: NavigationController;
+  let history: AppHistory;
 
   beforeEach(() => {
     window.history.replaceState(null, '', '/');
-    controller = createNavigationController();
+    history = createAppHistory();
   });
 
   afterEach(() => {
-    controller.dispose();
+    history.dispose();
   });
 
   it('should render the matched page component', () => {
@@ -65,7 +59,7 @@ describe('AppRouteSwitch', () => {
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         fallback={<FallbackPage />}
@@ -88,7 +82,7 @@ describe('AppRouteSwitch', () => {
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         fallback={<FallbackPage />}
@@ -98,7 +92,7 @@ describe('AppRouteSwitch', () => {
     expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
 
     act(() => {
-      controller.navigate('/scaffolder/templates');
+      history.navigate('/scaffolder/templates');
     });
 
     expect(screen.getByTestId('scaffolder-page')).toBeInTheDocument();
@@ -115,7 +109,7 @@ describe('AppRouteSwitch', () => {
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         fallback={<FallbackPage />}
@@ -125,7 +119,7 @@ describe('AppRouteSwitch', () => {
     expect(screen.getByTestId('fallback-page')).toBeInTheDocument();
   });
 
-  it('should provide a RoutingContract with correct basePath to the matched page', () => {
+  it('should provide a PageMount with correct basePath to the matched page', () => {
     window.history.replaceState(null, '', '/scaffolder/templates');
 
     const routeTable = new RouteTable(['/catalog', '/scaffolder']);
@@ -136,7 +130,7 @@ describe('AppRouteSwitch', () => {
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         fallback={<FallbackPage />}
@@ -148,46 +142,12 @@ describe('AppRouteSwitch', () => {
     );
   });
 
-  it('should provide a contract whose navigate is scoped to basePath', () => {
-    window.history.replaceState(null, '', '/catalog/entities');
-
-    let capturedContract: RoutingContract | undefined;
-
-    function ContractCapture() {
-      capturedContract = useRoutingContract();
-      return <div>captured</div>;
-    }
-
-    const routeTable = new RouteTable(['/catalog']);
-    const pages = new Map<string, ComponentType>([
-      ['/catalog', ContractCapture],
-    ]);
-
-    render(
-      <AppRouteSwitch
-        controller={controller}
-        routeTable={routeTable}
-        pages={pages}
-        fallback={<FallbackPage />}
-      />,
-    );
-
-    expect(capturedContract).toBeDefined();
-    expect(capturedContract!.basePath).toBe('/catalog');
-
-    act(() => {
-      capturedContract!.navigate('/entity/bar');
-    });
-
-    expect(window.location.pathname).toBe('/catalog/entity/bar');
-  });
-
   it('should handle root path catch-all', () => {
     window.history.replaceState(null, '', '/something');
 
     function RootPage() {
-      const contract = useRoutingContract();
-      return <div data-testid="root-page">Root: {contract.basePath}</div>;
+      const mount = usePageMount();
+      return <div data-testid="root-page">Root: {mount?.basePath}</div>;
     }
 
     const routeTable = new RouteTable(['/catalog', '/']);
@@ -198,7 +158,7 @@ describe('AppRouteSwitch', () => {
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         fallback={<FallbackPage />}
@@ -221,7 +181,7 @@ describe('AppRouteSwitch', () => {
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         fallback={<FallbackPage />}
@@ -253,7 +213,7 @@ describe('AppRouteSwitch', () => {
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         fallback={<FallbackPage />}
@@ -265,66 +225,34 @@ describe('AppRouteSwitch', () => {
 
     // Navigate to working plugin
     act(() => {
-      controller.navigate('/ok/entities');
+      history.navigate('/ok/entities');
     });
     expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
 
     // Navigate back to crashing plugin — error boundary resets (key changes)
     // so the plugin gets another chance to render (and will crash again)
     act(() => {
-      controller.navigate('/crashing');
+      history.navigate('/crashing');
     });
     expect(screen.getByTestId('fallback-page')).toBeInTheDocument();
     errorSpy.mockRestore();
   });
 
-  it('should use pre-created contracts from the contracts map', () => {
-    window.history.replaceState(null, '', '/catalog/entities');
-
-    const preCreatedContract = controller.createContract('/catalog');
-    const contracts = new Map<string, RoutingContract>([
-      ['/catalog', preCreatedContract],
-    ]);
-
-    let capturedContract: RoutingContract | undefined;
-
-    function ContractCapture() {
-      capturedContract = useRoutingContract();
-      return <div>captured</div>;
-    }
-
-    const routeTable = new RouteTable(['/catalog']);
-    const pages = new Map<string, ComponentType>([
-      ['/catalog', ContractCapture],
-    ]);
-
-    render(
-      <AppRouteSwitch
-        controller={controller}
-        routeTable={routeTable}
-        pages={pages}
-        contracts={contracts}
-        fallback={<FallbackPage />}
-      />,
-    );
-
-    expect(capturedContract).toBe(preCreatedContract);
-  });
-
-  it('should create contracts with a concrete matched basePath for parameterized routes', () => {
+  it('should create a fresh PageMount for parameterized routes on each match', () => {
     window.history.replaceState(
       null,
       '',
       '/catalog/default/component/wayback-archive/overview',
     );
 
-    let capturedContract: RoutingContract | undefined;
+    let mountCount = 0;
 
     function EntityPage() {
-      capturedContract = useRoutingContract();
-      return (
-        <div data-testid="entity-page">Entity: {capturedContract.basePath}</div>
-      );
+      const mount = usePageMount();
+      useEffect(() => {
+        mountCount += 1;
+      }, []);
+      return <div data-testid="entity-page">Entity: {mount?.basePath}</div>;
     }
 
     const pattern = '/catalog/:namespace/:kind/:name';
@@ -336,7 +264,7 @@ describe('AppRouteSwitch', () => {
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         fallback={<FallbackPage />}
@@ -346,89 +274,29 @@ describe('AppRouteSwitch', () => {
     expect(screen.getByTestId('entity-page')).toHaveTextContent(
       'Entity: /catalog/default/component/wayback-archive',
     );
-    expect(capturedContract!.basePath).toBe(
-      '/catalog/default/component/wayback-archive',
-    );
-    expect(capturedContract!.routePattern).toBe(pattern);
-
-    act(() => {
-      capturedContract!.navigate('docs');
-    });
-    expect(window.location.pathname).toBe(
-      '/catalog/default/component/wayback-archive/docs',
-    );
-  });
-
-  it('should keep the same contract instance when the concrete entity basePath changes', () => {
-    window.history.replaceState(
-      null,
-      '',
-      '/catalog/default/component/entity-a/overview',
-    );
-
-    let capturedContract: RoutingContract | undefined;
-    let mountCount = 0;
-
-    function EntityPage() {
-      capturedContract = useRoutingContract();
-      useEffect(() => {
-        mountCount += 1;
-      }, []);
-      return (
-        <div data-testid="entity-page">Entity: {capturedContract.basePath}</div>
-      );
-    }
-
-    const pattern = '/catalog/:namespace/:kind/:name';
-    const routeTable = new RouteTable([pattern]);
-    const pages = new Map<string, ComponentType>([[pattern, EntityPage]]);
-
-    render(
-      <AppRouteSwitch
-        controller={controller}
-        routeTable={routeTable}
-        pages={pages}
-        fallback={<FallbackPage />}
-      />,
-    );
-
-    const contractAtA = capturedContract;
-    expect(contractAtA).toBeDefined();
-    expect(contractAtA!.basePath).toBe('/catalog/default/component/entity-a');
     expect(mountCount).toBe(1);
 
     act(() => {
-      controller.navigate('/catalog/default/component/entity-b/docs');
+      history.navigate('/catalog/default/component/entity-b/docs');
     });
 
-    expect(capturedContract).toBe(contractAtA);
-    expect(capturedContract!.basePath).toBe(
-      '/catalog/default/component/entity-b',
-    );
+    // Same registered pattern — error boundary key is pattern-stable; no remount
+    expect(mountCount).toBe(1);
     expect(screen.getByTestId('entity-page')).toHaveTextContent(
       'Entity: /catalog/default/component/entity-b',
     );
-    // Same page pattern — error boundary key is pattern-stable; no remount
-    expect(mountCount).toBe(1);
-
-    act(() => {
-      capturedContract!.navigate('ci');
-    });
-    expect(window.location.pathname).toBe(
-      '/catalog/default/component/entity-b/ci',
-    );
   });
 
-  it('should redirect via controller.navigate before matching pages', () => {
+  it('should redirect via history.navigate before matching pages', () => {
     window.history.replaceState(null, '', '/old-catalog');
 
     const routeTable = new RouteTable(['/catalog']);
     const pages = new Map<string, ComponentType>([['/catalog', CatalogPage]]);
-    const navigateSpy = jest.spyOn(controller, 'navigate');
+    const navigateSpy = jest.spyOn(history, 'navigate');
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         redirects={[{ from: '/old-catalog', to: '/catalog' }]}
@@ -448,11 +316,11 @@ describe('AppRouteSwitch', () => {
 
     const routeTable = new RouteTable(['/docs']);
     const pages = new Map<string, ComponentType>([['/docs', CatalogPage]]);
-    const navigateSpy = jest.spyOn(controller, 'navigate');
+    const navigateSpy = jest.spyOn(history, 'navigate');
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         redirects={[{ from: '/d', to: '/docs/*' }]}
@@ -475,11 +343,11 @@ describe('AppRouteSwitch', () => {
       ['/catalog', CatalogPage],
       ['/home', ScaffolderPage],
     ]);
-    const navigateSpy = jest.spyOn(controller, 'navigate');
+    const navigateSpy = jest.spyOn(history, 'navigate');
 
     render(
       <AppRouteSwitch
-        controller={controller}
+        history={history}
         routeTable={routeTable}
         pages={pages}
         redirects={[{ from: '/', to: '/home' }]}

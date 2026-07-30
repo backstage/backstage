@@ -141,7 +141,7 @@ const appPluginOverride = appPlugin.withOverrides({
  * @public
  * Renders the given element in a test app, for use in unit tests.
  *
- * Navigation is owned by a {@link @backstage/frontend-plugin-api#NavigationControllerApi}
+ * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
  * with in-memory history — the same seam as production — rather than a
  * test-only root React Router as the long-term harness.
  */

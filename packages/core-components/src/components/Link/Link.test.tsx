@@ -27,14 +27,14 @@ import {
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
-import {
-  createMockContract,
-  createMockNavigationController,
-} from '@backstage/frontend-test-utils';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
-import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { RoutingContractContext } from '../../../../frontend-plugin-api/src/routing/RoutingContractContext';
+import {
+  PageMountContext,
+  type PageMount,
+} from '../../../../frontend-plugin-api/src/routing/PageMountContext';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ConfigReader } from '@backstage/config';
@@ -219,8 +219,11 @@ describe('<Link />', () => {
 
   describe('NFS Link shim', () => {
     const navigate = jest.fn();
-    const navigationController = createMockNavigationController({ navigate });
-    const scopedContract = createMockContract({ basePath: '/create' });
+    const navigationController = createMockAppHistory({ navigate });
+    const scopedContract: PageMount = {
+      basePath: '/create',
+      routePattern: '/create',
+    };
 
     beforeEach(() => {
       navigate.mockClear();
@@ -228,14 +231,12 @@ describe('<Link />', () => {
 
     it('escalates cross-plugin absolute targets via the navigation controller', () => {
       render(
-        <TestApiProvider
-          apis={[[navigationControllerApiRef, navigationController]]}
-        >
-          <RoutingContractContext.Provider value={scopedContract}>
+        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
+          <PageMountContext.Provider value={scopedContract}>
             <MemoryRouter>
               <Link to="/catalog/default/component/widget">Entity</Link>
             </MemoryRouter>
-          </RoutingContractContext.Provider>
+          </PageMountContext.Provider>
         </TestApiProvider>,
       );
 

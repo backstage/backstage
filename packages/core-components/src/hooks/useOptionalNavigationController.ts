@@ -17,17 +17,19 @@
 import { useContext } from 'react';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import {
-  navigationControllerApiRef,
-  type NavigationControllerApi,
-  type RoutingContract,
+  appHistoryApiRef,
+  type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { RoutingContractContext } from '../../../frontend-plugin-api/src/routing/RoutingContractContext';
+import {
+  PageMountContext,
+  type PageMount,
+} from '../../../frontend-plugin-api/src/routing/PageMountContext';
 
 /**
- * Returns the framework navigation controller when the new frontend system
- * has registered one, and `undefined` otherwise (old frontend system apps,
- * or isolated tests without a navigation controller).
+ * Returns the framework app history when the new frontend system has
+ * registered one, and `undefined` otherwise (old frontend system apps, or
+ * isolated tests without an app history).
  *
  * Chrome (`Link`, sidebar active-state, `ErrorPage`, ...) uses this to prefer
  * framework navigation/location when available while keeping React Router
@@ -35,18 +37,16 @@ import { RoutingContractContext } from '../../../frontend-plugin-api/src/routing
  *
  * @internal
  */
-export function useOptionalNavigationController():
-  | NavigationControllerApi
-  | undefined {
-  return useApiHolder().get(navigationControllerApiRef);
+export function useOptionalNavigationController(): AppHistoryApi | undefined {
+  return useApiHolder().get(appHistoryApiRef);
 }
 
 /**
- * Returns the {@link RoutingContract} for the current page scope, if any is
- * in context.
+ * Returns the {@link PageMount} for the current page scope, if any is in
+ * context.
  *
  * @internal
  */
-export function useOptionalRoutingContract(): RoutingContract | undefined {
-  return useContext(RoutingContractContext);
+export function useOptionalRoutingContract(): PageMount | undefined {
+  return useContext(PageMountContext);
 }

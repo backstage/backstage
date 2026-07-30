@@ -2,10 +2,12 @@
 
 React Router v7 adapter for Backstage's router-agnostic plugin routing (RFC [#33603](https://github.com/backstage/backstage/issues/33603)).
 
-Injects React Router `UNSAFE_*` contexts from a `RoutingContract` so plugins can
-import from `react-router` / `react-router-dom` v7. Navigation is delegated to the
-contract; this package never writes `window.history` via `pushState` / `replaceState`
-or `go`.
+Injects React Router `UNSAFE_*` contexts projected from the framework's
+`AppHistoryApi` so plugins can import from `react-router` / `react-router-dom`
+v7. Navigation is delegated to `AppHistoryApi.navigate`; this package never
+writes `window.history` via `pushState` / `replaceState` or `go`. Programmatic
+back/forward (`navigate(-1)`) is not supported — there is a single, real
+browser history; use the browser's own back/forward.
 
 This package is deliberately separate from
 `@backstage/plugin-react-router-v6-adapter` and does not share React Router
@@ -27,6 +29,11 @@ const myV7Router = PageRouterBlueprint.make({
   },
 });
 ```
+
+`ReactRouterV7PageRouter` renders `children` as opaque content inside the
+scoped React Router v7 context — an existing `<Routes>` tree composed by the
+page itself (e.g. from a `PageBlueprint` `loader`) keeps working, including
+relative `Link`s, nested `<Routes>`, and `useParams`.
 
 ## Multi-router coexistence
 

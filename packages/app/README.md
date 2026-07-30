@@ -8,19 +8,22 @@ To play with it, open a terminal and run the command: `yarn start`
 
 ## NFS routing demo
 
-Three live sibling pages share the exact same library-agnostic
-[`RouteDescriptor`](../frontend-plugin-api/src/routing/RouteDescriptor.ts)
-tree on a `PageBlueprint` page (RFC
+Three live sibling pages demo different page router adapters (RFC
 [#33603](https://github.com/backstage/backstage/issues/33603)), each attached
-to a different page router adapter via `PageRouterBlueprint`:
+via `PageRouterBlueprint`:
 
 | Path                         | Page router adapter                         |
 | ---------------------------- | ------------------------------------------- |
-| `/nfs-routing-demo`          | `@backstage/plugin-react-router-v6-adapter` |
+| `/nfs-routing-demo`          | React Router v6 (app default)               |
 | `/nfs-routing-demo-v7`       | `@backstage/plugin-react-router-v7-adapter` |
 | `/nfs-routing-demo-tanstack` | `@backstage/plugin-tanstack-router-adapter` |
 
-Each page attaches its adapter individually — there is **no** app-wide
-default router swap. See
+The v6 and v7 pages share the same tabbed sub-page structure (built with
+`SubPageBlueprint`), proving `PageBlueprint`'s native React Router `<Routes>`
+composition works unchanged under either adapter. TanStack Router fully owns
+its own route tree and has no opaque-children bridge for that tabbed
+structure, so its sibling page renders single content instead. Each page
+attaches its adapter individually — there is **no** app-wide default router
+swap. See
 [`src/examples/nfsRoutingDemo.tsx`](./src/examples/nfsRoutingDemo.tsx) for the
-shared descriptor tree and the per-page `PageRouterBlueprint` wiring.
+shared panel components and the per-page `PageRouterBlueprint` wiring.

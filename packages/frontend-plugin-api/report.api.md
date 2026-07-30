@@ -19,7 +19,6 @@ import { PropsWithChildren } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
-import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 
 // @public @deprecated
 export type AlertApi = {
@@ -199,6 +198,18 @@ export type ApiRefConfig = {
   id: string;
 };
 
+// @public
+export interface AppHistoryApi {
+  createHref(to: string): string;
+  readonly location$: Observable<FrameworkLocation>;
+  navigate(path: string, options?: FrameworkNavigateOptions): void;
+}
+
+// @public
+export const appHistoryApiRef: ApiRef_2<AppHistoryApi, 'core.app-history'> & {
+  readonly $$type: '@backstage/ApiRef';
+};
+
 // @public (undocumented)
 export type AppLanguageApi = {
   getAvailableLanguages(): {
@@ -279,6 +290,9 @@ export interface AppRouteRedirect {
   to: string;
 }
 
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/frontend-plugin-api" does not have an export "PageMount"
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/frontend-plugin-api" does not have an export "PageMount"
+//
 // @public
 export function AppRouteSwitch(
   props: AppRouteSwitchProps,
@@ -286,9 +300,8 @@ export function AppRouteSwitch(
 
 // @public
 export interface AppRouteSwitchProps {
-  contracts?: Map<string, RoutingContract>;
-  controller: NavigationControllerApi;
   fallback: ReactElement;
+  history: AppHistoryApi;
   pages: Map<string, ComponentType>;
   redirects?: AppRouteRedirect[];
   routeTable: RouteTable;
@@ -489,11 +502,6 @@ export function createApiRef<T>(): {
     readonly $$type: '@backstage/ApiRef';
   };
 };
-
-// @public
-export interface CreateContractOptions {
-  routePattern?: string;
-}
 
 // @public
 export function createExtension<
@@ -863,23 +871,6 @@ export interface CreateFrontendPluginOptions<
   pluginId: TId;
   // (undocumented)
   routes?: TRoutes;
-  title?: string;
-}
-
-// @public
-export function createRouteDescriptor(
-  options?: CreateRouteDescriptorOptions,
-): RouteDescriptor;
-
-// @public
-export interface CreateRouteDescriptorOptions {
-  children?: readonly RouteDescriptor[];
-  component?: ComponentType<{}>;
-  icon?: IconElement;
-  id?: string;
-  index?: boolean;
-  loader?: RouteDescriptorLoader;
-  path?: string;
   title?: string;
 }
 
@@ -1468,7 +1459,7 @@ export const fetchApiRef: ApiRef_2<FetchApi, 'core.fetch'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
-// @public (undocumented)
+// @public
 export interface FrameworkLocation {
   // (undocumented)
   hash: string;
@@ -1481,7 +1472,6 @@ export interface FrameworkLocation {
 
 // @public
 export interface FrameworkNavigateOptions {
-  adapterState?: Record<string, unknown>;
   // (undocumented)
   replace?: boolean;
   state?: unknown;
@@ -1644,32 +1634,6 @@ export type NavigateRouteRefFunc<TParams extends AnyRouteRefParams> = (
     ? readonly [options?: FrameworkNavigateOptions]
     : readonly [params: TParams, options?: FrameworkNavigateOptions]
 ) => void;
-
-// @public (undocumented)
-export interface NavigationControllerApi {
-  block(blocker: RoutingBlocker): () => void;
-  canGoBack(): boolean;
-  canGoForward(): boolean;
-  createContract(
-    basePath: string,
-    options?: CreateContractOptions,
-  ): RoutingContract;
-  getAdapterState(adapterId: string): unknown;
-  go(delta: number): void;
-  readonly historyLength: number;
-  // (undocumented)
-  readonly location$: Observable<FrameworkLocation>;
-  // (undocumented)
-  navigate(path: string, options?: FrameworkNavigateOptions): void;
-}
-
-// @public
-export const navigationControllerApiRef: ApiRef_2<
-  NavigationControllerApi,
-  'core.navigation-controller'
-> & {
-  readonly $$type: '@backstage/ApiRef';
-};
 
 // @public (undocumented)
 export const NotFoundErrorPage: {
@@ -1906,7 +1870,6 @@ export const PageBlueprint: ExtensionBlueprint<{
     title?: string;
     icon?: IconElement;
     loader?: () => Promise<JSX_2.Element>;
-    routes?: readonly RouteDescriptor[];
     routeRef?: RouteRef;
     noHeader?: boolean;
   };
@@ -2058,10 +2021,9 @@ export interface PageRouterCapabilities {
 
 // @public
 export type PageRouterComponent = ComponentType<{
-  contract: RoutingContract;
+  basePath: string;
   routePattern: string;
   appBasename?: string;
-  routes?: readonly RouteDescriptor[];
   children: ReactNode;
 }>;
 
@@ -2197,25 +2159,6 @@ export const Progress: {
 export type ProgressProps = {};
 
 // @public
-export interface RouteDescriptor {
-  // (undocumented)
-  readonly $$type: '@backstage/RouteDescriptor';
-  readonly children: readonly RouteDescriptor[];
-  readonly component?: ComponentType<{}>;
-  readonly icon?: IconElement;
-  readonly id?: string;
-  readonly index: boolean;
-  readonly loader?: RouteDescriptorLoader;
-  readonly params: readonly string[];
-  readonly path?: string;
-  readonly splat: boolean;
-  readonly title?: string;
-}
-
-// @public
-export type RouteDescriptorLoader = () => Promise<JSX_2.Element>;
-
-// @public
 export type RouteFunc<TParams extends AnyRouteRefParams> = (
   ...input: TParams extends undefined ? readonly [] : readonly [params: TParams]
 ) => string;
@@ -2270,6 +2213,8 @@ export const routeResolutionApiRef: ApiRef_2<
   readonly $$type: '@backstage/ApiRef';
 };
 
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/frontend-plugin-api" does not have an export "PageMount"
+//
 // @public
 export class RouteTable {
   constructor(basePaths: string[]);
@@ -2278,41 +2223,9 @@ export class RouteTable {
 
 // @public
 export interface RouteTableMatch {
+  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/frontend-plugin-api" does not have an export "PageMount"
   basePath: string;
   path: string;
-}
-
-// @public
-export type RoutingBlocker = (
-  transition: RoutingBlockerTransition,
-) => boolean | Promise<boolean>;
-
-// @public
-export type RoutingBlockerAction = 'PUSH' | 'REPLACE';
-
-// @public
-export interface RoutingBlockerTransition {
-  // (undocumented)
-  action: RoutingBlockerAction;
-  // (undocumented)
-  currentLocation: FrameworkLocation;
-  // (undocumented)
-  nextLocation: FrameworkLocation;
-}
-
-// @public
-export interface RoutingContract {
-  readonly basePath: string;
-  block(blocker: RoutingBlocker): () => void;
-  canGoBack(): boolean;
-  canGoForward(): boolean;
-  getAdapterState(adapterId: string): unknown;
-  go(delta: number): void;
-  readonly historyLength: number;
-  readonly location$: Observable<FrameworkLocation>;
-  // (undocumented)
-  navigate(to: string, options?: FrameworkNavigateOptions): void;
-  readonly routePattern?: string;
 }
 
 // @public
@@ -2370,6 +2283,10 @@ export type StorageValueSnapshot<TValue extends JsonValue> =
       value: TValue;
     };
 
+// Warning: (tsdoc-code-span-missing-delimiter) The code span is missing its closing backtick
+// Warning: (tsdoc-code-span-missing-delimiter) The code span is missing its closing backtick
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/frontend-plugin-api" does not have an export "PageMount"
+//
 // @public
 export const SubPageBlueprint: ExtensionBlueprint<{
   kind: 'sub-page';
@@ -2692,6 +2609,9 @@ export function useBreadcrumbEntries(): {
 
 // @public
 export function useFrameworkLocation(): FrameworkLocation;
+
+// @public
+export function useHref(to: string): string;
 
 // @public
 export function useNavigateRouteRef<TParams extends AnyRouteRefParams>(

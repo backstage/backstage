@@ -19,12 +19,12 @@ import { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { TestApiProvider } from '@backstage/test-utils';
 import {
-  createMockNavigationController,
+  createMockAppHistory,
   createMockRouteResolutionApi,
 } from '@backstage/frontend-test-utils';
 import { RouteLink } from './RouteLink';
 import { createRouteRef } from './RouteRef';
-import { navigationControllerApiRef } from './NavigationControllerApi';
+import { appHistoryApiRef } from './AppHistoryApi';
 import { routeResolutionApiRef } from '../apis';
 
 describe('RouteLink', () => {
@@ -42,10 +42,7 @@ describe('RouteLink', () => {
             routes: [[catalogRouteRef, '/catalog/:namespace/:kind/:name']],
           }),
         ],
-        [
-          navigationControllerApiRef,
-          createMockNavigationController({ navigate }),
-        ],
+        [appHistoryApiRef, createMockAppHistory({ navigate })],
       ]}
     >
       <MemoryRouter>{children}</MemoryRouter>
@@ -98,10 +95,7 @@ describe('RouteLink', () => {
                   routes: [[homeRouteRef, '/catalog']],
                 }),
               ],
-              [
-                navigationControllerApiRef,
-                createMockNavigationController({ navigate }),
-              ],
+              [appHistoryApiRef, createMockAppHistory({ navigate })],
             ]}
           >
             <MemoryRouter>{children}</MemoryRouter>
@@ -136,10 +130,7 @@ describe('RouteLink', () => {
                   resolve: () => undefined,
                 }),
               ],
-              [
-                navigationControllerApiRef,
-                createMockNavigationController({ navigate }),
-              ],
+              [appHistoryApiRef, createMockAppHistory({ navigate })],
             ]}
           >
             <MemoryRouter>{children}</MemoryRouter>

@@ -5,15 +5,12 @@
 ```ts
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import type { ReactNode } from 'react';
-import type { RouteDescriptor } from '@backstage/frontend-plugin-api';
-import type { RoutingContract } from '@backstage/frontend-plugin-api';
 
 // @public
 export function TanStackPageRouter(props: {
-  contract: RoutingContract;
+  basePath: string;
   routePattern: string;
   appBasename?: string;
-  routes?: readonly RouteDescriptor[];
   children: ReactNode;
 }): JSX_2.Element;
 ```

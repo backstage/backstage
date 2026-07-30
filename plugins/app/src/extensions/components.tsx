@@ -31,7 +31,7 @@ import {
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { RoutingContractContext } from '../../../../packages/frontend-plugin-api/src/routing/RoutingContractContext';
+import { PageMountContext } from '../../../../packages/frontend-plugin-api/src/routing/PageMountContext';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useContext, useMemo } from 'react';
@@ -90,19 +90,19 @@ export const PageLayout = SwappableComponentBlueprint.make({
           tabs,
           children,
         } = props;
-        // Prefer the page RoutingContract mount path when NFS is present;
-        // fall back to React Router for isolated/OFS trees (e.g.
+        // Prefer the page's PageMount basePath when NFS is present; fall
+        // back to React Router for isolated/OFS trees (e.g.
         // createExtensionTester + renderInTestApp without AppRouteSwitch).
-        // Only call useResolvedPath when there is no contract — chrome must
-        // not unconditionally require root RR when a contract is present.
-        const contract = useContext(RoutingContractContext);
+        // Only call useResolvedPath when there is no page mount — chrome
+        // must not unconditionally require root RR when one is present.
+        const pageMount = useContext(PageMountContext);
         const inRouter = useInRouterContext();
         const rrParentPath =
-          !contract && inRouter
+          !pageMount && inRouter
             ? useResolvedPath('.').pathname.replace(/\/$/, '')
             : '';
-        const parentPath = contract
-          ? contract.basePath.replace(/\/$/, '')
+        const parentPath = pageMount
+          ? pageMount.basePath.replace(/\/$/, '')
           : rrParentPath;
         // Empty string titleLink is treated as unset (same as undefined) so the
         // breadcrumb still points at the page mount path rather than "".

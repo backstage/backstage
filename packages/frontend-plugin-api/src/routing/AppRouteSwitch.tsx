@@ -21,11 +21,9 @@ import {
   type ErrorInfo,
   type ReactElement,
   type ReactNode,
-  useMemo,
 } from 'react';
-import { RoutingContractContext } from './RoutingContractContext';
-import type { NavigationControllerApi } from './NavigationControllerApi';
-import type { RoutingContract } from './RoutingContract';
+import { PageMountContext, type PageMount } from './PageMountContext';
+import type { AppHistoryApi } from './AppHistoryApi';
 import { RouteTable } from './RouteTable';
 import {
   useObservableAsState,
@@ -78,14 +76,12 @@ export interface AppRouteRedirect {
  * @public
  */
 export interface AppRouteSwitchProps {
-  /** Framework navigation controller that owns browser history. */
-  controller: NavigationControllerApi;
+  /** Framework app history that owns browser history. */
+  history: AppHistoryApi;
   /** Longest-prefix matcher for registered page paths. */
   routeTable: RouteTable;
   /** Page components keyed by registered route pattern. */
   pages: Map<string, ComponentType>;
-  /** Optional pre-created contracts keyed by registered route pattern. */
-  contracts?: Map<string, RoutingContract>;
   /** Optional redirects resolved before page matching. */
   redirects?: AppRouteRedirect[];
   /** Rendered when no page matches. */
@@ -126,54 +122,58 @@ function matchRedirect(
 
 function resolveRedirectTarget(
   redirects: AppRouteRedirect[] | undefined,
-  pathname: string,
+  location: { pathname: string; search: string; hash: string },
 ): string | undefined {
   if (!redirects?.length) {
     return undefined;
   }
   for (const redirect of redirects) {
-    const params = matchRedirect(redirect.from, pathname);
+    const params = matchRedirect(redirect.from, location.pathname);
     if (params) {
-      return substitutePathParams(redirect.to, params);
+      const substituted = substitutePathParams(redirect.to, params);
+      // Preserve the incoming search/hash unless the redirect template
+      // declares its own.
+      const url = new URL(substituted, 'http://localhost');
+      const search = url.search || location.search;
+      const hash = url.hash || location.hash;
+      return `${url.pathname}${search}${hash}`;
     }
   }
   return undefined;
 }
 
 /**
- * Subscribes to NavigationController.location$, matches the current pathname
- * via RouteTable, and renders the matched page extension with a scoped
- * RoutingContract provided via context.
+ * Subscribes to AppHistory.location$, matches the current pathname via
+ * RouteTable, and renders the matched page extension with a
+ * {@link PageMount} provided via context.
  *
  * Configured redirects are resolved first and applied via
- * `controller.navigate(..., { replace: true })` — no react-router `useRoutes`.
+ * `history.navigate(..., { replace: true })` — no react-router `useRoutes`.
  *
- * Reads from NavigationController.location$ (basename-stripped) rather than
+ * Reads from AppHistory.location$ (basename-stripped) rather than
  * window.location directly, ensuring correct behavior with app basename.
  *
- * For parameterized routes, the page map and contracts are keyed by the
- * registered pattern (`match.path`). `createContract` receives the concrete
- * matched URL prefix (`match.basePath`) plus that pattern so `basePath` can
- * project across entity-style navigations without replacing the contract.
+ * The page map is keyed by the registered pattern (`match.path`). The
+ * {@link PageMount} provided to the matched page carries both that pattern
+ * and the concrete matched URL prefix (`match.basePath`).
  *
  * @public
  */
 export function AppRouteSwitch(props: AppRouteSwitchProps) {
-  const { controller, routeTable, pages, contracts, redirects, fallback } =
-    props;
+  const { history, routeTable, pages, redirects, fallback } = props;
 
   const location = useObservableAsState(
-    controller.location$,
+    history.location$,
     frameworkLocationEqual,
   );
 
-  const redirectTarget = resolveRedirectTarget(redirects, location.pathname);
+  const redirectTarget = resolveRedirectTarget(redirects, location);
 
   useEffect(() => {
     if (redirectTarget) {
-      controller.navigate(redirectTarget, { replace: true });
+      history.navigate(redirectTarget, { replace: true });
     }
-  }, [controller, redirectTarget]);
+  }, [history, redirectTarget]);
 
   const match = redirectTarget
     ? undefined
@@ -181,28 +181,11 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
   const matchedPath = match?.path;
   const matchedBasePath = match?.basePath;
 
-  // Key contracts by registered pattern only — concrete basePath projects
-  // on the stable instance so entity A→B does not dispose scoped adapters.
-  const contract = useMemo(() => {
-    if (!matchedPath || !matchedBasePath) {
-      return undefined;
-    }
-    // Use pre-created contract if available (keyed by registered pattern)
-    if (contracts?.has(matchedPath)) {
-      return contracts.get(matchedPath)!;
-    }
-    return controller.createContract(matchedBasePath, {
-      routePattern: matchedPath,
-    });
-    // matchedBasePath intentionally omitted: pattern-keyed identity
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [matchedPath, controller, contracts]);
-
   if (redirectTarget) {
     return null;
   }
 
-  if (!matchedPath || !matchedBasePath || !contract) {
+  if (!matchedPath || !matchedBasePath) {
     return fallback;
   }
 
@@ -211,8 +194,13 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
     return fallback;
   }
 
+  const pageMount: PageMount = {
+    basePath: matchedBasePath,
+    routePattern: matchedPath,
+  };
+
   return (
-    <RoutingContractContext.Provider value={contract}>
+    <PageMountContext.Provider value={pageMount}>
       <PluginErrorBoundary
         key={matchedPath}
         basePath={matchedBasePath}
@@ -220,6 +208,6 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
       >
         <PageComponent />
       </PluginErrorBoundary>
-    </RoutingContractContext.Provider>
+    </PageMountContext.Provider>
   );
 }

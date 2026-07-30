@@ -27,7 +27,7 @@ import {
   useFrameworkLocation,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { useRoutingContract } from '../../../packages/frontend-plugin-api/src/routing/RoutingContractContext';
+import { usePageMount } from '../../../packages/frontend-plugin-api/src/routing/PageMountContext';
 import { Link, useLocation } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 
@@ -44,7 +44,7 @@ describe('multi-router coexistence', () => {
   const catalogRouteRef = createRouteRef();
   const settingsRouteRef = createRouteRef();
 
-  it('should coexist v6 default + v7 pages with cross-plugin nav and back/forward', async () => {
+  it('should coexist v6 default + v7 pages with cross-plugin and controller navigate', async () => {
     const CatalogV6Page = () => {
       const location = useFrameworkLocation();
       return (
@@ -159,8 +159,9 @@ describe('multi-router coexistence', () => {
       );
     });
 
+    // AppHistoryApi has no programmatic `go` — navigate directly instead.
     await act(async () => {
-      navigationController.go(-1);
+      navigationController.navigate('/settings-pudding/general');
     });
 
     await waitFor(() => {
@@ -172,7 +173,7 @@ describe('multi-router coexistence', () => {
     });
 
     await act(async () => {
-      navigationController.go(-1);
+      navigationController.navigate('/settings-pudding');
     });
 
     await waitFor(() => {
@@ -183,7 +184,7 @@ describe('multi-router coexistence', () => {
     });
 
     await act(async () => {
-      navigationController.go(-1);
+      navigationController.navigate('/catalog-pudding');
     });
 
     await waitFor(() => {
@@ -195,7 +196,7 @@ describe('multi-router coexistence', () => {
     });
 
     await act(async () => {
-      navigationController.go(1);
+      navigationController.navigate('/settings-pudding');
     });
 
     await waitFor(() => {
@@ -230,12 +231,12 @@ describe('multi-router coexistence', () => {
 
     const TreeV7SubPage = () => {
       const location = useLocation();
-      const contract = useRoutingContract();
+      const pageMount = usePageMount();
       return (
         <div data-testid="tree-subpage">
           <div data-testid="adapter">v7</div>
           <div data-testid="pathname">{location.pathname}</div>
-          <div data-testid="contract-base">{contract.basePath}</div>
+          <div data-testid="contract-base">{pageMount?.basePath}</div>
           <RouteLink routeRef={homeRouteRef} data-testid="to-home">
             Home (v6)
           </RouteLink>
@@ -313,8 +314,9 @@ describe('multi-router coexistence', () => {
       expect(screen.getByTestId('pathname')).toHaveTextContent('/home-pudding');
     });
 
+    // AppHistoryApi has no programmatic `go` — navigate directly instead.
     await act(async () => {
-      navigationController.go(-1);
+      navigationController.navigate('/visualizer-pudding/tree');
     });
 
     await waitFor(() => {
@@ -323,7 +325,7 @@ describe('multi-router coexistence', () => {
     });
 
     await act(async () => {
-      navigationController.go(1);
+      navigationController.navigate('/home-pudding');
     });
 
     await waitFor(() => {

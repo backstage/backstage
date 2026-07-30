@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-import { descriptorPathToTanStack } from './compileRouteDescriptors';
+/**
+ * A location within the app, as seen by framework navigation.
+ *
+ * @public
+ */
+export interface FrameworkLocation {
+  pathname: string;
+  search: string;
+  hash: string;
+  /** User-visible navigation state for this location. */
+  state: unknown;
+}
 
-describe('descriptorPathToTanStack', () => {
-  it('should convert descriptor paths to TanStack path segments', () => {
-    expect(descriptorPathToTanStack(undefined)).toBe('/');
-    expect(descriptorPathToTanStack('overview')).toBe('/overview');
-    expect(descriptorPathToTanStack('entities/:id')).toBe('/entities/$id');
-    expect(descriptorPathToTanStack('docs/*')).toBe('/docs/$');
-    expect(descriptorPathToTanStack('*')).toBe('/$');
-  });
-});
+/**
+ * Options for framework navigation.
+ *
+ * @public
+ */
+export interface FrameworkNavigateOptions {
+  replace?: boolean;
+  /** User-visible navigation state (exposed on {@link FrameworkLocation.state}). */
+  state?: unknown;
+}

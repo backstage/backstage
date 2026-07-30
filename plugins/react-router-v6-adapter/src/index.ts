@@ -15,9 +15,12 @@
  */
 
 /**
- * React Router v6 adapter for Backstage scoped plugin routing.
+ * This package is retained only as a tombstone. The React Router v6 default
+ * page adapter now lives in `@backstage/plugin-app` at
+ * `plugins/app/src/routing/reactRouterV6` and is registered as the app's
+ * default page router. Do not import from this package.
  *
  * @packageDocumentation
  */
 
-export { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
+export {};

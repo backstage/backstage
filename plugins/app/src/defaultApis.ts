@@ -66,7 +66,7 @@ import {
   toastApiRef,
   pageRouterApiRef,
 } from '@backstage/frontend-plugin-api';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-react-router-v6-adapter';
+import { ReactRouterV6PageRouter } from './routing/reactRouterV6';
 import {
   ScmAuth,
   ScmIntegrationsApi,

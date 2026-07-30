@@ -15,36 +15,43 @@
  */
 
 import type { ReactNode } from 'react';
-import type {
-  RouteDescriptor,
-  RoutingContract,
-} from '@backstage/frontend-plugin-api';
 import { TanStackRouterHost } from './TanStackRouterHost';
 
 /**
- * TanStack Router page adapter. Compiles route descriptor trees into a TanStack
- * route tree and projects the page routing contract into a hand-rolled history.
- * Never writes `window.history` via push/replace.
+ * TanStack Router page adapter. Projects the framework's `AppHistoryApi`
+ * into a hand-rolled TanStack history, scoped to the page's `basePath`, and
+ * renders `children` under a single root route. Never writes
+ * `window.history` via push/replace.
  *
  * Register as a page override via `PageRouterBlueprint`, or as the
  * `pageRouterApiRef` default.
  *
- * Opaque React Router children are not supported — pages must declare in-page
- * routes as descriptors (or render TanStack-native content under a descriptor
- * tree).
+ * Opaque React Router content is not supported — there is no TanStack
+ * opaque-children bridge, since this adapter fully owns rendering via its
+ * own route tree (currently a single root route). Report
+ * `supportsOpaqueChildren: false` via `getCapabilities()` when registering
+ * this as the default page router so `PageBlueprint` fails fast instead of
+ * silently dropping content.
  *
- * Back/forward uses the contract's `go`; `canGoBack` / `historyLength` come from
- * the contract. TanStack `__TSR_*` metadata is stored under the
- * `tanstack-router` adapterState namespace.
+ * Programmatic back/forward and cross-adapter navigation blockers are not
+ * supported — there is a single, real browser history with no shared
+ * blocker seam; `useBlocker` still works for navigation initiated through
+ * this page's own TanStack `<Link>` / `router.navigate`.
  *
  * @public
  */
 export function TanStackPageRouter(props: {
-  contract: RoutingContract;
+  /** Concrete app-absolute URL prefix this page is mounted at. */
+  basePath: string;
+  /** Registered route pattern this page is mounted at. */
   routePattern: string;
+  /** App deploy basename — unused; `AppHistoryApi.createHref` already applies it. */
   appBasename?: string;
-  routes?: readonly RouteDescriptor[];
   children: ReactNode;
 }) {
-  return <TanStackRouterHost {...props} />;
+  return (
+    <TanStackRouterHost basePath={props.basePath}>
+      {props.children}
+    </TanStackRouterHost>
+  );
 }

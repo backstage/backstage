@@ -17,8 +17,8 @@
 import { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { renderHook, act } from '@testing-library/react';
-import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
-import { createMockNavigationController } from '@backstage/frontend-test-utils';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { TestApiProvider } from '@backstage/test-utils';
 import { useChromeGoBack } from './useChromeGoBack';
 
@@ -33,15 +33,13 @@ describe('useChromeGoBack', () => {
     mockNavigate.mockClear();
   });
 
-  it('calls navigation controller go(-1) without React Router (NFS)', () => {
-    const go = jest.fn();
-    const navigationController = createMockNavigationController({ go });
+  it('calls window.history.back() without React Router (NFS)', () => {
+    const historyBack = jest.spyOn(window.history, 'back').mockReturnValue();
+    const navigationController = createMockAppHistory();
 
     const { result } = renderHook(() => useChromeGoBack(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[[navigationControllerApiRef, navigationController]]}
-        >
+        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
           {children}
         </TestApiProvider>
       ),
@@ -51,8 +49,10 @@ describe('useChromeGoBack', () => {
       result.current();
     });
 
-    expect(go).toHaveBeenCalledWith(-1);
+    expect(historyBack).toHaveBeenCalledTimes(1);
     expect(mockNavigate).not.toHaveBeenCalled();
+
+    historyBack.mockRestore();
   });
 
   it('calls react-router navigate(-1) when no controller is registered (OFS)', () => {

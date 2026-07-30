@@ -21,7 +21,7 @@ import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { useRouteRef } from './useRouteRef';
 import { useAppNavigate } from './useFrameworkNavigation';
-import type { FrameworkNavigateOptions } from './RoutingContract';
+import type { FrameworkNavigateOptions } from './FrameworkLocation';
 
 /**
  * A function that resolves a {@link RouteRef} to a path and navigates via

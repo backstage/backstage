@@ -68,7 +68,6 @@
     "@backstage/plugin-notifications": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
-    "@backstage/plugin-react-router-v6-adapter": "workspace:^",
     "@backstage/plugin-react-router-v7-adapter": "workspace:^",
     "@backstage/plugin-scaffolder": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ComponentType, ReactNode } from 'react';
-import type { RoutingContract } from '@backstage/frontend-plugin-api';
+import type { ComponentType, MutableRefObject, ReactNode } from 'react';
+import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { createScopedRouterWithBindings } from './createScopedRouterWithBindings';
 import type {
   ReactRouterAdapterBindings,
@@ -27,8 +27,6 @@ import {
   UNSAFE_RouteContext,
   NavigationType,
   matchPath,
-  Route,
-  Routes,
   useLocation as useRRLocation,
   useNavigate as useRRNavigate,
   useParams as useRRParams,
@@ -41,24 +39,14 @@ import type { Location, NavigateFunction } from 'react-router';
  * @internal
  */
 export interface CreateScopedRouterOptions {
+  /** Live ref to the page's current concrete `basePath`. */
+  basePathRef: MutableRefObject<string>;
   /**
    * Registered page path pattern (e.g. `/catalog` or
    * `/catalog/:namespace/:kind/:name`). Used to populate React Router
-   * `useParams` via a splat match of `${routePattern}/*`.
+   * `useParams`.
    */
-  routePattern?: string;
-  /**
-   * App deploy basename (e.g. `/backstage`). Prefixed onto `createHref`
-   * results so Link `href`s work under subpath deploys.
-   */
-  appBasename?: string;
-  /**
-   * History stack navigation (back/forward). Prefer omitting this and using
-   * RoutingContract.go on the contract. When provided, overrides the
-   * contract. When neither is available, `go` is a no-op and a development
-   * warning is logged — never falls back to `window.history.go`.
-   */
-  go?: (delta: number) => void;
+  routePattern: string;
 }
 
 /**
@@ -79,8 +67,6 @@ export interface ScopedRouterResult {
   useSearchParams: (
     ...args: Parameters<typeof useRRSearchParams>
   ) => ReturnType<typeof useRRSearchParams>;
-  /** Unsubscribes from the contract's location$ observable. */
-  dispose: () => void;
 }
 
 const v7Bindings: ReactRouterAdapterBindings = {
@@ -96,32 +82,25 @@ const v7Bindings: ReactRouterAdapterBindings = {
   useNavigate: useRRNavigate as ReactRouterAdapterBindings['useNavigate'],
   useParams: useRRParams as ReactRouterAdapterBindings['useParams'],
   useSearchParams: useRRSearchParams,
-  Route: Route as ReactRouterAdapterBindings['Route'],
-  Routes,
 };
 
 /**
- * Creates a React Router v7 context adapter bound to a RoutingContract.
+ * Creates a React Router v7 context adapter bound to the framework's
+ * {@link AppHistoryApi}.
  *
  * Injects `UNSAFE_*` contexts directly (never nests `<Router>` / writes
- * `window.history` via push/replace). Navigation is delegated to
- * `contract.navigate`; back/forward uses `contract.go`, or the `go` option
- * when provided as an override.
- *
- * Location exposed to React Router is **app-absolute** (`basePath` + scoped
- * pathname) so relative Links and in-plugin `Routes` resolve the same way they
- * did under a root router. `contract.navigate` still receives paths scoped to
- * `basePath`.
+ * `window.history` via push/replace/go). Navigation is delegated to
+ * `appHistory.navigate`.
  *
  * @internal
  */
 export function createScopedRouter(
-  contract: RoutingContract,
-  options?: CreateScopedRouterOptions,
+  appHistory: AppHistoryApi,
+  options: CreateScopedRouterOptions,
 ): ScopedRouterResult {
   const result: CommonScopedRouterResult = createScopedRouterWithBindings(
     v7Bindings,
-    contract,
+    appHistory,
     {
       ...options,
       // React Router v7 NavigationContextObject requires future: {} and
@@ -142,6 +121,5 @@ export function createScopedRouter(
     >() => T,
     useSearchParams:
       result.useSearchParams as ScopedRouterResult['useSearchParams'],
-    dispose: result.dispose,
   };
 }

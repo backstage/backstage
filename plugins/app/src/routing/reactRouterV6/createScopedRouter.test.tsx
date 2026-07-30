@@ -17,17 +17,16 @@
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { createMockContract } from '@backstage/frontend-test-utils';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { Link, useParams, useOutlet, useNavigate } from 'react-router-dom';
 import { createScopedRouter } from './createScopedRouter';
 
 describe('createScopedRouter', () => {
   it('should render children inside a React Router context', () => {
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/entity/foo',
+    const appHistory = createMockAppHistory({
+      initialLocation: '/catalog/entity/foo',
     });
-    const { Router } = createScopedRouter(contract);
+    const { Router } = createScopedRouter(appHistory, '/catalog');
 
     render(
       <Router>
@@ -38,12 +37,11 @@ describe('createScopedRouter', () => {
     expect(screen.getByTestId('child')).toHaveTextContent('Hello');
   });
 
-  it('should sync initial location from contract without flash as app-absolute path', () => {
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/entity/bar?q=test#section',
+  it('should read the initial location from app history as app-absolute path', () => {
+    const appHistory = createMockAppHistory({
+      initialLocation: '/catalog/entity/bar?q=test#section',
     });
-    const { Router, useLocation } = createScopedRouter(contract);
+    const { Router, useLocation } = createScopedRouter(appHistory, '/catalog');
 
     const renderedPathnames: string[] = [];
 
@@ -73,13 +71,10 @@ describe('createScopedRouter', () => {
     expect(screen.getByTestId('hash')).toHaveTextContent('#section');
   });
 
-  it('should delegate navigate calls to contract with scoped paths', async () => {
+  it('should delegate navigate calls to app history with app-absolute paths', async () => {
     const user = userEvent.setup();
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/',
-    });
-    const { Router } = createScopedRouter(contract);
+    const appHistory = createMockAppHistory({ initialLocation: '/catalog' });
+    const { Router } = createScopedRouter(appHistory, '/catalog');
 
     function NavButton() {
       const navigate = useNavigate();
@@ -98,8 +93,11 @@ describe('createScopedRouter', () => {
 
     await user.click(screen.getByRole('button', { name: 'Go' }));
 
-    expect(contract.navigateCalls).toEqual([
-      { to: '/entity/new', options: { replace: false, state: undefined } },
+    expect(appHistory.navigateCalls).toEqual([
+      {
+        to: '/catalog/entity/new',
+        options: { replace: false, state: undefined },
+      },
     ]);
   });
 
@@ -107,11 +105,8 @@ describe('createScopedRouter', () => {
     const user = userEvent.setup();
     const pushSpy = jest.spyOn(window.history, 'pushState');
     const replaceSpy = jest.spyOn(window.history, 'replaceState');
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/',
-    });
-    const { Router } = createScopedRouter(contract);
+    const appHistory = createMockAppHistory({ initialLocation: '/catalog' });
+    const { Router } = createScopedRouter(appHistory, '/catalog');
 
     function NavButton() {
       const navigate = useNavigate();
@@ -136,12 +131,11 @@ describe('createScopedRouter', () => {
     replaceSpy.mockRestore();
   });
 
-  it('should update when contract emits new location', () => {
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/entity/foo',
+  it('should update when app history emits a new location', () => {
+    const appHistory = createMockAppHistory({
+      initialLocation: '/catalog/entity/foo',
     });
-    const { Router, useLocation } = createScopedRouter(contract);
+    const { Router, useLocation } = createScopedRouter(appHistory, '/catalog');
 
     function LocationDisplay() {
       const location = useLocation();
@@ -159,7 +153,7 @@ describe('createScopedRouter', () => {
     );
 
     act(() => {
-      contract.navigate('/entity/bar');
+      appHistory.navigate('/catalog/entity/bar');
     });
 
     expect(screen.getByTestId('pathname')).toHaveTextContent(
@@ -168,11 +162,13 @@ describe('createScopedRouter', () => {
   });
 
   it('should stop receiving updates after dispose()', () => {
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/entity/foo',
+    const appHistory = createMockAppHistory({
+      initialLocation: '/catalog/entity/foo',
     });
-    const { Router, useLocation, dispose } = createScopedRouter(contract);
+    const { Router, useLocation, dispose } = createScopedRouter(
+      appHistory,
+      '/catalog',
+    );
 
     function LocationDisplay() {
       const location = useLocation();
@@ -192,7 +188,7 @@ describe('createScopedRouter', () => {
     dispose();
 
     act(() => {
-      contract.navigate('/entity/after-dispose');
+      appHistory.navigate('/catalog/entity/after-dispose');
     });
 
     expect(screen.getByTestId('pathname')).toHaveTextContent(
@@ -201,13 +197,14 @@ describe('createScopedRouter', () => {
   });
 
   it('should populate useParams from the route pattern splat match', () => {
-    const contract = createMockContract({
-      basePath: '/catalog/default/component/my-entity',
-      initialLocation: '/overview',
+    const appHistory = createMockAppHistory({
+      initialLocation: '/catalog/default/component/my-entity/overview',
     });
-    const { Router } = createScopedRouter(contract, {
-      routePattern: '/catalog/:namespace/:kind/:name',
-    });
+    const { Router } = createScopedRouter(
+      appHistory,
+      '/catalog/default/component/my-entity',
+      { routePattern: '/catalog/:namespace/:kind/:name' },
+    );
 
     function ParamsDisplay() {
       const params = useParams();
@@ -234,11 +231,8 @@ describe('createScopedRouter', () => {
   });
 
   it('should provide empty RouteContext defaults when no route pattern is set', () => {
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/',
-    });
-    const { Router } = createScopedRouter(contract);
+    const appHistory = createMockAppHistory({ initialLocation: '/catalog' });
+    const { Router } = createScopedRouter(appHistory, '/catalog');
 
     function RouteContextInspector() {
       const params = useParams();
@@ -263,14 +257,13 @@ describe('createScopedRouter', () => {
     expect(screen.getByTestId('outlet')).toHaveTextContent('null');
   });
 
-  it('should prefix Link hrefs with appBasename', () => {
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/',
+  it('should prefix Link hrefs with the app history basename', () => {
+    const appHistory = createMockAppHistory({
+      initialLocation: '/catalog',
+      basename: '/backstage',
     });
-    const { Router } = createScopedRouter(contract, {
+    const { Router } = createScopedRouter(appHistory, '/catalog', {
       routePattern: '/catalog',
-      appBasename: '/backstage',
     });
 
     render(
@@ -290,11 +283,8 @@ describe('createScopedRouter', () => {
   it('should use the provided go callback instead of window.history.go', () => {
     const go = jest.fn();
     const historyGoSpy = jest.spyOn(window.history, 'go');
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/',
-    });
-    const { Router } = createScopedRouter(contract, { go });
+    const appHistory = createMockAppHistory({ initialLocation: '/catalog' });
+    const { Router } = createScopedRouter(appHistory, '/catalog', { go });
 
     function GoButton() {
       const navigate = useNavigate();
@@ -317,13 +307,11 @@ describe('createScopedRouter', () => {
     historyGoSpy.mockRestore();
   });
 
-  it('should use contract.go when go option is omitted', () => {
+  it('should warn and no-op navigator.go when no go option is provided', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
     const historyGoSpy = jest.spyOn(window.history, 'go');
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/',
-    });
-    const { Router } = createScopedRouter(contract);
+    const appHistory = createMockAppHistory({ initialLocation: '/catalog' });
+    const { Router } = createScopedRouter(appHistory, '/catalog');
 
     function GoButton() {
       const navigate = useNavigate();
@@ -342,44 +330,14 @@ describe('createScopedRouter', () => {
 
     screen.getByRole('button', { name: 'Back' }).click();
     expect(historyGoSpy).not.toHaveBeenCalled();
-    expect(contract.goCalls).toEqual([-1]);
+    expect(warnSpy).toHaveBeenCalled();
     historyGoSpy.mockRestore();
-  });
-
-  it('should prefer explicit go option over contract.go', () => {
-    const go = jest.fn();
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/',
-    });
-    const { Router } = createScopedRouter(contract, { go });
-
-    function GoButton() {
-      const navigate = useNavigate();
-      return (
-        <button type="button" onClick={() => navigate(-1)}>
-          Back
-        </button>
-      );
-    }
-
-    render(
-      <Router>
-        <GoButton />
-      </Router>,
-    );
-
-    screen.getByRole('button', { name: 'Back' }).click();
-    expect(go).toHaveBeenCalledWith(-1);
-    expect(contract.goCalls).toEqual([]);
+    warnSpy.mockRestore();
   });
 
   it('should return useLocation, useNavigate, useParams, useSearchParams', () => {
-    const contract = createMockContract({
-      basePath: '/catalog',
-      initialLocation: '/',
-    });
-    const result = createScopedRouter(contract);
+    const appHistory = createMockAppHistory({ initialLocation: '/catalog' });
+    const result = createScopedRouter(appHistory, '/catalog');
 
     expect(result).toHaveProperty('Router');
     expect(result).toHaveProperty('useLocation');

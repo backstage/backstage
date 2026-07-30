@@ -17,10 +17,14 @@
 import {
   createElement,
   useMemo,
+  useRef,
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
-import type { RoutingContract } from '@backstage/frontend-plugin-api';
+import type {
+  AppHistoryApi,
+  FrameworkLocation,
+} from '@backstage/frontend-plugin-api';
 import type {
   AdapterLocation,
   AdapterTo,
@@ -29,135 +33,86 @@ import type {
   ScopedRouterWithBindingsResult,
 } from './types';
 
+function toAdapterLocation(loc: FrameworkLocation): AdapterLocation {
+  return {
+    pathname: loc.pathname,
+    search: loc.search,
+    hash: loc.hash,
+    state: loc.state ?? null,
+    key: 'default',
+  };
+}
+
 /**
- * Creates a React Router context adapter bound to a RoutingContract, using
- * version-specific APIs supplied by the caller.
+ * Creates a React Router context adapter bound to the framework's
+ * {@link AppHistoryApi}, using version-specific APIs supplied by the caller.
  *
  * Injects `UNSAFE_*` contexts directly (never nests `<Router>` / writes
  * `window.history` via push/replace). Navigation is delegated to
- * `contract.navigate`; back/forward uses `contract.go`, or the `go` option
- * when provided as an override.
+ * `appHistory.navigate` with app-absolute paths — `AppHistoryApi.location$`
+ * already emits app-absolute (basename-stripped) locations, so no
+ * scoped/app-absolute translation is needed here.
  *
- * Location exposed to React Router is **app-absolute** (`basePath` + scoped
- * pathname) so relative Links and in-plugin `Routes` resolve the same way they
- * did under a root router. `contract.navigate` still receives paths scoped to
- * `basePath`.
+ * `basePath` + `routePattern` are used only to populate the injected
+ * `UNSAFE_RouteContext` (so `useParams` and relative-Link `pathnameBase`
+ * resolve the same way they did under a root router) — they never affect
+ * the location handed to React Router itself.
+ *
+ * `go` is not supported by `AppHistoryApi` (there is a single, real browser
+ * history — use browser back/forward). Calling `navigate(-1)` warns and is a
+ * no-op, matching the framework root router (`RootHistoryRouter`).
  *
  * @internal
  */
 export function createScopedRouterWithBindings(
   bindings: ReactRouterAdapterBindings,
-  contract: RoutingContract,
-  options?: CreateScopedRouterWithBindingsOptions,
+  appHistory: AppHistoryApi,
+  options: CreateScopedRouterWithBindingsOptions,
 ): ScopedRouterWithBindingsResult {
-  if (!contract) {
-    throw new Error(
-      'createScopedRouter requires a RoutingContract. Ensure this component is rendered inside a page that provides RoutingContractContext.',
-    );
-  }
+  const { basePathRef, routePattern, navigationContextExtras = {} } = options;
 
-  const routePattern = options?.routePattern;
-  const appBasename = options?.appBasename ?? '';
-  const navigationContextExtras = options?.navigationContextExtras ?? {};
-  const goDelta =
-    options?.go ??
-    (typeof contract.go === 'function'
-      ? (delta: number) => contract.go(delta)
-      : (delta: number) => {
-          if (process.env.NODE_ENV !== 'production') {
-            // eslint-disable-next-line no-console
-            console.warn(
-              `[createScopedRouter] navigator.go(${delta}) called without ` +
-                `contract.go or a \`go\` option. Prefer RoutingContract.go; ` +
-                `window.history.go is never used as a fallback.`,
-            );
-          }
-        });
-
-  // Store for useSyncExternalStore — keeps the latest app-absolute location.
-  // The initial value is captured synchronously since contract.location$ emits
-  // synchronously on subscribe.
-  let latestLocation: AdapterLocation = {
-    pathname: '/',
-    search: '',
-    hash: '',
-    state: null,
-    key: 'default',
-  };
-
-  function toAppAbsolute(scopedPathname: string): string {
-    if (contract.basePath === '/') {
-      return scopedPathname || '/';
-    }
-    if (scopedPathname === '/' || scopedPathname === '') {
-      return contract.basePath;
-    }
-    const suffix = scopedPathname.startsWith('/')
-      ? scopedPathname
-      : `/${scopedPathname}`;
-    return `${contract.basePath}${suffix}`;
-  }
-
-  function toContractPath(appPath: string): string {
-    if (contract.basePath === '/') {
-      return appPath;
-    }
-    if (appPath === contract.basePath) {
-      return '/';
-    }
-    if (appPath.startsWith(`${contract.basePath}/`)) {
-      return appPath.slice(contract.basePath.length) || '/';
-    }
-    // Out of scope — pass through; contract.navigate will warn and block.
-    return appPath;
-  }
-
-  // Capture the initial value synchronously
-  const initialSub = contract.location$.subscribe(loc => {
-    latestLocation = {
-      pathname: toAppAbsolute(loc.pathname),
-      search: loc.search,
-      hash: loc.hash,
-      state: loc.state ?? null,
-      key: 'default',
-    };
-  });
-  initialSub.unsubscribe();
-
-  // Set of listener callbacks for useSyncExternalStore
+  // useSyncExternalStore requires getSnapshot() to return a referentially
+  // stable value between store events, or it will loop forever re-rendering.
+  // Track the latest location in a plain closure variable (updated only by
+  // the subscription callback below), mirroring how AppHistoryApi itself is
+  // implemented, rather than recomputing a fresh object on every call.
+  let latestLocation: AdapterLocation = toAdapterLocation(
+    readCurrentAppLocation(),
+  );
   const listeners = new Set<() => void>();
-
-  // Subscription reference — managed by useSyncExternalStore's subscribe lifecycle.
   let subscription: { unsubscribe(): void } | undefined;
 
-  function subscribeToContract(): void {
+  function readCurrentAppLocation(): FrameworkLocation {
+    let current!: FrameworkLocation;
+    const sub = appHistory.location$.subscribe(loc => {
+      current = loc;
+    });
+    sub.unsubscribe();
+    return current;
+  }
+
+  function subscribeToAppHistory(): void {
     if (subscription) return;
-    subscription = contract.location$.subscribe(routingLocation => {
-      latestLocation = {
-        pathname: toAppAbsolute(routingLocation.pathname),
-        search: routingLocation.search,
-        hash: routingLocation.hash,
-        state: routingLocation.state ?? null,
-        key: 'default',
-      };
+    subscription = appHistory.location$.subscribe(loc => {
+      latestLocation = toAdapterLocation(loc);
       for (const listener of listeners) {
         listener();
       }
     });
   }
 
-  function unsubscribeFromContract(): void {
+  function unsubscribeFromAppHistory(): void {
     subscription?.unsubscribe();
     subscription = undefined;
   }
 
   function subscribe(listener: () => void): () => void {
     listeners.add(listener);
-    subscribeToContract();
+    subscribeToAppHistory();
     return () => {
       listeners.delete(listener);
       if (listeners.size === 0) {
-        unsubscribeFromContract();
+        unsubscribeFromAppHistory();
       }
     };
   }
@@ -167,23 +122,13 @@ export function createScopedRouterWithBindings(
   }
 
   function buildRouteMatches(location: AdapterLocation) {
-    if (!routePattern) {
-      return {
-        outlet: null,
-        matches: [] as any[],
-        isDataRoute: false,
-      };
-    }
-
+    const basePath = basePathRef.current;
     const normalizedPattern =
       routePattern === '/' ? '/' : routePattern.replace(/\/$/, '');
     const splatPattern =
       normalizedPattern === '/' ? '/*' : `${normalizedPattern}/*`;
 
     // Prefer a splat match so in-plugin nested Routes / useParams['*'] work.
-    // Fall back to an exact-prefix match so relative Links from the page root
-    // (e.g. `/catalog` + `./create`) resolve against pathnameBase `/catalog`
-    // rather than treating the last segment as a file name.
     const match =
       bindings.matchPath(
         { path: splatPattern, end: false },
@@ -194,24 +139,15 @@ export function createScopedRouterWithBindings(
         location.pathname,
       );
 
-    if (!match) {
-      return {
-        outlet: null,
-        matches: [] as any[],
-        isDataRoute: false,
-      };
-    }
-
-    const params = match.params;
     return {
       outlet: null,
       matches: [
         {
-          params,
-          pathname: match.pathname,
-          pathnameBase: match.pathnameBase,
+          params: match?.params ?? {},
+          pathname: basePath,
+          pathnameBase: basePath,
           route: {
-            path: match.pattern.path,
+            path: routePattern,
             caseSensitive: false,
             children: undefined,
             element: null,
@@ -226,12 +162,11 @@ export function createScopedRouterWithBindings(
 
   function ScopedRouter({ children }: { children: ReactNode }) {
     const location = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+    const locationRef = useRef(location);
+    locationRef.current = location;
 
     const locationContextValue = useMemo(
-      () => ({
-        location,
-        navigationType: bindings.NavigationType.Pop,
-      }),
+      () => ({ location, navigationType: bindings.NavigationType.Pop }),
       [location],
     );
 
@@ -242,31 +177,27 @@ export function createScopedRouterWithBindings(
             typeof to === 'string'
               ? to
               : `${to.pathname ?? ''}${to.search ?? ''}${to.hash ?? ''}`;
-          if (!appBasename) {
-            return path;
+          return appHistory.createHref(path);
+        },
+        go(_delta: number): void {
+          if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.warn(
+              '[createScopedRouter] navigator.go() is not supported by the ' +
+                'framework app history; use browser back/forward instead.',
+            );
           }
-          const url = new URL(path, 'http://localhost');
-          return `${appBasename}${url.pathname}${url.search}${url.hash}`;
         },
-        go(delta: number): void {
-          goDelta(delta);
+        push(to: AdapterTo, state?: any): void {
+          const path = toPath(to, locationRef.current.pathname);
+          appHistory.navigate(path, { replace: false, state });
         },
-        push(to: AdapterTo, state?: any, _opts?: any): void {
-          const path =
-            typeof to === 'string'
-              ? to
-              : createPath(to, latestLocation.pathname);
-          contract.navigate(toContractPath(path), { replace: false, state });
-        },
-        replace(to: AdapterTo, state?: any, _opts?: any): void {
-          const path =
-            typeof to === 'string'
-              ? to
-              : createPath(to, latestLocation.pathname);
-          contract.navigate(toContractPath(path), { replace: true, state });
+        replace(to: AdapterTo, state?: any): void {
+          const path = toPath(to, locationRef.current.pathname);
+          appHistory.navigate(path, { replace: true, state });
         },
       }),
-      // latestLocation / contract / options are stable for this scoped router instance
+      // locationRef / appHistory are stable for this scoped router instance
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [],
     );
@@ -308,17 +239,13 @@ export function createScopedRouterWithBindings(
     useParams: <T extends Record<string, string | undefined>>(): T =>
       bindings.useParams() as T,
     useSearchParams: (...args: any[]) => bindings.useSearchParams(...args),
-    dispose: () => {
-      unsubscribeFromContract();
-      listeners.clear();
-    },
   };
 }
 
-function createPath(
-  to: Partial<{ pathname: string; search: string; hash: string }>,
-  currentPathname: string,
-): string {
+function toPath(to: AdapterTo, currentPathname: string): string {
+  if (typeof to === 'string') {
+    return to;
+  }
   // Use current pathname when To.pathname is undefined (e.g., useSearchParams
   // updates only search params without specifying a pathname)
   const { pathname = currentPathname, search = '', hash = '' } = to;

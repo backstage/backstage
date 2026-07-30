@@ -14,128 +14,95 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
-import type {
-  RouteDescriptor,
-  RoutingContract,
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  type MutableRefObject,
+  type ReactNode,
+} from 'react';
+import {
+  useApi,
+  appHistoryApiRef,
+  type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
+import type { RouterHistory } from '@tanstack/history';
 import {
   RouterProvider,
+  createRootRoute,
   createRouter,
   type AnyRouter,
 } from '@tanstack/react-router';
-import { compileRouteDescriptors } from './compileRouteDescriptors';
-import { createContractHistory } from './createContractHistory';
+import { createTanStackHistory } from './createTanStackHistory';
 
 /**
- * Options for creating a TanStack scoped router bound to a contract.
+ * Result of creating a TanStack scoped router for a page.
  *
  * @internal
  */
-export interface CreateTanStackScopedRouterOptions {
-  /**
-   * Registered page route pattern (for stable contract identity).
-   */
-  routePattern?: string;
-  /**
-   * App basename prefix for href creation.
-   */
-  appBasename?: string;
-  /**
-   * In-page route descriptors to compile into a route tree.
-   */
-  routes?: readonly RouteDescriptor[];
-  /**
-   * Ref to page shell children so the route tree can stay stable across
-   * renders.
-   */
-  childrenRef?: React.MutableRefObject<ReactNode>;
-  /**
-   * Static page shell children when a ref is not needed.
-   */
-  children?: ReactNode;
-}
-
-/**
- * Result of creating a TanStack scoped router for a page contract.
- *
- * @internal
- */
-export interface TanStackScopedRouterResult {
-  /**
-   * The TanStack router instance.
-   */
+interface TanStackScopedRouter {
   router: AnyRouter;
-  /**
-   * Tear down history subscriptions.
-   */
-  dispose: () => void;
+  history: RouterHistory;
 }
 
 /**
- * Creates a TanStack router whose history projects the given routing contract.
- * Never writes `window.history`.
+ * Creates a TanStack router whose history projects the framework's
+ * `AppHistoryApi`, scoped to `basePathRef`, with a single root route that
+ * renders opaque page `children`. Never writes `window.history`.
  *
  * @internal
  */
-export function createTanStackScopedRouter(
-  contract: RoutingContract,
-  options?: CreateTanStackScopedRouterOptions,
-): TanStackScopedRouterResult {
-  const history = createContractHistory(contract, {
-    appBasename: options?.appBasename,
+function createTanStackScopedRouter(
+  appHistory: AppHistoryApi,
+  basePathRef: MutableRefObject<string>,
+  childrenRef: MutableRefObject<ReactNode>,
+): TanStackScopedRouter {
+  const history = createTanStackHistory(appHistory, basePathRef);
+  const routeTree = createRootRoute({
+    component: () => <>{childrenRef.current}</>,
   });
-  const routeTree = compileRouteDescriptors(options?.routes ?? [], {
-    childrenRef: options?.childrenRef,
-    children: options?.children,
-  });
+  const router = createRouter({ routeTree, history });
 
-  const router = createRouter({
-    routeTree,
-    history,
-  });
-
-  return {
-    router,
-    dispose: () => {
-      history.destroy();
-    },
-  };
+  return { router, history };
 }
 
 /**
- * Host that creates a TanStack router for the page contract, disposes it on
- * unmount / option change, and renders via TanStack `RouterProvider`.
+ * Host that creates a TanStack router for the page, disposes it on unmount /
+ * `AppHistoryApi` identity change, and renders via TanStack `RouterProvider`.
+ *
+ * `basePath` changes (e.g. entity A → entity B under the same page) do not
+ * recreate the router — they flow through the live `basePathRef` used by the
+ * underlying history.
  *
  * @internal
  */
 export function TanStackRouterHost(props: {
-  contract: RoutingContract;
-  routePattern: string;
-  appBasename?: string;
-  routes?: readonly RouteDescriptor[];
+  basePath: string;
   children: ReactNode;
 }) {
-  const { contract, routePattern, appBasename, routes, children } = props;
+  const { basePath, children } = props;
+  const appHistory = useApi(appHistoryApiRef);
+  const basePathRef = useRef(basePath);
+  basePathRef.current = basePath;
   const childrenRef = useRef<ReactNode>(children);
   childrenRef.current = children;
-  const scopedRef = useRef<TanStackScopedRouterResult | null>(null);
+  const scopedRef = useRef<TanStackScopedRouter | null>(null);
 
   const scoped = useMemo(() => {
-    scopedRef.current?.dispose();
-    const created = createTanStackScopedRouter(contract, {
-      routePattern,
-      appBasename,
-      routes,
+    scopedRef.current?.history.destroy();
+    const created = createTanStackScopedRouter(
+      appHistory,
+      basePathRef,
       childrenRef,
-    });
+    );
     scopedRef.current = created;
     return created;
-  }, [contract, routePattern, appBasename, routes]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appHistory]);
 
   useEffect(() => {
     return () => {
-      scopedRef.current?.dispose();
+      scopedRef.current?.history.destroy();
       scopedRef.current = null;
     };
   }, [scoped]);

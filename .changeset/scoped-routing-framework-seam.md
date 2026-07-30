@@ -2,12 +2,12 @@
 '@backstage/frontend-plugin-api': minor
 ---
 
-**BREAKING**: Extends the scoped routing contract and navigation controller with required stack helpers (`go`, `canGoBack`, `canGoForward`, `historyLength`), namespaced adapter state, and a shared pre-navigation blocker API (blockers run for push/replace only — never for go or browser back/forward).
+**BREAKING**: Simplifies the scoped plugin routing framework seam (RFC #33603) introduced in a previous release.
 
-Introduces the framework seam for scoped plugin routing (RFC #33603): navigation controller API, optional page `router` input (empty input resolves the app default via `pageRouterApiRef`), library-agnostic route descriptors, `AppRouteSwitch` / `RouteTable` for top-level page matching, and `RouteLink` / `useNavigateRouteRef` for cross-plugin navigation.
+The `navigationControllerApiRef` / `NavigationControllerApi` are replaced by a much thinner `appHistoryApiRef` / `AppHistoryApi`, exposing only `navigate`, `location$`, and `createHref`. `RoutingContract`, `createRouteDescriptor` / `RouteDescriptor`, and `NavigationControllerApi.createContract` are removed — plugin code should use `useAppNavigate` (or the new `useHref` hook, the `useHref`-plus-`navigate` counterpart for resolving links) instead of a page-scoped contract. `RouteLink` and `useNavigateRouteRef` are unaffected.
 
-Plugin navigation uses `useAppNavigate` (framework controller when present, React Router otherwise) and `useOptionalFrameworkNavigate` for soft-fail shared components. Location and navigate option types are `FrameworkLocation` and `FrameworkNavigateOptions`. App chrome that requires the new frontend system should use `useFrameworkLocation` or `navigationControllerApiRef` directly — there is no React Router fallback for location.
+`AppRouteSwitch` no longer mints per-page routing contracts; it takes an `AppHistoryApi` (`history` prop, renamed from `controller`) and provides matched pages with a lightweight page-mount context instead.
 
-Page routers can declare capabilities; contracts stay stable across concrete base path changes under the same page pattern; subpages receive their own scoped contract and resolve an empty router input the same way pages do.
+`PageRouterApi.getDefaultRouter()` components now receive `basePath`, `routePattern`, and `appBasename` directly instead of a `RoutingContract`, and no longer receive compiled route descriptors. `PageBlueprint` and `SubPageBlueprint` compose sub-pages into a native React Router `<Routes>` tree instead of compiling library-agnostic route descriptors, so sub-page content works as opaque React Router children under any compatible page router adapter.
 
-Adapter compiler helpers (path segment utilities, lazy descriptor element, nested contract provider) are package-internal; first-party adapters reach them via monorepo imports.
+Programmatic back/forward (`go`, `canGoBack`, `canGoForward`, `historyLength`), namespaced per-adapter history state, and the shared pre-navigation blocker API are no longer part of the public framework navigation surface.

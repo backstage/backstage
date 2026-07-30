@@ -16,30 +16,25 @@
 
 import { ComponentType, ReactNode } from 'react';
 import { createApiRef } from '../system';
-import type { RoutingContract } from '../../routing/RoutingContract';
-import type { RouteDescriptor } from '../../routing/RouteDescriptor';
 
 /**
- * A page-level router adapter that injects library routing context from a
- * {@link RoutingContract} without owning browser history.
+ * A page-level router adapter that injects library routing context for its
+ * `children`, without owning browser history.
  *
- * When `routes` is provided, the adapter compiles the library-agnostic
- * {@link RouteDescriptor} tree into its native route elements. Opaque
- * `children` (e.g. existing React Router `<Routes>`) remain supported when
- * `routes` is omitted.
+ * `children` are opaque — typically a native React Router `<Routes>` tree
+ * (or arbitrary content) composed by `PageBlueprint` / `SubPageBlueprint`.
+ * The adapter's job is only to provide routing context scoped to `basePath`
+ * so `children` can resolve locations, links, and nested routes correctly.
  *
  * @public
  */
 export type PageRouterComponent = ComponentType<{
-  contract: RoutingContract;
+  /** Concrete app-absolute URL prefix this page is mounted at. */
+  basePath: string;
+  /** Registered route pattern this page is mounted at. */
   routePattern: string;
+  /** App deploy basename (e.g. `/backstage`), if any. */
   appBasename?: string;
-  /**
-   * Optional in-page route tree. When set, the adapter compiles these
-   * descriptors and renders them as the page's routed content (typically
-   * injected as children of the single React child, e.g. PageLayout).
-   */
-  routes?: readonly RouteDescriptor[];
   children: ReactNode;
 }>;
 
@@ -51,15 +46,12 @@ export type PageRouterComponent = ComponentType<{
  */
 export interface PageRouterCapabilities {
   /**
-   * Whether the adapter can render opaque `children` (e.g. existing React
-   * Router `<Routes>` composed inside a `PageBlueprint` `loader`) when no
-   * `routes` descriptors are supplied.
+   * Whether the adapter can render opaque `children` (e.g. a React Router
+   * `<Routes>` tree composed by `PageBlueprint` / `SubPageBlueprint`).
    *
-   * Adapters that compile {@link RouteDescriptor} trees into a native route
-   * tree that fully owns rendering (e.g. TanStack Router) cannot host opaque
-   * React Router children and should report `false`. Pages must then declare
-   * in-page routing as `RouteDescriptor` trees (`PageBlueprint` `routes`, or
-   * the `pages` input via `SubPageBlueprint`) instead.
+   * Adapters that fully own rendering via their own compiled route tree
+   * (e.g. TanStack Router) cannot host opaque React Router children and
+   * should report `false`.
    *
    * Defaults to `true` (opaque children supported) when the adapter omits
    * this capability entirely.
@@ -80,7 +72,7 @@ export interface PageRouterCapabilities {
 export interface PageRouterApi {
   /**
    * Returns a React component that wraps page content with the default
-   * router adapter for the given contract and route pattern.
+   * router adapter for the given base path.
    */
   getDefaultRouter(): PageRouterComponent;
   /**

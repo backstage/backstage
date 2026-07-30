@@ -16,8 +16,8 @@
 
 import { useCallback, useRef, useSyncExternalStore } from 'react';
 import type {
+  AppHistoryApi,
   FrameworkLocation,
-  NavigationControllerApi,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { frameworkLocationEqual } from '../../../frontend-plugin-api/src/routing/useObservableAsState';
@@ -33,7 +33,7 @@ import { frameworkLocationEqual } from '../../../frontend-plugin-api/src/routing
  * @internal
  */
 export function useOptionalNavigationControllerLocation(
-  navigationController: NavigationControllerApi | undefined,
+  navigationController: AppHistoryApi | undefined,
 ): FrameworkLocation | undefined {
   const snapshotRef = useRef<FrameworkLocation | undefined>(undefined);
 

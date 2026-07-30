@@ -119,8 +119,7 @@ function getRouteParamCount(ref: MockRouteResolutionRouteRef): number {
  * custom implementation (including always returning `undefined`).
  *
  * Also available as `mockApis.routeResolution()`. Pair with
- * {@link createMockNavigationController} and optionally
- * {@link createMockContract} for NFS `RouteLink` / `useNavigateRouteRef` tests.
+ * {@link createMockAppHistory} for NFS `RouteLink` / `useNavigateRouteRef` tests.
  *
  * @public
  * @example
@@ -137,8 +136,8 @@ function getRouteParamCount(ref: MockRouteResolutionRouteRef): number {
  *       }),
  *     ],
  *     [
- *       navigationControllerApiRef,
- *       createMockNavigationController({ navigate }),
+ *       appHistoryApiRef,
+ *       createMockAppHistory({ navigate }),
  *     ],
  *   ]}
  * >

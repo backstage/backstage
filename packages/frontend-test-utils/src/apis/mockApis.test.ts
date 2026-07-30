@@ -120,23 +120,23 @@ describe('mockApis', () => {
     });
   });
 
-  describe('navigationController', () => {
+  describe('appHistory', () => {
     it('can create an instance', () => {
       const navigate = jest.fn();
-      const controller = mockApis.navigationController({ navigate });
-      controller.navigate('/catalog');
+      const history = mockApis.appHistory({ navigate });
+      history.navigate('/catalog');
       expect(navigate).toHaveBeenCalledWith('/catalog');
-      expect(controller.navigateCalls).toEqual([
+      expect(history.navigateCalls).toEqual([
         { to: '/catalog', options: undefined },
       ]);
     });
 
     it('can create a mock and make assertions on it', () => {
-      const controller = mockApis.navigationController.mock({
+      const history = mockApis.appHistory.mock({
         navigate: jest.fn(),
       });
-      controller.navigate('/tools');
-      expect(controller.navigate).toHaveBeenCalledWith('/tools');
+      history.navigate('/tools');
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
     });
   });
 

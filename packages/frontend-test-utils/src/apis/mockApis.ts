@@ -17,24 +17,24 @@
 import {
   alertApiRef,
   analyticsApiRef,
+  appHistoryApiRef,
   configApiRef,
   discoveryApiRef,
   errorApiRef,
   fetchApiRef,
   featureFlagsApiRef,
   identityApiRef,
-  navigationControllerApiRef,
   routeResolutionApiRef,
   storageApiRef,
   translationApiRef,
   type AnalyticsApi,
+  type AppHistoryApi,
   type ConfigApi,
   type DiscoveryApi,
   type ErrorApi,
   type FetchApi,
   type FeatureFlagState,
   type IdentityApi,
-  type NavigationControllerApi,
   type RouteResolutionApi,
   type StorageApi,
   type TranslationApi,
@@ -63,10 +63,10 @@ import {
 } from './MockWithApiFactory';
 import { createApiMock } from './createApiMock';
 import {
-  createMockNavigationController,
-  type MockNavigationController,
-  type MockNavigationControllerOptions,
-} from './createMockNavigationController';
+  createMockAppHistory,
+  type MockAppHistory,
+  type MockAppHistoryOptions,
+} from './createMockAppHistory';
 import {
   createMockRouteResolutionApi,
   type MockRouteResolutionApi,
@@ -476,48 +476,40 @@ export namespace mockApis {
 
   /**
    * Fake implementation of
-   * {@link @backstage/frontend-plugin-api#NavigationControllerApi}.
+   * {@link @backstage/frontend-plugin-api#AppHistoryApi}.
    *
    * @public
    * @example
    *
    * ```tsx
    * const navigate = jest.fn();
-   * const navigationController = mockApis.navigationController({ navigate });
+   * const appHistory = mockApis.appHistory({ navigate });
    * // Pair with mockApis.routeResolution() for RouteLink / useNavigateRouteRef
    * ```
    */
-  export function navigationController(
-    options?: MockNavigationControllerOptions,
-  ): MockNavigationController & MockWithApiFactory<NavigationControllerApi> {
-    const instance = createMockNavigationController(options);
-    return attachMockApiFactory(
-      navigationControllerApiRef,
-      instance,
-    ) as MockNavigationController & MockWithApiFactory<NavigationControllerApi>;
+  export function appHistory(
+    options?: MockAppHistoryOptions,
+  ): MockAppHistory & MockWithApiFactory<AppHistoryApi> {
+    const instance = createMockAppHistory(options);
+    return attachMockApiFactory(appHistoryApiRef, instance) as MockAppHistory &
+      MockWithApiFactory<AppHistoryApi>;
   }
 
   /**
    * Mock helpers for
-   * {@link @backstage/frontend-plugin-api#NavigationControllerApi}.
+   * {@link @backstage/frontend-plugin-api#AppHistoryApi}.
    *
    * @public
    */
-  export namespace navigationController {
+  export namespace appHistory {
     export const mock = createApiMock(
-      navigationControllerApiRef,
+      appHistoryApiRef,
       () =>
         ({
           navigate: jest.fn(),
-          go: jest.fn(),
-          canGoBack: jest.fn(),
-          canGoForward: jest.fn(),
-          historyLength: 1,
-          getAdapterState: jest.fn(),
           location$: jest.fn(),
-          block: jest.fn(),
-          createContract: jest.fn(),
-        } as unknown as jest.Mocked<NavigationControllerApi>),
+          createHref: jest.fn(),
+        } as unknown as jest.Mocked<AppHistoryApi>),
     );
   }
 

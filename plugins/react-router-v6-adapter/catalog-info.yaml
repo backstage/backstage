@@ -4,9 +4,9 @@ metadata:
   name: backstage-plugin-react-router-v6-adapter
   title: '@backstage/plugin-react-router-v6-adapter'
   description: >-
-    React Router v6 adapter for the Backstage router-agnostic plugin routing
-    system
+    Deprecated re-export of the React Router v6 adapter, which now lives in
+    @backstage/plugin-app
 spec:
-  lifecycle: experimental
+  lifecycle: deprecated
   type: backstage-web-library
   owner: framework-maintainers

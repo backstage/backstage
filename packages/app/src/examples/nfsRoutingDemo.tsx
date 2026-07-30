@@ -15,23 +15,26 @@
  */
 
 /**
- * Adopter-facing demo of library-agnostic {@link RouteDescriptor} trees on
- * `PageBlueprint` pages (RFC #33603).
+ * Adopter-facing demo of page router adapters (RFC #33603).
  *
- * Three live sibling pages share the exact same descriptor tree
- * (`createNfsDemoRoutes`) and only differ in which page router adapter is
- * attached to their `router` input:
+ * Three live sibling pages only differ in which page router adapter is
+ * attached to their `router` input via `PageRouterBlueprint`:
  *
  * | Path                          | Adapter                     |
  * | ------------------------------ | ---------------------------- |
- * | `/nfs-routing-demo`            | React Router v6 (explicit)  |
- * | `/nfs-routing-demo-v7`         | React Router v7             |
- * | `/nfs-routing-demo-tanstack`   | TanStack Router             |
+ * | `/nfs-routing-demo`            | React Router v6 (app default) |
+ * | `/nfs-routing-demo-v7`         | React Router v7               |
+ * | `/nfs-routing-demo-tanstack`   | TanStack Router               |
  *
- * Each page attaches its adapter via `PageRouterBlueprint` — there is no
- * app-wide default swap. See
- * `plugins/react-router-v7-adapter/src/multiRouterCoexistence.test.tsx`
- * for the same page-scoped override pattern under test.
+ * The React Router pages (v6, v7) compose the same tabbed sub-page
+ * structure via `SubPageBlueprint` — `PageBlueprint` composes sub-pages into
+ * a native React Router `<Routes>` tree, so the same tabs work unchanged
+ * under either adapter (opaque children).
+ *
+ * TanStack Router fully owns its own route tree and cannot host that opaque
+ * React Router content (no opaque-children bridge — see
+ * `@backstage/plugin-tanstack-router-adapter`), so its sibling page renders
+ * single, non-tabbed content via `loader` instead.
  *
  * See https://github.com/backstage/backstage/issues/33603
  */
@@ -39,11 +42,9 @@
 import {
   PageBlueprint,
   PageRouterBlueprint,
-  RouteDescriptor,
-  createRouteDescriptor,
+  SubPageBlueprint,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-react-router-v6-adapter';
 import { ReactRouterV7PageRouter } from '@backstage/plugin-react-router-v7-adapter';
 import { TanStackPageRouter } from '@backstage/plugin-tanstack-router-adapter';
 import Typography from '@material-ui/core/Typography';
@@ -64,8 +65,6 @@ function OverviewPanel({ adapter }: { adapter: NfsDemoAdapterLabel }) {
         Overview
       </Typography>
       <Typography paragraph>
-        This tab is declared with <code>createRouteDescriptor</code> — a
-        library-agnostic route tree compiled by the active page router adapter.
         This page is wired to the <strong>{adapter}</strong> page router via{' '}
         <code>PageRouterBlueprint</code>.
       </Typography>
@@ -84,8 +83,8 @@ function NestedPanel() {
         Nested
       </Typography>
       <Typography paragraph>
-        A second tab at a relative path (<code>nested</code>). PageLayout tabs
-        and the page router share the same descriptor tree.
+        A second tab at a relative path (<code>nested</code>), composed as a
+        sub-page via <code>SubPageBlueprint</code>.
       </Typography>
     </div>
   );
@@ -98,40 +97,11 @@ function DetailPanel() {
         Detail
       </Typography>
       <Typography paragraph>
-        A third tab showing that multiple sibling descriptors compose into tabs
-        without opaque React Router children in the page loader.
+        A third tab showing that multiple sibling sub-pages compose into tabs
+        the same way under both React Router adapters.
       </Typography>
     </div>
   );
-}
-
-/**
- * Builds the shared `overview` / `nested` / `detail` tab tree used by all
- * three sibling demo pages, so the same descriptors are proven under every
- * adapter. Only the `Overview` tab's copy differs, to name the adapter the
- * page is currently running under.
- */
-function createNfsDemoRoutes(adapter: NfsDemoAdapterLabel): RouteDescriptor[] {
-  return [
-    createRouteDescriptor({
-      id: 'overview',
-      path: 'overview',
-      title: 'Overview',
-      loader: async () => <OverviewPanel adapter={adapter} />,
-    }),
-    createRouteDescriptor({
-      id: 'nested',
-      path: 'nested',
-      title: 'Nested',
-      loader: async () => <NestedPanel />,
-    }),
-    createRouteDescriptor({
-      id: 'detail',
-      path: 'detail',
-      title: 'Detail',
-      loader: async () => <DetailPanel />,
-    }),
-  ];
 }
 
 const nfsRoutingDemoRouteRef = createRouteRef();
@@ -147,15 +117,36 @@ export const NfsRoutingDemoPage = PageBlueprint.make({
     title: 'NFS Routing Demo (RR v6)',
     icon: <AccountTreeIcon />,
     routeRef: nfsRoutingDemoRouteRef,
-    routes: createNfsDemoRoutes('React Router v6'),
   },
 });
 
-export const NfsRoutingDemoRouter = PageRouterBlueprint.make({
-  name: 'nfsRoutingDemo-v6',
-  attachTo: { id: 'page:pages/nfsRoutingDemo', input: 'router' },
+export const NfsRoutingDemoOverview = SubPageBlueprint.make({
+  name: 'nfsRoutingDemo-overview',
+  attachTo: { id: 'page:pages/nfsRoutingDemo', input: 'pages' },
   params: {
-    component: ReactRouterV6PageRouter,
+    path: 'overview',
+    title: 'Overview',
+    loader: async () => <OverviewPanel adapter="React Router v6" />,
+  },
+});
+
+export const NfsRoutingDemoNested = SubPageBlueprint.make({
+  name: 'nfsRoutingDemo-nested',
+  attachTo: { id: 'page:pages/nfsRoutingDemo', input: 'pages' },
+  params: {
+    path: 'nested',
+    title: 'Nested',
+    loader: async () => <NestedPanel />,
+  },
+});
+
+export const NfsRoutingDemoDetail = SubPageBlueprint.make({
+  name: 'nfsRoutingDemo-detail',
+  attachTo: { id: 'page:pages/nfsRoutingDemo', input: 'pages' },
+  params: {
+    path: 'detail',
+    title: 'Detail',
+    loader: async () => <DetailPanel />,
   },
 });
 
@@ -163,7 +154,8 @@ const nfsRoutingDemoV7RouteRef = createRouteRef();
 
 /**
  * Sibling page at `/nfs-routing-demo-v7`, wired to the React Router v7 page
- * adapter via `PageRouterBlueprint`.
+ * adapter via `PageRouterBlueprint`. Uses the same tabbed sub-page structure
+ * as the v6 sibling to prove opaque children work the same under both.
  */
 export const NfsRoutingDemoV7Page = PageBlueprint.make({
   name: 'nfsRoutingDemoV7',
@@ -172,7 +164,36 @@ export const NfsRoutingDemoV7Page = PageBlueprint.make({
     title: 'NFS Routing Demo (RR v7)',
     icon: <CallSplitIcon />,
     routeRef: nfsRoutingDemoV7RouteRef,
-    routes: createNfsDemoRoutes('React Router v7'),
+  },
+});
+
+export const NfsRoutingDemoV7Overview = SubPageBlueprint.make({
+  name: 'nfsRoutingDemoV7-overview',
+  attachTo: { id: 'page:pages/nfsRoutingDemoV7', input: 'pages' },
+  params: {
+    path: 'overview',
+    title: 'Overview',
+    loader: async () => <OverviewPanel adapter="React Router v7" />,
+  },
+});
+
+export const NfsRoutingDemoV7Nested = SubPageBlueprint.make({
+  name: 'nfsRoutingDemoV7-nested',
+  attachTo: { id: 'page:pages/nfsRoutingDemoV7', input: 'pages' },
+  params: {
+    path: 'nested',
+    title: 'Nested',
+    loader: async () => <NestedPanel />,
+  },
+});
+
+export const NfsRoutingDemoV7Detail = SubPageBlueprint.make({
+  name: 'nfsRoutingDemoV7-detail',
+  attachTo: { id: 'page:pages/nfsRoutingDemoV7', input: 'pages' },
+  params: {
+    path: 'detail',
+    title: 'Detail',
+    loader: async () => <DetailPanel />,
   },
 });
 
@@ -187,8 +208,11 @@ export const NfsRoutingDemoV7Router = PageRouterBlueprint.make({
 const nfsRoutingDemoTanstackRouteRef = createRouteRef();
 
 /**
- * Sibling page at `/nfs-routing-demo-tanstack`, wired to the TanStack Router
- * page adapter via `PageRouterBlueprint`.
+ * Sibling page at `/nfs-routing-demo-tanstack`, wired to the TanStack
+ * Router page adapter via `PageRouterBlueprint`. TanStack fully owns its
+ * route tree and has no opaque-children bridge, so this page renders single
+ * content via `loader` rather than the tabbed `SubPageBlueprint` structure
+ * used by the v6/v7 siblings.
  */
 export const NfsRoutingDemoTanstackPage = PageBlueprint.make({
   name: 'nfsRoutingDemoTanstack',
@@ -197,7 +221,7 @@ export const NfsRoutingDemoTanstackPage = PageBlueprint.make({
     title: 'NFS Routing Demo (TanStack)',
     icon: <DeviceHubIcon />,
     routeRef: nfsRoutingDemoTanstackRouteRef,
-    routes: createNfsDemoRoutes('TanStack Router'),
+    loader: async () => <OverviewPanel adapter="TanStack Router" />,
   },
 });
 

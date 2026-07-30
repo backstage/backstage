@@ -1,7 +1,9 @@
 ---
-'@backstage/frontend-test-utils': patch
+'@backstage/frontend-test-utils': minor
 ---
 
-Adds mock helpers for scoped plugin routing tests: mock routing contracts (including stack helpers, namespaced adapter state, and pre-navigation blockers), `createMockRouteResolutionApi` / `createMockNavigationController`, and `mockApis.routeResolution()` / `mockApis.navigationController()`.
+**BREAKING**: Simplifies the mock helpers for scoped plugin routing tests (RFC #33603) to match the thinner `AppHistoryApi`.
 
-Test apps drive navigation through the framework navigation controller with in-memory history instead of a root MemoryRouter. `renderInTestApp` / `renderTestApp` still accept `initialRouteEntries` and return a `navigationController` for assertions; React Router context is projected through the v6 adapter backed by that controller, matching production page routing.
+`createMockNavigationController` and `mockApis.navigationController()` are replaced by `createMockAppHistory` and `mockApis.appHistory()`, which mock `navigate`, `location$`, and `createHref` (with an optional `basename`). `createMockContract` and `createMockRouteResolutionApi`'s pairing with a routing contract are removed — pair `createMockRouteResolutionApi` with `createMockAppHistory` for `RouteLink` / `useNavigateRouteRef` tests instead.
+
+Test apps still drive navigation through the framework app history with in-memory history instead of a root `MemoryRouter`. `renderInTestApp` / `renderTestApp` still accept `initialRouteEntries` and return a `navigationController` for assertions (now typed as `AppHistoryApi`).

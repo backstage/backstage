@@ -117,7 +117,7 @@ const appPluginOverride = appPlugin.withOverrides({
  * Renders the provided extensions inside a Backstage app, returning the same
  * utilities as `@testing-library/react` `render` function.
  *
- * Navigation is owned by a {@link @backstage/frontend-plugin-api#NavigationControllerApi}
+ * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
  * with in-memory history — the same seam as production — rather than a
  * test-only root React Router as the long-term harness.
  *

@@ -25,8 +25,8 @@ import {
   useFrameworkNavigate,
   useOptionalFrameworkNavigate,
 } from './useFrameworkNavigation';
-import { navigationControllerApiRef } from './NavigationControllerApi';
-import type { FrameworkLocation } from './RoutingContract';
+import { appHistoryApiRef } from './AppHistoryApi';
+import type { FrameworkLocation } from './FrameworkLocation';
 
 function createLocationObservable(initial: FrameworkLocation): {
   location$: Observable<FrameworkLocation>;
@@ -73,7 +73,7 @@ function createLocationObservable(initial: FrameworkLocation): {
 }
 
 describe('useFrameworkNavigate', () => {
-  it('delegates to the navigation controller with options', () => {
+  it('delegates to the app history with options', () => {
     const navigate = jest.fn();
     const { location$ } = createLocationObservable({
       pathname: '/',
@@ -87,12 +87,11 @@ describe('useFrameworkNavigate', () => {
         <TestApiProvider
           apis={[
             [
-              navigationControllerApiRef,
+              appHistoryApiRef,
               {
                 navigate,
-                go: jest.fn(),
                 location$,
-                createContract: jest.fn(),
+                createHref: (to: string) => to,
               },
             ],
           ]}
@@ -117,7 +116,7 @@ describe('useFrameworkNavigate', () => {
 });
 
 describe('useOptionalFrameworkNavigate', () => {
-  it('returns undefined when no navigation controller is registered', () => {
+  it('returns undefined when no app history is registered', () => {
     const { result } = renderHook(() => useOptionalFrameworkNavigate(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[]}>{children}</TestApiProvider>
@@ -127,7 +126,7 @@ describe('useOptionalFrameworkNavigate', () => {
     expect(result.current).toBeUndefined();
   });
 
-  it('returns a navigate callback when a navigation controller is present', () => {
+  it('returns a navigate callback when an app history is present', () => {
     const navigate = jest.fn();
     const { location$ } = createLocationObservable({
       pathname: '/',
@@ -141,12 +140,11 @@ describe('useOptionalFrameworkNavigate', () => {
         <TestApiProvider
           apis={[
             [
-              navigationControllerApiRef,
+              appHistoryApiRef,
               {
                 navigate,
-                go: jest.fn(),
                 location$,
-                createContract: jest.fn(),
+                createHref: (to: string) => to,
               },
             ],
           ]}
@@ -167,7 +165,7 @@ describe('useOptionalFrameworkNavigate', () => {
 });
 
 describe('useAppNavigate', () => {
-  it('uses the framework navigation controller when registered', () => {
+  it('uses the framework app history when registered', () => {
     const navigate = jest.fn();
     const { location$ } = createLocationObservable({
       pathname: '/',
@@ -182,12 +180,11 @@ describe('useAppNavigate', () => {
           <TestApiProvider
             apis={[
               [
-                navigationControllerApiRef,
+                appHistoryApiRef,
                 {
                   navigate,
-                  go: jest.fn(),
                   location$,
-                  createContract: jest.fn(),
+                  createHref: (to: string) => to,
                 },
               ],
             ]}
@@ -205,7 +202,7 @@ describe('useAppNavigate', () => {
     expect(navigate).toHaveBeenCalledWith('/catalog', { replace: true });
   });
 
-  it('falls back to React Router navigate when no controller is registered', () => {
+  it('falls back to React Router navigate when no app history is registered', () => {
     let locationPathname = '/start';
     const { result } = renderHook(
       () => {
@@ -232,7 +229,7 @@ describe('useAppNavigate', () => {
 });
 
 describe('useFrameworkLocation', () => {
-  it('returns the current controller location and updates on emit', () => {
+  it('returns the current app history location and updates on emit', () => {
     const { location$, emit } = createLocationObservable({
       pathname: '/catalog',
       search: '?q=1',
@@ -245,12 +242,11 @@ describe('useFrameworkLocation', () => {
         <TestApiProvider
           apis={[
             [
-              navigationControllerApiRef,
+              appHistoryApiRef,
               {
                 navigate: jest.fn(),
-                go: jest.fn(),
                 location$,
-                createContract: jest.fn(),
+                createHref: (to: string) => to,
               },
             ],
           ]}

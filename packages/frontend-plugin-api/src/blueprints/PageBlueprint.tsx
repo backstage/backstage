@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-import { JSX, ReactNode, useContext, useEffect, useMemo } from 'react';
+import { JSX, ReactNode, useMemo } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { IconElement } from '../icons/types';
-import {
-  RouteRef,
-  type RouteDescriptor,
-  createRouteDescriptor,
-} from '../routing';
-import {
-  RoutingContractContext,
-  useRoutingContract,
-} from '../routing/RoutingContractContext';
+import { RouteRef } from '../routing';
+import { usePageMount } from '../routing/PageMountContext';
 import {
   coreExtensionData,
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
 import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
+import { BreadcrumbEntry } from '../breadcrumbs';
 import { useApi, useApiHolder } from '../apis/system';
 import type { AppNode } from '../apis';
 import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
@@ -61,61 +56,31 @@ function resolveTitleLink(
 }
 
 /**
- * Library-agnostic index redirect used when descriptor tabs have no index
- * route — replaces the former React Router `<Navigate>` in PageBlueprint.
- * Uses the page {@link RoutingContract} so `to` stays scoped to the page.
- */
-function DescriptorIndexRedirect(props: { to: string }) {
-  const contract = useRoutingContract();
-  const { to } = props;
-
-  useEffect(() => {
-    contract?.navigate(to.startsWith('/') ? to : `/${to}`, { replace: true });
-  }, [contract, to]);
-
-  return null;
-}
-
-/**
  * Wraps page content with the page's router input override, or the app-plugin
  * default from {@link pageRouterApiRef}.
  *
- * When no {@link RoutingContract} is present (e.g. isolated `renderInTestApp`
- * without AppRouteSwitch), children render without a page adapter so the root
- * test/app chrome router remains in effect.
+ * When there is no {@link PageMount} present (e.g. isolated `renderInTestApp`
+ * without `AppRouteSwitch`), children render without a page adapter so the
+ * root test/app chrome router remains in effect.
  *
- * When `routes` is provided, they are passed to the adapter for compilation
- * into the adapter's native route tree (React Router today; TanStack later).
- *
- * When `routes` is omitted and `opaqueChildren` is set, `children` is opaque
- * page content (e.g. from a `loader`) that may itself compose React Router
- * elements internally. If the default adapter reports
- * `supportsOpaqueChildren: false` (see {@link PageRouterCapabilities}), this
- * fails fast rather than silently dropping in-page routing — see the
- * TanStack Router adapter, which owns rendering via a compiled route tree and
- * cannot host opaque children.
+ * `children` are opaque — typically a native React Router `<Routes>` tree —
+ * so any adapter used here must be able to host arbitrary React Router
+ * content unless it overrides this page directly (see
+ * {@link PageRouterCapabilities.supportsOpaqueChildren}).
  */
 function PageRouterWrapper(props: {
-  routePattern: string;
   RouterOverride?: PageRouterComponent;
-  routes?: readonly RouteDescriptor[];
-  /**
-   * Marks `children` as opaque page content that the default adapter may be
-   * unable to render without `routes` descriptors. Only set for the `loader`
-   * branch — other branches either supply `routes` or render no routable
-   * content.
-   */
-  opaqueChildren?: boolean;
+  /** Whether `children` may contain routable (e.g. React Router) content. */
+  hasRoutableContent?: boolean;
   children: ReactNode;
 }) {
-  const { routePattern, RouterOverride, routes, opaqueChildren, children } =
-    props;
-  const contract = useContext(RoutingContractContext);
+  const { RouterOverride, hasRoutableContent, children } = props;
+  const pageMount = usePageMount();
   const apiHolder = useApiHolder();
   const configApi = useApi(configApiRef);
   const appBasename = useMemo(() => getAppBasename(configApi), [configApi]);
 
-  if (!contract) {
+  if (!pageMount) {
     return <>{children}</>;
   }
 
@@ -127,24 +92,22 @@ function PageRouterWrapper(props: {
     return <>{children}</>;
   }
 
-  if (!RouterOverride && opaqueChildren && !routes?.length) {
+  if (!RouterOverride && hasRoutableContent) {
     const capabilities = pageRouterApi?.getCapabilities?.();
     if (capabilities?.supportsOpaqueChildren === false) {
       throw new Error(
         'The active page router does not support opaque React Router ' +
-          'children. Declare in-page routes with RouteDescriptors ' +
-          '(PageBlueprint params.routes or SubPageBlueprint pages), or use ' +
-          'a React Router page adapter.',
+          'children. Use a React Router page adapter, or attach a ' +
+          'PageRouterBlueprint override for this page.',
       );
     }
   }
 
   return (
     <Router
-      contract={contract}
-      routePattern={routePattern}
+      basePath={pageMount.basePath}
+      routePattern={pageMount.routePattern}
       appBasename={appBasename || undefined}
-      routes={routes}
     >
       {children}
     </Router>
@@ -153,10 +116,8 @@ function PageRouterWrapper(props: {
 
 function PluginPageShell(props: {
   node: AppNode;
-  routePattern: string;
   RouterOverride?: PageRouterComponent;
-  routes?: readonly RouteDescriptor[];
-  opaqueChildren?: boolean;
+  hasRoutableContent?: boolean;
   title: string;
   icon?: IconElement;
   noHeader?: boolean;
@@ -167,10 +128,8 @@ function PluginPageShell(props: {
 }) {
   const {
     node,
-    routePattern,
     RouterOverride,
-    routes,
-    opaqueChildren,
+    hasRoutableContent,
     title,
     icon,
     noHeader,
@@ -187,10 +146,8 @@ function PluginPageShell(props: {
   return (
     <ExtensionBoundary node={node}>
       <PageRouterWrapper
-        routePattern={routePattern}
         RouterOverride={RouterOverride}
-        routes={routes}
-        opaqueChildren={opaqueChildren}
+        hasRoutableContent={hasRoutableContent}
       >
         <PageLayout
           title={title}
@@ -214,15 +171,14 @@ function PluginPageShell(props: {
  * to override the default React Router v6 adapter registered by the app plugin.
  * When the input is empty, the default is resolved from {@link pageRouterApiRef}.
  *
- * In-page routes can be declared as library-agnostic {@link RouteDescriptor}
- * trees via the `routes` param, or composed from sub-pages attached to the
- * `pages` input (e.g. via `SubPageBlueprint`). Both are compiled into
- * descriptors and handed to the page router adapter, so tabbed sub-pages work
- * the same under every adapter. Opaque React Router children inside a
- * `loader` remain supported when the active page router reports
+ * Sub-pages attached to the `pages` input (e.g. via `SubPageBlueprint`) are
+ * composed into a native React Router `<Routes>` tree, so tabbed sub-pages
+ * work the same under every React Router-compatible adapter. A `loader`'s
+ * opaque content (which may itself compose React Router elements) is
+ * supported the same way — both rely on the active page router reporting
  * {@link PageRouterCapabilities.supportsOpaqueChildren} (React Router
- * adapters). Adapters that do not support opaque children (e.g. TanStack)
- * require descriptors and fail fast on the loader path.
+ * adapters do; adapters that fully own their route tree, e.g. TanStack, do
+ * not and fail fast instead).
  *
  * @public
  */
@@ -259,14 +215,6 @@ export const PageBlueprint = createExtensionBlueprint({
       title?: string;
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
-      /**
-       * Library-agnostic in-page route tree for subpage / tab routing.
-       * Used when no `pages` input extensions are attached — the `pages`
-       * input takes precedence and is compiled into descriptors the same
-       * way. Opaque React Router children in `loader` remain supported.
-       * Compiled by the page router adapter.
-       */
-      routes?: readonly RouteDescriptor[];
       routeRef?: RouteRef;
       /**
        * Hide the default plugin page header, making the page fill up all available space.
@@ -293,7 +241,6 @@ export const PageBlueprint = createExtensionBlueprint({
     yield coreExtensionData.reactElement(
       createPageElement({
         node,
-        routePath,
         RouterOverride,
         resolvedTitle,
         resolvedIcon,
@@ -302,7 +249,6 @@ export const PageBlueprint = createExtensionBlueprint({
         noHeader,
         loader: params.loader,
         pages: inputs.pages,
-        routes: params.routes,
       }),
     );
     if (params.routeRef) {
@@ -317,25 +263,8 @@ export const PageBlueprint = createExtensionBlueprint({
   },
 });
 
-function withIndexRedirect(
-  routes: readonly RouteDescriptor[],
-  firstPath: string | undefined,
-): readonly RouteDescriptor[] {
-  if (!firstPath || routes.some(route => route.index)) {
-    return routes;
-  }
-  return [
-    createRouteDescriptor({
-      index: true,
-      component: () => <DescriptorIndexRedirect to={firstPath} />,
-    }),
-    ...routes,
-  ];
-}
-
 function createPageElement(options: {
   node: AppNode;
-  routePath: string;
   RouterOverride?: PageRouterComponent;
   resolvedTitle: string;
   resolvedIcon?: IconElement;
@@ -346,11 +275,9 @@ function createPageElement(options: {
   pages: readonly {
     get(ref: any): any;
   }[];
-  routes?: readonly RouteDescriptor[];
 }): JSX.Element {
   const {
     node,
-    routePath,
     RouterOverride,
     resolvedTitle,
     resolvedIcon,
@@ -359,16 +286,14 @@ function createPageElement(options: {
     noHeader,
     loader,
     pages,
-    routes,
   } = options;
 
   if (loader) {
     return (
       <PluginPageShell
         node={node}
-        routePattern={routePath}
         RouterOverride={RouterOverride}
-        opaqueChildren
+        hasRoutableContent
         title={resolvedTitle}
         icon={resolvedIcon}
         noHeader={noHeader}
@@ -393,61 +318,47 @@ function createPageElement(options: {
       };
     });
     const firstPagePath = pages[0]?.get(coreExtensionData.routePath);
-    const pageDescriptors: RouteDescriptor[] = pages.map(page => {
-      const path = page.get(coreExtensionData.routePath);
-      const pageTitle = page.get(coreExtensionData.title);
-      const pageIcon = page.get(coreExtensionData.icon);
-      const element = page.get(coreExtensionData.reactElement);
-      return createRouteDescriptor({
-        path,
-        title: pageTitle,
-        icon: pageIcon,
-        component: () => element,
-      });
-    });
     return (
       <PluginPageShell
         node={node}
-        routePattern={routePath}
         RouterOverride={RouterOverride}
-        routes={withIndexRedirect(pageDescriptors, firstPagePath)}
+        hasRoutableContent
         title={resolvedTitle}
         icon={resolvedIcon}
         tabs={tabs}
         titleRouteRef={titleRouteRef}
         pluginId={pluginId}
-      />
-    );
-  }
-
-  if (routes?.length) {
-    const tabs: PageLayoutTab[] = routes
-      .filter(route => !route.index && route.path)
-      .map(route => ({
-        id: route.id ?? route.path!,
-        label: route.title || route.path!,
-        icon: route.icon,
-        href: route.path!,
-      }));
-    return (
-      <PluginPageShell
-        node={node}
-        routePattern={routePath}
-        RouterOverride={RouterOverride}
-        routes={withIndexRedirect(routes, tabs[0]?.href)}
-        title={resolvedTitle}
-        icon={resolvedIcon}
-        tabs={tabs.length > 0 ? tabs : undefined}
-        titleRouteRef={titleRouteRef}
-        pluginId={pluginId}
-      />
+      >
+        <Routes>
+          {firstPagePath && (
+            <Route index element={<Navigate to={firstPagePath} replace />} />
+          )}
+          {pages.map(page => {
+            const path = page.get(coreExtensionData.routePath);
+            const pageTitle = page.get(coreExtensionData.title);
+            const element = page.get(coreExtensionData.reactElement);
+            return (
+              <Route
+                key={path}
+                path={`${path}/*`}
+                element={
+                  <BreadcrumbEntry
+                    entry={{ label: pageTitle || path, href: path }}
+                  >
+                    {element}
+                  </BreadcrumbEntry>
+                }
+              />
+            );
+          })}
+        </Routes>
+      </PluginPageShell>
     );
   }
 
   return (
     <PluginPageShell
       node={node}
-      routePattern={routePath}
       RouterOverride={RouterOverride}
       title={resolvedTitle}
       icon={resolvedIcon}

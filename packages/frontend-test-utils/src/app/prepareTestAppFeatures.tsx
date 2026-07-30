@@ -23,7 +23,7 @@ import {
   createFrontendPlugin,
   createRouteRef,
   coreExtensionData,
-  navigationControllerApiRef,
+  appHistoryApiRef,
   type ApiRef,
   type ExtensionDefinition,
   type ExternalRouteRef,
@@ -56,7 +56,7 @@ export function prepareTestAppFeatures(options: {
   apiFactoryOverrides: ReturnType<typeof createApiFactory>[];
   externalBindings: Map<ExternalRouteRef, RouteRef>;
 } {
-  const { controller, basename } = options.navigation;
+  const { controller } = options.navigation;
   const extensions = [...options.extensions];
   const externalBindings = new Map<ExternalRouteRef, RouteRef>();
 
@@ -92,11 +92,7 @@ export function prepareTestAppFeatures(options: {
   }
 
   function TestRouter({ children }: { children: ReactNode }) {
-    return (
-      <TestAppRouter controller={controller} basename={basename}>
-        {children}
-      </TestAppRouter>
-    );
+    return <TestAppRouter controller={controller}>{children}</TestAppRouter>;
   }
 
   const features: FrontendFeature[] = [
@@ -104,10 +100,10 @@ export function prepareTestAppFeatures(options: {
       pluginId: 'app',
       extensions: [
         ApiBlueprint.make({
-          name: 'navigation-controller',
+          name: 'app-history',
           params: defineParams =>
             defineParams({
-              api: navigationControllerApiRef,
+              api: appHistoryApiRef,
               deps: {},
               factory: () => controller,
             }),
@@ -133,7 +129,7 @@ export function prepareTestAppFeatures(options: {
   const apiFactoryOverrides = [
     // Prefer the memory-history controller over any production default
     // registered in phase APIs (first registration wins).
-    createApiFactory(navigationControllerApiRef, controller),
+    createApiFactory(appHistoryApiRef, controller),
     ...(options.apis ?? []).map(entry => {
       const mockFactory = getMockApiFactory(entry);
       if (mockFactory) {

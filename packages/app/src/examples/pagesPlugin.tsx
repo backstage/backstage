@@ -32,9 +32,14 @@ import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {
   NfsRoutingDemoPage,
-  NfsRoutingDemoRouter,
+  NfsRoutingDemoOverview,
+  NfsRoutingDemoNested,
+  NfsRoutingDemoDetail,
   NfsRoutingDemoV7Page,
   NfsRoutingDemoV7Router,
+  NfsRoutingDemoV7Overview,
+  NfsRoutingDemoV7Nested,
+  NfsRoutingDemoV7Detail,
   NfsRoutingDemoTanstackPage,
   NfsRoutingDemoTanstackRouter,
 } from './nfsRoutingDemo';
@@ -123,29 +128,29 @@ const IndexPage = PageBlueprint.make({
 
             <h2>Scoped Plugin Routing</h2>
             <p>
-              Library-agnostic in-page routes via <code>RouteDescriptor</code>{' '}
-              (RFC{' '}
+              Page router adapters (RFC{' '}
               <a href="https://github.com/backstage/backstage/issues/33603">
                 #33603
               </a>
-              ):
+              ) — the same tabbed sub-page structure under React Router v6 and
+              v7, and single-page content under TanStack Router:
             </p>
             <ul>
               <li>
                 <Link to="/nfs-routing-demo">NFS Routing Demo (RR v6)</Link> —
-                tabbed page declared with <code>createRouteDescriptor</code>
+                tabbed page built with <code>SubPageBlueprint</code>
               </li>
               <li>
                 <Link to="/nfs-routing-demo-v7">NFS Routing Demo (RR v7)</Link>{' '}
-                — the same descriptor tree under the React Router v7 page
-                adapter
+                — the same tabbed sub-page structure under the React Router v7
+                page adapter
               </li>
               <li>
                 <Link to="/nfs-routing-demo-tanstack">
                   NFS Routing Demo (TanStack)
                 </Link>{' '}
-                — the same descriptor tree under the TanStack Router page
-                adapter
+                — single-page content under the TanStack Router page adapter,
+                which has no opaque-children bridge for tabs
               </li>
             </ul>
 
@@ -587,9 +592,14 @@ export const pagesPlugin = createFrontendPlugin({
     Page1,
     ExternalPage,
     NfsRoutingDemoPage,
-    NfsRoutingDemoRouter,
+    NfsRoutingDemoOverview,
+    NfsRoutingDemoNested,
+    NfsRoutingDemoDetail,
     NfsRoutingDemoV7Page,
     NfsRoutingDemoV7Router,
+    NfsRoutingDemoV7Overview,
+    NfsRoutingDemoV7Nested,
+    NfsRoutingDemoV7Detail,
     NfsRoutingDemoTanstackPage,
     NfsRoutingDemoTanstackRouter,
     FeatureFlagPage,

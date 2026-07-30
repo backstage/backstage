@@ -21,7 +21,7 @@ import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
 import { PageBlueprint } from './PageBlueprint';
 import { PageRouterBlueprint } from './PageRouterBlueprint';
 import { SubPageBlueprint } from './SubPageBlueprint';
-import { useRoutingContract } from '../routing/RoutingContractContext';
+import { usePageMount } from '../routing/PageMountContext';
 
 describe('SubPageBlueprint', () => {
   it('should expose an optional singleton router input', () => {
@@ -45,7 +45,7 @@ describe('SubPageBlueprint', () => {
     );
   });
 
-  it('should give each subpage its own contract at parentBase + / + subPath', async () => {
+  it('should give each subpage its own PageMount at parentBase + / + subPath', async () => {
     // Unnamed parent → page:test; named subpages attach relatively (same as
     // production plugins such as app-visualizer).
     const parentPage = PageBlueprint.make({
@@ -62,10 +62,10 @@ describe('SubPageBlueprint', () => {
         title: 'Info',
         loader: async () => {
           const Probe = () => {
-            const contract = useRoutingContract();
+            const mount = usePageMount();
             return (
               <div data-testid="info-page">
-                <div data-testid="contract-base">{contract.basePath}</div>
+                <div data-testid="mount-base">{mount?.basePath}</div>
               </div>
             );
           };
@@ -81,10 +81,10 @@ describe('SubPageBlueprint', () => {
         title: 'Config',
         loader: async () => {
           const Probe = () => {
-            const contract = useRoutingContract();
+            const mount = usePageMount();
             return (
               <div data-testid="config-page">
-                <div data-testid="contract-base">{contract.basePath}</div>
+                <div data-testid="mount-base">{mount?.basePath}</div>
               </div>
             );
           };
@@ -100,7 +100,7 @@ describe('SubPageBlueprint', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('info-page')).toBeInTheDocument();
-      expect(screen.getByTestId('contract-base')).toHaveTextContent(
+      expect(screen.getByTestId('mount-base')).toHaveTextContent(
         '/devtools/info',
       );
     });
@@ -114,13 +114,13 @@ describe('SubPageBlueprint', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('config-page')).toBeInTheDocument();
-      expect(screen.getByTestId('contract-base')).toHaveTextContent(
+      expect(screen.getByTestId('mount-base')).toHaveTextContent(
         '/devtools/config',
       );
     });
   });
 
-  it('should resolve an empty subpage router input via the API-holder default', async () => {
+  it('should render subpage content without a router override', async () => {
     const parentPage = PageBlueprint.make({
       params: {
         path: '/settings',
@@ -134,15 +134,13 @@ describe('SubPageBlueprint', () => {
         path: 'general',
         title: 'General',
         loader: async () => {
-          // useLocation only works if a page adapter wrapped this subpage
-          // (empty router input → pageRouterApiRef default).
           const Probe = () => {
             const location = useLocation();
-            const contract = useRoutingContract();
+            const mount = usePageMount();
             return (
               <div data-testid="general-page">
                 <div data-testid="pathname">{location.pathname}</div>
-                <div data-testid="contract-base">{contract.basePath}</div>
+                <div data-testid="mount-base">{mount?.basePath}</div>
               </div>
             );
           };
@@ -158,7 +156,7 @@ describe('SubPageBlueprint', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('general-page')).toBeInTheDocument();
-      expect(screen.getByTestId('contract-base')).toHaveTextContent(
+      expect(screen.getByTestId('mount-base')).toHaveTextContent(
         '/settings/general',
       );
       expect(screen.getByTestId('pathname')).toHaveTextContent(
@@ -169,10 +167,10 @@ describe('SubPageBlueprint', () => {
 
   it('should allow a subpage router override while the parent stays on the default', async () => {
     const CustomSubpageRouter: PageRouterComponent = ({
-      contract,
+      basePath,
       children,
     }) => (
-      <div data-testid="custom-subpage-router" data-base={contract.basePath}>
+      <div data-testid="custom-subpage-router" data-base={basePath}>
         {children}
       </div>
     );
@@ -191,10 +189,10 @@ describe('SubPageBlueprint', () => {
         title: 'Tree',
         loader: async () => {
           const Probe = () => {
-            const contract = useRoutingContract();
+            const mount = usePageMount();
             return (
               <div data-testid="tree-page">
-                <div data-testid="tree-contract">{contract.basePath}</div>
+                <div data-testid="tree-mount">{mount?.basePath}</div>
               </div>
             );
           };
@@ -219,10 +217,10 @@ describe('SubPageBlueprint', () => {
         title: 'Detailed',
         loader: async () => {
           const Probe = () => {
-            const contract = useRoutingContract();
+            const mount = usePageMount();
             return (
               <div data-testid="detailed-page">
-                <div data-testid="detailed-contract">{contract.basePath}</div>
+                <div data-testid="detailed-mount">{mount?.basePath}</div>
               </div>
             );
           };
@@ -242,7 +240,7 @@ describe('SubPageBlueprint', () => {
         'data-base',
         '/visualizer/tree',
       );
-      expect(screen.getByTestId('tree-contract')).toHaveTextContent(
+      expect(screen.getByTestId('tree-mount')).toHaveTextContent(
         '/visualizer/tree',
       );
     });
@@ -259,7 +257,7 @@ describe('SubPageBlueprint', () => {
       expect(
         screen.queryByTestId('custom-subpage-router'),
       ).not.toBeInTheDocument();
-      expect(screen.getByTestId('detailed-contract')).toHaveTextContent(
+      expect(screen.getByTestId('detailed-mount')).toHaveTextContent(
         '/visualizer/detailed',
       );
     });
@@ -281,11 +279,11 @@ describe('SubPageBlueprint', () => {
         loader: async () => {
           const Templates = () => {
             const location = useLocation();
-            const contract = useRoutingContract();
+            const mount = usePageMount();
             return (
               <div data-testid="templates-page">
                 <div data-testid="pathname">{location.pathname}</div>
-                <div data-testid="contract-base">{contract.basePath}</div>
+                <div data-testid="mount-base">{mount?.basePath}</div>
                 <Link to="./actions" data-testid="relative-link">
                   Actions
                 </Link>
@@ -316,7 +314,7 @@ describe('SubPageBlueprint', () => {
       expect(screen.getByTestId('pathname')).toHaveTextContent(
         '/create/templates',
       );
-      expect(screen.getByTestId('contract-base')).toHaveTextContent(
+      expect(screen.getByTestId('mount-base')).toHaveTextContent(
         '/create/templates',
       );
       expect(screen.getByTestId('relative-link')).toHaveAttribute(

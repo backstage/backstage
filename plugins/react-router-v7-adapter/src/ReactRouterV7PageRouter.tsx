@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from 'react';
-import type {
-  RouteDescriptor,
-  RoutingContract,
-} from '@backstage/frontend-plugin-api';
-import { ScopedRouterHost } from './ScopedRouterHost';
+import { useMemo, useRef, type ReactNode } from 'react';
+import { useApi, appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { createScopedRouter } from './createScopedRouter';
-import { withCompiledRouteDescriptors } from './compileRouteDescriptors';
 
 /**
- * React Router v7 page adapter. Injects library context from the page's
- * RoutingContract and never writes `window.history` via push/replace/go.
+ * React Router v7 page adapter. Injects library context projected from the
+ * framework's `AppHistoryApi` and never writes `window.history` via
+ * push/replace/go.
  *
- * When `routes` is provided, compiles the RouteDescriptor tree into
- * React Router routes. Opaque `children` remain supported when `routes` is
- * omitted (expand-contract path).
+ * Renders `children` as opaque content inside that context — an existing
+ * React Router `<Routes>` tree composed by the page itself keeps working
+ * (relative Links, nested `<Routes>`, `useParams`, and so on).
  *
- * Back/forward uses RoutingContract.go on the contract.
+ * Programmatic back/forward (`navigate(-1)`) is not supported — there is a
+ * single, real browser history; use the browser's own back/forward.
  *
  * Attach via PageRouterBlueprint to a page's optional `router` input to
  * override the app-plugin default.
@@ -39,17 +36,26 @@ import { withCompiledRouteDescriptors } from './compileRouteDescriptors';
  * @public
  */
 export function ReactRouterV7PageRouter(props: {
-  contract: RoutingContract;
+  /** Concrete app-absolute URL prefix this page is mounted at. */
+  basePath: string;
+  /** Registered route pattern this page is mounted at. */
   routePattern: string;
+  /** App deploy basename — unused; `AppHistoryApi.createHref` already applies it. */
   appBasename?: string;
-  routes?: readonly RouteDescriptor[];
   children: ReactNode;
 }) {
-  return (
-    <ScopedRouterHost
-      {...props}
-      createScopedRouter={createScopedRouter}
-      withCompiledRouteDescriptors={withCompiledRouteDescriptors}
-    />
+  const { basePath, routePattern, children } = props;
+  const appHistory = useApi(appHistoryApiRef);
+  const basePathRef = useRef(basePath);
+  basePathRef.current = basePath;
+
+  const scopedRouter = useMemo(
+    () => createScopedRouter(appHistory, { basePathRef, routePattern }),
+    // basePathRef is a stable ref object; basePath changes flow through it
+    // without recreating the router (and without losing in-page state).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [appHistory, routePattern],
   );
+
+  return <scopedRouter.Router>{children}</scopedRouter.Router>;
 }

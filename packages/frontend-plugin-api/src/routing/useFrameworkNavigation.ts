@@ -17,65 +17,60 @@
 import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApi, useApiHolder } from '../apis/system';
-import {
-  navigationControllerApiRef,
-  type NavigationControllerApi,
-} from './NavigationControllerApi';
+import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
 import type {
   FrameworkLocation,
   FrameworkNavigateOptions,
-} from './RoutingContract';
+} from './FrameworkLocation';
 import { frameworkLocationEqual } from './useObservableAsState';
 
 /**
- * Subscribes to a navigation controller's `location$` when one is provided.
- * Returns `undefined` when there is no controller.
+ * Subscribes to the app history's `location$` when one is provided.
+ * Returns `undefined` when there is no app history registered.
  */
-function useNavigationControllerLocation(
-  navigationController: NavigationControllerApi | undefined,
+function useAppHistoryLocation(
+  appHistory: AppHistoryApi | undefined,
 ): FrameworkLocation | undefined {
   const snapshotRef = useRef<FrameworkLocation | undefined>(undefined);
 
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
-      if (!navigationController) {
+      if (!appHistory) {
         return () => {};
       }
-      const subscription = navigationController.location$.subscribe(
-        location => {
-          if (
-            !snapshotRef.current ||
-            !frameworkLocationEqual(snapshotRef.current, location)
-          ) {
-            snapshotRef.current = location;
-            onStoreChange();
-          }
-        },
-      );
+      const subscription = appHistory.location$.subscribe(location => {
+        if (
+          !snapshotRef.current ||
+          !frameworkLocationEqual(snapshotRef.current, location)
+        ) {
+          snapshotRef.current = location;
+          onStoreChange();
+        }
+      });
       return () => subscription.unsubscribe();
     },
-    [navigationController],
+    [appHistory],
   );
 
   const getSnapshot = useCallback((): FrameworkLocation | undefined => {
-    if (!navigationController) {
+    if (!appHistory) {
       return undefined;
     }
     if (!snapshotRef.current) {
       // location$ emits synchronously on subscribe; seed via a one-shot sub.
-      const sub = navigationController.location$.subscribe(location => {
+      const sub = appHistory.location$.subscribe(location => {
         snapshotRef.current = location;
       });
       sub.unsubscribe();
     }
     return snapshotRef.current;
-  }, [navigationController]);
+  }, [appHistory]);
 
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }
 
 /**
- * Returns the current app location from the framework navigation controller.
+ * Returns the current app location from the framework's app history.
  *
  * Prefer this over React Router's `useLocation` in app chrome and other
  * framework-owned UI so navigation does not depend on a root router as the
@@ -84,15 +79,15 @@ function useNavigationControllerLocation(
  * @public
  */
 export function useFrameworkLocation(): FrameworkLocation {
-  const navigationController = useApi(navigationControllerApiRef);
-  return useNavigationControllerLocation(navigationController)!;
+  const appHistory = useApi(appHistoryApiRef);
+  return useAppHistoryLocation(appHistory)!;
 }
 
 /**
- * Returns a navigate function backed by the framework navigation controller.
+ * Returns a navigate function backed by the framework's app history.
  *
  * Package-internal helper for NFS-only call sites (e.g. {@link RouteLink}).
- * App shell code should use {@link navigationControllerApiRef} directly.
+ * App shell code should use {@link appHistoryApiRef} directly.
  * Plugin code should prefer {@link useAppNavigate}.
  *
  * @internal
@@ -101,44 +96,46 @@ export function useFrameworkNavigate(): (
   path: string,
   options?: FrameworkNavigateOptions,
 ) => void {
-  const navigationController = useApi(navigationControllerApiRef);
+  const appHistory = useApi(appHistoryApiRef);
   return useCallback(
     (path: string, options?: FrameworkNavigateOptions) => {
-      navigationController.navigate(path, options);
+      appHistory.navigate(path, options);
     },
-    [navigationController],
+    [appHistory],
   );
 }
 
 /**
- * Returns a navigate function backed by the framework navigation controller,
- * or `undefined` when no controller is registered (old frontend system / OFS).
+ * Returns a navigate function backed by the framework's app history, or
+ * `undefined` when no app history is registered (old frontend system / OFS).
  *
  * Prefer {@link useAppNavigate} in shared plugin code — it applies the
  * React Router fallback for you. Use this hook only when you need the
- * optional controller navigate function itself.
+ * optional navigate function itself.
  *
  * @public
  */
 export function useOptionalFrameworkNavigate():
   | ((path: string, options?: FrameworkNavigateOptions) => void)
   | undefined {
-  const navigationController = useApiHolder().get(navigationControllerApiRef);
+  const appHistory = useApiHolder().get(appHistoryApiRef);
   const navigate = useCallback(
     (path: string, options?: FrameworkNavigateOptions) => {
-      navigationController?.navigate(path, options);
+      appHistory?.navigate(path, options);
     },
-    [navigationController],
+    [appHistory],
   );
-  return navigationController ? navigate : undefined;
+  return appHistory ? navigate : undefined;
 }
 
 /**
- * Navigate using the framework navigation controller when registered, otherwise
+ * Navigate using the framework's app history when registered, otherwise
  * React Router's `useNavigate`.
  *
  * Prefer this in shared plugin code that must run under both the new and old
  * frontend systems. Paths should be app-absolute (basename-stripped).
+ *
+ * The react-aria-style counterpart to this hook is {@link useHref}.
  *
  * @public
  */

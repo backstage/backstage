@@ -10,6 +10,7 @@ import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
+import { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -40,7 +41,6 @@ import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { NavigationControllerApi } from '@backstage/frontend-plugin-api';
 import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactNode } from 'react';
@@ -48,7 +48,6 @@ import { registerMswTestHooks } from '@backstage/test-utils';
 import type { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { RouteResolutionApi } from '@backstage/frontend-plugin-api';
-import { RoutingContract } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
@@ -94,12 +93,9 @@ export function createExtensionTester<
 ): ExtensionTester<NonNullable<T['output']>>;
 
 // @public
-export function createMockContract(options: MockContractOptions): MockContract;
-
-// @public
-export function createMockNavigationController(
-  options?: MockNavigationControllerOptions,
-): MockNavigationController;
+export function createMockAppHistory(
+  options?: MockAppHistoryOptions,
+): MockAppHistory;
 
 // @public
 export function createMockRouteResolutionApi(
@@ -204,6 +200,15 @@ export namespace mockApis {
         partialImpl?: Partial<AnalyticsApi> | undefined,
       ) => ApiMock<AnalyticsApi>;
   }
+  export function appHistory(
+    options?: MockAppHistoryOptions,
+  ): MockAppHistory & MockWithApiFactory<AppHistoryApi>;
+  export namespace appHistory {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<AppHistoryApi> | undefined,
+      ) => ApiMock<AppHistoryApi>;
+  }
   export function config(options?: {
     data?: JsonObject;
   }): MockConfigApi & MockWithApiFactory<ConfigApi_2>;
@@ -260,15 +265,6 @@ export namespace mockApis {
         partialImpl?: Partial<IdentityApi> | undefined,
       ) => ApiMock<IdentityApi>;
   }
-  export function navigationController(
-    options?: MockNavigationControllerOptions,
-  ): MockNavigationController & MockWithApiFactory<NavigationControllerApi>;
-  export namespace navigationController {
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<NavigationControllerApi> | undefined,
-      ) => ApiMock<NavigationControllerApi>;
-  }
   export function permission(options?: {
     authorize?:
       | AuthorizeResult.ALLOW
@@ -310,6 +306,21 @@ export namespace mockApis {
   }
 }
 
+// @public
+export interface MockAppHistory extends AppHistoryApi {
+  navigateCalls: Array<{
+    to: string;
+    options?: FrameworkNavigateOptions;
+  }>;
+}
+
+// @public
+export interface MockAppHistoryOptions {
+  basename?: string;
+  initialLocation?: string;
+  navigate?: jest.Mock | AppHistoryApi['navigate'];
+}
+
 // @public @deprecated
 export class MockConfigApi implements ConfigApi {
   constructor(input: { data: JsonObject });
@@ -329,25 +340,6 @@ export class MockConfigApi implements ConfigApi {
   getStringArray(key: string): string[];
   has(key: string): boolean;
   keys(): string[];
-}
-
-// @public
-export interface MockContract extends RoutingContract {
-  // (undocumented)
-  goCalls: number[];
-  // (undocumented)
-  navigateCalls: Array<{
-    to: string;
-    options?: FrameworkNavigateOptions;
-  }>;
-}
-
-// @public
-export interface MockContractOptions {
-  // (undocumented)
-  basePath: string;
-  // (undocumented)
-  initialLocation?: string;
 }
 
 // @public @deprecated
@@ -423,22 +415,6 @@ export interface MockFetchApiOptions {
     | {
         discoveryApi: Pick<DiscoveryApi_2, 'getBaseUrl'>;
       };
-}
-
-// @public
-export interface MockNavigationController extends NavigationControllerApi {
-  goCalls: number[];
-  navigateCalls: Array<{
-    to: string;
-    options?: FrameworkNavigateOptions;
-  }>;
-}
-
-// @public
-export interface MockNavigationControllerOptions {
-  go?: jest.Mock | NavigationControllerApi['go'];
-  initialLocation?: string;
-  navigate?: jest.Mock | NavigationControllerApi['navigate'];
 }
 
 // @public @deprecated
@@ -576,7 +552,7 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
 
 // @public
 export type TestAppRenderResult = RenderResult & {
-  navigationController: NavigationControllerApi;
+  navigationController: AppHistoryApi;
 };
 
 export { withLogCollector };

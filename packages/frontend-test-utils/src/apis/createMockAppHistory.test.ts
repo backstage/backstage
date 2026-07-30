@@ -15,15 +15,15 @@
  */
 
 import { FrameworkLocation } from '@backstage/frontend-plugin-api';
-import { createMockNavigationController } from './createMockNavigationController';
+import { createMockAppHistory } from './createMockAppHistory';
 
-describe('createMockNavigationController', () => {
+describe('createMockAppHistory', () => {
   it('should emit the initial location synchronously on subscribe', () => {
-    const controller = createMockNavigationController({
+    const appHistory = createMockAppHistory({
       initialLocation: '/catalog?q=1#hash',
     });
     const locs: FrameworkLocation[] = [];
-    controller.location$.subscribe(l => locs.push(l));
+    appHistory.location$.subscribe(l => locs.push(l));
     expect(locs).toEqual([
       {
         pathname: '/catalog',
@@ -36,13 +36,13 @@ describe('createMockNavigationController', () => {
 
   it('should update location$ and record navigate calls', () => {
     const navigate = jest.fn();
-    const controller = createMockNavigationController({ navigate });
+    const appHistory = createMockAppHistory({ navigate });
     const locs: FrameworkLocation[] = [];
-    controller.location$.subscribe(l => locs.push(l));
+    appHistory.location$.subscribe(l => locs.push(l));
 
-    controller.navigate('/tools', { state: { step: 1 } });
+    appHistory.navigate('/tools', { state: { step: 1 } });
 
-    expect(controller.navigateCalls).toEqual([
+    expect(appHistory.navigateCalls).toEqual([
       { to: '/tools', options: { state: { step: 1 } } },
     ]);
     expect(navigate).toHaveBeenCalledWith('/tools', { state: { step: 1 } });
@@ -56,26 +56,14 @@ describe('createMockNavigationController', () => {
 
   it('should preserve single-arg navigate arity for jest assertions', () => {
     const navigate = jest.fn();
-    const controller = createMockNavigationController({ navigate });
-    controller.navigate('/only-path');
+    const appHistory = createMockAppHistory({ navigate });
+    appHistory.navigate('/only-path');
     expect(navigate).toHaveBeenCalledWith('/only-path');
     expect(navigate.mock.calls[0]).toHaveLength(1);
   });
 
-  it('should record go calls and invoke the optional go mock', () => {
-    const go = jest.fn();
-    const controller = createMockNavigationController({ go });
-    controller.go(-1);
-    expect(controller.goCalls).toEqual([-1]);
-    expect(go).toHaveBeenCalledWith(-1);
-  });
-
-  it('should expose block and createContract stubs', () => {
-    const controller = createMockNavigationController();
-    const unblock = controller.block(() => false);
-    expect(typeof unblock).toBe('function');
-    expect(controller.createContract('/catalog')).toEqual(
-      expect.objectContaining({ basePath: '/' }),
-    );
+  it('should resolve hrefs without modification (no basename)', () => {
+    const appHistory = createMockAppHistory();
+    expect(appHistory.createHref('/catalog')).toBe('/catalog');
   });
 });

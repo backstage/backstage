@@ -58,7 +58,6 @@
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-app-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
-    "@backstage/plugin-react-router-v6-adapter": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/ui": "workspace:^",

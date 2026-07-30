@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { useRoutingContract } from '../../../../packages/frontend-plugin-api/src/routing/RoutingContractContext';
+import { usePageMount } from '../../../../packages/frontend-plugin-api/src/routing/PageMountContext';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { Link as BuiLink } from '@backstage/ui';
 
 const DEFAULT_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -289,16 +288,16 @@ describe('AppRoutes', () => {
       params: {
         path: '/catalog/:namespace/:kind/:name',
         loader: async () => {
-          const ContractProbe = () => {
-            const contract = useRoutingContract();
+          const MountProbe = () => {
+            const mount = usePageMount();
             return (
               <div data-testid="catalog-entity-page">
                 Catalog Entity Page
-                <div data-testid="contract-base">{contract.basePath}</div>
+                <div data-testid="contract-base">{mount?.basePath}</div>
               </div>
             );
           };
-          return <ContractProbe />;
+          return <MountProbe />;
         },
       },
     });
@@ -317,22 +316,22 @@ describe('AppRoutes', () => {
     });
   });
 
-  it('should provide a scoped RoutingContract to the matched page', async () => {
+  it('should provide a PageMount with the matched basePath to the matched page', async () => {
     const catalogPage = PageBlueprint.make({
       name: 'catalog',
       params: {
         path: '/catalog',
         loader: async () => {
-          const ContractProbe = () => {
-            const contract = useRoutingContract();
+          const MountProbe = () => {
+            const mount = usePageMount();
             return (
               <div data-testid="catalog-page">
                 Catalog Page
-                <div data-testid="contract-base">{contract.basePath}</div>
+                <div data-testid="contract-base">{mount?.basePath}</div>
               </div>
             );
           };
-          return <ContractProbe />;
+          return <MountProbe />;
         },
       },
     });
@@ -350,11 +349,11 @@ describe('AppRoutes', () => {
 
   it('should resolve pages correctly when the app is served under a basename', async () => {
     const CatalogWithLinks = () => {
-      const contract = useRoutingContract();
+      const mount = usePageMount();
       return (
         <div data-testid="catalog-page">
           Catalog Page
-          <div data-testid="contract-base">{contract.basePath}</div>
+          <div data-testid="contract-base">{mount?.basePath}</div>
           <Link to="./create" data-testid="create-link">
             Create Entity
           </Link>
@@ -1056,7 +1055,7 @@ describe('AppRoutes', () => {
     });
   });
 
-  it('should support in-plugin relative navigation and back/forward via the memory harness', async () => {
+  it('should support in-plugin relative navigation via the memory harness', async () => {
     const CatalogWithNav = () => {
       const location = useLocation();
       return (
@@ -1080,7 +1079,7 @@ describe('AppRoutes', () => {
       },
     });
 
-    const { navigationController } = renderTestApp({
+    renderTestApp({
       extensions: [catalogPage],
       initialRouteEntries: ['/catalog'],
     });
@@ -1107,76 +1106,6 @@ describe('AppRoutes', () => {
       expect(screen.getByTestId('pathname')).toHaveTextContent(
         '/catalog/create',
       );
-    });
-
-    await act(async () => {
-      navigationController.go(-1);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
-        '/catalog/entities',
-      );
-    });
-
-    await act(async () => {
-      navigationController.go(1);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
-        '/catalog/create',
-      );
-    });
-  });
-
-  it('routes @backstage/ui chrome components (e.g. BUI Link) through the navigation controller, respecting blockers', async () => {
-    const BuiLinkPage = () => (
-      <div data-testid="catalog-page">
-        <BuiLink href="/catalog/other">Go elsewhere</BuiLink>
-      </div>
-    );
-
-    const catalogPage = PageBlueprint.make({
-      name: 'catalog',
-      params: {
-        path: '/catalog',
-        loader: async () => <BuiLinkPage />,
-      },
-    });
-
-    const { navigationController } = renderTestApp({
-      extensions: [catalogPage],
-      initialRouteEntries: ['/catalog'],
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
-    });
-
-    const locations: string[] = [];
-    navigationController.location$.subscribe(loc =>
-      locations.push(loc.pathname),
-    );
-
-    const unblock = navigationController.block(() => true);
-
-    await act(async () => {
-      fireEvent.click(screen.getByRole('link', { name: 'Go elsewhere' }));
-    });
-
-    // Blocked: BUI Link navigation went through the (blocker-aware)
-    // navigation controller rather than bypassing it.
-    expect(locations[locations.length - 1]).toBe('/catalog');
-
-    unblock();
-
-    await act(async () => {
-      fireEvent.click(screen.getByRole('link', { name: 'Go elsewhere' }));
-    });
-
-    await waitFor(() => {
-      expect(locations[locations.length - 1]).toBe('/catalog/other');
     });
   });
 

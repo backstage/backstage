@@ -19,12 +19,12 @@ import { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { TestApiProvider } from '@backstage/test-utils';
 import {
-  createMockNavigationController,
+  createMockAppHistory,
   createMockRouteResolutionApi,
 } from '@backstage/frontend-test-utils';
 import { useNavigateRouteRef } from './useNavigateRouteRef';
 import { createRouteRef } from './RouteRef';
-import { navigationControllerApiRef } from './NavigationControllerApi';
+import { appHistoryApiRef } from './AppHistoryApi';
 import { routeResolutionApiRef } from '../apis';
 
 describe('useNavigateRouteRef', () => {
@@ -48,10 +48,7 @@ describe('useNavigateRouteRef', () => {
                 routes: [[catalogRouteRef, '/catalog/:namespace/:kind/:name']],
               }),
             ],
-            [
-              navigationControllerApiRef,
-              createMockNavigationController({ navigate }),
-            ],
+            [appHistoryApiRef, createMockAppHistory({ navigate })],
           ]}
         >
           <MemoryRouter>{children}</MemoryRouter>
@@ -86,10 +83,7 @@ describe('useNavigateRouteRef', () => {
                 routes: [[homeRouteRef, '/catalog']],
               }),
             ],
-            [
-              navigationControllerApiRef,
-              createMockNavigationController({ navigate }),
-            ],
+            [appHistoryApiRef, createMockAppHistory({ navigate })],
           ]}
         >
           <MemoryRouter>{children}</MemoryRouter>
@@ -113,10 +107,7 @@ describe('useNavigateRouteRef', () => {
               routeResolutionApiRef,
               createMockRouteResolutionApi({ resolve: () => undefined }),
             ],
-            [
-              navigationControllerApiRef,
-              createMockNavigationController({ navigate }),
-            ],
+            [appHistoryApiRef, createMockAppHistory({ navigate })],
           ]}
         >
           <MemoryRouter>{children}</MemoryRouter>

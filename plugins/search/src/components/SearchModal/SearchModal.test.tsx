@@ -16,11 +16,11 @@
 
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
-import { createMockNavigationController } from '@backstage/frontend-test-utils';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
-import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../../plugin';
 import {
   searchApiRef,
@@ -38,7 +38,7 @@ describe('SearchModal', () => {
   const apiRegistry = TestApiRegistry.from(
     [configApiRef, configApiMock],
     [searchApiRef, searchApiMock],
-    [navigationControllerApiRef, createMockNavigationController({ navigate })],
+    [appHistoryApiRef, createMockAppHistory({ navigate })],
   );
 
   beforeEach(() => {

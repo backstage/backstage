@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteDescriptor, createRouteRef } from '../routing';
+import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import {
   createExtensionTester,
@@ -288,29 +288,34 @@ describe('PageBlueprint', () => {
     `);
   });
 
-  it('should accept route descriptors for subpage tab routing', async () => {
-    const myPage = PageBlueprint.make({
-      name: 'descriptor-page',
+  it('should compose SubPageBlueprint pages into tabs', async () => {
+    const parentPage = PageBlueprint.make({
       params: {
         path: '/tools',
         title: 'Tools',
-        routes: [
-          createRouteDescriptor({
-            path: 'overview',
-            title: 'Overview',
-            loader: async () => <div data-testid="overview">Overview</div>,
-          }),
-          createRouteDescriptor({
-            path: 'settings',
-            title: 'Settings',
-            loader: async () => <div data-testid="settings">Settings</div>,
-          }),
-        ],
+      },
+    });
+
+    const overviewSubPage = SubPageBlueprint.make({
+      name: 'overview',
+      params: {
+        path: 'overview',
+        title: 'Overview',
+        loader: async () => <div data-testid="overview">Overview</div>,
+      },
+    });
+
+    const settingsSubPage = SubPageBlueprint.make({
+      name: 'settings',
+      params: {
+        path: 'settings',
+        title: 'Settings',
+        loader: async () => <div data-testid="settings">Settings</div>,
       },
     });
 
     renderTestApp({
-      extensions: [myPage],
+      extensions: [parentPage, overviewSubPage, settingsSubPage],
       initialRouteEntries: ['/tools/overview'],
     });
 
@@ -321,7 +326,7 @@ describe('PageBlueprint', () => {
     expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();
   });
 
-  it('should still support SubPageBlueprint pages input alongside descriptors API', async () => {
+  it('should support SubPageBlueprint pages input', async () => {
     const parentPage = PageBlueprint.make({
       params: {
         path: '/devtools',
@@ -348,20 +353,11 @@ describe('PageBlueprint', () => {
     );
   });
 
-  it('should prefer pages input over routes when both are present', async () => {
+  it('should redirect to the first subpage on the parent index route', async () => {
     const parentPage = PageBlueprint.make({
       params: {
         path: '/mixed',
         title: 'Mixed',
-        routes: [
-          createRouteDescriptor({
-            path: 'descriptor',
-            title: 'Descriptor',
-            loader: async () => (
-              <div data-testid="descriptor-page">Descriptor</div>
-            ),
-          }),
-        ],
       },
     });
 
@@ -376,12 +372,11 @@ describe('PageBlueprint', () => {
 
     renderTestApp({
       extensions: [parentPage, inputSubPage],
-      initialRouteEntries: ['/mixed/input'],
+      initialRouteEntries: ['/mixed'],
     });
 
     await waitFor(() =>
       expect(screen.getByTestId('input-page')).toBeInTheDocument(),
     );
-    expect(screen.queryByTestId('descriptor-page')).not.toBeInTheDocument();
   });
 });

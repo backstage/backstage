@@ -15,8 +15,8 @@
  */
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { createMockNavigationController } from '@backstage/frontend-test-utils';
-import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { useNavigateToQuery } from './util';
 import { rootRouteRef } from '../plugin';
 
@@ -37,12 +37,7 @@ describe('util', () => {
 
       await renderInTestApp(
         <TestApiProvider
-          apis={[
-            [
-              navigationControllerApiRef,
-              createMockNavigationController({ navigate }),
-            ],
-          ]}
+          apis={[[appHistoryApiRef, createMockAppHistory({ navigate })]]}
         >
           <MyComponent />
         </TestApiProvider>,

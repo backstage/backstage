@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ComponentType, Context, ReactElement, ReactNode } from 'react';
+import type {
+  ComponentType,
+  Context,
+  MutableRefObject,
+  ReactNode,
+} from 'react';
 
 /**
  * Minimal location shape shared by React Router v6 and v7.
@@ -69,8 +74,6 @@ export interface ReactRouterAdapterBindings {
   useNavigate: () => (...args: any[]) => any;
   useParams: () => Record<string, string | undefined>;
   useSearchParams: (...args: any[]) => any;
-  Route: ComponentType<any>;
-  Routes: ComponentType<{ children?: ReactNode }>;
 }
 
 /**
@@ -88,23 +91,19 @@ export type NavigationContextExtras = Record<string, unknown>;
  */
 export interface CreateScopedRouterWithBindingsOptions {
   /**
-   * Registered page path pattern (e.g. `/catalog` or
+   * Live ref to the page's current concrete `basePath` (e.g. `/catalog` or
+   * `/catalog/default/component/foo`). Read on every render rather than
+   * captured at creation, so navigating between concrete prefixes under the
+   * same `routePattern` (e.g. entity A → entity B) doesn't require
+   * recreating the router / losing in-page component state.
+   */
+  basePathRef: MutableRefObject<string>;
+  /**
+   * Registered page route pattern (e.g. `/catalog` or
    * `/catalog/:namespace/:kind/:name`). Used to populate React Router
-   * `useParams` via a splat match of `${routePattern}/*`.
+   * `useParams`.
    */
-  routePattern?: string;
-  /**
-   * App deploy basename (e.g. `/backstage`). Prefixed onto `createHref`
-   * results so Link `href`s work under subpath deploys.
-   */
-  appBasename?: string;
-  /**
-   * History stack navigation (back/forward). Prefer omitting this and using
-   * RoutingContract.go on the contract. When provided, overrides the
-   * contract. When neither is available, `go` is a no-op and a development
-   * warning is logged — never falls back to `window.history.go`.
-   */
-  go?: (delta: number) => void;
+  routePattern: string;
   /**
    * Extra NavigationContext fields that differ between React Router major
    * versions (e.g. v6 `future.v7_relativeSplatPath` vs v7 `useTransitions`).
@@ -128,57 +127,4 @@ export interface ScopedRouterWithBindingsResult {
   useParams: <T extends Record<string, string | undefined>>() => T;
   /** Bound `useSearchParams` from the injected bindings. */
   useSearchParams: (...args: any[]) => any;
-  /** Unsubscribes from the contract's location$ observable. */
-  dispose: () => void;
-}
-
-/**
- * Options the shared page-router host passes to createScopedRouter (no
- * version-specific NavigationContext extras — those stay in each adapter).
- *
- * @internal
- */
-export type ScopedRouterHostCreateOptions = Pick<
-  CreateScopedRouterWithBindingsOptions,
-  'routePattern' | 'appBasename' | 'go'
->;
-
-/**
- * Props for the shared page-router host.
- *
- * @internal
- */
-export interface ScopedRouterHostProps {
-  contract: import('@backstage/frontend-plugin-api').RoutingContract;
-  routePattern: string;
-  appBasename?: string;
-  routes?: readonly import('@backstage/frontend-plugin-api').RouteDescriptor[];
-  children: ReactNode;
-  createScopedRouter: (
-    contract: import('@backstage/frontend-plugin-api').RoutingContract,
-    options?: ScopedRouterHostCreateOptions,
-  ) => ScopedRouterWithBindingsResult;
-  withCompiledRouteDescriptors: (
-    children: ReactNode,
-    routes:
-      | readonly import('@backstage/frontend-plugin-api').RouteDescriptor[]
-      | undefined,
-  ) => ReactNode;
-}
-
-/**
- * Return type of {@link createCompileRouteDescriptors}.
- *
- * @internal
- */
-export interface CompileRouteDescriptorsApi {
-  compileRouteDescriptors: (
-    routes: readonly import('@backstage/frontend-plugin-api').RouteDescriptor[],
-  ) => ReactElement;
-  withCompiledRouteDescriptors: (
-    children: ReactNode,
-    routes:
-      | readonly import('@backstage/frontend-plugin-api').RouteDescriptor[]
-      | undefined,
-  ) => ReactNode;
 }

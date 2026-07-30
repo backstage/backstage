@@ -18,17 +18,16 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
-  createMockContract,
-  createMockNavigationController,
+  createMockAppHistory,
   createMockRouteResolutionApi,
   renderInTestApp as renderInFrontendTestApp,
 } from '@backstage/frontend-test-utils';
 import {
-  navigationControllerApiRef,
+  appHistoryApiRef,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { RoutingContractContext } from '../../../../../packages/frontend-plugin-api/src/routing/RoutingContractContext';
+import { PageMountContext } from '../../../../../packages/frontend-plugin-api/src/routing/PageMountContext';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from './EntityRefLink';
 
@@ -211,8 +210,8 @@ describe('<EntityRefLink />', () => {
 
   it('navigates via the framework controller under NFS scoped routing', () => {
     const navigate = jest.fn();
-    const navigationController = createMockNavigationController({ navigate });
-    const scopedContract = createMockContract({ basePath: '/create' });
+    const navigationController = createMockAppHistory({ navigate });
+    const pageMount = { basePath: '/create', routePattern: '/create' };
 
     const entity = {
       apiVersion: 'v1',
@@ -232,14 +231,14 @@ describe('<EntityRefLink />', () => {
               routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
             }),
           ],
-          [navigationControllerApiRef, navigationController],
+          [appHistoryApiRef, navigationController],
         ]}
       >
-        <RoutingContractContext.Provider value={scopedContract}>
+        <PageMountContext.Provider value={pageMount}>
           <MemoryRouter>
             <EntityRefLink entityRef={entity} />
           </MemoryRouter>
-        </RoutingContractContext.Provider>
+        </PageMountContext.Provider>
       </TestApiProvider>,
     );
 
@@ -287,7 +286,7 @@ describe('<EntityRefLink />', () => {
 
   it('does not framework-navigate for modified clicks or target=_blank', () => {
     const navigate = jest.fn();
-    const navigationController = createMockNavigationController({ navigate });
+    const navigationController = createMockAppHistory({ navigate });
 
     const entity = {
       apiVersion: 'v1',
@@ -307,7 +306,7 @@ describe('<EntityRefLink />', () => {
               routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
             }),
           ],
-          [navigationControllerApiRef, navigationController],
+          [appHistoryApiRef, navigationController],
         ]}
       >
         <MemoryRouter>
@@ -328,7 +327,7 @@ describe('<EntityRefLink />', () => {
               routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
             }),
           ],
-          [navigationControllerApiRef, navigationController],
+          [appHistoryApiRef, navigationController],
         ]}
       >
         <MemoryRouter>

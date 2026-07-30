@@ -15,8 +15,8 @@
  */
 
 import { fireEvent } from '@testing-library/react';
-import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
-import { createMockNavigationController } from '@backstage/frontend-test-utils';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { ErrorPage } from './ErrorPage';
 import { Link } from '../../components/Link';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -134,22 +134,22 @@ describe('<ErrorPage/>', () => {
       expect(mockNavigate).toHaveBeenCalledWith(-1);
     });
 
-    it('calls the navigation controller go(-1) instead of react-router when one is registered (NFS)', async () => {
-      const go = jest.fn();
-      const navigationController = createMockNavigationController({ go });
+    it('calls window.history.back() instead of react-router when a navigation controller is registered (NFS)', async () => {
+      const historyBack = jest.spyOn(window.history, 'back').mockReturnValue();
+      const navigationController = createMockAppHistory();
 
       const { getByTestId } = await renderInTestApp(
-        <TestApiProvider
-          apis={[[navigationControllerApiRef, navigationController]]}
-        >
+        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
           <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
         </TestApiProvider>,
       );
 
       fireEvent.click(getByTestId('go-back-link'));
 
-      expect(go).toHaveBeenCalledWith(-1);
+      expect(historyBack).toHaveBeenCalledTimes(1);
       expect(mockNavigate).not.toHaveBeenCalled();
+
+      historyBack.mockRestore();
     });
   });
 });

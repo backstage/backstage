@@ -32,7 +32,7 @@ import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
  * without conflicting with the app plugin's v6 peer dependency.
  */
 describe('ReactRouterV7PageRouter wired path', () => {
-  it('should run a page with router override on v7 with in-plugin nav and back/forward', async () => {
+  it('should run a page with router override on v7 with in-plugin nav and cross-page navigate', async () => {
     const SettingsWithNav = () => {
       const location = useLocation();
       return (
@@ -90,8 +90,9 @@ describe('ReactRouterV7PageRouter wired path', () => {
 
     // v7 relative splat resolution uses the full matched pathname for `./`
     // links, so return to the page root before the next relative hop.
+    // AppHistoryApi has no programmatic `go` — navigate directly instead.
     await act(async () => {
-      navigationController.go(-1);
+      navigationController.navigate('/settings-v7');
     });
 
     await waitFor(() => {
@@ -109,7 +110,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
     });
 
     await act(async () => {
-      navigationController.go(-1);
+      navigationController.navigate('/settings-v7');
     });
 
     await waitFor(() => {
@@ -117,7 +118,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
     });
 
     await act(async () => {
-      navigationController.go(1);
+      navigationController.navigate('/settings-v7/auth');
     });
 
     await waitFor(() => {
@@ -126,7 +127,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
       );
     });
 
-    // Page stayed on the v7 adapter through in-plugin nav and back/forward.
+    // Page stayed on the v7 adapter through in-plugin nav and controller nav.
     expect(screen.getByTestId('router-version')).toHaveTextContent('v7');
   });
 

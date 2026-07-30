@@ -27,8 +27,8 @@ export interface RouteTableMatch {
    */
   path: string;
   /**
-   * Concrete matched URL prefix to pass to `createContract` as `basePath`.
-   * For a pattern like `/catalog/:namespace/:kind/:name` matching
+   * Concrete matched URL prefix for the page's {@link PageMount}. For a
+   * pattern like `/catalog/:namespace/:kind/:name` matching
    * `/catalog/default/component/foo/overview`, this is
    * `/catalog/default/component/foo`.
    */
@@ -48,10 +48,8 @@ type CompiledRoute = {
  * The root path `/` acts as a catch-all.
  *
  * {@link RouteTable.match} returns both the registered pattern (for page
- * lookup / contract identity) and a concrete `basePath` (the matched URL
- * prefix) for `createContract`. Pass the concrete path as `basePath` and the
- * registered pattern as `routePattern` so contracts can project across
- * entity-style prefix changes without changing identity.
+ * lookup) and a concrete `basePath` (the matched URL prefix) for the page's
+ * {@link PageMount}.
  *
  * @public
  */

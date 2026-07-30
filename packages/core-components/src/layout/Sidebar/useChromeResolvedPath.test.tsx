@@ -17,22 +17,20 @@
 import { PropsWithChildren } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { renderHook } from '@testing-library/react';
-import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
-import { createMockNavigationController } from '@backstage/frontend-test-utils';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { TestApiProvider } from '@backstage/test-utils';
 import { useChromeResolvedPath } from './useChromeResolvedPath';
 
 describe('useChromeResolvedPath', () => {
   it('returns absolute paths as plain resolved strings without React Router', () => {
-    const navigationController = createMockNavigationController({
+    const navigationController = createMockAppHistory({
       initialLocation: '/catalog',
     });
 
     const { result } = renderHook(() => useChromeResolvedPath('/docs'), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[[navigationControllerApiRef, navigationController]]}
-        >
+        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
           {children}
         </TestApiProvider>
       ),
@@ -42,15 +40,13 @@ describe('useChromeResolvedPath', () => {
   });
 
   it('resolves relative paths against the navigation controller location (NFS)', () => {
-    const navigationController = createMockNavigationController({
+    const navigationController = createMockAppHistory({
       initialLocation: '/catalog/entities',
     });
 
     const { result } = renderHook(() => useChromeResolvedPath('../docs'), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[[navigationControllerApiRef, navigationController]]}
-        >
+        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
           {children}
         </TestApiProvider>
       ),

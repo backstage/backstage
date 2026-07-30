@@ -21,7 +21,7 @@ import {
   coreExtensionData,
   createExtensionInput,
   NotFoundErrorPage,
-  navigationControllerApiRef,
+  appHistoryApiRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
 import { AppRouteSwitch, RouteTable } from '@backstage/frontend-plugin-api';
@@ -77,11 +77,11 @@ export const AppRoutes = createExtension({
     }
 
     const RoutesElement = () => {
-      const controller = useApi(navigationControllerApiRef);
+      const history = useApi(appHistoryApiRef);
 
       return (
         <AppRouteSwitch
-          controller={controller}
+          history={history}
           routeTable={routeTable}
           pages={pages}
           redirects={redirects}

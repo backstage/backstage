@@ -17,22 +17,20 @@
 import { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { renderHook, act } from '@testing-library/react';
-import { navigationControllerApiRef } from '@backstage/frontend-plugin-api';
-import { createMockNavigationController } from '@backstage/frontend-test-utils';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { TestApiProvider } from '@backstage/test-utils';
 import { useChromePathname } from './useChromePathname';
 
 describe('useChromePathname', () => {
   it('reads pathname from the navigation controller without React Router (NFS)', () => {
-    const navigationController = createMockNavigationController({
+    const navigationController = createMockAppHistory({
       initialLocation: '/catalog/default/component/widget',
     });
 
     const { result } = renderHook(() => useChromePathname(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[[navigationControllerApiRef, navigationController]]}
-        >
+        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
           {children}
         </TestApiProvider>
       ),
@@ -42,15 +40,13 @@ describe('useChromePathname', () => {
   });
 
   it('updates when the navigation controller emits a new location', () => {
-    const navigationController = createMockNavigationController({
+    const navigationController = createMockAppHistory({
       initialLocation: '/catalog',
     });
 
     const { result } = renderHook(() => useChromePathname(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[[navigationControllerApiRef, navigationController]]}
-        >
+        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
           {children}
         </TestApiProvider>
       ),
@@ -74,15 +70,13 @@ describe('useChromePathname', () => {
   });
 
   it('prefers the navigation controller over React Router when both are present', () => {
-    const navigationController = createMockNavigationController({
+    const navigationController = createMockAppHistory({
       initialLocation: '/from-controller',
     });
 
     const { result } = renderHook(() => useChromePathname(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[[navigationControllerApiRef, navigationController]]}
-        >
+        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
           <MemoryRouter initialEntries={['/from-router']}>
             {children}
           </MemoryRouter>

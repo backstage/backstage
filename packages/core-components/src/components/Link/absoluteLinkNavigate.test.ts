@@ -18,14 +18,16 @@ import {
   hasFrameworkNavigationSignals,
   shouldNavigateViaFramework,
 } from './absoluteLinkNavigate';
-import type {
-  NavigationControllerApi,
-  RoutingContract,
-} from '@backstage/frontend-plugin-api';
+import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import type { PageMount } from '../../../../frontend-plugin-api/src/routing/PageMountContext';
 
-const controller = {} as NavigationControllerApi;
-const scopedContract = { basePath: '/create' } as unknown as RoutingContract;
-const rootContract = { basePath: '/' } as unknown as RoutingContract;
+const controller = {} as AppHistoryApi;
+const scopedContract: PageMount = {
+  basePath: '/create',
+  routePattern: '/create',
+};
+const rootContract: PageMount = { basePath: '/', routePattern: '/' };
 
 describe('AbsoluteLinkNavigate', () => {
   describe('hasFrameworkNavigationSignals', () => {

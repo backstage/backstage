@@ -42,7 +42,7 @@ import {
   TestApiRegistry,
 } from '@backstage/test-utils';
 import {
-  createMockNavigationController,
+  createMockAppHistory,
   createMockRouteResolutionApi,
   mockApis,
 } from '@backstage/frontend-test-utils';
@@ -52,7 +52,7 @@ import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ReactNode, useEffect } from 'react';
 import {
-  navigationControllerApiRef,
+  appHistoryApiRef,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
 
@@ -85,7 +85,7 @@ describe('EntityLayout', () => {
     [alertApiRef, mockApis.alert()],
     [starredEntitiesApiRef, new MockStarredEntitiesApi()],
     [permissionApiRef, mockApis.permission()],
-    [navigationControllerApiRef, createMockNavigationController()],
+    [appHistoryApiRef, createMockAppHistory()],
     [routeResolutionApiRef, createEntityLayoutRouteResolutionApi()],
   );
 
@@ -392,10 +392,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
           [alertApiRef, alertApi],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           [permissionApiRef, mockApis.permission()],
-          [
-            navigationControllerApiRef,
-            createMockNavigationController({ navigate }),
-          ],
+          [appHistoryApiRef, createMockAppHistory({ navigate })],
           [routeResolutionApiRef, createEntityLayoutRouteResolutionApi()],
         ]}
       >
@@ -445,10 +442,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
           [alertApiRef, alertApi],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           [permissionApiRef, mockApis.permission()],
-          [
-            navigationControllerApiRef,
-            createMockNavigationController({ navigate }),
-          ],
+          [appHistoryApiRef, createMockAppHistory({ navigate })],
           [routeResolutionApiRef, createEntityLayoutRouteResolutionApi()],
         ]}
       >

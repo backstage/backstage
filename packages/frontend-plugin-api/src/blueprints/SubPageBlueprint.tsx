@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { ReactNode, useContext, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import { RoutingContractContext } from '../routing/RoutingContractContext';
+import { PageMountContext, usePageMount } from '../routing/PageMountContext';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -25,55 +25,68 @@ import {
 } from '../wiring';
 import { ExtensionBoundary } from '../components';
 import { optionalStringSchema } from '../schema/optionalStringSchema';
-import { useApi, useApiHolder } from '../apis/system';
-import {
-  pageRouterApiRef,
-  type PageRouterComponent,
-} from '../apis/definitions/PageRouterApi';
+import { useApi } from '../apis/system';
+import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
 import { PageRouterBlueprint } from './PageRouterBlueprint';
 import { configApiRef } from '../apis/definitions/ConfigApi';
 import { getAppBasename } from './getAppBasename';
 
+function joinMountPath(parentPath: string, subPath: string): string {
+  const trimmedParent = parentPath.replace(/\/$/, '');
+  const trimmedSub = subPath.replace(/^\//, '');
+  return `${trimmedParent}/${trimmedSub}`;
+}
+
 /**
- * Wraps subpage content with the subpage's router input override, or the
- * app-plugin default from {@link pageRouterApiRef}.
+ * Provides the subpage's own {@link PageMount} (`parentBase + '/' + subPath`)
+ * to its content, and optionally wraps it with the subpage's own router
+ * input override.
  *
- * Uses the subpage's own {@link RoutingContract} (provided by the parent page
- * at `parentBase + '/' + subPath`). Empty router input resolves the API-holder
- * default — the same singleton pattern as {@link PageBlueprint}.
+ * Empty router input resolves no adapter here — the parent page's `<Routes>`
+ * (established by `PageBlueprint`) already owns routing dispatch between
+ * sibling subpages, so a subpage only needs its own adapter when it wants
+ * additional in-page routing of its own.
  */
 function SubPageRouterWrapper(props: {
+  path: string;
   RouterOverride?: PageRouterComponent;
   children: ReactNode;
 }) {
-  const { RouterOverride, children } = props;
-  const contract = useContext(RoutingContractContext);
-  const apiHolder = useApiHolder();
+  const { path, RouterOverride, children } = props;
+  const parentMount = usePageMount();
   const configApi = useApi(configApiRef);
   const appBasename = useMemo(() => getAppBasename(configApi), [configApi]);
 
-  if (!contract) {
+  const mount = useMemo(() => {
+    if (!parentMount) {
+      return undefined;
+    }
+    return {
+      basePath: joinMountPath(parentMount.basePath, path),
+      routePattern: joinMountPath(parentMount.routePattern, path),
+    };
+  }, [parentMount, path]);
+
+  if (!mount) {
     return <>{children}</>;
   }
 
-  const pageRouterApi = apiHolder.get(pageRouterApiRef);
-  const Router =
-    RouterOverride ?? pageRouterApi?.getDefaultRouter() ?? undefined;
-
-  if (!Router) {
-    return <>{children}</>;
-  }
-
-  // Concrete contract basePath is the subpage mount path; adapters match
-  // app-absolute locations against this pattern.
-  return (
-    <Router
-      contract={contract}
-      routePattern={contract.basePath}
+  const content = RouterOverride ? (
+    <RouterOverride
+      basePath={mount.basePath}
+      routePattern={mount.routePattern}
       appBasename={appBasename || undefined}
     >
       {children}
-    </Router>
+    </RouterOverride>
+  ) : (
+    children
+  );
+
+  return (
+    <PageMountContext.Provider value={mount}>
+      {content}
+    </PageMountContext.Provider>
   );
 }
 
@@ -81,11 +94,13 @@ function SubPageRouterWrapper(props: {
  * Creates extensions that are sub-page React components attached to a parent page.
  * Sub-pages are rendered as tabs within the parent page's header.
  *
- * Each subpage receives its own scoped {@link RoutingContract} from the parent
- * page at `parentBase + '/' + subPath`. An optional `router` input (via
- * {@link PageRouterBlueprint} attached to this sub-page) overrides the default
- * adapter; empty input resolves the app-plugin default from
- * {@link pageRouterApiRef}.
+ * `PageBlueprint` composes each subpage's output path and element into a
+ * native React Router `<Route>` on the parent page's `<Routes>`. Each
+ * subpage also receives its own {@link PageMount} (`parentBase + '/' +
+ * subPath`) for descendants (e.g. breadcrumbs). An optional `router` input
+ * (via {@link PageRouterBlueprint} attached to this sub-page) additionally
+ * wraps the subpage's own content with an adapter for further in-page
+ * routing.
  *
  * @public
  * @example
@@ -160,7 +175,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
     yield coreExtensionData.routePath(routePath);
     yield coreExtensionData.title(config.title ?? params.title);
     yield coreExtensionData.reactElement(
-      <SubPageRouterWrapper RouterOverride={RouterOverride}>
+      <SubPageRouterWrapper path={routePath} RouterOverride={RouterOverride}>
         {ExtensionBoundary.lazy(node, params.loader)}
       </SubPageRouterWrapper>,
     );

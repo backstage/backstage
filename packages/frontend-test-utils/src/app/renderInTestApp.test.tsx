@@ -24,7 +24,7 @@ import {
   useRouteRef,
   identityApiRef,
   useApi,
-  navigationControllerApiRef,
+  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import { Routes, Route, useLocation, Link } from 'react-router-dom';
 import { renderInTestApp } from './renderInTestApp';
@@ -206,7 +206,7 @@ describe('renderInTestApp', () => {
   it('should drive navigation through the memory-history controller', async () => {
     const LocationProbe = () => {
       const { pathname } = useLocation();
-      const navigation = useApi(navigationControllerApiRef);
+      const navigation = useApi(appHistoryApiRef);
       return (
         <div>
           <span>Path: {pathname}</span>
@@ -269,7 +269,6 @@ describe('renderInTestApp', () => {
     const { navigationController } = renderInTestApp(<div>Hi</div>);
     expect(navigationController).toBeDefined();
     expect(typeof navigationController.navigate).toBe('function');
-    expect(typeof navigationController.go).toBe('function');
-    expect(typeof navigationController.createContract).toBe('function');
+    expect(typeof navigationController.createHref).toBe('function');
   });
 });

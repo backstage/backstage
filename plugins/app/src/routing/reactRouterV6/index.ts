@@ -13,4 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import '@testing-library/jest-dom';
+
+/**
+ * React Router v6 default page routing adapter, local to the app plugin.
+ *
+ * @packageDocumentation
+ */
+
+export { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
+export { createScopedRouter } from './createScopedRouter';
+export type {
+  CreateScopedRouterOptions,
+  ScopedRouterResult,
+} from './createScopedRouter';
