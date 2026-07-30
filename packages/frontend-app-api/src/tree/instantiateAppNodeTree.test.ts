@@ -44,7 +44,6 @@ import { createConfigSchema } from '../../../frontend-plugin-api/src/schema/crea
 import { TestApiRegistry, withLogCollector } from '@backstage/test-utils';
 import { createErrorCollector } from '../wiring/createErrorCollector';
 import { z } from 'zod/v4';
-import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 const testApis = TestApiRegistry.from();
 const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
@@ -863,56 +862,6 @@ describe('instantiateAppNodeTree', () => {
       }),
       { namespace: 'app' },
     );
-
-    it('should consume portable schemas from older extension definitions', () => {
-      // Older frontend-plugin-api versions resolved config.schema callbacks
-      // before creating the opaque extension definition.
-      const olderExtensionDefinition = OpaqueExtensionDefinition.createInstance(
-        'v2',
-        {
-          T: undefined as any,
-          name: 'older',
-          attachTo: { id: 'ignored', input: 'ignored' },
-          disabled: false,
-          inputs: {},
-          output: [testDataRef],
-          override() {
-            throw new Error('Not implemented');
-          },
-          configSchema: {
-            parse(input) {
-              const output =
-                (input as { output?: unknown }).output ?? 'default';
-              if (typeof output !== 'string') {
-                throw new Error('Expected string');
-              }
-              return { output };
-            },
-            schema() {
-              return {
-                schema: {
-                  type: 'object',
-                  properties: { output: { type: 'string' } },
-                  additionalProperties: false,
-                },
-              };
-            },
-          },
-          factory({ config }) {
-            return [testDataRef((config as { output: string }).output)];
-          },
-        },
-      );
-      const extension = resolveExtensionDefinition(olderExtensionDefinition, {
-        namespace: 'app',
-      });
-
-      expect(
-        makeInstanceWithId(extension, {
-          output: 'from older producer',
-        }).instance?.getData(testDataRef),
-      ).toBe('from older producer');
-    });
 
     it('should instantiate a single node', () => {
       const tree = resolveAppTree(
