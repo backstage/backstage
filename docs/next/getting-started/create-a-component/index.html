@@ -32,7 +32,7 @@
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script>
 <script src="https://widget.kapa.ai/kapa-widget.bundle.js" data-website-id="4f3b7b51-4ea6-4a5b-aede-44fbe128c0f2" data-project-name="Backstage" data-project-color="#36baa2" data-project-logo="https://backstage.io/img/favicon.svg" data-launcher-button-image="https://backstage.io/img/favicon.svg" data-button-position-bottom="4rem" data-button-position-right="0.75rem" data-color-scheme-selector="[data-theme=&#39;dark&#39;]" data-example-questions="What is Backstage?,How do I get started?" async></script><link rel="stylesheet" href="/assets/css/styles.a3f04945.css">
-<script src="/assets/js/runtime~main.20d0957d.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.75aaf995.js" defer="defer"></script>
 <script src="/assets/js/main.8ca190e9.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -89,32 +89,8 @@
 <p><img decoding="async" loading="lazy" alt="select create to make component" src="/assets/images/select-create-to-make-component-bd0797783323964c1f090af8df015d33.png" width="977" height="515" class="img_ev3q"></p>
 </li>
 </ol>
-<p>If you see an error message, similar to the following,</p>
-<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token plain">![error creating new component](../assets/uiguide/error-creating-new-component.png)</span><br></span></code></pre></div></div>
-<p>Perform the following steps:</p>
-<ol>
-<li class="">
-<p>Close the Backstage app.</p>
-</li>
-<li class="">
-<p>Enter <code>CTRL-C</code> in the terminal window to stop the Backstage frontend and backend.</p>
-</li>
-<li class="">
-<p>In the terminal window, enter:</p>
-<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token plain">export NODE_OPTIONS=--no-node-snapshot</span><br></span></code></pre></div></div>
-<blockquote>
-<p><strong>NOTE:</strong>
-The <a class="" href="/docs/next/features/software-templates/#prerequisites">no-node-snapshot</a> <code>NODE_OPTIONS</code> environment variable is required in order to use the templates.</p>
-</blockquote>
-</li>
-<li class="">
-<p>Enter <code>yarn start</code> to restart the Backstage application.</p>
-</li>
-<li class="">
-<p>Repeat steps to create the component.</p>
-</li>
-</ol>
-<p>Otherwise, you can follow along with the progress, and as soon as every step is finished, you can take a look at your new service in either the repository or the Catalog.</p>
+<p>You can follow along with the progress, and as soon as every step is finished,
+you can take a look at your new service in either the repository or the Catalog.</p>
 <p><img decoding="async" loading="lazy" alt="run of example of create component" src="/assets/images/successful-create-new-component-b7530768bd8e5c9c432dea448f0be06a.png" width="1658" height="885" class="img_ev3q"></p>
 <p>Selecting <code>REPOSITORY</code> displays the <code>catalog-info.yaml</code>file and other project setup files that were created for the new component in the main branch of the <code>tutorial</code> repository.</p>
 <p>The <code>catalog-info.yaml</code> file describes the entity for the Software Catalog. <a class="" href="/docs/next/features/software-catalog/descriptor-format">Descriptor Format of Catalog Entities</a> provides additional information.</p>
