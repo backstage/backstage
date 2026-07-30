@@ -660,11 +660,14 @@ describe('NunjucksWorkflowRunner', () => {
             input: {
               foo: '${{parameters.input | lower }}',
               region: '${{environment.parameters.region}}',
+              identifier:
+                '${{ parameters.identifier | replace(r/^([a-z]+)([0-9]+)$/, "$2-$1") }}',
             },
           },
         ],
         parameters: {
           input: 'BACKSTAGE',
+          identifier: 'backstage123',
         },
       });
 
@@ -672,7 +675,11 @@ describe('NunjucksWorkflowRunner', () => {
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
-          input: { foo: 'backstage', region: 'us-east-1' },
+          input: {
+            foo: 'backstage',
+            region: 'us-east-1',
+            identifier: '123-backstage',
+          },
         }),
       );
     });

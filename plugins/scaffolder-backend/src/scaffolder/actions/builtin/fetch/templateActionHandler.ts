@@ -120,6 +120,7 @@ export async function createTemplateActionHandler<
 
   const templateRenderer = createTemplateRenderer({
     ...templateCapabilities,
+    allowRegexExecution: true,
     cookiecutterCompat: ctx.input.cookiecutterCompat,
     trimBlocks: ctx.input.trimBlocks,
     lstripBlocks: ctx.input.lstripBlocks,

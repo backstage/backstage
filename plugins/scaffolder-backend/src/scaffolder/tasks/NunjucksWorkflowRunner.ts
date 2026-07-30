@@ -313,11 +313,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           ]),
         );
         const dryRunContext = preparedContext
-          .withPath(['environment'], {
+          .withValue(['environment'], {
             parameters: this.environment?.parameters || {},
             secrets: redactedEnvironmentSecrets,
           } as NunjitsuTemplateValue)
-          .withPath(['secrets'], redactedSecrets);
+          .withValue(['secrets'], redactedSecrets);
         const debugInput =
           (step.input &&
             this.render(step.input, dryRunContext, templateRenderer)) ??
@@ -343,7 +343,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           } else {
             context.steps[step.id] = { output: {} };
           }
-          return preparedContext.withPath(
+          return preparedContext.withValue(
             ['steps', step.id],
             context.steps[step.id] as unknown as NunjitsuTemplateValue,
           );
@@ -359,11 +359,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         secrets: task.secrets ?? {},
       };
       const preparedPreIterationContext = preparedContext
-        .withPath(
+        .withValue(
           ['environment'],
           preIterationContext.environment as NunjitsuTemplateValue,
         )
-        .withPath(
+        .withValue(
           ['secrets'],
           preIterationContext.secrets as NunjitsuTemplateValue,
         );
@@ -387,7 +387,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       ).map(i => {
         const preparedFullContext =
           'each' in i
-            ? preparedPreIterationContext.withPath(
+            ? preparedPreIterationContext.withValue(
                 ['each'],
                 i.each as NunjitsuTemplateValue,
               )
@@ -481,8 +481,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           if (hasSecrets) {
             try {
               const preparedContextNoSecrets = iteration.preparedContext
-                .withPath(['secrets'], {})
-                .withPath(['environment', 'secrets'], {});
+                .withValue(['secrets'], {})
+                .withValue(['environment', 'secrets'], {});
               const inputWithoutSecrets = this.render(
                 step.input,
                 preparedContextNoSecrets,
@@ -578,7 +578,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
 
       context.steps[step.id] = { output: stepOutput };
-      const updatedPreparedContext = preparedContext.withPath(
+      const updatedPreparedContext = preparedContext.withValue(
         ['steps', step.id],
         context.steps[step.id] as unknown as NunjitsuTemplateValue,
       );
@@ -621,6 +621,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     const statusCheckInvoked = { value: false };
 
     const templateRenderer = createTemplateRenderer({
+      allowRegexExecution: true,
       filters: {
         ...this.defaultTemplateCapabilities.filters,
         ...templateCapabilities?.filters,
