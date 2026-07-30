@@ -26,7 +26,7 @@ After installation, you can modify the installed files to adapt them to your pro
 
 Once a skill is installed in your repository, attach or reference the relevant `SKILL.md` file when starting a task with your AI coding assistant. Most AI assistants in editors such as VS Code will automatically pick up instruction files that are committed to your repository.
 
-For example, when migrating MUI imports in a plugin, include the `mui-to-bui-migration` skill so the assistant follows the correct component mapping and import patterns.
+For example, when migrating a plugin from Material-UI to Backstage UI, include the `mui-to-bui-migration` skill so the assistant runs the official migration recipe first and then finishes leftovers.
 
 ## Contributing New Skills
 
