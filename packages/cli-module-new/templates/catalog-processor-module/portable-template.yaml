@@ -5,5 +5,4 @@ values:
   pluginId: catalog
   fullModuleId: '{{ moduleId }}-processor'
   moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'
-  processorVar: '{{ camelCase moduleId }}Processor'
   processorClass: '{{ upperFirst ( camelCase moduleId ) }}Processor'

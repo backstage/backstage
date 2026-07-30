@@ -6,6 +6,9 @@ import {
   LocationSpec,
 } from '@backstage/plugin-catalog-node';
 
+/**
+ * @see https://backstage.io/docs/features/software-catalog/extending-the-model
+ */
 export class {{processorClass}} implements CatalogProcessor {
   static fromConfig(_config: Config): {{processorClass}} {
     return new {{processorClass}}();
