@@ -43,9 +43,9 @@ import {
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { shouldNavigateViaFramework } from './absoluteLinkNavigate';
 import {
-  useOptionalNavigationController,
-  useOptionalRoutingContract,
-} from '../../hooks/useOptionalNavigationController';
+  useOptionalAppHistory,
+  useOptionalPageMount,
+} from '../../hooks/useOptionalAppHistory';
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -201,8 +201,8 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
   ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
-    const navigationController = useOptionalNavigationController();
-    const routingContract = useOptionalRoutingContract();
+    const appHistory = useOptionalAppHistory();
+    const pageMount = useOptionalPageMount();
 
     // Adding the base path to URLs breaks react-router v6 stable, so we only
     // do it for beta. The react router version won't change at runtime so it is
@@ -216,8 +216,8 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
       !external &&
       shouldNavigateViaFramework({
         to,
-        navigationController,
-        routingContract,
+        appHistory,
+        pageMount,
       });
 
     if (scriptProtocolPattern.test(to)) {
@@ -233,14 +233,14 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
       }
       if (
         navigateViaFramework &&
-        navigationController &&
+        appHistory &&
         !event.defaultPrevented &&
         event.button === 0 &&
         !isModifiedEvent(event) &&
         props.target !== '_blank'
       ) {
         event.preventDefault();
-        navigationController.navigate(to);
+        appHistory.navigate(to);
       }
     };
 

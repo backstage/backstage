@@ -38,7 +38,7 @@ function joinMountPath(parentPath: string, subPath: string): string {
 }
 
 /**
- * Provides the subpage's own {@link PageMount} (`parentBase + '/' + subPath`)
+ * Provides the subpage's own `PageMount` (`parentBase + '/' + subPath`)
  * to its content, and optionally wraps it with the subpage's own router
  * input override.
  *
@@ -96,8 +96,7 @@ function SubPageRouterWrapper(props: {
  *
  * `PageBlueprint` composes each subpage's output path and element into a
  * native React Router `<Route>` on the parent page's `<Routes>`. Each
- * subpage also receives its own {@link PageMount} (`parentBase + '/' +
- * subPath`) for descendants (e.g. breadcrumbs). An optional `router` input
+ * subpage also receives its own `PageMount` (`parentBase + '/' + subPath`) for descendants (e.g. breadcrumbs). An optional `router` input
  * (via {@link PageRouterBlueprint} attached to this sub-page) additionally
  * wraps the subpage's own content with an adapter for further in-page
  * routing.

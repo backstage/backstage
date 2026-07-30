@@ -23,53 +23,51 @@ import type {
 import { frameworkLocationEqual } from '../../../frontend-plugin-api/src/routing/useObservableAsState';
 
 /**
- * Subscribes to a navigation controller's `location$` when one is provided.
- * Returns `undefined` when there is no controller (OFS / isolated tests).
+ * Subscribes to a app history's `location$` when one is provided.
+ * Returns `undefined` when there is no app history (OFS / isolated tests).
  *
  * Kept in core-components (rather than importing the NFS-only hook) so chrome
- * can pass an already-resolved optional controller without depending on
+ * can pass an already-resolved optional app history without depending on
  * `useApiHolder` semantics from the new frontend system.
  *
  * @internal
  */
-export function useOptionalNavigationControllerLocation(
-  navigationController: AppHistoryApi | undefined,
+export function useOptionalAppHistoryLocation(
+  appHistory: AppHistoryApi | undefined,
 ): FrameworkLocation | undefined {
   const snapshotRef = useRef<FrameworkLocation | undefined>(undefined);
 
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
-      if (!navigationController) {
+      if (!appHistory) {
         return () => {};
       }
-      const subscription = navigationController.location$.subscribe(
-        location => {
-          if (
-            !snapshotRef.current ||
-            !frameworkLocationEqual(snapshotRef.current, location)
-          ) {
-            snapshotRef.current = location;
-            onStoreChange();
-          }
-        },
-      );
+      const subscription = appHistory.location$.subscribe(location => {
+        if (
+          !snapshotRef.current ||
+          !frameworkLocationEqual(snapshotRef.current, location)
+        ) {
+          snapshotRef.current = location;
+          onStoreChange();
+        }
+      });
       return () => subscription.unsubscribe();
     },
-    [navigationController],
+    [appHistory],
   );
 
   const getSnapshot = useCallback((): FrameworkLocation | undefined => {
-    if (!navigationController) {
+    if (!appHistory) {
       return undefined;
     }
     if (!snapshotRef.current) {
-      const sub = navigationController.location$.subscribe(location => {
+      const sub = appHistory.location$.subscribe(location => {
         snapshotRef.current = location;
       });
       sub.unsubscribe();
     }
     return snapshotRef.current;
-  }, [navigationController]);
+  }, [appHistory]);
 
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

@@ -59,7 +59,7 @@ function resolveTitleLink(
  * Wraps page content with the page's router input override, or the app-plugin
  * default from {@link pageRouterApiRef}.
  *
- * When there is no {@link PageMount} present (e.g. isolated `renderInTestApp`
+ * When there is no `PageMount` present (e.g. isolated `renderInTestApp`
  * without `AppRouteSwitch`), children render without a page adapter so the
  * root test/app chrome router remains in effect.
  *

@@ -145,7 +145,7 @@ function resolveRedirectTarget(
 /**
  * Subscribes to AppHistory.location$, matches the current pathname via
  * RouteTable, and renders the matched page extension with a
- * {@link PageMount} provided via context.
+ * `PageMount` provided via context.
  *
  * Configured redirects are resolved first and applied via
  * `history.navigate(..., { replace: true })` — no react-router `useRoutes`.
@@ -154,7 +154,7 @@ function resolveRedirectTarget(
  * window.location directly, ensuring correct behavior with app basename.
  *
  * The page map is keyed by the registered pattern (`match.path`). The
- * {@link PageMount} provided to the matched page carries both that pattern
+ * `PageMount` provided to the matched page carries both that pattern
  * and the concrete matched URL prefix (`match.basePath`).
  *
  * @public

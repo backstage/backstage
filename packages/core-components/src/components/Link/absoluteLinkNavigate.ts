@@ -22,7 +22,7 @@ import type { PageMount } from '../../../../frontend-plugin-api/src/routing/Page
  * AbsoluteLinkNavigate — decide when `Link` should use the app-wide
  * {@link AppHistoryApi} for an absolute `to` instead of ambient React Router.
  *
- * A page mounted under a scoped {@link PageMount} (e.g. `/create`) gets its
+ * A page mounted under a scoped `PageMount` (e.g. `/create`) gets its
  * own React Router context whose `navigate` is bound to that page. An
  * absolute cross-plugin `Link to="/catalog/..."` rendered inside that page
  * would otherwise resolve relative to the page's own router. Routing those
@@ -41,49 +41,49 @@ import type { PageMount } from '../../../../frontend-plugin-api/src/routing/Page
 /** Inputs for AbsoluteLinkNavigate decisions. */
 export type AbsoluteLinkNavigateOptions = {
   to: string;
-  navigationController: AppHistoryApi | undefined;
-  routingContract: PageMount | undefined;
+  appHistory: AppHistoryApi | undefined;
+  pageMount: PageMount | undefined;
 };
 
 /**
- * True when new-frontend-system navigation signals are present (controller
+ * True when new-frontend-system navigation signals are present (app history
  * and/or page mount in context).
  *
  * @internal
  */
 export function hasFrameworkNavigationSignals(
-  navigationController: AppHistoryApi | undefined,
-  routingContract: PageMount | undefined,
+  appHistory: AppHistoryApi | undefined,
+  pageMount: PageMount | undefined,
 ): boolean {
-  return Boolean(navigationController || routingContract);
+  return Boolean(appHistory || pageMount);
 }
 
 /**
- * True when `to` should navigate via the framework navigation controller
- * instead of the ambient React Router context.
+ * True when `to` should navigate via the framework app history instead of
+ * the ambient React Router context.
  *
  * @internal
  */
 export function shouldNavigateViaFramework(
   options: AbsoluteLinkNavigateOptions,
 ): boolean {
-  const { to, navigationController, routingContract } = options;
-  if (!hasFrameworkNavigationSignals(navigationController, routingContract)) {
+  const { to, appHistory, pageMount } = options;
+  if (!hasFrameworkNavigationSignals(appHistory, pageMount)) {
     return false;
   }
-  if (!navigationController) {
+  if (!appHistory) {
     return false;
   }
   if (!to.startsWith('/') || to.startsWith('//')) {
     return false;
   }
 
-  if (!routingContract || routingContract.basePath === '/') {
+  if (!pageMount || pageMount.basePath === '/') {
     return true;
   }
 
   const pathname = to.split(/[?#]/, 1)[0] ?? to;
-  const { basePath } = routingContract;
+  const { basePath } = pageMount;
   const inScope = pathname === basePath || pathname.startsWith(`${basePath}/`);
   return !inScope;
 }

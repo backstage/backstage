@@ -37,16 +37,16 @@ import {
  *
  * @internal
  */
-export function useOptionalNavigationController(): AppHistoryApi | undefined {
+export function useOptionalAppHistory(): AppHistoryApi | undefined {
   return useApiHolder().get(appHistoryApiRef);
 }
 
 /**
- * Returns the {@link PageMount} for the current page scope, if any is in
- * context.
+ * Returns the current page mount (`basePath` + `routePattern`) when one is
+ * in context, and `undefined` otherwise.
  *
  * @internal
  */
-export function useOptionalRoutingContract(): PageMount | undefined {
+export function useOptionalPageMount(): PageMount | undefined {
   return useContext(PageMountContext);
 }

@@ -290,9 +290,6 @@ export interface AppRouteRedirect {
   to: string;
 }
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/frontend-plugin-api" does not have an export "PageMount"
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/frontend-plugin-api" does not have an export "PageMount"
-//
 // @public
 export function AppRouteSwitch(
   props: AppRouteSwitchProps,
@@ -2213,8 +2210,6 @@ export const routeResolutionApiRef: ApiRef_2<
   readonly $$type: '@backstage/ApiRef';
 };
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/frontend-plugin-api" does not have an export "PageMount"
-//
 // @public
 export class RouteTable {
   constructor(basePaths: string[]);
@@ -2223,7 +2218,6 @@ export class RouteTable {
 
 // @public
 export interface RouteTableMatch {
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/frontend-plugin-api" does not have an export "PageMount"
   basePath: string;
   path: string;
 }
@@ -2283,10 +2277,6 @@ export type StorageValueSnapshot<TValue extends JsonValue> =
       value: TValue;
     };
 
-// Warning: (tsdoc-code-span-missing-delimiter) The code span is missing its closing backtick
-// Warning: (tsdoc-code-span-missing-delimiter) The code span is missing its closing backtick
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/frontend-plugin-api" does not have an export "PageMount"
-//
 // @public
 export const SubPageBlueprint: ExtensionBlueprint<{
   kind: 'sub-page';

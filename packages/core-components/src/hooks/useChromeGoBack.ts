@@ -16,7 +16,7 @@
 
 import { useCallback } from 'react';
 import { useInRouterContext, useNavigate } from 'react-router-dom';
-import { useOptionalNavigationController } from './useOptionalNavigationController';
+import { useOptionalAppHistory } from './useOptionalAppHistory';
 
 /**
  * Returns a go-back callback for app chrome / error pages.
@@ -31,7 +31,7 @@ import { useOptionalNavigationController } from './useOptionalNavigationControll
  * @internal
  */
 export function useChromeGoBack(): () => void {
-  const navigationController = useOptionalNavigationController();
+  const appHistory = useOptionalAppHistory();
   const inRouter = useInRouterContext();
 
   // Router context / API presence are stable for a component's lifetime
@@ -39,16 +39,16 @@ export function useChromeGoBack(): () => void {
   // gating useNavigate keeps the hook call count stable and avoids
   // requiring a root RR projection.
   let rrNavigate: ReturnType<typeof useNavigate> | undefined;
-  if (!navigationController && inRouter) {
+  if (!appHistory && inRouter) {
     // eslint-disable-next-line react-hooks/rules-of-hooks -- stable router/API presence
     rrNavigate = useNavigate();
   }
 
   return useCallback(() => {
-    if (navigationController) {
+    if (appHistory) {
       window.history.back();
       return;
     }
     rrNavigate?.(-1);
-  }, [navigationController, rrNavigate]);
+  }, [appHistory, rrNavigate]);
 }

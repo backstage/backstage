@@ -15,8 +15,8 @@
  */
 
 import { useInRouterContext, useLocation } from 'react-router-dom';
-import { useOptionalNavigationController } from '../../hooks/useOptionalNavigationController';
-import { useOptionalNavigationControllerLocation } from '../../hooks/useOptionalNavigationControllerLocation';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
+import { useOptionalAppHistoryLocation } from '../../hooks/useOptionalAppHistoryLocation';
 
 /**
  * App chrome pathname that prefers the framework navigation controller when
@@ -30,16 +30,15 @@ import { useOptionalNavigationControllerLocation } from '../../hooks/useOptional
  * @internal
  */
 export function useChromePathname(): string {
-  const navigationController = useOptionalNavigationController();
-  const frameworkLocation =
-    useOptionalNavigationControllerLocation(navigationController);
+  const appHistory = useOptionalAppHistory();
+  const frameworkLocation = useOptionalAppHistoryLocation(appHistory);
   const inRouter = useInRouterContext();
 
   // Gate on controller presence (not snapshot truthiness) so NFS never calls
   // useLocation. Router / API presence are stable for a component's lifetime
   // (same pattern as BUI's useResolvedHref / Link's useResolvedPath), keeping
   // hook call count stable.
-  if (navigationController) {
+  if (appHistory) {
     return frameworkLocation?.pathname ?? '/';
   }
   if (!inRouter) {

@@ -27,7 +27,7 @@ export interface RouteTableMatch {
    */
   path: string;
   /**
-   * Concrete matched URL prefix for the page's {@link PageMount}. For a
+   * Concrete matched URL prefix for the page's `PageMount`. For a
    * pattern like `/catalog/:namespace/:kind/:name` matching
    * `/catalog/default/component/foo/overview`, this is
    * `/catalog/default/component/foo`.
@@ -49,7 +49,7 @@ type CompiledRoute = {
  *
  * {@link RouteTable.match} returns both the registered pattern (for page
  * lookup) and a concrete `basePath` (the matched URL prefix) for the page's
- * {@link PageMount}.
+ * `PageMount`.
  *
  * @public
  */

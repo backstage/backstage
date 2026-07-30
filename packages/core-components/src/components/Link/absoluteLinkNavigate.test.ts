@@ -23,11 +23,11 @@ import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import type { PageMount } from '../../../../frontend-plugin-api/src/routing/PageMountContext';
 
 const controller = {} as AppHistoryApi;
-const scopedContract: PageMount = {
+const scopedMount: PageMount = {
   basePath: '/create',
   routePattern: '/create',
 };
-const rootContract: PageMount = { basePath: '/', routePattern: '/' };
+const rootMount: PageMount = { basePath: '/', routePattern: '/' };
 
 describe('AbsoluteLinkNavigate', () => {
   describe('hasFrameworkNavigationSignals', () => {
@@ -35,14 +35,12 @@ describe('AbsoluteLinkNavigate', () => {
       expect(hasFrameworkNavigationSignals(undefined, undefined)).toBe(false);
     });
 
-    it('is true when the navigation controller is registered', () => {
+    it('is true when the app history is registered', () => {
       expect(hasFrameworkNavigationSignals(controller, undefined)).toBe(true);
     });
 
-    it('is true when a routing contract is in context', () => {
-      expect(hasFrameworkNavigationSignals(undefined, scopedContract)).toBe(
-        true,
-      );
+    it('is true when a page mount is in context', () => {
+      expect(hasFrameworkNavigationSignals(undefined, scopedMount)).toBe(true);
     });
   });
 
@@ -51,18 +49,18 @@ describe('AbsoluteLinkNavigate', () => {
       expect(
         shouldNavigateViaFramework({
           to: '/catalog/default/component/foo',
-          navigationController: undefined,
-          routingContract: undefined,
+          appHistory: undefined,
+          pageMount: undefined,
         }),
       ).toBe(false);
     });
 
-    it('does not use the framework for relative targets under a scoped contract', () => {
+    it('does not use the framework for relative targets under a scoped page mount', () => {
       expect(
         shouldNavigateViaFramework({
           to: './templates/foo',
-          navigationController: controller,
-          routingContract: scopedContract,
+          appHistory: controller,
+          pageMount: scopedMount,
         }),
       ).toBe(false);
     });
@@ -71,38 +69,38 @@ describe('AbsoluteLinkNavigate', () => {
       expect(
         shouldNavigateViaFramework({
           to: '/create/templates/default/foo',
-          navigationController: controller,
-          routingContract: scopedContract,
+          appHistory: controller,
+          pageMount: scopedMount,
         }),
       ).toBe(false);
     });
 
-    it('uses the framework for cross-plugin absolute targets outside the contract', () => {
+    it('uses the framework for cross-plugin absolute targets outside the page mount', () => {
       expect(
         shouldNavigateViaFramework({
           to: '/catalog/default/component/foo',
-          navigationController: controller,
-          routingContract: scopedContract,
+          appHistory: controller,
+          pageMount: scopedMount,
         }),
       ).toBe(true);
     });
 
-    it('uses the framework for absolute targets under the root contract', () => {
+    it('uses the framework for absolute targets under the root page mount', () => {
       expect(
         shouldNavigateViaFramework({
           to: '/catalog',
-          navigationController: controller,
-          routingContract: rootContract,
+          appHistory: controller,
+          pageMount: rootMount,
         }),
       ).toBe(true);
     });
 
-    it('does not use the framework when only a contract is present without a controller', () => {
+    it('does not use the framework when only a page mount is present without app history', () => {
       expect(
         shouldNavigateViaFramework({
           to: '/catalog/default/component/foo',
-          navigationController: undefined,
-          routingContract: scopedContract,
+          appHistory: undefined,
+          pageMount: scopedMount,
         }),
       ).toBe(false);
     });
