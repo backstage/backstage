@@ -53,6 +53,10 @@
       matchPackageNames: ['browser-actions/setup-chrome'],
       enabled: false,
     },
+    {
+      matchManagers: ['github-actions'],
+      pinDigests: true,
+    },
     // ESM only majors, that we're not ready for yet
     {
       matchPackageNames: ['node-fetch'],
