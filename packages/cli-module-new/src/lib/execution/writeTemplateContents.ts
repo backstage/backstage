@@ -79,7 +79,9 @@ export async function writeTemplateContents(
       // Automatically inject input values into package.json
       if (file.path === 'package.json') {
         try {
-          content = injectPackageJsonInput(input, content);
+          content = injectPackageJsonInput(input, content, () =>
+            templater.template(`{{ versionQuery pluginPackage '*' }}`),
+          );
         } catch (error) {
           throw new ForwardedError(
             'Failed to transform templated package.json',
@@ -103,6 +105,7 @@ export async function writeTemplateContents(
 export function injectPackageJsonInput(
   input: PortableTemplateInput,
   content: string,
+  resolvePluginPackageVersion: () => string,
 ) {
   const pkgJson = JSON.parse(content);
 
@@ -126,6 +129,23 @@ export function injectPackageJsonInput(
     }
   } else {
     delete pkgJson.private;
+  }
+
+  if (input.roleParams.role === 'backend-plugin-module') {
+    const pluginPackage = input.roleParams.pluginPackage;
+    const hasPluginPackageDependency = [
+      pkgJson.dependencies,
+      pkgJson.devDependencies,
+      pkgJson.optionalDependencies,
+      pkgJson.peerDependencies,
+    ].some(dependencies => dependencies?.[pluginPackage] !== undefined);
+
+    if (!hasPluginPackageDependency) {
+      pkgJson.devDependencies = {
+        ...pkgJson.devDependencies,
+        [pluginPackage]: resolvePluginPackageVersion(),
+      };
+    }
   }
 
   if (input.publishRegistry) {
