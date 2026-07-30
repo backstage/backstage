@@ -109,12 +109,11 @@ Each extension is registered with the app under a unique ID (for example,
 to decide which extensions to enable, disable, or reconfigure.
 
 Extension blueprints declare a `configSchema` using validators that support
-Standard Schema and JSON Schema. This example imports [Zod
-v4](https://zod.dev/) from the plugin package that owns the schema. When the app
-starts, the framework parses and validates the configuration against the schema,
-then passes the result to the extension's factory function. This means your
-components receive typed, validated values instead of reading raw configuration
-strings at runtime.
+Standard Schema and JSON Schema. The plugin package that owns the schema imports
+[Zod v4](https://zod.dev/) for this example. When the app starts, the framework
+parses and validates the configuration against the schema, then passes the
+result to the extension's factory function. This means your components receive
+typed, validated values instead of reading raw configuration strings at runtime.
 
 This config-first approach means that adopters of your plugin can customize
 its behavior without forking the code — they only need to adjust their
