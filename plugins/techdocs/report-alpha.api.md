@@ -126,6 +126,7 @@ const _default: OverridableFrontendPlugin<
     }>;
     'entity-content:techdocs': OverridableExtensionDefinition<{
       config: {
+        withoutFeedbackLink: boolean;
         path: string | undefined;
         title: string | undefined;
         filter: FilterPredicate | undefined;
@@ -133,6 +134,7 @@ const _default: OverridableFrontendPlugin<
         icon: string | undefined;
       };
       configInput: {
+        withoutFeedbackLink?: boolean | undefined;
         path?: string | undefined;
         title?: string | undefined;
         filter?: FilterPredicate | undefined;
@@ -342,12 +344,14 @@ const _default: OverridableFrontendPlugin<
       config: {
         withoutSearch: boolean;
         withoutHeader: boolean;
+        withoutFeedbackLink: boolean;
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
         withoutSearch?: boolean | undefined;
         withoutHeader?: boolean | undefined;
+        withoutFeedbackLink?: boolean | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };
@@ -541,10 +545,10 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'table.actions.addToFavorites': 'Add to favorites';
     readonly 'table.actions.removeFromFavorites': 'Remove from favorites';
     readonly 'table.actions.copyDocsUrl': 'Click to copy documentation link to clipboard';
-    readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.emptyState.title': 'No documents to show';
     readonly 'table.emptyState.description': 'Create your own document. Check out our Getting Started Information';
     readonly 'table.emptyState.docsButton': 'DOCS';
+    readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'home.supportButton': 'Discover documentation in your ecosystem.';
     readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'notFound.title': 'Documentation not found';
@@ -560,8 +564,8 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'stateIndicator.contentStaleError.message': 'Building a newer version of this documentation failed.';
     readonly 'redirectNotification.redirectNow': 'Redirect now';
     readonly 'readerPageHeader.source': 'Source';
-    readonly 'readerPageHeader.owner': 'Owner';
     readonly 'readerPageHeader.lifecycle': 'Lifecycle';
+    readonly 'readerPageHeader.owner': 'Owner';
     readonly 'pageWrapper.title': 'Documentation';
     readonly 'pageWrapper.subtitle': 'Documentation available in {{orgName}}';
     readonly 'entityContent.title': 'TechDocs';

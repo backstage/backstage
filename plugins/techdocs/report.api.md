@@ -418,6 +418,7 @@ export type TechDocsReaderPageContentProps = {
   entityRef?: CompoundEntityRef;
   defaultPath?: string;
   withSearch?: boolean;
+  withFeedbackLink?: boolean;
   searchResultUrlMapper?: (url: string) => string;
   onReady?: () => void;
 };
