@@ -225,6 +225,8 @@ describe('fetch:template', () => {
               subdir: {
                 'templated-content.txt':
                   '${{ values.name }}: ${{ values.count }}',
+                'regex.txt':
+                  '${{ "test-project" | replace(r/^test-(.+)$/, "$1-template") }}',
               },
               '.${{ values.name }}': '${{ values.itemList | dump }}',
               'a-binary-file.png': aBinaryFile,
@@ -272,6 +274,9 @@ describe('fetch:template', () => {
             'utf-8',
           ),
         ).resolves.toEqual('test-project: 1234');
+        await expect(
+          fs.readFile(`${workspacePath}/target/subdir/regex.txt`, 'utf-8'),
+        ).resolves.toEqual('project-template');
       });
 
       it('processes dotfiles', async () => {

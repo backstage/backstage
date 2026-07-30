@@ -660,11 +660,14 @@ describe('NunjucksWorkflowRunner', () => {
             input: {
               foo: '${{parameters.input | lower }}',
               region: '${{environment.parameters.region}}',
+              identifier:
+                '${{ parameters.identifier | replace(r/^([a-z]+)([0-9]+)$/, "$2-$1") }}',
             },
           },
         ],
         parameters: {
           input: 'BACKSTAGE',
+          identifier: 'backstage123',
         },
       });
 
@@ -672,7 +675,11 @@ describe('NunjucksWorkflowRunner', () => {
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
-          input: { foo: 'backstage', region: 'us-east-1' },
+          input: {
+            foo: 'backstage',
+            region: 'us-east-1',
+            identifier: '123-backstage',
+          },
         }),
       );
     });
@@ -700,7 +707,7 @@ describe('NunjucksWorkflowRunner', () => {
       expect(logger.error).not.toHaveBeenCalled();
     });
 
-    it('should keep the original types for the input and not parse things that are not meant to be parsed', async () => {
+    it('should preserve native input value types', async () => {
       const task = createMockTaskWithSpec({
         steps: [
           {
@@ -710,19 +717,33 @@ describe('NunjucksWorkflowRunner', () => {
             input: {
               number: '${{parameters.number}}',
               string: '${{parameters.string}}',
+              boolean: '${{parameters.boolean}}',
+              nullValue: '${{parameters.nullValue}}',
+              array: '${{parameters.array}}',
             },
           },
         ],
         parameters: {
           number: 0,
           string: '1',
+          boolean: true,
+          nullValue: null,
+          array: ['one', 'two'],
         },
       });
 
       await runner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ input: { number: 0, string: '1' } }),
+        expect.objectContaining({
+          input: {
+            number: 0,
+            string: '1',
+            boolean: true,
+            nullValue: null,
+            array: ['one', 'two'],
+          },
+        }),
       );
     });
 
@@ -748,6 +769,40 @@ describe('NunjucksWorkflowRunner', () => {
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({ input: { foo: { bar: 'BACKSTAGE' } } }),
       );
+    });
+
+    it('should preserve immutable structured values from Nunjitsu', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-mock-action',
+            input: {
+              object: '${{ parameters.object }}',
+              array: '${{ parameters.array }}',
+            },
+          },
+        ],
+        parameters: {
+          object: { items: [{ name: 'one' }] },
+          array: [{ name: 'two' }],
+        },
+      });
+
+      await runner.execute(task);
+
+      const { input } = fakeActionHandler.mock.calls[0][0];
+      expect(input).toEqual({
+        object: { items: [{ name: 'one' }] },
+        array: [{ name: 'two' }],
+      });
+      expect(Object.getPrototypeOf(input.object)).toBeNull();
+      expect(Object.isFrozen(input.object)).toBe(true);
+      expect(Object.isFrozen(input.object.items)).toBe(true);
+      expect(Object.getPrototypeOf(input.object.items[0])).toBeNull();
+      expect(Object.isFrozen(input.array)).toBe(true);
+      expect(Object.getPrototypeOf(input.array[0])).toBeNull();
     });
 
     it('supports really complex structures', async () => {

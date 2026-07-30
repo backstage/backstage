@@ -14,73 +14,67 @@
  * limitations under the License.
  */
 
-import { SecureTemplater } from './SecureTemplater';
+import { createTemplateRenderer } from 'nunjitsu';
+import { collectTemplateCapabilities } from '../../util/templating';
 
-describe('SecureTemplater', () => {
-  it('should render some templates', async () => {
-    const { render, dispose } = await SecureTemplater.loadRenderer();
-    expect(render('${{ test }}', { test: 'my-value' })).toBe('my-value');
+describe('Nunjitsu', () => {
+  it('should render some templates', () => {
+    const renderer = createTemplateRenderer();
+    const context = renderer.prepareContext({ test: 'my-value' });
+    expect(renderer.render('${{ test }}', context)).toBe('my-value');
 
-    expect(render('${{ test | dump }}', { test: 'my-value' })).toBe(
-      '"my-value"',
-    );
+    expect(renderer.render('${{ test | dump }}', context)).toBe('"my-value"');
 
     expect(
-      render('${{ test | replace("my-", "our-") }}', {
-        test: 'my-value',
-      }),
+      renderer.render('${{ test | replace("my-", "our-") }}', context),
     ).toBe('our-value');
 
-    expect(() =>
-      render('${{ invalid...syntax }}', {
-        test: 'my-value',
-      }),
-    ).toThrow(/expected name as lookup value, got ./);
-
-    dispose();
-
-    expect(() => render('${{ test }}', { test: 'my-value' })).toThrow(
-      /disposed/i,
+    expect(() => renderer.render('${{ invalid...syntax }}', context)).toThrow(
+      /Expected name/,
     );
   });
 
-  it('should allow dispose to be called more than once', async () => {
-    const { dispose } = await SecureTemplater.loadRenderer();
+  it('preserves native values for sole interpolations', () => {
+    const renderer = createTemplateRenderer();
+    const context = renderer.prepareContext({
+      value: { enabled: true, retries: 3 },
+    });
 
-    dispose();
-
-    expect(() => dispose()).not.toThrow();
+    expect(renderer.renderValue('${{ value }}', context)).toEqual({
+      enabled: true,
+      retries: 3,
+    });
+    expect(renderer.renderValue('Value: ${{ value }}', context)).toBe(
+      'Value: [object Object]',
+    );
   });
-  it('should make cookiecutter compatibility available when requested', async () => {
-    const { render: renderWith, dispose: disposeWith } =
-      await SecureTemplater.loadRenderer({
-        cookiecutterCompat: true,
-      });
-    const { render: renderWithout, dispose: disposeWithout } =
-      await SecureTemplater.loadRenderer();
+
+  it('should make cookiecutter compatibility available when requested', () => {
+    const { render: renderWith } = createTemplateRenderer({
+      cookiecutterCompat: true,
+    });
+    const { render: renderWithout } = createTemplateRenderer();
 
     // Same two tests repeated to make sure switching back and forth works
     expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
     expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
     expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
-      /Error: filter not found: jsonify/,
+      /Unknown template filter "jsonify"/,
     );
     expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
     expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
-      /Error: filter not found: jsonify/,
+      /Unknown template filter "jsonify"/,
     );
     expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
-      /Error: filter not found: jsonify/,
+      /Unknown template filter "jsonify"/,
     );
     expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
-      /Error: filter not found: jsonify/,
+      /Unknown template filter "jsonify"/,
     );
     expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
-    disposeWith();
-    disposeWithout();
   });
 
-  it('should make parseRepoUrl available when requested', async () => {
+  it('should make parseRepoUrl available when requested', () => {
     const parseRepoUrl = jest.fn(() => ({
       repo: 'my-repo',
       owner: 'my-owner',
@@ -89,12 +83,12 @@ describe('SecureTemplater', () => {
 
     const projectSlug = jest.fn(() => 'my-owner/my-repo');
 
-    const { render: renderWith, dispose: disposeWith } =
-      await SecureTemplater.loadRenderer({
-        templateFilters: { parseRepoUrl, projectSlug },
-      });
-    const { render: renderWithout, dispose: disposeWithout } =
-      await SecureTemplater.loadRenderer();
+    const { render: renderWith } = createTemplateRenderer({
+      ...collectTemplateCapabilities({
+        filters: { parseRepoUrl, projectSlug },
+      }),
+    });
+    const { render: renderWithout } = createTemplateRenderer();
 
     const ctx = {
       repoUrl: 'https://my-host.com/my-owner/my-repo',
@@ -112,29 +106,27 @@ describe('SecureTemplater', () => {
     );
     expect(() =>
       renderWithout('${{ repoUrl | parseRepoUrl | dump }}', ctx),
-    ).toThrow(/Error: filter not found: parseRepoUrl/);
+    ).toThrow(/Unknown template filter "parseRepoUrl"/);
     expect(() => renderWithout('${{ repoUrl | projectSlug }}', ctx)).toThrow(
-      /Error: filter not found: projectSlug/,
+      /Unknown template filter "projectSlug"/,
     );
 
     expect(parseRepoUrl.mock.calls).toEqual([
       ['https://my-host.com/my-owner/my-repo'],
     ]);
-    disposeWith();
-    disposeWithout();
   });
 
-  it('should make additional filters available when requested', async () => {
+  it('should make additional filters available when requested', () => {
     const mockFilter1 = jest.fn(() => 'filtered text');
     const mockFilter2 = jest.fn((var1, var2) => `${var1} ${var2}`);
     const mockFilter3 = jest.fn((var1, var2) => ({ var1, var2 }));
     const mockFilter4 = jest.fn(() => undefined);
-    const { render: renderWith, dispose: disposeWith } =
-      await SecureTemplater.loadRenderer({
-        templateFilters: { mockFilter1, mockFilter2, mockFilter3, mockFilter4 },
-      });
-    const { render: renderWithout, dispose: disposeWithout } =
-      await SecureTemplater.loadRenderer();
+    const { render: renderWith } = createTemplateRenderer({
+      ...collectTemplateCapabilities({
+        filters: { mockFilter1, mockFilter2, mockFilter3, mockFilter4 },
+      }),
+    });
+    const { render: renderWithout } = createTemplateRenderer();
 
     const ctx = { inputValue: 'the input value' };
 
@@ -158,34 +150,32 @@ describe('SecureTemplater', () => {
     expect(renderWith('${{ inputValue | mockFilter4 }}', ctx)).toBe('');
 
     expect(() => renderWithout('${{ inputValue | mockFilter1 }}', ctx)).toThrow(
-      /Error: filter not found: mockFilter1/,
+      /Unknown template filter "mockFilter1"/,
     );
     expect(() =>
       renderWithout('${{ inputValue | mockFilter2("extra arg") }}', ctx),
-    ).toThrow(/Error: filter not found: mockFilter2/);
+    ).toThrow(/Unknown template filter "mockFilter2"/);
     expect(() =>
       renderWithout('${{ inputValue | mockFilter3("extra arg") }}', ctx),
-    ).toThrow(/Error: filter not found: mockFilter3/);
+    ).toThrow(/Unknown template filter "mockFilter3"/);
 
     expect(mockFilter1.mock.calls).toEqual([['the input value']]);
     expect(mockFilter2.mock.calls).toEqual([['the input value', 'extra arg']]);
     expect(mockFilter3.mock.calls).toEqual([
       ['the input value', 'another extra arg'],
     ]);
-    disposeWith();
-    disposeWithout();
   });
-  it('should make additional globals available when requested', async () => {
+  it('should make additional globals available when requested', () => {
     const mockGlobal1 = jest.fn(() => 'awesome global function');
     const mockGlobal2 = 'foo';
     const mockGlobal3 = 123456;
     const mockGlobal4 = jest.fn(() => undefined);
-    const { render: renderWith, dispose: disposeWith } =
-      await SecureTemplater.loadRenderer({
-        templateGlobals: { mockGlobal1, mockGlobal2, mockGlobal3, mockGlobal4 },
-      });
-    const { render: renderWithout, dispose: disposeWithout } =
-      await SecureTemplater.loadRenderer();
+    const { render: renderWith } = createTemplateRenderer({
+      ...collectTemplateCapabilities({
+        globals: { mockGlobal1, mockGlobal2, mockGlobal3, mockGlobal4 },
+      }),
+    });
+    const { render: renderWithout } = createTemplateRenderer();
 
     const ctx = {};
 
@@ -197,32 +187,32 @@ describe('SecureTemplater', () => {
     expect(renderWith('${{ mockGlobal4() }}', ctx)).toBe('');
 
     expect(() => renderWithout('${{ mockGlobal1() }}', ctx)).toThrow(
-      /Error: Unable to call `mockGlobal1`/,
+      /resolved to undefined and cannot be called/,
     );
-    disposeWith();
-    disposeWithout();
   });
 
-  it('should not allow helpers to be rewritten', async () => {
-    const { render, dispose } = await SecureTemplater.loadRenderer({
-      templateFilters: {
-        parseRepoUrl: () => ({
-          repo: 'my-repo',
-          owner: 'my-owner',
-          host: 'my-host.com',
-        }),
-      },
+  it('should not allow helpers to be rewritten', () => {
+    const { render } = createTemplateRenderer({
+      ...collectTemplateCapabilities({
+        filters: {
+          parseRepoUrl: () => ({
+            repo: 'my-repo',
+            owner: 'my-owner',
+            host: 'my-host.com',
+          }),
+        },
+      }),
     });
 
     const ctx = {
       repoUrl: 'https://my-host.com/my-owner/my-repo',
     };
-    expect(
+    expect(() =>
       render(
         '${{ ({}).constructor.constructor("parseRepoUrl = () => JSON.stringify(`inject`)")() }}',
         ctx,
       ),
-    ).toBe('');
+    ).toThrow(/Template name "constructor" is reserved/);
 
     expect(render('${{ repoUrl | parseRepoUrl | dump }}', ctx)).toBe(
       JSON.stringify({
@@ -231,23 +221,21 @@ describe('SecureTemplater', () => {
         host: 'my-host.com',
       }),
     );
-    dispose();
   });
 
-  it('allows pollution during a single template execution', async () => {
-    const { render, dispose } = await SecureTemplater.loadRenderer();
+  it('does not allow prototype pollution', () => {
+    const { render } = createTemplateRenderer();
 
     const ctx = {
       x: 'foo',
     };
     expect(render('${{ x }}', ctx)).toBe('foo');
-    expect(
+    expect(() =>
       render(
         '${{ ({}).constructor.constructor("Array.prototype.forEach = () => {}")() }}',
         ctx,
       ),
-    ).toBe('');
-    expect(() => render('${{ x }}', ctx)).toThrow();
-    dispose();
+    ).toThrow(/Template name "constructor" is reserved/);
+    expect(render('${{ x }}', ctx)).toBe('foo');
   });
 });
