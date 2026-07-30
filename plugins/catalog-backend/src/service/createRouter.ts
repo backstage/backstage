@@ -511,10 +511,14 @@ export async function createRouter(
 
       try {
         const request = entitiesBatchRequest(req);
+        const parsedFilter = parseEntityFilterParams(req.query);
+        const combinedFilter =
+          parsedFilter && request.filter
+            ? { $all: [parsedFilter, request.filter] }
+            : parsedFilter ?? request.filter;
         const { items } = await entitiesCatalog.entitiesBatch({
           entityRefs: request.entityRefs,
-          filter: parseEntityFilterParams(req.query),
-          query: request.query,
+          filter: combinedFilter,
           fields: parseEntityTransformParams(req.query, request.fields),
           credentials: await httpAuth.credentials(req),
         });
@@ -570,10 +574,10 @@ export async function createRouter(
       });
 
       try {
-        const { facets, query } = parseEntityFacetsQuery(req.body ?? {});
+        const { facets, filter } = parseEntityFacetsQuery(req.body ?? {});
 
         const response = await entitiesCatalog.facets({
-          query,
+          filter,
           facets,
           credentials: await httpAuth.credentials(req),
         });
