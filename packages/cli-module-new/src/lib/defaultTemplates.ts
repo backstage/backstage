@@ -30,4 +30,5 @@ export const defaultTemplates = [
   '@backstage/cli-module-new/templates/scaffolder-backend-module',
   '@backstage/cli-module-new/templates/scaffolder-field-extension-module',
   '@backstage/cli-module-new/templates/permission-policy-module',
+  '@backstage/cli-module-new/templates/search-collator-module',
 ];
