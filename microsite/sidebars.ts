@@ -62,6 +62,7 @@ export default {
         'getting-started/configure-app-with-plugins',
         'getting-started/homepage',
       ]),
+      'getting-started/ci',
       sidebarElementWithIndex({ label: 'Deploying Backstage' }, [
         'deployment/index',
         'deployment/scaling',
