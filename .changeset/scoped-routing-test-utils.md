@@ -1,9 +1,9 @@
 ---
-'@backstage/frontend-test-utils': minor
+'@backstage/frontend-test-utils': patch
 ---
 
-**BREAKING**: Simplifies the mock helpers for scoped plugin routing tests (RFC #33603) to match the thinner `AppHistoryApi`.
+Added test helpers for the app history introduced with scoped plugin routing ([RFC #33603](https://github.com/backstage/backstage/issues/33603)).
 
-`createMockNavigationController` and `mockApis.navigationController()` are replaced by `createMockAppHistory` and `mockApis.appHistory()`, which mock `navigate`, `location$`, and `createHref` (with an optional `basename`). `createMockContract` and `createMockRouteResolutionApi`'s pairing with a routing contract are removed — pair `createMockRouteResolutionApi` with `createMockAppHistory` for `RouteLink` / `useNavigateRouteRef` tests instead.
+`createMockAppHistory` and `mockApis.appHistory()` provide an `AppHistoryApi` backed by in-memory history that records the navigation it receives, and `createMockRouteResolutionApi` and `mockApis.routeResolution()` provide a route resolution mock with a fixed set of route ref paths. Pair the two to test `RouteLink` and `useNavigateRouteRef` without rendering a full app.
 
-Test apps still drive navigation through the framework app history with in-memory history instead of a root `MemoryRouter`. `renderInTestApp` / `renderTestApp` still accept `initialRouteEntries` and return a `navigationController` for assertions (now typed as `AppHistoryApi`).
+`renderInTestApp` and `renderTestApp` now drive navigation through an in-memory app history and return it as `appHistory` on the render result, next to the usual React Testing Library result. Use it to navigate and to assert on the resulting location. The `initialRouteEntries` option sets the starting entries as before.

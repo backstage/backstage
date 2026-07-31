@@ -124,7 +124,7 @@ describe('<ErrorPage/>', () => {
       mockNavigate.mockClear();
     });
 
-    it('calls react-router navigate(-1) when no navigation controller is registered (OFS)', async () => {
+    it('calls react-router navigate(-1) when no app history is registered (OFS)', async () => {
       const { getByTestId } = await renderInTestApp(
         <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
       );
@@ -134,12 +134,12 @@ describe('<ErrorPage/>', () => {
       expect(mockNavigate).toHaveBeenCalledWith(-1);
     });
 
-    it('calls window.history.back() instead of react-router when a navigation controller is registered (NFS)', async () => {
+    it('calls window.history.back() instead of react-router when an app history is registered (NFS)', async () => {
       const historyBack = jest.spyOn(window.history, 'back').mockReturnValue();
-      const navigationController = createMockAppHistory();
+      const appHistory = createMockAppHistory();
 
       const { getByTestId } = await renderInTestApp(
-        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
         </TestApiProvider>,
       );

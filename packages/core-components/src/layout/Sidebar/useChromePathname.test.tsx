@@ -23,14 +23,14 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { useChromePathname } from './useChromePathname';
 
 describe('useChromePathname', () => {
-  it('reads pathname from the navigation controller without React Router (NFS)', () => {
-    const navigationController = createMockAppHistory({
+  it('reads pathname from the app history without React Router (NFS)', () => {
+    const appHistory = createMockAppHistory({
       initialLocation: '/catalog/default/component/widget',
     });
 
     const { result } = renderHook(() => useChromePathname(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           {children}
         </TestApiProvider>
       ),
@@ -39,27 +39,27 @@ describe('useChromePathname', () => {
     expect(result.current).toBe('/catalog/default/component/widget');
   });
 
-  it('updates when the navigation controller emits a new location', () => {
-    const navigationController = createMockAppHistory({
+  it('updates when the app history emits a new location', () => {
+    const appHistory = createMockAppHistory({
       initialLocation: '/catalog',
     });
 
     const { result } = renderHook(() => useChromePathname(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           {children}
         </TestApiProvider>
       ),
     });
 
     act(() => {
-      navigationController.navigate('/docs');
+      appHistory.navigate('/docs');
     });
 
     expect(result.current).toBe('/docs');
   });
 
-  it('falls back to React Router useLocation when no controller is registered (OFS)', () => {
+  it('falls back to React Router useLocation when there is no app history (OFS)', () => {
     const { result } = renderHook(() => useChromePathname(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <MemoryRouter initialEntries={['/explore']}>{children}</MemoryRouter>
@@ -69,14 +69,14 @@ describe('useChromePathname', () => {
     expect(result.current).toBe('/explore');
   });
 
-  it('prefers the navigation controller over React Router when both are present', () => {
-    const navigationController = createMockAppHistory({
-      initialLocation: '/from-controller',
+  it('prefers the app history over React Router when both are present', () => {
+    const appHistory = createMockAppHistory({
+      initialLocation: '/from-app-history',
     });
 
     const { result } = renderHook(() => useChromePathname(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           <MemoryRouter initialEntries={['/from-router']}>
             {children}
           </MemoryRouter>
@@ -84,6 +84,6 @@ describe('useChromePathname', () => {
       ),
     });
 
-    expect(result.current).toBe('/from-controller');
+    expect(result.current).toBe('/from-app-history');
   });
 });

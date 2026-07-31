@@ -304,7 +304,7 @@ describe('SubPageBlueprint', () => {
       },
     });
 
-    const { navigationController } = renderTestApp({
+    const { appHistory } = renderTestApp({
       extensions: [parentPage, templatesSubPage, tasksSubPage],
       initialRouteEntries: ['/create/templates'],
     });
@@ -329,7 +329,7 @@ describe('SubPageBlueprint', () => {
     });
 
     await act(async () => {
-      navigationController.navigate('/create/tasks');
+      appHistory.navigate('/create/tasks');
     });
 
     await waitFor(() => {

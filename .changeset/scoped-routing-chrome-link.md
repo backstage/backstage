@@ -2,4 +2,6 @@
 '@backstage/core-components': patch
 ---
 
-App chrome helpers and shared `Link` prefer the framework app history when one is registered (pathname, path resolve, go-back, sidebar active-path matching, and absolute / cross-plugin targets). Without an app history, behavior stays on React Router for old frontend apps. Protocol-relative `//` URLs are treated as external.
+`Link`, `Sidebar` and `ErrorPage` now use the app history when one is available, so sidebar highlighting, the error page "go back" link, and links to absolute or cross-plugin paths keep working under scoped plugin routing. In apps built with the old frontend system there is no app history and behavior is unchanged.
+
+`Link` now also treats protocol-relative `//` URLs as external links.

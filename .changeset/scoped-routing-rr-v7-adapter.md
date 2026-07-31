@@ -2,4 +2,6 @@
 '@backstage/plugin-react-router-v7-adapter': patch
 ---
 
-Adds a React Router v7 page adapter (`ReactRouterV7PageRouter`) that injects library routing context projected from the app's `AppHistoryApi`, without writing browser history directly. An existing React Router `<Routes>` tree composed by the page keeps working as opaque `children` (relative links, nested `<Routes>`, `useParams`, and so on). Register the adapter with `PageRouterBlueprint` or `pageRouterApiRef`.
+Added a new package that provides `ReactRouterV7PageRouter`, a page router that renders new frontend system pages with React Router v7. Attach it to a page's `router` input with `PageRouterBlueprint`, or register it as the app-wide default through `pageRouterApiRef`.
+
+Pages keep composing their content with React Router as usual — relative links, nested `<Routes>` and `useParams` all work — while browser history stays owned by the app.

@@ -23,7 +23,7 @@ const UNSET = Symbol('useObservableAsState.unset');
  * Subscribes to a Backstage Observable and returns the latest value as React state.
  *
  * The observable MUST emit synchronously on subscribe (which
- * NavigationController.location$ and scoped contract location$ both do).
+ * `AppHistoryApi.location$` does).
  *
  * @internal
  */

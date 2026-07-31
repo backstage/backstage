@@ -37,7 +37,7 @@ describe('useNavigateRouteRef', () => {
     navigate.mockClear();
   });
 
-  it('resolves the route ref and navigates via the framework controller', () => {
+  it('resolves the route ref and navigates via the app history', () => {
     const { result } = renderHook(() => useNavigateRouteRef(catalogRouteRef), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider

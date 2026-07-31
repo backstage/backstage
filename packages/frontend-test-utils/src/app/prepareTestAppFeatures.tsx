@@ -36,13 +36,13 @@ import { getMockApiFactory } from '../apis/MockWithApiFactory';
 import { TestAppRouter, type TestNavigation } from './createTestNavigation';
 
 /**
- * Shared mounted-route + navigation-controller wiring for test app renderers.
+ * Shared mounted-route + app-history wiring for test app renderers.
  *
  * @internal
  */
 export function prepareTestAppFeatures(options: {
   extensions: ExtensionDefinition[];
-  navigation: Pick<TestNavigation, 'controller' | 'basename'>;
+  navigation: Pick<TestNavigation, 'appHistory' | 'basename'>;
   appPluginOverride: FrontendFeature;
   mountedRoutes?: {
     [path: string]: RouteRef | ExternalRouteRef;
@@ -56,7 +56,7 @@ export function prepareTestAppFeatures(options: {
   apiFactoryOverrides: ReturnType<typeof createApiFactory>[];
   externalBindings: Map<ExternalRouteRef, RouteRef>;
 } {
-  const { controller } = options.navigation;
+  const { appHistory } = options.navigation;
   const extensions = [...options.extensions];
   const externalBindings = new Map<ExternalRouteRef, RouteRef>();
 
@@ -92,7 +92,7 @@ export function prepareTestAppFeatures(options: {
   }
 
   function TestRouter({ children }: { children: ReactNode }) {
-    return <TestAppRouter controller={controller}>{children}</TestAppRouter>;
+    return <TestAppRouter appHistory={appHistory}>{children}</TestAppRouter>;
   }
 
   const features: FrontendFeature[] = [
@@ -105,7 +105,7 @@ export function prepareTestAppFeatures(options: {
             defineParams({
               api: appHistoryApiRef,
               deps: {},
-              factory: () => controller,
+              factory: () => appHistory,
             }),
         }),
         RouterBlueprint.make({
@@ -127,9 +127,9 @@ export function prepareTestAppFeatures(options: {
   }
 
   const apiFactoryOverrides = [
-    // Prefer the memory-history controller over any production default
+    // Prefer the in-memory app history over any production default
     // registered in phase APIs (first registration wins).
-    createApiFactory(appHistoryApiRef, controller),
+    createApiFactory(appHistoryApiRef, appHistory),
     ...(options.apis ?? []).map(entry => {
       const mockFactory = getMockApiFactory(entry);
       if (mockFactory) {

@@ -86,17 +86,17 @@ describe('RouteTracker', () => {
   function renderWithNavigation(
     initialPath: string,
     children?: ReactNode,
-    navigationController: AppHistoryApi = createMockAppHistory({
+    appHistory: AppHistoryApi = createMockAppHistory({
       initialLocation: initialPath,
     }),
   ) {
     return {
-      navigationController,
+      appHistory,
       ...render(
         <TestApiProvider
           apis={[
             [analyticsApiRef, mockedAnalytics],
-            [appHistoryApiRef, navigationController],
+            [appHistoryApiRef, appHistory],
           ]}
         >
           <RouteTracker routeObjects={routeObjects} />
@@ -129,10 +129,10 @@ describe('RouteTracker', () => {
   });
 
   it('should capture the navigate event on route change', async () => {
-    const { navigationController } = renderWithNavigation('/path/foo/bar');
+    const { appHistory } = renderWithNavigation('/path/foo/bar');
 
     act(() => {
-      navigationController.navigate('/path2/hello');
+      appHistory.navigate('/path2/hello');
     });
 
     expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({

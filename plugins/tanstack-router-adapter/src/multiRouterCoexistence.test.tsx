@@ -29,13 +29,13 @@ import { TanStackPageRouter } from './TanStackPageRouter';
 /**
  * Pudding-style coexistence: default RR v6 page + TanStack page override,
  * both rendering opaque single-page content, with cross-plugin and
- * controller-driven navigation.
+ * app-history-driven navigation.
  */
 describe('TanStack + RR v6 coexistence', () => {
   const catalogRouteRef = createRouteRef();
   const toolsRouteRef = createRouteRef();
 
-  it('should coexist v6 default + TanStack page with cross-plugin and controller navigate', async () => {
+  it('should coexist v6 default + TanStack page with cross-plugin and app history navigate', async () => {
     const CatalogV6Page = () => {
       const location = useFrameworkLocation();
       return (
@@ -99,7 +99,7 @@ describe('TanStack + RR v6 coexistence', () => {
       ],
     });
 
-    const { navigationController } = renderTestApp({
+    const { appHistory } = renderTestApp({
       features: [catalogPlugin, toolsPlugin],
       initialRouteEntries: ['/catalog-pudding-ts'],
     });
@@ -132,7 +132,7 @@ describe('TanStack + RR v6 coexistence', () => {
 
     // AppHistoryApi has no programmatic `go` — navigate directly instead.
     await act(async () => {
-      navigationController.navigate('/tools-pudding-ts');
+      appHistory.navigate('/tools-pudding-ts');
     });
 
     await waitFor(() => {
@@ -141,7 +141,7 @@ describe('TanStack + RR v6 coexistence', () => {
     });
 
     await act(async () => {
-      navigationController.navigate('/catalog-pudding-ts');
+      appHistory.navigate('/catalog-pudding-ts');
     });
 
     await waitFor(() => {

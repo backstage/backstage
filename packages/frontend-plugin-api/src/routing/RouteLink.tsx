@@ -52,9 +52,9 @@ function isModifiedEvent(event: ReactMouseEvent): boolean {
 }
 
 /**
- * A link that resolves a {@link RouteRef} and navigates via the framework
- * navigation controller when registered, otherwise falls through to a normal
- * anchor navigation. Prefer this for cross-plugin navigation instead of React
+ * A link that resolves a {@link RouteRef} and navigates via the app history
+ * when one is available, otherwise falls through to a normal anchor
+ * navigation. Prefer this for cross-plugin navigation instead of React
  * Router's `Link` or a scoped `useNavigate` with an absolute path.
  *
  * @public
@@ -86,7 +86,7 @@ export const RouteLink = forwardRef(function RouteLink<
       return;
     }
     if (!frameworkNavigate) {
-      // Old frontend / no controller: let the browser follow href.
+      // Old frontend system / no app history: let the browser follow href.
       return;
     }
     event.preventDefault();

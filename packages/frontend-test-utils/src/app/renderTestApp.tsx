@@ -66,7 +66,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   features?: FrontendFeature[];
 
   /**
-   * Initial route entries for the in-memory navigation controller history.
+   * Initial route entries for the in-memory app history.
    * The last entry is the starting location.
    */
   initialRouteEntries?: string[];
@@ -118,8 +118,8 @@ const appPluginOverride = appPlugin.withOverrides({
  * utilities as `@testing-library/react` `render` function.
  *
  * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
- * with in-memory history — the same seam as production — rather than a
- * test-only root React Router as the long-term harness.
+ * with in-memory history, the same seam as production, and is returned as
+ * `appHistory`.
  *
  * @public
  */
@@ -128,7 +128,7 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
 ): TestAppRenderResult {
   const extensions = [...(options?.extensions ?? [])];
   const configData = options?.config ?? DEFAULT_MOCK_CONFIG;
-  const { controller, basename } = createTestNavigation({
+  const { appHistory, basename } = createTestNavigation({
     initialEntries: options?.initialRouteEntries,
     config: configData,
   });
@@ -136,7 +136,7 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
   const { features, apiFactoryOverrides, externalBindings } =
     prepareTestAppFeatures({
       extensions,
-      navigation: { controller, basename },
+      navigation: { appHistory, basename },
       appPluginOverride,
       mountedRoutes: options?.mountedRoutes,
       features: options?.features,
@@ -189,5 +189,5 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),
   );
 
-  return Object.assign(result, { navigationController: controller });
+  return Object.assign(result, { appHistory });
 }

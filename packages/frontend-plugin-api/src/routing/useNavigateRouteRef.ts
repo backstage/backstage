@@ -37,12 +37,12 @@ export type NavigateRouteRefFunc<TParams extends AnyRouteRefParams> = (
 
 /**
  * Combines {@link useRouteRef} with {@link useAppNavigate} for cross-plugin
- * programmatic navigation (framework controller when present, React Router
+ * programmatic navigation (app history when present, React Router
  * otherwise).
  *
  * Prefer this (or {@link RouteLink}) over React Router's `useNavigate` with an
- * absolute path resolved from a route ref, so navigation is not blocked by a
- * scoped routing contract under the new frontend system.
+ * absolute path resolved from a route ref, so navigation is not scoped to the
+ * current page under the new frontend system.
  *
  * Returns `undefined` when the route cannot be resolved.
  *

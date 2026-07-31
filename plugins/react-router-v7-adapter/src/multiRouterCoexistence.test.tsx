@@ -43,7 +43,7 @@ describe('multi-router coexistence', () => {
   const catalogRouteRef = createRouteRef();
   const settingsRouteRef = createRouteRef();
 
-  it('should coexist v6 default + v7 pages with cross-plugin and controller navigate', async () => {
+  it('should coexist v6 default + v7 pages with cross-plugin and app history navigate', async () => {
     const CatalogV6Page = () => {
       const location = useFrameworkLocation();
       return (
@@ -110,7 +110,7 @@ describe('multi-router coexistence', () => {
       ],
     });
 
-    const { navigationController } = renderTestApp({
+    const { appHistory } = renderTestApp({
       features: [catalogPlugin, settingsPlugin],
       initialRouteEntries: ['/catalog-pudding'],
     });
@@ -160,7 +160,7 @@ describe('multi-router coexistence', () => {
 
     // AppHistoryApi has no programmatic `go` — navigate directly instead.
     await act(async () => {
-      navigationController.navigate('/settings-pudding/general');
+      appHistory.navigate('/settings-pudding/general');
     });
 
     await waitFor(() => {
@@ -172,7 +172,7 @@ describe('multi-router coexistence', () => {
     });
 
     await act(async () => {
-      navigationController.navigate('/settings-pudding');
+      appHistory.navigate('/settings-pudding');
     });
 
     await waitFor(() => {
@@ -183,7 +183,7 @@ describe('multi-router coexistence', () => {
     });
 
     await act(async () => {
-      navigationController.navigate('/catalog-pudding');
+      appHistory.navigate('/catalog-pudding');
     });
 
     await waitFor(() => {
@@ -195,7 +195,7 @@ describe('multi-router coexistence', () => {
     });
 
     await act(async () => {
-      navigationController.navigate('/settings-pudding');
+      appHistory.navigate('/settings-pudding');
     });
 
     await waitFor(() => {
@@ -278,7 +278,7 @@ describe('multi-router coexistence', () => {
       },
     });
 
-    const { navigationController } = renderTestApp({
+    const { appHistory } = renderTestApp({
       extensions: [homePage, visualizerPage, treeSubPage, treeV7Router],
       initialRouteEntries: ['/home-pudding'],
     });
@@ -315,7 +315,7 @@ describe('multi-router coexistence', () => {
 
     // AppHistoryApi has no programmatic `go` — navigate directly instead.
     await act(async () => {
-      navigationController.navigate('/visualizer-pudding/tree');
+      appHistory.navigate('/visualizer-pudding/tree');
     });
 
     await waitFor(() => {
@@ -324,7 +324,7 @@ describe('multi-router coexistence', () => {
     });
 
     await act(async () => {
-      navigationController.navigate('/home-pudding');
+      appHistory.navigate('/home-pudding');
     });
 
     await waitFor(() => {

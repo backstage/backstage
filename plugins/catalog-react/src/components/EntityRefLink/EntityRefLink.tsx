@@ -57,10 +57,9 @@ function isModifiedEvent(event: ReactMouseEvent): boolean {
 /**
  * Shows a clickable link to an entity.
  *
- * Under the new frontend system, entity targets navigate via the framework
- * app history (not the disposable NFS `Link` shim). Without an app history
- * (old frontend system), the shared {@link @backstage/core-components#Link}
- * keeps today's react-router behavior.
+ * Under the new frontend system, entity targets navigate via the app history.
+ * Without an app history (old frontend system), the shared
+ * {@link @backstage/core-components#Link} keeps today's react-router behavior.
  *
  * @public
  */

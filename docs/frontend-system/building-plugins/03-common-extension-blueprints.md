@@ -65,17 +65,15 @@ Your custom component receives a `navItems` prop—a collection with `take(id)` 
 
 ### Router - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.RouterBlueprint.html) (deprecated)
 
-> **Deprecated.** Prefer page-level router adapters. The framework's `AppHistoryApi` is the sole history authority; do not use `RouterBlueprint` as a history authority.
+> **Deprecated.** Browser history is owned by the app, so a root router component no longer controls plugin routing. Existing overrides keep working and there is no removal date, but new code should choose a router per page instead.
 
-Router extensions historically replaced the root router component attached to the app root. Existing overrides may still wrap the app root for chrome context, but new apps should not rely on them for plugin routing.
+Router extensions replace the root router component attached to the app root.
 
 **Migration:**
 
-- Use [`PageRouterBlueprint`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.PageRouterBlueprint.html) / `pageRouterApiRef` for page-level router adapters (React Router v6 default, or a page override such as v7 or TanStack).
-- In test apps, use the `@backstage/frontend-test-utils` memory navigation harness (`createTestNavigation` and the returned `navigationController`, typed as `AppHistoryApi`) instead of a root `MemoryRouter` / `RouterBlueprint` override.
+- Use [`PageRouterBlueprint`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.PageRouterBlueprint.html) / `pageRouterApiRef` to pick the router that renders a page. The default is React Router v6, and a page can opt in to React Router v7 or TanStack Router instead.
+- In tests, use `renderInTestApp` / `renderTestApp` from `@backstage/frontend-test-utils` and drive navigation through the `appHistory` they return, instead of a root `MemoryRouter` or a `RouterBlueprint` override.
 - For a plugin-author guide to absolute navigation and testing under page-scoped routing, see [Scoped Plugin Routing](../architecture/36-routes.md#scoped-plugin-routing).
-
-**Residual:** `AbsoluteLinkNavigate` and `RootReactRouterV6` still exist for chrome / absolute-link paths that assume a root React Router projection. Remove `AbsoluteLinkNavigate` when AppRoot no longer mounts `RootReactRouterV6`.
 
 ## Extension blueprints in `@backstage/plugin-catalog-react/alpha`
 

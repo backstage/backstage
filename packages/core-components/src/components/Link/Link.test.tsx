@@ -215,7 +215,7 @@ describe('<Link />', () => {
 
   describe('NFS Link shim', () => {
     const navigate = jest.fn();
-    const navigationController = createMockAppHistory({ navigate });
+    const appHistory = createMockAppHistory({ navigate });
     const scopedContract: PageMount = {
       basePath: '/create',
       routePattern: '/create',
@@ -225,9 +225,9 @@ describe('<Link />', () => {
       navigate.mockClear();
     });
 
-    it('escalates cross-plugin absolute targets via the navigation controller', () => {
+    it('escalates cross-plugin absolute targets via the app history', () => {
       render(
-        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           <PageMountContext.Provider value={scopedContract}>
             <MemoryRouter>
               <Link to="/catalog/default/component/widget">Entity</Link>

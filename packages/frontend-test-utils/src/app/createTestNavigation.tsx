@@ -41,11 +41,10 @@ import type { JsonObject } from '@backstage/types';
  */
 export type TestAppRenderResult = RenderResult & {
   /**
-   * Framework app history backed by in-memory history.
-   * Prefer this (or `appHistoryApiRef`) over a root React Router for
-   * asserting and driving navigation in tests.
+   * The app history backed by in-memory history. Use this to drive and assert
+   * on navigation in tests.
    */
-  navigationController: AppHistoryApi;
+  appHistory: AppHistoryApi;
 };
 
 /**
@@ -54,7 +53,7 @@ export type TestAppRenderResult = RenderResult & {
  * @internal
  */
 export interface TestNavigation {
-  controller: AppHistory;
+  appHistory: AppHistory;
   history: HistoryBackend;
   basename: string;
 }
@@ -95,11 +94,11 @@ export function createTestNavigation(options?: {
   const history = createMemoryHistoryBackend({
     initialEntries: historyEntries,
   });
-  const controller = createAppHistory({
+  const appHistory = createAppHistory({
     history,
     basename: basename || undefined,
   });
-  return { controller, history, basename };
+  return { appHistory, history, basename };
 }
 
 /**
@@ -112,8 +111,8 @@ export function createTestNavigation(options?: {
  */
 export function TestAppRouter(props: {
   children: ReactNode;
-  controller: AppHistory;
+  appHistory: AppHistory;
 }) {
-  const { children, controller } = props;
-  return <RootHistoryRouter history={controller}>{children}</RootHistoryRouter>;
+  const { children, appHistory } = props;
+  return <RootHistoryRouter history={appHistory}>{children}</RootHistoryRouter>;
 }

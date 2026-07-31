@@ -31,11 +31,10 @@ let hasWarnedDeprecation = false;
  * is limited to use by the app plugin.
  *
  * @public
- * @deprecated Prefer page-level router adapters via `PageRouterBlueprint` and
- * the app-plugin `pageRouterApiRef` default. History is owned by the navigation
- * controller; this blueprint is no longer the history authority. Existing
- * overrides still wrap the app root for chrome context, but new apps should
- * not rely on them for plugin routing.
+ * @deprecated Browser history is owned by the app itself, so this blueprint no
+ * longer controls plugin routing. It remains fully supported and there is no
+ * removal date, but new code should pick a page-level router through
+ * `PageRouterBlueprint` or `pageRouterApiRef` instead.
  */
 export const RouterBlueprint = createExtensionBlueprint({
   kind: 'app-router-component',
@@ -53,9 +52,9 @@ export const RouterBlueprint = createExtensionBlueprint({
       hasWarnedDeprecation = true;
       // eslint-disable-next-line no-console
       console.warn(
-        'DEPRECATION WARNING: RouterBlueprint is deprecated and is no longer the history authority. ' +
-          'Prefer page-level router adapters via PageRouterBlueprint / pageRouterApiRef. ' +
-          'History is owned by the navigation controller.',
+        'DEPRECATION WARNING: RouterBlueprint is deprecated and no longer controls plugin routing, ' +
+          'since browser history is owned by the app itself. It remains supported, but new code ' +
+          'should pick a page-level router through PageRouterBlueprint or pageRouterApiRef.',
       );
     }
     yield componentDataRef(params.component);

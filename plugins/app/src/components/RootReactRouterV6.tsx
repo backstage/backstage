@@ -22,14 +22,14 @@ import { RootHistoryRouter } from '../../../../packages/frontend-app-api/src/rou
 /**
  * Root-level React Router v6 projection of the app history.
  *
- * Residual: supplies RR context for chrome that still needs react-router APIs
- * (`useResolvedPath`, relative `Link` targets, OFS-compatible trees). History
- * authority remains the AppHistory — this never owns `window.history` via
- * push/replace.
+ * Supplies a React Router context for app chrome that uses react-router APIs
+ * (`useResolvedPath`, relative `Link` targets, old frontend system trees).
+ * The app history remains the history authority — this never owns
+ * `window.history` via push/replace.
  *
- * Prefer framework location/nav for new chrome (`useFrameworkLocation`,
- * `useChromePathname`, `RouteLink`, `useNavigateRouteRef`). Remove this
- * projection once remaining chrome no longer requires a root RR context.
+ * New chrome should use the app history directly (`useFrameworkLocation`,
+ * `useChromePathname`, `RouteLink`, `useNavigateRouteRef`) so that this
+ * projection can eventually be dropped.
  */
 export function RootReactRouterV6(props: { children: ReactNode }) {
   const { children } = props;

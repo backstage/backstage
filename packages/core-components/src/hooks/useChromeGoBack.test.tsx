@@ -35,11 +35,11 @@ describe('useChromeGoBack', () => {
 
   it('calls window.history.back() without React Router (NFS)', () => {
     const historyBack = jest.spyOn(window.history, 'back').mockReturnValue();
-    const navigationController = createMockAppHistory();
+    const appHistory = createMockAppHistory();
 
     const { result } = renderHook(() => useChromeGoBack(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           {children}
         </TestApiProvider>
       ),
@@ -55,7 +55,7 @@ describe('useChromeGoBack', () => {
     historyBack.mockRestore();
   });
 
-  it('calls react-router navigate(-1) when no controller is registered (OFS)', () => {
+  it('calls react-router navigate(-1) when there is no app history (OFS)', () => {
     const { result } = renderHook(() => useChromeGoBack(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <MemoryRouter>{children}</MemoryRouter>

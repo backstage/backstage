@@ -23,7 +23,7 @@ import type {
 import { frameworkLocationEqual } from '../../../frontend-plugin-api/src/routing/useObservableAsState';
 
 /**
- * Subscribes to a app history's `location$` when one is provided.
+ * Subscribes to an app history's `location$` when one is provided.
  * Returns `undefined` when there is no app history (OFS / isolated tests).
  *
  * Kept in core-components (rather than importing the NFS-only hook) so chrome

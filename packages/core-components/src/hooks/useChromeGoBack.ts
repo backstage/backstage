@@ -21,9 +21,9 @@ import { useOptionalAppHistory } from './useOptionalAppHistory';
 /**
  * Returns a go-back callback for app chrome / error pages.
  *
- * Prefers browser history when the framework app history is present (NFS)
- * and only calls React Router's `useNavigate` when there is no controller
- * (OFS). `AppHistoryApi` has no `go()` of its own — it listens for
+ * Prefers browser history when the app history is present (new frontend
+ * system) and only calls React Router's `useNavigate` when there is no app
+ * history (old frontend system). `AppHistoryApi` has no `go()` of its own — it listens for
  * `popstate`, so going back through the browser (rather than the app
  * history) is the supported way to navigate back (see `RootHistoryRouter`'s
  * `navigator.go()`).

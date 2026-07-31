@@ -67,7 +67,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
       },
     });
 
-    const { navigationController } = renderTestApp({
+    const { appHistory } = renderTestApp({
       extensions: [settingsPage, settingsV7Router],
       initialRouteEntries: ['/settings-v7'],
     });
@@ -92,7 +92,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
     // links, so return to the page root before the next relative hop.
     // AppHistoryApi has no programmatic `go` — navigate directly instead.
     await act(async () => {
-      navigationController.navigate('/settings-v7');
+      appHistory.navigate('/settings-v7');
     });
 
     await waitFor(() => {
@@ -110,7 +110,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
     });
 
     await act(async () => {
-      navigationController.navigate('/settings-v7');
+      appHistory.navigate('/settings-v7');
     });
 
     await waitFor(() => {
@@ -118,7 +118,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
     });
 
     await act(async () => {
-      navigationController.navigate('/settings-v7/auth');
+      appHistory.navigate('/settings-v7/auth');
     });
 
     await waitFor(() => {
@@ -127,7 +127,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
       );
     });
 
-    // Page stayed on the v7 adapter through in-plugin nav and controller nav.
+    // Page stayed on the v7 adapter through in-plugin nav and app history nav.
     expect(screen.getByTestId('router-version')).toHaveTextContent('v7');
   });
 

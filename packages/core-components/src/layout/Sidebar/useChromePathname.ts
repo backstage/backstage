@@ -19,13 +19,12 @@ import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 import { useOptionalAppHistoryLocation } from '../../hooks/useOptionalAppHistoryLocation';
 
 /**
- * App chrome pathname that prefers the framework navigation controller when
- * present (NFS), and falls back to React Router's `useLocation` (OFS).
+ * App chrome pathname that prefers the app history when present (new frontend
+ * system), and falls back to React Router's `useLocation` (old frontend
+ * system).
  *
- * When a navigation controller is registered, React Router hooks are not
- * called — chrome pathname resolution does not require a root RR projection.
- * (Sidebar `Link` / BUI path-matching may still need RR until those are
- * migrated.)
+ * When an app history is registered, React Router hooks are not called, so
+ * chrome pathname resolution does not require a root React Router context.
  *
  * @internal
  */
@@ -34,10 +33,10 @@ export function useChromePathname(): string {
   const frameworkLocation = useOptionalAppHistoryLocation(appHistory);
   const inRouter = useInRouterContext();
 
-  // Gate on controller presence (not snapshot truthiness) so NFS never calls
-  // useLocation. Router / API presence are stable for a component's lifetime
-  // (same pattern as BUI's useResolvedHref / Link's useResolvedPath), keeping
-  // hook call count stable.
+  // Gate on app history presence (not snapshot truthiness) so the new frontend
+  // system never calls useLocation. Router / API presence are stable for a
+  // component's lifetime (same pattern as BUI's useResolvedHref / Link's
+  // useResolvedPath), keeping hook call count stable.
   if (appHistory) {
     return frameworkLocation?.pathname ?? '/';
   }

@@ -368,7 +368,7 @@ describe('AppRoutes', () => {
       },
     });
 
-    const { navigationController } = renderTestApp({
+    const { appHistory } = renderTestApp({
       extensions: [catalogPage],
       // App-relative path; harness stores it under /backstage on the memory backend.
       initialRouteEntries: ['/catalog/entities'],
@@ -387,16 +387,14 @@ describe('AppRoutes', () => {
       );
     });
 
-    // Prove the controller was constructed with basename: navigate writes
+    // Prove the app history was constructed with basename: navigate writes
     // under /backstage and location$ still emits the stripped app path.
     const locations: string[] = [];
-    navigationController.location$.subscribe(loc =>
-      locations.push(loc.pathname),
-    );
+    appHistory.location$.subscribe(loc => locations.push(loc.pathname));
     expect(locations[locations.length - 1]).toBe('/catalog/entities');
 
     await act(async () => {
-      navigationController.navigate('/catalog/other');
+      appHistory.navigate('/catalog/other');
     });
     expect(locations).toContain('/catalog/other');
   });

@@ -479,7 +479,7 @@ function MyInvalidComponent() {
 
 ## Scoped Plugin Routing
 
-In the new frontend system, browser history is owned by a single framework `AppHistoryApi` — there is no root React Router tree and no per-page routing contract. Each matched page receives its mount point (`basePath` + registered `routePattern`) via context. In-page routing still goes through a page router adapter (React Router v6 by default), so relative navigation inside a page keeps working the way it does today.
+In the new frontend system, browser history is owned by the app and exposed as a single `AppHistoryApi`, rather than by a router component at the app root. Each page is then rendered by a page router scoped to that page's own path, using React Router v6 by default, so relative navigation inside a page keeps working the way it does today.
 
 This section is for plugin authors outside the Backstage monorepo who need to keep their plugins working under that model. For the design background, see [RFC #33603](https://github.com/backstage/backstage/issues/33603).
 
@@ -490,13 +490,13 @@ If your plugin only navigates within its own page scope, you can keep using Reac
 - `Link`, `useNavigate`, `useParams`, and `<Routes>` from `react-router-dom`
 - Relative paths and in-plugin sub-routes
 
-Under the new frontend system those APIs are provided by the page router adapter. You do not need to adopt a different router library for the default path.
+Under the new frontend system those APIs are provided by the page router. You do not need to adopt a different router library.
 
 ### Absolute and cross-plugin navigation
 
-Resolving a route ref to a concrete path and then calling React Router `navigate(...)`, or pointing React Router `Link` at an absolute `to` string, can break under a page-scoped adapter — the page adapter is not the history authority for targets outside its own page.
+Resolving a route ref to a concrete path and then calling React Router `navigate(...)`, or pointing React Router `Link` at an absolute `to` string, can break under a page-scoped router — a page router only owns navigation within its own page.
 
-Prefer the dual-path helpers from `@backstage/frontend-plugin-api` so the same plugin works in both the new and old frontend systems. The public navigation surface mirrors the `navigate` + `useHref` pattern used by libraries like react-aria:
+Prefer the navigation helpers from `@backstage/frontend-plugin-api` so the same plugin works in both the new and old frontend systems. The public navigation surface is the `navigate` and `useHref` pair, deliberately mirroring [React Aria's `RouterProvider`](https://react-spectrum.adobe.com/react-aria/routing.html):
 
 ```tsx
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -513,9 +513,7 @@ export function useNavigateToSearchQuery() {
 }
 ```
 
-`useAppNavigate` uses the framework's `AppHistoryApi` when one is registered, and falls back to React Router when it is not. `useHref` is the react-aria-style counterpart for resolving a path to a browser-ready href (e.g. for a plain `<a>`), with the same React Router fallback.
-
-`useFrameworkLocation` is for app shell and chrome under the new frontend system only — it requires a registered `AppHistoryApi` and does not fall back to React Router. Plugin page code that only needs to navigate should prefer `useAppNavigate` / `RouteLink`.
+`useAppNavigate` uses the app's `AppHistoryApi` when one is available, and falls back to React Router when it is not. `useHref` is its counterpart for resolving a path to a browser-ready href, for example for a plain `<a>`, with the same React Router fallback.
 
 For declarative cross-plugin links, use `RouteLink` instead of building absolute `to` strings:
 
@@ -543,13 +541,13 @@ export function EntityNameLink(props: {
 }
 ```
 
-For programmatic navigation to a route ref, use `useNavigateRouteRef`. If you already depend on `EntityRefLink` from `@backstage/plugin-catalog-react`, bump that package so you pick up its `RouteLink`-based NFS path.
+For programmatic navigation to a route ref, use `useNavigateRouteRef`. If you already depend on `EntityRefLink` from `@backstage/plugin-catalog-react`, upgrade that package to pick up its `RouteLink`-based implementation.
 
 ### Page routers
 
-Leaving a page's `router` input empty keeps the app default, which is React Router v6 via `pageRouterApiRef`. `PageBlueprint` composes a page's sub-pages (`pages` input / `SubPageBlueprint`) and `loader` content into a native React Router `<Routes>` tree — there is no library-agnostic route tree format to declare; pages compose React Router elements directly, the same way they did before the new frontend system.
+Leaving a page's `router` input empty keeps the app default, which is React Router v6. `PageBlueprint` composes a page's sub-pages (`pages` input / `SubPageBlueprint`) and `loader` content into a regular React Router `<Routes>` tree, the same way pages did before the new frontend system.
 
-If you want a different page router (for example React Router v7), attach it with `PageRouterBlueprint`:
+If you want a different page router (for example React Router v7), attach one of the packaged routers with `PageRouterBlueprint`:
 
 ```tsx
 import { PageRouterBlueprint } from '@backstage/frontend-plugin-api';
@@ -561,18 +559,18 @@ const toolsV7Router = PageRouterBlueprint.make({
 });
 ```
 
-A page router adapter component receives `{ basePath, routePattern, appBasename?, children }` — `children` is the page's opaque content (its own `<Routes>` tree, or a `loader`'s element); the adapter's job is only to provide routing context scoped to `basePath` so `children` can resolve locations, links, and nested routes correctly.
+The page's content is passed to the page router unchanged, so the page keeps composing its own React Router elements and the router only scopes them to the page's path.
 
-TanStack Router (`@backstage/plugin-tanstack-router-adapter`) fully owns rendering via its own route tree and has **no** opaque React Router children bridge — it only supports single-page (`loader`) content, not sub-pages / tabs. If an app makes TanStack the default page router, `PageBlueprint` fails fast (`supportsOpaqueChildren: false`) for pages that would otherwise rely on opaque React Router content; keep an explicit React Router page router override for those pages.
+TanStack Router (`@backstage/plugin-tanstack-router-adapter`) renders through its own route tree and cannot host React Router content, so it only supports pages that render a single content element, not pages built from sub-pages or tabs. If an app makes TanStack the default page router, such pages fail fast with a clear error; give them a React Router page router instead.
 
 ### Testing
 
-When exercising new frontend system navigation, prefer the memory navigation harness from `@backstage/frontend-test-utils`. `renderInTestApp` and `renderTestApp` drive an in-memory `AppHistoryApi` and return a `navigationController` (typed as `AppHistoryApi`) you can assert against — `navigate`, `location$`, and `createHref`. There is no programmatic `go`; drive multi-step scenarios with direct `navigationController.navigate(path)` calls, and rely on the browser's real back/forward for that behavior outside of tests.
+When exercising new frontend system navigation, use `renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils`. They drive an in-memory `AppHistoryApi` and return it as `appHistory`, so you can call `appHistory.navigate(path)` to move between locations and assert on `location$` or `createHref`. Browser back and forward are not simulated; drive multi-step scenarios with explicit `navigate` calls.
 
 Relative in-plugin tests that only need React Router context can continue to use existing patterns.
 
 ### Deprecated root router overrides
 
-Do not use `RouterBlueprint` as a history authority in new work. Prefer page-level adapters (`PageRouterBlueprint` / `pageRouterApiRef`). See [Common Extension Blueprints](../building-plugins/03-common-extension-blueprints.md) for the Router blueprint migration notes.
+`RouterBlueprint` no longer controls plugin routing. It keeps working and there is no removal date, but new code should pick a router per page with `PageRouterBlueprint` / `pageRouterApiRef`. See [Common Extension Blueprints](../building-plugins/03-common-extension-blueprints.md) for the Router blueprint migration notes.
 
-If your plugin implements or mocks `AppHistoryApi` directly, keep to its minimal surface: `navigate`, `location$`, and `createHref`. There is no per-adapter metadata channel and no shared navigation-blocker registry — those are now the responsibility of individual page router adapters, not the framework.
+If your plugin mocks `AppHistoryApi` directly, keep to its minimal surface: `navigate`, `location$`, and `createHref`.

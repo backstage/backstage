@@ -193,8 +193,7 @@ function isModifiedEvent(event: ReactMouseEvent): boolean {
  * Unstyled link primitive which...
  * - Uses react-router for internal links.
  * - Under the new frontend system, routes absolute / cross-plugin targets
- *   through the framework navigation controller when NFS signals are present
- *   (see AbsoluteLinkNavigate / `absoluteLinkNavigate.ts`).
+ *   through the app history (see `absoluteLinkNavigate.ts`).
  * - Captures link clicks as analytics events.
  */
 export const UnstyledLink = forwardRef<any, LinkProps>(
@@ -267,7 +266,7 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
     }
 
     if (navigateViaFramework) {
-      // AbsoluteLinkNavigate: absolute / cross-plugin targets use the controller
+      // Absolute / cross-plugin targets navigate through the app history
       return (
         <a {...props} ref={ref} href={to} onClick={handleClick}>
           {props.children}

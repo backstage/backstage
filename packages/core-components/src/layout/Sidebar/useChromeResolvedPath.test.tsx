@@ -24,13 +24,13 @@ import { useChromeResolvedPath } from './useChromeResolvedPath';
 
 describe('useChromeResolvedPath', () => {
   it('returns absolute paths as plain resolved strings without React Router', () => {
-    const navigationController = createMockAppHistory({
+    const appHistory = createMockAppHistory({
       initialLocation: '/catalog',
     });
 
     const { result } = renderHook(() => useChromeResolvedPath('/docs'), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           {children}
         </TestApiProvider>
       ),
@@ -39,14 +39,14 @@ describe('useChromeResolvedPath', () => {
     expect(result.current.pathname).toBe('/docs');
   });
 
-  it('resolves relative paths against the navigation controller location (NFS)', () => {
-    const navigationController = createMockAppHistory({
+  it('resolves relative paths against the app history location (NFS)', () => {
+    const appHistory = createMockAppHistory({
       initialLocation: '/catalog/entities',
     });
 
     const { result } = renderHook(() => useChromeResolvedPath('../docs'), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[appHistoryApiRef, navigationController]]}>
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           {children}
         </TestApiProvider>
       ),
@@ -55,7 +55,7 @@ describe('useChromeResolvedPath', () => {
     expect(result.current.pathname).toBe('/catalog/docs');
   });
 
-  it('resolves relative paths via React Router when no controller is registered (OFS)', () => {
+  it('resolves relative paths via React Router when there is no app history (OFS)', () => {
     const { result } = renderHook(() => useChromeResolvedPath('widgets'), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <MemoryRouter initialEntries={['/catalog']}>

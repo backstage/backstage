@@ -203,7 +203,7 @@ describe('renderInTestApp', () => {
     });
   });
 
-  it('should drive navigation through the memory-history controller', async () => {
+  it('should drive navigation through the in-memory app history', async () => {
     const LocationProbe = () => {
       const { pathname } = useLocation();
       const navigation = useApi(appHistoryApiRef);
@@ -217,16 +217,14 @@ describe('renderInTestApp', () => {
       );
     };
 
-    const { navigationController } = renderInTestApp(<LocationProbe />, {
+    const { appHistory } = renderInTestApp(<LocationProbe />, {
       initialRouteEntries: ['/start'],
     });
 
     expect(screen.getByText('Path: /start')).toBeInTheDocument();
 
     const locations: string[] = [];
-    navigationController.location$.subscribe(loc =>
-      locations.push(loc.pathname),
-    );
+    appHistory.location$.subscribe(loc => locations.push(loc.pathname));
 
     fireEvent.click(screen.getByRole('button', { name: 'Go next' }));
 
@@ -247,7 +245,7 @@ describe('renderInTestApp', () => {
       );
     };
 
-    const { navigationController } = renderInTestApp(<LocationProbe />, {
+    const { appHistory } = renderInTestApp(<LocationProbe />, {
       initialRouteEntries: ['/start'],
       config: {
         app: { baseUrl: 'http://localhost:3000/backstage' },
@@ -261,14 +259,14 @@ describe('renderInTestApp', () => {
       '/backstage/catalog',
     );
 
-    navigationController.navigate('/catalog');
+    appHistory.navigate('/catalog');
     expect(await screen.findByText('Path: /catalog')).toBeInTheDocument();
   });
 
-  it('should expose navigationController on the render result', () => {
-    const { navigationController } = renderInTestApp(<div>Hi</div>);
-    expect(navigationController).toBeDefined();
-    expect(typeof navigationController.navigate).toBe('function');
-    expect(typeof navigationController.createHref).toBe('function');
+  it('should expose appHistory on the render result', () => {
+    const { appHistory } = renderInTestApp(<div>Hi</div>);
+    expect(appHistory).toBeDefined();
+    expect(typeof appHistory.navigate).toBe('function');
+    expect(typeof appHistory.createHref).toBe('function');
   });
 });

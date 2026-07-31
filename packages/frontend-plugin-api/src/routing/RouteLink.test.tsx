@@ -53,7 +53,7 @@ describe('RouteLink', () => {
     navigate.mockClear();
   });
 
-  it('renders an href for the resolved route and navigates via the framework controller', () => {
+  it('renders an href for the resolved route and navigates via the app history', () => {
     render(
       <RouteLink
         routeRef={catalogRouteRef}

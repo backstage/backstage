@@ -207,9 +207,9 @@ describe('<EntityRefLink />', () => {
     );
   });
 
-  it('navigates via the framework controller under NFS scoped routing', () => {
+  it('navigates via the app history under scoped routing', () => {
     const navigate = jest.fn();
-    const navigationController = createMockAppHistory({ navigate });
+    const appHistory = createMockAppHistory({ navigate });
     const pageMount = { basePath: '/create', routePattern: '/create' };
 
     const entity = {
@@ -230,7 +230,7 @@ describe('<EntityRefLink />', () => {
               routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
             }),
           ],
-          [appHistoryApiRef, navigationController],
+          [appHistoryApiRef, appHistory],
         ]}
       >
         <PageMountContext.Provider value={pageMount}>
@@ -261,7 +261,7 @@ describe('<EntityRefLink />', () => {
       },
     };
 
-    const { navigationController } = renderInFrontendTestApp(
+    const { appHistory } = renderInFrontendTestApp(
       <EntityRefLink entityRef={entity} />,
       {
         mountedRoutes: {
@@ -271,7 +271,7 @@ describe('<EntityRefLink />', () => {
       },
     );
 
-    const navigateSpy = jest.spyOn(navigationController, 'navigate');
+    const navigateSpy = jest.spyOn(appHistory, 'navigate');
 
     const link = screen.getByText('software').closest('a');
     expect(link).toHaveAttribute('href', '/catalog/default/component/software');
@@ -285,7 +285,7 @@ describe('<EntityRefLink />', () => {
 
   it('does not framework-navigate for modified clicks or target=_blank', () => {
     const navigate = jest.fn();
-    const navigationController = createMockAppHistory({ navigate });
+    const appHistory = createMockAppHistory({ navigate });
 
     const entity = {
       apiVersion: 'v1',
@@ -305,7 +305,7 @@ describe('<EntityRefLink />', () => {
               routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
             }),
           ],
-          [appHistoryApiRef, navigationController],
+          [appHistoryApiRef, appHistory],
         ]}
       >
         <MemoryRouter>
@@ -326,7 +326,7 @@ describe('<EntityRefLink />', () => {
               routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
             }),
           ],
-          [appHistoryApiRef, navigationController],
+          [appHistoryApiRef, appHistory],
         ]}
       >
         <MemoryRouter>
@@ -339,7 +339,7 @@ describe('<EntityRefLink />', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
-  it('falls back to react-router Link without NFS navigation controller (OFS)', async () => {
+  it('falls back to react-router Link when there is no app history (OFS)', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',

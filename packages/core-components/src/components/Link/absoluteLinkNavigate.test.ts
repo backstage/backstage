@@ -21,7 +21,7 @@ import {
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import type { PageMount } from '@internal/frontend';
 
-const controller = {} as AppHistoryApi;
+const appHistory = {} as AppHistoryApi;
 const scopedMount: PageMount = {
   basePath: '/create',
   routePattern: '/create',
@@ -35,7 +35,7 @@ describe('AbsoluteLinkNavigate', () => {
     });
 
     it('is true when the app history is registered', () => {
-      expect(hasFrameworkNavigationSignals(controller, undefined)).toBe(true);
+      expect(hasFrameworkNavigationSignals(appHistory, undefined)).toBe(true);
     });
 
     it('is true when a page mount is in context', () => {
@@ -58,7 +58,7 @@ describe('AbsoluteLinkNavigate', () => {
       expect(
         shouldNavigateViaFramework({
           to: './templates/foo',
-          appHistory: controller,
+          appHistory,
           pageMount: scopedMount,
         }),
       ).toBe(false);
@@ -68,7 +68,7 @@ describe('AbsoluteLinkNavigate', () => {
       expect(
         shouldNavigateViaFramework({
           to: '/create/templates/default/foo',
-          appHistory: controller,
+          appHistory,
           pageMount: scopedMount,
         }),
       ).toBe(false);
@@ -78,7 +78,7 @@ describe('AbsoluteLinkNavigate', () => {
       expect(
         shouldNavigateViaFramework({
           to: '/catalog/default/component/foo',
-          appHistory: controller,
+          appHistory,
           pageMount: scopedMount,
         }),
       ).toBe(true);
@@ -88,7 +88,7 @@ describe('AbsoluteLinkNavigate', () => {
       expect(
         shouldNavigateViaFramework({
           to: '/catalog',
-          appHistory: controller,
+          appHistory,
           pageMount: rootMount,
         }),
       ).toBe(true);

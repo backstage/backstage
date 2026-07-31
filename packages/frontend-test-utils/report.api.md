@@ -552,7 +552,7 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
 
 // @public
 export type TestAppRenderResult = RenderResult & {
-  navigationController: AppHistoryApi;
+  appHistory: AppHistoryApi;
 };
 
 export { withLogCollector };

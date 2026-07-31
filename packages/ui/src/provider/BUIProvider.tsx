@@ -26,12 +26,11 @@ import type { UseAnalyticsFn } from '../analytics/types';
 export type BUIProviderProps = {
   useAnalytics?: UseAnalyticsFn;
   /**
-   * Navigate function backed by a host application's own router or
-   * navigation authority (e.g. a Backstage frontend-system navigation
-   * controller). When provided, this is used for all client-side navigation
-   * triggered by descendant BUI components (`Link`, `Tabs`, `Menu`, ...)
-   * instead of React Router's `useNavigate`, and a React Router context is
-   * no longer required.
+   * Navigate function backed by the host application's own router or history,
+   * for example a Backstage app history. When provided, this is used for all
+   * client-side navigation triggered by descendant BUI components (`Link`,
+   * `Tabs`, `Menu`, ...) instead of React Router's `useNavigate`, and a React
+   * Router context is not required.
    */
   navigate?: (path: string, options?: { replace?: boolean }) => void;
   /**

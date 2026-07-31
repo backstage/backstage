@@ -2,4 +2,4 @@
 '@backstage/frontend-app-api': patch
 ---
 
-Simplifies the framework-owned app history for scoped plugin routing (RFC #33603): the internal app history no longer mints per-page routing contracts, and no longer tracks programmatic back/forward state, namespaced adapter history state, or pre-navigation blockers. It now implements the thinner `AppHistoryApi` (`navigate`, `location$`, `createHref`) from `@backstage/frontend-plugin-api`. App wiring still uses `AppRouteSwitch` and `RouteTable` from `@backstage/frontend-plugin-api`.
+The app now owns browser history for the new frontend system and provides it to plugins as `appHistoryApiRef`, as part of scoped plugin routing ([RFC #33603](https://github.com/backstage/backstage/issues/33603)). Top level pages are matched and rendered from the app's own route table, and route tracking for analytics follows the app history instead of a router component at the app root.

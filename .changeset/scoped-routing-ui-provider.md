@@ -2,8 +2,8 @@
 '@backstage/ui': patch
 ---
 
-`BUIProvider` accepts optional `navigate` and `useHref` so host apps can back BUI navigable components with the framework app history.
+`BUIProvider` accepts optional `navigate` and `useHref` props, so a host app can route the navigation of all descendant BUI components through its own navigation authority instead of React Router. When `navigate` is set, a React Router context is no longer required.
 
-Internal `href` resolution keeps a usable `/` when React Router resolves the app root to an empty path, so root links stay navigable.
+Links to the app root are also no longer dropped when React Router resolves the root to an empty path.
 
 **Affected components:** Link, BUIProvider

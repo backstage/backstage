@@ -31,7 +31,7 @@ describe('Entity details component', () => {
 });
 ```
 
-`renderInTestApp` and `renderTestApp` drive navigation through the framework navigation controller with in-memory history, and return a `navigationController` you can use in assertions. Prefer that harness when the behavior under test depends on scoped routing. For absolute and cross-plugin navigation guidance, see [Scoped Plugin Routing](../architecture/36-routes.md#scoped-plugin-routing).
+`renderInTestApp` and `renderTestApp` drive navigation through an in-memory app history, and return it as `appHistory` so you can navigate and assert on the current location. Prefer that harness when the behavior under test depends on scoped routing. For absolute and cross-plugin navigation guidance, see [Scoped Plugin Routing](../architecture/36-routes.md#scoped-plugin-routing).
 
 To mock [Utility APIs](../architecture/33-utility-apis.md) that are used by your component, pass API overrides to `renderInTestApp` using the `apis` option. Mock helpers are available from `@backstage/frontend-test-utils` and plugin-specific test utilities. For a deeper look at the available mock APIs and how to create your own, see [Testing with Utility APIs](../utility-apis/05-testing.md).
 

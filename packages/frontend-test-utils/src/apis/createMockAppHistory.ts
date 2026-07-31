@@ -70,11 +70,11 @@ export interface MockAppHistory extends AppHistoryApi {
  * Always emits synchronously on `location$` subscribe. `navigate` updates
  * the current location and notifies subscribers, matching the real
  * app history's sync-emission invariant. Prefer `renderInTestApp` /
- * `renderTestApp` (and the returned `navigationController`) when asserting
+ * `renderTestApp` (and the returned `appHistory`) when asserting
  * navigation across a full test app.
  *
  * Also available as `mockApis.appHistory()`. Pair with
- * {@link createMockRouteResolutionApi} for NFS `RouteLink` /
+ * {@link createMockRouteResolutionApi} for `RouteLink` /
  * `useNavigateRouteRef` tests.
  *
  * @public
