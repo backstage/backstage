@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z, AnyZodObject } from 'zod/v3';
 import { BasicPermission } from '@backstage/plugin-permission-common';
+import { StandardJSONSchemaV1, StandardSchemaV1 } from '@standard-schema/spec';
 import {
   LoggerService,
   BackstageCredentials,
@@ -24,16 +24,31 @@ import {
  * @alpha
  */
 export type ActionsRegistryActionContext<
-  TInputSchema extends AnyZodObject,
-  TSecretsSchema extends AnyZodObject | undefined = undefined,
+  TInputSchema extends ActionsRegistryActionSchema,
+  TSecretsSchema extends ActionsRegistryActionSchema | undefined = undefined,
 > = {
-  input: z.infer<TInputSchema>;
-  secrets: TSecretsSchema extends AnyZodObject
-    ? z.infer<TSecretsSchema>
+  /** The action input after validation and any schema transformations. */
+  input: StandardSchemaV1.InferOutput<TInputSchema>;
+  /** The action secrets after validation and any schema transformations. */
+  secrets: TSecretsSchema extends ActionsRegistryActionSchema
+    ? StandardSchemaV1.InferOutput<TSecretsSchema>
     : undefined;
   logger: LoggerService;
   credentials: BackstageCredentials;
 };
+
+/**
+ * A schema used by an action registry action.
+ *
+ * The schema must support Standard Schema validation, including asynchronous
+ * validation, and Standard JSON Schema conversion for draft-07.
+ *
+ * @alpha
+ */
+export type ActionsRegistryActionSchema<
+  TInput = unknown,
+  TOutput = TInput,
+> = StandardSchemaV1<TInput, TOutput> & StandardJSONSchemaV1<TInput, TOutput>;
 
 /**
  * An example of how to use an action registered in the actions registry.
@@ -41,32 +56,37 @@ export type ActionsRegistryActionContext<
  * @alpha
  */
 export type ActionsRegistryActionExample<
-  TInputSchema extends AnyZodObject,
-  TOutputSchema extends AnyZodObject,
+  TInputSchema extends ActionsRegistryActionSchema,
+  TOutputSchema extends ActionsRegistryActionSchema,
 > = {
   title: string;
   description?: string;
-  input: z.infer<TInputSchema>;
-  output?: z.infer<TOutputSchema>;
+  /** Example input as supplied by an action caller, before validation. */
+  input: StandardSchemaV1.InferInput<TInputSchema>;
+  /** Example output as observed by an action caller, after validation. */
+  output?: StandardSchemaV1.InferOutput<TOutputSchema>;
 };
 
 /**
  * @alpha
  */
 export type ActionsRegistryActionOptions<
-  TInputSchema extends AnyZodObject,
-  TOutputSchema extends AnyZodObject,
-  TSecretsSchema extends AnyZodObject | undefined = undefined,
+  TInputSchema extends ActionsRegistryActionSchema,
+  TOutputSchema extends ActionsRegistryActionSchema,
+  TSecretsSchema extends ActionsRegistryActionSchema | undefined = undefined,
 > = {
   name: string;
   title: string;
   description: string;
   schema: {
-    input: (zod: typeof z) => TInputSchema;
-    output: (zod: typeof z) => TOutputSchema;
-    secrets?: (
-      zod: typeof z,
-    ) => TSecretsSchema extends AnyZodObject ? TSecretsSchema : never;
+    /** Validates invocation input and describes its wire format. */
+    input: TInputSchema;
+    /** Validates action output and describes its observable format. */
+    output: TOutputSchema;
+    /** Validates invocation secrets and describes their wire format. */
+    secrets?: TSecretsSchema extends ActionsRegistryActionSchema
+      ? TSecretsSchema
+      : never;
   };
   examples?: Array<ActionsRegistryActionExample<TInputSchema, TOutputSchema>>;
   visibilityPermission?: BasicPermission;
@@ -83,9 +103,9 @@ export type ActionsRegistryActionOptions<
   action: (
     context: ActionsRegistryActionContext<TInputSchema, TSecretsSchema>,
   ) => Promise<
-    z.infer<TOutputSchema> extends void
+    StandardSchemaV1.InferInput<TOutputSchema> extends void
       ? void
-      : { output: z.infer<TOutputSchema> }
+      : { output: StandardSchemaV1.InferInput<TOutputSchema> }
   >;
 };
 
@@ -94,9 +114,9 @@ export type ActionsRegistryActionOptions<
  */
 export interface ActionsRegistryService {
   register<
-    TInputSchema extends AnyZodObject,
-    TOutputSchema extends AnyZodObject,
-    TSecretsSchema extends AnyZodObject | undefined = undefined,
+    TInputSchema extends ActionsRegistryActionSchema,
+    TOutputSchema extends ActionsRegistryActionSchema,
+    TSecretsSchema extends ActionsRegistryActionSchema | undefined = undefined,
   >(
     options: ActionsRegistryActionOptions<
       TInputSchema,

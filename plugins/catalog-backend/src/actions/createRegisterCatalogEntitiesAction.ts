@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { InputError } from '@backstage/errors';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -49,20 +50,18 @@ This action is similar to the "Register existing component" flow in the Backstag
 A unique identifier (locationId) will be returned for the newly created Location. You can use this identifier in the future to unregister or delete the Location and all entities it owns.
 `,
     schema: {
-      input: z =>
-        z.object({
-          locationUrl: z
-            .string()
-            .describe(
-              `URL reference to the catalog-info.yaml file that describes the entity to register. For example: https://github.com/backstage/demo/blob/master/catalog-info.yaml`,
-            ),
-        }),
-      output: z =>
-        z.object({
-          locationId: z
-            .string()
-            .describe('The ID of the entity that was registered'),
-        }),
+      input: z.object({
+        locationUrl: z
+          .string()
+          .describe(
+            `URL reference to the catalog-info.yaml file that describes the entity to register. For example: https://github.com/backstage/demo/blob/master/catalog-info.yaml`,
+          ),
+      }),
+      output: z.object({
+        locationId: z
+          .string()
+          .describe('The ID of the entity that was registered'),
+      }),
     },
     action: async ({ input, credentials }) => {
       if (!isValidUrl(input.locationUrl)) {

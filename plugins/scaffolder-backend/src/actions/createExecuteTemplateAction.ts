@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 import { JsonValue } from '@backstage/types';
@@ -37,33 +38,31 @@ The template is run using the credentials provided to this action, and respects 
 Returns a taskId that can be used to track execution progress.
 Use the catalog.get-catalog-entity action to fetch the Template entity and discover its parameter schema and secrets definition before calling this action.`,
     schema: {
-      input: z =>
-        z.object({
-          templateRef: z
-            .string()
-            .describe(
-              'The template entity reference to execute, e.g. "template:default/my-template"',
-            ),
-          values: z
-            .record(z.unknown())
-            .describe(
-              'Input parameter values required by the template. Use catalog.get-catalog-entity to discover the required parameters for the template.',
-            ),
-          secrets: z
-            .record(z.string())
-            .optional()
-            .describe(
-              'Optional secrets to pass to the template execution. Use catalog.get-catalog-entity to discover the secrets definition on the Template entity.',
-            ),
-        }),
-      output: z =>
-        z.object({
-          taskId: z
-            .string()
-            .describe(
-              'The task ID for the scaffolder execution. Use this to track progress or retrieve logs.',
-            ),
-        }),
+      input: z.object({
+        templateRef: z
+          .string()
+          .describe(
+            'The template entity reference to execute, e.g. "template:default/my-template"',
+          ),
+        values: z
+          .record(z.string(), z.unknown())
+          .describe(
+            'Input parameter values required by the template. Use catalog.get-catalog-entity to discover the required parameters for the template.',
+          ),
+        secrets: z
+          .record(z.string(), z.string())
+          .optional()
+          .describe(
+            'Optional secrets to pass to the template execution. Use catalog.get-catalog-entity to discover the secrets definition on the Template entity.',
+          ),
+      }),
+      output: z.object({
+        taskId: z
+          .string()
+          .describe(
+            'The task ID for the scaffolder execution. Use this to track progress or retrieve logs.',
+          ),
+      }),
     },
     action: async ({ input, credentials }) => {
       const { taskId } = await scaffolderService.scaffold(

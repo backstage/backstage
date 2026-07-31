@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { NotFoundError } from '@backstage/errors';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -39,28 +40,27 @@ This action is similar to the "Unregister location" function in the Backstage UI
 Once completed, all entities associated with the Location will be deleted from the catalog.
 `,
     schema: {
-      input: z =>
-        z.object({
-          type: z
-            .union([
-              z.object({
-                locationId: z
-                  .string()
-                  .describe(`Location ID of the Entity to unregister`),
-              }),
-              z.object({
-                locationUrl: z
-                  .string()
-                  .describe(
-                    `URL of the catalog-info.yaml file to unregister for example: https://github.com/backstage/demo/blob/master/catalog-info.yaml`,
-                  ),
-              }),
-            ])
-            .describe(
-              'Identifies the entity to unregister. Provide either locationId or locationUrl.',
-            ),
-        }),
-      output: z => z.object({}),
+      input: z.object({
+        type: z
+          .union([
+            z.object({
+              locationId: z
+                .string()
+                .describe(`Location ID of the Entity to unregister`),
+            }),
+            z.object({
+              locationUrl: z
+                .string()
+                .describe(
+                  `URL of the catalog-info.yaml file to unregister for example: https://github.com/backstage/demo/blob/master/catalog-info.yaml`,
+                ),
+            }),
+          ])
+          .describe(
+            'Identifies the entity to unregister. Provide either locationId or locationUrl.',
+          ),
+      }),
+      output: z.object({}),
     },
     action: async ({ input: { type }, credentials }) => {
       if ('locationId' in type) {

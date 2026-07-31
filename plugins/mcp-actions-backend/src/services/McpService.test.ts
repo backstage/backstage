@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { McpService } from './McpService';
 import {
@@ -40,8 +41,8 @@ describe('McpService', () => {
       title: 'Test',
       description: 'Test',
       schema: {
-        input: z => z.object({ input: z.string() }),
-        output: z => z.object({ output: z.string() }),
+        input: z.object({ input: z.string() }),
+        output: z.object({ output: z.string() }),
       },
       action: async () => ({ output: { output: 'test' } }),
     });
@@ -276,8 +277,8 @@ describe('McpService', () => {
       title: 'Test',
       description: 'Test',
       schema: {
-        input: z => z.object({ input: z.string() }),
-        output: z => z.object({ output: z.string() }),
+        input: z.object({ input: z.string() }),
+        output: z.object({ output: z.string() }),
       },
       action: mockAction,
     });
@@ -428,8 +429,8 @@ describe('McpService', () => {
       title: 'Failing',
       description: 'Fails',
       schema: {
-        input: z => z.object({}),
-        output: z => z.object({}),
+        input: z.object({}),
+        output: z.object({}),
       },
       action: jest.fn().mockRejectedValue(customError),
     });
@@ -502,8 +503,8 @@ describe('McpService', () => {
       title: 'Failing',
       description: 'An action that throws InputError',
       schema: {
-        input: z => z.object({ value: z.string() }),
-        output: z => z.object({}),
+        input: z.object({ value: z.string() }),
+        output: z.object({}),
       },
       action: async () => {
         throw new InputError('the value was invalid');
@@ -560,8 +561,8 @@ describe('McpService', () => {
       title: 'Not Found',
       description: 'An action that throws NotFoundError',
       schema: {
-        input: z => z.object({ id: z.string() }),
-        output: z => z.object({}),
+        input: z.object({ id: z.string() }),
+        output: z.object({}),
       },
       action: async () => {
         throw new NotFoundError('entity does not exist');
@@ -967,8 +968,8 @@ describe('McpService', () => {
         title: 'Test',
         description: 'Test',
         schema: {
-          input: z => z.object({}),
-          output: z => z.object({}),
+          input: z.object({}),
+          output: z.object({}),
         },
         action: async () => ({ output: {} }),
       });
@@ -1007,8 +1008,8 @@ describe('McpService', () => {
         title: 'Test',
         description: 'Test',
         schema: {
-          input: z => z.object({}),
-          output: z => z.object({}),
+          input: z.object({}),
+          output: z.object({}),
         },
         action: async () => ({ output: {} }),
       });
@@ -1048,8 +1049,8 @@ describe('McpService', () => {
         title: 'Test',
         description: 'Test',
         schema: {
-          input: z => z.object({}),
-          output: z => z.object({}),
+          input: z.object({}),
+          output: z.object({}),
         },
         action: async () => ({ output: {} }),
       });
@@ -1099,8 +1100,8 @@ describe('McpService', () => {
         title: 'Test',
         description: 'Test',
         schema: {
-          input: z => z.object({ input: z.string() }),
-          output: z => z.object({ output: z.string() }),
+          input: z.object({ input: z.string() }),
+          output: z.object({ output: z.string() }),
         },
         action: async () => ({ output: { output: 'test' } }),
       });
@@ -1272,8 +1273,8 @@ describe('McpService', () => {
         title: 'Failing',
         description: 'Throws InputError',
         schema: {
-          input: z => z.object({ value: z.string() }),
-          output: z => z.object({}),
+          input: z.object({ value: z.string() }),
+          output: z.object({}),
         },
         action: async () => {
           throw new InputError('the value was invalid');

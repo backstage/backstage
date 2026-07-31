@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { createBackend } from '@backstage/backend-defaults';
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
@@ -58,14 +59,12 @@ backend.add(
             title: 'Test Action',
             description: 'Test Action',
             schema: {
-              input: z =>
-                z.object({
-                  name: z.string(),
-                }),
-              output: z =>
-                z.object({
-                  greeting: z.string(),
-                }),
+              input: z.object({
+                name: z.string(),
+              }),
+              output: z.object({
+                greeting: z.string(),
+              }),
             },
             action: async ({ input }) => ({
               output: {

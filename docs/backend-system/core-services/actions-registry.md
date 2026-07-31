@@ -19,10 +19,12 @@ Each action registered with the service must conform to the `ActionsRegistryActi
 - **`title`:** A human-readable title for the action (string)
 - **`description`:** A detailed description of what the action does (string)
 - **`schema`:** Object containing schema definitions
-  - **`input`:** Function that returns a Zod schema for validating input
-  - **`output`:** Function that returns a Zod schema for validating output
-  - **`secrets`:** (optional) Function that returns a Zod schema for validating secrets. See [Secrets](#secrets) below.
+  - **`input`:** Schema for validating action input
+  - **`output`:** Schema for validating action output
+  - **`secrets`:** (optional) Schema for validating secrets. See [Secrets](#secrets) below.
 - **`action`:** The async function that executes the action logic
+
+Each schema is supplied directly and must implement both Standard Schema V1 and Standard JSON Schema V1. Standard Schema provides synchronous or asynchronous validation, while Standard JSON Schema lets the registry publish draft-07 metadata. Input and secrets metadata describe values before validation, while output metadata describes values after validation. Zod 4 schemas imported from the full `zod` package support both interfaces. The `zod/v4` subpath provided by Zod 3 does not include the required JSON Schema converter.
 
 ### Optional Properties
 
@@ -41,6 +43,8 @@ When an action is executed, it receives a context object (`ActionsRegistryAction
 - **`logger`:** A LoggerService instance for logging within the action
 - **`credentials`:** BackstageCredentials for authentication and authorization
 
+Schema transformations are reflected in the action types. Callers provide the input type of the input and secrets schemas, and the action receives their validated output types. The action returns the input type of the output schema, and callers observe its validated output type. Examples therefore use wire-format input and observable output. Validation transformations may be asynchronous.
+
 ## Using the Service
 
 ### Registering an Action
@@ -49,6 +53,7 @@ Here's an example of how to register an action with the Actions Registry Service
 
 ```typescript
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
+import { z } from 'zod';
 
 export function registerMyActions(actionsRegistry: ActionsRegistryService) {
   // Register a simple read-only action
@@ -57,19 +62,17 @@ export function registerMyActions(actionsRegistry: ActionsRegistryService) {
     title: 'Fetch User Information',
     description: 'Retrieves user information from the catalog',
     schema: {
-      input: z =>
-        z.object({
-          userRef: z.string(),
-          includeGroups: z.boolean().optional(),
+      input: z.object({
+        userRef: z.string(),
+        includeGroups: z.boolean().optional(),
+      }),
+      output: z.object({
+        user: z.object({
+          name: z.string(),
+          email: z.string(),
+          groups: z.array(z.string()).optional(),
         }),
-      output: z =>
-        z.object({
-          user: z.object({
-            name: z.string(),
-            email: z.string(),
-            groups: z.array(z.string()).optional(),
-          }),
-        }),
+      }),
     },
     attributes: {
       readOnly: true,
@@ -99,15 +102,13 @@ export function registerMyActions(actionsRegistry: ActionsRegistryService) {
     title: 'Delete Entity',
     description: 'Removes an entity from the catalog',
     schema: {
-      input: z =>
-        z.object({
-          entityRef: z.string(),
-          force: z.boolean().optional(),
-        }),
-      output: z =>
-        z.object({
-          deletedEntities: z.array(z.string()),
-        }),
+      input: z.object({
+        entityRef: z.string(),
+        force: z.boolean().optional(),
+      }),
+      output: z.object({
+        deletedEntities: z.array(z.string()),
+      }),
     },
     attributes: {
       destructive: true,
@@ -124,7 +125,7 @@ export function registerMyActions(actionsRegistry: ActionsRegistryService) {
       );
 
       return {
-        output: deletedEntities,
+        output: { deletedEntities },
       };
     },
   });
@@ -185,8 +186,8 @@ actionsRegistry.register({
   description: 'Removes an entity from the catalog',
   visibilityPermission: myDeletePermission,
   schema: {
-    input: z => z.object({ entityRef: z.string() }),
-    output: z => z.object({ deleted: z.boolean() }),
+    input: z.object({ entityRef: z.string() }),
+    output: z.object({ deleted: z.boolean() }),
   },
   action: async ({ input }) => {
     // action logic
@@ -203,7 +204,7 @@ Actions can declare a `secrets` schema to request external credentials from the 
 
 ### Declaring a Secrets Schema
 
-Add a `secrets` function to the `schema` object alongside `input` and `output`. It works the same way as the input schema, receiving the Zod instance and returning a Zod object schema:
+Add a `secrets` schema alongside `input` and `output`:
 
 ```typescript
 actionsRegistry.register({
@@ -211,22 +212,19 @@ actionsRegistry.register({
   title: 'Create GitHub Issue',
   description: 'Creates an issue in a GitHub repository',
   schema: {
-    input: z =>
-      z.object({
-        repo: z.string(),
-        title: z.string(),
-        body: z.string().optional(),
-      }),
-    output: z =>
-      z.object({
-        issueUrl: z.string(),
-      }),
-    secrets: z =>
-      z.object({
-        githubToken: z
-          .string()
-          .describe('GitHub Personal Access Token with repo scope'),
-      }),
+    input: z.object({
+      repo: z.string(),
+      title: z.string(),
+      body: z.string().optional(),
+    }),
+    output: z.object({
+      issueUrl: z.string(),
+    }),
+    secrets: z.object({
+      githubToken: z
+        .string()
+        .describe('GitHub Personal Access Token with repo scope'),
+    }),
   },
   attributes: {
     destructive: false,
@@ -250,7 +248,7 @@ The `secrets` field in the action context is fully typed based on the declared s
 
 ### How Secrets Flow Through the System
 
-Secrets are validated against the Zod schema the same way input is validated. If secrets are required but not provided, or if they fail validation, the action returns an `InputError`. If secrets are provided to an action that does not declare a secrets schema, the request is also rejected.
+Secrets are validated against their schema the same way input is validated. If secrets are required but not provided, or if they fail validation, the action returns an `InputError`. If secrets are provided to an action that does not declare a secrets schema, the request is also rejected.
 
 The secrets schema is included in the action metadata returned by the list endpoint, so callers can discover which secrets an action requires before invoking it.
 

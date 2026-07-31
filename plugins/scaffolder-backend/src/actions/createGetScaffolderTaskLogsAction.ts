@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 
@@ -37,54 +38,52 @@ Each log event has a type (log, completion, cancelled, or recovered), a body con
 Use the after parameter to fetch only events after a specific event ID for incremental polling.
     `,
     schema: {
-      input: z =>
-        z.object({
-          taskId: z.string().describe('The ID of the scaffolder task'),
-          after: z
-            .number()
-            .int()
-            .min(0)
-            .optional()
-            .describe(
-              'Return only log events after this event ID for incremental polling',
-            ),
-        }),
-      output: z =>
-        z
-          .object({
-            events: z
-              .array(
-                z.object({
-                  id: z.number().describe('The event ID'),
-                  taskId: z
-                    .string()
-                    .describe('The ID of the task this event belongs to'),
-                  createdAt: z
-                    .string()
-                    .describe('Timestamp when the event was created'),
-                  type: z
-                    .string()
-                    .describe(
-                      'Event type: log, completion, cancelled, or recovered',
-                    ),
-                  body: z
-                    .object({
-                      message: z.string().describe('The log message'),
-                      stepId: z
-                        .string()
-                        .optional()
-                        .describe('The step ID associated with this event'),
-                      status: z
-                        .string()
-                        .optional()
-                        .describe('The task status at the time of this event'),
-                    })
-                    .describe('The event body'),
-                }),
-              )
-              .describe('The list of log events for the task'),
-          })
-          .describe('Object containing the events array'),
+      input: z.object({
+        taskId: z.string().describe('The ID of the scaffolder task'),
+        after: z
+          .number()
+          .int()
+          .min(0)
+          .optional()
+          .describe(
+            'Return only log events after this event ID for incremental polling',
+          ),
+      }),
+      output: z
+        .object({
+          events: z
+            .array(
+              z.object({
+                id: z.number().describe('The event ID'),
+                taskId: z
+                  .string()
+                  .describe('The ID of the task this event belongs to'),
+                createdAt: z
+                  .string()
+                  .describe('Timestamp when the event was created'),
+                type: z
+                  .string()
+                  .describe(
+                    'Event type: log, completion, cancelled, or recovered',
+                  ),
+                body: z
+                  .object({
+                    message: z.string().describe('The log message'),
+                    stepId: z
+                      .string()
+                      .optional()
+                      .describe('The step ID associated with this event'),
+                    status: z
+                      .string()
+                      .optional()
+                      .describe('The task status at the time of this event'),
+                  })
+                  .describe('The event body'),
+              }),
+            )
+            .describe('The list of log events for the task'),
+        })
+        .describe('Object containing the events array'),
     },
     action: async ({ input, credentials }) => {
       const events = await scaffolderService.getLogs(

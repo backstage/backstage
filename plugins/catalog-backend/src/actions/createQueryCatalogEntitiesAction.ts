@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
-import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
+import { createZodV4FilterPredicateSchema } from '@backstage/filter-predicates';
 
 const QUERY_SYNTAX = `
 ## Query Syntax
@@ -128,33 +129,41 @@ export const createQueryCatalogEntitiesAction = ({
       ? MODEL_REFERENCE_DESCRIPTION
       : INLINE_MODEL_DESCRIPTION,
     schema: {
-      input: z =>
-        z.object({
-          query: createZodV3FilterPredicateSchema(z)
-            .optional()
-            .describe(
-              'Entity predicate query. Supports field matching, $all, $any, $not, $exists, $in, $contains, and $hasPrefix operators.',
-            ),
-          fields: z
-            .array(z.string())
-            .optional()
-            .describe(
-              'Specific fields to include in the response. If not provided, all fields are returned. Each entry is a dot separated path into an entity, e.g. `spec.type`.',
-            ),
-          limit: z
-            .number()
-            .int()
-            .positive()
-            .optional()
-            .describe('Maximum number of entities to return at a time.'),
-          offset: z
-            .number()
-            .int()
-            .min(0)
-            .optional()
-            .describe('Number of entities to skip before returning results.'),
-          orderFields: z
-            .union([
+      input: z.object({
+        query: createZodV4FilterPredicateSchema()
+          .optional()
+          .describe(
+            'Entity predicate query. Supports field matching, $all, $any, $not, $exists, $in, $contains, and $hasPrefix operators.',
+          ),
+        fields: z
+          .array(z.string())
+          .optional()
+          .describe(
+            'Specific fields to include in the response. If not provided, all fields are returned. Each entry is a dot separated path into an entity, e.g. `spec.type`.',
+          ),
+        limit: z
+          .number()
+          .int()
+          .positive()
+          .optional()
+          .describe('Maximum number of entities to return at a time.'),
+        offset: z
+          .number()
+          .int()
+          .min(0)
+          .optional()
+          .describe('Number of entities to skip before returning results.'),
+        orderFields: z
+          .union([
+            z.object({
+              field: z
+                .string()
+                .describe(
+                  'Field to order by. The format is a dot separated path into an entity, e.g. `spec.type`.',
+                ),
+              order: z.enum(['asc', 'desc']).describe('Sort order'),
+            }),
+            z.array(
               z.object({
                 field: z
                   .string()
@@ -163,54 +172,42 @@ export const createQueryCatalogEntitiesAction = ({
                   ),
                 order: z.enum(['asc', 'desc']).describe('Sort order'),
               }),
-              z.array(
-                z.object({
-                  field: z
-                    .string()
-                    .describe(
-                      'Field to order by. The format is a dot separated path into an entity, e.g. `spec.type`.',
-                    ),
-                  order: z.enum(['asc', 'desc']).describe('Sort order'),
-                }),
+            ),
+          ])
+          .optional()
+          .describe(
+            'Ordering criteria for the results. Can be a single order directive or an array for multi-field sorting.',
+          ),
+        fullTextFilter: z
+          .object({
+            term: z.string().describe('Full text search term'),
+            fields: z
+              .array(z.string())
+              .optional()
+              .describe(
+                'Fields to search within. Each entry is a dot separated path into an entity, e.g. `spec.type`.',
               ),
-            ])
-            .optional()
-            .describe(
-              'Ordering criteria for the results. Can be a single order directive or an array for multi-field sorting.',
-            ),
-          fullTextFilter: z
-            .object({
-              term: z.string().describe('Full text search term'),
-              fields: z
-                .array(z.string())
-                .optional()
-                .describe(
-                  'Fields to search within. Each entry is a dot separated path into an entity, e.g. `spec.type`.',
-                ),
-            })
-            .optional()
-            .describe('Full text search criteria'),
-          cursor: z
-            .string()
-            .optional()
-            .describe(
-              'Cursor for pagination. This can be used only after the first request with a response containing a cursor. If a cursor is given it takes precedence over `offset`.',
-            ),
-        }),
-      output: z =>
-        z.object({
-          items: z
-            .array(z.object({}).passthrough())
-            .describe('List of entities'),
-          totalItems: z.number().describe('Total number of entities'),
-          hasMoreEntities: z
-            .boolean()
-            .describe('Whether more entities are available'),
-          nextPageCursor: z
-            .string()
-            .optional()
-            .describe('Next page cursor used to fetch next page of entities'),
-        }),
+          })
+          .optional()
+          .describe('Full text search criteria'),
+        cursor: z
+          .string()
+          .optional()
+          .describe(
+            'Cursor for pagination. This can be used only after the first request with a response containing a cursor. If a cursor is given it takes precedence over `offset`.',
+          ),
+      }),
+      output: z.object({
+        items: z.array(z.object({}).passthrough()).describe('List of entities'),
+        totalItems: z.number().describe('Total number of entities'),
+        hasMoreEntities: z
+          .boolean()
+          .describe('Whether more entities are available'),
+        nextPageCursor: z
+          .string()
+          .optional()
+          .describe('Next page cursor used to fetch next page of entities'),
+      }),
     },
     action: async ({ input, credentials }) => {
       const response = await catalog.queryEntities(

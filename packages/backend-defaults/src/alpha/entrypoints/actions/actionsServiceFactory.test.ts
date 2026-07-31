@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import {
   mockCredentials,
   mockServices,
@@ -671,15 +672,13 @@ describe('actionsServiceFactory', () => {
                   title: 'Test',
                   description: 'Test',
                   schema: {
-                    input: z =>
-                      z.object({
-                        name: z.string(),
-                      }),
-                    output: z =>
-                      z.object({
-                        ok: z.boolean(),
-                        string: z.string(),
-                      }),
+                    input: z.object({
+                      name: z.string(),
+                    }),
+                    output: z.object({
+                      ok: z.boolean(),
+                      string: z.string(),
+                    }),
                   },
                   action: async ({ input }) => {
                     return {

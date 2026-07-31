@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z as zv3 } from 'zod/v3';
+import { z } from 'zod';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -21,18 +21,18 @@ import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { SearchIndexService } from '@backstage/plugin-search-backend-node/alpha';
 import { filterResultSet, toSearchResults } from '../utils/search_result_utils';
 
-const jsonObjectSchema: zv3.ZodSchema<JsonObject> = zv3.lazy(() => {
-  const jsonValueSchema: zv3.ZodSchema<JsonValue> = zv3.lazy(() =>
-    zv3.union([
-      zv3.string(),
-      zv3.number(),
-      zv3.boolean(),
-      zv3.null(),
-      zv3.array(jsonValueSchema),
+const jsonObjectSchema: z.ZodType<JsonObject> = z.lazy(() => {
+  const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
+    z.union([
+      z.string(),
+      z.number(),
+      z.boolean(),
+      z.null(),
+      z.array(jsonValueSchema),
       jsonObjectSchema,
     ]),
   );
-  return zv3.record(jsonValueSchema);
+  return z.record(z.string(), jsonValueSchema);
 });
 
 export const createQueryAction = ({
@@ -66,69 +66,61 @@ Results are returned in a paginated format, along with \`pageCursor\` for naviga
       readOnly: true,
     },
     schema: {
-      input: z =>
-        z.object({
-          term: z.string().describe('The search term to query for'),
-          types: (allTypes.length > 0
-            ? z.array(z.enum(allTypes as [string, ...string[]]))
-            : z.array(z.string())
+      input: z.object({
+        term: z.string().describe('The search term to query for'),
+        types: (allTypes.length > 0
+          ? z.array(z.enum(allTypes as [string, ...string[]]))
+          : z.array(z.string())
+        )
+          .optional()
+          .describe('The types of documents to query for'),
+        filters: jsonObjectSchema
+          .optional()
+          .describe('The filters to apply to the query'),
+        pageLimit: z
+          .number()
+          .optional()
+          .describe('The number of results to return per page. Defaults to 10.')
+          .default(10),
+        pageCursor: z
+          .string()
+          .optional()
+          .describe('The cursor for the next page of results'),
+      }),
+      output: z.object({
+        results: z
+          .array(
+            z.object({
+              type: z.string().describe('Document type'),
+              document: z
+                .object({
+                  title: z.string().describe('Document title'),
+                  text: z.string().describe('Document text content'),
+                  location: z.string().describe('Document location, e.g. URL'),
+                })
+                .passthrough(),
+              highlight: z
+                .object({
+                  preTag: z.string(),
+                  postTag: z.string(),
+                  fields: z.record(z.string(), z.string()),
+                })
+                .optional()
+                .describe('Optional result highlight that matches the query'),
+              rank: z.number().optional().describe('The rank of the result'),
+            }),
           )
-            .optional()
-            .describe('The types of documents to query for'),
-          filters: jsonObjectSchema
-            .optional()
-            .describe('The filters to apply to the query'),
-          pageLimit: z
-            .number()
-            .optional()
-            .describe(
-              'The number of results to return per page. Defaults to 10.',
-            )
-            .default(10),
-          pageCursor: z
-            .string()
-            .optional()
-            .describe('The cursor for the next page of results'),
-        }),
-      output: z =>
-        z.object({
-          results: z
-            .array(
-              z.object({
-                type: z.string().describe('Document type'),
-                document: z
-                  .object({
-                    title: z.string().describe('Document title'),
-                    text: z.string().describe('Document text content'),
-                    location: z
-                      .string()
-                      .describe('Document location, e.g. URL'),
-                  })
-                  .passthrough(),
-                highlight: z
-                  .object({
-                    preTag: z.string(),
-                    postTag: z.string(),
-                    fields: z.record(z.string(), z.string()),
-                  })
-                  .optional()
-                  .describe('Optional result highlight that matches the query'),
-                rank: z.number().optional().describe('The rank of the result'),
-              }),
-            )
-            .describe('The search results'),
-          nextPageCursor: z
-            .string()
-            .optional()
-            .describe('The cursor for the next page of results, if any'),
-          totalItems: z
-            .number()
-            .optional()
-            .describe('The total number of results found'),
-          hasMoreResults: z
-            .boolean()
-            .describe('Whether there are more results'),
-        }),
+          .describe('The search results'),
+        nextPageCursor: z
+          .string()
+          .optional()
+          .describe('The cursor for the next page of results, if any'),
+        totalItems: z
+          .number()
+          .optional()
+          .describe('The total number of results found'),
+        hasMoreResults: z.boolean().describe('Whether there are more results'),
+      }),
     },
     action: async ({ input, credentials }) => {
       const resp = await engine.query(input, { credentials });

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import {
   metricsServiceMock,
@@ -38,8 +39,8 @@ describe('Mcp Backend', () => {
             title: 'Make Greeting',
             description: 'Make a greeting',
             schema: {
-              input: z => z.object({ name: z.string() }),
-              output: z => z.object({ greeting: z.string() }),
+              input: z.object({ name: z.string() }),
+              output: z.object({ greeting: z.string() }),
             },
             action: async ({ input }) => ({
               output: { greeting: `Hello ${input.name}!` },
@@ -156,8 +157,8 @@ describe('Mcp Backend', () => {
               title: 'Get Entity',
               description: 'Fetch an entity',
               schema: {
-                input: z => z.object({ name: z.string() }),
-                output: z => z.object({ entity: z.string() }),
+                input: z.object({ name: z.string() }),
+                output: z.object({ entity: z.string() }),
               },
               action: async ({ input }) => ({
                 output: { entity: input.name },
@@ -179,8 +180,8 @@ describe('Mcp Backend', () => {
               title: 'Create App',
               description: 'Create an app from template',
               schema: {
-                input: z => z.object({ template: z.string() }),
-                output: z => z.object({ name: z.string() }),
+                input: z.object({ template: z.string() }),
+                output: z.object({ name: z.string() }),
               },
               action: async ({ input }) => ({
                 output: { name: input.template },
