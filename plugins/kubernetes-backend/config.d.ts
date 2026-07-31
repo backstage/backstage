@@ -59,7 +59,7 @@ export interface Config {
             /** @visibility frontend */
             authProvider?: string;
             /** @visibility secret  */
-            authMetadata?: object;
+            authMetadata?: { [key: string]: unknown };
             /** @visibility frontend */
             oidcTokenProvider?: string;
             /** @visibility frontend */
