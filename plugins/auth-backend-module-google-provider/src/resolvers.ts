@@ -20,7 +20,7 @@ import {
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
-import { z } from 'zod/v3';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Google auth provider.
