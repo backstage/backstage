@@ -28,7 +28,9 @@ $page-header-height: 44px;
 .hubSpotNewAdopterFormContent {
   max-width: 500px;
   border-radius: 8px 0 0 8px;
-  background-color: var(--ifm-color-white);
+  background-color: var(--ifm-background-surface-color);
+  color: var(--ifm-front-color-base);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 
   form {
     width: 100%;
@@ -37,10 +39,26 @@ $page-header-height: 44px;
 
     padding-right: 2rem;
   }
-  select[class*='hs-input'] {
-    color: black;
+
+  :global(.hs-form-field) label,
+  :global(.hs-form-field) legend,
+  :global(.hs-richtext),
+  :global(.hs-richtext) p {
+    color: var(--ifm-front-color-base);
   }
-  input[class*='hs-button'] {
-    color: black;
+
+  :global(.hs-input) {
+    color: var(--ifm-front-color-base);
+    background-color: var(--ifm-background-color);
+    border: 1px solid var(--ifm-color-emphasis-300);
+
+    &::placeholder {
+      color: var(--ifm-front-emphasis-500);
+    }
+  }
+
+  :global(.hs-error-msgs) label,
+  :global(.hs-error-msg) {
+    color: var(--ifm-color-danger);
   }
 }
