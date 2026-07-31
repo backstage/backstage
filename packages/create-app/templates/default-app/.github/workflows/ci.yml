@@ -1,8 +1,12 @@
 # Documentation: https://backstage.io/docs/getting-started/ci
+# Other CI systems: https://backstage.io/docs/getting-started/ci#other-ci-systems
 name: PR CI build
 
 on:
   pull_request: {}
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -46,11 +50,11 @@ jobs:
       - name: lint
         run: yarn backstage-cli repo lint
 
-      - name: deprecations
-        run: yarn backstage-cli repo list-deprecations
-
       - name: type checking and declarations
         run: yarn tsc:full
+
+      - name: deprecations
+        run: yarn backstage-cli repo list-deprecations
 
       - name: build
         run: yarn build:all
@@ -59,10 +63,10 @@ jobs:
         run: yarn backstage-cli repo test
 
       - name: config check
-        run: |
-          yarn backstage-cli config:check --lax --strict
-          yarn backstage-cli config:check --lax --strict --config app-config.yaml --config app-config.production.yaml
+        run: yarn backstage-cli config:check --lax --strict --config app-config.yaml --config app-config.production.yaml
 
+      # Optional: Docker builds can be slow. Consider moving this to a merge
+      # or scheduled workflow if it slows down your pull request feedback loop.
       - name: docker build
         env:
           DOCKER_BUILDKIT: 1

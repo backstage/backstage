@@ -36,7 +36,7 @@ yarn backstage-cli repo lint
 
 Runs ESLint across all packages in the monorepo. This catches code quality
 issues, unused imports, and style violations. See
-[repo lint](../tooling/cli/03-commands.md#repo-lint) for available options.
+[repo lint](../tooling/cli/module-lint.md#repo-lint) for available options.
 
 ### Type checking
 
@@ -58,7 +58,7 @@ yarn backstage-cli repo test
 Runs the test suite for all packages. The Backstage CLI automatically
 detects which test runner to use and handles monorepo-specific
 configuration. See
-[repo test](../tooling/cli/03-commands.md#repo-test) for available
+[repo test](../tooling/cli/module-test.md#repo-test) for available
 options.
 
 ### Deprecated API usage
@@ -70,7 +70,7 @@ yarn backstage-cli repo list-deprecations
 Scans your code for usage of deprecated Backstage APIs. This is especially
 useful when preparing for version upgrades, but running it in CI ensures
 new code doesn't introduce deprecated patterns. See
-[repo list-deprecations](../tooling/cli/03-commands.md#repo-list-deprecations)
+[repo list-deprecations](../tooling/cli/module-maintenance.md#repo-list-deprecations)
 for available options.
 
 ### Build
@@ -83,23 +83,10 @@ Builds all packages in the monorepo, including the backend bundle that the
 Dockerfile needs. Running the build in CI catches compilation errors,
 missing dependencies, and broken imports that type checking alone might
 not surface. See
-[repo build](../tooling/cli/03-commands.md#repo-build) for available
+[repo build](../tooling/cli/module-build.md#repo-build) for available
 options.
 
 ### Configuration validation
-
-```shell
-yarn backstage-cli config:check --lax --strict
-```
-
-Validates your `app-config.yaml` against the configuration schema. The
-`--lax` flag allows environment variables to remain unresolved (useful in
-CI where production secrets aren't available), while `--strict` ensures
-the config structure matches the schema. See
-[config:check](../tooling/cli/03-commands.md#configcheck) for available
-options.
-
-To validate your production configuration as well:
 
 ```shell
 yarn backstage-cli config:check --lax --strict \
@@ -107,7 +94,16 @@ yarn backstage-cli config:check --lax --strict \
   --config app-config.production.yaml
 ```
 
-### Docker build
+Validates your configuration files against the configuration schema. The
+`--lax` flag allows environment variables to remain unresolved (useful in
+CI where production secrets aren't available), while `--strict` ensures
+the config structure matches the schema. Passing multiple `--config`
+flags lets you validate your production configuration alongside the
+default. See
+[config:check](../tooling/cli/module-config.md#configcheck) for available
+options.
+
+### Docker build (optional)
 
 ```shell
 yarn build-image
@@ -118,6 +114,10 @@ Verifies that the Docker image builds successfully. This script runs
 catches issues like incompatible dependencies that only surface at
 packaging time. This step expects pre-built backend bundles from
 `yarn build:all`.
+
+This step is optional. Docker builds can be slow, so some teams prefer to
+run them only on merges to the default branch or on a scheduled basis
+rather than on every pull request.
 
 ## GitHub Actions
 
@@ -138,11 +138,11 @@ in seconds when the lockfile hasn't changed.
 The pipeline runs these steps in order:
 
 1. **Lint** -- checks code quality across all packages
-2. **Deprecations** -- flags deprecated API usage
-3. **Type checking** -- full TypeScript compilation
+2. **Type checking** -- full TypeScript compilation
+3. **Deprecations** -- flags deprecated API usage
 4. **Build** -- builds all packages (`yarn build:all`)
 5. **Tests** -- runs the full test suite
-6. **Config check** -- validates both default and production configuration
+6. **Config check** -- validates default and production configuration together
 7. **Docker build** -- verifies the container image builds
 
 Build runs before tests because some test setups depend on generated
@@ -238,11 +238,52 @@ pipeline {
     }
     stage('Config check') {
       steps {
-        sh 'yarn backstage-cli config:check --lax --strict'
+        sh 'yarn backstage-cli config:check --lax --strict --config app-config.yaml --config app-config.production.yaml'
       }
     }
   }
 }
+```
+
+### Azure DevOps
+
+```yaml
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  CI: 'true'
+  NODE_OPTIONS: '--max-old-space-size=4096'
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '24.x'
+    displayName: use node.js
+
+  - script: yarn install --immutable
+    displayName: yarn install
+
+  - script: yarn backstage-cli repo lint
+    displayName: lint
+
+  - script: yarn tsc:full
+    displayName: type checking
+
+  - script: yarn backstage-cli repo list-deprecations
+    displayName: deprecations
+
+  - script: yarn build:all
+    displayName: build
+
+  - script: yarn backstage-cli repo test
+    displayName: tests
+
+  - script: yarn backstage-cli config:check --lax --strict --config app-config.yaml --config app-config.production.yaml
+    displayName: config check
 ```
 
 ### Key differences from GitHub Actions
