@@ -26,8 +26,7 @@ import {
   useAppNavigate,
   useFrameworkLocation,
 } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { usePageMount } from '../../../packages/frontend-plugin-api/src/routing/PageMountContext';
+import { usePageMount } from '@internal/frontend';
 import { Link, useLocation } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 

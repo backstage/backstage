@@ -19,8 +19,7 @@ import {
   shouldNavigateViaFramework,
 } from './absoluteLinkNavigate';
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { PageMount } from '../../../../frontend-plugin-api/src/routing/PageMountContext';
+import type { PageMount } from '@internal/frontend';
 
 const controller = {} as AppHistoryApi;
 const scopedMount: PageMount = {

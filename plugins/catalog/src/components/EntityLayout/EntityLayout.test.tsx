@@ -58,7 +58,7 @@ import {
 
 /**
  * Resolves only `entityRouteRef` so descendant `EntityRefLink`s can render
- * via framework `RouteLink` once a NavigationControllerApi is present.
+ * via framework `RouteLink` once an `AppHistoryApi` is present.
  * Unmapped refs throw so legacy `useRouteRef` falls back to mountedRoutes.
  */
 function createEntityLayoutRouteResolutionApi() {

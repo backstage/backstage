@@ -17,8 +17,7 @@
 import { useEffect, type ComponentType } from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { AppRouteSwitch, RouteTable } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { usePageMount } from '../../../frontend-plugin-api/src/routing/PageMountContext';
+import { usePageMount } from '@internal/frontend';
 import { createAppHistory } from './AppHistory';
 import type { AppHistory } from './AppHistory';
 

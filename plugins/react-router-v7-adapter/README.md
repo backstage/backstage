@@ -10,7 +10,7 @@ back/forward (`navigate(-1)`) is not supported — there is a single, real
 browser history; use the browser's own back/forward.
 
 This package is deliberately separate from
-`@backstage/plugin-react-router-v6-adapter` and does not share React Router
+the app-plugin default React Router v6 host and does not share React Router
 dependencies with it.
 
 ## Usage

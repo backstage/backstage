@@ -17,7 +17,7 @@
 import { ReactNode, useMemo } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import { PageMountContext, usePageMount } from '../routing/PageMountContext';
+import { PageMountContext, usePageMount } from '@internal/frontend';
 import {
   coreExtensionData,
   createExtensionBlueprint,

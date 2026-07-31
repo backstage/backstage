@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
 import { Link, Routes, Route } from 'react-router-dom';
@@ -53,16 +53,12 @@ describe('ReactRouterV6PageRouter', () => {
       initialRouteEntries: ['/opaque-v6'],
     });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('opaque-index')).toBeInTheDocument();
-    });
+    await screen.findByTestId('opaque-index');
 
     await act(async () => {
       screen.getByTestId('opaque-general-link').click();
     });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('opaque-general')).toBeInTheDocument();
-    });
+    await screen.findByTestId('opaque-general');
   });
 });

@@ -4,7 +4,7 @@
 
 **BREAKING**: Simplifies the scoped plugin routing framework seam (RFC #33603) introduced in a previous release.
 
-The `navigationControllerApiRef` / `NavigationControllerApi` are replaced by a much thinner `appHistoryApiRef` / `AppHistoryApi`, exposing only `navigate`, `location$`, and `createHref`. `RoutingContract`, `createRouteDescriptor` / `RouteDescriptor`, and `NavigationControllerApi.createContract` are removed — plugin code should use `useAppNavigate` (or the new `useHref` hook, the `useHref`-plus-`navigate` counterpart for resolving links) instead of a page-scoped contract. `RouteLink` and `useNavigateRouteRef` are unaffected.
+The `navigationControllerApiRef` / `NavigationControllerApi` are replaced by a much thinner `appHistoryApiRef` / `AppHistoryApi`, exposing only `navigate`, `location$`, and `createHref`. `RoutingContract`, `createRouteDescriptor` / `RouteDescriptor`, and `NavigationControllerApi.createContract` are removed — plugin code should use `AppHistoryApi.navigate` with the new `useHref` hook (the react-aria-style pair), or `useAppNavigate` when a dual new/old frontend-system navigate hook is needed, instead of a page-scoped contract. `RouteLink` and `useNavigateRouteRef` are unaffected.
 
 `AppRouteSwitch` no longer mints per-page routing contracts; it takes an `AppHistoryApi` (`history` prop, renamed from `controller`) and provides matched pages with a lightweight page-mount context instead.
 

@@ -30,11 +30,7 @@ import {
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  PageMountContext,
-  type PageMount,
-} from '../../../../frontend-plugin-api/src/routing/PageMountContext';
+import { PageMountContext, type PageMount } from '@internal/frontend';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ConfigReader } from '@backstage/config';

@@ -30,8 +30,7 @@ import {
   BreadcrumbEntry,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { PageMountContext } from '../../../../packages/frontend-plugin-api/src/routing/PageMountContext';
+import { PageMountContext } from '@internal/frontend';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useContext, useMemo } from 'react';

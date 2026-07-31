@@ -21,7 +21,7 @@ import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
 import { PageBlueprint } from './PageBlueprint';
 import { PageRouterBlueprint } from './PageRouterBlueprint';
 import { SubPageBlueprint } from './SubPageBlueprint';
-import { usePageMount } from '../routing/PageMountContext';
+import { usePageMount } from '@internal/frontend';
 
 describe('SubPageBlueprint', () => {
   it('should expose an optional singleton router input', () => {

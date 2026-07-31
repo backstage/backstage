@@ -212,11 +212,11 @@ export interface AppRouterProps {
  * the sign-in page. Once the user has signed-in, it will instead render
  * the app, while providing routing and route tracking for the app.
  *
- * History authority is the NavigationController. The default root wrapper
+ * History authority is the AppHistory. The default root wrapper
  * is a residual React Router v6 projection for chrome that still needs RR
  * context (`useResolvedPath`, relative links, and `@backstage/ui`'s own
  * react-router-backed href resolution in `useDefinition` / `Tabs` /
- * `HeaderNav`). `BUIProvider` is given the navigation controller directly so
+ * `HeaderNav`). `BUIProvider` is given the app history directly so
  * BUI-authored chrome (`Link`, `Tabs`, `Menu`, ...) navigates through it
  * instead of a scoped page router, regardless of which page (if any) chrome
  * is rendered under. Sidebar active-state and RouteTracker already prefer

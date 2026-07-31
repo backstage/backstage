@@ -58,9 +58,9 @@ function isModifiedEvent(event: ReactMouseEvent): boolean {
  * Shows a clickable link to an entity.
  *
  * Under the new frontend system, entity targets navigate via the framework
- * navigation controller (not the disposable NFS `Link` shim). Without a
- * navigation controller (old frontend system), the shared
- * {@link @backstage/core-components#Link} keeps today's react-router behavior.
+ * app history (not the disposable NFS `Link` shim). Without an app history
+ * (old frontend system), the shared {@link @backstage/core-components#Link}
+ * keeps today's react-router behavior.
  *
  * @public
  */
@@ -114,7 +114,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       />
     );
 
-    // When a navigation controller is present, always use framework navigate —
+    // When an app history is present, always use framework navigate —
     // never fall back to the react-router Link shim under NFS.
     if (frameworkNavigate) {
       const to = resolvedFrameworkPath ?? entityLink(props.entityRef);

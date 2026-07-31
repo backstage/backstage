@@ -76,7 +76,11 @@ function useAppHistoryLocation(
  * framework-owned UI so navigation does not depend on a root router as the
  * history authority.
  *
- * @public
+ * Adopter-facing code should prefer {@link AppHistoryApi} (`location$`) or
+ * the active page adapter's native location hook. This helper is for
+ * first-party chrome and tests.
+ *
+ * @internal
  */
 export function useFrameworkLocation(): FrameworkLocation {
   const appHistory = useApi(appHistoryApiRef);
@@ -113,7 +117,7 @@ export function useFrameworkNavigate(): (
  * React Router fallback for you. Use this hook only when you need the
  * optional navigate function itself.
  *
- * @public
+ * @internal
  */
 export function useOptionalFrameworkNavigate():
   | ((path: string, options?: FrameworkNavigateOptions) => void)

@@ -19,8 +19,6 @@ import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 /**
  * Where a page (or subpage) is mounted in the app.
- *
- * @internal
  */
 export interface PageMount {
   /**
@@ -39,10 +37,8 @@ export interface PageMount {
  * A global singleton React context carrying the current page's mount point,
  * shared between packages via `@backstage/version-bridge`.
  *
- * Replaces the old `RoutingContractContext` now that pages no longer receive
- * a full scoped routing contract — just where they are mounted.
- *
- * @internal
+ * First-party chrome and adapters read this via `@internal/frontend` rather
+ * than a public export on `@backstage/frontend-plugin-api`.
  */
 export const PageMountContext = getOrCreateGlobalSingleton(
   'page-mount-context',
@@ -52,8 +48,6 @@ export const PageMountContext = getOrCreateGlobalSingleton(
 /**
  * Returns the current page's mount point, or `undefined` outside of a page
  * (e.g. an isolated `renderInTestApp` without `AppRouteSwitch`).
- *
- * @internal
  */
 export function usePageMount(): PageMount | undefined {
   return useContext(PageMountContext);

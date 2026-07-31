@@ -17,3 +17,8 @@
 export { OpaqueRouteRef } from './OpaqueRouteRef';
 export { OpaqueSubRouteRef } from './OpaqueSubRouteRef';
 export { OpaqueExternalRouteRef } from './OpaqueExternalRouteRef';
+export {
+  PageMountContext,
+  usePageMount,
+  type PageMount,
+} from './PageMountContext';

@@ -2598,9 +2598,6 @@ export function useBreadcrumbEntries(): {
 };
 
 // @public
-export function useFrameworkLocation(): FrameworkLocation;
-
-// @public
 export function useHref(to: string): string;
 
 // @public
@@ -2610,11 +2607,6 @@ export function useNavigateRouteRef<TParams extends AnyRouteRefParams>(
     | SubRouteRef<TParams>
     | ExternalRouteRef<TParams>,
 ): NavigateRouteRefFunc<TParams> | undefined;
-
-// @public
-export function useOptionalFrameworkNavigate():
-  | ((path: string, options?: FrameworkNavigateOptions) => void)
-  | undefined;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(

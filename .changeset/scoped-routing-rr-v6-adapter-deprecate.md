@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-react-router-v6-adapter': major
+'@backstage/plugin-app': patch
 ---
 
-Removes this package from the public adapter story. The React Router v6 default page router now lives inside `@backstage/plugin-app` (`plugins/app/src/routing/reactRouterV6`) and is registered as the silent app default. This package is retained only as a private tombstone and should not be depended on.
+Moves the default React Router v6 page routing adapter in-tree (`plugins/app/src/routing/reactRouterV6`) instead of depending on `@backstage/plugin-react-router-v6-adapter`, which is no longer published — do not depend on it. The adapter no longer compiles library-agnostic route descriptor trees, it only injects React Router context for opaque `children` (existing `react-router-dom` `<Routes>` / `<Route>` trees). This is an internal implementation detail and does not change the app plugin's public API.

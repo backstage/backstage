@@ -20,11 +20,7 @@ import {
   appHistoryApiRef,
   type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  PageMountContext,
-  type PageMount,
-} from '../../../frontend-plugin-api/src/routing/PageMountContext';
+import { PageMountContext, type PageMount } from '@internal/frontend';
 
 /**
  * Returns the framework app history when the new frontend system has

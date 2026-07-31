@@ -22,7 +22,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react';
-import { PageMountContext, type PageMount } from './PageMountContext';
+import { PageMountContext, type PageMount } from '@internal/frontend';
 import type { AppHistoryApi } from './AppHistoryApi';
 import { RouteTable } from './RouteTable';
 import {

@@ -26,8 +26,7 @@ import {
   appHistoryApiRef,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { PageMountContext } from '../../../../../packages/frontend-plugin-api/src/routing/PageMountContext';
+import { PageMountContext } from '@internal/frontend';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from './EntityRefLink';
 

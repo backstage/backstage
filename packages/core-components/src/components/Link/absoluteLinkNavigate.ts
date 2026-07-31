@@ -15,8 +15,7 @@
  */
 
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { PageMount } from '../../../../frontend-plugin-api/src/routing/PageMountContext';
+import type { PageMount } from '@internal/frontend';
 
 /**
  * AbsoluteLinkNavigate — decide when `Link` should use the app-wide

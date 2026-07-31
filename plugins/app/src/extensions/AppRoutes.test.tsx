@@ -17,8 +17,7 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { usePageMount } from '../../../../packages/frontend-plugin-api/src/routing/PageMountContext';
+import { usePageMount } from '@internal/frontend';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
 const DEFAULT_CONFIG = {
