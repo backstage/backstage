@@ -48,10 +48,14 @@ export const connectionsExampleBackendModuleGitlab = createBackendModule({
         try {
           const connection = await connections.find({
             type: 'gitlab',
-            url: 'https://gitlab.com',
+            params: { url: 'https://gitlab.com' },
             authMethods: ['token'],
           });
-          logger.info(`Found GitLab connection for host ${connection.host}`);
+          logger.info(
+            `Found GitLab connection for host ${
+              (connection as unknown as { host: string }).host
+            }`,
+          );
         } catch (e) {
           if (e instanceof NotFoundError) {
             logger.info('No GitLab connection configured');

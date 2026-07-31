@@ -38,12 +38,12 @@ export type Connection<
   T extends ConnectionType | ConnectionTypeKey = ConnectionType,
   TAuthMethod extends string = string,
 > = {
-  type: ConnectionTypeKey;
+  type: LookupConnectionType<T>['type'];
   title: string;
   auth: string extends TAuthMethod
     ? AuthValue<T>[]
     : Extract<AuthValue<T>, { method: TAuthMethod }>;
-} & ConnectionType;
+} & ReturnType<LookupConnectionType<T>['configSchema']['parse']>;
 
 // Discriminated union of every known connection type, suitable for
 // `switch (c.type)` narrowing.

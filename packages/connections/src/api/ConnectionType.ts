@@ -17,6 +17,15 @@ import type { z } from 'zod/v4';
 import type { Expand, JsonObject } from '@backstage/types';
 import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 
+/** @public */
+export type LookupStrategy = 'host' | 'aws';
+
+/** @public */
+export type LookupStrategyParams = {
+  host: { url: string };
+  aws: { accountId?: string };
+};
+
 // Field names the framework owns at the connection level. Connection-type
 // authors must not declare these in their `configSchema`.
 export type ReservedConnectionFields = 'type' | 'auth' | 'match' | 'title';
@@ -97,9 +106,12 @@ export type ConnectionAuthValue<TAuthConfig extends { method: string }> =
     ? Expand<Omit<TAuthConfig, 'title' | 'match'> & { title: string }>
     : never;
 
-export type MatchAuth<TAuthConfig extends { method: string }> = (
+export type MatchAuth<
+  TAuthConfig extends { method: string },
+  TParams = { url: string },
+> = (
   authMethods: ConnectionAuthValue<TAuthConfig>[],
-  query: string,
+  params: TParams,
 ) => ConnectionAuthValue<TAuthConfig> | undefined;
 
 /**
@@ -122,15 +134,15 @@ export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
 export type ConnectionType<
   T extends {
     type: string;
+    lookupStrategy: LookupStrategy;
     configSchema: unknown;
-    findParams: unknown;
     auth: readonly {
       method: string;
     }[];
   } = {
     type: string;
+    lookupStrategy: LookupStrategy;
     configSchema: unknown;
-    findParams: unknown;
     auth: readonly {
       method: string;
     }[];
@@ -138,9 +150,9 @@ export type ConnectionType<
 > = {
   type: T['type'];
   title: string;
+  lookupStrategy: T['lookupStrategy'];
   /** Schema for a complete connection configuration. */
   configSchema: PortableSchema<T['configSchema'], unknown>;
-  findParams: PortableSchema<T['findParams'], unknown>;
   /** Supported auth methods and their method-specific configuration schemas. */
   authMethods: readonly (T['auth'][number] extends infer TAuth
     ? TAuth extends { method: string }
@@ -154,13 +166,10 @@ export type ConnectionType<
         }
       : never
     : never)[];
-  // // Method shorthand keeps parameter checking bivariant so a narrow
-  // // ConnectionType (e.g. github) is still assignable to ConnectionType.
-  // // TODO a default match auth method so this is no longer optional
-  // matchAuth?(
-  //   authMethods: ConnectionAuthValue<T['auth'][number]>[],
-  //   query: string,
-  // ): ConnectionAuthValue<T['auth'][number]> | undefined;
+  matchAuth?(
+    authMethods: ConnectionAuthValue<T['auth'][number]>[],
+    params: LookupStrategyParams[T['lookupStrategy']],
+  ): ConnectionAuthValue<T['auth'][number]> | undefined;
 };
 
 /** @public */

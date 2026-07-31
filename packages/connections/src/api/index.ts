@@ -21,6 +21,8 @@ export type {
   ConnectionAuthMatch,
   ConnectionAuthMethodKey,
   ConnectionAuthValue,
+  LookupStrategy,
+  LookupStrategyParams,
   RootConnectionAuth,
   PortableSchema,
 } from './ConnectionType';

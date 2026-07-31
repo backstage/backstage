@@ -36,7 +36,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        params: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       });
 
@@ -68,7 +68,7 @@ describe('DefaultConnectionsService', () => {
       await expect(
         service.forPlugin('catalog').find({
           type: 'github',
-          url: 'https://enterprise.example.com/foo',
+          params: { url: 'https://enterprise.example.com/foo' },
           authMethods: ['app'],
         }),
       ).rejects.toThrow(/Connection not found/);
@@ -97,7 +97,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('scaffolder').find({
         type: 'github',
-        url: 'https://enterprise.example.com/foo',
+        params: { url: 'https://enterprise.example.com/foo' },
         authMethods: ['app'],
       });
 
@@ -133,12 +133,12 @@ describe('DefaultConnectionsService', () => {
 
       const splitForCatalog = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://split.example.com/foo',
+        params: { url: 'https://split.example.com/foo' },
         authMethods: ['token', 'app'],
       });
       const splitForScaffolder = await service.forPlugin('scaffolder').find({
         type: 'github',
-        url: 'https://split.example.com/foo',
+        params: { url: 'https://split.example.com/foo' },
         authMethods: ['token', 'app'],
       });
 
@@ -161,7 +161,7 @@ describe('DefaultConnectionsService', () => {
       await expect(
         service.forPlugin('catalog').find({
           type: 'github',
-          url: 'https://missing.example.com/foo',
+          params: { url: 'https://missing.example.com/foo' },
           authMethods: ['token'],
         }),
       ).rejects.toThrow(/Connection not found for type "github"/);
@@ -190,7 +190,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://specific.example.com/foo',
+        params: { url: 'https://specific.example.com/foo' },
         authMethods: ['token'],
       });
 
@@ -221,7 +221,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('scaffolder').find({
         type: 'github',
-        url: 'https://specific.example.com/foo',
+        params: { url: 'https://specific.example.com/foo' },
         authMethods: ['token'],
       });
 
@@ -247,7 +247,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('catalog').find({
         type: 'gitlab',
-        url: 'https://gitlab.com/my-org/my-repo',
+        params: { url: 'https://gitlab.com/my-org/my-repo' },
         authMethods: ['token'],
       });
 
@@ -280,12 +280,12 @@ describe('DefaultConnectionsService', () => {
 
       const forCatalog = await service.forPlugin('catalog').find({
         type: 'gitlab',
-        url: 'https://gitlab.com/my-org/my-repo',
+        params: { url: 'https://gitlab.com/my-org/my-repo' },
         authMethods: ['token'],
       });
       const forScaffolder = await service.forPlugin('scaffolder').find({
         type: 'gitlab',
-        url: 'https://gitlab.com/my-org/my-repo',
+        params: { url: 'https://gitlab.com/my-org/my-repo' },
         authMethods: ['token'],
       });
 
@@ -336,7 +336,7 @@ describe('DefaultConnectionsService', () => {
 
       const gh = await catalog.find({
         type: 'github',
-        url: 'https://enterprise.example.com/foo',
+        params: { url: 'https://enterprise.example.com/foo' },
         authMethods: ['token', 'app'],
       });
       // matchAuth's priority chain prefers `app` over `token` when an app
@@ -347,7 +347,7 @@ describe('DefaultConnectionsService', () => {
 
       const gl = await catalog.find({
         type: 'gitlab',
-        url: 'https://gitlab.com/foo',
+        params: { url: 'https://gitlab.com/foo' },
         authMethods: ['token'],
       });
       expect(gl?.host).toBe('gitlab.com');
@@ -391,7 +391,7 @@ describe('DefaultConnectionsService', () => {
         await expect(
           catalog.find({
             type: 'github',
-            url,
+            params: { url },
             authMethods: ['token'],
           }),
         ).rejects.toThrow(/Connection not found/);
@@ -399,7 +399,7 @@ describe('DefaultConnectionsService', () => {
 
       const kept = await catalog.find({
         type: 'github',
-        url: 'https://config.example.com/foo',
+        params: { url: 'https://config.example.com/foo' },
         authMethods: ['token'],
       });
       expect(kept?.host).toBe('config.example.com');
@@ -427,7 +427,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://public.example.com/foo',
+        params: { url: 'https://public.example.com/foo' },
         authMethods: ['none'],
       });
       expect(connection?.host).toBe('public.example.com');
@@ -457,7 +457,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://shared.example.com/foo',
+        params: { url: 'https://shared.example.com/foo' },
         authMethods: ['token', 'app'],
       });
       // matchAuth picks `app` from shared.example.com (priority chain).
@@ -479,7 +479,7 @@ describe('DefaultConnectionsService', () => {
       await expect(
         service.forPlugin('catalog').find({
           type: 'github',
-          url: 'https://github.com/foo',
+          params: { url: 'https://github.com/foo' },
           authMethods: ['app'],
         }),
       ).rejects.toThrow(
@@ -518,7 +518,7 @@ describe('DefaultConnectionsService', () => {
       await expect(
         service.forPlugin('catalog').find({
           type: 'github',
-          url: 'https://split.example.com/foo',
+          params: { url: 'https://split.example.com/foo' },
           authMethods: ['app'],
         }),
       ).rejects.toThrow(
@@ -543,7 +543,7 @@ describe('DefaultConnectionsService', () => {
       await expect(
         service.forPlugin('catalog').find({
           type: 'github',
-          url: 'not a url',
+          params: { url: 'not a url' },
           authMethods: ['token'],
         }),
       ).rejects.toThrow(/Invalid url/);
@@ -566,7 +566,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        params: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       });
 
@@ -587,7 +587,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        params: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       });
 
@@ -613,12 +613,12 @@ describe('DefaultConnectionsService', () => {
 
       const pub = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        params: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       });
       const ent = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://ghe.acme.com/my-org/my-repo',
+        params: { url: 'https://ghe.acme.com/my-org/my-repo' },
         authMethods: ['token'],
       });
 
@@ -646,12 +646,12 @@ describe('DefaultConnectionsService', () => {
 
       const pub = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        params: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       });
       const ent = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://ghe.acme.com/my-org/my-repo',
+        params: { url: 'https://ghe.acme.com/my-org/my-repo' },
         authMethods: ['token'],
       });
 
@@ -681,7 +681,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        params: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       });
 
@@ -707,7 +707,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        params: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       });
 
@@ -744,7 +744,7 @@ describe('DefaultConnectionsService', () => {
 
       const connection = await service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        params: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       });
 
@@ -783,7 +783,7 @@ describe('DefaultConnectionsService', () => {
             },
           ]),
         }),
-      ).toThrow(/Invalid connection of type "github".*at auth\[0\]\.token/s);
+      ).toThrow(/Invalid connection of type "github".*token/s);
     });
 
     it('throws with the offending field when a connection has an unknown property', () => {

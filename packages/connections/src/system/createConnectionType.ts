@@ -19,6 +19,8 @@ import type { Expand, JsonObject } from '@backstage/types';
 import type {
   ConnectionAuthMatch,
   ConnectionType,
+  LookupStrategy,
+  LookupStrategyParams,
   MatchAuth,
   PortableSchema,
   WithoutReservedAuthMethods,
@@ -88,26 +90,29 @@ function createPortableSchema<TSchema extends z.ZodType>(
 export function createConnectionType<
   TType extends string,
   TConfigSchema extends z.ZodObject,
-  TFindParams extends z.ZodObject,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
+  TLookupStrategy extends LookupStrategy = 'host',
 >({
   configSchema,
-  findParams,
   type,
   title,
+  lookupStrategy,
   authMethods,
   matchAuth,
 }: {
   type: TType;
   title: string;
+  lookupStrategy?: TLookupStrategy;
   configSchema: WithoutReservedFields<TConfigSchema>;
-  findParams?: WithoutReservedFields<TFindParams>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
-  matchAuth?: MatchAuth<RootConnectionAuthFromSchema<TAuthMethods[number]>>;
+  matchAuth?: MatchAuth<
+    RootConnectionAuthFromSchema<TAuthMethods[number]>,
+    LookupStrategyParams[TLookupStrategy]
+  >;
 }): ConnectionType<{
   type: TType;
+  lookupStrategy: TLookupStrategy;
   configSchema: ConfigFromSchema<TConfigSchema>;
-  findParams: ConfigFromSchema<TFindParams>;
   auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
 }> {
   const validatedAuthMethods = authMethods as TAuthMethods;
@@ -121,19 +126,10 @@ export function createConnectionType<
     `Invalid configuration for connection type "${type}"`,
   );
 
-  const defaultFindParams = z.object({
-    url: z.string(),
-  });
-
-  const _findParams = findParams || defaultFindParams;
-  const portableFindParamsSchema = createPortableSchema(
-    (_findParams as unknown as TConfigSchema).strict(),
-    `Invalid find parameters for connection type "${type}"`,
-  );
-
   return {
     type,
     title,
+    lookupStrategy: lookupStrategy ?? 'host',
     authMethods: validatedAuthMethods.map(
       ({ method, title: authTitle, configSchema: authConfigSchema }) => ({
         method,
@@ -144,13 +140,12 @@ export function createConnectionType<
         ),
       }),
     ),
-    findParams: portableFindParamsSchema,
     configSchema: portableConfigSchema,
     matchAuth,
   } as unknown as ConnectionType<{
     type: TType;
+    lookupStrategy: TLookupStrategy;
     configSchema: ConfigFromSchema<TConfigSchema>;
-    findParams: ConfigFromSchema<TFindParams>;
     auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
   }>;
 }

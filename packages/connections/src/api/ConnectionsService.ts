@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConnectionTypeKey } from '../definitions';
+import { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 import { Connection } from './Connection';
-import { ConnectionAuthMethodKey } from './ConnectionType';
+import {
+  ConnectionAuthMethodKey,
+  LookupStrategyParams,
+} from './ConnectionType';
 
 /** @public */
 export interface ConnectionsService {
@@ -24,7 +27,7 @@ export interface ConnectionsService {
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >(options: {
     type: TType;
-    url: string;
+    params: LookupStrategyParams[LookupConnectionType<TType>['lookupStrategy']];
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>>;
 }
