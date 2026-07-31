@@ -1,0 +1,22 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg { fill: #f0f4f8; }
+      .shield { fill: #1f3a93; stroke: #4a90e2; stroke-width: 2; }
+      .accent { fill: #4a90e2; }
+      .check { fill: none; stroke: white; stroke-width: 3; stroke-linecap: round; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect class="bg" width="200" height="200"/>
+
+  <!-- Shield Icon -->
+  <g transform="translate(50, 30)">
+    <!-- Shield outline -->
+    <path class="shield" d="M 50 10 L 90 25 L 90 60 Q 50 85 50 85 Q 10 85 10 60 L 10 25 Z"/>
+
+    <!-- Checkmark inside shield -->
+    <path class="check" d="M 35 55 L 45 65 L 65 45"/>
+  </g>
+</svg>
