@@ -36,7 +36,7 @@ export interface Config {
          *
          * Defaults to no filter, ie indexing all entities.
          */
-        filter?: object | object[];
+        filter?: { [key: string]: unknown } | { [key: string]: unknown }[];
         /**
          * The number of entities to process at a time. Keep this at a
          * reasonable number to avoid overloading either the catalog or the
