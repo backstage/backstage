@@ -100,7 +100,7 @@ export function createPackageVersionProvider(
     preferBackstageProtocol?: boolean;
   },
 ) {
-  return (name: string, versionHint?: string): string => {
+  return (name: string, versionHint?: string): string | undefined => {
     const packageVersion = packageVersions[name];
 
     // 1) workspace precedence (existing logic) - check this first
@@ -120,7 +120,7 @@ export function createPackageVersionProvider(
     // 3) fallback to current npm resolution
     const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {
-      throw new Error(`No version available for package ${name}`);
+      return undefined;
     }
 
     const validRanges = lockfileEntries?.filter(entry =>

@@ -81,6 +81,7 @@ describe('createPackageVersionProvider', () => {
     expect(provider('@backstage/frontend-dev-utils')).toBe(
       `^${packageVersions['@backstage/frontend-dev-utils']}`,
     );
+    expect(provider('unknown-package')).toBeUndefined();
   });
 
   describe('with backstage protocol options', () => {

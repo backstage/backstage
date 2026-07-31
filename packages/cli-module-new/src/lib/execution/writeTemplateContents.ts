@@ -80,7 +80,7 @@ export async function writeTemplateContents(
       if (file.path === 'package.json') {
         try {
           content = injectPackageJsonInput(input, content, pluginPackage =>
-            templater.tryResolvePackageVersion(pluginPackage),
+            templater.getPackageVersion(pluginPackage),
           );
         } catch (error) {
           throw new ForwardedError(

@@ -63,10 +63,14 @@ export class PortableTemplater {
     const templater = new PortableTemplater(
       {
         versionQuery(name: string, versionHint: string | unknown) {
-          return versionProvider(
+          const version = versionProvider(
             name,
             typeof versionHint === 'string' ? versionHint : undefined,
           );
+          if (!version) {
+            throw new Error(`No version available for package ${name}`);
+          }
+          return version;
         },
       },
       options.values ?? {},
@@ -107,18 +111,8 @@ export class PortableTemplater {
     })(this.#values);
   }
 
-  tryResolvePackageVersion(name: string): string | undefined {
-    try {
-      return this.#versionProvider(name);
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message === `No version available for package ${name}`
-      ) {
-        return undefined;
-      }
-      throw error;
-    }
+  getPackageVersion(name: string): string | undefined {
+    return this.#versionProvider(name);
   }
 
   appendTemplatedValues(record: Record<string, string>): void {
