@@ -132,7 +132,24 @@ describe('writeTemplateContents', () => {
     expect(packageWithCustomPlugin.devDependencies).toEqual({
       '@acme/plugin-custom-backend': 'workspace:^',
     });
-    expect(resolvePluginPackageVersion).toHaveBeenCalledTimes(1);
+    expect(resolvePluginPackageVersion).toHaveBeenCalledWith(
+      '@acme/plugin-custom-backend',
+    );
+  });
+
+  it('should skip the plugin package when its version cannot be resolved', () => {
+    const resolvePluginPackageVersion = jest.fn(() => undefined);
+    const packageWithoutPluginVersion = JSON.parse(
+      injectPackageJsonInput(
+        backendModuleInput,
+        JSON.stringify({ name: backendModuleInput.packageName }),
+        resolvePluginPackageVersion,
+      ),
+    );
+    expect(packageWithoutPluginVersion).not.toHaveProperty('devDependencies');
+    expect(resolvePluginPackageVersion).toHaveBeenCalledWith(
+      '@acme/plugin-custom-backend',
+    );
   });
 
   it('should preserve an existing backend plugin package dependency', () => {

@@ -70,6 +70,7 @@ export class PortableTemplater {
         },
       },
       options.values ?? {},
+      versionProvider,
     );
 
     if (options.templatedValues) {
@@ -80,13 +81,16 @@ export class PortableTemplater {
   }
 
   readonly #templater: typeof handlebars;
+  readonly #versionProvider: ReturnType<typeof createPackageVersionProvider>;
   #values: PortableTemplateParams;
 
   private constructor(
     helpers: handlebars.HelperDeclareSpec,
     values: PortableTemplateParams,
+    versionProvider: ReturnType<typeof createPackageVersionProvider>,
   ) {
     this.#templater = handlebars.create();
+    this.#versionProvider = versionProvider;
 
     this.#templater.registerHelper(builtInHelpers);
 
@@ -101,6 +105,20 @@ export class PortableTemplater {
     return this.#templater.compile(content, {
       strict: true,
     })(this.#values);
+  }
+
+  tryResolvePackageVersion(name: string): string | undefined {
+    try {
+      return this.#versionProvider(name);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === `No version available for package ${name}`
+      ) {
+        return undefined;
+      }
+      throw error;
+    }
   }
 
   appendTemplatedValues(record: Record<string, string>): void {
