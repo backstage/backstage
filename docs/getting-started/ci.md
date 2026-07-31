@@ -140,13 +140,13 @@ The pipeline runs these steps in order:
 1. **Lint** -- checks code quality across all packages
 2. **Type checking** -- full TypeScript compilation
 3. **Deprecations** -- flags deprecated API usage
-4. **Build** -- builds all packages (`yarn build:all`)
-5. **Tests** -- runs the full test suite
+4. **Tests** -- runs the full test suite
+5. **Build** -- builds all packages (`yarn build:all`)
 6. **Config check** -- validates default and production configuration together
 7. **Docker build** -- verifies the container image builds
 
-Build runs before tests because some test setups depend on generated
-artifacts, and it runs before the Docker build because the Dockerfile
+Tests run before the full build to give faster feedback on the most common
+failure mode. Build runs before the Docker build because the Dockerfile
 expects pre-built backend bundles.
 
 ### Customizing the workflow
@@ -171,6 +171,19 @@ stages:
   - validate
   - build
   - test
+
+default:
+  cache:
+    key:
+      files:
+        - yarn.lock
+    paths:
+      - node_modules/
+      - .yarn/cache/
+
+variables:
+  CI: 'true'
+  NODE_OPTIONS: '--max-old-space-size=8192'
 
 lint:
   stage: validate
@@ -208,7 +221,7 @@ pipeline {
   }
   environment {
     CI = 'true'
-    NODE_OPTIONS = '--max-old-space-size=4096'
+    NODE_OPTIONS = '--max-old-space-size=8192'
   }
   stages {
     stage('Install') {
@@ -247,6 +260,11 @@ pipeline {
 
 ### Azure DevOps
 
+> **Note:** YAML `pr:` triggers only work when your repo is hosted on
+> GitHub or Bitbucket Cloud. If you use Azure Repos Git, configure a
+> [branch policy for build validation](https://learn.microsoft.com/en-us/azure/devops/repos/git/branch-policies#build-validation)
+> to run this pipeline on pull requests.
+
 ```yaml
 trigger:
   - main
@@ -256,7 +274,7 @@ pool:
 
 variables:
   CI: 'true'
-  NODE_OPTIONS: '--max-old-space-size=4096'
+  NODE_OPTIONS: '--max-old-space-size=8192'
 
 steps:
   - task: NodeTool@0
@@ -294,7 +312,7 @@ steps:
   `docker build` inside a pipeline. Check your platform's documentation
   for Docker support.
 - **Environment variables**: Set `CI=true` and
-  `NODE_OPTIONS=--max-old-space-size=4096` in your pipeline environment.
+  `NODE_OPTIONS=--max-old-space-size=8192` in your pipeline environment.
   The `CI` variable ensures deterministic behavior in tools like Jest, and
   the memory limit is explained below.
 
@@ -305,8 +323,8 @@ Two environment variables are set in the generated workflow:
 - **`CI=true`** -- Enables CI-specific behavior in tools like Jest (for
   example, running all tests instead of only changed ones) and prevents
   interactive prompts.
-- **`NODE_OPTIONS=--max-old-space-size=4096`** -- Increases the Node.js
-  heap memory limit to 4 GB. TypeScript compilation and bundling across a
+- **`NODE_OPTIONS=--max-old-space-size=8192`** -- Increases the Node.js
+  heap memory limit to 8 GB. TypeScript compilation and bundling across a
   monorepo can exceed the default memory limit, especially as you add
   plugins. This setting prevents out-of-memory crashes during
   `yarn tsc:full` and `yarn build:all`.

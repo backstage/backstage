@@ -8,26 +8,34 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=8192
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@v6
 
       # Beginning of yarn setup
       - name: use node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        uses: actions/setup-node@v6
         with:
           node-version: 24.x
           registry-url: https://registry.npmjs.org/
+      - name: install and enable corepack
+        run: |
+          npm install -g corepack
+          corepack enable
       - name: cache all node_modules
         id: cache-modules
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        uses: actions/cache@v5
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
@@ -36,7 +44,7 @@ jobs:
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - name: cache global yarn cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        uses: actions/cache@v5
         if: steps.cache-modules.outputs.cache-hit != 'true'
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
@@ -56,11 +64,11 @@ jobs:
       - name: deprecations
         run: yarn backstage-cli repo list-deprecations
 
-      - name: build
-        run: yarn build:all
-
       - name: tests
         run: yarn backstage-cli repo test
+
+      - name: build
+        run: yarn build:all
 
       - name: config check
         run: yarn backstage-cli config:check --lax --strict --config app-config.yaml --config app-config.production.yaml
