@@ -114,7 +114,6 @@ describe('Mcp Backend', () => {
         description: 'Make a greeting',
         inputSchema: {
           $schema: 'http://json-schema.org/draft-07/schema#',
-          additionalProperties: false,
           properties: {
             name: {
               type: 'string',

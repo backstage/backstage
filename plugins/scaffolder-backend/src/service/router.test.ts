@@ -292,7 +292,6 @@ describe('scaffolder router', () => {
         schema: {
           input: {
             $schema: 'http://json-schema.org/draft-07/schema#',
-            additionalProperties: false,
             properties: { name: { type: 'string' } },
             required: ['name'],
             type: 'object',

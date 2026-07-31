@@ -92,7 +92,6 @@ describe('McpService', () => {
         description: 'Test',
         inputSchema: {
           $schema: 'http://json-schema.org/draft-07/schema#',
-          additionalProperties: false,
           properties: {
             input: {
               type: 'string',
