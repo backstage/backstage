@@ -51,15 +51,21 @@ import { version as testUtils } from '../../../test-utils/package.json';
 import { version as theme } from '../../../theme/package.json';
 import { version as types } from '../../../types/package.json';
 import { version as ui } from '../../../ui/package.json';
+import { version as appBackend } from '../../../../plugins/app-backend/package.json';
 import { version as authBackend } from '../../../../plugins/auth-backend/package.json';
 import { version as authBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
 import { version as catalogBackend } from '../../../../plugins/catalog-backend/package.json';
 import { version as catalogNode } from '../../../../plugins/catalog-node/package.json';
+import { version as eventsBackend } from '../../../../plugins/events-backend/package.json';
+import { version as kubernetesBackend } from '../../../../plugins/kubernetes-backend/package.json';
+import { version as notificationsBackend } from '../../../../plugins/notifications-backend/package.json';
 import { version as permissionBackend } from '../../../../plugins/permission-backend/package.json';
+import { version as proxyBackend } from '../../../../plugins/proxy-backend/package.json';
 import { version as scaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
 import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
 import { version as scaffolderNodeTestUtils } from '../../../../plugins/scaffolder-node-test-utils/package.json';
 import { version as searchBackend } from '../../../../plugins/search-backend/package.json';
+import { version as techdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
 
 export const packageVersions: Record<string, string> = {
   '@backstage/backend-defaults': backendDefaults,
@@ -84,14 +90,20 @@ export const packageVersions: Record<string, string> = {
   '@backstage/ui': ui,
   '@backstage/plugin-scaffolder-node': scaffolderNode,
   '@backstage/plugin-scaffolder-node-test-utils': scaffolderNodeTestUtils,
+  '@backstage/plugin-app-backend': appBackend,
   '@backstage/plugin-auth-backend': authBackend,
   '@backstage/plugin-auth-backend-module-guest-provider':
     authBackendModuleGuestProvider,
   '@backstage/plugin-catalog-backend': catalogBackend,
   '@backstage/plugin-catalog-node': catalogNode,
+  '@backstage/plugin-events-backend': eventsBackend,
+  '@backstage/plugin-kubernetes-backend': kubernetesBackend,
+  '@backstage/plugin-notifications-backend': notificationsBackend,
   '@backstage/plugin-permission-backend': permissionBackend,
+  '@backstage/plugin-proxy-backend': proxyBackend,
   '@backstage/plugin-scaffolder-backend': scaffolderBackend,
   '@backstage/plugin-search-backend': searchBackend,
+  '@backstage/plugin-techdocs-backend': techdocsBackend,
 };
 
 export function createPackageVersionProvider(
