@@ -259,15 +259,48 @@ export class DefaultConnectionsService {
       throw new InputError(`Unrecognised connection type ${connection.type}`);
     }
 
-    const parsed = getConnectionType(connection.type).configSchema.parse(
-      connection,
-    );
-    if (parsed.auth.length === 0) {
+    const connectionType = getConnectionType(connection.type);
+
+    const rawAuth = connection.auth;
+    if (!Array.isArray(rawAuth) || rawAuth.length === 0) {
       throw new InputError(
         `Connection of type "${connection.type}" must configure at least one auth method`,
       );
     }
-    return parsed;
+
+    const auth = (rawAuth as JsonObject[]).map(entry => {
+      if (typeof entry.method !== 'string') {
+        throw new InputError(
+          `Auth entry for connection type "${connection.type}" is missing a "method" field`,
+        );
+      }
+      const authMethod = connectionType.authMethods.find(
+        am => am.method === entry.method,
+      );
+      if (!authMethod) {
+        throw new InputError(
+          `Unknown auth method "${entry.method}" for connection type "${connection.type}"`,
+        );
+      }
+      const { method, title, match, ...rest } = entry;
+      return {
+        ...authMethod.configSchema.parse(rest),
+        method,
+        title: title as string | undefined,
+        match: match as { plugins: string[] } | undefined,
+      } as RootConnection['auth'][number];
+    });
+
+    const { type, auth: _, title, match, ...configFields } = connection;
+    const parsed = connectionType.configSchema.parse(configFields);
+
+    return {
+      ...parsed,
+      type: connection.type,
+      title: title as string | undefined,
+      match: match as { plugins: string[] } | undefined,
+      auth,
+    } as RootConnection;
   }
 
   #assignDefaultTitles(): void {

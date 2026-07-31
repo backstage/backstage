@@ -71,4 +71,5 @@ export const GithubConnectionType = createConnectionType({
       authMethods.find(a => a.method === 'none')
     );
   },
+  selectionMode: 'host',
 });

@@ -15,8 +15,9 @@
  */
 import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
-import type { JsonObject } from '@backstage/types';
+import type { Expand, JsonObject } from '@backstage/types';
 import type {
+  ConnectionAuthMatch,
   ConnectionType,
   MatchAuth,
   PortableSchema,
@@ -38,42 +39,23 @@ type ConfigFromSchema<TConfigSchema extends z.ZodObject> =
     ? Record<never, never>
     : z.infer<TConfigSchema>;
 
+// Expand flattens the intersection into a single object literal so that
+// editor tooltips show each auth method variant as a readable flat shape
+// rather than a chain of truncated intersections.
 type RootConnectionAuthFromSchema<
   TAuthMethod extends ConnectionAuthMethodSchema,
 > = TAuthMethod extends ConnectionAuthMethodSchema<
   infer TMethod,
   infer TConfigSchema
 >
-  ? ConfigFromSchema<TConfigSchema> & {
-      method: TMethod;
-      title?: string;
-      match?: { plugins: string[] };
-    }
+  ? Expand<
+      {
+        method: TMethod;
+        title?: string;
+        match?: ConnectionAuthMatch;
+      } & ConfigFromSchema<TConfigSchema>
+    >
   : never;
-
-type RootConnectionFromSchemas<
-  TType extends string,
-  TConfigSchema extends z.ZodObject,
-  TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-> = ConfigFromSchema<TConfigSchema> & {
-  type: TType;
-  title?: string;
-  match?: { plugins: string[] };
-  auth: Array<RootConnectionAuthFromSchema<TAuthMethods[number]>>;
-};
-
-type RootConnectionAuthMethodsFromSchemas<
-  TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-> = {
-  readonly [I in keyof TAuthMethods]: RootConnectionAuthFromSchema<
-    TAuthMethods[I]
-  >;
-};
-
-const matchSchema = z
-  .object({ plugins: z.array(z.string()) })
-  .strict()
-  .optional();
 
 function createPortableSchema<TSchema extends z.ZodType>(
   schema: TSchema,
@@ -106,9 +88,11 @@ function createPortableSchema<TSchema extends z.ZodType>(
 export function createConnectionType<
   TType extends string,
   TConfigSchema extends z.ZodObject,
+  TFindParams extends z.ZodObject,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
 >({
   configSchema,
+  findParams,
   type,
   title,
   authMethods,
@@ -117,49 +101,37 @@ export function createConnectionType<
   type: TType;
   title: string;
   configSchema: WithoutReservedFields<TConfigSchema>;
+  findParams?: WithoutReservedFields<TFindParams>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
-  matchAuth?: MatchAuth<
-    RootConnectionAuthMethodsFromSchemas<TAuthMethods>[number]
-  >;
-}): ConnectionType<
-  RootConnectionFromSchemas<TType, TConfigSchema, TAuthMethods>
-> {
+  matchAuth?: MatchAuth<RootConnectionAuthFromSchema<TAuthMethods[number]>>;
+}): ConnectionType<{
+  type: TType;
+  configSchema: ConfigFromSchema<TConfigSchema>;
+  findParams: ConfigFromSchema<TFindParams>;
+  auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
+}> {
   const validatedAuthMethods = authMethods as TAuthMethods;
   if (validatedAuthMethods.length < 1) {
     throw new InputError(
       `Connection type "${type}" must declare at least one auth method`,
     );
   }
-  const authOptions = validatedAuthMethods.map(am =>
-    am.configSchema
-      .extend({
-        method: z.literal(am.method),
-        title: z.string().min(1).optional(),
-        match: matchSchema,
-      })
-      .strict(),
-  );
-  const validated = configSchema as unknown as TConfigSchema;
-  const schema = validated
-    .extend({
-      type: z.literal(type),
-      title: z.string().min(1).optional(),
-      match: matchSchema,
-      auth: z.array(
-        authOptions.length === 1
-          ? authOptions[0]
-          : z.discriminatedUnion(
-              'method',
-              authOptions as [(typeof authOptions)[0], ...typeof authOptions],
-            ),
-      ),
-    })
-    .strict();
-  const portableSchema = createPortableSchema(
-    schema,
+  const portableConfigSchema = createPortableSchema(
+    (configSchema as unknown as TConfigSchema).strict(),
     `Invalid configuration for connection type "${type}"`,
   );
-  const connectionType = {
+
+  const defaultFindParams = z.object({
+    url: z.string(),
+  });
+
+  const _findParams = findParams || defaultFindParams;
+  const portableFindParamsSchema = createPortableSchema(
+    (_findParams as unknown as TConfigSchema).strict(),
+    `Invalid find parameters for connection type "${type}"`,
+  );
+
+  return {
     type,
     title,
     authMethods: validatedAuthMethods.map(
@@ -172,10 +144,13 @@ export function createConnectionType<
         ),
       }),
     ),
-    configSchema: portableSchema,
+    findParams: portableFindParamsSchema,
+    configSchema: portableConfigSchema,
     matchAuth,
-  } as unknown as ConnectionType<
-    RootConnectionFromSchemas<TType, TConfigSchema, TAuthMethods>
-  >;
-  return connectionType;
+  } as unknown as ConnectionType<{
+    type: TType;
+    configSchema: ConfigFromSchema<TConfigSchema>;
+    findParams: ConfigFromSchema<TFindParams>;
+    auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
+  }>;
 }

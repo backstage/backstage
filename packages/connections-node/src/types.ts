@@ -17,9 +17,15 @@ import type {
   ConnectionType,
   ConnectionTypeKey,
   LookupConnectionType,
+  RootConnectionAuth,
 } from '@backstage/connections';
 
-/** The configuration shape of a connection before plugin filtering. */
+/** The shape of a connection before plugin filtering. */
 export type RootConnection<
   T extends ConnectionType | ConnectionTypeKey = ConnectionType,
-> = ReturnType<LookupConnectionType<T>['configSchema']['parse']>;
+> = ReturnType<LookupConnectionType<T>['configSchema']['parse']> & {
+  type: LookupConnectionType<T>['type'];
+  title?: string;
+  match?: { plugins: string[] };
+  auth: RootConnectionAuth<LookupConnectionType<T>['authMethods'][number]>[];
+};

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { z } from 'zod/v4';
-import type { JsonObject } from '@backstage/types';
+import type { Expand, JsonObject } from '@backstage/types';
 import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 
 // Field names the framework owns at the connection level. Connection-type
@@ -66,10 +66,35 @@ export type WithoutReservedAuthMethods<
     : TAuthMethods[I];
 };
 
+/**
+ * Restricts an auth entry to only be handed out to the given plugins.
+ *
+ * @public
+ */
+export type ConnectionAuthMatch = {
+  plugins: string[];
+};
+
+// Expand flattens intersections and Omit into plain object literals so that
+// editor tooltips stay readable.
+/** @public */
+export type RootConnectionAuth<M> = M extends {
+  method: infer TMethod extends string;
+  configSchema: { parse: (...args: any[]) => infer TConfig };
+}
+  ? Expand<
+      {
+        method: TMethod;
+        title?: string;
+        match?: ConnectionAuthMatch;
+      } & TConfig
+    >
+  : never;
+
 /** @public */
 export type ConnectionAuthValue<TAuthConfig extends { method: string }> =
   TAuthConfig extends any
-    ? Omit<TAuthConfig, 'title' | 'match'> & { title: string }
+    ? Expand<Omit<TAuthConfig, 'title' | 'match'> & { title: string }>
     : never;
 
 export type MatchAuth<TAuthConfig extends { method: string }> = (
@@ -97,24 +122,25 @@ export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
 export type ConnectionType<
   T extends {
     type: string;
+    configSchema: unknown;
+    findParams: unknown;
     auth: readonly {
       method: string;
     }[];
   } = {
     type: string;
-    title?: string;
-    match?: { plugins: string[] };
+    configSchema: unknown;
+    findParams: unknown;
     auth: readonly {
       method: string;
-      title?: string;
-      match?: { plugins: string[] };
     }[];
   },
 > = {
   type: T['type'];
   title: string;
   /** Schema for a complete connection configuration. */
-  configSchema: PortableSchema<T, unknown>;
+  configSchema: PortableSchema<T['configSchema'], unknown>;
+  findParams: PortableSchema<T['findParams'], unknown>;
   /** Supported auth methods and their method-specific configuration schemas. */
   authMethods: readonly (T['auth'][number] extends infer TAuth
     ? TAuth extends { method: string }
@@ -122,19 +148,19 @@ export type ConnectionType<
           method: TAuth['method'];
           title: string;
           configSchema: PortableSchema<
-            Omit<TAuth, 'method' | 'match' | 'title'>,
+            Expand<Omit<TAuth, 'method' | 'match' | 'title'>>,
             unknown
           >;
         }
       : never
     : never)[];
-  // Method shorthand keeps parameter checking bivariant so a narrow
-  // ConnectionType (e.g. github) is still assignable to ConnectionType.
-  // TODO a default match auth method so this is no longer optional
-  matchAuth?(
-    authMethods: ConnectionAuthValue<T['auth'][number]>[],
-    query: string,
-  ): ConnectionAuthValue<T['auth'][number]> | undefined;
+  // // Method shorthand keeps parameter checking bivariant so a narrow
+  // // ConnectionType (e.g. github) is still assignable to ConnectionType.
+  // // TODO a default match auth method so this is no longer optional
+  // matchAuth?(
+  //   authMethods: ConnectionAuthValue<T['auth'][number]>[],
+  //   query: string,
+  // ): ConnectionAuthValue<T['auth'][number]> | undefined;
 };
 
 /** @public */
