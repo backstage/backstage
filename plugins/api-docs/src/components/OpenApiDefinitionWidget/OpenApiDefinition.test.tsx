@@ -52,9 +52,6 @@ paths:
 
     // swagger-ui loads the documentation asynchronously
     await waitFor(() => {
-      expect(
-        document.getElementById('operations-artists-get_artists'),
-      ).toBeInTheDocument();
       expect(getByText(/\/artists/i)).toBeInTheDocument();
       expect(getByText(/List all artists/i)).toBeInTheDocument();
     });

@@ -2,4 +2,4 @@
 '@backstage/plugin-api-docs': patch
 ---
 
-OpenApi Swagger widget - fixed deep-linking scroll to element
+Fixed deep linking in OpenAPI definition widget.
