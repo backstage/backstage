@@ -31,7 +31,7 @@ export interface Config {
         /**
          * Properties to override on the final entity object.
          */
-        entityOverrides?: object;
+        entityOverrides?: { [key: string]: unknown };
         /**
          * The format of the definition.
          * @defaultValue json
