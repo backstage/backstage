@@ -16,6 +16,7 @@
 
 import {
   createElement,
+  useContext,
   useMemo,
   useSyncExternalStore,
   type ComponentType,
@@ -136,6 +137,42 @@ const EMPTY_ROUTE_CONTEXT = {
   isDataRoute: false,
 };
 
+/**
+ * Whether `ancestorBase` is a route base strictly above `base`, i.e. the
+ * containment a parent match has over a child match in a real route tree.
+ */
+function isAncestorBase(ancestorBase: unknown, base: string): boolean {
+  if (typeof ancestorBase !== 'string' || ancestorBase === base) {
+    return false;
+  }
+  return ancestorBase === '/' || base.startsWith(`${ancestorBase}/`);
+}
+
+/**
+ * The matches this router is nested below: the leading run of the surrounding
+ * stack whose bases sit strictly above the projected match's own base.
+ *
+ * Everything from the first non-ancestor onwards describes the mount this
+ * router is taking over — the surrounding router's own view of this subtree —
+ * and is what the projected match stands in for. Taking a leading run rather
+ * than filtering keeps the stack contiguous, which is what `..` counts through:
+ * a pathless layout route shares its parent's base and so is kept, while the
+ * sibling match at this very mount is dropped.
+ */
+function takeAncestorMatches(
+  parentMatches: readonly any[],
+  pathnameBase: string,
+): any[] {
+  let count = 0;
+  while (
+    count < parentMatches.length &&
+    isAncestorBase(parentMatches[count]?.pathnameBase, pathnameBase)
+  ) {
+    count += 1;
+  }
+  return parentMatches.slice(0, count);
+}
+
 function toAdapterLocation(loc: FrameworkLocation): AdapterLocation {
   return {
     pathname: loc.pathname,
@@ -175,6 +212,13 @@ function toPath(to: AdapterTo, currentPathname: string): string {
  * separately supplied `basePath`, so it cannot drift out of step with the
  * location it describes. Without one, the projection is at app root scope and
  * publishes the neutral empty route context instead.
+ *
+ * That match is *appended* to the route context the projection is rendered
+ * inside rather than replacing it, so a mount nested in an existing route tree
+ * — a sub-page under its parent page's adapter — publishes a stack of the same
+ * depth a real nested `<Routes>` would, and `..` walks up to the parent mount
+ * instead of to the app root. At page scope there is nothing above but app
+ * chrome, whose context is empty, so the stack is the projected match alone.
  *
  * `go` is not supported by `AppHistoryApi` (there is a single, real browser
  * history — use browser back/forward). Calling `navigate(-1)` warns and is a
@@ -240,7 +284,10 @@ export function createAppHistoryRouter(
     return latestLocation;
   }
 
-  function buildRouteMatches(location: AdapterLocation) {
+  function buildRouteMatches(
+    location: AdapterLocation,
+    parentMatches: readonly any[],
+  ) {
     // At app root scope there is no route to be mounted under, so there is
     // never a match to project.
     if (normalizedPattern === undefined || splatPattern === undefined) {
@@ -271,9 +318,16 @@ export function createAppHistoryRouter(
       return EMPTY_ROUTE_CONTEXT;
     }
 
+    // A mount inside an existing route tree is one level *deeper* than that
+    // tree, not a fresh root: `..` means "up one route match", so replacing the
+    // surrounding stack with a single match would make the first `..` land at
+    // the app root instead of at the parent mount. The ancestors are carried
+    // over verbatim — they are the real matches React Router produced for the
+    // same location — and the projected match is appended as their leaf.
     return {
       outlet: null,
       matches: [
+        ...takeAncestorMatches(parentMatches, match.pathnameBase),
         {
           params: match.params,
           pathname: match.pathname,
@@ -294,6 +348,28 @@ export function createAppHistoryRouter(
 
   function AppHistoryRouter({ children }: { children: ReactNode }) {
     const location = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+
+    // The route context this router is mounted inside, if any — the parent
+    // page's own projection plus whatever routes it matched on the way down to
+    // this mount, or the neutral empty context at app root scope.
+    const parentMatches = (
+      useContext(bindings.UNSAFE_RouteContext) as
+        | { matches?: readonly any[] }
+        | null
+        | undefined
+    )?.matches;
+    // React Router builds a fresh RouteContext value on every render of the
+    // enclosing `<Routes>`, so the array identity is not usable as a memo key.
+    // Key on the parts of those matches this projection carries forward
+    // instead, the same way React Router's own `useResolvedPath` keys on its
+    // route pathnames.
+    const parentMatchesKey = JSON.stringify(
+      parentMatches?.map(each => [
+        each?.pathname,
+        each?.pathnameBase,
+        each?.route?.path,
+      ]) ?? [],
+    );
 
     const locationContextValue = useMemo(
       () => ({ location, navigationType: bindings.NavigationType.Pop }),
@@ -353,8 +429,10 @@ export function createAppHistoryRouter(
     );
 
     const routeContextValue = useMemo(
-      () => buildRouteMatches(location),
-      [location],
+      () => buildRouteMatches(location, parentMatches ?? []),
+      // `parentMatchesKey` stands in for `parentMatches`, see above.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [location, parentMatchesKey],
     );
 
     return createElement(

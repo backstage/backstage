@@ -27,9 +27,16 @@ import {
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import {
+  createMockAppHistory,
+  renderTestApp,
+} from '@backstage/frontend-test-utils';
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import {
+  PageBlueprint,
+  SubPageBlueprint,
+  appHistoryApiRef,
+} from '@backstage/frontend-plugin-api';
 import { PageMountProvider, type PageMount } from '@internal/frontend';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -445,6 +452,69 @@ describe('<Link />', () => {
 
       fireEvent.click(screen.getByRole('link', { name: 'Child route' }));
       expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it('leaves a subpage`s relative targets to its page adapter, which roots them at the parent page', async () => {
+      const scaffolderPage = PageBlueprint.make({
+        params: { path: '/create', title: 'Scaffolder' },
+      });
+      const templatesSubPage = SubPageBlueprint.make({
+        name: 'templates',
+        params: {
+          path: 'templates',
+          title: 'Templates',
+          loader: async () => (
+            <div>
+              <Link to="../tasks">Sibling tab</Link>
+              <Link to="..">Parent page</Link>
+              <Link to="release/1-42">Child route</Link>
+              <Link to="/catalog">Another page</Link>
+            </div>
+          ),
+        },
+      });
+      const tasksSubPage = SubPageBlueprint.make({
+        name: 'tasks',
+        params: {
+          path: 'tasks',
+          title: 'Tasks',
+          loader: async () => <p>Tasks</p>,
+        },
+      });
+
+      const { appHistory } = renderTestApp({
+        extensions: [scaffolderPage, templatesSubPage, tasksSubPage],
+        initialRouteEntries: ['/create/templates'],
+        config: {
+          app: { baseUrl: 'http://localhost:3000/backstage' },
+          backend: { baseUrl: 'http://localhost:7007' },
+        },
+      });
+
+      // A subpage sits one route match below its page, so React Router has a
+      // base of its own for every one of these and the page mount is not
+      // consulted. `..` is the tab-to-tab idiom, and lands on the sibling tab
+      // rather than at the app root.
+      expect(
+        await screen.findByRole('link', { name: 'Sibling tab' }),
+      ).toHaveAttribute('href', '/backstage/create/tasks');
+      expect(screen.getByRole('link', { name: 'Parent page' })).toHaveAttribute(
+        'href',
+        '/backstage/create',
+      );
+      expect(screen.getByRole('link', { name: 'Child route' })).toHaveAttribute(
+        'href',
+        '/backstage/create/templates/release/1-42',
+      );
+      // A cross-plugin absolute target still escalates to the app history.
+      expect(
+        screen.getByRole('link', { name: 'Another page' }),
+      ).toHaveAttribute('href', '/backstage/catalog');
+
+      fireEvent.click(screen.getByRole('link', { name: 'Sibling tab' }));
+      await waitFor(() => {
+        expect(appHistory.location.pathname).toBe('/create/tasks');
+      });
     });
 
     it('delegates every relative target to React Router without an app history (OFS)', async () => {

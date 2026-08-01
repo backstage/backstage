@@ -102,6 +102,13 @@ export type PageMountResolveOptions = {
    * Whether the ambient React Router context has any matched routes, i.e.
    * whether React Router has a base of its own to resolve a relative target
    * against.
+   *
+   * A match in context is always *rooted*: it is either the page adapter's own
+   * projected match — which is appended to the route context the page is
+   * mounted inside, so a subpage's stack starts at its parent page rather than
+   * at the subpage itself — or a route matched below one. So "is there a
+   * match" and "does the stack start at or above the page base" are the same
+   * question, and only the former needs asking here.
    */
   hasAmbientRouteMatch: boolean;
 };
@@ -111,14 +118,14 @@ export type PageMountResolveOptions = {
  * because no ambient React Router context can resolve it correctly.
  *
  * React Router resolves a relative target against the routes matched in
- * context. A page hosted by the React Router v6 adapter publishes its own
- * match, so React Router already has the right base — and keeps it, because
- * there `..` means "up one route match", which only the route tree knows how
- * to walk. A page hosted by TanStack or React Router v7 publishes no v6 match
- * at all, so React Router would silently resolve against the app root and the
- * link would leave the page entirely. `PageMount.basePath` is the framework's
- * analogue of React Router's `pathnameBase`, and is the only base available
- * there.
+ * context. A page or subpage hosted by the React Router v6 adapter publishes
+ * its own match on top of the ones it is mounted inside, so React Router
+ * already has the right base — and keeps it, because there `..` means "up one
+ * route match", which only the route tree knows how to walk. A page hosted by
+ * TanStack or React Router v7 publishes no v6 match at all, so React Router
+ * would silently resolve against the app root and the link would leave the
+ * page entirely. `PageMount.basePath` is the framework's analogue of React
+ * Router's `pathnameBase`, and is the only base available there.
  *
  * Only relative *path* targets qualify. App-absolute (`/x`) targets need no
  * base at all, while search-only (`?tab=x`) and fragment-only (`#section`)

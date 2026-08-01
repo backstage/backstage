@@ -43,6 +43,7 @@ export {
   type ReactRouterAdapterBindings,
 } from './createAppHistoryRouter';
 export { isExternalTarget } from './isExternalTarget';
+export { sanitizeHref } from './sanitizeHref';
 export {
   compilePath,
   matchPath,

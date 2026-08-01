@@ -26,7 +26,7 @@ import {
   useInRouterContext,
   createPath,
 } from 'react-router-dom';
-import { isExternalLink } from '../../utils/linkUtils';
+import { isExternalLink, sanitizeHref } from '../../utils/linkUtils';
 import type {
   ComponentConfig,
   UseDefinitionOptions,
@@ -44,12 +44,25 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
+  // Every BUI component that takes an href — Link, MenuItem, Row, Tab, Card,
+  // HeaderNav, TagGroup, the table cells — reaches its element through this
+  // hook, which makes this the one place an href can be made safe. Guarding
+  // each component instead would be a guard the next component forgets to add.
+  // This runs outside the router branch below, and before it, because an href
+  // that must never be followed must never be passed on whether or not there
+  // is a router to resolve it against.
+  const rawHref = (props as any).href;
+  const href = sanitizeHref(rawHref);
+
   let hrefResolvedProps = props;
+  if (href !== rawHref) {
+    hrefResolvedProps = { ...props, href } as P;
+  }
+
   const hasRouter = useInRouterContext();
   if (hasRouter) {
-    const rawHref = (props as any).href;
-    const resolved = useResolvedPath(rawHref ?? '');
-    if (rawHref !== undefined && !isExternalLink(rawHref)) {
+    const resolved = useResolvedPath(href ?? '');
+    if (href !== undefined && !isExternalLink(href)) {
       hrefResolvedProps = { ...props, href: createPath(resolved) } as P;
     }
   }

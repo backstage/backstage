@@ -119,7 +119,7 @@ describe('multi-router coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/catalog-pudding',
       );
     });
@@ -131,7 +131,7 @@ describe('multi-router coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('settings-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('v7');
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/settings-pudding',
       );
     });
@@ -141,7 +141,7 @@ describe('multi-router coexistence', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/settings-pudding/general',
       );
       expect(screen.getByTestId('adapter')).toHaveTextContent('v7');
@@ -154,7 +154,7 @@ describe('multi-router coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/catalog-pudding',
       );
     });
@@ -167,7 +167,7 @@ describe('multi-router coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('settings-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('v7');
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/settings-pudding/general',
       );
     });
@@ -178,7 +178,7 @@ describe('multi-router coexistence', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('settings-page')).toBeInTheDocument();
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/settings-pudding',
       );
     });
@@ -190,7 +190,7 @@ describe('multi-router coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/catalog-pudding',
       );
     });
@@ -202,7 +202,7 @@ describe('multi-router coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('settings-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('v7');
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/settings-pudding',
       );
     });
@@ -296,10 +296,10 @@ describe('multi-router coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('tree-subpage')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('v7');
-      expect(screen.getByTestId('contract-base')).toHaveTextContent(
+      expect(screen.getByTestId('contract-base').textContent).toBe(
         '/visualizer-pudding/tree',
       );
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/visualizer-pudding/tree',
       );
     });
@@ -311,7 +311,7 @@ describe('multi-router coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('home-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
-      expect(screen.getByTestId('pathname')).toHaveTextContent('/home-pudding');
+      expect(screen.getByTestId('pathname').textContent).toBe('/home-pudding');
     });
 
     // AppHistoryApi has no programmatic `go` — navigate directly instead.

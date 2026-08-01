@@ -46,6 +46,11 @@ function joinMountPath(parentPath: string, subPath: string): string {
  * keeps a subpage scoped to its own mount. The subpage's content is opaque:
  * the author picked both the content and, if they attached one, the adapter,
  * so there is nothing for the framework to reconcile.
+ *
+ * Scoped does not mean re-rooted: the subpage is still nested inside the
+ * parent page, so its adapter publishes its mount *below* whatever routing
+ * context surrounds it. That is what keeps `../sibling-tab` pointing at the
+ * sibling tab rather than at the app root.
  */
 function SubPageRouterWrapper(props: {
   path: string;

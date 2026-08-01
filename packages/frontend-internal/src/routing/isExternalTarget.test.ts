@@ -30,6 +30,11 @@ const EXTERNAL_TARGET_PARITY_CASES: Array<[string, boolean]> = [
   ['http://example.com', true],
   // Protocol relative
   ['//example.com/x', true],
+  // A backslash opens an authority exactly like a slash does, so any pair of
+  // them does: a browser resolves every one of these to `http://evil.com/`
+  ['/\\evil.com', true],
+  ['\\\\evil.com', true],
+  ['\\/evil.com', true],
   // Opaque schemes
   ['mailto:someone@example.com', true],
   ['tel:+15555550123', true],
@@ -40,12 +45,25 @@ const EXTERNAL_TARGET_PARITY_CASES: Array<[string, boolean]> = [
   ['data:text/plain,hello', true],
   // eslint-disable-next-line no-script-url
   ['javascript:alert(1)', true],
+  // Browsers drop every ASCII tab and newline from a URL and trim leading C0
+  // controls and spaces before parsing it, so each of these is one of the
+  // targets above wearing a disguise and has to be classified the same way
+  ['\tjavascript:alert(1)', true],
+  ['\njavascript:alert(1)', true],
+  ['\u0000javascript:alert(1)', true],
+  ['java\tscript:alert(1)', true],
+  [' https://example.com', true],
+  ['\t//evil.com', true],
   // App relative, including targets that merely carry a URL in the query or
   // fragment — only the part before the first `?` or `#` decides
   ['/search?query=https://example.com', false],
   ['/search#https://example.com', false],
   ['/catalog/default/component/foo', false],
   ['catalog/default', false],
+  // A lone backslash is only a path separator — a browser reads these as
+  // `/evil.com` and `/catalog/default`, both on the app's own origin
+  ['\\evil.com', false],
+  ['/catalog\\default', false],
   ['?query=1', false],
   ['#section', false],
   ['', false],

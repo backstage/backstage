@@ -15,18 +15,13 @@
  */
 
 import { useState } from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import {
-  TestApiProvider,
-  createMockAppHistory,
-  renderTestApp,
-} from '@backstage/frontend-test-utils';
+import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   PageRouterBlueprint,
   SubPageBlueprint,
-  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import { Link, useParams, useSearch } from '@tanstack/react-router';
 import { TanStackPageRouter } from './TanStackPageRouter';
@@ -82,20 +77,6 @@ const adapter = {
 };
 
 const PAGE_PATTERN = '/things/:id';
-
-/** Sub-pages as the framework hands them over, for adapter-level rendering. */
-const SUB_PAGES = [
-  {
-    path: 'overview',
-    label: 'Overview',
-    element: <adapter.SubPageProbe name="overview" />,
-  },
-  {
-    path: 'settings',
-    label: 'Settings',
-    element: <adapter.SubPageProbe name="settings" />,
-  },
-];
 
 function renderPage(initialPath: string) {
   const thingsPage = PageBlueprint.make({
@@ -198,21 +179,14 @@ describe(`${adapter.name} page adapter conformance`, () => {
   });
 
   it('should keep in-page state while the concrete mount prefix changes', async () => {
-    const appHistory = createMockAppHistory({
-      initialLocation: '/things/alpha/overview',
-    });
-    const pageAt = (basePath: string) => (
-      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
-        <adapter.PageRouter
-          basePath={basePath}
-          routePattern={PAGE_PATTERN}
-          subPages={SUB_PAGES}
-          indexPath="overview"
-        />
-      </TestApiProvider>
-    );
-
-    const { rerender } = render(pageAt('/things/alpha'));
+    // Deliberately driven through the whole app rather than by re-rendering
+    // the adapter with a new `basePath`: everything between the page match and
+    // the adapter — the page mount context, the page chrome, the extension
+    // boundaries — re-renders on this navigation too, and a remount anywhere
+    // along that path costs the page its state just as surely as the adapter
+    // rebuilding its own router does. A harness that renders the adapter alone
+    // is stable by construction and so cannot see any of that.
+    const { appHistory } = renderPage('/things/alpha/overview');
 
     expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
     await act(async () => {
@@ -223,16 +197,16 @@ describe(`${adapter.name} page adapter conformance`, () => {
     });
     expect(screen.getByTestId('bumped')).toHaveTextContent('2');
 
-    // The app history emits synchronously from navigate(), and only the
-    // re-render it triggers hands the adapter its new concrete prefix — the
-    // ordering that used to make the adapter rebuild its router and throw
-    // away page state, scroll position and in-flight requests.
+    // Entity A → entity B. The app history emits synchronously from
+    // navigate(), before the re-render that hands the adapter its new concrete
+    // prefix — the ordering that used to make the adapter rebuild its router
+    // and throw away page state, scroll position and in-flight requests.
     await act(async () => {
       appHistory.navigate('/things/beta/overview');
     });
-    rerender(pageAt('/things/beta'));
 
     expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
+    expect(appHistory.location.pathname).toBe('/things/beta/overview');
     expect(screen.getByTestId('bumped')).toHaveTextContent('2');
   });
 

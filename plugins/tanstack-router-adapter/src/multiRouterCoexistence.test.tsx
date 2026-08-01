@@ -145,7 +145,7 @@ describe('TanStack + RR v6 coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('tools-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('tanstack');
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/tools-pudding-ts',
       );
     });
@@ -268,7 +268,7 @@ describe('TanStack + RR v6 coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('tree-subpage')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('tanstack');
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/visualizer-pudding-ts/tree',
       );
       expect(screen.getByTestId('scoped-pathname')).toHaveTextContent('/');
@@ -281,7 +281,7 @@ describe('TanStack + RR v6 coexistence', () => {
     await waitFor(() => {
       expect(screen.getByTestId('home-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
-      expect(screen.getByTestId('pathname')).toHaveTextContent(
+      expect(screen.getByTestId('pathname').textContent).toBe(
         '/home-pudding-ts',
       );
     });

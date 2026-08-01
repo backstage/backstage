@@ -15,28 +15,35 @@
  */
 
 import { useHref, useInRouterContext } from 'react-router-dom';
-import { isExternalLink } from '../utils/linkUtils';
+import { isExternalLink, sanitizeHref } from '../utils/linkUtils';
 
 /**
  * Resolves an href for rendering. External URLs are returned unchanged;
  * internal paths are resolved through react-router's useHref so they
  * respect the current basename and route context.
  *
+ * Hrefs a browser would execute rather than navigate to are made inert first.
+ * `useDefinition` already does this for every BUI component, so in practice
+ * this only bites for hrefs that arrive some other way — `BUIProvider` hands
+ * this hook to react-aria's `RouterProvider` as its `useHref`, which is a path
+ * into the DOM that does not pass through a component definition.
+ *
  * @internal
  */
 export function useResolvedHref(href: string): string;
 export function useResolvedHref(href: string | undefined): string | undefined;
 export function useResolvedHref(href: string | undefined): string | undefined {
+  const safeHref = sanitizeHref(href);
   const hasRouter = useInRouterContext();
   // useHref throws outside a Router, so we guard with useInRouterContext.
   // The guard is safe because a component's router context does not
   // change during its lifetime, keeping the hook call count stable.
   if (!hasRouter) {
-    return href;
+    return safeHref;
   }
-  const resolved = useHref(href ?? '');
-  if (!href || isExternalLink(href)) {
-    return href;
+  const resolved = useHref(safeHref ?? '');
+  if (!safeHref || isExternalLink(safeHref)) {
+    return safeHref;
   }
   return resolved;
 }

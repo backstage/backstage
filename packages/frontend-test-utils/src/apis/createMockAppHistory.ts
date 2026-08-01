@@ -22,6 +22,7 @@ import {
 import { isExternalTarget } from '@internal/frontend';
 import {
   createSyncLocationObservable,
+  emitFrameworkLocation,
   parseFrameworkLocation,
 } from './mockFrameworkLocation';
 
@@ -34,6 +35,10 @@ export interface MockAppHistoryOptions {
   /**
    * Initial location for the mock app history's `location$`.
    * Defaults to `'/'`.
+   *
+   * Stands in for the browser URL, so a `basename` is stripped from it just as
+   * the real app history strips it from `window.location` — every location the
+   * API then hands out is app-relative.
    */
   initialLocation?: string;
   /**
@@ -44,8 +49,13 @@ export interface MockAppHistoryOptions {
   /**
    * App deploy basename prefixed onto `createHref` results, mirroring the
    * real `AppHistoryApi` implementation — including leaving targets that are
-   * not app-relative alone. Does not affect `navigate` or `location$`, which
-   * are always basename-independent.
+   * not app-relative alone, and stripping the prefix back off
+   * {@link MockAppHistoryOptions.initialLocation}.
+   *
+   * `navigate` targets and `location$` emissions are app-relative on both
+   * sides of the basename, exactly as in production: the real implementation
+   * prepends the basename on the way into the History API and strips it on the
+   * way back out, so a round trip through it is invisible.
    */
   basename?: string;
 }
@@ -102,8 +112,28 @@ export function createMockAppHistory(
   } = options;
 
   const subscribers = new Set<(value: FrameworkLocation) => void>();
-  let current = parseFrameworkLocation(initialLocation);
   const navigateCalls: MockAppHistory['navigateCalls'] = [];
+
+  /**
+   * Mirrors the real app history's `stripBasename`: the initial location
+   * stands in for the browser URL, which carries the deploy basename, while
+   * every location the API hands out is app-relative.
+   */
+  function stripBasename(pathname: string): string {
+    if (
+      basename &&
+      (pathname === basename || pathname.startsWith(`${basename}/`))
+    ) {
+      return pathname.slice(basename.length) || '/';
+    }
+    return pathname;
+  }
+
+  const initial = parseFrameworkLocation(initialLocation);
+  let current: FrameworkLocation = {
+    ...initial,
+    pathname: stripBasename(initial.pathname),
+  };
 
   // Mirrors the real app history: the reference is only replaced when
   // something observable about the location changed, so `location` is safe to
@@ -142,9 +172,7 @@ export function createMockAppHistory(
       commitLocation(
         parseFrameworkLocation(to, navOptions?.state ?? undefined),
       );
-      for (const subscriber of subscribers) {
-        subscriber(current);
-      }
+      emitFrameworkLocation(current, subscribers);
       if (!navigateImpl) {
         return;
       }

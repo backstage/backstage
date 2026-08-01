@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import {
-  TestApiProvider,
   createMockAppHistory,
   renderTestApp,
 } from '@backstage/frontend-test-utils';
@@ -26,13 +25,13 @@ import {
   PageBlueprint,
   PageRouterBlueprint,
   SubPageBlueprint,
-  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
   Link,
   MemoryRouter,
   Route,
   Routes,
+  UNSAFE_RouteContext,
   useHref,
   useParams,
   useResolvedPath,
@@ -94,20 +93,6 @@ const adapter = {
 };
 
 const PAGE_PATTERN = '/things/:id';
-
-/** Sub-pages as the framework hands them over, for adapter-level rendering. */
-const SUB_PAGES = [
-  {
-    path: 'overview',
-    label: 'Overview',
-    element: <adapter.SubPageProbe name="overview" />,
-  },
-  {
-    path: 'settings',
-    label: 'Settings',
-    element: <adapter.SubPageProbe name="settings" />,
-  },
-];
 
 function renderPage(initialPath: string) {
   const thingsPage = PageBlueprint.make({
@@ -210,21 +195,14 @@ describe(`${adapter.name} page adapter conformance`, () => {
   });
 
   it('should keep in-page state while the concrete mount prefix changes', async () => {
-    const appHistory = createMockAppHistory({
-      initialLocation: '/things/alpha/overview',
-    });
-    const pageAt = (basePath: string) => (
-      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
-        <adapter.PageRouter
-          basePath={basePath}
-          routePattern={PAGE_PATTERN}
-          subPages={SUB_PAGES}
-          indexPath="overview"
-        />
-      </TestApiProvider>
-    );
-
-    const { rerender } = render(pageAt('/things/alpha'));
+    // Deliberately driven through the whole app rather than by re-rendering
+    // the adapter with a new `basePath`: everything between the page match and
+    // the adapter — the page mount context, the page chrome, the extension
+    // boundaries — re-renders on this navigation too, and a remount anywhere
+    // along that path costs the page its state just as surely as the adapter
+    // rebuilding its own router does. A harness that renders the adapter alone
+    // is stable by construction and so cannot see any of that.
+    const { appHistory } = renderPage('/things/alpha/overview');
 
     expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
     await act(async () => {
@@ -235,16 +213,16 @@ describe(`${adapter.name} page adapter conformance`, () => {
     });
     expect(screen.getByTestId('bumped')).toHaveTextContent('2');
 
-    // The app history emits synchronously from navigate(), and only the
-    // re-render it triggers hands the adapter its new concrete prefix — the
-    // ordering that used to make the adapter rebuild its router and throw
-    // away page state, scroll position and in-flight requests.
+    // Entity A → entity B. The app history emits synchronously from
+    // navigate(), before the re-render that hands the adapter its new concrete
+    // prefix — the ordering that used to make the adapter rebuild its router
+    // and throw away page state, scroll position and in-flight requests.
     await act(async () => {
       appHistory.navigate('/things/beta/overview');
     });
-    rerender(pageAt('/things/beta'));
 
     expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
+    expect(appHistory.location.pathname).toBe('/things/beta/overview');
     expect(screen.getByTestId('bumped')).toHaveTextContent('2');
   });
 
@@ -295,6 +273,13 @@ const BASE_PATH = '/catalog/default/component/foo';
 
 function ContextProbe() {
   const params = useParams();
+  // The match stack itself, not just what the hooks make of it. `route.path`
+  // in particular is only observable indirectly — a pattern that lost its
+  // trailing splat still resolves relative targets and still matches
+  // descendant `<Routes>`, and only tells React Router apart from the adapter
+  // by way of a console warning nobody reads. Comparing the stack against the
+  // real tree pins it.
+  const { matches } = useContext(UNSAFE_RouteContext);
   return (
     <div>
       <span data-testid="dot">{useResolvedPath('./create').pathname}</span>
@@ -302,6 +287,15 @@ function ContextProbe() {
       <span data-testid="bare">{useResolvedPath('create').pathname}</span>
       <span data-testid="href">{useHref('./create')}</span>
       <span data-testid="params">{JSON.stringify(params)}</span>
+      <span data-testid="matches">
+        {JSON.stringify(
+          matches.map(match => [
+            match.pathname,
+            match.pathnameBase,
+            match.route.path,
+          ]),
+        )}
+      </span>
       <Routes>
         <Route
           path="overview/*"
@@ -319,6 +313,7 @@ function readContextProbe() {
     bare: screen.getByTestId('bare').textContent,
     href: screen.getByTestId('href').textContent,
     params: screen.getByTestId('params').textContent,
+    matches: screen.getByTestId('matches').textContent,
     nested: screen.queryByTestId('nested')?.textContent ?? 'no-match',
   };
 }
@@ -378,12 +373,15 @@ describe(`${adapter.name} route context matches a real router tree`, () => {
 
     // Off the page entirely — a real router would not have rendered the page
     // at this location, so the honest answer is the neutral no-route context
-    // rather than an invented match that leaks a stale prefix.
+    // rather than an invented match that leaks a stale prefix. Anchored,
+    // because the failure this guards against is a *longer* pathname with the
+    // stale prefix still on the front, which a substring match would accept.
     act(() => {
       appHistory.navigate('/elsewhere');
     });
 
     expect(screen.getByTestId('params')).toHaveTextContent('{}');
-    expect(screen.getByTestId('dot')).toHaveTextContent('/create');
+    expect(screen.getByTestId('matches')).toHaveTextContent(/^\[\]$/);
+    expect(screen.getByTestId('dot')).toHaveTextContent(/^\/create$/);
   });
 });

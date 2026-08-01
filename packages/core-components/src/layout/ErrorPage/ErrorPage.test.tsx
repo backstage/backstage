@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { ErrorPage } from './ErrorPage';
 import { Link } from '../../components/Link';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
 
 describe('<ErrorPage/>', () => {
   it('should render with status code, status message and go back link', async () => {
@@ -120,36 +115,59 @@ describe('<ErrorPage/>', () => {
   });
 
   describe('go back link', () => {
-    beforeEach(() => {
-      mockNavigate.mockClear();
-    });
+    /** Renders the location the ambient React Router is at. */
+    function CurrentLocation() {
+      const { pathname } = useLocation();
+      return <p>at {pathname}</p>;
+    }
 
-    it('calls react-router navigate(-1) when no app history is registered (OFS)', async () => {
-      const { getByTestId } = await renderInTestApp(
-        <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
+    it('goes back a page without an app history (OFS)', async () => {
+      // A real browser router rather than the default in-memory one: going
+      // back is only observable in the history the app actually runs on, and
+      // this is the history a deployed app has.
+      window.history.pushState({}, '', '/ofs-one');
+      window.history.pushState({}, '', '/ofs-two');
+
+      await renderInTestApp(
+        <>
+          <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
+          <CurrentLocation />
+        </>,
+        {
+          components: {
+            Router: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+          },
+        },
       );
+      expect(screen.getByText('at /ofs-two')).toBeInTheDocument();
 
-      fireEvent.click(getByTestId('go-back-link'));
+      fireEvent.click(screen.getByTestId('go-back-link'));
 
-      expect(mockNavigate).toHaveBeenCalledWith(-1);
+      expect(await screen.findByText('at /ofs-one')).toBeInTheDocument();
+      expect(window.location.pathname).toBe('/ofs-one');
     });
 
-    it('calls window.history.back() instead of react-router when an app history is registered (NFS)', async () => {
-      const historyBack = jest.spyOn(window.history, 'back').mockReturnValue();
-      const appHistory = createMockAppHistory();
+    it('goes back through the browser, leaving the router alone, when an app history is registered (NFS)', async () => {
+      window.history.pushState({}, '', '/nfs-one');
+      window.history.pushState({}, '', '/nfs-two');
+      const appHistory = createMockAppHistory({ initialLocation: '/nfs-two' });
 
-      const { getByTestId } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
+          <CurrentLocation />
         </TestApiProvider>,
+        { routeEntries: ['/router-one', '/router-two'] },
       );
 
-      fireEvent.click(getByTestId('go-back-link'));
+      fireEvent.click(screen.getByTestId('go-back-link'));
 
-      expect(historyBack).toHaveBeenCalledTimes(1);
-      expect(mockNavigate).not.toHaveBeenCalled();
-
-      historyBack.mockRestore();
+      // The app history has no `go()` of its own and listens for `popstate`, so
+      // the browser is what goes back. The ambient router is a separate history
+      // here, and stays where it was rather than being popped a second time.
+      await waitFor(() => expect(window.location.pathname).toBe('/nfs-one'));
+      expect(screen.getByText('at /router-two')).toBeInTheDocument();
+      expect(appHistory.navigateCalls).toEqual([]);
     });
   });
 });

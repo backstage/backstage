@@ -16,7 +16,13 @@
 
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
-import { Link, useLocation } from 'react-router-dom';
+import {
+  Link,
+  Route,
+  Routes,
+  useLocation,
+  useResolvedPath,
+} from 'react-router-dom';
 import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
 import { PageBlueprint } from './PageBlueprint';
 import { PageRouterBlueprint } from './PageRouterBlueprint';
@@ -335,5 +341,148 @@ describe('SubPageBlueprint', () => {
     await waitFor(() => {
       expect(screen.getByTestId('tasks-page')).toBeInTheDocument();
     });
+  });
+
+  /**
+   * `../sibling` is the tab-to-tab idiom in a sub-page, and `..` means "up one
+   * route match" — so a sub-page has to sit one match below its parent page,
+   * the same as content composed with a plain nested `<Routes>`. A sub-page
+   * that published a single match of its own instead would send every `..` to
+   * the app root.
+   */
+  const relativeTargetsPage = PageBlueprint.make({
+    params: { path: '/create', title: 'Scaffolder' },
+  });
+  const relativeTargetsSubPage = SubPageBlueprint.make({
+    name: 'templates',
+    params: {
+      path: 'templates',
+      title: 'Templates',
+      loader: async () => {
+        const Templates = () => (
+          <div data-testid="templates-page">
+            <div data-testid="up">{useResolvedPath('..').pathname}</div>
+            <div data-testid="self">{useResolvedPath('.').pathname}</div>
+            <Link to="..">Parent page</Link>
+            <Link to="../tasks">Tasks tab</Link>
+            <Link to="./actions">Actions</Link>
+            <Routes>
+              <Route
+                path="actions/:name"
+                element={<Link to="../preview">Up from a nested route</Link>}
+              />
+            </Routes>
+          </div>
+        );
+        return <Templates />;
+      },
+    },
+  });
+  const relativeTargetsSiblingSubPage = SubPageBlueprint.make({
+    name: 'tasks',
+    params: {
+      path: 'tasks',
+      title: 'Tasks',
+      loader: async () => <div data-testid="tasks-page">Tasks</div>,
+    },
+  });
+  const relativeTargetsSoloPage = PageBlueprint.make({
+    name: 'solo',
+    params: {
+      path: '/solo',
+      title: 'Solo',
+      loader: async () => {
+        const Solo = () => (
+          <div data-testid="solo-page">
+            <div data-testid="solo-up">{useResolvedPath('..').pathname}</div>
+            <Link to="..">Above the page</Link>
+          </div>
+        );
+        return <Solo />;
+      },
+    },
+  });
+  const relativeTargetsExtensions = [
+    relativeTargetsPage,
+    relativeTargetsSubPage,
+    relativeTargetsSiblingSubPage,
+    relativeTargetsSoloPage,
+  ];
+
+  it('should resolve relative targets in a subpage against the subpage, and `..` against the parent page', async () => {
+    const { appHistory } = renderTestApp({
+      extensions: relativeTargetsExtensions,
+      initialRouteEntries: ['/create/templates'],
+    });
+
+    expect(await screen.findByTestId('templates-page')).toBeInTheDocument();
+    expect(screen.getByTestId('up')).toHaveTextContent('/create');
+    expect(screen.getByTestId('self')).toHaveTextContent('/create/templates');
+    expect(screen.getByRole('link', { name: 'Parent page' })).toHaveAttribute(
+      'href',
+      '/create',
+    );
+    expect(screen.getByRole('link', { name: 'Tasks tab' })).toHaveAttribute(
+      'href',
+      '/create/tasks',
+    );
+    expect(screen.getByRole('link', { name: 'Actions' })).toHaveAttribute(
+      'href',
+      '/create/templates/actions',
+    );
+
+    // One match deeper again, `..` lands back on the sub-page rather than on
+    // the page above it.
+    await act(async () => {
+      appHistory.navigate('/create/templates/actions/build');
+    });
+    expect(
+      await screen.findByRole('link', { name: 'Up from a nested route' }),
+    ).toHaveAttribute('href', '/create/templates/preview');
+
+    // The href is not just decoration — following it has to land on the tab.
+    await act(async () => {
+      appHistory.navigate('/create/templates');
+    });
+    await act(async () => {
+      screen.getByRole('link', { name: 'Tasks tab' }).click();
+    });
+    expect(await screen.findByTestId('tasks-page')).toBeInTheDocument();
+    expect(appHistory.location.pathname).toBe('/create/tasks');
+
+    // A page is the root of its own match stack, so its own `..` still leaves
+    // the page entirely.
+    await act(async () => {
+      appHistory.navigate('/solo');
+    });
+    expect(await screen.findByTestId('solo-page')).toBeInTheDocument();
+    expect(screen.getByTestId('solo-up')).toHaveTextContent('/');
+    expect(
+      screen.getByRole('link', { name: 'Above the page' }),
+    ).toHaveAttribute('href', '/');
+  });
+
+  it('should include the app deploy basename in targets resolved from a subpage', async () => {
+    renderTestApp({
+      extensions: relativeTargetsExtensions,
+      initialRouteEntries: ['/create/templates'],
+      config: {
+        app: { baseUrl: 'http://localhost:3000/backstage' },
+        backend: { baseUrl: 'http://localhost:7007' },
+      },
+    });
+
+    expect(await screen.findByTestId('templates-page')).toBeInTheDocument();
+    // Relative resolution happens in app-relative space, and only the href
+    // carries the deploy basename — so it appears exactly once.
+    expect(screen.getByTestId('up')).toHaveTextContent('/create');
+    expect(screen.getByRole('link', { name: 'Tasks tab' })).toHaveAttribute(
+      'href',
+      '/backstage/create/tasks',
+    );
+    expect(screen.getByRole('link', { name: 'Actions' })).toHaveAttribute(
+      'href',
+      '/backstage/create/templates/actions',
+    );
   });
 });

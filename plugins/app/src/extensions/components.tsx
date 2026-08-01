@@ -30,11 +30,11 @@ import {
   BreadcrumbEntry,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
-import { usePageMount } from '@internal/frontend';
+import { normalizeBasePath, usePageMount } from '@internal/frontend';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
-import { useMemo } from 'react';
-import { useInRouterContext, useResolvedPath } from 'react-router-dom';
+import { useContext, useMemo } from 'react';
+import { UNSAFE_RouteContext as RouteContext } from 'react-router-dom';
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -90,19 +90,20 @@ export const PageLayout = SwappableComponentBlueprint.make({
           children,
         } = props;
         // Prefer the page's PageMount basePath when NFS is present; fall
-        // back to React Router for isolated/OFS trees (e.g.
+        // back to the ambient React Router match for isolated/OFS trees (e.g.
         // createExtensionTester + renderInTestApp without AppRouteSwitch).
-        // Only call useResolvedPath when there is no page mount — chrome
-        // must not unconditionally require root RR when one is present.
+        // The match is read from the context React Router's own
+        // `useResolvedPath` reads rather than through that hook, so both
+        // answers are computed on every render and chrome never requires an
+        // ambient router — an app may legitimately replace the root one with a
+        // passthrough through RouterBlueprint.
         const pageMount = usePageMount();
-        const inRouter = useInRouterContext();
-        const rrParentPath =
-          !pageMount && inRouter
-            ? useResolvedPath('.').pathname.replace(/\/$/, '')
-            : '';
-        const parentPath = pageMount
-          ? pageMount.basePath.replace(/\/$/, '')
-          : rrParentPath;
+        const { matches } = useContext(RouteContext);
+        const routeMatchBase =
+          matches.length > 0 ? matches[matches.length - 1].pathnameBase : '';
+        const parentPath = normalizeBasePath(
+          pageMount ? pageMount.basePath : routeMatchBase,
+        );
         // Empty string titleLink is treated as unset (same as undefined) so the
         // breadcrumb still points at the page mount path rather than "".
         const breadcrumbHref =

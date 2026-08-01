@@ -34,7 +34,7 @@ import {
   type ErrorApi,
   type FetchApi,
   type FeatureFlagState,
-  type FrameworkNavigateOptions,
+  type FrameworkLocation,
   type IdentityApi,
   type RouteResolutionApi,
   type StorageApi,
@@ -62,7 +62,7 @@ import {
   attachMockApiFactory,
   type MockWithApiFactory,
 } from './MockWithApiFactory';
-import { createApiMock } from './createApiMock';
+import { createApiMock, type ApiMock } from './createApiMock';
 import {
   createMockAppHistory,
   type MockAppHistory,
@@ -500,30 +500,60 @@ export namespace mockApis {
    * Mock helpers for
    * {@link @backstage/frontend-plugin-api#AppHistoryApi}.
    *
-   * The default implementation is backed by {@link createMockAppHistory}, so
-   * `location`, `location$` and `createHref` behave like the real app history
+   * The whole mock is backed by {@link createMockAppHistory}, so `location`,
+   * `location$`, `navigate` and `createHref` behave like the real app history
    * while `navigate` and `createHref` stay assertable jest mocks. Components
    * that subscribe to the location can therefore be rendered against this mock
    * without any additional setup.
    *
+   * A `navigate` passed in observes the call instead of replacing the
+   * implementation around it, so the real behavior — rejecting targets that
+   * are not app-relative, committing the new location, emitting on `location$`
+   * — is still there. A mock that is more permissive than the API it stands in
+   * for is a mock that hides bugs, so relaxing any of that is deliberate:
+   * assigning `location` pins it, and passing `createHref` replaces it
+   * outright.
+   *
+   * Use {@link mockApis.appHistory} instead when a test needs to configure the
+   * fake — an app deployed under a basename, or a starting location other than
+   * the app root.
+   *
    * @public
    */
   export namespace appHistory {
-    export const mock = createApiMock(appHistoryApiRef, () => {
-      const instance = createMockAppHistory();
-      const mocked = {
-        location: instance.location,
+    export const mock: (
+      partialImpl?: Partial<AppHistoryApi> | undefined,
+    ) => ApiMock<AppHistoryApi> = partialImpl => {
+      // `navigate` goes to the fake rather than to `createApiMock`, which
+      // installs a partial implementation by replacing the jest mock's body
+      // wholesale. That would take the external-target guard, the location
+      // commit and the `location$` emission with it, leaving a mock that
+      // accepts `https://example.com` and reports the app root forever.
+      const { navigate, ...rest } = partialImpl ?? {};
+      const instance = createMockAppHistory({ navigate });
+      // Set by `createApiMock` when a test passes an explicit `location`; the
+      // one documented way to stop the location tracking navigation.
+      let pinnedLocation: FrameworkLocation | undefined;
+
+      return createApiMock(appHistoryApiRef, () => ({
+        // A getter, like the real app history's: reading it after a navigation
+        // has to see that navigation, and repeated reads have to be
+        // reference-equal or `useSyncExternalStore` re-renders forever.
+        get location() {
+          return pinnedLocation ?? instance.location;
+        },
+        set location(value: FrameworkLocation) {
+          pinnedLocation = value;
+        },
         location$: instance.location$,
-        navigate: jest.fn(
-          (to: string, navOptions?: FrameworkNavigateOptions) => {
-            instance.navigate(to, navOptions);
-            mocked.location = instance.location;
-          },
+        // Rest args rather than named ones, so a single-argument call stays a
+        // single-argument call all the way through to a supplied `navigate`.
+        navigate: jest.fn((...args: Parameters<AppHistoryApi['navigate']>) =>
+          instance.navigate(...args),
         ),
         createHref: jest.fn((to: string) => instance.createHref(to)),
-      };
-      return mocked;
-    });
+      }))(rest);
+    };
   }
 
   /**

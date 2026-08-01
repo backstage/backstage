@@ -16,7 +16,7 @@
 
 import { screen, waitFor, within } from '@testing-library/react';
 import { Route, Routes, useParams } from 'react-router-dom';
-import { renderTestApp } from '@backstage/frontend-test-utils';
+import { renderInTestApp, renderTestApp } from '@backstage/frontend-test-utils';
 import {
   BreadcrumbEntry,
   PageBlueprint,
@@ -85,6 +85,102 @@ describe('PageLayout', () => {
         screen.getByRole('heading', { name: 'My Plugin' }),
       ).toBeInTheDocument();
     });
+  });
+
+  it('resolves relative tabs and the breadcrumb against the page mount', async () => {
+    const myPlugin = createFrontendPlugin({
+      pluginId: 'my-plugin',
+      extensions: [
+        PageBlueprint.make({
+          name: 'index-page',
+          params: {
+            title: 'Outer',
+            path: '/my-plugin',
+            noHeader: true,
+            loader: async () => (
+              <PageLayout
+                title="My Plugin"
+                tabs={[
+                  { id: 'overview', label: 'Overview', href: 'overview' },
+                  { id: 'settings', label: 'Settings', href: '/settings' },
+                ]}
+              >
+                <div>Plugin content</div>
+              </PageLayout>
+            ),
+          },
+        }),
+      ],
+    });
+
+    renderTestApp({
+      features: [myPlugin],
+      initialRouteEntries: ['/my-plugin'],
+    });
+
+    expect(
+      await screen.findByRole('tab', { name: 'Overview' }),
+    ).toHaveAttribute('href', '/my-plugin/overview');
+    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute(
+      'href',
+      '/settings',
+    );
+    const breadcrumbList = screen.getByRole('navigation', {
+      name: 'Breadcrumbs',
+    });
+    expect(
+      within(breadcrumbList).getByRole('link', { name: 'My Plugin' }),
+    ).toHaveAttribute('href', '/my-plugin');
+  });
+
+  it('falls back to the ambient route match when there is no page mount', async () => {
+    // No AppRouteSwitch above the layout, so there is no PageMount to read and
+    // the surrounding React Router match is the only base available.
+    renderInTestApp(
+      <PageLayout
+        title="My Plugin"
+        tabs={[{ id: 'overview', label: 'Overview', href: 'overview' }]}
+      >
+        <div>Plugin content</div>
+      </PageLayout>,
+      {
+        mountPath: '/my-plugin',
+        initialRouteEntries: ['/my-plugin'],
+      },
+    );
+
+    expect(
+      await screen.findByRole('tab', { name: 'Overview' }),
+    ).toHaveAttribute('href', '/my-plugin/overview');
+    const breadcrumbList = screen.getByRole('navigation', {
+      name: 'Breadcrumbs',
+    });
+    expect(
+      within(breadcrumbList).getByRole('link', { name: 'My Plugin' }),
+    ).toHaveAttribute('href', '/my-plugin');
+  });
+
+  it('falls back to the app root when nothing above the layout has a path', async () => {
+    // Neither a PageMount nor a route match, which is also what a layout sees
+    // when the app has no root router at all.
+    renderInTestApp(
+      <PageLayout
+        title="My Plugin"
+        tabs={[{ id: 'overview', label: 'Overview', href: 'overview' }]}
+      >
+        <div>Plugin content</div>
+      </PageLayout>,
+    );
+
+    expect(
+      await screen.findByRole('tab', { name: 'Overview' }),
+    ).toHaveAttribute('href', '/overview');
+    const breadcrumbList = screen.getByRole('navigation', {
+      name: 'Breadcrumbs',
+    });
+    expect(
+      within(breadcrumbList).getByRole('link', { name: 'My Plugin' }),
+    ).toHaveAttribute('href', '/');
   });
 
   describe('Breadcrumbs', () => {

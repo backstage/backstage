@@ -96,6 +96,51 @@ describe('createMockAppHistory', () => {
     expect(emitted).toBe(appHistory.location);
   });
 
+  it('should give every location$ subscription its own handler', () => {
+    const appHistory = createMockAppHistory();
+    const seen: string[] = [];
+    // The real app history wraps each subscription in its own handler, so the
+    // same function subscribing twice is two subscriptions.
+    const onNext = (l: FrameworkLocation) => seen.push(l.pathname);
+
+    const first = appHistory.location$.subscribe(onNext);
+    const second = appHistory.location$.subscribe(onNext);
+    expect(seen).toEqual(['/', '/']);
+
+    appHistory.navigate('/catalog');
+    expect(seen).toEqual(['/', '/', '/catalog', '/catalog']);
+
+    first.unsubscribe();
+    expect(first.closed).toBe(true);
+    expect(second.closed).toBe(false);
+
+    appHistory.navigate('/tools');
+    expect(seen).toEqual(['/', '/', '/catalog', '/catalog', '/tools']);
+
+    second.unsubscribe();
+  });
+
+  it('should read the initial location the way the real app history reads the browser', () => {
+    const appHistory = createMockAppHistory({
+      basename: '/backstage',
+      initialLocation: '/backstage/catalog?q=1#top',
+    });
+
+    // The initial location stands in for the browser URL, which carries the
+    // deploy basename — and every location the API hands out is stripped of it.
+    expect(appHistory.location).toEqual({
+      pathname: '/catalog',
+      search: '?q=1',
+      hash: '#top',
+      state: undefined,
+    });
+
+    // navigate targets are app-relative and never stripped, so a path that
+    // happens to repeat the basename stays exactly as navigated to.
+    appHistory.navigate('/backstage/other');
+    expect(appHistory.location.pathname).toBe('/backstage/other');
+  });
+
   it('should normalise hrefs the same way the real app history does', () => {
     const appHistory = createMockAppHistory();
 

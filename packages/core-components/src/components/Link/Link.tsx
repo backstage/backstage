@@ -216,10 +216,11 @@ function isModifiedEvent(event: ReactMouseEvent): boolean {
  * relative target against.
  *
  * This is the very context React Router's own `useResolvedPath` reads, so
- * reading it here is what lets `Link` tell a page running the React Router v6
- * adapter — which publishes its own match, and whose answer must not change —
- * from a page hosted by another routing library, where the nearest v6 context
- * is the app-root projection and has no match at all.
+ * reading it here is what lets `Link` tell a page or sub-page running the
+ * React Router v6 adapter — which publishes its own match on top of the ones
+ * it is mounted inside, and whose answer must not change — from a page hosted
+ * by another routing library, where the nearest v6 context is the app-root
+ * projection and has no match at all.
  */
 function useHasAmbientRouteMatch(): boolean {
   return useContext(RouteContext).matches.length > 0;

@@ -15,8 +15,23 @@
  */
 
 import { PropsWithChildren, ReactNode } from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { act, renderHook } from '@testing-library/react';
+import {
+  MemoryRouter,
+  Outlet,
+  Route,
+  Routes,
+  useHref,
+  useLocation,
+  useNavigate,
+  useResolvedPath,
+} from 'react-router-dom';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from '@testing-library/react';
 import { appHistoryApiRef, useApiHolder } from '@backstage/frontend-plugin-api';
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -33,12 +48,6 @@ import {
 function useOptionalAppHistory() {
   return useApiHolder().get(appHistoryApiRef);
 }
-
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
 
 type MockAppHistory = ReturnType<typeof createMockAppHistory>;
 
@@ -68,6 +77,34 @@ function frameworkWrapper(options: {
   );
 }
 
+/**
+ * Stands in for the `Sidebar`: it reads the same three authority-dependent
+ * values (current location, resolved target, rendered href) and renders the
+ * same things out of them — an active nav link — so a broken authority shows up
+ * as wrong output rather than as a hook that happened not to throw.
+ */
+function ChromeStandIn(props: { to: string }) {
+  const appHistory = useOptionalAppHistory();
+  const location = useAppLocation(appHistory);
+  const resolved = useAppResolvedPath(appHistory, props.to);
+  const href = useAppHref(appHistory, props.to);
+
+  return (
+    <nav aria-label="Chrome">
+      <a
+        href={href}
+        aria-current={
+          location.pathname === resolved.pathname ? 'page' : undefined
+        }
+      >
+        Catalog
+      </a>
+      <p>at {location.pathname}</p>
+      <p>target {resolved.pathname}</p>
+    </nav>
+  );
+}
+
 describe('normalizeBasePath', () => {
   it('strips trailing slashes and collapses the app root to an empty prefix', () => {
     expect(normalizeBasePath(undefined)).toBe('');
@@ -75,6 +112,73 @@ describe('normalizeBasePath', () => {
     expect(normalizeBasePath('///')).toBe('');
     expect(normalizeBasePath('/catalog')).toBe('/catalog');
     expect(normalizeBasePath('/catalog/')).toBe('/catalog');
+  });
+});
+
+describe('without a root React Router', () => {
+  it('renders app chrome from the app history alone', async () => {
+    const appHistory = createMockAppHistory({
+      initialLocation: '/catalog',
+      basename: '/backstage',
+    });
+
+    // No <MemoryRouter> anywhere: this is an app whose RouterBlueprint has been
+    // swapped for a passthrough, or a createSpecializedApp without plugin-app.
+    render(
+      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+        <ChromeStandIn to="/catalog" />
+      </TestApiProvider>,
+    );
+
+    const link = await screen.findByRole('link', { name: 'Catalog' });
+    expect(link).toHaveAttribute('href', '/backstage/catalog');
+    expect(link).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByText('at /catalog')).toBeInTheDocument();
+    expect(screen.getByText('target /catalog')).toBeInTheDocument();
+
+    act(() => {
+      appHistory.navigate('/docs');
+    });
+
+    expect(screen.getByText('at /docs')).toBeInTheDocument();
+    expect(link).not.toHaveAttribute('aria-current');
+  });
+
+  it('renders app chrome at the app root when there is no app history either', async () => {
+    // Pre-branch behaviour of the deleted useChromePathname: no router and no
+    // framework means the app root, not a blank app.
+    render(<ChromeStandIn to="catalog" />);
+
+    const link = await screen.findByRole('link', { name: 'Catalog' });
+    expect(link).toHaveAttribute('href', 'catalog');
+    expect(link).not.toHaveAttribute('aria-current');
+    expect(screen.getByText('at /')).toBeInTheDocument();
+    expect(screen.getByText('target /catalog')).toBeInTheDocument();
+  });
+
+  it('answers every hook from the app root when neither authority is present', () => {
+    const { result } = renderHook(() => ({
+      location: useAppLocation(undefined),
+      empty: useAppResolvedPath(undefined, ''),
+      relative: useAppResolvedPath(undefined, 'catalog/create'),
+      absolute: useAppResolvedPath(undefined, '/catalog?kind=component'),
+      href: useAppHref(undefined, '/catalog'),
+      externalHref: useAppHref(undefined, 'mailto:someone@example.com'),
+    }));
+
+    expect(result.current.location).toEqual({
+      pathname: '/',
+      search: '',
+      hash: '',
+    });
+    expect(result.current.empty.pathname).toBe('/');
+    expect(result.current.relative.pathname).toBe('/catalog/create');
+    expect(result.current.absolute).toMatchObject({
+      pathname: '/catalog',
+      search: '?kind=component',
+    });
+    expect(result.current.href).toBe('/catalog');
+    expect(result.current.externalHref).toBe('mailto:someone@example.com');
   });
 });
 
@@ -141,6 +245,133 @@ describe('useAppResolvedPath', () => {
     expect(result.current.pathname).toBe('/catalog/widgets');
     expect(emptyResult.current.pathname).toBe('/catalog');
   });
+});
+
+describe('the React Router authority', () => {
+  // Reading React Router's contexts instead of calling its hooks is only safe
+  // if it gives the same answers, so the expectations here are computed from
+  // React Router itself: both hooks render in the same tree and must agree.
+  const trees: Array<{ name: string; wrapper: (p: PropsWithChildren) => any }> =
+    [
+      {
+        name: 'no route match',
+        wrapper: ({ children }) => (
+          <MemoryRouter initialEntries={['/catalog/x']}>
+            {children}
+          </MemoryRouter>
+        ),
+      },
+      {
+        name: 'location with a trailing slash',
+        wrapper: ({ children }) => (
+          <MemoryRouter initialEntries={['/catalog/']}>{children}</MemoryRouter>
+        ),
+      },
+      {
+        name: 'one deep parameterised match',
+        wrapper: ({ children }) => (
+          <MemoryRouter
+            initialEntries={['/catalog/default/component/foo/docs']}
+          >
+            <Routes>
+              <Route
+                path="/catalog/:namespace/:kind/:name/*"
+                element={children}
+              />
+            </Routes>
+          </MemoryRouter>
+        ),
+      },
+      {
+        name: 'nested matches',
+        wrapper: ({ children }) => (
+          <MemoryRouter initialEntries={['/catalog/sub/x']}>
+            <Routes>
+              <Route path="/catalog" element={<Outlet />}>
+                <Route path="sub/*" element={children} />
+              </Route>
+            </Routes>
+          </MemoryRouter>
+        ),
+      },
+      {
+        name: 'pathless layout route',
+        wrapper: ({ children }) => (
+          <MemoryRouter initialEntries={['/catalog/x']}>
+            <Routes>
+              <Route element={<Outlet />}>
+                <Route path="/catalog/*" element={children} />
+              </Route>
+            </Routes>
+          </MemoryRouter>
+        ),
+      },
+      {
+        name: 'index route',
+        wrapper: ({ children }) => (
+          <MemoryRouter initialEntries={['/catalog']}>
+            <Routes>
+              <Route path="/catalog" element={<Outlet />}>
+                <Route index element={children} />
+              </Route>
+            </Routes>
+          </MemoryRouter>
+        ),
+      },
+      {
+        name: 'deployed under a basename',
+        wrapper: ({ children }) => (
+          <MemoryRouter basename="/backstage" initialEntries={['/backstage']}>
+            {children}
+          </MemoryRouter>
+        ),
+      },
+    ];
+
+  const targets = [
+    '',
+    '.',
+    './',
+    'widgets',
+    'widgets/',
+    'a/b',
+    '/catalog',
+    '/catalog/',
+    '/catalog?kind=component',
+    '/catalog#frag',
+    '/search?query=https://example.com',
+    '..',
+    '../x',
+    '../../x',
+    '?tab=readme',
+    '#section',
+  ];
+
+  it.each(trees)(
+    'resolves and renders hrefs like React Router ($name)',
+    ({ wrapper }) => {
+      for (const to of targets) {
+        const { result } = renderHook(
+          () => ({
+            routerPath: useResolvedPath(to),
+            appPath: useAppResolvedPath(undefined, to),
+            routerHref: useHref(to),
+            appHref: useAppHref(undefined, to),
+          }),
+          { wrapper },
+        );
+
+        expect({ to, ...result.current.appPath }).toEqual({
+          to,
+          ...result.current.routerPath,
+        });
+        expect({ to, href: result.current.appHref }).toEqual({
+          to,
+          href: result.current.routerHref,
+        });
+      }
+    },
+  );
 });
 
 describe('useAppLocation', () => {
@@ -255,36 +486,82 @@ describe('useAppHref', () => {
 });
 
 describe('useAppGoBack', () => {
-  beforeEach(() => {
-    mockNavigate.mockClear();
+  /** Renders the React Router location the surrounding tree is sitting at. */
+  function RouterLocation() {
+    const { pathname } = useLocation();
+    return <h1>at {pathname}</h1>;
+  }
+
+  /** Stands in for `ErrorPage`'s go-back link. */
+  function GoBackLink(props: { appHistory?: MockAppHistory }) {
+    const goBack = useAppGoBack(props.appHistory);
+    return <button onClick={goBack}>Go back</button>;
+  }
+
+  /** React Router's own answer, rendered beside it for comparison. */
+  function RouterGoBackLink() {
+    const navigate = useNavigate();
+    return <button onClick={() => navigate(-1)}>Go back the router way</button>;
+  }
+
+  const entries = ['/one', '/two', '/three'];
+
+  it('pops the history entry React Router navigate(-1) pops', async () => {
+    // Reading the navigator out of the context instead of calling `useNavigate`
+    // is only safe if it moves the same history the same way, so React Router's
+    // own answer is rendered in the same tree and the two are compared.
+    const goBackWith = async (button: string) => {
+      const view = render(
+        <MemoryRouter initialEntries={entries} initialIndex={2}>
+          <RouterLocation />
+          <GoBackLink />
+          <RouterGoBackLink />
+        </MemoryRouter>,
+      );
+      expect(await view.findByRole('heading')).toHaveTextContent('at /three');
+
+      fireEvent.click(view.getByRole('button', { name: button }));
+      const landedOn = view.getByRole('heading').textContent;
+      view.unmount();
+      return landedOn;
+    };
+
+    expect(await goBackWith('Go back')).toBe('at /two');
+    expect(await goBackWith('Go back')).toBe(
+      await goBackWith('Go back the router way'),
+    );
   });
 
-  it('goes back through the browser on the framework path', () => {
+  it('goes back through the browser on the framework path, leaving the router alone', async () => {
     const historyBack = jest.spyOn(window.history, 'back').mockReturnValue();
+    const appHistory = createMockAppHistory({ initialLocation: '/three' });
 
-    const { result } = renderHook(() => useAppGoBack(useOptionalAppHistory()), {
-      wrapper: frameworkWrapper({}),
-    });
-    act(() => {
-      result.current();
-    });
+    const view = render(
+      <MemoryRouter initialEntries={entries} initialIndex={2}>
+        <RouterLocation />
+        <GoBackLink appHistory={appHistory} />
+      </MemoryRouter>,
+    );
+    fireEvent.click(await view.findByRole('button', { name: 'Go back' }));
 
+    // The app history has no `go()` of its own, so the browser pops and the
+    // `popstate` it fires is what the app history hears. The ambient router is
+    // left where it was rather than popped a second time.
     expect(historyBack).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(view.getByRole('heading')).toHaveTextContent('at /three');
 
     historyBack.mockRestore();
   });
 
-  it('uses React Router navigate(-1) when there is no app history', () => {
-    const { result } = renderHook(() => useAppGoBack(useOptionalAppHistory()), {
-      wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <MemoryRouter>{children}</MemoryRouter>
-      ),
-    });
-    act(() => {
-      result.current();
-    });
+  it('goes back through the browser when there is no router either', async () => {
+    const historyBack = jest.spyOn(window.history, 'back').mockReturnValue();
 
-    expect(mockNavigate).toHaveBeenCalledWith(-1);
+    render(<GoBackLink />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Go back' }));
+
+    // No navigator to ask, and the browser history is the only one there is.
+    expect(historyBack).toHaveBeenCalledTimes(1);
+
+    historyBack.mockRestore();
   });
 });

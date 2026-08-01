@@ -35,6 +35,13 @@ export function parseFrameworkLocation(
  * Creates a location observable that always emits the current location
  * synchronously on subscribe.
  *
+ * Each subscription gets its own handler, exactly as the real app history's
+ * `location$` does. Registering the caller's own function instead would key
+ * the subscriber set by caller identity: the same callback subscribing twice
+ * would collapse into one subscription, and unsubscribing either would silence
+ * both — behavior no real observable has, and one a test could easily mistake
+ * for a missed emission in the code under test.
+ *
  * @internal
  */
 export function createSyncLocationObservable(
@@ -46,21 +53,26 @@ export function createSyncLocationObservable(
       return this;
     },
     subscribe(observerOrNext): Subscription {
+      let closed = false;
       const next =
         typeof observerOrNext === 'function'
           ? observerOrNext
           : observerOrNext?.next?.bind(observerOrNext);
-      if (next) {
-        subscribers.add(next);
-        next(getCurrent());
-      }
-      let closed = false;
+
+      const handler = (value: FrameworkLocation) => {
+        if (!closed && next) {
+          next(value);
+        }
+      };
+
+      subscribers.add(handler);
+      // Replay the current location immediately on subscribe.
+      handler(getCurrent());
+
       return {
         unsubscribe() {
-          if (next) {
-            subscribers.delete(next);
-          }
           closed = true;
+          subscribers.delete(handler);
         },
         get closed() {
           return closed;
@@ -68,4 +80,22 @@ export function createSyncLocationObservable(
       };
     },
   };
+}
+
+/**
+ * Emits a location to every current subscriber.
+ *
+ * Iterates a copy, so a subscriber that unsubscribes (or subscribes) while
+ * being notified does not mutate the set mid-emission — the same thing the
+ * real app history does.
+ *
+ * @internal
+ */
+export function emitFrameworkLocation(
+  location: FrameworkLocation,
+  subscribers: Set<(value: FrameworkLocation) => void>,
+): void {
+  for (const subscriber of [...subscribers]) {
+    subscriber(location);
+  }
 }

@@ -44,15 +44,6 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test"
   },
-  "jest": {
-    "moduleNameMapper": {
-      ".(css|less|scss|sss|styl)$": "<rootDir>/../../../node_modules/jest-css-modules",
-      "^@backstage/frontend-test-utils$": "<rootDir>/../../../packages/frontend-test-utils/src/index.ts",
-      "^@backstage/frontend-plugin-api$": "<rootDir>/../../../packages/frontend-plugin-api/src/index.ts",
-      "^@backstage/core-app-api$": "<rootDir>/../../../packages/core-app-api/src/index.ts",
-      "^@internal/frontend$": "<rootDir>/../../../packages/frontend-internal/src/index.ts"
-    }
-  },
   "dependencies": {
     "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
