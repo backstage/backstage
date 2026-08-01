@@ -14,6 +14,7 @@ import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { PageRouterComponent } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 
@@ -103,6 +104,18 @@ const _default: OverridableFrontendPlugin<
             internal: false;
           }
         >;
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+            internal: false;
+          }
+        >;
       };
       kind: 'page';
       name: undefined;
@@ -144,7 +157,20 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+            internal: false;
+          }
+        >;
+      };
       params: {
         path: string;
         title: string;
@@ -182,7 +208,20 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+            internal: false;
+          }
+        >;
+      };
       params: {
         path: string;
         title: string;
@@ -220,7 +259,20 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+            internal: false;
+          }
+        >;
+      };
       params: {
         path: string;
         title: string;

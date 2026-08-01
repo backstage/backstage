@@ -79,6 +79,31 @@ describe('<Link />', () => {
     expect(externalLink).toContainElement(externalLinkIcon);
   });
 
+  it('hands upper-case and digit-bearing schemes to the browser', async () => {
+    await renderInTestApp(
+      <>
+        <Link to="MAILTO:someone@example.com">Mail</Link>
+        <Link to="HTTPS://example.com/docs">Docs</Link>
+        <Link to="s3://bucket/key">Bucket</Link>
+      </>,
+    );
+
+    // Schemes are case-insensitive, so these targets are passed through
+    // verbatim rather than resolved as app-relative paths by the router.
+    expect(
+      screen.getByRole('link', { name: 'Mail, Opens in a new window' }),
+    ).toHaveAttribute('href', 'MAILTO:someone@example.com');
+    expect(
+      screen.getByRole('link', { name: 'Bucket, Opens in a new window' }),
+    ).toHaveAttribute('href', 's3://bucket/key');
+
+    const docs = screen.getByRole('link', {
+      name: 'Docs, Opens in a new window',
+    });
+    expect(docs).toHaveAttribute('href', 'HTTPS://example.com/docs');
+    expect(docs).toHaveAttribute('target', '_blank');
+  });
+
   it('captures click using analytics api', async () => {
     const linkText = 'Navigate!';
     const analyticsApi = mockApis.analytics();
@@ -150,6 +175,15 @@ describe('<Link />', () => {
       [true, 'ms+help://'],
       [true, '//'],
       [true, '//evil.example'],
+      // Schemes are case-insensitive, so these are just as external as their
+      // lower-case forms and must never be handed to the router
+      [true, 'MAILTO:foo@example.org'],
+      [true, 'HTTPS://some-host'],
+      // eslint-disable-next-line no-script-url
+      [true, 'JavaScript:alert(1)'],
+      // Schemes may contain digits after the first character
+      [true, 's3://bucket/key'],
+      [true, 'web3://some-host'],
       [false, '123://'],
       [false, 'abc&xzy://'],
       [false, 'http'],
@@ -158,6 +192,15 @@ describe('<Link />', () => {
       [false, 'path/to/something?param1=value'],
       [false, '/path/to/something'],
       [false, '/path/to/something#fragment'],
+      // A scheme has to start with a letter, so a first path segment that
+      // begins with `+`, `-` or `.` is app-relative — as it is to a browser
+      [false, '+foo:bar'],
+      [false, '-foo:bar'],
+      [false, '.foo:bar'],
+      // A query or fragment may legitimately carry a URL of its own
+      [false, '/search?q=https://example.com'],
+      [false, '/search#https://example.com'],
+      [false, 'search?q=https://example.com'],
     ])('should be %p when %p', (expected, uri) => {
       expect(isExternalUri(uri)).toBe(expected);
     });
@@ -285,6 +328,151 @@ describe('<Link />', () => {
         expect(screen.getByText(testString)).toBeInTheDocument();
       });
       expect(navigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('relative targets', () => {
+    const v7Page: PageMount = {
+      basePath: '/demo-v7/v7-only',
+      routePattern: '/demo-v7/v7-only',
+    };
+    const v6Page: PageMount = {
+      basePath: '/demo/deep-link',
+      routePattern: '/demo/deep-link',
+    };
+
+    it('resolves against the page mount inside a page with no React Router page scope', () => {
+      const navigate = jest.fn();
+      const appHistory = createMockAppHistory({
+        navigate,
+        basename: '/backstage',
+      });
+
+      render(
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+          {/* A router with no matched routes is all a TanStack or React Router
+              v7 page leaves in context for react-router v6 consumers, and is
+              what the app-root projection publishes. */}
+          <MemoryRouter initialEntries={['/demo-v7/v7-only']}>
+            <PageMountProvider mount={v7Page}>
+              <Link to="../v6-guest">Sibling tab</Link>
+              <Link to="release/1-42">Child route</Link>
+              <Link to="?tab=details">Same page</Link>
+              <Link to="/catalog">Another page</Link>
+              <Link to="https://example.com/docs">Docs</Link>
+            </PageMountProvider>
+          </MemoryRouter>
+        </TestApiProvider>,
+      );
+
+      // Without the page mount these would resolve against the app root, to
+      // `/v6-guest` and `/release/1-42`.
+      expect(screen.getByRole('link', { name: 'Sibling tab' })).toHaveAttribute(
+        'href',
+        '/backstage/demo-v7/v6-guest',
+      );
+      expect(screen.getByRole('link', { name: 'Child route' })).toHaveAttribute(
+        'href',
+        '/backstage/demo-v7/v7-only/release/1-42',
+      );
+      // A target with no pathname of its own is relative to the location
+      // rather than to any base, which React Router resolves correctly with or
+      // without a match, so it is still handed over untouched.
+      expect(screen.getByRole('link', { name: 'Same page' })).toHaveAttribute(
+        'href',
+        '/demo-v7/v7-only?tab=details',
+      );
+      expect(
+        screen.getByRole('link', { name: 'Another page' }),
+      ).toHaveAttribute('href', '/backstage/catalog');
+      expect(
+        screen.getByRole('link', { name: 'Docs, Opens in a new window' }),
+      ).toHaveAttribute('href', 'https://example.com/docs');
+
+      fireEvent.click(screen.getByRole('link', { name: 'Sibling tab' }));
+      expect(navigate).toHaveBeenCalledWith('/demo-v7/v6-guest');
+    });
+
+    it('leaves relative targets to a page-scoped React Router, including `..` up a nested route', () => {
+      const navigate = jest.fn();
+      const appHistory = createMockAppHistory({
+        navigate,
+        basename: '/backstage',
+      });
+      const pageContent = (
+        <PageMountProvider mount={v6Page}>
+          <Link to="widget/blue">Child route</Link>
+          <Link to="../elsewhere">Up from the page</Link>
+          <Link to="/demo/deep-link/area/south">In-page absolute</Link>
+          <Routes>
+            <Route
+              path="area/:area"
+              element={<Link to="../sibling">Up from a nested route</Link>}
+            />
+          </Routes>
+        </PageMountProvider>
+      );
+
+      render(
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+          <MemoryRouter initialEntries={['/demo/deep-link/area/north']}>
+            {/* Stands in for the React Router v6 page adapter, which projects
+                the page's own route match into context. */}
+            <Routes>
+              <Route path="/demo/deep-link/*" element={pageContent} />
+            </Routes>
+          </MemoryRouter>
+        </TestApiProvider>,
+      );
+
+      expect(screen.getByRole('link', { name: 'Child route' })).toHaveAttribute(
+        'href',
+        '/demo/deep-link/widget/blue',
+      );
+      // `..` is one route match to React Router, not one path segment: the
+      // page is the only match here, so this leaves the page entirely rather
+      // than resolving to `/demo/elsewhere`.
+      expect(
+        screen.getByRole('link', { name: 'Up from the page' }),
+      ).toHaveAttribute('href', '/elsewhere');
+      // One match deeper, `..` lands back on the page rather than above it.
+      expect(
+        screen.getByRole('link', { name: 'Up from a nested route' }),
+      ).toHaveAttribute('href', '/demo/deep-link/sibling');
+      expect(
+        screen.getByRole('link', { name: 'In-page absolute' }),
+      ).toHaveAttribute('href', '/demo/deep-link/area/south');
+
+      fireEvent.click(screen.getByRole('link', { name: 'Child route' }));
+      expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it('delegates every relative target to React Router without an app history (OFS)', async () => {
+      await renderInTestApp(
+        <Routes>
+          <Route
+            path="/base/*"
+            element={
+              <PageMountProvider
+                mount={{ basePath: '/base/deep', routePattern: '/base/deep' }}
+              >
+                <Link to="widget/blue">Child route</Link>
+                <Link to="../up">Up one route</Link>
+              </PageMountProvider>
+            }
+          />
+        </Routes>,
+        { routeEntries: ['/base/deep'] },
+      );
+
+      // Resolved against the matched route, not against the page mount, which
+      // would have produced `/base/deep/widget/blue` and `/base/up`.
+      expect(
+        await screen.findByRole('link', { name: 'Child route' }),
+      ).toHaveAttribute('href', '/base/widget/blue');
+      expect(
+        screen.getByRole('link', { name: 'Up one route' }),
+      ).toHaveAttribute('href', '/up');
     });
   });
 });

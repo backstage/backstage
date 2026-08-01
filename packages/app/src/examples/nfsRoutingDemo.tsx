@@ -595,15 +595,13 @@ function V7OnlyPanel() {
         mount and the app history rather than any routing library.
       </Typography>
       <Typography paragraph>
-        The one thing that does not work here is a <em>relative</em>{' '}
-        <code style={codeStyle}>Link</code> target:{' '}
-        <code style={codeStyle}>Link</code> hands relative targets to React
-        Router, and the nearest v6 context in this subtree is the app root, so{' '}
-        <code style={codeStyle}>to="../v6-guest"</code> would resolve to{' '}
-        <code style={codeStyle}>/v6-guest</code>. Inside a page that is not
-        hosted by React Router v6, link with{' '}
-        <code style={codeStyle}>RouteLink</code>, an app-absolute path, or the
-        hosting library's own link component.
+        A <em>relative</em> <code style={codeStyle}>Link</code> target works
+        here as well. There is no React Router v6 match in this subtree for one
+        to be resolved against, so <code style={codeStyle}>Link</code> resolves
+        it against this tab's mount instead:{' '}
+        <code style={codeStyle}>to="../v6-guest"</code> lands on the sibling tab
+        rather than escaping to <code style={codeStyle}>/v6-guest</code> at the
+        app root, and the click is navigated through the app history.
       </Typography>
       <ul>
         <HrefReadout
@@ -613,6 +611,12 @@ function V7OnlyPanel() {
           <RouteLink routeRef={v7V6GuestRouteRef}>
             the v6 tab next door
           </RouteLink>
+        </HrefReadout>
+        <HrefReadout
+          expected={V7_V6_GUEST_BASE}
+          note="core-components Link with a relative target — resolved against this tab's mount, not against the app root"
+        >
+          <Link to="../v6-guest">the v6 tab, relatively</Link>
         </HrefReadout>
         <HrefReadout
           expected={TANSTACK_PAGE_PATH}

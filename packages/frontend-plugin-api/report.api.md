@@ -4,11 +4,17 @@
 
 ```ts
 import { AnchorHTMLAttributes } from 'react';
-import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api';
+import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-plugin-api';
+import { ApiRef as ApiRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import type { Config } from '@backstage/config';
+import { ConfigurableExtensionDataRef as ConfigurableExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
 import { Expand } from '@backstage/types';
 import { ExpandRecursive } from '@backstage/types';
+import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-plugin-api';
+import { ExtensionBlueprintParams as ExtensionBlueprintParams_2 } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
+import { ExtensionInput as ExtensionInput_2 } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -16,9 +22,9 @@ import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
-import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
+import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 
 // @public @deprecated
 export type AlertApi = {
@@ -82,12 +88,12 @@ export type AnalyticsImplementation = {
 };
 
 // @public @deprecated
-export const AnalyticsImplementationBlueprint: ExtensionBlueprint<{
+export const AnalyticsImplementationBlueprint: ExtensionBlueprint_2<{
   kind: 'analytics';
   params: <TDeps extends { [name in string]: unknown }>(
     params: AnalyticsImplementationFactory<TDeps>,
-  ) => ExtensionBlueprintParams<AnalyticsImplementationFactory<{}>>;
-  output: ExtensionDataRef<
+  ) => ExtensionBlueprintParams_2<AnalyticsImplementationFactory<{}>>;
+  output: ExtensionDataRef_2<
     AnalyticsImplementationFactory<{}>,
     'core.analytics.factory',
     {}
@@ -96,7 +102,7 @@ export const AnalyticsImplementationBlueprint: ExtensionBlueprint<{
   config: {};
   configInput: {};
   dataRefs: {
-    factory: ConfigurableExtensionDataRef<
+    factory: ConfigurableExtensionDataRef_2<
       AnalyticsImplementationFactory<{}>,
       'core.analytics.factory',
       {}
@@ -146,7 +152,7 @@ export type AnyRouteRefParams =
   | undefined;
 
 // @public
-export const ApiBlueprint: ExtensionBlueprint<{
+export const ApiBlueprint: ExtensionBlueprint_2<{
   kind: 'api';
   params: <
     TApi,
@@ -154,13 +160,13 @@ export const ApiBlueprint: ExtensionBlueprint<{
     TDeps extends { [name in string]: unknown },
   >(
     params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => ExtensionBlueprintParams<AnyApiFactory>;
-  output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  ) => ExtensionBlueprintParams_2<AnyApiFactory>;
+  output: ExtensionDataRef_2<AnyApiFactory, 'core.api.factory', {}>;
   inputs: {};
   config: {};
   configInput: {};
   dataRefs: {
-    factory: ConfigurableExtensionDataRef<
+    factory: ConfigurableExtensionDataRef_2<
       AnyApiFactory,
       'core.api.factory',
       {}
@@ -202,6 +208,7 @@ export type ApiRefConfig = {
 export interface AppHistoryApi {
   createHref(to: string): string;
   readonly location$: Observable<FrameworkLocation>;
+  readonly location: FrameworkLocation;
   navigate(path: string, options?: FrameworkNavigateOptions): void;
 }
 
@@ -272,37 +279,17 @@ export interface AppNodeSpec {
 }
 
 // @public
-export const AppRootElementBlueprint: ExtensionBlueprint<{
+export const AppRootElementBlueprint: ExtensionBlueprint_2<{
   kind: 'app-root-element';
   params: {
     element: JSX.Element;
   };
-  output: ExtensionDataRef<JSX_2, 'core.reactElement', {}>;
+  output: ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>;
   inputs: {};
   config: {};
   configInput: {};
   dataRefs: never;
 }>;
-
-// @public
-export interface AppRouteRedirect {
-  from: string;
-  to: string;
-}
-
-// @public
-export function AppRouteSwitch(
-  props: AppRouteSwitchProps,
-): JSX_3.Element | null;
-
-// @public
-export interface AppRouteSwitchProps {
-  fallback: ReactElement;
-  history: AppHistoryApi;
-  pages: Map<string, ComponentType>;
-  redirects?: AppRouteRedirect[];
-  routeTable: RouteTable;
-}
 
 // @public
 export type AppTheme = {
@@ -453,16 +440,16 @@ export interface ConfigurableExtensionDataRef<
 
 // @public (undocumented)
 export const coreExtensionData: {
-  title: ConfigurableExtensionDataRef<string, 'core.title', {}>;
-  icon: ConfigurableExtensionDataRef<IconElement, 'core.icon', {}>;
-  reactElement: ConfigurableExtensionDataRef<
+  title: ConfigurableExtensionDataRef_2<string, 'core.title', {}>;
+  icon: ConfigurableExtensionDataRef_2<IconElement, 'core.icon', {}>;
+  reactElement: ConfigurableExtensionDataRef_2<
     JSX_2.Element,
     'core.reactElement',
     {}
   >;
-  routePath: ConfigurableExtensionDataRef<string, 'core.routing.path', {}>;
-  routeRef: ConfigurableExtensionDataRef<
-    RouteRef<AnyRouteRefParams>,
+  routePath: ConfigurableExtensionDataRef_2<string, 'core.routing.path', {}>;
+  routeRef: ConfigurableExtensionDataRef_2<
+    RouteRef<AnyRouteRefParams_2>,
     'core.routing.ref',
     {}
   >;
@@ -1043,7 +1030,7 @@ export const errorApiRef: ApiRef_2<ErrorApi, 'core.error'> & {
 // @public (undocumented)
 export const ErrorDisplay: {
   (props: ErrorDisplayProps): JSX.Element | null;
-  ref: SwappableComponentRef<ErrorDisplayProps, ErrorDisplayProps>;
+  ref: SwappableComponentRef_2<ErrorDisplayProps, ErrorDisplayProps>;
 };
 
 // @public (undocumented)
@@ -1082,7 +1069,7 @@ export interface ExtensionBlueprint<
   // (undocumented)
   make<
     TName extends string | undefined,
-    TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
+    TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
     UParentInputs extends ExtensionDataRef,
   >(args: {
     name?: TName;
@@ -1138,7 +1125,7 @@ export interface ExtensionBlueprint<
     };
     factory(
       originalFactory: <
-        TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
+        TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
       >(
         params: TParamsInput extends ExtensionBlueprintDefineParams
           ? TParamsInput
@@ -1635,7 +1622,7 @@ export type NavigateRouteRefFunc<TParams extends AnyRouteRefParams> = (
 // @public (undocumented)
 export const NotFoundErrorPage: {
   (props: NotFoundErrorPageProps): JSX.Element | null;
-  ref: SwappableComponentRef<NotFoundErrorPageProps, NotFoundErrorPageProps>;
+  ref: SwappableComponentRef_2<NotFoundErrorPageProps, NotFoundErrorPageProps>;
 };
 
 // @public (undocumented)
@@ -1734,7 +1721,7 @@ export interface OverridableExtensionDefinition<
     TExtraInputs extends {
       [inputName in string]: ExtensionInput;
     },
-    TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
+    TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
     UParentInputs extends ExtensionDataRef,
     TNewExtensionConfigSchema extends {
       [key in string]: StandardSchemaV1;
@@ -1763,7 +1750,7 @@ export interface OverridableExtensionDefinition<
         };
         factory?(
           originalFactory: <
-            TFactoryParamsReturn extends AnyParamsInput_2<
+            TFactoryParamsReturn extends AnyParamsInput<
               NonNullable<T['params']>
             >,
           >(
@@ -1860,7 +1847,7 @@ export interface OverridableFrontendPlugin<
 }
 
 // @public
-export const PageBlueprint: ExtensionBlueprint<{
+export const PageBlueprint: ExtensionBlueprint_2<{
   kind: 'page';
   params: {
     path: string;
@@ -1871,23 +1858,23 @@ export const PageBlueprint: ExtensionBlueprint<{
     noHeader?: boolean;
   };
   output:
-    | ExtensionDataRef<string, 'core.routing.path', {}>
-    | ExtensionDataRef<
-        RouteRef<AnyRouteRefParams>,
+    | ExtensionDataRef_2<string, 'core.routing.path', {}>
+    | ExtensionDataRef_2<
+        RouteRef<AnyRouteRefParams_2>,
         'core.routing.ref',
         {
           optional: true;
         }
       >
-    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ExtensionDataRef<
+    | ExtensionDataRef_2<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef_2<
         string,
         'core.title',
         {
           optional: true;
         }
       >
-    | ExtensionDataRef<
+    | ExtensionDataRef_2<
         IconElement,
         'core.icon',
         {
@@ -1895,24 +1882,24 @@ export const PageBlueprint: ExtensionBlueprint<{
         }
       >;
   inputs: {
-    pages: ExtensionInput<
-      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
+    pages: ExtensionInput_2<
+      | ConfigurableExtensionDataRef_2<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef_2<string, 'core.routing.path', {}>
+      | ConfigurableExtensionDataRef_2<
+          RouteRef<AnyRouteRefParams_2>,
           'core.routing.ref',
           {
             optional: true;
           }
         >
-      | ConfigurableExtensionDataRef<
+      | ConfigurableExtensionDataRef_2<
           string,
           'core.title',
           {
             optional: true;
           }
         >
-      | ConfigurableExtensionDataRef<
+      | ConfigurableExtensionDataRef_2<
           IconElement,
           'core.icon',
           {
@@ -1925,8 +1912,12 @@ export const PageBlueprint: ExtensionBlueprint<{
         internal: false;
       }
     >;
-    router: ExtensionInput<
-      ConfigurableExtensionDataRef<PageRouterComponent, 'core.page.router', {}>,
+    router: ExtensionInput_2<
+      ConfigurableExtensionDataRef_2<
+        PageRouterComponent,
+        'core.page.router',
+        {}
+      >,
       {
         singleton: true;
         optional: true;
@@ -1948,7 +1939,7 @@ export const PageBlueprint: ExtensionBlueprint<{
 // @public
 export const PageLayout: {
   (props: PageLayoutProps): JSX.Element | null;
-  ref: SwappableComponentRef<PageLayoutProps, PageLayoutProps>;
+  ref: SwappableComponentRef_2<PageLayoutProps, PageLayoutProps>;
 };
 
 // @public
@@ -1982,28 +1973,25 @@ export interface PageLayoutTab {
 }
 
 // @public
-export interface PageRouterApi {
-  getCapabilities?(): PageRouterCapabilities;
-  getDefaultRouter(): PageRouterComponent;
-}
-
-// @public
-export const pageRouterApiRef: ApiRef_2<PageRouterApi, 'core.page-router'> & {
+export const pageRouterApiRef: ApiRef_2<
+  PageRouterComponent,
+  'core.page-router'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const PageRouterBlueprint: ExtensionBlueprint<{
+export const PageRouterBlueprint: ExtensionBlueprint_2<{
   kind: 'page-router';
   params: {
     component: PageRouterComponent;
   };
-  output: ExtensionDataRef<PageRouterComponent, 'core.page.router', {}>;
+  output: ExtensionDataRef_2<PageRouterComponent, 'core.page.router', {}>;
   inputs: {};
   config: {};
   configInput: {};
   dataRefs: {
-    component: ConfigurableExtensionDataRef<
+    component: ConfigurableExtensionDataRef_2<
       PageRouterComponent,
       'core.page.router',
       {}
@@ -2012,17 +2000,21 @@ export const PageRouterBlueprint: ExtensionBlueprint<{
 }>;
 
 // @public
-export interface PageRouterCapabilities {
-  supportsOpaqueChildren?: boolean;
-}
-
-// @public
 export type PageRouterComponent = ComponentType<{
   basePath: string;
   routePattern: string;
-  appBasename?: string;
-  children: ReactNode;
+  subPages?: readonly PageRouterSubPage[];
+  indexPath?: string;
+  children?: ReactNode;
 }>;
+
+// @public
+export interface PageRouterSubPage {
+  element: ReactNode;
+  icon?: IconElement;
+  label: string;
+  path: string;
+}
 
 // @public @deprecated (undocumented)
 export type PageTab = PageLayoutTab;
@@ -2035,12 +2027,12 @@ export type PendingOAuthRequest = {
 };
 
 // @public
-export const PluginHeaderActionBlueprint: ExtensionBlueprint<{
+export const PluginHeaderActionBlueprint: ExtensionBlueprint_2<{
   kind: 'plugin-header-action';
   params: {
     loader: () => Promise<JSX.Element>;
   };
-  output: ExtensionDataRef<JSX_2, 'core.reactElement', {}>;
+  output: ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>;
   inputs: {};
   config: {};
   configInput: {};
@@ -2093,14 +2085,14 @@ export const pluginWrapperApiRef: ApiRef_2<
 };
 
 // @public
-export const PluginWrapperBlueprint: ExtensionBlueprint<{
+export const PluginWrapperBlueprint: ExtensionBlueprint_2<{
   kind: 'plugin-wrapper';
   params: <TValue = never>(params: {
     loader: () => Promise<PluginWrapperDefinition<TValue>>;
-  }) => ExtensionBlueprintParams<{
+  }) => ExtensionBlueprintParams_2<{
     loader: () => Promise<PluginWrapperDefinition>;
   }>;
-  output: ExtensionDataRef<
+  output: ExtensionDataRef_2<
     () => Promise<PluginWrapperDefinition>,
     'core.plugin-wrapper.loader',
     {}
@@ -2109,7 +2101,7 @@ export const PluginWrapperBlueprint: ExtensionBlueprint<{
   config: {};
   configInput: {};
   dataRefs: {
-    wrapper: ConfigurableExtensionDataRef<
+    wrapper: ConfigurableExtensionDataRef_2<
       () => Promise<PluginWrapperDefinition>,
       'core.plugin-wrapper.loader',
       {}
@@ -2149,7 +2141,7 @@ export type ProfileInfoApi = {
 // @public (undocumented)
 export const Progress: {
   (props: ProgressProps): JSX.Element | null;
-  ref: SwappableComponentRef<ProgressProps, ProgressProps>;
+  ref: SwappableComponentRef_2<ProgressProps, ProgressProps>;
 };
 
 // @public (undocumented)
@@ -2211,18 +2203,6 @@ export const routeResolutionApiRef: ApiRef_2<
 };
 
 // @public
-export class RouteTable {
-  constructor(basePaths: string[]);
-  match(pathname: string): RouteTableMatch | undefined;
-}
-
-// @public
-export interface RouteTableMatch {
-  basePath: string;
-  path: string;
-}
-
-// @public
 export type SessionApi = {
   signIn(): Promise<void>;
   signOut(): Promise<void>;
@@ -2278,7 +2258,7 @@ export type StorageValueSnapshot<TValue extends JsonValue> =
     };
 
 // @public
-export const SubPageBlueprint: ExtensionBlueprint<{
+export const SubPageBlueprint: ExtensionBlueprint_2<{
   kind: 'sub-page';
   params: {
     path: string;
@@ -2288,17 +2268,17 @@ export const SubPageBlueprint: ExtensionBlueprint<{
     routeRef?: RouteRef;
   };
   output:
-    | ExtensionDataRef<string, 'core.routing.path', {}>
-    | ExtensionDataRef<
-        RouteRef<AnyRouteRefParams>,
+    | ExtensionDataRef_2<string, 'core.routing.path', {}>
+    | ExtensionDataRef_2<
+        RouteRef<AnyRouteRefParams_2>,
         'core.routing.ref',
         {
           optional: true;
         }
       >
-    | ExtensionDataRef<JSX_2, 'core.reactElement', {}>
-    | ExtensionDataRef<string, 'core.title', {}>
-    | ExtensionDataRef<
+    | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
+    | ExtensionDataRef_2<string, 'core.title', {}>
+    | ExtensionDataRef_2<
         IconElement,
         'core.icon',
         {
@@ -2306,8 +2286,12 @@ export const SubPageBlueprint: ExtensionBlueprint<{
         }
       >;
   inputs: {
-    router: ExtensionInput<
-      ConfigurableExtensionDataRef<PageRouterComponent, 'core.page.router', {}>,
+    router: ExtensionInput_2<
+      ConfigurableExtensionDataRef_2<
+        PageRouterComponent,
+        'core.page.router',
+        {}
+      >,
       {
         singleton: true;
         optional: true;

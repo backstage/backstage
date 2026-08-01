@@ -11,6 +11,7 @@ import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { PageRouterComponent } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
@@ -84,6 +85,18 @@ const visualizerPlugin: OverridableFrontendPlugin<
             internal: false;
           }
         >;
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+            internal: false;
+          }
+        >;
       };
       params: {
         path: string;
@@ -134,7 +147,20 @@ const visualizerPlugin: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+            internal: false;
+          }
+        >;
+      };
       params: {
         path: string;
         title: string;
@@ -172,7 +198,20 @@ const visualizerPlugin: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+            internal: false;
+          }
+        >;
+      };
       params: {
         path: string;
         title: string;
@@ -210,7 +249,20 @@ const visualizerPlugin: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+            internal: false;
+          }
+        >;
+      };
       params: {
         path: string;
         title: string;

@@ -15,24 +15,9 @@
  */
 
 import { useHref as useReactRouterHref } from 'react-router-dom';
+import { isExternalTarget } from '@internal/frontend';
 import { useApiHolder } from '../apis/system';
 import { appHistoryApiRef } from './AppHistoryApi';
-
-/**
- * Whether a target is not app-relative — absolute (`https://example.com/x`),
- * protocol-relative (`//example.com/x`), or an opaque scheme such as
- * `mailto:`. Only the path portion is inspected, so
- * `/search?query=https://example.com` is an ordinary app-relative target.
- *
- * Kept in step with `isExternalTarget` in `AppHistory`, which is the source of
- * truth for the {@link AppHistoryApi.createHref} contract. React Router's
- * `useHref` has no equivalent guard — it resolves the path and joins the
- * basename regardless — so the fallback path needs its own.
- */
-function isExternalTarget(to: string): boolean {
-  const [path] = to.split(/[?#]/);
-  return path.startsWith('//') || /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(path);
-}
 
 /**
  * Resolves an app-relative path to a browser-ready href (including the app's
@@ -42,7 +27,9 @@ function isExternalTarget(to: string): boolean {
  * registered (old frontend system).
  *
  * Targets that are not app-relative are returned unchanged under both
- * frontend systems — see {@link AppHistoryApi.createHref}.
+ * frontend systems — see {@link AppHistoryApi.createHref}. React Router's
+ * `useHref` has no equivalent guard — it resolves the path and joins the
+ * basename regardless — so the fallback path needs its own.
  *
  * @public
  */

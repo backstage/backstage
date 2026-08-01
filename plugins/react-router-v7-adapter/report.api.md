@@ -4,13 +4,15 @@
 
 ```ts
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { PageRouterSubPage } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 
 // @public
 export function ReactRouterV7PageRouter(props: {
   basePath: string;
   routePattern: string;
-  appBasename?: string;
-  children: ReactNode;
+  subPages?: readonly PageRouterSubPage[];
+  indexPath?: string;
+  children?: ReactNode;
 }): JSX_2.Element;
 ```

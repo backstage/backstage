@@ -32,6 +32,7 @@ import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { JSXElementConstructor } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { PageRouterComponent } from '@backstage/frontend-plugin-api';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -1205,6 +1206,18 @@ const _default: OverridableFrontendPlugin<
             internal: false;
           }
         >;
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+            internal: false;
+          }
+        >;
         filters: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
@@ -1331,6 +1344,18 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
+          }
+        >;
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
             internal: false;
           }
         >;

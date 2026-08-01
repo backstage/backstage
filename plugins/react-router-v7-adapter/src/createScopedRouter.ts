@@ -16,11 +16,11 @@
 
 import type { ComponentType, ReactNode } from 'react';
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
-import { createScopedRouterWithBindings } from './createScopedRouterWithBindings';
-import type {
-  ReactRouterAdapterBindings,
-  ScopedRouterWithBindingsResult as CommonScopedRouterResult,
-} from './types';
+import {
+  createAppHistoryRouter,
+  type AppHistoryRouterResult,
+  type ReactRouterAdapterBindings,
+} from '@internal/frontend';
 import {
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,
@@ -97,11 +97,12 @@ export function createScopedRouter(
   appHistory: AppHistoryApi,
   options: CreateScopedRouterOptions,
 ): ScopedRouterResult {
-  const result: CommonScopedRouterResult = createScopedRouterWithBindings(
+  const result: AppHistoryRouterResult = createAppHistoryRouter(
     v7Bindings,
     appHistory,
     {
       ...options,
+      name: 'createScopedRouter',
       // React Router v7 NavigationContextObject requires future: {} and
       // useTransitions (boolean | undefined). v7 has no relative-splat flag:
       // relative targets always resolve against the leaf match's full

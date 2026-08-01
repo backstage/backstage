@@ -18,8 +18,8 @@ import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import type { PageMount } from '@internal/frontend';
 
 /**
- * AbsoluteLinkNavigate — decide when `Link` should use the app-wide
- * {@link AppHistoryApi} for an absolute `to` instead of ambient React Router.
+ * AbsoluteLinkNavigate — decide when `Link` should go through the app-wide
+ * {@link AppHistoryApi} instead of the ambient React Router context.
  *
  * A page mounted under a scoped `PageMount` (e.g. `/create`) gets its
  * own React Router context whose `navigate` is bound to that page. An
@@ -27,12 +27,18 @@ import type { PageMount } from '@internal/frontend';
  * would otherwise resolve relative to the page's own router. Routing those
  * targets through the app history keeps them working.
  *
+ * The mirror image is a page whose routing library is not React Router v6 at
+ * all: there the ambient v6 context is the app-root projection, which has no
+ * match to resolve a *relative* target against. Those resolve against the page
+ * mount instead — see {@link shouldResolveViaPageMount}.
+ *
  * This module hides dual-authority (scoped page router vs app history) from
  * `Link`. It remains required as long as pages get their own scoped React
  * Router context (i.e. as long as a root React Router projection is in use for
  * chrome/legacy consumers) — see `RootReactRouterV6` /
- * ChromeRouterProjection. Relative and in-scope absolute targets are left
- * untouched so scoped adapters keep working.
+ * ChromeRouterProjection. In-scope absolute targets, and relative targets that
+ * a page-scoped React Router context can resolve, are left untouched so scoped
+ * adapters keep working.
  *
  * @internal
  */
@@ -85,4 +91,54 @@ export function shouldNavigateViaFramework(
   const { basePath } = pageMount;
   const inScope = pathname === basePath || pathname.startsWith(`${basePath}/`);
   return !inScope;
+}
+
+/** Inputs for the relative-target decision. */
+export type PageMountResolveOptions = {
+  to: string;
+  appHistory: AppHistoryApi | undefined;
+  pageMount: PageMount | undefined;
+  /**
+   * Whether the ambient React Router context has any matched routes, i.e.
+   * whether React Router has a base of its own to resolve a relative target
+   * against.
+   */
+  hasAmbientRouteMatch: boolean;
+};
+
+/**
+ * True when a relative `to` has to be resolved against `PageMount.basePath`
+ * because no ambient React Router context can resolve it correctly.
+ *
+ * React Router resolves a relative target against the routes matched in
+ * context. A page hosted by the React Router v6 adapter publishes its own
+ * match, so React Router already has the right base — and keeps it, because
+ * there `..` means "up one route match", which only the route tree knows how
+ * to walk. A page hosted by TanStack or React Router v7 publishes no v6 match
+ * at all, so React Router would silently resolve against the app root and the
+ * link would leave the page entirely. `PageMount.basePath` is the framework's
+ * analogue of React Router's `pathnameBase`, and is the only base available
+ * there.
+ *
+ * Only relative *path* targets qualify. App-absolute (`/x`) targets need no
+ * base at all, while search-only (`?tab=x`) and fragment-only (`#section`)
+ * targets are relative to the current location rather than to any base, which
+ * React Router gets right with or without a match. As for
+ * {@link shouldNavigateViaFramework}, the caller has already established that
+ * `to` points inside the app.
+ *
+ * Outside a page there is nothing to resolve against that React Router does
+ * not already agree with — both fall back to the app root — so app chrome
+ * keeps taking the same path it takes today.
+ *
+ * @internal
+ */
+export function shouldResolveViaPageMount(
+  options: PageMountResolveOptions,
+): boolean {
+  const { to, appHistory, pageMount, hasAmbientRouteMatch } = options;
+  if (!appHistory || !pageMount || hasAmbientRouteMatch) {
+    return false;
+  }
+  return !/^[/?#]/.test(to);
 }

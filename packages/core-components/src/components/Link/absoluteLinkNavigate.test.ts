@@ -17,6 +17,7 @@
 import {
   hasFrameworkNavigationSignals,
   shouldNavigateViaFramework,
+  shouldResolveViaPageMount,
 } from './absoluteLinkNavigate';
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import type { PageMount } from '@internal/frontend';
@@ -100,6 +101,84 @@ describe('AbsoluteLinkNavigate', () => {
           to: '/catalog/default/component/foo',
           appHistory: undefined,
           pageMount: scopedMount,
+        }),
+      ).toBe(false);
+    });
+  });
+
+  describe('shouldResolveViaPageMount', () => {
+    const inPageWithoutRouteMatch = {
+      appHistory,
+      pageMount: scopedMount,
+      hasAmbientRouteMatch: false,
+    };
+
+    it('resolves relative path targets inside a page that React Router has no match for', () => {
+      expect(
+        shouldResolveViaPageMount({
+          to: '../templates',
+          ...inPageWithoutRouteMatch,
+        }),
+      ).toBe(true);
+      expect(
+        shouldResolveViaPageMount({
+          to: 'templates',
+          ...inPageWithoutRouteMatch,
+        }),
+      ).toBe(true);
+      expect(
+        shouldResolveViaPageMount({ to: '', ...inPageWithoutRouteMatch }),
+      ).toBe(true);
+    });
+
+    it('leaves everything React Router can already resolve alone', () => {
+      // A page-scoped route context knows how far up `..` goes; a base path
+      // does not, so the ambient context stays authoritative wherever it has a
+      // match.
+      expect(
+        shouldResolveViaPageMount({
+          to: '../templates',
+          ...inPageWithoutRouteMatch,
+          hasAmbientRouteMatch: true,
+        }),
+      ).toBe(false);
+      // App-absolute targets need no base, and search-only / fragment-only
+      // targets are relative to the location rather than to any base.
+      expect(
+        shouldResolveViaPageMount({
+          to: '/catalog',
+          ...inPageWithoutRouteMatch,
+        }),
+      ).toBe(false);
+      expect(
+        shouldResolveViaPageMount({
+          to: '?filter=owned',
+          ...inPageWithoutRouteMatch,
+        }),
+      ).toBe(false);
+      expect(
+        shouldResolveViaPageMount({
+          to: '#summary',
+          ...inPageWithoutRouteMatch,
+        }),
+      ).toBe(false);
+    });
+
+    it('never takes over on the old frontend system or outside a page', () => {
+      expect(
+        shouldResolveViaPageMount({
+          to: '../templates',
+          ...inPageWithoutRouteMatch,
+          appHistory: undefined,
+        }),
+      ).toBe(false);
+      // App chrome has no page mount, and there the framework and React Router
+      // agree already - both resolve from the app root.
+      expect(
+        shouldResolveViaPageMount({
+          to: '../templates',
+          ...inPageWithoutRouteMatch,
+          pageMount: undefined,
         }),
       ).toBe(false);
     });

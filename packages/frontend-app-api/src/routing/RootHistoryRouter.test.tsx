@@ -122,7 +122,7 @@ describe('RootHistoryRouter', () => {
     });
 
     expect(history.navigateCalls).toEqual([
-      { to: '/pushed', options: { state: undefined } },
+      { to: '/pushed', options: { state: undefined, replace: false } },
       { to: '/replaced', options: { state: undefined, replace: true } },
     ]);
     expect(screen.getByTestId('pathname')).toHaveTextContent('/replaced');
