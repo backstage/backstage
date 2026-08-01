@@ -29,7 +29,7 @@ $page-header-height: 44px;
   max-width: 500px;
   border-radius: 8px 0 0 8px;
   background-color: var(--ifm-background-surface-color);
-  color: var(--ifm-front-color-base);
+  color: var(--ifm-font-color-base);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 
   form {
@@ -44,16 +44,16 @@ $page-header-height: 44px;
   :global(.hs-form-field) legend,
   :global(.hs-richtext),
   :global(.hs-richtext) p {
-    color: var(--ifm-front-color-base);
+    color: var(--ifm-font-color-base);
   }
 
   :global(.hs-input) {
-    color: var(--ifm-front-color-base);
+    color: var(--ifm-font-color-base);
     background-color: var(--ifm-background-color);
     border: 1px solid var(--ifm-color-emphasis-300);
 
     &::placeholder {
-      color: var(--ifm-front-emphasis-500);
+      color: var(--ifm-font-emphasis-500);
     }
   }
 
