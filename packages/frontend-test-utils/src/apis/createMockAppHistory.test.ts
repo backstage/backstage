@@ -62,8 +62,75 @@ describe('createMockAppHistory', () => {
     expect(navigate.mock.calls[0]).toHaveLength(1);
   });
 
-  it('should resolve hrefs without modification (no basename)', () => {
+  it('should expose location as a stable reference that tracks navigation', () => {
+    const appHistory = createMockAppHistory({ initialLocation: '/catalog' });
+
+    const initial = appHistory.location;
+    expect(initial).toEqual({
+      pathname: '/catalog',
+      search: '',
+      hash: '',
+      state: undefined,
+    });
+    // Repeated reads must be reference-equal, or useSyncExternalStore loops.
+    expect(appHistory.location).toBe(initial);
+
+    // Navigating to the location we are already on is not a change.
+    appHistory.navigate('/catalog');
+    expect(appHistory.location).toBe(initial);
+
+    appHistory.navigate('/tools?tab=1', { state: { step: 1 } });
+    expect(appHistory.location).not.toBe(initial);
+    expect(appHistory.location).toEqual({
+      pathname: '/tools',
+      search: '?tab=1',
+      hash: '',
+      state: { step: 1 },
+    });
+
+    // location$ hands out the same reference the accessor returns.
+    let emitted: FrameworkLocation | undefined;
+    appHistory.location$.subscribe(l => {
+      emitted = l;
+    });
+    expect(emitted).toBe(appHistory.location);
+  });
+
+  it('should normalise hrefs the same way the real app history does', () => {
     const appHistory = createMockAppHistory();
+
     expect(appHistory.createHref('/catalog')).toBe('/catalog');
+    expect(appHistory.createHref('/catalog?q=1#top')).toBe('/catalog?q=1#top');
+    // Without a basename there is nothing to prepend, but the target is still
+    // resolved to an app-absolute path, exactly as in production.
+    expect(appHistory.createHref('catalog')).toBe('/catalog');
+    expect(appHistory.createHref('/a/../b')).toBe('/b');
+  });
+
+  it('should treat targets that are not app-relative like the real app history', () => {
+    const appHistory = createMockAppHistory({ basename: '/backstage' });
+
+    expect(appHistory.createHref('/catalog')).toBe('/backstage/catalog');
+    // Pass-through rather than basename-prefixed.
+    expect(appHistory.createHref('https://example.com/x')).toBe(
+      'https://example.com/x',
+    );
+    expect(appHistory.createHref('//example.com/x')).toBe('//example.com/x');
+    expect(appHistory.createHref('mailto:support@example.com')).toBe(
+      'mailto:support@example.com',
+    );
+    // Only the path portion counts, so a URL in the query is still app-relative.
+    expect(appHistory.createHref('/search?q=https://example.com')).toBe(
+      '/backstage/search?q=https://example.com',
+    );
+
+    // navigate is strict for exactly the same inputs.
+    expect(() => appHistory.navigate('https://example.com/x')).toThrow(
+      /does not support absolute or protocol-relative URLs/,
+    );
+    expect(() => appHistory.navigate('mailto:support@example.com')).toThrow();
+    expect(() =>
+      appHistory.navigate('/search?q=https://example.com'),
+    ).not.toThrow();
   });
 });

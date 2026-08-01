@@ -19,7 +19,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { useResolvedHref } from './useResolvedHref';
 
 describe('useResolvedHref', () => {
-  it('preserves the app root when react-router resolves "/" to an empty string', () => {
+  it('resolves the app root through react-router, with and without a basename', () => {
     const { result } = renderHook(() => useResolvedHref('/'), {
       wrapper: ({ children }) => (
         <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>
@@ -27,10 +27,8 @@ describe('useResolvedHref', () => {
     });
 
     expect(result.current).toBe('/');
-  });
 
-  it('preserves the app root when a basename is configured', () => {
-    const { result } = renderHook(() => useResolvedHref('/'), {
+    const { result: withBasename } = renderHook(() => useResolvedHref('/'), {
       wrapper: ({ children }) => (
         <MemoryRouter basename="/docs" initialEntries={['/docs']}>
           {children}
@@ -38,13 +36,9 @@ describe('useResolvedHref', () => {
       ),
     });
 
-    // With a basename, useHref('/') typically yields '/docs' (or '/docs/').
-    // If RR ever collapses the root to ''/'.', we still keep '/'.
-    expect(result.current === '/' || result.current.startsWith('/docs')).toBe(
-      true,
-    );
-    expect(result.current).not.toBe('');
-    expect(result.current).not.toBe('.');
+    // The basename has to survive: returning the server root would navigate
+    // out of the app under a sub-path deployment.
+    expect(withBasename.current).toBe('/docs');
   });
 
   it('leaves external URLs unchanged', () => {

@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { useMemo, useRef, type ReactNode } from 'react';
-import { useApi, appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { useMemo, type ReactNode } from 'react';
+import {
+  useApi,
+  appHistoryApiRef,
+  type PageRouterSubPage,
+} from '@backstage/frontend-plugin-api';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { createScopedRouter } from './createScopedRouter';
 
 /**
@@ -23,9 +28,12 @@ import { createScopedRouter } from './createScopedRouter';
  * framework's `AppHistoryApi` and never writes `window.history` via
  * push/replace/go.
  *
- * Renders `children` as opaque content inside that context — an existing
- * React Router `<Routes>` tree composed by the page itself keeps working
- * (relative Links, nested `<Routes>`, `useParams`, and so on).
+ * Sub-pages arrive as data and are compiled here into a React Router
+ * `<Routes>` tree, applying this library's own prefix convention (a `/*`
+ * splat, so a sub-page can nest further routes of its own). `children` are
+ * rendered as opaque content inside the same context — an existing React
+ * Router `<Routes>` tree composed by the page itself keeps working (relative
+ * Links, nested `<Routes>`, `useParams`, and so on).
  *
  * Programmatic back/forward (`navigate(-1)`) is not supported — there is a
  * single, real browser history; use the browser's own back/forward.
@@ -36,26 +44,50 @@ import { createScopedRouter } from './createScopedRouter';
  * @public
  */
 export function ReactRouterV7PageRouter(props: {
-  /** Concrete app-absolute URL prefix this page is mounted at. */
+  /**
+   * Concrete app-absolute URL prefix this page is mounted at. Not read by
+   * this adapter: the page's route match is derived from `routePattern` and
+   * the live location, which keeps the two in step and keeps the router
+   * mount-stable while the concrete prefix changes (entity A → entity B).
+   */
   basePath: string;
   /** Registered route pattern this page is mounted at. */
   routePattern: string;
-  /** App deploy basename — unused; `AppHistoryApi.createHref` already applies it. */
-  appBasename?: string;
-  children: ReactNode;
+  /** The page's sub-pages, for this adapter to route between. */
+  subPages?: readonly PageRouterSubPage[];
+  /** Sub-page path the page root redirects to. */
+  indexPath?: string;
+  children?: ReactNode;
 }) {
-  const { basePath, routePattern, children } = props;
+  const { routePattern, subPages, indexPath, children } = props;
   const appHistory = useApi(appHistoryApiRef);
-  const basePathRef = useRef(basePath);
-  basePathRef.current = basePath;
 
+  // Only ever recreated for a genuinely different router: a new element type
+  // here would unmount and remount the whole page subtree, throwing away page
+  // state, scroll position and in-flight requests.
   const scopedRouter = useMemo(
-    () => createScopedRouter(appHistory, { basePathRef, routePattern }),
-    // basePathRef is a stable ref object; basePath changes flow through it
-    // without recreating the router (and without losing in-page state).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    () => createScopedRouter(appHistory, { routePattern }),
     [appHistory, routePattern],
   );
 
-  return <scopedRouter.Router>{children}</scopedRouter.Router>;
+  return (
+    <scopedRouter.Router>
+      {subPages?.length ? (
+        <Routes>
+          {indexPath && (
+            <Route index element={<Navigate to={indexPath} replace />} />
+          )}
+          {subPages.map(subPage => (
+            <Route
+              key={subPage.path}
+              path={`${subPage.path}/*`}
+              element={subPage.element}
+            />
+          ))}
+        </Routes>
+      ) : (
+        children
+      )}
+    </scopedRouter.Router>
+  );
 }

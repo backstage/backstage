@@ -16,10 +16,14 @@
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { Link, LinkProps } from '@backstage/core-components';
-import { useApiHolder, useRouteRef } from '@backstage/core-plugin-api';
 import {
+  useAnalytics,
+  useApiHolder,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
+import {
+  appHistoryApiRef,
   routeResolutionApiRef,
-  useOptionalFrameworkNavigate,
   type RouteRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line no-restricted-imports
@@ -74,12 +78,17 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       hideIcon,
       disableTooltip,
       onClick,
+      // Pulled out of the rest props: these are Link concerns and must not be
+      // spread onto a plain anchor on the framework path.
+      noTrack,
+      externalLinkIcon,
       ...linkProps
     } = props;
     const entityLink = useEntityRefLink();
     const apiHolder = useApiHolder();
+    const analytics = useAnalytics();
     const routeResolutionApi = apiHolder.get(routeResolutionApiRef);
-    const frameworkNavigate = useOptionalFrameworkNavigate();
+    const appHistory = apiHolder.get(appHistoryApiRef);
     const routeParams = useMemo(
       () => entityRouteParams(entityRef, { encodeParams: true }),
       [entityRef],
@@ -115,15 +124,24 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
 
     // When an app history is present, always use framework navigate —
     // never fall back to the react-router Link shim under NFS.
-    if (frameworkNavigate) {
+    if (appHistory) {
       const to = resolvedFrameworkPath ?? entityLink(props.entityRef);
+      // Mirrors Link: text content when there is any, otherwise the target.
+      const linkText = typeof content === 'string' ? content : to;
       return (
         <MaterialLink
           {...linkProps}
           ref={ref}
-          href={to}
+          // The href has to be a real browser URL, including the app's deploy
+          // basename, so middle-click and "open in new tab" work.
+          href={appHistory.createHref(to)}
           onClick={(event: ReactMouseEvent<HTMLAnchorElement>) => {
             onClick?.(event as any);
+            if (!noTrack) {
+              analytics.captureEvent('click', linkText, {
+                attributes: { to },
+              });
+            }
             if (
               event.defaultPrevented ||
               event.button !== 0 ||
@@ -133,7 +151,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
               return;
             }
             event.preventDefault();
-            frameworkNavigate(to);
+            appHistory.navigate(to);
           }}
         >
           {content}
@@ -145,6 +163,8 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       <Link
         {...linkProps}
         ref={ref}
+        noTrack={noTrack}
+        externalLinkIcon={externalLinkIcon}
         to={entityLink(props.entityRef)}
         onClick={onClick}
       >

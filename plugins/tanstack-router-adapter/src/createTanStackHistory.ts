@@ -25,11 +25,35 @@ import type {
   ParsedHistoryState,
   RouterHistory,
 } from '@tanstack/history';
-import type { MutableRefObject } from 'react';
 
 type HistoryNotify = RouterHistory['notify'];
 type HistoryNotifyAction = Parameters<HistoryNotify>[0];
 type HistorySubscriber = Parameters<RouterHistory['subscribe']>[0];
+
+/**
+ * Options for {@link createTanStackHistory}.
+ *
+ * @internal
+ */
+export interface CreateTanStackHistoryOptions {
+  /**
+   * Registered page route pattern this history is scoped to (e.g. `/catalog`
+   * or `/catalog/:namespace/:kind/:name`).
+   */
+  routePattern: string;
+}
+
+/** An app-absolute pathname split at the page's mount point. */
+interface PageScope {
+  /** The page's concrete mount prefix within that pathname. */
+  base: string;
+  /** The remainder, as the page's own scoped pathname. */
+  scoped: string;
+}
+
+function toSegments(path: string): string[] {
+  return path.split('/').filter(Boolean);
+}
 
 function createRandomKey(): string {
   return (Math.random() + 1).toString(36).substring(7);
@@ -42,14 +66,20 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 /**
  * Creates a `RouterHistory` bound to the framework's {@link AppHistoryApi}.
  *
- * Never writes `window.history`. Locations are kept **scoped** to `basePath`
- * (read from `basePathRef` on every conversion, so navigating between
- * concrete prefixes under the same page — e.g. entity A → entity B — doesn't
- * require recreating the TanStack router). TanStack's own `__TSR_index` /
- * `__TSR_key` bookkeeping is tracked locally by this history instance only —
- * `AppHistoryApi` has no namespaced adapter-state channel to persist it in,
- * so it does not survive a full remount and is not shared with other
- * adapters or app chrome.
+ * Never writes `window.history`. Locations are kept **scoped** to the page:
+ * the mount prefix is derived from `routePattern` and the app location on
+ * every emission, so it is always the prefix of the location it is stripping
+ * from. A concrete `basePath` handed in from React could not do that —
+ * `AppHistoryApi` emits synchronously from `navigate()`, before the re-render
+ * that would have updated it, so navigating from one concrete prefix to
+ * another (entity A → entity B) would strip against the old prefix and leave
+ * an app-absolute pathname parked in the scoped location, which the next push
+ * re-prefixes into `/page/page/sub`.
+ *
+ * TanStack's own `__TSR_index` / `__TSR_key` bookkeeping is tracked locally by
+ * this history instance only — `AppHistoryApi` has no namespaced adapter-state
+ * channel to persist it in, so it does not survive a full remount and is not
+ * shared with other adapters or app chrome.
  *
  * `history.block` is a **local** blocker seam: it only intercepts push /
  * replace initiated through this history (e.g. a TanStack `<Link>` or
@@ -64,50 +94,70 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  */
 export function createTanStackHistory(
   appHistory: AppHistoryApi,
-  basePathRef: MutableRefObject<string>,
+  options: CreateTanStackHistoryOptions,
 ): RouterHistory {
   let tsrIndex = 0;
 
-  function toScopedPathname(appPathname: string): string {
-    const basePath = basePathRef.current;
+  const mountSegments = toSegments(options.routePattern);
+
+  /**
+   * Splits an app-absolute pathname into this page's mount prefix and the
+   * page-scoped remainder, or `undefined` when the pathname is not on this
+   * page at all.
+   *
+   * The page's concrete `basePath` is its `routePattern` with the params
+   * substituted, one segment each, so the pattern fixes both how many leading
+   * segments belong to the mount and which of them are literal. That makes
+   * the split a pure function of the pattern and the location — it cannot go
+   * stale between the two the way a captured prefix can.
+   */
+  function splitScope(appPathname: string): PageScope | undefined {
+    const segments = toSegments(appPathname);
+    if (segments.length < mountSegments.length) {
+      return undefined;
+    }
+    for (let i = 0; i < mountSegments.length; i++) {
+      const patternSegment = mountSegments[i];
+      const isDynamic =
+        patternSegment.startsWith(':') || patternSegment === '*';
+      if (!isDynamic && patternSegment !== segments[i]) {
+        return undefined;
+      }
+    }
+    const rest = segments.slice(mountSegments.length).join('/');
+    return {
+      base: mountSegments.length
+        ? `/${segments.slice(0, mountSegments.length).join('/')}`
+        : '/',
+      scoped: rest ? `/${rest}` : '/',
+    };
+  }
+
+  let basePath = splitScope(appHistory.location.pathname)?.base ?? '/';
+
+  /**
+   * Re-adds the page's mount prefix to a scoped href. Exactly inverts the
+   * split above for every scoped location this history can hold, so a
+   * round-trip through `AppHistoryApi` never accumulates a prefix.
+   */
+  function toAppAbsolute(scopedHref: string): string {
+    const { pathname, search, hash } = parseHref(scopedHref, undefined);
     if (basePath === '/') {
-      return appPathname || '/';
+      return `${pathname || '/'}${search}${hash}`;
     }
-    if (appPathname === basePath) {
-      return '/';
-    }
-    if (appPathname.startsWith(`${basePath}/`)) {
-      return appPathname.slice(basePath.length) || '/';
-    }
-    // Out of scope — pass through; appHistory.navigate will still route it.
-    return appPathname;
+    // The page root *is* the base path, so a scoped `/` contributes nothing —
+    // otherwise `/` + `?q=1` would come out as `/page/?q=1`.
+    const suffix =
+      pathname === '/' || pathname === ''
+        ? ''
+        : `${pathname.startsWith('/') ? '' : '/'}${pathname}`;
+    return `${basePath}${suffix}${search}${hash}`;
   }
 
-  function toAppAbsolute(scopedPathname: string): string {
-    const basePath = basePathRef.current;
-    if (basePath === '/') {
-      return scopedPathname || '/';
-    }
-    if (scopedPathname === '/' || scopedPathname === '') {
-      return basePath;
-    }
-    const suffix = scopedPathname.startsWith('/')
-      ? scopedPathname
-      : `/${scopedPathname}`;
-    return `${basePath}${suffix}`;
-  }
-
-  function readCurrentAppLocation(): FrameworkLocation {
-    let current!: FrameworkLocation;
-    const sub = appHistory.location$.subscribe(loc => {
-      current = loc;
-    });
-    sub.unsubscribe();
-    return current;
-  }
-
-  function toHistoryLocation(appLoc: FrameworkLocation): HistoryLocation {
-    const scopedPathname = toScopedPathname(appLoc.pathname);
+  function toHistoryLocation(
+    appLoc: FrameworkLocation,
+    scopedPathname: string,
+  ): HistoryLocation {
     const href = `${scopedPathname}${appLoc.search}${appLoc.hash}`;
     const userState = appLoc.state;
     const tsrState = {
@@ -125,11 +175,19 @@ export function createTanStackHistory(
 
   const subscribers = new Set<HistorySubscriber>();
   let subscription: { unsubscribe(): void } | undefined;
+  let sourceLocation: FrameworkLocation = appHistory.location;
   let latestLocation: HistoryLocation = toHistoryLocation(
-    readCurrentAppLocation(),
+    sourceLocation,
+    splitScope(sourceLocation.pathname)?.scoped ?? '/',
   );
   let blockers: NavigationBlocker[] = [];
   let pendingAction: HistoryNotifyAction | undefined;
+
+  function commit(appLoc: FrameworkLocation, scope: PageScope): void {
+    basePath = scope.base;
+    sourceLocation = appLoc;
+    latestLocation = toHistoryLocation(appLoc, scope.scoped);
+  }
 
   const notify: HistoryNotify = action => {
     subscribers.forEach(subscriber =>
@@ -141,15 +199,24 @@ export function createTanStackHistory(
     if (subscription) {
       return;
     }
-    let isFirstEmission = true;
     subscription = appHistory.location$.subscribe(loc => {
-      if (isFirstEmission) {
-        isFirstEmission = false;
-        latestLocation = toHistoryLocation(loc);
+      // `AppHistoryApi.location` is a stable reference, so an observable that
+      // replays its current value on subscribe is already accounted for.
+      if (loc === sourceLocation) {
         return;
       }
       const action = pendingAction;
       pendingAction = undefined;
+      const scope = splitScope(loc.pathname);
+      if (!scope) {
+        // The app has navigated off this page, so this page is on its way
+        // out and its scoped history has nothing to say about a location
+        // that is not on it. Keeping the last in-scope location is what makes
+        // the split and the re-add exact inverses: an off-page pathname
+        // parked in the scoped location would be re-prefixed by the next
+        // push.
+        return;
+      }
       if (!action) {
         // External navigation (browser back/forward, or a navigate from
         // outside this TanStack-owned page). There's no reliable way to
@@ -157,7 +224,7 @@ export function createTanStackHistory(
         // best-effort local bookkeeping only.
         tsrIndex += 1;
       }
-      latestLocation = toHistoryLocation(loc);
+      commit(loc, scope);
       notify(action ?? { type: 'GO', index: 0 });
     });
   };
@@ -175,8 +242,14 @@ export function createTanStackHistory(
     // above (if attached) has already fired and consumed pendingAction.
     // Resyncing here is a no-op for that case, and covers the case where no
     // subscriber is attached yet.
-    latestLocation = toHistoryLocation(readCurrentAppLocation());
     pendingAction = undefined;
+    const loc = appHistory.location;
+    if (loc !== sourceLocation) {
+      const scope = splitScope(loc.pathname);
+      if (scope) {
+        commit(loc, scope);
+      }
+    }
   };
 
   const navigateThroughAppHistory = (
@@ -212,7 +285,7 @@ export function createTanStackHistory(
       // eslint-disable-next-line no-console
       console.warn(
         '[createTanStackHistory] history.go()/back()/forward() are not ' +
-          'supported by the framework app history; use the browser\u2019s ' +
+          'supported by the framework app history; use the browser’s ' +
           'own back/forward instead.',
       );
     }

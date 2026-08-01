@@ -9,21 +9,32 @@ To play with it, open a terminal and run the command: `yarn start`
 ## NFS routing demo
 
 Three live sibling pages demo different page router adapters (RFC
-[#33603](https://github.com/backstage/backstage/issues/33603)), each attached
-via `PageRouterBlueprint`:
+[#33603](https://github.com/backstage/backstage/issues/33603)). Each page is
+hosted by a different routing library, and each tab proves a combination the
+others do not:
 
-| Path                         | Page router adapter                         |
-| ---------------------------- | ------------------------------------------- |
-| `/nfs-routing-demo`          | React Router v6 (app default)               |
-| `/nfs-routing-demo-v7`       | `@backstage/plugin-react-router-v7-adapter` |
-| `/nfs-routing-demo-tanstack` | `@backstage/plugin-tanstack-router-adapter` |
+| Page (host adapter)                            | Tab         | Combination proved                                     |
+| ---------------------------------------------- | ----------- | ------------------------------------------------------ |
+| `/nfs-routing-demo` (React Router v6, default) | `nested-v6` | React Router v6 nested inside React Router v6          |
+|                                                | `tanstack`  | a TanStack sub-page inside a React Router v6 page      |
+|                                                | `deep-link` | links resolved three segments below the page base      |
+| `/nfs-routing-demo-tanstack` (TanStack Router) | `tanstack`  | TanStack building the tab route tree, and a nested one |
+|                                                | `v6-guest`  | a React Router v6 sub-page inside a TanStack page      |
+| `/nfs-routing-demo-v7` (React Router v7)       | `v6-guest`  | React Router v6 and v7 route trees in the same app     |
+|                                                | `v7-only`   | framework chrome with no React Router v6 in context    |
 
-The v6 and v7 pages share the same tabbed sub-page structure (built with
-`SubPageBlueprint`), proving `PageBlueprint`'s native React Router `<Routes>`
-composition works unchanged under either adapter. TanStack Router fully owns
-its own route tree and has no opaque-children bridge for that tabbed
-structure, so its sibling page renders single content instead. Each page
-attaches its adapter individually — there is **no** app-wide default router
-swap. See
+`PageBlueprint` hands sub-pages to the active adapter as data rather than as a
+compiled route tree, so each adapter builds the tree with its own routing
+library — including TanStack Router, which could not host a tabbed page at all
+while the framework was passing down a React Router `<Routes>` tree. A sub-page
+that attaches its own `router` input runs its content under that adapter; one
+that does not falls back to the app-plugin default (React Router v6), which is
+how the TanStack and v7 pages end up hosting a v6 guest.
+
+Every panel prints the resolved app-absolute URL and the resolved `href` of
+each link it renders, so a doubled base path (`/page/page/sub`) is visible on
+screen rather than only in devtools. Each page attaches its adapter
+individually — there is **no** app-wide default router swap. See
 [`src/examples/nfsRoutingDemo.tsx`](./src/examples/nfsRoutingDemo.tsx) for the
-shared panel components and the per-page `PageRouterBlueprint` wiring.
+panel components and the per-page and per-sub-page `PageRouterBlueprint`
+wiring.

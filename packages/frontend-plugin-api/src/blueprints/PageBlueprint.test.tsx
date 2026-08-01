@@ -26,7 +26,12 @@ import {
   createExtensionInput,
 } from '../wiring';
 import { screen, waitFor } from '@testing-library/react';
+import { ReactNode } from 'react';
 import { SubPageBlueprint } from './SubPageBlueprint';
+import { PageRouterBlueprint } from './PageRouterBlueprint';
+import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
+import { appHistoryApiRef } from '../routing/AppHistoryApi';
+import { useApi } from '../apis/system';
 
 describe('PageBlueprint', () => {
   const mockRouteRef = createRouteRef();
@@ -351,6 +356,82 @@ describe('PageBlueprint', () => {
     await waitFor(() =>
       expect(screen.getByTestId('info-page')).toBeInTheDocument(),
     );
+  });
+
+  it('should hand sub-pages to the router adapter as data, not as a route tree', async () => {
+    const received: Array<{
+      paths: string[];
+      labels: string[];
+      indexPath?: string;
+      children: ReactNode;
+    }> = [];
+
+    // A deliberately non-React-Router adapter: it matches on the raw strings
+    // the framework handed it. If the framework were still composing a
+    // <Routes> tree, there would be nothing here for it to route.
+    const RecordingRouter: PageRouterComponent = ({
+      basePath,
+      subPages = [],
+      indexPath,
+      children,
+    }) => {
+      const { pathname } = useApi(appHistoryApiRef).location;
+      received.push({
+        paths: subPages.map(subPage => subPage.path),
+        labels: subPages.map(subPage => subPage.label),
+        indexPath,
+        children,
+      });
+      const active =
+        subPages.find(subPage => pathname === `${basePath}/${subPage.path}`) ??
+        subPages.find(subPage => subPage.path === indexPath);
+      return <div data-testid="recording-router">{active?.element}</div>;
+    };
+
+    const parentPage = PageBlueprint.make({
+      params: { path: '/recorded', title: 'Recorded' },
+    });
+    const adapter = PageRouterBlueprint.make({
+      name: 'recording',
+      attachTo: { id: 'page:test', input: 'router' },
+      params: { component: RecordingRouter },
+    });
+    const overviewSubPage = SubPageBlueprint.make({
+      name: 'overview',
+      params: {
+        path: 'overview',
+        title: 'Overview',
+        loader: async () => <div data-testid="overview">Overview</div>,
+      },
+    });
+    const settingsSubPage = SubPageBlueprint.make({
+      name: 'settings',
+      params: {
+        path: 'settings',
+        title: 'Settings',
+        loader: async () => <div data-testid="settings">Settings</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [parentPage, adapter, overviewSubPage, settingsSubPage],
+      initialRouteEntries: ['/recorded/settings'],
+    });
+
+    expect(await screen.findByTestId('settings')).toBeInTheDocument();
+
+    // Author-written paths, with no React Router splat applied by the
+    // framework, and no opaque children to fall back on.
+    expect(received[0].paths).toEqual(['overview', 'settings']);
+    expect(received[0].labels).toEqual(['Overview', 'Settings']);
+    expect(received[0].indexPath).toBe('overview');
+    expect(received[0].children).toBeUndefined();
+
+    // Breadcrumb wrapping stays framework-side: the adapter rendered nothing
+    // but the element it was given, and the sub-page breadcrumb is present.
+    const breadcrumbs = screen.getByRole('navigation', { name: 'Breadcrumbs' });
+    expect(breadcrumbs).toHaveTextContent('Recorded');
+    expect(breadcrumbs).toHaveTextContent('Settings');
   });
 
   it('should redirect to the first subpage on the parent index route', async () => {

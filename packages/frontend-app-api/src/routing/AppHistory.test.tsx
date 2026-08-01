@@ -37,6 +37,43 @@ describe('AppHistory', () => {
     expect(window.location.pathname).toBe('/catalog/entity/foo');
   });
 
+  it('should expose a referentially stable current location', () => {
+    // The accessor backs useSyncExternalStore's getSnapshot, which loops
+    // forever if repeated reads return different references.
+    expect(history.location).toEqual({
+      pathname: '/',
+      search: '',
+      hash: '',
+      state: undefined,
+    });
+    expect(history.location).toBe(history.location);
+
+    const before = history.location;
+    history.navigate('/catalog?kind=component#top');
+
+    expect(history.location).not.toBe(before);
+    expect(history.location).toEqual({
+      pathname: '/catalog',
+      search: '?kind=component',
+      hash: '#top',
+      state: undefined,
+    });
+
+    // A redundant navigation must not mint a new reference, otherwise every
+    // subscriber re-renders for a location that did not change.
+    const unchanged = history.location;
+    history.navigate('/catalog?kind=component#top');
+    expect(history.location).toBe(unchanged);
+
+    // Subscribers observe exactly what the accessor reports.
+    const seen: unknown[] = [];
+    const sub = history.location$.subscribe(loc => seen.push(loc));
+    expect(seen[0]).toBe(history.location);
+    history.navigate('/other');
+    expect(seen[1]).toBe(history.location);
+    sub.unsubscribe();
+  });
+
   describe('with memory history backend', () => {
     let memoryHistory: AppHistory;
     let memoryBackend: ReturnType<typeof createMemoryHistoryBackend>;
@@ -177,16 +214,26 @@ describe('AppHistory', () => {
     replaceSpy.mockRestore();
   });
 
-  it('should throw for absolute URLs', () => {
-    expect(() => history.navigate('https://evil.com/path')).toThrow(
-      'does not support absolute or protocol-relative URLs',
-    );
-  });
+  it('should throw for absolute and protocol-relative URLs, but not for URLs inside the query or hash', () => {
+    const rejected = 'does not support absolute or protocol-relative URLs';
+    expect(() => history.navigate('https://evil.com/path')).toThrow(rejected);
+    expect(() => history.navigate('//evil.com/path')).toThrow(rejected);
+    expect(() => history.navigate('mailto:x@y.z')).toThrow(rejected);
 
-  it('should throw for protocol-relative URLs', () => {
-    expect(() => history.navigate('//evil.com/path')).toThrow(
-      'does not support absolute or protocol-relative URLs',
-    );
+    // Only the path may carry a scheme. A query string or fragment that
+    // happens to contain a URL is an ordinary app-relative target - links
+    // such as /search?query=<url> are a common pattern.
+    history.navigate('/search?query=https://example.com');
+    expect(window.location.pathname).toBe('/search');
+    expect(window.location.search).toBe('?query=https://example.com');
+
+    history.navigate('/x#see-https://y');
+    expect(window.location.pathname).toBe('/x');
+    expect(window.location.hash).toBe('#see-https://y');
+
+    history.navigate('/a?b=//c');
+    expect(window.location.pathname).toBe('/a');
+    expect(window.location.search).toBe('?b=//c');
   });
 
   it('should not emit after dispose', () => {
@@ -197,6 +244,33 @@ describe('AppHistory', () => {
     window.history.pushState(null, '', '/new');
     window.dispatchEvent(new PopStateEvent('popstate'));
     expect(emissions.length).toBe(countAfterSubscribe);
+  });
+
+  it('should release its popstate listener on dispose', () => {
+    // Each instance attaches exactly one listener to the window, and dispose
+    // is the only thing that takes it back off again - repeated app creation
+    // (tests, HMR) leaks a listener for every instance left undisposed.
+    const addSpy = jest.spyOn(window, 'addEventListener');
+    const removeSpy = jest.spyOn(window, 'removeEventListener');
+
+    const instances = [createAppHistory(), createAppHistory()];
+    const added = addSpy.mock.calls.filter(([type]) => type === 'popstate');
+    expect(added).toHaveLength(2);
+
+    for (const instance of instances) {
+      instance.dispose();
+      instance.dispose(); // dispose is idempotent
+    }
+
+    const removed = removeSpy.mock.calls.filter(
+      ([type]) => type === 'popstate',
+    );
+    expect(removed.map(([, listener]) => listener)).toEqual(
+      added.map(([, listener]) => listener),
+    );
+
+    addSpy.mockRestore();
+    removeSpy.mockRestore();
   });
 
   it('should support observer object with next method', () => {
@@ -260,8 +334,25 @@ describe('AppHistory', () => {
       expect(locations).not.toContain('-extra/page');
     });
 
-    it('should prepend basename in createHref', () => {
+    it('should prepend basename in createHref, but pass through targets that are not app-relative', () => {
       expect(bnHistory.createHref('/catalog')).toBe('/backstage/catalog');
+      expect(bnHistory.createHref('/search?query=https://example.com')).toBe(
+        '/backstage/search?query=https://example.com',
+      );
+
+      // Prefixing these would silently turn an external link into a broken
+      // internal one, and createHref runs during render where throwing is not
+      // an option - so they are returned untouched.
+      expect(bnHistory.createHref('https://example.com/evil')).toBe(
+        'https://example.com/evil',
+      );
+      expect(bnHistory.createHref('//example.com/evil')).toBe(
+        '//example.com/evil',
+      );
+      expect(bnHistory.createHref('mailto:support@example.com')).toBe(
+        'mailto:support@example.com',
+      );
+      expect(bnHistory.createHref('tel:+15551234')).toBe('tel:+15551234');
     });
   });
 });

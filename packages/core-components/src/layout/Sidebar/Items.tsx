@@ -34,7 +34,6 @@ import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import classnames from 'classnames';
-import type { Location } from 'history';
 
 import {
   ComponentProps,
@@ -54,6 +53,13 @@ import {
 } from 'react';
 
 import { Link, NavLinkProps, resolvePath } from 'react-router-dom';
+import {
+  useAppBasePath,
+  useAppLocation,
+  useAppResolvedPath,
+  type AppLocation,
+} from '@internal/frontend';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 import {
   SidebarConfig,
@@ -65,8 +71,6 @@ import DoubleArrowRight from './icons/DoubleArrowRight';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
 import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
-import { useChromePathname } from './useChromePathname';
-import { useChromeResolvedPath } from './useChromeResolvedPath';
 import { isLocationMatch } from './utils';
 import Button from '@material-ui/core/Button';
 
@@ -235,17 +239,24 @@ function useMemoStyles(sidebarConfig: SidebarConfig) {
  * Evaluates the routes of the SubmenuItems & nested DropdownItems.
  * The reevaluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization.
  *
+ * Targets are resolved per element inside a memoized callback, so they cannot
+ * each call `useAppResolvedPath`; `basePath` carries the same resolution base
+ * that hook would use.
+ *
  * @param submenu SidebarSubmenu component
  * @param location Location
+ * @param basePath Base path relative targets resolve against
  * @returns boolean
  */
 const useLocationMatch = (
   submenu: ReactElement<SidebarSubmenuProps>,
-  location: Location,
+  location: AppLocation,
+  basePath: string,
 ): boolean =>
   useElementFilter(
     submenu.props.children,
     elements => {
+      const base = basePath || '/';
       let active = false;
       elements
         .getElements()
@@ -260,19 +271,20 @@ const useLocationMatch = (
                 dropdownItems.forEach(
                   ({ to: _to }) =>
                     (active =
-                      active || isLocationMatch(location, resolvePath(_to))),
+                      active ||
+                      isLocationMatch(location, resolvePath(_to, base))),
                 );
                 return;
               }
               if (to) {
-                active = isLocationMatch(location, resolvePath(to));
+                active = isLocationMatch(location, resolvePath(to, base));
               }
             }
           },
         );
       return active;
     },
-    [location.pathname],
+    [location.pathname, basePath],
   );
 
 type SidebarItemBaseProps = {
@@ -344,9 +356,9 @@ export const WorkaroundNavLink = forwardRef<
   },
   ref,
 ) {
-  // Prefer framework location under NFS; RR remains for OFS only.
-  let locationPathname = useChromePathname();
-  let { pathname: toPathname } = useChromeResolvedPath(to);
+  const appHistory = useOptionalAppHistory();
+  let { pathname: locationPathname } = useAppLocation(appHistory);
+  let { pathname: toPathname } = useAppResolvedPath(appHistory, to);
 
   if (!caseSensitive) {
     locationPathname = locationPathname.toLocaleLowerCase('en-US');
@@ -460,7 +472,8 @@ const SidebarItemBase = forwardRef<
   };
 
   const analyticsApi = useAnalytics();
-  const { pathname: to } = useChromeResolvedPath(
+  const { pathname: to } = useAppResolvedPath(
+    useOptionalAppHistory(),
     !isButtonItem(props) && props.to ? props.to : '',
   );
 
@@ -515,9 +528,8 @@ const SidebarItemWithSubmenu = ({
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
   const [isHoveredOn, setIsHoveredOn] = useState(false);
-  const pathname = useChromePathname();
-  const location = { pathname } as Location;
-  const isActive = useLocationMatch(children, location);
+  const location = useAppLocation(useOptionalAppHistory());
+  const isActive = useLocationMatch(children, location, useAppBasePath());
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { compilePath, routePriority } from './routePattern';
+import { matchPath, routePriority } from './routePattern';
 
 /**
  * Result of matching a pathname against a {@link RouteTable}.
- *
- * @public
  */
 export interface RouteTableMatch {
   /**
@@ -35,26 +33,23 @@ export interface RouteTableMatch {
   basePath: string;
 }
 
-type CompiledRoute = {
+type RankedRoute = {
   path: string;
   priority: number;
-  matcher?: RegExp;
 };
 
 /**
  * Provides URL matching for top-level page routing.
  *
- * Routes are sorted by specificity (static segments over params over splats).
- * The root path `/` acts as a catch-all.
+ * Routes are sorted by specificity (static segments over params over splats)
+ * and then matched as path prefixes. The root path `/` acts as a catch-all.
  *
  * {@link RouteTable.match} returns both the registered pattern (for page
  * lookup) and a concrete `basePath` (the matched URL prefix) for the page's
  * `PageMount`.
- *
- * @public
  */
 export class RouteTable {
-  private readonly paths: CompiledRoute[];
+  private readonly paths: RankedRoute[];
 
   /**
    * Creates a route table from the given registered page base paths.
@@ -75,11 +70,7 @@ export class RouteTable {
     }
     // Deduplicate — first registration wins (order preserved before sort)
     this.paths = [...new Set(basePaths)]
-      .map(path => ({
-        path,
-        priority: routePriority(path),
-        matcher: path === '/' ? undefined : compilePath(path, false).regexp,
-      }))
+      .map(path => ({ path, priority: routePriority(path) }))
       .sort((a, b) => b.priority - a.priority || b.path.length - a.path.length);
   }
 
@@ -87,11 +78,16 @@ export class RouteTable {
    * Matches `pathname` against registered paths and returns the best match.
    */
   match(pathname: string): RouteTableMatch | undefined {
-    const matched = this.paths.find(({ path, matcher }) =>
-      path === '/'
-        ? true // root catches everything
-        : matcher?.test(pathname),
-    );
+    let matched: RouteTableMatch | undefined;
+    for (const { path } of this.paths) {
+      // A prefix match of `/` matches everything, so the root is the catch-all
+      // without needing to be special cased here.
+      const result = matchPath(path, pathname, false);
+      if (result) {
+        matched = { path, basePath: result.matchedPathname };
+        break;
+      }
+    }
 
     if (!matched) {
       return undefined;
@@ -111,16 +107,6 @@ export class RouteTable {
       );
     }
 
-    if (matched.path === '/') {
-      return { path: '/', basePath: '/' };
-    }
-
-    const matchResult = matched.matcher!.exec(pathname);
-    const matchedPrefix = matchResult?.[0]?.replace(/\/$/, '') || matched.path;
-
-    return {
-      path: matched.path,
-      basePath: matchedPrefix,
-    };
+    return matched;
   }
 }

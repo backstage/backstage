@@ -97,6 +97,7 @@
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.0.0",

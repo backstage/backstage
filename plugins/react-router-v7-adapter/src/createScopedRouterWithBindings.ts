@@ -17,7 +17,6 @@
 import {
   createElement,
   useMemo,
-  useRef,
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
@@ -33,6 +32,13 @@ import type {
   ScopedRouterWithBindingsResult,
 } from './types';
 
+/** The neutral "not on this page" RouteContext, shared so it stays stable. */
+const EMPTY_ROUTE_CONTEXT = {
+  outlet: null,
+  matches: [] as any[],
+  isDataRoute: false,
+};
+
 function toAdapterLocation(loc: FrameworkLocation): AdapterLocation {
   return {
     pathname: loc.pathname,
@@ -43,20 +49,33 @@ function toAdapterLocation(loc: FrameworkLocation): AdapterLocation {
   };
 }
 
+function toPath(to: AdapterTo, currentPathname: string): string {
+  if (typeof to === 'string') {
+    return to;
+  }
+  // Use the current pathname when To.pathname is undefined (e.g.
+  // useSearchParams updates only the search params).
+  const { pathname = currentPathname, search = '', hash = '' } = to;
+  return `${pathname}${search}${hash}`;
+}
+
 /**
- * Creates a React Router context adapter bound to the framework's
+ * Creates a React Router context adapter projected from the framework's
  * {@link AppHistoryApi}, using version-specific APIs supplied by the caller.
  *
  * Injects `UNSAFE_*` contexts directly (never nests `<Router>` / writes
- * `window.history` via push/replace). Navigation is delegated to
- * `appHistory.navigate` with app-absolute paths — `AppHistoryApi.location$`
- * already emits app-absolute (basename-stripped) locations, so no
- * scoped/app-absolute translation is needed here.
+ * `window.history` via push/replace) — `AppHistoryApi` remains the sole
+ * history authority. The location fed into React Router context is the real
+ * app-absolute location (not translated/scoped), so React Router's own
+ * relative-path resolution produces app-absolute targets that are handed to
+ * `appHistory.navigate` unchanged.
  *
- * `basePath` + `routePattern` are used only to populate the injected
- * `UNSAFE_RouteContext` (so `useParams` and relative-Link `pathnameBase`
- * resolve the same way they did under a root router) — they never affect
- * the location handed to React Router itself.
+ * The injected `UNSAFE_RouteContext` reproduces the match a real
+ * `<Route path={`${routePattern}/*`}>` would have produced for the current
+ * location, so `useParams`, relative `Link` targets and descendant `<Routes>`
+ * behave exactly as they do under a root router of the same React Router
+ * version. It is derived by matching, never from a separately supplied
+ * `basePath`, so it cannot drift out of step with the location it describes.
  *
  * `go` is not supported by `AppHistoryApi` (there is a single, real browser
  * history — use browser back/forward). Calling `navigate(-1)` warns and is a
@@ -69,50 +88,45 @@ export function createScopedRouterWithBindings(
   appHistory: AppHistoryApi,
   options: CreateScopedRouterWithBindingsOptions,
 ): ScopedRouterWithBindingsResult {
-  const { basePathRef, routePattern, navigationContextExtras = {} } = options;
+  const { routePattern, navigationContextExtras = {} } = options;
+
+  const normalizedPattern =
+    routePattern === '/' ? '/' : routePattern.replace(/\/$/, '');
+  const splatPattern =
+    normalizedPattern === '/' ? '/*' : `${normalizedPattern}/*`;
 
   // useSyncExternalStore requires getSnapshot() to return a referentially
   // stable value between store events, or it will loop forever re-rendering.
-  // Track the latest location in a plain closure variable (updated only by
-  // the subscription callback below), mirroring how AppHistoryApi itself is
+  // Track the latest location in plain closure variables (updated only by the
+  // subscription callback below), mirroring how AppHistoryApi itself is
   // implemented, rather than recomputing a fresh object on every call.
-  let latestLocation: AdapterLocation = toAdapterLocation(
-    readCurrentAppLocation(),
-  );
+  let sourceLocation: FrameworkLocation = appHistory.location;
+  let latestLocation: AdapterLocation = toAdapterLocation(sourceLocation);
   const listeners = new Set<() => void>();
   let subscription: { unsubscribe(): void } | undefined;
 
-  function readCurrentAppLocation(): FrameworkLocation {
-    let current!: FrameworkLocation;
-    const sub = appHistory.location$.subscribe(loc => {
-      current = loc;
-    });
-    sub.unsubscribe();
-    return current;
-  }
-
-  function subscribeToAppHistory(): void {
-    if (subscription) return;
-    subscription = appHistory.location$.subscribe(loc => {
-      latestLocation = toAdapterLocation(loc);
-      for (const listener of listeners) {
-        listener();
-      }
-    });
-  }
-
-  function unsubscribeFromAppHistory(): void {
-    subscription?.unsubscribe();
-    subscription = undefined;
-  }
-
   function subscribe(listener: () => void): () => void {
     listeners.add(listener);
-    subscribeToAppHistory();
+    if (!subscription) {
+      subscription = appHistory.location$.subscribe(loc => {
+        // `AppHistoryApi.location` is a stable reference, so an observable
+        // that replays its current value on subscribe is a no-op here rather
+        // than a spurious re-render with an equal-but-new location object.
+        if (loc === sourceLocation) {
+          return;
+        }
+        sourceLocation = loc;
+        latestLocation = toAdapterLocation(loc);
+        for (const each of listeners) {
+          each();
+        }
+      });
+    }
     return () => {
       listeners.delete(listener);
       if (listeners.size === 0) {
-        unsubscribeFromAppHistory();
+        subscription?.unsubscribe();
+        subscription = undefined;
       }
     };
   }
@@ -122,13 +136,11 @@ export function createScopedRouterWithBindings(
   }
 
   function buildRouteMatches(location: AdapterLocation) {
-    const basePath = basePathRef.current;
-    const normalizedPattern =
-      routePattern === '/' ? '/' : routePattern.replace(/\/$/, '');
-    const splatPattern =
-      normalizedPattern === '/' ? '/*' : `${normalizedPattern}/*`;
-
-    // Prefer a splat match so in-plugin nested Routes / useParams['*'] work.
+    // Prefer a splat match so in-plugin nested Routes / useParams['*'] work,
+    // and so descendant `<Routes>` see a parent route path that ends in `*`.
+    // Fall back to an exact-prefix match so relative Links from the page root
+    // (e.g. `/catalog` + `./create`) resolve against pathnameBase `/catalog`
+    // rather than treating the last segment as a file name.
     const match =
       bindings.matchPath(
         { path: splatPattern, end: false },
@@ -139,15 +151,24 @@ export function createScopedRouterWithBindings(
         location.pathname,
       );
 
+    // A location outside the page's own pattern only happens while the app is
+    // navigating away, i.e. for the render just before this page unmounts. A
+    // real router would not have rendered the page at all, so the neutral
+    // no-route context is the honest answer — inventing a match here is what
+    // makes a stale prefix leak back out through relative navigation.
+    if (!match) {
+      return EMPTY_ROUTE_CONTEXT;
+    }
+
     return {
       outlet: null,
       matches: [
         {
-          params: match?.params ?? {},
-          pathname: basePath,
-          pathnameBase: basePath,
+          params: match.params,
+          pathname: match.pathname,
+          pathnameBase: match.pathnameBase,
           route: {
-            path: routePattern,
+            path: match.pattern.path,
             caseSensitive: false,
             children: undefined,
             element: null,
@@ -162,8 +183,6 @@ export function createScopedRouterWithBindings(
 
   function ScopedRouter({ children }: { children: ReactNode }) {
     const location = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
-    const locationRef = useRef(location);
-    locationRef.current = location;
 
     const locationContextValue = useMemo(
       () => ({ location, navigationType: bindings.NavigationType.Pop }),
@@ -184,20 +203,30 @@ export function createScopedRouterWithBindings(
             // eslint-disable-next-line no-console
             console.warn(
               '[createScopedRouter] navigator.go() is not supported by the ' +
-                'framework app history; use browser back/forward instead.',
+                'framework app history; use the browser’s own ' +
+                'back/forward instead.',
             );
           }
         },
+        // React Router resolves relative `to` targets against the pathname we
+        // supply via LocationContext (the real app-absolute pathname), so the
+        // resolved path handed to push/replace is already app-absolute — no
+        // further translation needed.
         push(to: AdapterTo, state?: any): void {
-          const path = toPath(to, locationRef.current.pathname);
-          appHistory.navigate(path, { replace: false, state });
+          appHistory.navigate(toPath(to, latestLocation.pathname), {
+            replace: false,
+            state,
+          });
         },
         replace(to: AdapterTo, state?: any): void {
-          const path = toPath(to, locationRef.current.pathname);
-          appHistory.navigate(path, { replace: true, state });
+          appHistory.navigate(toPath(to, latestLocation.pathname), {
+            replace: true,
+            state,
+          });
         },
       }),
-      // locationRef / appHistory are stable for this scoped router instance
+      // latestLocation / appHistory / options are stable for this scoped
+      // router instance
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [],
     );
@@ -240,14 +269,4 @@ export function createScopedRouterWithBindings(
       bindings.useParams() as T,
     useSearchParams: (...args: any[]) => bindings.useSearchParams(...args),
   };
-}
-
-function toPath(to: AdapterTo, currentPathname: string): string {
-  if (typeof to === 'string') {
-    return to;
-  }
-  // Use current pathname when To.pathname is undefined (e.g., useSearchParams
-  // updates only search params without specifying a pathname)
-  const { pathname = currentPathname, search = '', hash = '' } = to;
-  return `${pathname}${search}${hash}`;
 }

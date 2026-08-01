@@ -114,6 +114,40 @@ describe('matchRouteRefs', () => {
     expect(result![2].pathname).toBe('/grandparent/my-x/parent/child');
   });
 
+  it('should join paths without emitting duplicate slashes under a root layout', () => {
+    const rootRef = createRouteRef();
+    const childRef = createRouteRef();
+
+    const routes: BackstageRouteObject[] = [
+      {
+        ...rest,
+        path: '',
+        routeRefs: new Set([rootRef]),
+        children: [
+          { ...rest, path: 'scaffolder', routeRefs: new Set([childRef]) },
+        ],
+      },
+    ];
+
+    const result = matchRouteRefs(routes, '/scaffolder');
+    expect(result).not.toBeNull();
+    expect(result!.map(m => m.pathname)).toEqual(['/', '/scaffolder']);
+  });
+
+  it('should match case-insensitively unless the route opts in to caseSensitive', () => {
+    const routes: BackstageRouteObject[] = [{ ...rest, path: 'catalog' }];
+
+    const result = matchRouteRefs(routes, '/CATALOG');
+    expect(result).not.toBeNull();
+    expect(result![0].pathname).toBe('/CATALOG');
+
+    const sensitive: BackstageRouteObject[] = [
+      { ...rest, caseSensitive: true, path: 'catalog' },
+    ];
+    expect(matchRouteRefs(sensitive, '/CATALOG')).toBeNull();
+    expect(matchRouteRefs(sensitive, '/catalog')).not.toBeNull();
+  });
+
   it('should return null for unmatched paths', () => {
     const routes: BackstageRouteObject[] = [{ ...rest, path: 'catalog' }];
 

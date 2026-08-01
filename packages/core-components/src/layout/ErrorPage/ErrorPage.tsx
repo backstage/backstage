@@ -19,8 +19,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { ReactNode } from 'react';
 import { Link } from '../../components/Link';
+import { useAppGoBack } from '@internal/frontend';
 import { useSupportConfig } from '../../hooks';
-import { useChromeGoBack } from '../../hooks/useChromeGoBack';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 import { MicDrop } from './MicDrop';
 import { StackDetails } from './StackDetails';
 import { coreComponentsTranslationRef } from '../../translation';
@@ -74,7 +75,7 @@ export function ErrorPage(props: IErrorPageProps) {
     stack,
   } = props;
   const classes = useStyles();
-  const goBack = useChromeGoBack();
+  const goBack = useAppGoBack(useOptionalAppHistory());
   const support = useSupportConfig();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 

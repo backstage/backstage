@@ -15,7 +15,21 @@
  */
 
 /**
- * Determines if a link is external.
+ * Determines if a link is external: an absolute URL
+ * (`https://example.com/x`), a protocol-relative URL (`//example.com/x`), or
+ * an opaque scheme such as `mailto:` or `tel:`.
+ *
+ * Only the path portion is inspected — the part before the first `?` or `#`.
+ * A query string or fragment may legitimately carry a URL of its own, so
+ * `/search?query=https://example.com` is an ordinary app-relative link.
+ *
+ * This is deliberately a copy of `isExternalTarget` in `@internal/frontend`,
+ * which the Backstage frontend framework uses for the same decision. BUI is a
+ * standalone design system with no dependency on the frontend framework, so it
+ * cannot import that helper — but the two must answer identically, or a link
+ * routes internally in one layer and escapes the app in the other. Both are
+ * pinned to the same table of cases; see `linkUtils.test.ts`.
+ *
  * @param href - The href of the link.
  * @returns True if the link is external, false otherwise.
  * @internal
@@ -23,22 +37,8 @@
 export function isExternalLink(href?: string): boolean {
   if (!href) return false;
 
-  // Check if it's an absolute URL with protocol
-  if (href.startsWith('http://') || href.startsWith('https://')) {
-    return true;
-  }
-
-  // Check if it's a protocol-relative URL
-  if (href.startsWith('//')) {
-    return true;
-  }
-
-  // Check if it's a mailto: or tel: link
-  if (href.startsWith('mailto:') || href.startsWith('tel:')) {
-    return true;
-  }
-
-  return false;
+  const [path] = href.split(/[?#]/);
+  return path.startsWith('//') || /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(path);
 }
 
 /**

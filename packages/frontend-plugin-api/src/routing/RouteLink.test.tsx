@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -33,19 +33,46 @@ describe('RouteLink', () => {
   });
   const navigate = jest.fn();
 
+  const widgetLink = (
+    <RouteLink
+      routeRef={catalogRouteRef}
+      params={{
+        namespace: 'default',
+        kind: 'component',
+        name: 'widget',
+      }}
+    >
+      Widget
+    </RouteLink>
+  );
+
+  const routeResolution = createMockRouteResolutionApi({
+    routes: [[catalogRouteRef, '/catalog/:namespace/:kind/:name']],
+  });
+
+  // The app is deployed under a sub-path, so hrefs have to carry the basename
+  // even though route refs resolve to app-relative paths.
   const wrapper = ({ children }: PropsWithChildren<{}>) => (
     <TestApiProvider
       apis={[
+        [routeResolutionApiRef, routeResolution],
         [
-          routeResolutionApiRef,
-          createMockRouteResolutionApi({
-            routes: [[catalogRouteRef, '/catalog/:namespace/:kind/:name']],
-          }),
+          appHistoryApiRef,
+          createMockAppHistory({ navigate, basename: '/backstage' }),
         ],
-        [appHistoryApiRef, createMockAppHistory({ navigate })],
       ]}
     >
       <MemoryRouter>{children}</MemoryRouter>
+    </TestApiProvider>
+  );
+
+  // Old frontend system: no app history is registered, so the basename comes
+  // from the router instead.
+  const legacyWrapper = ({ children }: PropsWithChildren<{}>) => (
+    <TestApiProvider apis={[[routeResolutionApiRef, routeResolution]]}>
+      <MemoryRouter basename="/backstage" initialEntries={['/backstage']}>
+        {children}
+      </MemoryRouter>
     </TestApiProvider>
   );
 
@@ -54,25 +81,19 @@ describe('RouteLink', () => {
   });
 
   it('renders an href for the resolved route and navigates via the app history', () => {
-    render(
-      <RouteLink
-        routeRef={catalogRouteRef}
-        params={{
-          namespace: 'default',
-          kind: 'component',
-          name: 'widget',
-        }}
-      >
-        Widget
-      </RouteLink>,
-      { wrapper },
-    );
+    render(widgetLink, { wrapper });
 
     const link = screen.getByRole('link', { name: 'Widget' });
-    expect(link).toHaveAttribute('href', '/catalog/default/component/widget');
+    // The href is what the browser would follow, so it includes the deploy
+    // basename ...
+    expect(link).toHaveAttribute(
+      'href',
+      '/backstage/catalog/default/component/widget',
+    );
 
     fireEvent.click(link);
 
+    // ... while navigate still receives the app-relative path.
     expect(navigate).toHaveBeenCalledWith(
       '/catalog/default/component/widget',
       undefined,
@@ -144,24 +165,34 @@ describe('RouteLink', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
-  it('allows modified clicks to use the native href (no framework navigate)', () => {
-    render(
-      <RouteLink
-        routeRef={catalogRouteRef}
-        params={{
-          namespace: 'default',
-          kind: 'component',
-          name: 'widget',
-        }}
-      >
-        Widget
-      </RouteLink>,
-      { wrapper },
-    );
+  it('leaves a browser-followable href for clicks it does not handle', () => {
+    const { unmount } = render(widgetLink, { wrapper });
 
-    fireEvent.click(screen.getByRole('link', { name: 'Widget' }), {
-      metaKey: true,
-    });
+    // A modified click is left to the browser, which follows the href.
+    const frameworkLink = screen.getByRole('link', { name: 'Widget' });
+    const modifiedClick = createEvent.click(frameworkLink, { metaKey: true });
+    fireEvent(frameworkLink, modifiedClick);
+
     expect(navigate).not.toHaveBeenCalled();
+    expect(modifiedClick.defaultPrevented).toBe(false);
+    expect(frameworkLink).toHaveAttribute(
+      'href',
+      '/backstage/catalog/default/component/widget',
+    );
+    unmount();
+
+    // Same under the old frontend system, where there is no app history to
+    // handle any click at all.
+    render(widgetLink, { wrapper: legacyWrapper });
+    const legacyLink = screen.getByRole('link', { name: 'Widget' });
+    const plainClick = createEvent.click(legacyLink);
+    fireEvent(legacyLink, plainClick);
+
+    expect(navigate).not.toHaveBeenCalled();
+    expect(plainClick.defaultPrevented).toBe(false);
+    expect(legacyLink).toHaveAttribute(
+      'href',
+      '/backstage/catalog/default/component/widget',
+    );
   });
 });

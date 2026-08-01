@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { screen, fireEvent } from '@testing-library/react';
+import { act, screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
   useAnalytics,
@@ -28,6 +28,11 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { Routes, Route, useLocation, Link } from 'react-router-dom';
 import { renderInTestApp } from './renderInTestApp';
+
+function PathProbe() {
+  const { pathname } = useLocation();
+  return <span>Path: {pathname}</span>;
+}
 
 describe('renderInTestApp', () => {
   it('should render the given component in a page', async () => {
@@ -259,14 +264,27 @@ describe('renderInTestApp', () => {
       '/backstage/catalog',
     );
 
-    appHistory.navigate('/catalog');
+    // Driving the store from outside React, so the resulting re-render has to
+    // be wrapped or React warns that state was updated outside act().
+    act(() => {
+      appHistory.navigate('/catalog');
+    });
     expect(await screen.findByText('Path: /catalog')).toBeInTheDocument();
   });
 
-  it('should expose appHistory on the render result', () => {
-    const { appHistory } = renderInTestApp(<div>Hi</div>);
-    expect(appHistory).toBeDefined();
-    expect(typeof appHistory.navigate).toBe('function');
-    expect(typeof appHistory.createHref).toBe('function');
+  it('should expose an appHistory on the render result that drives the app', async () => {
+    const { appHistory } = renderInTestApp(<PathProbe />, {
+      initialRouteEntries: ['/start'],
+    });
+
+    expect(appHistory.location.pathname).toBe('/start');
+    expect(appHistory.createHref('/catalog?q=1')).toBe('/catalog?q=1');
+
+    act(() => {
+      appHistory.navigate('/elsewhere');
+    });
+
+    expect(await screen.findByText('Path: /elsewhere')).toBeInTheDocument();
+    expect(appHistory.location.pathname).toBe('/elsewhere');
   });
 });

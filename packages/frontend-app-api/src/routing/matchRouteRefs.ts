@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
+import { matchPath, routePriority } from '@internal/frontend';
 import { BackstageRouteObject } from './types';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  matchPath,
-  routePriority,
-} from '../../../frontend-plugin-api/src/routing/routePattern';
 
 /** @internal */
 export interface RouteRefMatch {
@@ -37,8 +33,8 @@ export interface RouteRefMatch {
  * Each match's `pathname` is the full accumulated path from root to that node,
  * matching react-router's `matchRoutes` behavior.
  *
- * Path compile / match / priority come from the shared {@link routePattern}
- * module also used by {@link RouteTable}.
+ * Path compile / match / priority come from the shared `routePattern` module
+ * in `@internal/frontend`, which {@link RouteTable} also uses.
  *
  * @internal
  */
@@ -55,8 +51,11 @@ function joinPathSegments(base: string, segment: string): string {
   if (segment === '/') {
     return base || '/';
   }
-  const joined = base + segment;
-  return joined || '/';
+  // The base may already end in a slash and the segment may already start with
+  // one; normalize both so joining never produces a `//`.
+  const trimmedBase = base.replace(/\/$/, '');
+  const prefixedSegment = segment.startsWith('/') ? segment : `/${segment}`;
+  return `${trimmedBase}${prefixedSegment}`;
 }
 
 function pushMatch(
@@ -93,7 +92,12 @@ function matchLeafRoute(
   parentPathname: string,
   matches: RouteRefMatch[],
 ): boolean {
-  const result = matchPath(route.path, remainingPathname, true);
+  const result = matchPath(
+    route.path,
+    remainingPathname,
+    true,
+    route.caseSensitive,
+  );
   if (!result) {
     return false;
   }
@@ -113,7 +117,12 @@ function matchParentRoute(
   parentPathname: string,
   matches: RouteRefMatch[],
 ): boolean {
-  const partialResult = matchPath(route.path, remainingPathname, false);
+  const partialResult = matchPath(
+    route.path,
+    remainingPathname,
+    false,
+    route.caseSensitive,
+  );
   if (!partialResult) {
     return false;
   }
@@ -142,7 +151,12 @@ function matchParentRoute(
 
   // Children didn't match; check if this route itself is an exact match
   matches.length = savedLength;
-  const exactResult = matchPath(route.path, remainingPathname, true);
+  const exactResult = matchPath(
+    route.path,
+    remainingPathname,
+    true,
+    route.caseSensitive,
+  );
   if (!exactResult) {
     return false;
   }

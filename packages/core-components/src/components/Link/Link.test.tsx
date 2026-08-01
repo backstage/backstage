@@ -30,7 +30,7 @@ import {
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-import { PageMountContext, type PageMount } from '@internal/frontend';
+import { PageMountProvider, type PageMount } from '@internal/frontend';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ConfigReader } from '@backstage/config';
@@ -228,11 +228,11 @@ describe('<Link />', () => {
     it('escalates cross-plugin absolute targets via the app history', () => {
       render(
         <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
-          <PageMountContext.Provider value={scopedContract}>
+          <PageMountProvider mount={scopedContract}>
             <MemoryRouter>
               <Link to="/catalog/default/component/widget">Entity</Link>
             </MemoryRouter>
-          </PageMountContext.Provider>
+          </PageMountProvider>
         </TestApiProvider>,
       );
 
@@ -240,6 +240,33 @@ describe('<Link />', () => {
       expect(navigate).toHaveBeenCalledWith(
         '/catalog/default/component/widget',
       );
+    });
+
+    it('renders an href that includes the app deploy basename', () => {
+      const deployedAppHistory = createMockAppHistory({
+        navigate,
+        basename: '/backstage',
+      });
+
+      render(
+        <TestApiProvider apis={[[appHistoryApiRef, deployedAppHistory]]}>
+          <PageMountProvider mount={scopedContract}>
+            <MemoryRouter>
+              <Link to="/catalog?filter=owned">Catalog</Link>
+            </MemoryRouter>
+          </PageMountProvider>
+        </TestApiProvider>,
+      );
+
+      // Middle-click, "open in new tab" and crawlers only ever see the href,
+      // so it has to carry the basename even though the click is intercepted.
+      expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
+        'href',
+        '/backstage/catalog?filter=owned',
+      );
+
+      fireEvent.click(screen.getByRole('link', { name: 'Catalog' }));
+      expect(navigate).toHaveBeenCalledWith('/catalog?filter=owned');
     });
 
     it('does not escalate without NFS signals (OFS fallback)', async () => {

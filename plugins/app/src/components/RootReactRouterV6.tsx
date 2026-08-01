@@ -27,9 +27,11 @@ import { RootHistoryRouter } from '../../../../packages/frontend-app-api/src/rou
  * The app history remains the history authority — this never owns
  * `window.history` via push/replace.
  *
- * New chrome should use the app history directly (`useFrameworkLocation`,
- * `useChromePathname`, `RouteLink`, `useNavigateRouteRef`) so that this
- * projection can eventually be dropped.
+ * New chrome should read the app history directly instead — `appHistoryApiRef`
+ * for the live location, and `RouteLink` / `useNavigateRouteRef` for
+ * navigation — so that this projection can eventually be dropped. Chrome that
+ * still has to work under both frontend systems goes through the `useApp*`
+ * helpers in `@internal/frontend`, which pick the authority for it.
  */
 export function RootReactRouterV6(props: { children: ReactNode }) {
   const { children } = props;

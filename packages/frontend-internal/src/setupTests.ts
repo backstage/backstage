@@ -14,17 +14,4 @@
  * limitations under the License.
  */
 
-import type { ConfigApi } from '../apis/definitions/ConfigApi';
-
-/** @internal */
-export function getAppBasename(configApi: ConfigApi): string {
-  try {
-    const baseUrl = configApi.getOptionalString('app.baseUrl');
-    if (!baseUrl) {
-      return '';
-    }
-    return new URL(baseUrl, 'http://localhost').pathname.replace(/\/$/, '');
-  } catch {
-    return '';
-  }
-}
+import '@testing-library/jest-dom';

@@ -17,7 +17,6 @@
 import {
   useCallback,
   useMemo,
-  useRef,
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
@@ -83,30 +82,17 @@ function toRRLocation(loc: FrameworkLocation): RRLocation {
 export function RootHistoryRouter(props: RootHistoryRouterProps) {
   const { history, children } = props;
 
-  const snapshotRef = useRef<FrameworkLocation | undefined>(undefined);
-
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
-      const sub = history.location$.subscribe(loc => {
-        snapshotRef.current = loc;
-        onStoreChange();
-      });
+      const sub = history.location$.subscribe(() => onStoreChange());
       return () => sub.unsubscribe();
     },
     [history],
   );
 
-  // location$ emits synchronously on subscribe, so a throwaway subscription
-  // seeds the ref when no subscription is active yet (e.g. first render).
-  const getSnapshot = useCallback((): FrameworkLocation => {
-    if (!snapshotRef.current) {
-      const sub = history.location$.subscribe(loc => {
-        snapshotRef.current = loc;
-      });
-      sub.unsubscribe();
-    }
-    return snapshotRef.current!;
-  }, [history]);
+  // `history.location` is a stable reference that only changes when the
+  // location does, so it is a valid snapshot on its own.
+  const getSnapshot = useCallback(() => history.location, [history]);
 
   const location = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
   const rrLocation = useMemo(() => toRRLocation(location), [location]);
@@ -119,7 +105,8 @@ export function RootHistoryRouter(props: RootHistoryRouterProps) {
           // eslint-disable-next-line no-console
           console.warn(
             '[RootHistoryRouter] navigator.go() is not supported by the ' +
-              'framework app history; use browser back/forward instead.',
+              'framework app history; use the browser’s own back/forward ' +
+              'instead.',
           );
         }
       },

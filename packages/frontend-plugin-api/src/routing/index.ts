@@ -30,17 +30,10 @@ export type {
 } from './FrameworkLocation';
 export type { AppHistoryApi } from './AppHistoryApi';
 export { appHistoryApiRef } from './AppHistoryApi';
-// useFrameworkLocation / useOptionalFrameworkNavigate are @internal (kept
-// available for first-party chrome and tests); split into their own
-// statement since TypeScript's `stripInternal` declaration emit can drop an
-// entire re-export list if it isn't split from @public names re-exported
-// from the same module.
-export {
-  useFrameworkLocation,
-  useOptionalFrameworkNavigate,
-} from './useFrameworkNavigation';
 // useAppNavigate is the public react-aria-style navigate hook. Location
-// subscription for adopters goes through AppHistoryApi.location$.
+// subscription for adopters goes through AppHistoryApi.location$, and
+// first-party chrome subscribes with useAppHistoryLocation from
+// @internal/frontend — neither is exported from here.
 export { useAppNavigate } from './useFrameworkNavigation';
 export { useHref } from './useHref';
 export {
@@ -48,9 +41,3 @@ export {
   type NavigateRouteRefFunc,
 } from './useNavigateRouteRef';
 export { RouteLink, type RouteLinkProps } from './RouteLink';
-export {
-  AppRouteSwitch,
-  type AppRouteSwitchProps,
-  type AppRouteRedirect,
-} from './AppRouteSwitch';
-export { RouteTable, type RouteTableMatch } from './RouteTable';

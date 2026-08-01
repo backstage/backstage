@@ -74,6 +74,29 @@ async function renderSidebar() {
   await userEvent.hover(screen.getByTestId('sidebar-root'));
 }
 
+describe('SidebarItem highlighting', () => {
+  it('resolves relative targets from the app root, not the current path', async () => {
+    await renderInTestApp(
+      <Sidebar>
+        <SidebarItem text="Home" icon={HomeIcon} to="catalog" />
+        <SidebarItem text="Docs" icon={CreateComponentIcon} to="docs" />
+      </Sidebar>,
+      { routeEntries: ['/catalog/default/component/foo'] },
+    );
+
+    // `to="catalog"` must mean `/catalog` no matter how deep the current
+    // location is, otherwise scaffolded apps lose sidebar highlighting as soon
+    // as the user opens an entity page.
+    expect(await screen.findByRole('link', { name: 'Home' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('link', { name: 'Docs' })).not.toHaveAttribute(
+      'aria-current',
+    );
+  });
+});
+
 describe('Items', () => {
   beforeEach(async () => {
     jest.clearAllMocks();

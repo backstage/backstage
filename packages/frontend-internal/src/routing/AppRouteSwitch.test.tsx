@@ -16,10 +16,13 @@
 
 import { useEffect, type ComponentType } from 'react';
 import { render, screen, act } from '@testing-library/react';
-import { AppRouteSwitch, RouteTable } from '@backstage/frontend-plugin-api';
-import { usePageMount } from '@internal/frontend';
-import { createAppHistory } from './AppHistory';
-import type { AppHistory } from './AppHistory';
+import {
+  createMockAppHistory,
+  type MockAppHistory,
+} from '@backstage/frontend-test-utils';
+import { AppRouteSwitch } from './AppRouteSwitch';
+import { RouteTable } from './RouteTable';
+import { usePageMount } from './PageMountContext';
 
 function CatalogPage() {
   const mount = usePageMount();
@@ -36,19 +39,14 @@ function FallbackPage() {
 }
 
 describe('AppRouteSwitch', () => {
-  let history: AppHistory;
-
-  beforeEach(() => {
-    window.history.replaceState(null, '', '/');
-    history = createAppHistory();
-  });
-
-  afterEach(() => {
-    history.dispose();
-  });
+  // The switch only ever reads `location`, `location$` and `navigate` off the
+  // app history, and the mock upholds the same emission and stable-reference
+  // contract as the real one — so it stands in without pulling app wiring
+  // into this package.
+  let history: MockAppHistory;
 
   it('should render the matched page component', () => {
-    window.history.replaceState(null, '', '/catalog/entities');
+    history = createMockAppHistory({ initialLocation: '/catalog/entities' });
 
     const routeTable = new RouteTable(['/catalog', '/scaffolder']);
     const pages = new Map<string, ComponentType>([
@@ -71,7 +69,7 @@ describe('AppRouteSwitch', () => {
   });
 
   it('should switch to a different page on navigation', () => {
-    window.history.replaceState(null, '', '/catalog');
+    history = createMockAppHistory({ initialLocation: '/catalog' });
 
     const routeTable = new RouteTable(['/catalog', '/scaffolder']);
     const pages = new Map<string, ComponentType>([
@@ -101,7 +99,7 @@ describe('AppRouteSwitch', () => {
   });
 
   it('should render fallback for unmatched paths', () => {
-    window.history.replaceState(null, '', '/unknown/path');
+    history = createMockAppHistory({ initialLocation: '/unknown/path' });
 
     const routeTable = new RouteTable(['/catalog']);
     const pages = new Map<string, ComponentType>([['/catalog', CatalogPage]]);
@@ -119,7 +117,9 @@ describe('AppRouteSwitch', () => {
   });
 
   it('should provide a PageMount with correct basePath to the matched page', () => {
-    window.history.replaceState(null, '', '/scaffolder/templates');
+    history = createMockAppHistory({
+      initialLocation: '/scaffolder/templates',
+    });
 
     const routeTable = new RouteTable(['/catalog', '/scaffolder']);
     const pages = new Map<string, ComponentType>([
@@ -142,7 +142,7 @@ describe('AppRouteSwitch', () => {
   });
 
   it('should handle root path catch-all', () => {
-    window.history.replaceState(null, '', '/something');
+    history = createMockAppHistory({ initialLocation: '/something' });
 
     function RootPage() {
       const mount = usePageMount();
@@ -169,7 +169,7 @@ describe('AppRouteSwitch', () => {
 
   it('should catch plugin errors with error boundary and render fallback', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation();
-    window.history.replaceState(null, '', '/crashing');
+    history = createMockAppHistory({ initialLocation: '/crashing' });
 
     function CrashingPage(): never {
       throw new Error('Plugin crashed!');
@@ -198,7 +198,7 @@ describe('AppRouteSwitch', () => {
 
   it('should recover from error boundary when navigating to a different plugin and back', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation();
-    window.history.replaceState(null, '', '/crashing');
+    history = createMockAppHistory({ initialLocation: '/crashing' });
 
     function CrashingPage(): never {
       throw new Error('Plugin crashed!');
@@ -238,11 +238,9 @@ describe('AppRouteSwitch', () => {
   });
 
   it('should create a fresh PageMount for parameterized routes on each match', () => {
-    window.history.replaceState(
-      null,
-      '',
-      '/catalog/default/component/wayback-archive/overview',
-    );
+    history = createMockAppHistory({
+      initialLocation: '/catalog/default/component/wayback-archive/overview',
+    });
 
     let mountCount = 0;
 
@@ -275,6 +273,13 @@ describe('AppRouteSwitch', () => {
     );
     expect(mountCount).toBe(1);
 
+    // Navigating within the same entity keeps the same concrete mount
+    act(() => {
+      history.navigate('/catalog/default/component/wayback-archive/docs');
+    });
+
+    expect(mountCount).toBe(1);
+
     act(() => {
       history.navigate('/catalog/default/component/entity-b/docs');
     });
@@ -286,8 +291,56 @@ describe('AppRouteSwitch', () => {
     );
   });
 
+  it('should not inherit a crash from a previous mount of the same route pattern', () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation();
+    history = createMockAppHistory({
+      initialLocation: '/catalog/default/component/broken',
+    });
+
+    function EntityPage() {
+      const mount = usePageMount();
+      if (mount?.basePath.endsWith('/broken')) {
+        throw new Error('Entity page crashed!');
+      }
+      return <div data-testid="entity-page">Entity: {mount?.basePath}</div>;
+    }
+
+    const pattern = '/catalog/:namespace/:kind/:name';
+    const routeTable = new RouteTable([pattern]);
+    const pages = new Map<string, ComponentType>([[pattern, EntityPage]]);
+
+    render(
+      <AppRouteSwitch
+        history={history}
+        routeTable={routeTable}
+        pages={pages}
+        fallback={<FallbackPage />}
+      />,
+    );
+
+    expect(screen.getByTestId('fallback-page')).toBeInTheDocument();
+
+    // A healthy entity under the same pattern is a separate mount and must
+    // render, rather than inheriting the crashed boundary state.
+    act(() => {
+      history.navigate('/catalog/default/component/fine');
+    });
+
+    expect(screen.getByTestId('entity-page')).toHaveTextContent(
+      'Entity: /catalog/default/component/fine',
+    );
+
+    // Returning to the broken entity crashes again rather than staying healthy
+    act(() => {
+      history.navigate('/catalog/default/component/broken');
+    });
+
+    expect(screen.getByTestId('fallback-page')).toBeInTheDocument();
+    errorSpy.mockRestore();
+  });
+
   it('should redirect via history.navigate before matching pages', () => {
-    window.history.replaceState(null, '', '/old-catalog');
+    history = createMockAppHistory({ initialLocation: '/old-catalog' });
 
     const routeTable = new RouteTable(['/catalog']);
     const pages = new Map<string, ComponentType>([['/catalog', CatalogPage]]);
@@ -311,7 +364,9 @@ describe('AppRouteSwitch', () => {
   });
 
   it('should substitute redirect params including splat remainder', () => {
-    window.history.replaceState(null, '', '/d/default/component/my-entity');
+    history = createMockAppHistory({
+      initialLocation: '/d/default/component/my-entity',
+    });
 
     const routeTable = new RouteTable(['/docs']);
     const pages = new Map<string, ComponentType>([['/docs', CatalogPage]]);
@@ -335,7 +390,7 @@ describe('AppRouteSwitch', () => {
   });
 
   it('should only redirect root when from is /', () => {
-    window.history.replaceState(null, '', '/catalog');
+    history = createMockAppHistory({ initialLocation: '/catalog' });
 
     const routeTable = new RouteTable(['/catalog', '/home']);
     const pages = new Map<string, ComponentType>([

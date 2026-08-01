@@ -30,19 +30,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import {
-  NfsRoutingDemoPage,
-  NfsRoutingDemoOverview,
-  NfsRoutingDemoNested,
-  NfsRoutingDemoDetail,
-  NfsRoutingDemoV7Page,
-  NfsRoutingDemoV7Router,
-  NfsRoutingDemoV7Overview,
-  NfsRoutingDemoV7Nested,
-  NfsRoutingDemoV7Detail,
-  NfsRoutingDemoTanstackPage,
-  NfsRoutingDemoTanstackRouter,
-} from './nfsRoutingDemo';
+import { nfsRoutingDemoExtensions } from './nfsRoutingDemo';
 
 const indexRouteRef = createRouteRef();
 const page1RouteRef = createRouteRef();
@@ -132,25 +120,27 @@ const IndexPage = PageBlueprint.make({
               <a href="https://github.com/backstage/backstage/issues/33603">
                 #33603
               </a>
-              ) — the same tabbed sub-page structure under React Router v6 and
-              v7, and single-page content under TanStack Router:
+              ). Three pages, each hosted by a different routing library, and
+              seven tabs that between them cover every combination worth
+              proving. Each panel prints the resolved URL and the resolved{' '}
+              <code>href</code> of its links, so a doubled base path shows up on
+              screen:
             </p>
             <ul>
               <li>
-                <Link to="/nfs-routing-demo">NFS Routing Demo (RR v6)</Link> —
-                tabbed page built with <code>SubPageBlueprint</code>
+                <Link to="/nfs-routing-demo">React Router v6 host</Link> — v6
+                nested inside v6, a TanStack sub-page inside a v6 page, and
+                links resolved three segments below the page base
               </li>
               <li>
-                <Link to="/nfs-routing-demo-v7">NFS Routing Demo (RR v7)</Link>{' '}
-                — the same tabbed sub-page structure under the React Router v7
-                page adapter
+                <Link to="/nfs-routing-demo-tanstack">TanStack host</Link> —
+                TanStack building the tab route tree itself, and hosting a React
+                Router v6 sub-page
               </li>
               <li>
-                <Link to="/nfs-routing-demo-tanstack">
-                  NFS Routing Demo (TanStack)
-                </Link>{' '}
-                — single-page content under the TanStack Router page adapter,
-                which has no opaque-children bridge for tabs
+                <Link to="/nfs-routing-demo-v7">React Router v7 host</Link> — v6
+                and v7 route trees in the same app, plus a tab with no v6
+                context at all where the framework chrome still resolves
               </li>
             </ul>
 
@@ -591,17 +581,7 @@ export const pagesPlugin = createFrontendPlugin({
     IndexPage,
     Page1,
     ExternalPage,
-    NfsRoutingDemoPage,
-    NfsRoutingDemoOverview,
-    NfsRoutingDemoNested,
-    NfsRoutingDemoDetail,
-    NfsRoutingDemoV7Page,
-    NfsRoutingDemoV7Router,
-    NfsRoutingDemoV7Overview,
-    NfsRoutingDemoV7Nested,
-    NfsRoutingDemoV7Detail,
-    NfsRoutingDemoTanstackPage,
-    NfsRoutingDemoTanstackRouter,
+    ...nfsRoutingDemoExtensions,
     FeatureFlagPage,
     AllFlagsPage,
     AnyFlagPage,

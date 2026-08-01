@@ -36,7 +36,8 @@ import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
 import { SidebarConfigContext, SidebarConfig } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';
-import { useChromePathname } from './useChromePathname';
+import { useAppLocation } from '@internal/frontend';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /**
  * Props of MobileSidebar
@@ -160,7 +161,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const { children } = props;
   const classes = useStyles({ sidebarConfig });
-  const pathname = useChromePathname();
+  const { pathname } = useAppLocation(useOptionalAppHistory());
   const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
     useState<number>(-1);
 

@@ -14,22 +14,51 @@
  * limitations under the License.
  */
 
+import { useCallback, useSyncExternalStore } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   PageRouterBlueprint,
   RouteLink,
+  SubPageBlueprint,
+  appHistoryApiRef,
   createFrontendPlugin,
   createRouteRef,
-  useFrameworkLocation,
+  useApi,
+  useAppNavigate,
 } from '@backstage/frontend-plugin-api';
+import { useLocation as useTanStackLocation } from '@tanstack/react-router';
 import { TanStackPageRouter } from './TanStackPageRouter';
 
 /**
- * Pudding-style coexistence: default RR v6 page + TanStack page override,
- * both rendering opaque single-page content, with cross-plugin and
- * app-history-driven navigation.
+ * Subscribes to the app-absolute location. Written out here rather than
+ * pulled from `@internal/frontend`, because that package is inlined into its
+ * consumers and would make this TanStack adapter forward a `react-router-dom`
+ * peer dependency it has no business having.
+ */
+function useAppLocation() {
+  const appHistory = useApi(appHistoryApiRef);
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      const subscription = appHistory.location$.subscribe(() =>
+        onStoreChange(),
+      );
+      return () => subscription.unsubscribe();
+    },
+    [appHistory],
+  );
+  // `AppHistoryApi.location` is a stable reference, so it is the snapshot.
+  const getSnapshot = useCallback(() => appHistory.location, [appHistory]);
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+}
+
+/**
+ * Pudding-style coexistence: default RR v6 and TanStack in one app, both as
+ * peer pages and with a TanStack sub-page nested under a default-v6 parent
+ * page — the case that only became possible once the framework started
+ * handing sub-pages over as data, and the one that would notice a TanStack
+ * page mis-scoping itself to its parent's prefix.
  */
 describe('TanStack + RR v6 coexistence', () => {
   const catalogRouteRef = createRouteRef();
@@ -37,7 +66,7 @@ describe('TanStack + RR v6 coexistence', () => {
 
   it('should coexist v6 default + TanStack page with cross-plugin and app history navigate', async () => {
     const CatalogV6Page = () => {
-      const location = useFrameworkLocation();
+      const location = useAppLocation();
       return (
         <div data-testid="catalog-page">
           <div data-testid="adapter">v6-default</div>
@@ -50,7 +79,7 @@ describe('TanStack + RR v6 coexistence', () => {
     };
 
     const ToolsPage = () => {
-      const location = useFrameworkLocation();
+      const location = useAppLocation();
       return (
         <div data-testid="tools-page">
           <div data-testid="adapter">tanstack</div>
@@ -146,6 +175,134 @@ describe('TanStack + RR v6 coexistence', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
+      expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
+    });
+  });
+
+  it('should run a TanStack subpage under a default-v6 parent with cross-page nav', async () => {
+    const homeRouteRef = createRouteRef();
+
+    const HomeV6Page = () => {
+      const location = useAppLocation();
+      const navigate = useAppNavigate();
+      return (
+        <div data-testid="home-page">
+          <div data-testid="adapter">v6-default</div>
+          <div data-testid="pathname">{location.pathname}</div>
+          <button
+            type="button"
+            data-testid="to-tree"
+            onClick={() => navigate('/visualizer-pudding-ts/tree')}
+          >
+            Tree subpage
+          </button>
+        </div>
+      );
+    };
+
+    const TreeTanStackSubPage = () => {
+      const frameworkLocation = useAppLocation();
+      const scopedLocation = useTanStackLocation();
+      return (
+        <div data-testid="tree-subpage">
+          <div data-testid="adapter">tanstack</div>
+          <div data-testid="pathname">{frameworkLocation.pathname}</div>
+          {/* Scoped to the sub-page's own mount, not to its parent page. */}
+          <div data-testid="scoped-pathname">{scopedLocation.pathname}</div>
+          <RouteLink routeRef={homeRouteRef} data-testid="to-home">
+            Home (v6)
+          </RouteLink>
+        </div>
+      );
+    };
+
+    const homePage = PageBlueprint.make({
+      name: 'home',
+      params: {
+        path: '/home-pudding-ts',
+        routeRef: homeRouteRef,
+        loader: async () => <HomeV6Page />,
+      },
+    });
+
+    const visualizerPage = PageBlueprint.make({
+      name: 'visualizer',
+      params: {
+        path: '/visualizer-pudding-ts',
+        title: 'Visualizer',
+      },
+    });
+
+    const treeSubPage = SubPageBlueprint.make({
+      name: 'tree',
+      attachTo: { id: 'page:test/visualizer', input: 'pages' },
+      params: {
+        path: 'tree',
+        title: 'Tree',
+        loader: async () => <TreeTanStackSubPage />,
+      },
+    });
+
+    const treeTanStackRouter = PageRouterBlueprint.make({
+      name: 'tree-tanstack',
+      attachTo: { id: 'sub-page:test/tree', input: 'router' },
+      params: {
+        component: TanStackPageRouter,
+      },
+    });
+
+    const { appHistory } = renderTestApp({
+      extensions: [homePage, visualizerPage, treeSubPage, treeTanStackRouter],
+      initialRouteEntries: ['/home-pudding-ts'],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('home-page')).toBeInTheDocument();
+      expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
+    });
+
+    await act(async () => {
+      screen.getByTestId('to-tree').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('tree-subpage')).toBeInTheDocument();
+      expect(screen.getByTestId('adapter')).toHaveTextContent('tanstack');
+      expect(screen.getByTestId('pathname')).toHaveTextContent(
+        '/visualizer-pudding-ts/tree',
+      );
+      expect(screen.getByTestId('scoped-pathname')).toHaveTextContent('/');
+    });
+
+    await act(async () => {
+      screen.getByTestId('to-home').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('home-page')).toBeInTheDocument();
+      expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
+      expect(screen.getByTestId('pathname')).toHaveTextContent(
+        '/home-pudding-ts',
+      );
+    });
+
+    // AppHistoryApi has no programmatic `go` — navigate directly instead.
+    await act(async () => {
+      appHistory.navigate('/visualizer-pudding-ts/tree');
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('tree-subpage')).toBeInTheDocument();
+      expect(screen.getByTestId('adapter')).toHaveTextContent('tanstack');
+      expect(screen.getByTestId('scoped-pathname')).toHaveTextContent('/');
+    });
+
+    await act(async () => {
+      appHistory.navigate('/home-pudding-ts');
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('home-page')).toBeInTheDocument();
       expect(screen.getByTestId('adapter')).toHaveTextContent('v6-default');
     });
   });

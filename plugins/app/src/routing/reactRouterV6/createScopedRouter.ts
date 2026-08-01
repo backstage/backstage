@@ -16,11 +16,11 @@
 
 import type { ComponentType, ReactNode } from 'react';
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
-import { createScopedRouterWithBindings } from './createScopedRouterWithBindings';
-import type {
-  ReactRouterAdapterBindings,
-  ScopedRouterWithBindingsResult as CommonScopedRouterResult,
-} from './types';
+import {
+  createAppHistoryRouter,
+  type AppHistoryRouterResult,
+  type ReactRouterAdapterBindings,
+} from '@internal/frontend';
 import {
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,
@@ -40,22 +40,12 @@ import type { Location, NavigateFunction } from 'react-router-dom';
  */
 export interface CreateScopedRouterOptions {
   /**
-   * Registered page path pattern (e.g. `/catalog` or
-   * `/catalog/:namespace/:kind/:name`). Used to populate React Router
-   * `useParams` via a splat match of `${routePattern}/*`.
+   * Registered page route pattern (e.g. `/catalog` or
+   * `/catalog/:namespace/:kind/:name`). The page's route match — params,
+   * splat tail and the base that relative targets resolve against — is
+   * derived from this pattern and the live app location.
    */
-  routePattern?: string;
-  /**
-   * App deploy basename (e.g. `/backstage`). Prefixed onto `createHref`
-   * results so Link `href`s work under subpath deploys.
-   */
-  appBasename?: string;
-  /**
-   * History stack navigation (back/forward). When omitted, `go` is a no-op
-   * and a development warning is logged — window.history.go is never used
-   * as a fallback.
-   */
-  go?: (delta: number) => void;
+  routePattern: string;
 }
 
 /**
@@ -76,8 +66,6 @@ export interface ScopedRouterResult {
   useSearchParams: (
     ...args: Parameters<typeof useRRSearchParams>
   ) => ReturnType<typeof useRRSearchParams>;
-  /** Unsubscribes from the app history's location$ observable. */
-  dispose: () => void;
 }
 
 const v6Bindings: ReactRouterAdapterBindings = {
@@ -100,22 +88,24 @@ const v6Bindings: ReactRouterAdapterBindings = {
  * {@link AppHistoryApi}.
  *
  * Injects `UNSAFE_*` contexts directly (never nests `<Router>` / writes
- * `window.history` via push/replace). Navigation is delegated to
- * `appHistory.navigate`; back/forward uses the `go` option when provided.
+ * `window.history` via push/replace/go). Navigation is delegated to
+ * `appHistory.navigate`.
  *
  * @internal
  */
 export function createScopedRouter(
   appHistory: AppHistoryApi,
-  basePath: string,
-  options?: CreateScopedRouterOptions,
+  options: CreateScopedRouterOptions,
 ): ScopedRouterResult {
-  const result: CommonScopedRouterResult = createScopedRouterWithBindings(
+  const result: AppHistoryRouterResult = createAppHistoryRouter(
     v6Bindings,
     appHistory,
     {
-      basePath,
       ...options,
+      name: 'createScopedRouter',
+      // React Router v6 NavigationContextObject requires the future flags,
+      // and this projection keeps the v6 default: relative targets resolve
+      // against the leaf match's pathnameBase rather than its splat tail.
       navigationContextExtras: {
         future: {
           v7_relativeSplatPath: false,
@@ -133,6 +123,5 @@ export function createScopedRouter(
     >() => T,
     useSearchParams:
       result.useSearchParams as ScopedRouterResult['useSearchParams'],
-    dispose: result.dispose,
   };
 }

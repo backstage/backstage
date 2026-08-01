@@ -42,10 +42,8 @@ import {
 } from 'react-router-dom';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { shouldNavigateViaFramework } from './absoluteLinkNavigate';
-import {
-  useOptionalAppHistory,
-  useOptionalPageMount,
-} from '../../hooks/useOptionalAppHistory';
+import { usePageMount } from '@internal/frontend';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -201,7 +199,7 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
     const classes = useStyles();
     const analytics = useAnalytics();
     const appHistory = useOptionalAppHistory();
-    const pageMount = useOptionalPageMount();
+    const pageMount = usePageMount();
 
     // Adding the base path to URLs breaks react-router v6 stable, so we only
     // do it for beta. The react router version won't change at runtime so it is
@@ -265,10 +263,17 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
       );
     }
 
-    if (navigateViaFramework) {
-      // Absolute / cross-plugin targets navigate through the app history
+    if (navigateViaFramework && appHistory) {
+      // Absolute / cross-plugin targets navigate through the app history. The
+      // href still has to be a real browser URL, including the app's deploy
+      // basename, so middle-click, "open in new tab" and crawlers work.
       return (
-        <a {...props} ref={ref} href={to} onClick={handleClick}>
+        <a
+          {...props}
+          ref={ref}
+          href={appHistory.createHref(to)}
+          onClick={handleClick}
+        >
           {props.children}
         </a>
       );

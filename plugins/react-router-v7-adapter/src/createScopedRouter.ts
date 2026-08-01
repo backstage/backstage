@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ComponentType, MutableRefObject, ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { createScopedRouterWithBindings } from './createScopedRouterWithBindings';
 import type {
@@ -39,12 +39,11 @@ import type { Location, NavigateFunction } from 'react-router';
  * @internal
  */
 export interface CreateScopedRouterOptions {
-  /** Live ref to the page's current concrete `basePath`. */
-  basePathRef: MutableRefObject<string>;
   /**
-   * Registered page path pattern (e.g. `/catalog` or
-   * `/catalog/:namespace/:kind/:name`). Used to populate React Router
-   * `useParams`.
+   * Registered page route pattern (e.g. `/catalog` or
+   * `/catalog/:namespace/:kind/:name`). The page's route match — params,
+   * splat tail and the base that relative targets resolve against — is
+   * derived from this pattern and the live app location.
    */
   routePattern: string;
 }
@@ -104,7 +103,10 @@ export function createScopedRouter(
     {
       ...options,
       // React Router v7 NavigationContextObject requires future: {} and
-      // useTransitions (boolean | undefined).
+      // useTransitions (boolean | undefined). v7 has no relative-splat flag:
+      // relative targets always resolve against the leaf match's full
+      // pathname, which is why the projected match has to carry the real
+      // splat tail rather than just the page's prefix.
       navigationContextExtras: {
         future: {},
         useTransitions: undefined,

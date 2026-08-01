@@ -17,7 +17,7 @@
 import { ReactNode, useMemo } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import { PageMountContext, usePageMount } from '@internal/frontend';
+import { PageMountProvider, usePageMount } from '@internal/frontend';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -25,11 +25,9 @@ import {
 } from '../wiring';
 import { ExtensionBoundary } from '../components';
 import { optionalStringSchema } from '../schema/optionalStringSchema';
-import { useApi } from '../apis/system';
 import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
 import { PageRouterBlueprint } from './PageRouterBlueprint';
-import { configApiRef } from '../apis/definitions/ConfigApi';
-import { getAppBasename } from './getAppBasename';
+import { PageRouterWrapper } from './PageRouterWrapper';
 
 function joinMountPath(parentPath: string, subPath: string): string {
   const trimmedParent = parentPath.replace(/\/$/, '');
@@ -38,14 +36,16 @@ function joinMountPath(parentPath: string, subPath: string): string {
 }
 
 /**
- * Provides the subpage's own `PageMount` (`parentBase + '/' + subPath`)
- * to its content, and optionally wraps it with the subpage's own router
- * input override.
+ * Provides the subpage's own `PageMount` (`parentBase + '/' + subPath`) to its
+ * content, and runs that content through the same adapter resolution a page
+ * uses — the subpage's own `router` input when it has one, otherwise the
+ * app-plugin default.
  *
- * Empty router input resolves no adapter here — the parent page's `<Routes>`
- * (established by `PageBlueprint`) already owns routing dispatch between
- * sibling subpages, so a subpage only needs its own adapter when it wants
- * additional in-page routing of its own.
+ * Resolving an adapter here (rather than letting content inherit whatever
+ * routing context the parent page's adapter happened to leave behind) is what
+ * keeps a subpage scoped to its own mount. The subpage's content is opaque:
+ * the author picked both the content and, if they attached one, the adapter,
+ * so there is nothing for the framework to reconcile.
  */
 function SubPageRouterWrapper(props: {
   path: string;
@@ -54,8 +54,6 @@ function SubPageRouterWrapper(props: {
 }) {
   const { path, RouterOverride, children } = props;
   const parentMount = usePageMount();
-  const configApi = useApi(configApiRef);
-  const appBasename = useMemo(() => getAppBasename(configApi), [configApi]);
 
   const mount = useMemo(() => {
     if (!parentMount) {
@@ -71,22 +69,12 @@ function SubPageRouterWrapper(props: {
     return <>{children}</>;
   }
 
-  const content = RouterOverride ? (
-    <RouterOverride
-      basePath={mount.basePath}
-      routePattern={mount.routePattern}
-      appBasename={appBasename || undefined}
-    >
-      {children}
-    </RouterOverride>
-  ) : (
-    children
-  );
-
   return (
-    <PageMountContext.Provider value={mount}>
-      {content}
-    </PageMountContext.Provider>
+    <PageMountProvider mount={mount}>
+      <PageRouterWrapper mount={mount} RouterOverride={RouterOverride}>
+        {children}
+      </PageRouterWrapper>
+    </PageMountProvider>
   );
 }
 
@@ -94,12 +82,13 @@ function SubPageRouterWrapper(props: {
  * Creates extensions that are sub-page React components attached to a parent page.
  * Sub-pages are rendered as tabs within the parent page's header.
  *
- * `PageBlueprint` composes each subpage's output path and element into a
- * native React Router `<Route>` on the parent page's `<Routes>`. Each
- * subpage also receives its own `PageMount` (`parentBase + '/' + subPath`) for descendants (e.g. breadcrumbs). An optional `router` input
- * (via {@link PageRouterBlueprint} attached to this sub-page) additionally
- * wraps the subpage's own content with an adapter for further in-page
- * routing.
+ * `PageBlueprint` hands each subpage's output path and element to the parent
+ * page's router adapter, which routes between them using its own routing
+ * library. Each subpage also receives its own `PageMount`
+ * (`parentBase + '/' + subPath`) for descendants (e.g. breadcrumbs), and its
+ * content is scoped to that mount by its own adapter — the optional `router`
+ * input (via {@link PageRouterBlueprint} attached to this sub-page) when
+ * present, otherwise the app-plugin default.
  *
  * @public
  * @example

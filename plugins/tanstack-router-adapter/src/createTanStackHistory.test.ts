@@ -25,19 +25,25 @@ import type { Observable } from '@backstage/types';
 /**
  * Minimal hand-rolled `AppHistoryApi` for adapter-level tests, so this
  * package's unit tests don't depend on shared test-utils mocks.
+ *
+ * Matches the real implementation on the two properties these tests turn on:
+ * `location` is a stable reference, and `location$` emits synchronously from
+ * inside `navigate()`.
  */
-function createMockAppHistory(initial?: FrameworkLocation): {
+function createMockAppHistory(initialPathname = '/'): {
   appHistory: AppHistoryApi;
+  navigatedTo: () => string[];
   navigateCalls: Array<{ to: string; options?: FrameworkNavigateOptions }>;
 } {
   const navigateCalls: Array<{
     to: string;
     options?: FrameworkNavigateOptions;
   }> = [];
-  let current: FrameworkLocation = initial ?? {
-    pathname: '/',
-    search: '',
-    hash: '',
+  const initialUrl = new URL(initialPathname, 'http://localhost');
+  let current: FrameworkLocation = {
+    pathname: initialUrl.pathname,
+    search: initialUrl.search,
+    hash: initialUrl.hash,
     state: undefined,
   };
   const listeners = new Set<(loc: FrameworkLocation) => void>();
@@ -62,6 +68,9 @@ function createMockAppHistory(initial?: FrameworkLocation): {
   };
 
   const appHistory: AppHistoryApi = {
+    get location() {
+      return current;
+    },
     location$,
     navigate(to, options) {
       navigateCalls.push({ to, options });
@@ -81,21 +90,22 @@ function createMockAppHistory(initial?: FrameworkLocation): {
     },
   };
 
-  return { appHistory, navigateCalls };
+  return {
+    appHistory,
+    navigateCalls,
+    navigatedTo: () => navigateCalls.map(call => call.to),
+  };
 }
 
 describe('createTanStackHistory', () => {
   it('should project a scoped location and never write window.history', () => {
-    const { appHistory } = createMockAppHistory({
-      pathname: '/tools/a',
-      search: '',
-      hash: '',
-      state: undefined,
-    });
+    const { appHistory } = createMockAppHistory('/tools/a');
     const pushSpy = jest.spyOn(window.history, 'pushState');
     const replaceSpy = jest.spyOn(window.history, 'replaceState');
 
-    const history = createTanStackHistory(appHistory, { current: '/tools' });
+    const history = createTanStackHistory(appHistory, {
+      routePattern: '/tools',
+    });
     expect(history.location.pathname).toBe('/a');
     expect(history.length).toBe(1);
     expect(history.canGoBack()).toBe(false);
@@ -113,49 +123,97 @@ describe('createTanStackHistory', () => {
     history.destroy();
   });
 
-  it('should navigate AppHistoryApi with the app-absolute path derived from basePath', () => {
-    const { appHistory, navigateCalls } = createMockAppHistory({
-      pathname: '/tools',
-      search: '',
-      hash: '',
-      state: undefined,
+  it('should navigate AppHistoryApi with the app-absolute path derived from the route pattern', () => {
+    const { appHistory, navigatedTo } = createMockAppHistory('/tools');
+    const history = createTanStackHistory(appHistory, {
+      routePattern: '/tools',
     });
-    const history = createTanStackHistory(appHistory, { current: '/tools' });
 
     history.push('/entities/alpha');
 
-    expect(navigateCalls).toEqual([
-      {
-        to: '/tools/entities/alpha',
-        options: { replace: false, state: undefined },
-      },
-    ]);
+    expect(navigatedTo()).toEqual(['/tools/entities/alpha']);
+    expect(history.createHref('/entities/alpha')).toBe('/tools/entities/alpha');
+    history.destroy();
   });
 
-  it('should track basePath changes via the live ref without recreating the history', () => {
-    const { appHistory } = createMockAppHistory({
-      pathname: '/tools/entities/alpha',
-      search: '',
-      hash: '',
-      state: undefined,
+  it('should stay scoped when the concrete prefix changes under the same pattern', () => {
+    const { appHistory, navigatedTo } = createMockAppHistory(
+      '/tools/entities/alpha',
+    );
+    const history = createTanStackHistory(appHistory, {
+      routePattern: '/tools/entities/:id',
     });
-    const basePathRef = { current: '/tools/entities/alpha' };
-    const history = createTanStackHistory(appHistory, basePathRef);
     const unsub = history.subscribe(() => {});
 
     expect(history.location.pathname).toBe('/');
 
-    basePathRef.current = '/tools/entities/beta';
+    // `AppHistoryApi` emits synchronously from inside navigate(), i.e. before
+    // any re-render could hand this history a new concrete prefix. Deriving
+    // the prefix from the route pattern is what keeps that emission scoped.
     appHistory.navigate('/tools/entities/beta');
 
     expect(history.location.pathname).toBe('/');
+
+    // ...and a later in-page push must not re-prefix a stale mount point.
+    history.push('/tab');
+
+    expect(navigatedTo()).toEqual([
+      '/tools/entities/beta',
+      '/tools/entities/beta/tab',
+    ]);
+    expect(history.location.pathname).toBe('/tab');
+    unsub();
+    history.destroy();
+  });
+
+  it('should ignore off-page locations rather than parking them in the scoped location', () => {
+    const { appHistory, navigatedTo } = createMockAppHistory('/tools');
+    const history = createTanStackHistory(appHistory, {
+      routePattern: '/tools',
+    });
+    const unsub = history.subscribe(() => {});
+
+    history.push('/entities/alpha');
+    expect(history.location.pathname).toBe('/entities/alpha');
+
+    // The app navigates off this page entirely, so the page is on its way
+    // out. Taking the off-page pathname on board is what used to make the
+    // next push re-prefix it into `/tools/other/page`.
+    appHistory.navigate('/other/page');
+    expect(history.location.pathname).toBe('/entities/alpha');
+
+    history.push('/entities/alpha/tab');
+
+    expect(navigatedTo()).toEqual([
+      '/tools/entities/alpha',
+      '/other/page',
+      '/tools/entities/alpha/tab',
+    ]);
+    unsub();
+    history.destroy();
+  });
+
+  it('should round-trip query and hash at the page root without adding a slash', () => {
+    const { appHistory, navigatedTo } = createMockAppHistory('/tools');
+    const history = createTanStackHistory(appHistory, {
+      routePattern: '/tools',
+    });
+    const unsub = history.subscribe(() => {});
+
+    history.push('/?b=2#g');
+
+    expect(navigatedTo()).toEqual(['/tools?b=2#g']);
+    expect(history.createHref('/?b=2#g')).toBe('/tools?b=2#g');
+    expect(history.location.pathname).toBe('/');
+    expect(history.location.search).toBe('?b=2');
+    expect(history.location.hash).toBe('#g');
     unsub();
     history.destroy();
   });
 
   it('should keep user state separate from local __TSR_* bookkeeping', () => {
     const { appHistory } = createMockAppHistory();
-    const history = createTanStackHistory(appHistory, { current: '/' });
+    const history = createTanStackHistory(appHistory, { routePattern: '/' });
 
     history.push('/x', { foo: 'bar' });
 
@@ -171,7 +229,7 @@ describe('createTanStackHistory', () => {
     const consoleWarn = jest
       .spyOn(console, 'warn')
       .mockImplementation(() => undefined);
-    const history = createTanStackHistory(appHistory, { current: '/' });
+    const history = createTanStackHistory(appHistory, { routePattern: '/' });
 
     history.push('/one');
     history.go(-1);
@@ -188,13 +246,10 @@ describe('createTanStackHistory', () => {
   });
 
   it('should notify subscribers on external (chrome-style) navigation', () => {
-    const { appHistory } = createMockAppHistory({
-      pathname: '/tools',
-      search: '',
-      hash: '',
-      state: undefined,
+    const { appHistory } = createMockAppHistory('/tools');
+    const history = createTanStackHistory(appHistory, {
+      routePattern: '/tools',
     });
-    const history = createTanStackHistory(appHistory, { current: '/tools' });
     const seen: string[] = [];
     const unsub = history.subscribe(({ location }) => {
       seen.push(location.pathname);
@@ -202,20 +257,17 @@ describe('createTanStackHistory', () => {
 
     appHistory.navigate('/tools/external');
 
-    expect(seen).toContain('/external');
+    expect(seen).toEqual(['/external']);
     expect(history.location.pathname).toBe('/external');
     unsub();
     history.destroy();
   });
 
   it('should run local blockers on push and skip navigation when blocked', async () => {
-    const { appHistory } = createMockAppHistory({
-      pathname: '/tools',
-      search: '',
-      hash: '',
-      state: undefined,
+    const { appHistory } = createMockAppHistory('/tools');
+    const history = createTanStackHistory(appHistory, {
+      routePattern: '/tools',
     });
-    const history = createTanStackHistory(appHistory, { current: '/tools' });
     let blocked = false;
     history.block({
       blockerFn: async () => {
@@ -234,13 +286,10 @@ describe('createTanStackHistory', () => {
   });
 
   it('should not run blockers on go/back/forward', async () => {
-    const { appHistory } = createMockAppHistory({
-      pathname: '/tools',
-      search: '',
-      hash: '',
-      state: undefined,
+    const { appHistory } = createMockAppHistory('/tools');
+    const history = createTanStackHistory(appHistory, {
+      routePattern: '/tools',
     });
-    const history = createTanStackHistory(appHistory, { current: '/tools' });
     let blockerCalls = 0;
     history.block({
       blockerFn: async () => {

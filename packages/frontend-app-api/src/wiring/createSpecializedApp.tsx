@@ -102,6 +102,14 @@ export function createSpecializedApp(
     ? createSessionStateFromApis(options.advanced.apis)
     : undefined;
 
+  // Known limitation, deliberately not fixed here: the prepared app is
+  // discarded after finalization, so its internal teardown hand-off — which
+  // releases the app history's window `popstate` listener — is unreachable, and
+  // the listener stays attached for the life of the process. Fixing it would
+  // mean returning a disposer from this deprecated entry point, i.e. new public
+  // API on the API that already has a supported replacement. Callers who need
+  // teardown (repeated app creation in one process, hot reload) should use
+  // `prepareSpecializedApp` instead, which hands disposal to its caller.
   return prepareSpecializedApp({
     features: options?.features,
     config: options?.config,

@@ -21,12 +21,13 @@ import {
   PageRouterBlueprint,
   RouteLink,
   SubPageBlueprint,
+  appHistoryApiRef,
   createFrontendPlugin,
   createRouteRef,
+  useApi,
   useAppNavigate,
-  useFrameworkLocation,
 } from '@backstage/frontend-plugin-api';
-import { usePageMount } from '@internal/frontend';
+import { useAppHistoryLocation, usePageMount } from '@internal/frontend';
 import { Link, useLocation } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 
@@ -45,11 +46,11 @@ describe('multi-router coexistence', () => {
 
   it('should coexist v6 default + v7 pages with cross-plugin and app history navigate', async () => {
     const CatalogV6Page = () => {
-      const location = useFrameworkLocation();
+      const location = useAppHistoryLocation(useApi(appHistoryApiRef));
       return (
         <div data-testid="catalog-page">
           <div data-testid="adapter">v6-default</div>
-          <div data-testid="pathname">{location.pathname}</div>
+          <div data-testid="pathname">{location?.pathname}</div>
           <RouteLink routeRef={settingsRouteRef} data-testid="to-settings">
             Settings (v7)
           </RouteLink>
@@ -211,12 +212,12 @@ describe('multi-router coexistence', () => {
     const homeRouteRef = createRouteRef();
 
     const HomeV6Page = () => {
-      const location = useFrameworkLocation();
+      const location = useAppHistoryLocation(useApi(appHistoryApiRef));
       const navigate = useAppNavigate();
       return (
         <div data-testid="home-page">
           <div data-testid="adapter">v6-default</div>
-          <div data-testid="pathname">{location.pathname}</div>
+          <div data-testid="pathname">{location?.pathname}</div>
           <button
             type="button"
             data-testid="to-tree"

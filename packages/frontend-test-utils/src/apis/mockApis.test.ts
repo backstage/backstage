@@ -16,6 +16,7 @@
 
 import {
   FeatureFlagState,
+  FrameworkLocation,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { mockApis } from './mockApis';
@@ -137,6 +138,30 @@ describe('mockApis', () => {
       });
       history.navigate('/tools');
       expect(history.navigate).toHaveBeenCalledWith('/tools');
+    });
+
+    it('has working defaults for everything a subscriber needs', () => {
+      const history = mockApis.appHistory.mock();
+
+      expect(history.createHref('/catalog')).toBe('/catalog');
+      expect(history.location).toEqual({
+        pathname: '/',
+        search: '',
+        hash: '',
+        state: undefined,
+      });
+
+      const seen: FrameworkLocation[] = [];
+      const subscription = history.location$.subscribe(l => seen.push(l));
+      expect(seen).toEqual([history.location]);
+
+      history.navigate('/tools');
+
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
+      expect(history.location.pathname).toBe('/tools');
+      expect(seen[1]).toBe(history.location);
+
+      subscription.unsubscribe();
     });
   });
 

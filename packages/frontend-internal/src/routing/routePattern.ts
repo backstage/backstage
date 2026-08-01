@@ -1,0 +1,207 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Shared path-pattern compile / match / priority, used by `RouteTable` and
+ * `matchRouteRefs` in `@backstage/frontend-app-api`.
+ *
+ * It lives here rather than in either consumer so both agree by construction —
+ * a route pattern must mean the same thing to top-level page matching and to
+ * route ref resolution. Nothing in this module is publicly exported by any
+ * package.
+ *
+ * Semantics follow react-router v6, which is the behavior plugin authors and
+ * adopters have written their route patterns against.
+ *
+ * @internal
+ */
+
+import { escapeRegExp } from './escapeRegExp';
+
+/** @internal */
+export interface CompiledPath {
+  regexp: RegExp;
+  paramNames: string[];
+}
+
+/** @internal */
+export interface PathMatch {
+  matchedPathname: string;
+  params: Record<string, string>;
+}
+
+// Per-segment scores, mirroring react-router's route ranking.
+const PARAM_SEGMENT = /^:[\w-]+$/;
+const DYNAMIC_SEGMENT_SCORE = 3;
+const EMPTY_SEGMENT_SCORE = 1;
+const STATIC_SEGMENT_SCORE = 10;
+const SPLAT_PENALTY = -2;
+
+/**
+ * Higher score = more specific = tried first.
+ *
+ * Each segment is scored on its own rather than the scores being summed into a
+ * length-dependent total, so a short static pattern always outranks a longer
+ * pattern built from params. Splats are penalized, and empty layout paths and
+ * `/` rank lowest.
+ *
+ * @internal
+ */
+export function routePriority(path: string): number {
+  const segments = path.split('/');
+  const initialScore =
+    segments.length + (segments.some(s => s === '*') ? SPLAT_PENALTY : 0);
+
+  return segments
+    .filter(segment => segment !== '*')
+    .reduce((score, segment) => {
+      if (PARAM_SEGMENT.test(segment)) {
+        return score + DYNAMIC_SEGMENT_SCORE;
+      }
+      return (
+        score + (segment === '' ? EMPTY_SEGMENT_SCORE : STATIC_SEGMENT_SCORE)
+      );
+    }, initialScore);
+}
+
+/**
+ * Converts a route path pattern into a RegExp and extracts parameter names.
+ * Handles named params (`:id`), a trailing catch-all `*`, and empty layout
+ * paths. Matching is case insensitive unless `caseSensitive` is set, which is
+ * the react-router default.
+ *
+ * @internal
+ */
+export function compilePath(
+  pattern: string,
+  end: boolean,
+  caseSensitive: boolean = false,
+): CompiledPath {
+  const paramNames: string[] = [];
+  const flags = caseSensitive ? undefined : 'i';
+
+  // Empty path matches as a layout/root route
+  if (pattern === '') {
+    return {
+      regexp: new RegExp(end ? '^/$' : '^/', flags),
+      paramNames,
+    };
+  }
+
+  let regexpSource = '^';
+
+  // Normalize: ensure leading slash, remove trailing slash
+  const normalizedPattern = pattern.startsWith('/') ? pattern : `/${pattern}`;
+  const segments = normalizedPattern.split('/').filter(Boolean);
+  const hasSplat = segments[segments.length - 1] === '*';
+  const namedSegments = hasSplat ? segments.slice(0, -1) : segments;
+
+  for (const segment of namedSegments) {
+    if (segment.startsWith(':')) {
+      paramNames.push(segment.slice(1));
+      regexpSource += '/([^/]+)';
+    } else {
+      regexpSource += `/${escapeRegExp(segment)}`;
+    }
+  }
+
+  if (hasSplat) {
+    paramNames.push('*');
+    // A splat matches an empty remainder, and never captures its own leading
+    // slash, so `/docs/*` matches `/docs` with an empty `*` param.
+    regexpSource += namedSegments.length === 0 ? '/(.*)$' : '(?:/(.+)|/*)$';
+  } else if (end) {
+    regexpSource += '/?$';
+  } else {
+    regexpSource += '(?:/|$)';
+  }
+
+  return {
+    regexp: new RegExp(regexpSource, flags),
+    paramNames,
+  };
+}
+
+/**
+ * Match a single path pattern against a pathname.
+ *
+ * @internal
+ */
+export function matchPath(
+  pattern: string,
+  pathname: string,
+  end: boolean,
+  caseSensitive: boolean = false,
+): PathMatch | null {
+  const { regexp, paramNames } = compilePath(pattern, end, caseSensitive);
+  const match = pathname.match(regexp);
+
+  if (!match) {
+    return null;
+  }
+
+  const matchedPathname = match[0].replace(/\/$/, '') || '/';
+  const params: Record<string, string> = {};
+
+  for (let i = 0; i < paramNames.length; i++) {
+    const name = paramNames[i];
+    const value = match[i + 1];
+    // Only a trailing splat can capture nothing, and it is reported as an
+    // empty string rather than being left out of the params.
+    if (value === undefined && name !== '*') {
+      continue;
+    }
+    params[name] = safelyDecodeURIComponent(value ?? '');
+  }
+
+  return { matchedPathname, params };
+}
+
+/**
+ * Pathnames are not guaranteed to be valid percent encoding — a bare `%` in
+ * any segment makes `decodeURIComponent` throw a `URIError`. Route matching
+ * runs above the page error boundary, so an escaping error would blank the
+ * whole app. Keep the raw value instead, the same way react-router does.
+ */
+function safelyDecodeURIComponent(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+/**
+ * Substitute named and splat params into a path template.
+ * Uses word boundaries for named params so `:a` does not match inside `:ab`.
+ *
+ * @internal
+ */
+export function substitutePathParams(
+  template: string,
+  params: Record<string, string>,
+): string {
+  let target = template;
+  for (const [name, value] of Object.entries(params)) {
+    // Replacing via a function keeps `$&`, `$'` and `` $` `` in the value
+    // literal rather than having them expanded as replacement patterns.
+    target = target.replace(
+      name === '*' ? /\*/g : new RegExp(`:${escapeRegExp(name)}\\b`, 'g'),
+      () => value ?? '',
+    );
+  }
+  return target;
+}

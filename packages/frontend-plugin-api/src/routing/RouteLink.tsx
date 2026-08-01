@@ -20,12 +20,14 @@ import {
   ReactNode,
   forwardRef,
 } from 'react';
+import { useAppHref } from '@internal/frontend';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { useRouteRef } from './useRouteRef';
-import { useOptionalFrameworkNavigate } from './useFrameworkNavigation';
+import { useApiHolder } from '../apis/system';
+import { appHistoryApiRef } from './AppHistoryApi';
 
 /**
  * Props for {@link RouteLink}.
@@ -64,16 +66,25 @@ export const RouteLink = forwardRef(function RouteLink<
 >(props: RouteLinkProps<TParams>, ref: React.ForwardedRef<HTMLAnchorElement>) {
   const { routeRef, params, replace, children, onClick, ...rest } = props;
   const routeFunc = useRouteRef(routeRef);
-  const frameworkNavigate = useOptionalFrameworkNavigate();
+  const appHistory = useApiHolder().get(appHistoryApiRef);
+
+  // Resolved above the unresolved-route bail-out below, since the target feeds
+  // a hook that has to be called unconditionally.
+  let to = '';
+  if (routeFunc) {
+    to =
+      params === undefined
+        ? (routeFunc as unknown as () => string)()
+        : (routeFunc as unknown as (p: TParams) => string)(params);
+  }
+
+  // The rendered href must include the app's deploy basename: modified clicks
+  // and the old frontend system both leave the anchor to the browser.
+  const href = useAppHref(appHistory, to);
 
   if (!routeFunc) {
     return <>{children}</>;
   }
-
-  const to =
-    params === undefined
-      ? (routeFunc as unknown as () => string)()
-      : (routeFunc as unknown as (p: TParams) => string)(params);
 
   const handleClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     onClick?.(event);
@@ -85,16 +96,16 @@ export const RouteLink = forwardRef(function RouteLink<
     ) {
       return;
     }
-    if (!frameworkNavigate) {
+    if (!appHistory) {
       // Old frontend system / no app history: let the browser follow href.
       return;
     }
     event.preventDefault();
-    frameworkNavigate(to, replace ? { replace: true } : undefined);
+    appHistory.navigate(to, replace ? { replace: true } : undefined);
   };
 
   return (
-    <a {...rest} ref={ref} href={to} onClick={handleClick}>
+    <a {...rest} ref={ref} href={href} onClick={handleClick}>
       {children}
     </a>
   );

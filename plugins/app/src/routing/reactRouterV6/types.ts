@@ -86,27 +86,17 @@ export type NavigationContextExtras = Record<string, unknown>;
  */
 export interface CreateScopedRouterWithBindingsOptions {
   /**
-   * Concrete app-absolute URL prefix this page is mounted at (e.g.
-   * `/catalog` or `/catalog/default/component/foo`).
+   * Registered page route pattern (e.g. `/catalog` or
+   * `/catalog/:namespace/:kind/:name`).
+   *
+   * The page's route match is derived from this pattern and the live app
+   * location on every render, which is why the projection never needs the
+   * concrete `basePath`: matching yields the same prefix, plus the params and
+   * the splat tail that React Router itself would have produced. Deriving it
+   * also means the match can never lag behind the location — the two always
+   * come from the same render.
    */
-  basePath: string;
-  /**
-   * Registered page path pattern (e.g. `/catalog` or
-   * `/catalog/:namespace/:kind/:name`). Used to populate React Router
-   * `useParams` via a splat match of `${routePattern}/*`.
-   */
-  routePattern?: string;
-  /**
-   * App deploy basename (e.g. `/backstage`). Prefixed onto `createHref`
-   * results so Link `href`s work under subpath deploys.
-   */
-  appBasename?: string;
-  /**
-   * History stack navigation (back/forward). When omitted, `go` is a no-op
-   * and a development warning is logged — window.history.go is never used
-   * as a fallback.
-   */
-  go?: (delta: number) => void;
+  routePattern: string;
   /**
    * Extra NavigationContext fields that differ between React Router major
    * versions (e.g. v6 `future.v7_relativeSplatPath` vs v7 `useTransitions`).
@@ -130,6 +120,4 @@ export interface ScopedRouterWithBindingsResult {
   useParams: <T extends Record<string, string | undefined>>() => T;
   /** Bound `useSearchParams` from the injected bindings. */
   useSearchParams: (...args: any[]) => any;
-  /** Unsubscribes from the app history's location$ observable. */
-  dispose: () => void;
 }

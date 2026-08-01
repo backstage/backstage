@@ -24,7 +24,8 @@ import { Link } from '../../components/Link/Link';
 import { SidebarConfig, SidebarConfigContext } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
-import { useChromePathname } from './useChromePathname';
+import { useAppLocation } from '@internal/frontend';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /**
  * Props for the `SidebarGroup`
@@ -78,7 +79,9 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   const { to, label, icon, value } = props;
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useStyles({ sidebarConfig });
-  const locationPathname = useChromePathname();
+  const { pathname: locationPathname } = useAppLocation(
+    useOptionalAppHistory(),
+  );
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);
 

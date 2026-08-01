@@ -50,6 +50,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@tanstack/history": "^1.162.0",
     "@tanstack/react-router": "^1.170.17",
     "@testing-library/dom": "^10.0.0",

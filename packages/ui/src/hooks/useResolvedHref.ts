@@ -38,10 +38,5 @@ export function useResolvedHref(href: string | undefined): string | undefined {
   if (!href || isExternalLink(href)) {
     return href;
   }
-  // React Router may resolve the app root to '' or '.' (with or without a
-  // basename). Keep a navigable href so breadcrumb/root links stay usable.
-  if (href === '/' && (resolved === '' || resolved === '.')) {
-    return '/';
-  }
   return resolved;
 }

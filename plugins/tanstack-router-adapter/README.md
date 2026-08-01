@@ -22,7 +22,7 @@ const tanstackRouter = PageRouterBlueprint.make({
 
 ## Limits
 
-TanStack Router renders through its own route tree and cannot host React Router content, so this package only supports pages that render a single content element. Pages built from sub-pages or tabs must keep a React Router page router; if this adapter is made the app-wide default through `pageRouterApiRef`, those pages fail fast with a clear error.
+Pages built from sub-pages (tabs) are supported: the framework hands the sub-page list over as data, and this adapter compiles it into real TanStack routes. A page's own content, supplied through a `PageBlueprint` `loader`, is rendered as-is under a single root route — if that content routes internally with another library, that is the page author's choice, made alongside their choice of this adapter.
 
 - Programmatic back, forward and `go` warn and do nothing. There is a single, real browser history; use the browser's own back and forward.
 - `useBlocker` only intercepts navigation started from within this page. It does not see navigation coming from elsewhere in the app.

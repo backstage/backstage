@@ -48,17 +48,28 @@ describe('ReactRouterV6PageRouter', () => {
       },
     });
 
-    renderTestApp({
+    const { appHistory } = renderTestApp({
       extensions: [settingsPage],
       initialRouteEntries: ['/opaque-v6'],
     });
 
-    await screen.findByTestId('opaque-index');
+    expect(await screen.findByTestId('opaque-index')).toHaveTextContent(
+      'Index',
+    );
+    expect(screen.queryByTestId('opaque-general')).not.toBeInTheDocument();
+    expect(screen.getByTestId('opaque-general-link')).toHaveAttribute(
+      'href',
+      '/opaque-v6/general',
+    );
 
     await act(async () => {
       screen.getByTestId('opaque-general-link').click();
     });
 
-    await screen.findByTestId('opaque-general');
+    expect(await screen.findByTestId('opaque-general')).toHaveTextContent(
+      'General',
+    );
+    expect(screen.queryByTestId('opaque-index')).not.toBeInTheDocument();
+    expect(appHistory.location.pathname).toBe('/opaque-v6/general');
   });
 });

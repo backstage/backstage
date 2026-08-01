@@ -28,8 +28,15 @@ export function generatePath(
   pattern: string,
   params: Record<string, string | undefined> = {},
 ): string {
+  // Named params and the trailing splat are substituted in a single pass over
+  // the pattern, so a `*` or `:name` inside a substituted value is never
+  // mistaken for a placeholder. Param names may contain hyphens, matching how
+  // the route pattern matcher reads them.
   return pattern
-    .replace(/:(\w+)(\?)?/g, (_, key, optional) => {
+    .replace(/:([\w-]+)(\?)?|\*$/g, (matched, key, optional) => {
+      if (matched === '*') {
+        return encodeSplatParam(params['*'] ?? '');
+      }
       const value = params[key];
       if (value === undefined) {
         if (!optional) {
@@ -41,7 +48,6 @@ export function generatePath(
       }
       return encodePathParam(value);
     })
-    .replace(/\*$/, () => encodeSplatParam(params['*'] ?? ''))
     .replace(/\/\/+/g, '/');
 }
 

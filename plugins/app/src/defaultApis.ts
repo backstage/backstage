@@ -86,11 +86,7 @@ export const apis = [
       defineParams({
         api: pageRouterApiRef,
         deps: {},
-        factory: () => ({
-          getDefaultRouter: () => ReactRouterV6PageRouter,
-          // Opaque React Router children (loader path) remain supported.
-          getCapabilities: () => ({ supportsOpaqueChildren: true }),
-        }),
+        factory: () => ReactRouterV6PageRouter,
       }),
   }),
   ApiBlueprint.make({

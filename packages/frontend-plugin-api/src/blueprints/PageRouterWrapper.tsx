@@ -1,0 +1,88 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { ReactNode } from 'react';
+import { useApiHolder } from '../apis/system';
+import {
+  pageRouterApiRef,
+  type PageRouterComponent,
+  type PageRouterSubPage,
+} from '../apis/definitions/PageRouterApi';
+import type { PageMount } from '@internal/frontend';
+
+/**
+ * Props for {@link PageRouterWrapper}.
+ */
+export interface PageRouterWrapperProps {
+  /** The mount this content is rendered at, or `undefined` when unmounted. */
+  mount: PageMount | undefined;
+  /** Adapter from the page's (or sub-page's) `router` extension input. */
+  RouterOverride?: PageRouterComponent;
+  /** Sub-pages for the adapter to route between, as data. */
+  subPages?: readonly PageRouterSubPage[];
+  /** Sub-page path the page root should land on. */
+  indexPath?: string;
+  /** Opaque content, when there are no sub-pages. */
+  children?: ReactNode;
+}
+
+/**
+ * Renders a page's or sub-page's content region with its own router input
+ * override, or the app-plugin default from {@link pageRouterApiRef}.
+ *
+ * Sub-pages are handed to the adapter as data rather than as an already
+ * composed route tree, so the adapter decides how they are matched — see
+ * {@link PageRouterComponent}. The page chrome around this (header, tabs,
+ * breadcrumbs) is framework-owned and deliberately sits outside the adapter:
+ * it resolves its links from the page mount and the route resolution API, so
+ * it must not require any particular routing library to be in context.
+ *
+ * When there is no mount (e.g. isolated `renderInTestApp` without
+ * `AppRouteSwitch`) there is nothing to scope an adapter to, so content
+ * renders without one and a sub-page list falls back to its index entry.
+ */
+export function PageRouterWrapper(props: PageRouterWrapperProps) {
+  const { mount, RouterOverride, subPages, indexPath, children } = props;
+  const apiHolder = useApiHolder();
+
+  // Without an adapter there is nothing to dispatch between sub-pages, so the
+  // index sub-page stands in for the whole list.
+  const unroutedContent = subPages?.length
+    ? subPages.find(subPage => subPage.path === indexPath)?.element ??
+      subPages[0].element
+    : children;
+
+  if (!mount) {
+    return <>{unroutedContent}</>;
+  }
+
+  const Router = RouterOverride ?? apiHolder.get(pageRouterApiRef);
+
+  if (!Router) {
+    return <>{unroutedContent}</>;
+  }
+
+  return (
+    <Router
+      basePath={mount.basePath}
+      routePattern={mount.routePattern}
+      subPages={subPages}
+      indexPath={indexPath}
+    >
+      {children}
+    </Router>
+  );
+}

@@ -57,6 +57,23 @@ describe('generatePath', () => {
     );
   });
 
+  it('should keep a trailing `*` that is part of a param value', () => {
+    expect(generatePath('/search/:term', { term: 'C*' })).toBe('/search/C*');
+    expect(generatePath('/search/:term/*', { term: 'C*', '*': 'a*/b' })).toBe(
+      '/search/C*/a*/b',
+    );
+  });
+
+  it('should support hyphenated param names', () => {
+    expect(generatePath('/entity/:my-param', { 'my-param': 'x' })).toBe(
+      '/entity/x',
+    );
+    expect(generatePath('/entity/:my-param?', {})).toBe('/entity/');
+    expect(() => generatePath('/entity/:my-param', {})).toThrow(
+      'Missing required param "my-param"',
+    );
+  });
+
   it('should handle paths with no params', () => {
     expect(generatePath('/simple/path')).toBe('/simple/path');
   });

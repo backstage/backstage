@@ -16,7 +16,11 @@
 
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import {
   createMockAppHistory,
   createMockRouteResolutionApi,
@@ -26,7 +30,8 @@ import {
   appHistoryApiRef,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
-import { PageMountContext } from '@internal/frontend';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
+import { PageMountProvider } from '@internal/frontend';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from './EntityRefLink';
 
@@ -233,11 +238,11 @@ describe('<EntityRefLink />', () => {
           [appHistoryApiRef, appHistory],
         ]}
       >
-        <PageMountContext.Provider value={pageMount}>
+        <PageMountProvider mount={pageMount}>
           <MemoryRouter>
             <EntityRefLink entityRef={entity} />
           </MemoryRouter>
-        </PageMountContext.Provider>
+        </PageMountProvider>
       </TestApiProvider>,
     );
 
@@ -247,7 +252,57 @@ describe('<EntityRefLink />', () => {
     fireEvent.click(screen.getByText('software'));
     expect(navigate).toHaveBeenCalledWith(
       '/catalog/default/component/software',
-      undefined,
+    );
+  });
+
+  it('renders a basename-prefixed href and reports clicks to analytics', () => {
+    const analyticsApi = mockApis.analytics();
+    const appHistory = createMockAppHistory({ basename: '/backstage' });
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
+      },
+    };
+
+    render(
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            createMockRouteResolutionApi({
+              routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
+            }),
+          ],
+          [appHistoryApiRef, appHistory],
+          [analyticsApiRef, analyticsApi],
+        ]}
+      >
+        <MemoryRouter>
+          <EntityRefLink entityRef={entity} noTrack={false} />
+        </MemoryRouter>
+      </TestApiProvider>,
+    );
+
+    const link = screen.getByText('software').closest('a');
+    // Middle-click / "open in new tab" only ever see the href.
+    expect(link).toHaveAttribute(
+      'href',
+      '/backstage/catalog/default/component/software',
+    );
+    // `noTrack` is a Link concern and must not reach the DOM.
+    expect(link).not.toHaveAttribute('notrack');
+
+    fireEvent.click(screen.getByText('software'));
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'click',
+        subject: '/catalog/default/component/software',
+        attributes: { to: '/catalog/default/component/software' },
+      }),
     );
   });
 
@@ -279,7 +334,6 @@ describe('<EntityRefLink />', () => {
     fireEvent.click(screen.getByText('software'));
     expect(navigateSpy).toHaveBeenCalledWith(
       '/catalog/default/component/software',
-      undefined,
     );
   });
 

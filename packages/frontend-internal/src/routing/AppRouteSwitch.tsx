@@ -16,30 +16,70 @@
 
 import {
   Component,
+  useCallback,
   useEffect,
+  useSyncExternalStore,
   type ComponentType,
   type ErrorInfo,
   type ReactElement,
   type ReactNode,
 } from 'react';
-import { PageMountContext, type PageMount } from '@internal/frontend';
-import type { AppHistoryApi } from './AppHistoryApi';
+import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
+import { PageMountProvider, type PageMount } from './PageMountContext';
 import { RouteTable } from './RouteTable';
-import {
-  useObservableAsState,
-  frameworkLocationEqual,
-} from './useObservableAsState';
 import { matchPath, substitutePathParams } from './routePattern';
 
+interface PluginErrorBoundaryProps {
+  basePath: string;
+  children: ReactNode;
+  fallback: ReactElement;
+}
+
+interface PluginErrorBoundaryState {
+  /** The concrete mount the rest of this state belongs to. */
+  basePath: string;
+  hasError: boolean;
+  error?: Error;
+}
+
+/**
+ * Renders the app fallback in place of a page that crashed.
+ *
+ * A crash belongs to the concrete mount it happened at, not to the route
+ * pattern: entity A crashing says nothing about entity B, even though both
+ * match `/catalog/:namespace/:kind/:name`. The error is therefore cleared
+ * whenever the mount changes.
+ *
+ * Deliberately done through derived state rather than by keying the boundary
+ * on the base path. A key would remount the whole page subtree on every base
+ * path change, discarding page state, scroll position and in-flight requests
+ * for healthy navigation between two entities. Clearing the error instead
+ * leaves those renders mount-stable.
+ */
 class PluginErrorBoundary extends Component<
-  { basePath: string; children: ReactNode; fallback: ReactElement },
-  { hasError: boolean; error?: Error }
+  PluginErrorBoundaryProps,
+  PluginErrorBoundaryState
 > {
   static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
   }
 
-  state = { hasError: false, error: undefined };
+  static getDerivedStateFromProps(
+    props: PluginErrorBoundaryProps,
+    state: PluginErrorBoundaryState,
+  ): Partial<PluginErrorBoundaryState> | null {
+    if (state.basePath === props.basePath) {
+      return null;
+    }
+    // A different concrete mount, so any error from the previous one is stale.
+    return { basePath: props.basePath, hasError: false, error: undefined };
+  }
+
+  state = {
+    basePath: this.props.basePath,
+    hasError: false,
+    error: undefined,
+  };
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     // eslint-disable-next-line no-console
@@ -60,8 +100,6 @@ class PluginErrorBoundary extends Component<
 
 /**
  * A configured redirect applied by {@link AppRouteSwitch} before page matching.
- *
- * @public
  */
 export interface AppRouteRedirect {
   /** App-absolute path pattern to match. */
@@ -72,8 +110,6 @@ export interface AppRouteRedirect {
 
 /**
  * Properties for {@link AppRouteSwitch}.
- *
- * @public
  */
 export interface AppRouteSwitchProps {
   /** Framework app history that owns browser history. */
@@ -157,15 +193,25 @@ function resolveRedirectTarget(
  * `PageMount` provided to the matched page carries both that pattern
  * and the concrete matched URL prefix (`match.basePath`).
  *
- * @public
+ * The error boundary is keyed by the pattern, so switching pages remounts it,
+ * while navigation between two concrete mounts of the same pattern does not.
+ * See {@link PluginErrorBoundary} for how a crash at one such mount is kept
+ * from being inherited by the next.
  */
 export function AppRouteSwitch(props: AppRouteSwitchProps) {
   const { history, routeTable, pages, redirects, fallback } = props;
 
-  const location = useObservableAsState(
-    history.location$,
-    frameworkLocationEqual,
+  // `history.location` is a stable reference that only changes when the
+  // location does, so it is the `useSyncExternalStore` snapshot directly.
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      const subscription = history.location$.subscribe(() => onStoreChange());
+      return () => subscription.unsubscribe();
+    },
+    [history],
   );
+  const getSnapshot = useCallback(() => history.location, [history]);
+  const location = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   const redirectTarget = resolveRedirectTarget(redirects, location);
 
@@ -200,7 +246,7 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
   };
 
   return (
-    <PageMountContext.Provider value={pageMount}>
+    <PageMountProvider mount={pageMount}>
       <PluginErrorBoundary
         key={matchedPath}
         basePath={matchedBasePath}
@@ -208,6 +254,6 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
       >
         <PageComponent />
       </PluginErrorBoundary>
-    </PageMountContext.Provider>
+    </PageMountProvider>
   );
 }

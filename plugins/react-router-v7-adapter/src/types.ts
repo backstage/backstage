@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ComponentType,
-  Context,
-  MutableRefObject,
-  ReactNode,
-} from 'react';
+import type { ComponentType, Context, ReactNode } from 'react';
 
 /**
  * Minimal location shape shared by React Router v6 and v7.
@@ -56,8 +51,8 @@ export interface AdapterPathMatch {
 }
 
 /**
- * React Router APIs injected by each versioned adapter so this package never
- * depends on `react-router` / `react-router-dom` peers.
+ * React Router APIs injected into {@link createScopedRouterWithBindings} so
+ * that helper never has to hard-code a specific `react-router` version.
  *
  * @internal
  */
@@ -91,17 +86,15 @@ export type NavigationContextExtras = Record<string, unknown>;
  */
 export interface CreateScopedRouterWithBindingsOptions {
   /**
-   * Live ref to the page's current concrete `basePath` (e.g. `/catalog` or
-   * `/catalog/default/component/foo`). Read on every render rather than
-   * captured at creation, so navigating between concrete prefixes under the
-   * same `routePattern` (e.g. entity A → entity B) doesn't require
-   * recreating the router / losing in-page component state.
-   */
-  basePathRef: MutableRefObject<string>;
-  /**
    * Registered page route pattern (e.g. `/catalog` or
-   * `/catalog/:namespace/:kind/:name`). Used to populate React Router
-   * `useParams`.
+   * `/catalog/:namespace/:kind/:name`).
+   *
+   * The page's route match is derived from this pattern and the live app
+   * location on every render, which is why the projection never needs the
+   * concrete `basePath`: matching yields the same prefix, plus the params and
+   * the splat tail that React Router itself would have produced. Deriving it
+   * also means the match can never lag behind the location — the two always
+   * come from the same render.
    */
   routePattern: string;
   /**

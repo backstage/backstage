@@ -30,10 +30,10 @@ import {
   BreadcrumbEntry,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
-import { PageMountContext } from '@internal/frontend';
+import { usePageMount } from '@internal/frontend';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useInRouterContext, useResolvedPath } from 'react-router-dom';
 
 export const Progress = SwappableComponentBlueprint.make({
@@ -94,7 +94,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
         // createExtensionTester + renderInTestApp without AppRouteSwitch).
         // Only call useResolvedPath when there is no page mount — chrome
         // must not unconditionally require root RR when one is present.
-        const pageMount = useContext(PageMountContext);
+        const pageMount = usePageMount();
         const inRouter = useInRouterContext();
         const rrParentPath =
           !pageMount && inRouter

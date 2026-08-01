@@ -34,6 +34,7 @@ import {
   type ErrorApi,
   type FetchApi,
   type FeatureFlagState,
+  type FrameworkNavigateOptions,
   type IdentityApi,
   type RouteResolutionApi,
   type StorageApi,
@@ -499,18 +500,30 @@ export namespace mockApis {
    * Mock helpers for
    * {@link @backstage/frontend-plugin-api#AppHistoryApi}.
    *
+   * The default implementation is backed by {@link createMockAppHistory}, so
+   * `location`, `location$` and `createHref` behave like the real app history
+   * while `navigate` and `createHref` stay assertable jest mocks. Components
+   * that subscribe to the location can therefore be rendered against this mock
+   * without any additional setup.
+   *
    * @public
    */
   export namespace appHistory {
-    export const mock = createApiMock(
-      appHistoryApiRef,
-      () =>
-        ({
-          navigate: jest.fn(),
-          location$: jest.fn(),
-          createHref: jest.fn(),
-        } as unknown as jest.Mocked<AppHistoryApi>),
-    );
+    export const mock = createApiMock(appHistoryApiRef, () => {
+      const instance = createMockAppHistory();
+      const mocked = {
+        location: instance.location,
+        location$: instance.location$,
+        navigate: jest.fn(
+          (to: string, navOptions?: FrameworkNavigateOptions) => {
+            instance.navigate(to, navOptions);
+            mocked.location = instance.location;
+          },
+        ),
+        createHref: jest.fn((to: string) => instance.createHref(to)),
+      };
+      return mocked;
+    });
   }
 
   /**

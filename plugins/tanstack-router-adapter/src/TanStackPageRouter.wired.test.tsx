@@ -20,6 +20,7 @@ import {
   ApiBlueprint,
   PageBlueprint,
   PageRouterBlueprint,
+  SubPageBlueprint,
   createFrontendModule,
   pageRouterApiRef,
 } from '@backstage/frontend-plugin-api';
@@ -31,9 +32,9 @@ import { TanStackPageRouter } from './TanStackPageRouter';
  * `loader`) content renders under a TanStack root route, `useBlocker` works
  * for in-page navigation initiated through TanStack's own `useNavigate`
  * (this adapter's `history.block` is a *local* seam — see the package
- * README), and `PageBlueprint` still fails fast when TanStack is the
- * default and a page relies on opaque React Router content (tabs / composed
- * `<Routes>`), since this adapter has no opaque children bridge.
+ * README), and sub-page tabs are hosted as real TanStack routes now that
+ * `PageBlueprint` hands sub-pages over as data instead of as a React Router
+ * tree.
  */
 describe('TanStackPageRouter wired path', () => {
   it('should render single-page content under a TanStack root route', async () => {
@@ -124,15 +125,36 @@ describe('TanStackPageRouter wired path', () => {
     expect(screen.getByTestId('q')).toHaveTextContent('');
   });
 
-  it('should fail fast when TanStack is default and page uses opaque loader', async () => {
-    const opaquePage = PageBlueprint.make({
-      name: 'opaque-ts',
+  it('should host sub-page tabs, including as the app-wide default router', async () => {
+    // Unnamed parent → page:test, so the named sub-pages attach relatively
+    // (the same wiring production plugins use).
+    const tabbedPage = PageBlueprint.make({
       params: {
-        path: '/opaque-ts',
-        loader: async () => <div data-testid="opaque-content">Opaque</div>,
+        path: '/tabbed-ts',
+        title: 'Tabbed',
       },
     });
 
+    const overviewSubPage = SubPageBlueprint.make({
+      name: 'overview',
+      params: {
+        path: 'overview',
+        title: 'Overview',
+        loader: async () => <div data-testid="overview-page">Overview</div>,
+      },
+    });
+
+    const settingsSubPage = SubPageBlueprint.make({
+      name: 'settings',
+      params: {
+        path: 'settings',
+        title: 'Settings',
+        loader: async () => <div data-testid="settings-page">Settings</div>,
+      },
+    });
+
+    // TanStack as the app-wide default, i.e. no PageRouterBlueprint override
+    // on the page — the path the old capability guard never covered.
     const tanstackDefaultModule = createFrontendModule({
       pluginId: 'app',
       extensions: [
@@ -142,35 +164,34 @@ describe('TanStackPageRouter wired path', () => {
             defineParams({
               api: pageRouterApiRef,
               deps: {},
-              factory: () => ({
-                getDefaultRouter: () => TanStackPageRouter,
-                getCapabilities: () => ({ supportsOpaqueChildren: false }),
-              }),
+              factory: () => TanStackPageRouter,
             }),
         }),
       ],
     });
 
-    const consoleError = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => undefined);
+    const { appHistory } = renderTestApp({
+      features: [tanstackDefaultModule],
+      extensions: [tabbedPage, overviewSubPage, settingsSubPage],
+      initialRouteEntries: ['/tabbed-ts/overview'],
+    });
 
-    try {
-      renderTestApp({
-        features: [tanstackDefaultModule],
-        extensions: [opaquePage],
-        initialRouteEntries: ['/opaque-ts'],
-      });
+    expect(await screen.findByTestId('overview-page')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();
 
-      await waitFor(() => {
-        expect(
-          screen.getAllByText(/does not support opaque React Router children/i)
-            .length,
-        ).toBeGreaterThan(0);
-      });
-      expect(screen.queryByTestId('opaque-content')).not.toBeInTheDocument();
-    } finally {
-      consoleError.mockRestore();
-    }
+    await act(async () => {
+      appHistory.navigate('/tabbed-ts/settings');
+    });
+
+    expect(await screen.findByTestId('settings-page')).toBeInTheDocument();
+    expect(screen.queryByTestId('overview-page')).not.toBeInTheDocument();
+
+    // The page root redirects to the first sub-page.
+    await act(async () => {
+      appHistory.navigate('/tabbed-ts');
+    });
+
+    expect(await screen.findByTestId('overview-page')).toBeInTheDocument();
   });
 });

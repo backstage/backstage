@@ -48,6 +48,11 @@ export const RouterBlueprint = createExtensionBlueprint({
     Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   }) {
+    // Only direct callers are warned. `convertLegacyAppOptions` in
+    // `@backstage/core-compat-api` reaches this blueprint on the adopter's
+    // behalf and deliberately overrides this factory rather than calling it, so
+    // migrating apps are not told to act on a choice they never made. Anything
+    // added below has to be mirrored there.
     if (!hasWarnedDeprecation && process.env.NODE_ENV !== 'test') {
       hasWarnedDeprecation = true;
       // eslint-disable-next-line no-console

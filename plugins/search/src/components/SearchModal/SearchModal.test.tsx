@@ -198,7 +198,33 @@ describe('SearchModal', () => {
     await userEvent.clear(input);
     await userEvent.type(input, 'new term{enter}');
 
-    expect(navigate).toHaveBeenCalledWith('/search?query=new term', undefined);
+    expect(navigate).toHaveBeenCalledWith(
+      '/search?query=new%20term',
+      undefined,
+    );
+  });
+
+  it('encodes the search term so protocol-like queries stay navigable', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden={false} toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    const input = screen.getByLabelText<HTMLInputElement>('Search');
+    await userEvent.type(input, 'https://github.com/backstage{enter}');
+
+    // The app history rejects any target containing '://', so the term has to
+    // be percent-encoded rather than interpolated raw.
+    expect(navigate).toHaveBeenCalledWith(
+      '/search?query=https%3A%2F%2Fgithub.com%2Fbackstage',
+      undefined,
+    );
   });
 
   it('should navigate with correct search terms to full results', async () => {

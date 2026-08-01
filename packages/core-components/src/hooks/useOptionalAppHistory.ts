@@ -14,35 +14,24 @@
  * limitations under the License.
  */
 
-import { useContext } from 'react';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import {
   appHistoryApiRef,
   type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
-import { PageMountContext, type PageMount } from '@internal/frontend';
 
 /**
  * Returns the framework app history when the new frontend system has
  * registered one, and `undefined` otherwise (old frontend system apps, or
  * isolated tests without an app history).
  *
- * Chrome (`Link`, sidebar active-state, `ErrorPage`, ...) uses this to prefer
- * framework navigation/location when available while keeping React Router
- * based behavior unchanged when it isn't.
+ * This is the one place chrome asks "is the framework the routing authority
+ * here?". The answer is then handed to the `useApp*` hooks in
+ * `@internal/frontend`, which cannot resolve it themselves without closing an
+ * import cycle back into `@backstage/frontend-plugin-api`.
  *
  * @internal
  */
 export function useOptionalAppHistory(): AppHistoryApi | undefined {
   return useApiHolder().get(appHistoryApiRef);
-}
-
-/**
- * Returns the current page mount (`basePath` + `routePattern`) when one is
- * in context, and `undefined` otherwise.
- *
- * @internal
- */
-export function useOptionalPageMount(): PageMount | undefined {
-  return useContext(PageMountContext);
 }

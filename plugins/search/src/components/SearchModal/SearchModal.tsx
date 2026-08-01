@@ -34,6 +34,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CloseIcon from '@material-ui/icons/Close';
+import qs from 'qs';
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 
 import { rootRouteRef } from '../../plugin';
@@ -143,7 +144,10 @@ export const Modal = ({
   const handleSearchBarSubmit = useCallback(() => {
     // Using ref to get the current field value without waiting for a query debounce
     const query = searchBarRef.current?.value ?? '';
-    navigate(`${searchRootRoute}?query=${query}`);
+    // Encode rather than interpolate: a term like `https://example.com` would
+    // otherwise produce a target the app history refuses to navigate to.
+    const queryString = qs.stringify({ query }, { addQueryPrefix: true });
+    navigate(`${searchRootRoute}${queryString}`);
     handleSearchResultClick();
   }, [navigate, handleSearchResultClick, searchRootRoute]);
 

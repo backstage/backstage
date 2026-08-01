@@ -21,47 +21,62 @@ import { Observable, Subscription } from '@backstage/types';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import {
   useAppNavigate,
-  useFrameworkLocation,
-  useFrameworkNavigate,
   useOptionalFrameworkNavigate,
 } from './useFrameworkNavigation';
-import { appHistoryApiRef } from './AppHistoryApi';
+import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
 import type { FrameworkLocation } from './FrameworkLocation';
 
-function createLocationObservable(initial: FrameworkLocation): {
-  location$: Observable<FrameworkLocation>;
+/**
+ * A hand-rolled `AppHistoryApi` matching the real implementation's contract:
+ * `location$` emits synchronously on subscribe and `location` is a stable
+ * reference that only changes when the location changes.
+ */
+function createFakeAppHistory(
+  initial: FrameworkLocation,
+  navigate: AppHistoryApi['navigate'] = jest.fn(),
+): {
+  appHistory: AppHistoryApi;
   emit: (location: FrameworkLocation) => void;
 } {
   const subscribers = new Set<(value: FrameworkLocation) => void>();
   let current = initial;
 
+  const location$: Observable<FrameworkLocation> = {
+    [Symbol.observable]() {
+      return this;
+    },
+    subscribe(observerOrNext): Subscription {
+      const next =
+        typeof observerOrNext === 'function'
+          ? observerOrNext
+          : observerOrNext?.next?.bind(observerOrNext);
+      if (next) {
+        subscribers.add(next);
+        next(current);
+      }
+      let closed = false;
+      return {
+        unsubscribe() {
+          if (next) {
+            subscribers.delete(next);
+          }
+          closed = true;
+        },
+        get closed() {
+          return closed;
+        },
+      };
+    },
+  };
+
   return {
-    location$: {
-      [Symbol.observable]() {
-        return this;
+    appHistory: {
+      get location() {
+        return current;
       },
-      subscribe(observerOrNext): Subscription {
-        const next =
-          typeof observerOrNext === 'function'
-            ? observerOrNext
-            : observerOrNext?.next?.bind(observerOrNext);
-        if (next) {
-          subscribers.add(next);
-          next(current);
-        }
-        let closed = false;
-        return {
-          unsubscribe() {
-            if (next) {
-              subscribers.delete(next);
-            }
-            closed = true;
-          },
-          get closed() {
-            return closed;
-          },
-        };
-      },
+      location$,
+      navigate,
+      createHref: (to: string) => to,
     },
     emit(location) {
       current = location;
@@ -71,49 +86,6 @@ function createLocationObservable(initial: FrameworkLocation): {
     },
   };
 }
-
-describe('useFrameworkNavigate', () => {
-  it('delegates to the app history with options', () => {
-    const navigate = jest.fn();
-    const { location$ } = createLocationObservable({
-      pathname: '/',
-      search: '',
-      hash: '',
-      state: undefined,
-    });
-
-    const { result } = renderHook(() => useFrameworkNavigate(), {
-      wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[
-            [
-              appHistoryApiRef,
-              {
-                navigate,
-                location$,
-                createHref: (to: string) => to,
-              },
-            ],
-          ]}
-        >
-          {children}
-        </TestApiProvider>
-      ),
-    });
-
-    act(() => {
-      result.current('/catalog/default/component/foo', {
-        replace: true,
-        state: { from: 'test' },
-      });
-    });
-
-    expect(navigate).toHaveBeenCalledWith('/catalog/default/component/foo', {
-      replace: true,
-      state: { from: 'test' },
-    });
-  });
-});
 
 describe('useOptionalFrameworkNavigate', () => {
   it('returns undefined when no app history is registered', () => {
@@ -126,29 +98,16 @@ describe('useOptionalFrameworkNavigate', () => {
     expect(result.current).toBeUndefined();
   });
 
-  it('returns a navigate callback when an app history is present', () => {
+  it('returns a navigate callback that delegates to the app history', () => {
     const navigate = jest.fn();
-    const { location$ } = createLocationObservable({
-      pathname: '/',
-      search: '',
-      hash: '',
-      state: undefined,
-    });
+    const { appHistory } = createFakeAppHistory(
+      { pathname: '/', search: '', hash: '', state: undefined },
+      navigate,
+    );
 
     const { result } = renderHook(() => useOptionalFrameworkNavigate(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[
-            [
-              appHistoryApiRef,
-              {
-                navigate,
-                location$,
-                createHref: (to: string) => to,
-              },
-            ],
-          ]}
-        >
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           {children}
         </TestApiProvider>
       ),
@@ -161,34 +120,33 @@ describe('useOptionalFrameworkNavigate', () => {
     });
 
     expect(navigate).toHaveBeenCalledWith('/search', { replace: true });
+
+    act(() => {
+      result.current!('/catalog/default/component/foo', {
+        replace: true,
+        state: { from: 'test' },
+      });
+    });
+
+    expect(navigate).toHaveBeenCalledWith('/catalog/default/component/foo', {
+      replace: true,
+      state: { from: 'test' },
+    });
   });
 });
 
 describe('useAppNavigate', () => {
   it('uses the framework app history when registered', () => {
     const navigate = jest.fn();
-    const { location$ } = createLocationObservable({
-      pathname: '/',
-      search: '',
-      hash: '',
-      state: undefined,
-    });
+    const { appHistory } = createFakeAppHistory(
+      { pathname: '/', search: '', hash: '', state: undefined },
+      navigate,
+    );
 
     const { result } = renderHook(() => useAppNavigate(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <MemoryRouter>
-          <TestApiProvider
-            apis={[
-              [
-                appHistoryApiRef,
-                {
-                  navigate,
-                  location$,
-                  createHref: (to: string) => to,
-                },
-              ],
-            ]}
-          >
+          <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
             {children}
           </TestApiProvider>
         </MemoryRouter>
@@ -225,58 +183,5 @@ describe('useAppNavigate', () => {
     });
 
     expect(locationPathname).toBe('/search');
-  });
-});
-
-describe('useFrameworkLocation', () => {
-  it('returns the current app history location and updates on emit', () => {
-    const { location$, emit } = createLocationObservable({
-      pathname: '/catalog',
-      search: '?q=1',
-      hash: '',
-      state: undefined,
-    });
-
-    const { result } = renderHook(() => useFrameworkLocation(), {
-      wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[
-            [
-              appHistoryApiRef,
-              {
-                navigate: jest.fn(),
-                location$,
-                createHref: (to: string) => to,
-              },
-            ],
-          ]}
-        >
-          {children}
-        </TestApiProvider>
-      ),
-    });
-
-    expect(result.current).toEqual({
-      pathname: '/catalog',
-      search: '?q=1',
-      hash: '',
-      state: undefined,
-    });
-
-    act(() => {
-      emit({
-        pathname: '/create',
-        search: '',
-        hash: '#top',
-        state: { x: 1 },
-      });
-    });
-
-    expect(result.current).toEqual({
-      pathname: '/create',
-      search: '',
-      hash: '#top',
-      state: { x: 1 },
-    });
   });
 });

@@ -15,23 +15,24 @@
  */
 
 import type { ReactNode } from 'react';
+import type { PageRouterSubPage } from '@backstage/frontend-plugin-api';
 import { TanStackRouterHost } from './TanStackRouterHost';
 
 /**
  * TanStack Router page adapter. Projects the framework's `AppHistoryApi`
- * into a hand-rolled TanStack history, scoped to the page's `basePath`, and
- * renders `children` under a single root route. Never writes
+ * into a hand-rolled TanStack history, scoped to the page's own mount, and
+ * renders the page under a TanStack route tree. Never writes
  * `window.history` via push/replace.
  *
  * Register as a page override via `PageRouterBlueprint`, or as the
  * `pageRouterApiRef` default.
  *
- * Opaque React Router content is not supported — there is no TanStack
- * opaque-children bridge, since this adapter fully owns rendering via its
- * own route tree (currently a single root route). Report
- * `supportsOpaqueChildren: false` via `getCapabilities()` when registering
- * this as the default page router so `PageBlueprint` fails fast instead of
- * silently dropping content.
+ * Sub-pages (tabs) are supported: the framework hands them over as data, so
+ * this adapter compiles them into real TanStack routes rather than being
+ * handed a React Router tree it cannot host. A page's own opaque `children`
+ * are rendered under a single root route — if that content uses React Router
+ * internally, that is the page author's choice, made alongside their choice
+ * of this adapter.
  *
  * Programmatic back/forward and cross-adapter navigation blockers are not
  * supported — there is a single, real browser history with no shared
@@ -41,16 +42,27 @@ import { TanStackRouterHost } from './TanStackRouterHost';
  * @public
  */
 export function TanStackPageRouter(props: {
-  /** Concrete app-absolute URL prefix this page is mounted at. */
+  /**
+   * Concrete app-absolute URL prefix this page is mounted at. Not read by
+   * this adapter: the scoped history derives the prefix from `routePattern`
+   * and the live location, so it is never a step behind the location it is
+   * scoping.
+   */
   basePath: string;
   /** Registered route pattern this page is mounted at. */
   routePattern: string;
-  /** App deploy basename — unused; `AppHistoryApi.createHref` already applies it. */
-  appBasename?: string;
-  children: ReactNode;
+  /** The page's sub-pages, for this adapter to route between. */
+  subPages?: readonly PageRouterSubPage[];
+  /** Sub-page path the page root redirects to. */
+  indexPath?: string;
+  children?: ReactNode;
 }) {
   return (
-    <TanStackRouterHost basePath={props.basePath}>
+    <TanStackRouterHost
+      routePattern={props.routePattern}
+      subPages={props.subPages}
+      indexPath={props.indexPath}
+    >
       {props.children}
     </TanStackRouterHost>
   );

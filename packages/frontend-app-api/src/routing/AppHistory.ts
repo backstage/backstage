@@ -20,6 +20,7 @@ import type {
   FrameworkNavigateOptions,
 } from '@backstage/frontend-plugin-api';
 import type { Observable, Subscription } from '@backstage/types';
+import { isExternalTarget } from '@internal/frontend';
 import {
   createWindowHistoryBackend,
   type HistoryBackend,
@@ -60,6 +61,7 @@ export class AppHistory implements AppHistoryApi {
   private readonly subscribers: Set<LocationHandler> = new Set();
   private readonly unlisten: () => void;
   private disposed = false;
+  private current: FrameworkLocation;
 
   /** @internal */
   static create(options?: AppHistoryOptions): AppHistory {
@@ -69,10 +71,40 @@ export class AppHistory implements AppHistoryApi {
   private constructor(options?: AppHistoryOptions) {
     this.basename = options?.basename ?? '';
     this.history = options?.history ?? createWindowHistoryBackend();
+    this.current = this.readLocation();
 
     this.unlisten = this.history.listen(() => {
       this.emit();
     });
+  }
+
+  /**
+   * The current location, as a stable reference that only changes when the
+   * location itself changes. Backs `getSnapshot` in `useSyncExternalStore`,
+   * which re-renders forever if repeated reads return new references.
+   */
+  get location(): FrameworkLocation {
+    return this.refresh();
+  }
+
+  /**
+   * Re-reads the backend and returns the current location, reusing the
+   * previous object when nothing observable changed. Reading live keeps us
+   * honest about history writes we never saw (a direct `replaceState` by
+   * plugin code emits no event), while reusing the reference keeps the result
+   * safe to hand to `useSyncExternalStore`.
+   */
+  private refresh(): FrameworkLocation {
+    const next = this.readLocation();
+    if (
+      this.current.pathname !== next.pathname ||
+      this.current.search !== next.search ||
+      this.current.hash !== next.hash ||
+      !Object.is(this.current.state, next.state)
+    ) {
+      this.current = next;
+    }
+    return this.current;
   }
 
   /** Observable of the current location (basename-stripped). */
@@ -99,7 +131,7 @@ export class AppHistory implements AppHistoryApi {
       this.subscribers.add(handler);
 
       // Emit current location immediately on subscribe
-      handler(this.getCurrentLocation());
+      handler(this.refresh());
 
       return {
         unsubscribe: () => {
@@ -120,7 +152,7 @@ export class AppHistory implements AppHistoryApi {
    * Navigate to a path (relative to the app root, not basename).
    */
   navigate(to: string, options?: FrameworkNavigateOptions): void {
-    if (to.startsWith('//') || to.includes('://')) {
+    if (isExternalTarget(to)) {
       throw new Error(
         'AppHistory.navigate does not support absolute or protocol-relative URLs',
       );
@@ -139,8 +171,25 @@ export class AppHistory implements AppHistoryApi {
     this.emit();
   }
 
-  /** Resolve an app-relative path to a browser-ready href. */
+  /**
+   * Resolve an app-relative path to a browser-ready href, prefixed with the
+   * app's deploy basename.
+   *
+   * Targets that are not app-relative — absolute (`https://example.com/x`),
+   * protocol-relative (`//example.com/x`), and opaque schemes such as
+   * `mailto:` and `tel:` — are returned unchanged rather than rewritten or
+   * rejected. Prefixing them silently produces a broken internal link, and
+   * throwing is not an option either: hrefs are resolved during render, where
+   * an error takes out the whole tree. Callers rendering
+   * `<a href={useHref(props.url)}>` for a possibly-external URL get the URL
+   * they passed in, matching `useResolvedHref` in `@backstage/ui`. Use
+   * {@link AppHistory.navigate} when a target must be app-relative — it
+   * throws for these instead.
+   */
   createHref(to: string): string {
+    if (isExternalTarget(to)) {
+      return to;
+    }
     const url = new URL(to, 'http://localhost');
     return `${this.basename}${url.pathname}${url.search}${url.hash}`;
   }
@@ -156,7 +205,7 @@ export class AppHistory implements AppHistoryApi {
     this.subscribers.clear();
   }
 
-  private getCurrentLocation(): FrameworkLocation {
+  private readLocation(): FrameworkLocation {
     const raw = this.history.getLocation();
     return {
       pathname: this.stripBasename(raw.pathname),
@@ -178,7 +227,7 @@ export class AppHistory implements AppHistoryApi {
   }
 
   private emit(): void {
-    const location = this.getCurrentLocation();
+    const location = this.refresh();
     const handlers = [...this.subscribers];
     for (const handler of handlers) {
       handler(location);
@@ -188,6 +237,11 @@ export class AppHistory implements AppHistoryApi {
 
 /**
  * Creates an {@link AppHistory}, the sole writer to app history.
+ *
+ * The caller owns the returned instance. Creating one attaches a listener to
+ * the history backend — a `popstate` listener on the window for the default
+ * backend — which stays attached until `dispose()` is called, so repeated
+ * creation without disposal accumulates listeners.
  *
  * @internal
  */

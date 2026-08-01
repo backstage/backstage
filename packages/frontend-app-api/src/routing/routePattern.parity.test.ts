@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
+import { createRouteRef, RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteTable } from '@internal/frontend';
 import {
-  createRouteRef,
-  RouteRef,
-  RouteTable,
-} from '@backstage/frontend-plugin-api';
+  generatePath as reactRouterGeneratePathTyped,
+  matchRoutes as reactRouterMatchRoutes,
+  type RouteObject,
+} from 'react-router-dom';
+import { generatePath } from './generatePath';
 import { matchRouteRefs } from './matchRouteRefs';
 import { BackstageRouteObject } from './types';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { routePriority } from '../../../frontend-plugin-api/src/routing/routePattern';
+
+// react-router types generatePath with template literal path params, which
+// makes it awkward to call with patterns held in variables.
+const reactRouterGeneratePath = reactRouterGeneratePathTyped as (
+  pattern: string,
+  params?: Record<string, string>,
+) => string;
 
 const rest = {
   element: null,
@@ -36,38 +44,39 @@ const rest = {
  * are consumed the same way RouteTable's end:false matchers do.
  */
 function toPrefixRoutes(paths: string[]): BackstageRouteObject[] {
-  return paths.map(path => {
-    if (path === '/') {
-      return {
-        ...rest,
-        path: '',
-        routeRefs: new Set([createRouteRef()]),
-        children: [{ ...rest, path: '*' }],
-      };
-    }
-    return {
-      ...rest,
-      path,
-      routeRefs: new Set([createRouteRef()]),
-      children: [{ ...rest, path: '*' }],
-    };
-  });
+  return paths.map(path => ({
+    ...rest,
+    // matchRouteRefs models the app root as an empty layout path
+    path: path === '/' ? '' : path,
+    routeRefs: new Set([createRouteRef()]),
+    children: [{ ...rest, path: '*' }],
+  }));
 }
 
-describe('RouteTable / matchRouteRefs parity', () => {
-  const cases: Array<{
-    name: string;
-    paths: string[];
-    pathname: string;
-    expectedPath: string | undefined;
-    expectedBasePath: string | undefined;
-  }> = [
+/** The same route set, expressed for react-router's own matchRoutes. */
+function toReactRouterRoutes(paths: string[]): RouteObject[] {
+  return paths.map(path => ({
+    path,
+    element: null,
+    children: [{ path: '*', element: null }],
+  }));
+}
+
+/** What react-router itself resolves the registered pattern and mount base to. */
+function reactRouterExpectation(paths: string[], pathname: string) {
+  const matches = reactRouterMatchRoutes(toReactRouterRoutes(paths), pathname);
+  return {
+    path: matches?.[0].route.path,
+    basePath: matches?.[0].pathnameBase,
+  };
+}
+
+describe('react-router parity', () => {
+  const cases: Array<{ name: string; paths: string[]; pathname: string }> = [
     {
       name: 'simple prefix',
       paths: ['/catalog', '/scaffolder'],
       pathname: '/catalog/foo',
-      expectedPath: '/catalog',
-      expectedBasePath: '/catalog',
     },
     {
       name: 'static over param',
@@ -77,89 +86,153 @@ describe('RouteTable / matchRouteRefs parity', () => {
         '/catalog/*',
       ],
       pathname: '/catalog/entities',
-      expectedPath: '/catalog/entities',
-      expectedBasePath: '/catalog/entities',
+    },
+    {
+      name: 'param wins when the static route cannot cover the extra segments',
+      paths: [
+        '/catalog/:namespace/:kind/:name',
+        '/catalog/entities',
+        '/catalog/*',
+      ],
+      pathname: '/catalog/entities/component/foo',
     },
     {
       name: 'static over longer param pattern',
       paths: ['/x/:a/:b/:c', '/x/y/z'],
       pathname: '/x/y/z',
-      expectedPath: '/x/y/z',
-      expectedBasePath: '/x/y/z',
+    },
+    {
+      name: 'static prefix over a param pattern that swallows the whole path',
+      paths: ['/x/y/z', '/x/:a/:b/:c/:d'],
+      pathname: '/x/y/z/q/r',
     },
     {
       name: 'parameterized entity basePath',
       paths: ['/catalog', '/catalog/:namespace/:kind/:name'],
       pathname: '/catalog/default/component/wayback-archive/kubernetes',
-      expectedPath: '/catalog/:namespace/:kind/:name',
-      expectedBasePath: '/catalog/default/component/wayback-archive',
     },
     {
       name: 'index when fewer segments than param route',
       paths: ['/catalog', '/catalog/:namespace/:kind/:name'],
       pathname: '/catalog/foo',
-      expectedPath: '/catalog',
-      expectedBasePath: '/catalog',
     },
     {
       name: 'exact index with coexisting param route',
       paths: ['/catalog', '/catalog/:namespace/:kind/:name'],
       pathname: '/catalog',
-      expectedPath: '/catalog',
-      expectedBasePath: '/catalog',
     },
+    { name: 'trailing slash', paths: ['/catalog'], pathname: '/catalog/' },
     {
       name: 'no partial prefix without separator',
       paths: ['/cat', '/catalog'],
       pathname: '/catalog/foo',
-      expectedPath: '/catalog',
-      expectedBasePath: '/catalog',
     },
     {
       name: 'unmatched without root',
       paths: ['/catalog'],
       pathname: '/unknown',
-      expectedPath: undefined,
-      expectedBasePath: undefined,
+    },
+    {
+      name: 'root catch-all',
+      paths: ['/', '/catalog'],
+      pathname: '/unknown/deep/path',
+    },
+    { name: 'root exact', paths: ['/', '/catalog'], pathname: '/' },
+    {
+      name: 'case-insensitive pathname',
+      paths: ['/catalog'],
+      pathname: '/CATALOG/foo',
+    },
+    {
+      name: 'malformed percent encoding',
+      paths: ['/catalog/:name'],
+      pathname: '/catalog/100%',
+    },
+    {
+      name: 'splat with an empty remainder',
+      paths: ['/docs/*'],
+      pathname: '/docs',
     },
   ];
 
+  beforeEach(() => {
+    // react-router warns via console.warn when it cannot decode a pathname
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it.each(cases)(
-    'agrees on $name',
-    ({ paths, pathname, expectedPath, expectedBasePath }) => {
+    'RouteTable agrees with matchRoutes on $name',
+    ({ paths, pathname }) => {
+      const expected = reactRouterExpectation(paths, pathname);
+
       const tableMatch = new RouteTable(paths).match(pathname);
 
-      expect(tableMatch?.path).toBe(expectedPath);
-      expect(tableMatch?.basePath).toBe(expectedBasePath);
-
-      const refMatches = matchRouteRefs(toPrefixRoutes(paths), pathname);
-      // First match is the registered parent pattern (before splat child)
-      const parent = refMatches?.[0];
-      expect(
-        parent?.routeObject.path === '' ? '/' : parent?.routeObject.path,
-      ).toBe(expectedPath);
-      expect(parent?.pathname).toBe(expectedBasePath);
+      expect(tableMatch?.path).toBe(expected.path);
+      expect(tableMatch?.basePath).toBe(expected.basePath);
     },
   );
 
-  it('shares the same priority ordering for overlapping patterns', () => {
-    // Longer param patterns score higher than shorter static ones; matching
-    // still prefers static when the param pattern does not fit the pathname
-    // (see RouteTable "prefer static segments" cases).
-    expect(routePriority('/catalog/:namespace/:kind/:name')).toBeGreaterThan(
-      routePriority('/catalog/entities'),
+  it.each(cases)(
+    'matchRouteRefs agrees with matchRoutes on $name',
+    ({ paths, pathname }) => {
+      const expected = reactRouterExpectation(paths, pathname);
+
+      const refMatches = matchRouteRefs(toPrefixRoutes(paths), pathname);
+      // First match is the registered parent pattern (before the splat child)
+      const parent = refMatches?.[0];
+
+      expect(
+        parent?.routeObject.path === '' ? '/' : parent?.routeObject.path,
+      ).toBe(expected.path);
+      expect(parent?.pathname).toBe(expected.basePath);
+    },
+  );
+
+  it('generates the same paths as react-router for values we do not encode', () => {
+    expect(
+      generatePath('/entity/:kind/:name', { kind: 'component', name: 'foo' }),
+    ).toBe(
+      reactRouterGeneratePath('/entity/:kind/:name', {
+        kind: 'component',
+        name: 'foo',
+      }),
     );
-    expect(routePriority('/catalog/entities')).toBeGreaterThan(
-      routePriority('/catalog'),
+    // A trailing `*` belongs to the param value, it is not a splat marker
+    expect(generatePath('/search/:term', { term: 'C*' })).toBe(
+      reactRouterGeneratePath('/search/:term', { term: 'C*' }),
     );
-    expect(routePriority('/x/y/z')).toBeGreaterThan(
-      routePriority('/x/:a/:b/:c'),
+    // Param names may contain hyphens
+    expect(generatePath('/entity/:my-param', { 'my-param': 'x' })).toBe(
+      reactRouterGeneratePath('/entity/:my-param', { 'my-param': 'x' }),
     );
-    expect(routePriority('/catalog')).toBeGreaterThan(
-      routePriority('/catalog/*'),
+    expect(generatePath('/files/*', { '*': 'path/to/file' })).toBe(
+      reactRouterGeneratePath('/files/*', { '*': 'path/to/file' }),
     );
-    expect(routePriority('/catalog/*')).toBe(routePriority('/'));
-    expect(routePriority('/')).toBe(routePriority(''));
-    expect(routePriority('*')).toBeLessThan(routePriority('/'));
+    expect(generatePath('/a/:b?/c', {})).toBe(
+      reactRouterGeneratePath('/a/:b?/c', {}),
+    );
+    expect(generatePath('/simple/path')).toBe(
+      reactRouterGeneratePath('/simple/path'),
+    );
+  });
+
+  it('diverges from react-router only where Backstage does so deliberately', () => {
+    // We percent-encode characters that would otherwise change the shape of
+    // the generated URL; react-router interpolates them verbatim.
+    expect(generatePath('/entity/:name', { name: 'a/b?c' })).toBe(
+      '/entity/a%2Fb%3Fc',
+    );
+    expect(reactRouterGeneratePath('/entity/:name', { name: 'a/b?c' })).toBe(
+      '/entity/a/b?c',
+    );
+
+    // An omitted optional param leaves an empty trailing segment rather than
+    // dropping the separator, so resolved route funcs keep a trailing slash.
+    expect(generatePath('/entity/:id?', {})).toBe('/entity/');
+    expect(reactRouterGeneratePath('/entity/:id?', {})).toBe('/entity');
   });
 });

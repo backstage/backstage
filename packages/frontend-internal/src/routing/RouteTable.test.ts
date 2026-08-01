@@ -95,6 +95,35 @@ describe('RouteTable', () => {
     });
   });
 
+  it('should prefer the static prefix over a longer param pattern that swallows the whole path', () => {
+    const table = new RouteTable(['/x/y/z', '/x/:a/:b/:c/:d']);
+
+    // Picking the param route here would mount the page at /x/y/z/q/r, so
+    // every relative link inside it would append to the wrong base.
+    expect(table.match('/x/y/z/q/r')).toEqual({
+      path: '/x/y/z',
+      basePath: '/x/y/z',
+    });
+  });
+
+  it('should match case-insensitively while keeping the pathname casing in basePath', () => {
+    const table = new RouteTable(['/catalog']);
+
+    expect(table.match('/CATALOG/foo')).toEqual({
+      path: '/catalog',
+      basePath: '/CATALOG',
+    });
+  });
+
+  it('should not throw on malformed percent encoding in the pathname', () => {
+    const table = new RouteTable(['/catalog/:name']);
+
+    expect(table.match('/catalog/100%')).toEqual({
+      path: '/catalog/:name',
+      basePath: '/catalog/100%',
+    });
+  });
+
   it('should prefer parameterized entity routes over index routes', () => {
     const table = new RouteTable([
       '/catalog',
