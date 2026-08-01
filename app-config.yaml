@@ -65,7 +65,7 @@ app:
     # Visit data is stored via UserSettings storage if available, otherwise browser localStorage.
     # - api:home/visits: true
     # - app-root-element:home/visit-listener: true
-    - widget:home/random-joke: false
+    - home-page-widget:home/random-joke: false
     - home-page-widget:home/toolkit:
         config:
           tools:
@@ -103,7 +103,7 @@ app:
             - component: HomePageSearchBar
               column: 0
               row: 0
-              width: 24
+              width: 12
               height: 2
               deletable: false
             - component: GettingStarted
@@ -141,7 +141,6 @@ app:
               row: 9
               width: 4
               height: 4
-           
 
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true

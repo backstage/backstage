@@ -42,7 +42,7 @@ software, services, and documentation.
 
 ### How to Edit This Card
 
-This widget is defined in \`packages/app/src/modules/home/homeModule.tsx\`.
+This widget is defined in \`packages/app/src/modules/appModuleHome.tsx\`.
 You can update the markdown content there to welcome your team with
 your own links and getting started tips.
 

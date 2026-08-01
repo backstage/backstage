@@ -98,7 +98,7 @@ export const Content = ({
         .then(setVisits);
     }
     return undefined;
-  }, [visitsApi, visits, loading, setVisits]);
+  }, [visitsApi, visits, loading, setVisits, kind, numVisitsTotal, config]);
 
   useEffect(() => {
     if (!loading) {
