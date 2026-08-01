@@ -74,12 +74,12 @@ function pushMatch(
 
 function childRemainingPath(
   remainingPathname: string,
-  matchedPathname: string,
+  pathnameBase: string,
 ): string {
-  if (matchedPathname === '/') {
+  if (pathnameBase === '/') {
     return remainingPathname;
   }
-  let childRemaining = remainingPathname.slice(matchedPathname.length);
+  let childRemaining = remainingPathname.slice(pathnameBase.length);
   if (!childRemaining.startsWith('/')) {
     childRemaining = `/${childRemaining}`;
   }
@@ -128,21 +128,24 @@ function matchParentRoute(
   }
 
   const savedLength = matches.length;
-  const fullPathname = joinPathSegments(
-    parentPathname,
-    partialResult.matchedPathname,
-  );
   matches.push({
     routeObject: route,
-    pathname: fullPathname,
+    pathname: joinPathSegments(parentPathname, partialResult.matchedPathname),
     params: partialResult.params,
   });
+
+  // Children continue from the base rather than from the whole match, so a
+  // splat parent hands its tail down to them instead of consuming it.
+  const childParentPathname = joinPathSegments(
+    parentPathname,
+    partialResult.pathnameBase,
+  );
 
   if (
     matchRouteBranch(
       route.children!,
-      childRemainingPath(remainingPathname, partialResult.matchedPathname),
-      fullPathname,
+      childRemainingPath(remainingPathname, partialResult.pathnameBase),
+      childParentPathname,
       matches,
     )
   ) {

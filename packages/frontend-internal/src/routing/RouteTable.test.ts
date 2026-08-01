@@ -106,6 +106,40 @@ describe('RouteTable', () => {
     });
   });
 
+  it('should mount a splat route at the prefix before the splat', () => {
+    // Handing back the whole pathname would mount the page at its own current
+    // URL, so every relative link inside it would append to itself.
+    expect(new RouteTable(['/docs/*']).match('/docs/a/b')).toEqual({
+      path: '/docs/*',
+      basePath: '/docs',
+    });
+    expect(new RouteTable(['/docs/*']).match('/docs')).toEqual({
+      path: '/docs/*',
+      basePath: '/docs',
+    });
+    expect(new RouteTable(['/:x/*']).match('/a/b/c')).toEqual({
+      path: '/:x/*',
+      basePath: '/a',
+    });
+    expect(new RouteTable(['/*']).match('/a/b')).toEqual({
+      path: '/*',
+      basePath: '/',
+    });
+  });
+
+  it('should break a tie between equally specific paths by registration order', () => {
+    // Both patterns score the same, so the one the app registered first wins —
+    // the tie-break react-router applies to sibling routes.
+    expect(new RouteTable(['/:x/b', '/a/:id']).match('/a/b')).toEqual({
+      path: '/:x/b',
+      basePath: '/a/b',
+    });
+    expect(new RouteTable(['/a/:id', '/:x/b']).match('/a/b')).toEqual({
+      path: '/a/:id',
+      basePath: '/a/b',
+    });
+  });
+
   it('should match case-insensitively while keeping the pathname casing in basePath', () => {
     const table = new RouteTable(['/catalog']);
 

@@ -52,6 +52,7 @@ import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProt
 import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/RouteTracker';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
+import { useAppHref } from '@internal/frontend';
 import { RootReactRouterV6 } from '../components/RootReactRouterV6';
 
 export const AppRoot = createExtension({
@@ -192,6 +193,27 @@ type RouteResolverProxy = {
 };
 
 /**
+ * The `useHref` half of the react-aria router contract, for every BUI anchor
+ * that reaches the DOM through it — `Tab`, `HeaderNav`, `MenuItem href`,
+ * `ButtonLink`.
+ *
+ * Without it those render hrefs without the app's deploy basename, so
+ * everything but a left click — middle click, open in a new tab, copy link
+ * address, crawlers — lands on a 404. react-aria calls this at the anchor's own
+ * position rather than here, which is what lets it resolve a target against the
+ * page the anchor is written in instead of against the app root; going through
+ * `useAppHref` is also what keeps a target from rendering as one href in BUI
+ * chrome and a different one in the `RouteLink` beside it.
+ *
+ * Declared at module scope so the reference handed to `BUIProvider`, and from
+ * there to react-aria's `RouterProvider`, never changes identity.
+ */
+function useFrameworkHref(path: string): string {
+  const appHistory = useApi(appHistoryApiRef);
+  return useAppHref(appHistory, path);
+}
+
+/**
  * Props for the {@link AppRouter} component.
  * @public
  */
@@ -216,10 +238,11 @@ export interface AppRouterProps {
  * is a residual React Router v6 projection for chrome that still needs RR
  * context (`useResolvedPath`, relative links, and `@backstage/ui`'s own
  * react-router-backed href resolution in `useDefinition` / `Tabs` /
- * `HeaderNav`). `BUIProvider` is given the app history directly, as both
- * `navigate` and `useHref`, so BUI-authored chrome (`Link`, `Tabs`, `Menu`,
- * ...) navigates and resolves hrefs through it instead of a scoped page
- * router, regardless of which page (if any) chrome is rendered under.
+ * `HeaderNav`). `BUIProvider` navigates through the app history directly and
+ * renders hrefs through {@link useFrameworkHref}, so BUI-authored chrome
+ * (`Link`, `Tabs`, `Menu`, ...) works through the framework instead of a
+ * scoped page router, regardless of which page (if any) chrome is rendered
+ * under.
  * Sidebar active-state and RouteTracker already prefer framework location.
  * Per-page adapters own in-plugin routing via PageBlueprint's `router` input
  * / {@link pageRouterApiRef}.
@@ -245,17 +268,6 @@ export function AppRouter(props: AppRouterProps) {
     (path: string, options?: Parameters<typeof appHistory.navigate>[1]) => {
       appHistory.navigate(path, options);
     },
-    [appHistory],
-  );
-  // The other half of the react-aria router contract. Without it every BUI
-  // anchor (`Tab`, `HeaderNav`, `MenuItem href`, `ButtonLink`) renders an href
-  // without the app's deploy basename, so everything but a left click (middle
-  // click, open in a new tab, copy link address, crawlers) lands on a 404.
-  // `createHref` applies the basename, and passes targets that are not
-  // app-relative through unchanged. Referentially stable because BUIProvider
-  // hands this to react-aria as a hook.
-  const frameworkUseHref = useCallback(
-    (path: string) => appHistory.createHref(path),
     [appHistory],
   );
 
@@ -299,7 +311,7 @@ export function AppRouter(props: AppRouterProps) {
         <BUIProvider
           useAnalytics={useAnalytics}
           navigate={frameworkNavigate}
-          useHref={frameworkUseHref}
+          useHref={useFrameworkHref}
         >
           <BreadcrumbsRegistryProvider>
             {...extraElements}
@@ -316,7 +328,7 @@ export function AppRouter(props: AppRouterProps) {
       <BUIProvider
         useAnalytics={useAnalytics}
         navigate={frameworkNavigate}
-        useHref={frameworkUseHref}
+        useHref={useFrameworkHref}
       >
         <BreadcrumbsRegistryProvider>
           {...extraElements}

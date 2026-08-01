@@ -29,6 +29,10 @@ export interface RouteTableMatch {
    * pattern like `/catalog/:namespace/:kind/:name` matching
    * `/catalog/default/component/foo/overview`, this is
    * `/catalog/default/component/foo`.
+   *
+   * A splat pattern mounts at the prefix before the splat, so `/docs/*`
+   * matching `/docs/a/b` gives `/docs` — the tail belongs to the page, not to
+   * its base.
    */
   basePath: string;
 }
@@ -42,7 +46,8 @@ type RankedRoute = {
  * Provides URL matching for top-level page routing.
  *
  * Routes are sorted by specificity (static segments over params over splats)
- * and then matched as path prefixes. The root path `/` acts as a catch-all.
+ * and then matched as path prefixes. Equally specific patterns are tried in
+ * registration order. The root path `/` acts as a catch-all.
  *
  * {@link RouteTable.match} returns both the registered pattern (for page
  * lookup) and a concrete `basePath` (the matched URL prefix) for the page's
@@ -71,7 +76,10 @@ export class RouteTable {
     // Deduplicate — first registration wins (order preserved before sort)
     this.paths = [...new Set(basePaths)]
       .map(path => ({ path, priority: routePriority(path) }))
-      .sort((a, b) => b.priority - a.priority || b.path.length - a.path.length);
+      // Sorting is stable, so equally specific patterns stay in registration
+      // order and the first one registered wins — the same tie-break
+      // react-router applies to sibling routes.
+      .sort((a, b) => b.priority - a.priority);
   }
 
   /**
@@ -84,7 +92,10 @@ export class RouteTable {
       // without needing to be special cased here.
       const result = matchPath(path, pathname, false);
       if (result) {
-        matched = { path, basePath: result.matchedPathname };
+        // The mount base is the match up to the splat, never the whole
+        // pathname — a page mounted at its own current URL would resolve every
+        // relative link inside it against itself.
+        matched = { path, basePath: result.pathnameBase };
         break;
       }
     }

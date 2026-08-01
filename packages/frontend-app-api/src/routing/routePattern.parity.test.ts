@@ -62,12 +62,29 @@ function toReactRouterRoutes(paths: string[]): RouteObject[] {
   }));
 }
 
+/**
+ * Our matched pathnames never end in a slash, where react-router keeps one it
+ * matched. react-router already normalizes its `pathnameBase` this way, so only
+ * the full matched pathname needs it.
+ */
+function stripTrailingSlash(pathname: string): string {
+  return pathname.replace(/(.)\/+$/, '$1');
+}
+
 /** What react-router itself resolves the registered pattern and mount base to. */
 function reactRouterExpectation(paths: string[], pathname: string) {
-  const matches = reactRouterMatchRoutes(toReactRouterRoutes(paths), pathname);
+  const match = reactRouterMatchRoutes(
+    toReactRouterRoutes(paths),
+    pathname,
+  )?.[0];
   return {
-    path: matches?.[0].route.path,
-    basePath: matches?.[0].pathnameBase,
+    path: match?.route.path,
+    // The mount base: everything the pattern matched up to the splat.
+    basePath: match?.pathnameBase,
+    // The whole matched pathname, splat tail included. The two differ only for
+    // splat patterns, which is what makes a splat case worth pairing with a
+    // base-path assertion.
+    matchedPathname: match && stripTrailingSlash(match.pathname),
   };
 }
 
@@ -153,6 +170,41 @@ describe('react-router parity', () => {
       paths: ['/docs/*'],
       pathname: '/docs',
     },
+    {
+      name: 'splat mounts at the prefix before the splat',
+      paths: ['/docs/*'],
+      pathname: '/docs/a/b',
+    },
+    {
+      name: 'splat with a single remaining segment',
+      paths: ['/a/b/*'],
+      pathname: '/a/b/c',
+    },
+    {
+      name: 'splat after a param segment',
+      paths: ['/:x/*'],
+      pathname: '/a/b/c',
+    },
+    {
+      name: 'root splat mounts at the root',
+      paths: ['/*'],
+      pathname: '/a/b',
+    },
+    {
+      name: 'static route over a splat that also covers the path',
+      paths: ['/docs/*', '/docs/intro'],
+      pathname: '/docs/intro/deep',
+    },
+    {
+      name: 'equal priority is broken by registration order',
+      paths: ['/:x/b', '/a/:id'],
+      pathname: '/a/b',
+    },
+    {
+      name: 'equal priority is broken by registration order, registered the other way round',
+      paths: ['/a/:id', '/:x/b'],
+      pathname: '/a/b',
+    },
   ];
 
   beforeEach(() => {
@@ -188,9 +240,45 @@ describe('react-router parity', () => {
       expect(
         parent?.routeObject.path === '' ? '/' : parent?.routeObject.path,
       ).toBe(expected.path);
-      expect(parent?.pathname).toBe(expected.basePath);
+      // A match reports the whole pathname it covers, unlike `RouteTable`,
+      // which reports the mount base.
+      expect(parent?.pathname).toBe(expected.matchedPathname);
     },
   );
+
+  it('descends into a splat route from its mount base, not from the whole match', () => {
+    // A splat parent with a named child is the shape that tells the two apart:
+    // resuming from the whole match leaves the child nothing to match against.
+    const expected = reactRouterMatchRoutes(
+      [
+        {
+          path: '/docs/*',
+          element: null,
+          children: [{ path: 'sub', element: null }],
+        },
+      ],
+      '/docs/sub',
+    );
+
+    const actual = matchRouteRefs(
+      [
+        {
+          ...rest,
+          path: '/docs/*',
+          routeRefs: new Set([createRouteRef()]),
+          children: [{ ...rest, path: 'sub' }],
+        },
+      ],
+      '/docs/sub',
+    );
+
+    expect(actual?.map(m => m.routeObject.path)).toEqual(
+      expected?.map(m => m.route.path),
+    );
+    expect(actual?.map(m => m.pathname)).toEqual(
+      expected?.map(m => m.pathname),
+    );
+  });
 
   it('generates the same paths as react-router for values we do not encode', () => {
     expect(

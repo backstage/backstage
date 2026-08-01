@@ -51,12 +51,14 @@ describe('routePattern', () => {
         matchPath('/entity/:kind/:name', '/entity/component/foo%20bar', true),
       ).toEqual({
         matchedPathname: '/entity/component/foo%20bar',
+        pathnameBase: '/entity/component/foo%20bar',
         params: { kind: 'component', name: 'foo bar' },
       });
       // A bare `%` is not valid percent encoding. react-router reports the raw
       // segment rather than letting the URIError escape.
       expect(matchPath('/catalog/:name', '/catalog/100%', true)).toEqual({
         matchedPathname: '/catalog/100%',
+        pathnameBase: '/catalog/100%',
         params: { name: '100%' },
       });
     });
@@ -64,15 +66,18 @@ describe('routePattern', () => {
     it('matches case-insensitively unless caseSensitive is set', () => {
       expect(matchPath('/Catalog', '/catalog', true)).toEqual({
         matchedPathname: '/catalog',
+        pathnameBase: '/catalog',
         params: {},
       });
       expect(matchPath('/catalog', '/CATALOG/foo', false)).toEqual({
         matchedPathname: '/CATALOG',
+        pathnameBase: '/CATALOG',
         params: {},
       });
       expect(matchPath('/Catalog', '/catalog', true, true)).toBeNull();
       expect(matchPath('/Catalog', '/Catalog', true, true)).toEqual({
         matchedPathname: '/Catalog',
+        pathnameBase: '/Catalog',
         params: {},
       });
     });
@@ -81,6 +86,7 @@ describe('routePattern', () => {
       const result = matchPath('/catalog', '/catalog/entities', false);
       expect(result).toEqual({
         matchedPathname: '/catalog',
+        pathnameBase: '/catalog',
         params: {},
       });
     });
@@ -88,20 +94,44 @@ describe('routePattern', () => {
     it('captures splat segments, including an empty remainder', () => {
       expect(matchPath('/docs/*', '/docs/a/b', true)).toEqual({
         matchedPathname: '/docs/a/b',
+        pathnameBase: '/docs',
         params: { '*': 'a/b' },
       });
       expect(matchPath('/docs/*', '/docs', true)).toEqual({
         matchedPathname: '/docs',
+        pathnameBase: '/docs',
         params: { '*': '' },
       });
       expect(matchPath('*', '/any/nested/path', true)).toEqual({
         matchedPathname: '/any/nested/path',
+        pathnameBase: '/',
         params: { '*': 'any/nested/path' },
       });
       expect(matchPath('*', '/', true)).toEqual({
         matchedPathname: '/',
+        pathnameBase: '/',
         params: { '*': '' },
       });
+    });
+
+    it('bases a splat match on the prefix before the splat', () => {
+      // Everything from the splat onwards belongs to whatever is mounted at the
+      // base, so the base has to stay put as the pathname grows.
+      expect(matchPath('/docs/*', '/docs/a/b/c', false)?.pathnameBase).toBe(
+        '/docs',
+      );
+      expect(matchPath('/:x/*', '/a/b/c', false)).toEqual({
+        matchedPathname: '/a/b/c',
+        pathnameBase: '/a',
+        params: { x: 'a', '*': 'b/c' },
+      });
+      // The base is sliced off the raw match, so a splat whose decoded value is
+      // shorter than the pathname it came from does not shift it.
+      expect(matchPath('/docs/*', '/docs/a%20b/c', false)?.pathnameBase).toBe(
+        '/docs',
+      );
+      // A trailing slash never survives into the base
+      expect(matchPath('/docs/*', '/docs/', false)?.pathnameBase).toBe('/docs');
     });
 
     it('compiles empty layout paths', () => {

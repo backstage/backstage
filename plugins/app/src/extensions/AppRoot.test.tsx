@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
+import { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
+  PageRouterBlueprint,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
-import { SignInPageBlueprint } from '@backstage/plugin-app-react';
+import {
+  RouterBlueprint,
+  SignInPageBlueprint,
+} from '@backstage/plugin-app-react';
 import { createApp } from '@backstage/frontend-defaults';
 import { mockApis } from '@backstage/test-utils';
-import { Link, Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
+import { ButtonLink, Link, Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
 
 const BASENAME_CONFIG = {
   app: { baseUrl: 'https://example.com/backstage' },
@@ -102,5 +107,73 @@ describe('AppRoot', () => {
     render(app.createRoot());
 
     await expectBasenameHrefs();
+  });
+
+  // The `useHref` handed to BUIProvider is called at each anchor's own
+  // position, so it can — and must — resolve a target against the page the
+  // anchor is written in. `AppHistory.createHref` on its own resolves against
+  // the app root, which turns an in-page fragment link into a link off the
+  // page. Both routers below are passthroughs, which is the supported shape
+  // (`RouterBlueprint` swapped out, a page hosted by another routing library)
+  // in which BUI has no React Router context of its own to resolve against and
+  // the raw target reaches this seam.
+  const passthroughAppRouter = createFrontendModule({
+    pluginId: 'app',
+    extensions: [
+      RouterBlueprint.make({
+        params: { component: ({ children }) => <>{children}</> },
+      }),
+    ],
+  });
+
+  const passthroughPageRouter = PageRouterBlueprint.make({
+    name: 'passthrough',
+    attachTo: { id: 'page:test/catalog', input: 'router' },
+    params: {
+      component: ({ children }: { children?: ReactNode }) => <>{children}</>,
+    },
+  });
+
+  it('should resolve BUI chrome hrefs against the page they are written in', async () => {
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog/:name',
+        loader: async () => (
+          <div>
+            <ButtonLink href="#tab-2">Fragment</ButtonLink>
+            <ButtonLink href="?query=x">Query</ButtonLink>
+            <ButtonLink href="sub">Relative</ButtonLink>
+            <ButtonLink href="/catalog/overview">Absolute</ButtonLink>
+            <ButtonLink href="https://example.com/x">External</ButtonLink>
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogPage, passthroughPageRouter],
+      features: [passthroughAppRouter],
+      initialRouteEntries: ['/catalog/foo'],
+      config: BASENAME_CONFIG,
+    });
+
+    const hrefOf = (name: string) =>
+      screen.getByRole('link', { name }).getAttribute('href');
+
+    await screen.findByRole('link', { name: 'Fragment' });
+    expect({
+      fragment: hrefOf('Fragment'),
+      query: hrefOf('Query'),
+      relative: hrefOf('Relative'),
+      absolute: hrefOf('Absolute'),
+      external: hrefOf('External'),
+    }).toEqual({
+      fragment: '/backstage/catalog/foo#tab-2',
+      query: '/backstage/catalog/foo?query=x',
+      relative: '/backstage/catalog/foo/sub',
+      absolute: '/backstage/catalog/overview',
+      external: 'https://example.com/x',
+    });
   });
 });

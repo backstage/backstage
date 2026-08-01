@@ -16,6 +16,7 @@
 
 import { useCallback, useContext, type Context } from 'react';
 import {
+  createPath,
   parsePath,
   resolvePath,
   UNSAFE_LocationContext as LocationContext,
@@ -35,10 +36,11 @@ import { useAppHistoryLocation } from './useAppHistoryLocation';
  * Two authorities can answer, and every call site has to pick the same way:
  *
  * - **Framework**: an `AppHistoryApi` is registered (new frontend system).
- *   Location comes from the app history, hrefs come from `createHref` (which
- *   applies the app's deploy basename), and relative targets resolve against
+ *   Location comes from the app history, and relative targets resolve against
  *   the current {@link PageMount} `basePath` — the framework's analogue of
- *   React Router's `pathnameBase`.
+ *   React Router's `pathnameBase` — or against the matches a page adapter
+ *   projects, where there are any. Hrefs are that resolved, app-absolute path
+ *   handed to `createHref`, which applies the app's deploy basename.
  * - **React Router**: no app history (old frontend system). Every value is the
  *   one React Router's own hook at that call site produced before the framework
  *   seam existed, so legacy behavior is unchanged.
@@ -192,6 +194,30 @@ export function useAppBasePath(): string {
 }
 
 /**
+ * The route bases a relative target resolves against on the framework path,
+ * in the same shape {@link useRouteBasePaths} produces for React Router.
+ *
+ * A page adapter projects the page's own match on top of the matches it is
+ * mounted inside, so wherever one is in context the stack it publishes is
+ * already the one React Router would have produced — ancestors included, which
+ * is what a leading `..` climbs. That is what makes a sub-page's
+ * `../sibling-tab` point at the sibling tab rather than at the app root.
+ *
+ * Chrome rendered above an adapter sees no matches at all — a page's header,
+ * tabs and breadcrumbs resolve their links from the mount rather than from a
+ * routing library, and an app whose `RouterBlueprint` is a passthrough has no
+ * React Router anywhere. There the page mount is the only base there is:
+ * relative targets resolve against it, and `..` climbs off the page, which is
+ * the answer React Router gives at its outermost match too.
+ */
+function useFrameworkBasePaths(): string[] {
+  const basePath = useAppBasePath();
+  const routeBasePaths = useRouteBasePaths();
+
+  return routeBasePaths.length > 0 ? routeBasePaths : [basePath || '/'];
+}
+
+/**
  * The current app-relative location.
  *
  * Falls back to the app root when neither authority can answer, so chrome that
@@ -236,15 +262,24 @@ export function useAppResolvedPath(
 }
 
 /**
- * Resolves an app-relative path to a browser-ready href, including the app's
- * deploy basename.
+ * Resolves a link target to a browser-ready href, including the app's deploy
+ * basename.
+ *
+ * The target is resolved against the page it is written in before the basename
+ * is applied, exactly as React Router's `useHref` resolves against the route it
+ * is called from: `#section` and `?tab=readme` keep the current location,
+ * `widgets` resolves against the page's base, and each leading `..` climbs one
+ * route match. The framework has to do that resolution here, because
+ * `AppHistory.createHref` resolves its input against the app *root* — the
+ * right contract for it, and the one `navigate` shares, but on its own it turns
+ * a fragment link written inside a page into a link to the app root.
  *
  * Targets that are not app-relative — absolute (`https://example.com/x`),
  * protocol-relative (`//example.com/x`), and opaque schemes such as `mailto:`
  * and `tel:` — are returned unchanged. `AppHistory.createHref` already does
  * this on the framework path; React Router's `useHref` does not, and would
- * resolve them against the current route and prefix the basename, so the
- * legacy path needs the same guard to agree.
+ * resolve them against the current route and prefix the basename, so both
+ * paths go through the same guard to agree.
  *
  * With no router there is no basename and no navigator to render the href, so
  * the target is handed back as written — the same answer `@backstage/ui`'s
@@ -255,14 +290,25 @@ export function useAppHref(
   to: string,
 ): string {
   const navigation = useRouterContext(NavigationContext);
-  // Always the React Router authority: the framework path renders its own href
-  // through `createHref` and never needs a resolved path.
+  const frameworkBasePaths = useFrameworkBasePaths();
+  const appLocation = useAppLocation(appHistory);
+  // Always the React Router authority: the framework path resolves through the
+  // bases above instead, and renders the result through `createHref`.
   const routerResolvedPath = useAppResolvedPath(undefined, to);
 
-  if (appHistory) {
-    return appHistory.createHref(to);
+  if (isExternalTarget(to)) {
+    return to;
   }
-  if (!navigation || isExternalTarget(to)) {
+  if (appHistory) {
+    // App-absolute by the time `createHref` sees it, so all that is left for it
+    // to do is prefix the deploy basename.
+    return appHistory.createHref(
+      createPath(
+        resolveAgainstRoutes(to, frameworkBasePaths, appLocation.pathname),
+      ),
+    );
+  }
+  if (!navigation) {
     return to;
   }
 

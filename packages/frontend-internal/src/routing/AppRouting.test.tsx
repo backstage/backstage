@@ -247,106 +247,117 @@ describe('useAppResolvedPath', () => {
   });
 });
 
+/**
+ * The route trees both authorities are run through, each paired with the
+ * browser URL it renders at — deploy basename included — so the same situation
+ * can be set up on the framework path: an app history standing at that
+ * location, under that basename.
+ */
+const trees: Array<{
+  name: string;
+  url: string;
+  basename?: string;
+  wrapper: (p: PropsWithChildren) => any;
+}> = [
+  {
+    name: 'no route match',
+    url: '/catalog/x',
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/x']}>{children}</MemoryRouter>
+    ),
+  },
+  {
+    name: 'location with a trailing slash',
+    url: '/catalog/',
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/']}>{children}</MemoryRouter>
+    ),
+  },
+  {
+    name: 'one deep parameterised match',
+    url: '/catalog/default/component/foo/docs',
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/default/component/foo/docs']}>
+        <Routes>
+          <Route path="/catalog/:namespace/:kind/:name/*" element={children} />
+        </Routes>
+      </MemoryRouter>
+    ),
+  },
+  {
+    name: 'nested matches',
+    url: '/catalog/sub/x',
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/sub/x']}>
+        <Routes>
+          <Route path="/catalog" element={<Outlet />}>
+            <Route path="sub/*" element={children} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    ),
+  },
+  {
+    name: 'pathless layout route',
+    url: '/catalog/x',
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog/x']}>
+        <Routes>
+          <Route element={<Outlet />}>
+            <Route path="/catalog/*" element={children} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    ),
+  },
+  {
+    name: 'index route',
+    url: '/catalog',
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={['/catalog']}>
+        <Routes>
+          <Route path="/catalog" element={<Outlet />}>
+            <Route index element={children} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    ),
+  },
+  {
+    name: 'deployed under a basename',
+    url: '/backstage',
+    basename: '/backstage',
+    wrapper: ({ children }) => (
+      <MemoryRouter basename="/backstage" initialEntries={['/backstage']}>
+        {children}
+      </MemoryRouter>
+    ),
+  },
+];
+
+const targets = [
+  '',
+  '.',
+  './',
+  'widgets',
+  'widgets/',
+  'a/b',
+  '/catalog',
+  '/catalog/',
+  '/catalog?kind=component',
+  '/catalog#frag',
+  '/search?query=https://example.com',
+  '..',
+  '../x',
+  '../../x',
+  '?tab=readme',
+  '#section',
+];
+
 describe('the React Router authority', () => {
   // Reading React Router's contexts instead of calling its hooks is only safe
   // if it gives the same answers, so the expectations here are computed from
   // React Router itself: both hooks render in the same tree and must agree.
-  const trees: Array<{ name: string; wrapper: (p: PropsWithChildren) => any }> =
-    [
-      {
-        name: 'no route match',
-        wrapper: ({ children }) => (
-          <MemoryRouter initialEntries={['/catalog/x']}>
-            {children}
-          </MemoryRouter>
-        ),
-      },
-      {
-        name: 'location with a trailing slash',
-        wrapper: ({ children }) => (
-          <MemoryRouter initialEntries={['/catalog/']}>{children}</MemoryRouter>
-        ),
-      },
-      {
-        name: 'one deep parameterised match',
-        wrapper: ({ children }) => (
-          <MemoryRouter
-            initialEntries={['/catalog/default/component/foo/docs']}
-          >
-            <Routes>
-              <Route
-                path="/catalog/:namespace/:kind/:name/*"
-                element={children}
-              />
-            </Routes>
-          </MemoryRouter>
-        ),
-      },
-      {
-        name: 'nested matches',
-        wrapper: ({ children }) => (
-          <MemoryRouter initialEntries={['/catalog/sub/x']}>
-            <Routes>
-              <Route path="/catalog" element={<Outlet />}>
-                <Route path="sub/*" element={children} />
-              </Route>
-            </Routes>
-          </MemoryRouter>
-        ),
-      },
-      {
-        name: 'pathless layout route',
-        wrapper: ({ children }) => (
-          <MemoryRouter initialEntries={['/catalog/x']}>
-            <Routes>
-              <Route element={<Outlet />}>
-                <Route path="/catalog/*" element={children} />
-              </Route>
-            </Routes>
-          </MemoryRouter>
-        ),
-      },
-      {
-        name: 'index route',
-        wrapper: ({ children }) => (
-          <MemoryRouter initialEntries={['/catalog']}>
-            <Routes>
-              <Route path="/catalog" element={<Outlet />}>
-                <Route index element={children} />
-              </Route>
-            </Routes>
-          </MemoryRouter>
-        ),
-      },
-      {
-        name: 'deployed under a basename',
-        wrapper: ({ children }) => (
-          <MemoryRouter basename="/backstage" initialEntries={['/backstage']}>
-            {children}
-          </MemoryRouter>
-        ),
-      },
-    ];
-
-  const targets = [
-    '',
-    '.',
-    './',
-    'widgets',
-    'widgets/',
-    'a/b',
-    '/catalog',
-    '/catalog/',
-    '/catalog?kind=component',
-    '/catalog#frag',
-    '/search?query=https://example.com',
-    '..',
-    '../x',
-    '../../x',
-    '?tab=readme',
-    '#section',
-  ];
-
   it.each(trees)(
     'resolves and renders hrefs like React Router ($name)',
     ({ wrapper }) => {
@@ -372,6 +383,205 @@ describe('the React Router authority', () => {
       }
     },
   );
+});
+
+describe('the framework authority', () => {
+  /**
+   * The framework spelling of a React Router href.
+   *
+   * The one value the two authorities render differently:
+   * `AppHistory.createHref` normalizes every target through `URL`, so a target
+   * that lands on the app root renders as `${basename}/` where React Router
+   * renders it as `${basename}`. Both address the app root, and only a deploy
+   * basename makes the two spellings distinguishable at all.
+   */
+  function appRootSpelling(routerHref: string, basename?: string): string {
+    if (!basename) {
+      return routerHref;
+    }
+    const rest = routerHref.slice(basename.length);
+    const atAppRoot =
+      rest === '' || rest.startsWith('?') || rest.startsWith('#');
+    return atAppRoot ? `${basename}/${rest}` : routerHref;
+  }
+
+  // The framework renders an href for the page the target is written in, which
+  // is the same question React Router answers, so every tree above is run
+  // through it too: an app history standing at the tree's own location, and
+  // the tree's matches standing in for the ones a page adapter projects. A
+  // target that renders one href under the old frontend system and a different
+  // one under the new fails here.
+  it.each(trees)(
+    'renders hrefs like React Router ($name)',
+    ({ url, basename, wrapper: Tree }) => {
+      const appHistory = createMockAppHistory({
+        initialLocation: url,
+        basename,
+      });
+      const wrapper = ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+          <Tree>{children}</Tree>
+        </TestApiProvider>
+      );
+
+      for (const to of targets) {
+        const { result } = renderHook(
+          () => ({
+            routerHref: useHref(to),
+            appHref: useAppHref(useOptionalAppHistory(), to),
+          }),
+          { wrapper },
+        );
+
+        expect({ to, href: result.current.appHref }).toEqual({
+          to,
+          href: appRootSpelling(result.current.routerHref, basename),
+        });
+      }
+    },
+  );
+
+  // A page registered at `/catalog`, currently rendering `/catalog/foo`, in an
+  // app deployed under `/backstage`.
+  const PAGE_URL = '/backstage/catalog/foo';
+  const pageMount: PageMount = {
+    basePath: '/catalog',
+    routePattern: '/catalog',
+  };
+
+  it('resolves a target against the page it is written in, chrome and content alike', () => {
+    const appHistory = createMockAppHistory({
+      initialLocation: PAGE_URL,
+      basename: '/backstage',
+    });
+
+    /** A page's own chrome: inside the page mount, above its router adapter. */
+    const chrome = ({ children }: PropsWithChildren<{}>) => (
+      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+        <MemoryRouter basename="/backstage" initialEntries={[PAGE_URL]}>
+          <PageMountProvider mount={pageMount}>{children}</PageMountProvider>
+        </MemoryRouter>
+      </TestApiProvider>
+    );
+
+    /** A page's content: the match its adapter projects for the same mount. */
+    const content = ({ children }: PropsWithChildren<{}>) => (
+      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+        <MemoryRouter basename="/backstage" initialEntries={[PAGE_URL]}>
+          <Routes>
+            <Route
+              path="/catalog/*"
+              element={
+                <PageMountProvider mount={pageMount}>
+                  {children}
+                </PageMountProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </TestApiProvider>
+    );
+
+    /** The same page under the old frontend system. */
+    const legacy = ({ children }: PropsWithChildren<{}>) => (
+      <TestApiProvider apis={[]}>
+        <MemoryRouter basename="/backstage" initialEntries={[PAGE_URL]}>
+          <Routes>
+            <Route path="/catalog/*" element={children} />
+          </Routes>
+        </MemoryRouter>
+      </TestApiProvider>
+    );
+
+    const hrefs = (wrapper: (props: PropsWithChildren<{}>) => JSX.Element) =>
+      Object.fromEntries(
+        [
+          '#frag',
+          '?query=x',
+          'sub',
+          './x',
+          '..',
+          '/x',
+          'https://example.com/x',
+        ].map(to => [
+          to,
+          renderHook(() => useAppHref(useOptionalAppHistory(), to), { wrapper })
+            .result.current,
+        ]),
+      );
+
+    const onThePage = {
+      // No pathname of their own, so they keep the location they were written
+      // at rather than falling back to the app root.
+      '#frag': '/backstage/catalog/foo#frag',
+      '?query=x': '/backstage/catalog/foo?query=x',
+      // Relative to the page's base, which is a segment above the location.
+      sub: '/backstage/catalog/sub',
+      './x': '/backstage/catalog/x',
+      // The page is the outermost match, so `..` climbs off it to the app root.
+      '..': '/backstage/',
+      '/x': '/backstage/x',
+      'https://example.com/x': 'https://example.com/x',
+    };
+
+    expect(hrefs(chrome)).toEqual(onThePage);
+    expect(hrefs(content)).toEqual(onThePage);
+    expect(hrefs(legacy)).toEqual({ ...onThePage, '..': '/backstage' });
+  });
+
+  it('climbs one route match per leading `..`, at page and at sub-page level', () => {
+    const SUB_PAGE_URL = '/backstage/catalog/foo/tab-1';
+    const appHistory = createMockAppHistory({
+      initialLocation: SUB_PAGE_URL,
+      basename: '/backstage',
+    });
+    const subPageMount: PageMount = {
+      basePath: '/catalog/foo/tab-1',
+      routePattern: '/catalog/:name/tab-1',
+    };
+
+    // The stack a sub-page runs under: the parent page's match with the
+    // sub-page's own appended, which is what its adapter projects.
+    const subPageTree = (element: ReactNode) => (
+      <MemoryRouter basename="/backstage" initialEntries={[SUB_PAGE_URL]}>
+        <Routes>
+          <Route path="/catalog/:name" element={<Outlet />}>
+            <Route path="tab-1/*" element={element} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    );
+
+    const framework = (to: string) =>
+      renderHook(() => useAppHref(useOptionalAppHistory(), to), {
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
+          <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+            {subPageTree(
+              <PageMountProvider mount={subPageMount}>
+                {children}
+              </PageMountProvider>,
+            )}
+          </TestApiProvider>
+        ),
+      }).result.current;
+
+    const legacy = (to: string) =>
+      renderHook(() => useAppHref(useOptionalAppHistory(), to), {
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
+          <TestApiProvider apis={[]}>{subPageTree(children)}</TestApiProvider>
+        ),
+      }).result.current;
+
+    // One `..` lands on the parent page, which is what makes a sub-page's
+    // `../sibling` point at the sibling tab rather than at the app root, and
+    // a second one climbs off the page altogether.
+    expect(framework('..')).toBe('/backstage/catalog/foo');
+    expect(framework('../tab-2')).toBe('/backstage/catalog/foo/tab-2');
+    expect(framework('../..')).toBe('/backstage/');
+    expect(legacy('..')).toBe('/backstage/catalog/foo');
+    expect(legacy('../tab-2')).toBe('/backstage/catalog/foo/tab-2');
+    expect(legacy('../..')).toBe('/backstage');
+  });
 });
 
 describe('useAppLocation', () => {

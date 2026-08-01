@@ -39,7 +39,19 @@ export interface CompiledPath {
 
 /** @internal */
 export interface PathMatch {
+  /**
+   * The whole portion of the pathname that the pattern matched, splat tail
+   * included, without a trailing slash.
+   */
   matchedPathname: string;
+  /**
+   * The portion of the match that precedes the splat — react-router's
+   * `pathnameBase`. This is the prefix that nested routes and relative links
+   * resolve against, so a route mounted at `/docs/*` keeps `/docs` as its base
+   * no matter how deep the current pathname goes. Equal to `matchedPathname`
+   * for a pattern without a splat.
+   */
+  pathnameBase: string;
   params: Record<string, string>;
 }
 
@@ -153,21 +165,42 @@ export function matchPath(
     return null;
   }
 
-  const matchedPathname = match[0].replace(/\/$/, '') || '/';
+  const rawMatchedPathname = match[0];
+  const matchedPathname = trimTrailingSlash(rawMatchedPathname);
   const params: Record<string, string> = {};
+  let pathnameBase = matchedPathname;
 
   for (let i = 0; i < paramNames.length; i++) {
     const name = paramNames[i];
     const value = match[i + 1];
-    // Only a trailing splat can capture nothing, and it is reported as an
-    // empty string rather than being left out of the params.
-    if (value === undefined && name !== '*') {
+    if (name === '*') {
+      // The base is everything the pattern matched up to the splat. It has to
+      // be sliced off the raw match rather than the decoded param, whose length
+      // no longer lines up with the pathname it came from.
+      // A trailing splat can capture nothing, and is then reported as an empty
+      // string rather than being left out of the params.
+      const rawSplat = value ?? '';
+      pathnameBase = trimTrailingSlash(
+        rawMatchedPathname.slice(
+          0,
+          rawMatchedPathname.length - rawSplat.length,
+        ),
+      );
+    } else if (value === undefined) {
       continue;
     }
     params[name] = safelyDecodeURIComponent(value ?? '');
   }
 
-  return { matchedPathname, params };
+  return { matchedPathname, pathnameBase, params };
+}
+
+/**
+ * Drops trailing slashes while keeping the leading one, so `/catalog/` becomes
+ * `/catalog` and the root `/` is left as it is.
+ */
+function trimTrailingSlash(pathname: string): string {
+  return pathname.replace(/(.)\/+$/, '$1');
 }
 
 /**

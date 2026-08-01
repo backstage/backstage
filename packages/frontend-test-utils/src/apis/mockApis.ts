@@ -514,9 +514,9 @@ export namespace mockApis {
    * assigning `location` pins it, and passing `createHref` replaces it
    * outright.
    *
-   * Use {@link mockApis.appHistory} instead when a test needs to configure the
-   * fake — an app deployed under a basename, or a starting location other than
-   * the app root.
+   * Use {@link mockApis.(appHistory:function)} instead when a test needs to
+   * configure the fake — an app deployed under a basename, or a starting
+   * location other than the app root.
    *
    * @public
    */
