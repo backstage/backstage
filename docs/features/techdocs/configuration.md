@@ -141,6 +141,125 @@ techdocs:
       defaultPlugins: ['techdocs-core']
 ```
 
+### Source storage
+
+`techdocs.generator.preserveSources`
+
+(Optional) Preserves source Markdown files alongside the generated HTML
+output. When enabled, the documentation source directory is copied into a
+`_sources/` directory in TechDocs storage and served through the existing
+static docs API.
+
+This is useful for Model Context Protocol (MCP) tools and other AI
+integrations that consume documentation. Markdown uses fewer tokens and
+produces better results than converted HTML when used as input to large
+language models.
+
+**Configuration:**
+
+```yaml
+techdocs:
+  generator:
+    preserveSources:
+      enabled: true # default: false
+      excludes: # optional, patterns to exclude from _sources/
+        - '*.png'
+        - '*.jpg'
+        - '*.gif'
+        - '*.svg'
+      additionalFiles: # optional, files from the repo root to include
+        - README.md
+        - CONTRIBUTING.md
+```
+
+A set of built-in excludes is always applied regardless of configuration:
+`.git/`, `node_modules/`, `__pycache__/`, `.venv/`, and `*.pyc`.
+Adopter-provided `excludes` extend the built-in list.
+
+Use `additionalFiles` to include files from the input directory root
+alongside the docs directory. By default, `README.md` is included
+automatically if it exists in the input directory root. To include
+other files, list them explicitly:
+
+```yaml
+techdocs:
+  generator:
+    preserveSources:
+      enabled: true
+      additionalFiles:
+        - README.md
+        - CONTRIBUTING.md
+        - CHANGELOG.md
+```
+
+Additional files are copied into the `_sources/` root using their base
+filename only. If two entries share the same filename (e.g. `README.md`
+and `docs/README.md`), the last one wins.
+
+Setting `additionalFiles` replaces the default list. To disable the
+default `README.md` inclusion without adding other files, add
+`README.md` to the `excludes` list instead:
+
+```yaml
+techdocs:
+  generator:
+    preserveSources:
+      enabled: true
+      excludes:
+        - README.md
+```
+
+Individual entities can override the global default using the
+`backstage.io/techdocs-source-storage` annotation with a value of `enabled`
+or `disabled`. See
+[Well-known Annotations](../software-catalog/well-known-annotations.md#backstageiotechdocs-source-storage)
+for details.
+
+When using the TechDocs CLI, use the `--include-sources` and
+`--source-excludes` flags instead. See the
+[CLI documentation](./cli.md) for details.
+
+**Structure for tool authors**
+
+When source storage is enabled, the `_sources/` directory in TechDocs
+storage has the following structure:
+
+```
+_sources/
+  manifest.json
+  docs/
+    index.md
+    getting-started.md
+    guides/
+      setup.md
+  README.md
+```
+
+`manifest.json` contains a machine-readable index of all stored source
+files:
+
+```json
+{
+  "generatedAt": 1722700000000,
+  "files": [
+    "README.md",
+    "docs/getting-started.md",
+    "docs/guides/setup.md",
+    "docs/index.md"
+  ]
+}
+```
+
+- `generatedAt` — Unix timestamp (milliseconds) of when the sources
+  were stored.
+- `files` — sorted list of all source file paths relative to
+  `_sources/`, using forward slashes.
+
+MCP servers and other tools can fetch `manifest.json` through the
+existing static docs API to discover available sources without
+directory listing. Site metadata such as `site_name` and
+`site_description` is available separately in `techdocs_metadata.json`.
+
 ## Builder Configuration
 
 `techdocs.builder`

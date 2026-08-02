@@ -85,6 +85,21 @@ export function registerCommands(program: Command) {
       'Bypass setting the container user as the same user and group id as host for Linux and MacOS',
       false,
     )
+    .option(
+      '--include-sources',
+      'Include source Markdown files in the generated output under _sources/.',
+      false,
+    )
+    .option(
+      '--source-excludes <PATTERNS...>',
+      'Patterns to exclude from _sources/. Supports exact names (e.g. "build") and extension patterns (e.g. "*.png" "*.jpg"). Only applies when --include-sources is set.',
+      [],
+    )
+    .option(
+      '--source-additional-files <FILES...>',
+      'Additional files from the source root to include in _sources/ (e.g. "README.md" "CONTRIBUTING.md"). Only applies when --include-sources is set.',
+      [],
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate'), 'default'));
 

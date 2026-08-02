@@ -128,6 +128,25 @@ The value of this annotation informs of the path to this component's TechDocs wi
 In conjunction with [backstage.io/techdocs-entity](#backstageiotechdocs-entity) this allows for deep linking into the TechDocs of
 another entity, not just linking to the root of another entity's TechDocs.
 
+### backstage.io/techdocs-source-storage
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/techdocs-source-storage: enabled
+```
+
+Controls whether the original Markdown source files are preserved alongside the
+generated HTML in TechDocs storage. Accepts `enabled` or `disabled`. When this
+annotation is absent, the entity falls back to the global
+`techdocs.generator.preserveSources.enabled` configuration setting (which
+defaults to `false`).
+
+See the [TechDocs Source Storage configuration](../techdocs/configuration.md#source-storage)
+for more details.
+
 ### backstage.io/view-url, backstage.io/edit-url
 
 ```yaml

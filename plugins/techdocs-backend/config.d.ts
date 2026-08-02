@@ -48,6 +48,37 @@ export interface Config {
       pullImage?: boolean;
 
       /**
+       * Preserve source Markdown files alongside the generated HTML output.
+       * When enabled, source files are stored under a `_sources/` directory
+       * in TechDocs storage and served through the existing static docs API.
+       */
+      preserveSources?: {
+        /**
+         * Enable source storage globally for all entities.
+         * Individual entities can override this with the
+         * `backstage.io/techdocs-source-storage` annotation.
+         * Defaults to false.
+         */
+        enabled?: boolean;
+
+        /**
+         * Patterns for files to exclude from source storage.
+         * Supports exact names (e.g. "build") and extension patterns (e.g. "*.png").
+         * These are additive with built-in excludes (.git, node_modules, etc.).
+         */
+        excludes?: string[];
+
+        /**
+         * Additional files from the input directory root to include in
+         * source storage alongside the docs directory. Defaults to
+         * including README.md if not specified. Setting this replaces
+         * the default list. To suppress the default README.md, add it
+         * to the excludes list instead.
+         */
+        additionalFiles?: string[];
+      };
+
+      /**
        * Override behavior specific to mkdocs.
        */
       mkdocs?: {
