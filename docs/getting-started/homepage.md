@@ -86,9 +86,8 @@ app:
 
 ## Available widgets
 
-The home plugin and search plugin ship with several built-in widgets. Each one
-is registered using the `HomePageWidgetBlueprint` and shows up in the
-**Add Widget** dialog.
+The following widgets are available out of the box and appear in the
+**Add Widget** dialog when editing the homepage.
 
 ### Home plugin widgets
 
@@ -386,3 +385,18 @@ export const homeModule = createFrontendModule({
 
 When no custom layout is installed, the plugin falls back to a built-in default
 that renders widgets inside `CustomHomepageGrid`.
+
+### Preventing duplicate widgets
+
+By default, users can add multiple instances of the same widget. If you are
+using a custom layout with `CustomHomepageGrid`, you can restrict each widget
+to a single instance by passing the `preventDuplicateWidgets` prop. This option
+requires a custom layout. It is not exposed as an app-config setting.
+
+```tsx
+<CustomHomepageGrid preventDuplicateWidgets>
+  {widgets.map((widget, index) => (
+    <Fragment key={widget.name ?? index}>{widget.component}</Fragment>
+  ))}
+</CustomHomepageGrid>
+```
