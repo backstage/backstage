@@ -82,6 +82,25 @@ export class DocsBuilder {
     this.cache = cache;
   }
 
+  private resolvePreserveSources(): boolean {
+    const annotation =
+      this.entity.metadata.annotations?.[
+        'backstage.io/techdocs-source-storage'
+      ];
+    if (annotation === 'enabled') return true;
+    if (annotation === 'disabled') return false;
+    if (annotation) {
+      this.logger.warn(
+        `Ignoring unrecognized backstage.io/techdocs-source-storage annotation value '${annotation}', expected 'enabled' or 'disabled'`,
+      );
+    }
+    return (
+      this.config.getOptionalBoolean(
+        'techdocs.generator.preserveSources.enabled',
+      ) ?? false
+    );
+  }
+
   /**
    * Build the docs and return whether they have been newly generated or have been cached
    * @returns true, if the docs have been built. false, if the cached docs are still up-to-date.
@@ -191,6 +210,13 @@ export class DocsBuilder {
         siteOptions: {
           name: this.entity.metadata.title ?? this.entity.metadata.name,
         },
+        preserveSources: this.resolvePreserveSources(),
+        sourceExcludes: this.config.getOptionalStringArray(
+          'techdocs.generator.preserveSources.excludes',
+        ),
+        sourceAdditionalFiles: this.config.getOptionalStringArray(
+          'techdocs.generator.preserveSources.additionalFiles',
+        ),
       });
 
       /**

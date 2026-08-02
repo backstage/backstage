@@ -76,6 +76,9 @@ export type GeneratorRunOptions = {
     name?: string;
   };
   runAsDefaultUser?: boolean;
+  preserveSources?: boolean;
+  sourceExcludes?: string[];
+  sourceAdditionalFiles?: string[];
 };
 
 // @public
