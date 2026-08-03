@@ -1268,7 +1268,7 @@ export interface Config {
       /**
        * List of logger overrides.
        *
-       * Can be used to configure a different level for logs matching certain criterias.
+       * Can be used to configure a different level for logs matching certain criteria.
        * For example, it can be used to ignore 'info' logs of given plugins.
        *
        * @example
