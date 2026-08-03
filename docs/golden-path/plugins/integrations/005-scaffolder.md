@@ -21,6 +21,8 @@ create a repository, write a file, or call another Backstage plugin. The
 [custom action guide](../../../features/software-templates/writing-custom-actions.md#streamlining-custom-action-creation-with-backstage-cli)
 explains how a backend module adds actions to Scaffolder.
 
+### What to expect
+
 In this guide, you will add a `todo:create` action. A Software Template will use
 the action to add onboarding TODOs to an existing Component:
 
@@ -249,6 +251,16 @@ installation flow.
 If the action succeeds for a non-owner, first check that it sends the identity
 of the user who started the template. Then check that `POST /todos` applies the
 Component ownership rule from the Permissions chapter.
+
+### What you did
+
+You registered a `todo:create` Scaffolder action and used it from a Software
+Template that creates onboarding TODOs for a selected Component. The action
+passes along the identity of the user who started the template, so the todo
+backend can apply its normal creation check.
+
+Members of the owning Group can run the template, while a non-owner cannot use
+the action to bypass the todo plugin's permissions.
 
 ## Next step
 

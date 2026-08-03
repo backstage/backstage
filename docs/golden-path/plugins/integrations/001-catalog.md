@@ -72,6 +72,8 @@ responsible for the TODO records. The `forEntityRef` field is simply the link
 between them: the TODO points to the Component, but the Catalog does not need to
 store or manage the TODO.
 
+### What to expect
+
 You'll do this in three steps:
 
 1. Associate todos with an entity ref.
@@ -436,6 +438,15 @@ and register it in your plugin:
 - Switching to another entity should load the todos for that entity.
 
 If the tab is missing, confirm that `todoEntityContent` is included in the plugin's `extensions` array. If the tab is present but empty, compare `forEntityRef` on the TODO records with the Component reference shown in the Catalog URL.
+
+### What you did
+
+You connected each TODO to a Catalog Component by storing its entity reference
+in `forEntityRef`. The todo backend can now return the TODOs for one Component,
+and the frontend shows them in a **Todos** tab on that Component's page.
+
+This keeps the responsibilities clear: the Catalog owns the Component, and the
+todo plugin owns the TODO records.
 
 ### Further reading
 

@@ -46,6 +46,8 @@ Before starting:
 - Install the Search backend and frontend in the example app.
 - Have at least one owner-visible TODO with a distinctive title.
 
+### What to expect
+
 You will:
 
 1. Describe what a TODO looks like inside Search.
@@ -316,6 +318,15 @@ the TODO collator. If both users see it, check that the collator uses
 `todoReadPermission` and sets `authorization.resourceRef` to the TODO id. Those
 two values connect each search document to the permission created in the
 Permissions chapter.
+
+### What you did
+
+You described TODOs as Search documents and added a collator that copies them
+into the Search index. Each document is connected to `todo.read`, and the TODO
+result component controls how matching TODOs appear on the Search page.
+
+Owners can now find their TODOs through Search, while other users do not see
+those protected results.
 
 ## Further reading
 
