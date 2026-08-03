@@ -119,7 +119,7 @@ export default {
                   'golden-path/plugins/integrations/search',
                   'golden-path/plugins/integrations/notifications',
                   'golden-path/plugins/integrations/scaffolder',
-                  'golden-path/plugins/integrations/mcp',
+                  'golden-path/plugins/integrations/actions-mcp',
                 ]),
                 'golden-path/plugins/conclusion',
               ]),
