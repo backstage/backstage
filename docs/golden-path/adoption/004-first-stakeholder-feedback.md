@@ -13,6 +13,10 @@ Include people who experience the problem from different positions. Start with d
 
 If you have a platform or developer experience organization, involve it early. That team may eventually own the product or depend on it to deliver wider platform goals. A technical partner can also help translate feedback into realistic options without turning every interview into a design review.
 
+When reviewing a custom plugin, also include the team that owns any service or
+data source it integrates. They can identify operational constraints and warn
+you about changes that may affect the plugin.
+
 ## Listen for evidence
 
 Ask participants to describe recent work rather than speculate about features. Useful areas to explore include:
@@ -25,11 +29,21 @@ Ask participants to describe recent work rather than speculate about features. U
 
 When possible, watch someone perform the task. Observed work often exposes missing context and cultural constraints that a feature request does not.
 
+For a plugin, ask participants to complete the real workflow. Notice whether
+they return to the plugin, still switch to another tool for part of the task, or
+avoid it altogether. These behaviors reveal gaps more reliably than a feature
+wish list.
+
 ## Turn feedback into decisions
 
 Group the findings into patterns, then compare them with the outcome and measures agreed with leadership. Prioritize changes that remove a repeated barrier or strengthen the evidence for the next adoption stage. Avoid prioritizing an isolated request simply because it came from the most senior participant.
 
 Close the feedback loop. Tell participants what you learned, what the team will change, and what it will not pursue yet. Keep a visible channel for follow-up and invite a small group of champions to test the next iteration. This demonstrates that participation affects the product and makes later adoption conversations more credible.
+
+Low plugin adoption does not automatically mean the plugin needs more features.
+Investigate discoverability, missing context, and workflow mismatches first.
+[Post-launch feedback and analytics](./006-preparing-for-ga.md#operate-after-launch)
+can help you decide whether to iterate, maintain, or retire the plugin.
 
 ## Learn from adopters
 

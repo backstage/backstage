@@ -70,6 +70,19 @@ These conversations give you the context you need to point them toward the right
 starting template, flag any overlap with existing plugins, and think about where
 it fits.
 
+### Sustain each plugin after launch
+
+Treat a plugin as a product rather than a one-time project. Its owning team
+should review feedback and usage, keep integrated services and dependencies
+current, and make small improvements when evidence shows recurring friction.
+The [post-launch operating guidance](./006-preparing-for-ga.md#operate-after-launch)
+explains how to combine direct conversations with analytics.
+
+If usage is lower than expected, investigate discoverability and workflow fit
+before adding features. If the original need disappears or the owning team can
+no longer maintain the plugin, follow the agreed retirement path instead of
+leaving an unsupported experience in the portal.
+
 ## Registering plugins in your catalog
 
 Once a team has built a plugin and it is ready for wider use, they should register it in the Software Catalog. This makes the plugin discoverable, gives
