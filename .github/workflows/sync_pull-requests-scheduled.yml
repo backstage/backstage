@@ -31,10 +31,18 @@ jobs:
             // 48 slots per day (one per 30-minute cron window).
             // Each PR is assigned a fixed slot via pr.number % 48, so
             // opening/closing other PRs never shifts the assignment.
+            //
+            // GitHub Actions cron jobs can be delayed 15-30+ minutes,
+            // which can push execution past the next 30-minute boundary
+            // and cause a slot to be permanently skipped. To prevent
+            // this, we process both the current slot and the previous
+            // one. Each PR may be processed twice per day as a result,
+            // but the downstream action is idempotent.
             const totalSlots = 48;
             const now = new Date();
             const currentSlot =
               now.getUTCHours() * 2 + (now.getUTCMinutes() >= 30 ? 1 : 0);
+            const prevSlot = (currentSlot + totalSlots - 1) % totalSlots;
 
             const prs = await github.paginate(github.rest.pulls.list, {
               owner: context.repo.owner,
@@ -43,12 +51,13 @@ jobs:
               per_page: 100,
             });
 
-            const batch = prs.filter(
-              pr => pr.number % totalSlots === currentSlot,
-            );
+            const batch = prs.filter(pr => {
+              const prSlot = pr.number % totalSlots;
+              return prSlot === currentSlot || prSlot === prevSlot;
+            });
 
             core.info(
-              `Slot ${currentSlot}/${totalSlots}: ` +
+              `Slots ${prevSlot},${currentSlot}/${totalSlots}: ` +
               `${batch.length} PRs to process out of ${prs.length} open`,
             );
 
