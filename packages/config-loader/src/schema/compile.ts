@@ -27,7 +27,7 @@ import {
 } from './types';
 import { SchemaObject } from 'json-schema-traverse';
 import { normalizeAjvPath } from './utils';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 
 // Used to keep track of the internal deepVisibility inherited through the schema.
 const inheritedVisibility = Symbol('inherited-visibility');
@@ -187,16 +187,23 @@ export function compileConfigSchemas(
       }
 
       if (options?.noUndeclaredProperties) {
+        const hasProperties =
+          typeof schema.properties === 'object' &&
+          schema.properties !== null &&
+          Object.keys(schema.properties).length > 0;
+        const hasPatternProperties =
+          typeof schema.patternProperties === 'object' &&
+          schema.patternProperties !== null &&
+          Object.keys(schema.patternProperties).length > 0;
         /**
-         * The `additionalProperties` key can only be applied to `type: object` in the JSON
-         *  schema.
+         * The `additionalProperties` key can only be applied to `type: object`
+         * in the JSON schema. It's only applied to objects that specify
+         * properties. Otherwise, we end up with nonsensical schemas that don't
+         * allow any properties at all.
          */
         if (
           schema?.type === 'object' &&
-          // Only restrict schemas that have properties otherwise we're left
-          // with `{type: object, additionalProperties: false}` which never
-          // makes sense.
-          ('properties' in schema || 'patternProperties' in schema)
+          (hasProperties || hasPatternProperties)
         ) {
           schema.additionalProperties ||= false;
         }
