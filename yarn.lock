@@ -3578,8 +3578,8 @@ __metadata:
   peerDependencies:
     "@emotion/react": ^11.10.5
     "@material-ui/core": ^4.12.2
-    "@material-ui/styles": ^4.10.0
     "@mui/material": ^5.12.2
+    "@mui/styles": ^5.0.0
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
@@ -7319,7 +7319,7 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
-    "@material-ui/styles": "npm:^4.11.0"
+    "@mui/styles": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -7370,8 +7370,8 @@ __metadata:
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
-    "@material-ui/styles": "npm:^4.10.0"
     "@microsoft/fetch-event-source": "npm:^2.0.1"
+    "@mui/styles": "npm:^5.0.0"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
@@ -11354,7 +11354,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/styles@npm:^4.10.0, @material-ui/styles@npm:^4.11.0, @material-ui/styles@npm:^4.11.4, @material-ui/styles@npm:^4.11.5":
+"@material-ui/styles@npm:^4.11.4, @material-ui/styles@npm:^4.11.5":
   version: 4.11.5
   resolution: "@material-ui/styles@npm:4.11.5"
   dependencies:
@@ -12039,7 +12039,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/styles@npm:^5.14.18":
+"@mui/styles@npm:^5.0.0, @mui/styles@npm:^5.14.18":
   version: 5.18.0
   resolution: "@mui/styles@npm:5.18.0"
   dependencies:
