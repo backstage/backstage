@@ -142,8 +142,8 @@ describe('MockActionsRegistry', () => {
         destructive: false,
       },
       schema: {
-        input: z => z.object({}),
-        output: z => z.object({}),
+        input: z.object({}),
+        output: z.object({}),
       },
       action: async () => ({ output: {} }),
     });
@@ -155,8 +155,8 @@ describe('MockActionsRegistry', () => {
         readOnly: true,
       },
       schema: {
-        input: z => z.object({}),
-        output: z => z.object({}),
+        input: z.object({}),
+        output: z.object({}),
       },
       action: async () => ({ output: {} }),
     });
@@ -169,8 +169,8 @@ describe('MockActionsRegistry', () => {
         readOnly: true,
       },
       schema: {
-        input: z => z.object({}),
-        output: z => z.object({}),
+        input: z.object({}),
+        output: z.object({}),
       },
       action: async () => ({ output: {} }),
     });

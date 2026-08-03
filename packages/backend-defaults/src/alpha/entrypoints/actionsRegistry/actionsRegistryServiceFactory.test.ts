@@ -372,10 +372,10 @@ describe('actionsRegistryServiceFactory', () => {
                   readOnly: true,
                 },
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
-                action: async () => ({ output: { ok: true } }),
+                action: async () => ({ output: {} }),
               });
             },
           });
@@ -433,10 +433,10 @@ describe('actionsRegistryServiceFactory', () => {
                   readOnly: false,
                 },
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
-                action: async () => ({ output: { ok: true } }),
+                action: async () => ({ output: {} }),
               });
               actionsRegistry.register({
                 name: 'read-only',
