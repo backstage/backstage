@@ -33,6 +33,40 @@ The split matters because policy authors need to reference your permission objec
 
 The goal here is to ensure users can only read their own todos. This is a resource permission because the decision depends on a property of the resource itself.
 
+### Prerequisites
+
+Before starting this guide, you should have:
+
+- A todo backend plugin with `GET /todos`, `POST /todos`, and `getTodo` support.
+- A persistent todo store where each todo has an `id` and `createdBy` value.
+- A shared `@internal/plugin-todo-common` package where permission definitions
+  can live.
+- The permission backend installed in the app where you test this policy.
+- A todo list query path that you can extend to filter by `createdBy`.
+
+### Mental model
+
+A permission is the name of an action, such as `todo.read` or `todo.create`.
+Your plugin defines those names and asks the permissions service whether the
+current caller is allowed to perform them. The app's permission policy decides
+the answer.
+
+For a basic permission, the answer is simply ALLOW or DENY. For a resource
+permission, the policy can return a conditional answer, such as "allow this
+only if the todo was created by the current user". Your plugin then translates
+that condition into a database filter before returning data.
+
+The snippets below assume the todo common package is available as
+`@internal/plugin-todo-common` and that it is a dependency of the todo backend
+package.
+
+Install the permission packages used by the snippets:
+
+```shell
+yarn workspace @internal/plugin-todo-common add @backstage/plugin-permission-common
+yarn workspace @internal/plugin-todo-backend add @backstage/plugin-permission-common @backstage/plugin-permission-node
+```
+
 ### Define the permission
 
 In your common package, define a resource permission for reading todos:
@@ -52,6 +86,12 @@ export const todoReadPermission = createPermission({
 export const todoPermissions = [todoReadPermission];
 ```
 
+Re-export the permission definitions from the common package entry point:
+
+```ts title="plugins/todo-common/src/index.ts"
+export * from './permissions';
+```
+
 The `resourceType` field ties this permission to a specific kind of resource. Exporting the string as a named constant (`TODO_RESOURCE_TYPE`) means you can import it in your backend rules rather than repeating the raw string, which prevents subtle mismatches.
 
 ### Define a permission rule
@@ -59,7 +99,7 @@ The `resourceType` field ties this permission to a specific kind of resource. Ex
 Rules are the conditions that the framework evaluates against a resource. Each rule has two parts: `apply`, which checks an in-memory resource, and `toQuery`, which converts the condition to a filter your database can use.
 
 ```ts
-// plugins/todo-backend/src/service/rules.ts
+// plugins/todo-backend/src/rules.ts
 import {
   createPermissionResourceRef,
   createPermissionRule,
@@ -68,9 +108,14 @@ import { TODO_RESOURCE_TYPE } from '@internal/plugin-todo-common';
 import * as z from 'zod';
 import type { TodoItem } from './services/TodoListService';
 
+export type TodoQuery = {
+  property: 'createdBy';
+  values: string[];
+};
+
 export const todoResourceRef = createPermissionResourceRef<
   TodoItem,
-  { createdBy: string }
+  TodoQuery
 >().with({
   pluginId: 'todo',
   resourceType: TODO_RESOURCE_TYPE,
@@ -107,7 +152,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { todoReadPermission } from '@internal/plugin-todo-common';
-import { todoResourceRef, rules } from './service/rules';
+import { todoResourceRef, rules } from './rules';
 import { todoListServiceRef } from './services/TodoListService';
 
 export const todoPlugin = createBackendPlugin({
@@ -141,7 +186,12 @@ export const todoPlugin = createBackendPlugin({
           },
         });
 
-        const router = await createRouter({ httpAuth, permissions, todoList });
+        const router = await createRouter({
+          httpAuth,
+          permissions,
+          permissionsRegistry,
+          todoList,
+        });
         httpRouter.use(router);
       },
     });
@@ -156,27 +206,35 @@ export const todoPlugin = createBackendPlugin({
 In your route handler, use `authorizeConditional` for resource permissions. Unlike `authorize`, this can return a conditional decision that you apply as a filter rather than a hard stop:
 
 ```ts
-// plugins/todo-backend/src/service/router.ts
+// plugins/todo-backend/src/router.ts
 import {
   HttpAuthService,
+  PermissionsRegistryService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { createConditionTransformer } from '@backstage/plugin-permission-node';
 import { todoReadPermission } from '@internal/plugin-todo-common';
+import { todoResourceRef } from './rules';
 import { todoListServiceRef } from './services/TodoListService';
 
 export async function createRouter({
   httpAuth,
   permissions,
+  permissionsRegistry,
   todoList,
 }: {
   httpAuth: HttpAuthService;
   permissions: PermissionsService;
+  permissionsRegistry: PermissionsRegistryService;
   todoList: typeof todoListServiceRef.T;
 }): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
+  const transformConditions = createConditionTransformer(
+    permissionsRegistry.getPermissionRuleset(todoResourceRef),
+  );
 
   router.get('/todos', async (req, res) => {
     const credentials = await httpAuth.credentials(req, { allow: ['user'] });
@@ -196,7 +254,7 @@ export async function createRouter({
     // If ALLOW, pass no filter (return everything).
     const result = await todoList.listTodos(
       decision.result === AuthorizeResult.CONDITIONAL
-        ? decision.conditions
+        ? transformConditions(decision.conditions)
         : undefined,
     );
 
@@ -210,6 +268,27 @@ export async function createRouter({
 
 The conditional path means users only see the data the policy allows, without the handler needing to know what the policy actually is. The policy is the adopter's concern.
 
+Update your `TodoListService.listTodos` method to accept the transformed
+`PermissionCriteria<TodoQuery>` filter and translate it to the database query
+format used by your store. Passing `decision.conditions` directly will not
+compile because those conditions still contain permission rule names and
+parameters; `transformConditions` converts them through the `toQuery` functions
+on your rules.
+
+At minimum, the service signature needs to accept the transformed criteria:
+
+```diff title="plugins/todo-backend/src/services/TodoListService.ts"
++import type { PermissionCriteria } from '@backstage/plugin-permission-common';
++import type { TodoQuery } from '../rules';
+
+-async listTodos(): Promise<{ items: TodoItem[] }> {
++async listTodos(
++  _filter?: PermissionCriteria<TodoQuery>,
++): Promise<{ items: TodoItem[] }> {
+   // Apply the filter to your database query before returning rows.
+ }
+```
+
 ### Export condition helpers for policy authors
 
 Adopters who write their own permission policy need to be able to express conditions using your rules. Export helpers from your backend package:
@@ -217,7 +296,7 @@ Adopters who write their own permission policy need to be able to express condit
 ```ts
 // plugins/todo-backend/src/conditionExports.ts
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { todoResourceRef, rules } from './service/rules';
+import { todoResourceRef, rules } from './rules';
 
 const { conditions, createConditionalDecision } = createConditionExports({
   resourceRef: todoResourceRef,
@@ -235,10 +314,23 @@ import {
   todoConditions,
   createTodoConditionalDecision,
 } from '@internal/plugin-todo-backend';
+import {
+  AuthorizeResult,
+  isPermission,
+  type PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
 import { todoReadPermission } from '@internal/plugin-todo-common';
 
 class MyPolicy implements PermissionPolicy {
-  async handle(request: PolicyQuery, user?: PolicyQueryUser) {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
     if (isPermission(request.permission, todoReadPermission)) {
       return createTodoConditionalDecision(
         request.permission,
@@ -283,6 +375,8 @@ permissionsRegistry.addPermissions([todoCreatePermission]);
 For basic permissions, use `authorize` instead of `authorizeConditional`. The result is always definitive:
 
 ```ts
+import { todoCreatePermission } from '@internal/plugin-todo-common';
+
 router.post('/todos', async (req, res) => {
   const parsed = todoSchema.safeParse(req.body);
   if (!parsed.success) {
