@@ -18,6 +18,9 @@ import type { PluginData } from '@site/src/pluginDirectory/manifest';
 import Layout from '@theme/Layout';
 import React from 'react';
 
+import { HealthSummary } from './HealthSummary';
+import styles from './pluginDirectory.module.scss';
+
 interface PluginDetailPageProps {
   plugin: PluginData;
 }
@@ -31,7 +34,9 @@ export default function PluginDetailPage({ plugin }: PluginDetailPageProps) {
 
   return (
     <Layout title={plugin.title} description={plugin.description}>
-      <main className="container padding-vert--lg">
+      <main
+        className={`container padding-vert--lg ${styles.detailPage}`}
+      >
         <nav aria-label="Breadcrumbs" className="margin-bottom--lg">
           <ul className="breadcrumbs">
             <li className="breadcrumbs__item">
@@ -47,18 +52,20 @@ export default function PluginDetailPage({ plugin }: PluginDetailPageProps) {
           </ul>
         </nav>
 
-        <article>
-          <header>
+        <article className={styles.detailArticle}>
+          <header className={styles.detailHeader}>
             <h1>{plugin.title}</h1>
             <p>
               by <Link to={plugin.authorUrl}>{plugin.author}</Link>
             </p>
           </header>
 
-          <p className="margin-top--lg">{plugin.description}</p>
+          <p className={styles.description}>{plugin.description}</p>
+
+          <HealthSummary plugin={plugin} />
 
           <section
-            className="margin-top--lg"
+            className={styles.resources}
             aria-labelledby="plugin-resources"
           >
             <h2 id="plugin-resources">Resources</h2>
