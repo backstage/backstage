@@ -313,6 +313,7 @@ neuro
 newrelic
 nginx
 nodegit
+nodemailer
 nodejs
 nohoist
 nonces
@@ -560,6 +561,7 @@ unreviewed
 unstarred
 untemplated
 untracked
+untrusted
 upsert
 upstreams
 upvote
