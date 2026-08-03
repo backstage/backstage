@@ -16,7 +16,7 @@ Each entity is identified by its `kind`, `namespace` and `name` — together the
 
 For your plugin, the catalog is the place you go when you want a stable, shared answer to "which thing is this, who owns it, and how does it relate to everything else?" — rather than maintaining your own list of services, owners, or resources.
 
-### Integration Points
+### Integration points
 
 There are three main places where a plugin can plug into the catalog. Pick the one that matches the question you are trying to answer.
 
@@ -72,9 +72,9 @@ for this component" when a developer opens that component in the catalog.
 
 You'll do this in three steps:
 
-1. Put an entity ref on every todo record.
-2. Add a backend route that returns todos for a given entity ref.
-3. Mount a tab on the entity page that calls that route.
+1. Associate todos with an entity ref.
+2. Expose a route that returns the todos for a given entity ref.
+3. Render the todos as a tab on the entity page.
 
 By the end you should be able to open any component in the catalog, click a **Todos** tab, and see the todos that belong to it — or an empty state if there are none.
 
@@ -85,7 +85,7 @@ yarn workspace @internal/plugin-todo-backend add @backstage/catalog-model
 yarn workspace @internal/plugin-todo add @backstage/catalog-model @backstage/plugin-catalog-react
 ```
 
-### Associate todos with an entity ref
+### Step 1: Associate todos with an entity ref
 
 Whenever your plugin records a todo, store the ref of the entity the todo belongs to alongside it. This is distinct from the existing `createdBy` field, which captures the _user_ who created the todo — `forEntityRef` captures the _thing the todo is about_ (a component, an API, a resource, and so on).
 
@@ -228,7 +228,7 @@ Keep the ref in lowercase, fully-qualified form (`kind:namespace/name`) so looku
 
 If `forEntityRef` is missing, `undefined`, or capitalized differently per row, fix that here before moving on — the next step relies on exact matches.
 
-### Expose a "todos for this entity" route
+### Step 2: Expose a "todos for this entity" route
 
 The entity page needs a single call that returns the todos for a given ref. Follow the same `:kind/:namespace/:name` shape the catalog itself uses for its routes — it keeps URLs predictable and avoids escaping the `:` in `kind:namespace/name`. The handler does three things:
 
@@ -331,7 +331,7 @@ The output is similar to this:
 
 For an entity that exists but has no todos you should get `{"items":[]}`, and for a ref that doesn't resolve you should get `404 Entity not found`. If you get a `403`, the calling identity doesn't have permission to read that entity — that's the catalog doing its job, not a bug in your route.
 
-### Render the todos on the entity page
+### Step 3: Render the todos on the entity page
 
 On the frontend, pull the current entity out of context with [`useEntity`](https://backstage.io/api/stable/functions/_backstage_plugin-catalog-react.index.useEntity.html) from `@backstage/plugin-catalog-react`, stringify its ref, and call the new route. Wrap it in whatever your plugin uses for empty and error states:
 
