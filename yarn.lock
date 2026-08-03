@@ -2537,7 +2537,7 @@ __metadata:
     npm-packlist: "npm:^5.0.0"
     p-queue: "npm:^6.6.2"
     portfinder: "npm:^1.0.32"
-    postcss: "npm:^8.1.0"
+    postcss: "npm:^8.5.18"
     postcss-import: "npm:^16.1.0"
     process: "npm:^0.11.10"
     raw-loader: "npm:^4.0.2"
@@ -2866,7 +2866,7 @@ __metadata:
     jsdom: "npm:^27.1.0"
     nodemon: "npm:^3.0.1"
     pirates: "npm:^4.0.6"
-    postcss: "npm:^8.1.0"
+    postcss: "npm:^8.5.18"
     sucrase: "npm:^3.20.2"
     yaml: "npm:^2.0.0"
   peerDependencies:
@@ -36126,12 +36126,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.3.11":
-  version: 3.3.11
-  resolution: "nanoid@npm:3.3.11"
+"nanoid@npm:^3.3.12":
+  version: 3.3.16
+  resolution: "nanoid@npm:3.3.16"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: 10/73b5afe5975a307aaa3c95dfe3334c52cdf9ae71518176895229b8d65ab0d1c0417dd081426134eb7571c055720428ea5d57c645138161e7d10df80815527c48
+  checksum: 10/8004af92b5541af1dbd23b69845b5026f777d5b7ef07163cea1837aae86e052ced8b383cecbf8a4f1b5e77ae207df96dc45e16b9e0fa3c4b761d085f1e42851b
   languageName: node
   linkType: hard
 
@@ -39099,14 +39099,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.1.0, postcss@npm:^8.4.33, postcss@npm:^8.5.1, postcss@npm:^8.5.6":
-  version: 8.5.14
-  resolution: "postcss@npm:8.5.14"
+"postcss@npm:^8.4.33, postcss@npm:^8.5.1, postcss@npm:^8.5.18, postcss@npm:^8.5.6":
+  version: 8.5.18
+  resolution: "postcss@npm:8.5.18"
   dependencies:
-    nanoid: "npm:^3.3.11"
+    nanoid: "npm:^3.3.12"
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
-  checksum: 10/2e3f4dea69692918fe9df5402beb0e54df84499995a094f2fbf63d1a9e38bc1b7a42854df47f09e02593213e01a5eb0627b1d1bd6d1b0ea90767b2e072f7167c
+  checksum: 10/b43f2d2493d82dc43fa50d21cf184bf3b66229e7f53fa1dedc7b8a7c4cecd7ac8ee18fad099f47570da7f78bbf46997a4c6e6c87d8d8ece683dc1f32cda6db3b
   languageName: node
   linkType: hard
 

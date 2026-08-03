@@ -72,7 +72,7 @@
     "glob": "^13.0.0",
     "jest-css-modules": "^2.1.0",
     "pirates": "^4.0.6",
-    "postcss": "^8.1.0",
+    "postcss": "^8.5.18",
     "sucrase": "^3.20.2",
     "yaml": "^2.0.0"
   },
