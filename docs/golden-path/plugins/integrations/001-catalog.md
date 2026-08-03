@@ -9,28 +9,29 @@ description: How to integrate your plugin with the Backstage Software Catalog
 
 ### What is the Software Catalog?
 
-The [Software Catalog](../../../features/software-catalog/index.md) is the
-graph of typed entities that sits at the center of every Backstage instance. [Components, APIs, Resources, Systems, Users, Groups](../../../features/software-catalog/system-model.md) — anything an organization wants to model and reason about — live in the catalog and are related to each other through a set of [well-known relations](../../../features/software-catalog/well-known-relations.md).
+The [Software Catalog](../../../features/software-catalog/index.md) is
+Backstage's directory of the software, teams, and people in an organization.
+Each item in the Catalog is called an
+[**entity**](../../../features/software-catalog/descriptor-format.md#overall-shape-of-an-entity).
+For example, a service can be a
+[Component entity](../../../features/software-catalog/system-model.md#component)
+and a team can be a
+[Group entity](../../../features/software-catalog/system-model.md#group).
 
-Each entity is identified by its `kind`, `namespace` and `name` — together these form an [entity reference](../../../features/software-catalog/references.md) that other plugins use to point at it. The catalog backend ingests [entity descriptors](../../../features/software-catalog/descriptor-format.md) from one or more _sources_, validates them against a schema, runs them through a pipeline of [_processors_](../../../features/software-catalog/external-integrations.md#custom-processors), stitches the resulting relations together, and exposes the final state through a [queryable API](../../../features/software-catalog/api.md) that the frontend and other plugins consume.
+Every entity has a unique address called an
+[entity reference](../../../features/software-catalog/references.md). It
+combines the entity's type, optional namespace, and name. For example,
+`component:default/petstore` identifies the `petstore` Component.
 
-For your plugin, the catalog is the place you go when you want a stable, shared answer to "which thing is this, who owns it, and how does it relate to everything else?" — rather than maintaining your own list of services, owners, or resources.
-
-### Integration points
-
-There are three main places where a plugin can plug into the catalog. Pick the one that matches the question you are trying to answer.
-
-**[Entity providers](../../../features/software-catalog/external-integrations.md#custom-entity-providers)** push entities into the catalog. They run on a schedule, fetch data from an external system, and emit a full or delta set of entities that the catalog should know about. Use a provider when your plugin owns a source of truth that should appear in the catalog — todos discovered in a backing store, for example.
-
-**[Catalog processors](../../../features/software-catalog/external-integrations.md#custom-processors)** transform entities as they flow through the ingestion pipeline. They can read [annotations](../../../features/software-catalog/descriptor-format.md#annotations-optional), mutate spec fields, emit additional entities, or attach extra relations. Use a processor when you want to react to existing entities or annotations rather than provide a brand-new source.
-
-**The catalog model** controls which kinds, versions, and spec types are considered valid. [Extending the model](../../../features/software-catalog/extending-the-model.md) lets you introduce a new first-class kind — `Todo`, for example — with its own schema, relations, and type guards. Use a model extension when your data does not fit comfortably into any of the built-in kinds.
-
-A typical plugin uses one or two of these together: a provider plus a model extension to introduce a new kind, or a processor that reads an annotation off existing entities to expose plugin-specific data.
+The todo plugin will store this address on each TODO to record which Catalog
+entity the TODO is about. The TODO remains in the todo plugin's database; the
+Catalog only stores the Component.
 
 ## Showing todos for a catalog entity
 
-The lightest-weight integration is to surface plugin data on entities that already live in the catalog. The source of truth for todos stays in your plugin's own store, and you join the two together by [entity reference](../../../features/software-catalog/references.md): each todo record carries the `kind:namespace/name` of the entity it belongs to, and the entity page asks the backend for "the todos that belong to me".
+Store the entity reference on each TODO in a field named `forEntityRef`. When a
+user opens a Component page, the frontend asks the todo backend for TODOs whose
+`forEntityRef` points to that Component.
 
 ### Prerequisites
 
@@ -66,9 +67,10 @@ todo row
   forEntityRef: component:default/petstore
 ```
 
-The catalog owns the component page. The todo backend owns the todo rows.
-`forEntityRef` is the link that lets the todo backend answer "show me the todos
-for this component" when a developer opens that component in the catalog.
+The Catalog is responsible for the Component and its page. The todo backend is
+responsible for the TODO records. The `forEntityRef` field is simply the link
+between them: the TODO points to the Component, but the Catalog does not need to
+store or manage the TODO.
 
 You'll do this in three steps:
 
@@ -76,7 +78,7 @@ You'll do this in three steps:
 2. Expose a route that returns the todos for a given entity ref.
 3. Render the todos as a tab on the entity page.
 
-By the end you should be able to open any component in the catalog, click a **Todos** tab, and see the todos that belong to it — or an empty state if there are none.
+By the end, each Component page will have a **Todos** tab. The tab will show the Component's TODOs or an empty message when it has none.
 
 Install the catalog packages used by the snippets:
 
@@ -87,9 +89,13 @@ yarn workspace @internal/plugin-todo add @backstage/catalog-model @backstage/plu
 
 ### Step 1: Associate todos with an entity ref
 
-Whenever your plugin records a todo, store the ref of the entity the todo belongs to alongside it. This is distinct from the existing `createdBy` field, which captures the _user_ who created the todo — `forEntityRef` captures the _thing the todo is about_ (a component, an API, a resource, and so on).
+Whenever your plugin creates a TODO, store the entity reference alongside it.
+The existing `createdBy` field answers "who created this TODO?"
+`forEntityRef` answers "which Component is this TODO about?"
 
-The ref is the stable identifier the catalog hands out — produced by [`stringifyEntityRef`](https://backstage.io/api/stable/functions/_backstage_catalog-model.index.stringifyEntityRef.html) and consumed by [`parseEntityRef`](https://backstage.io/api/stable/functions/_backstage_catalog-model.index.parseEntityRef.html) from `@backstage/catalog-model` — so it travels well between the backend, the catalog client, and the frontend.
+Use `stringifyEntityRef` from `@backstage/catalog-model` to turn a Catalog
+entity into a consistently formatted reference. Use `parseEntityRef` when you
+need to split that reference back into its `kind`, `namespace`, and `name`.
 
 Add the field to the `TodoItem` interface introduced in [Persistence](../backend/003-persistence.md):
 
@@ -151,9 +157,9 @@ Update the row type and the mappers in `TodoListService` to carry the new field:
  }
 ```
 
-Populate the field when a todo is created. The scaffolded backend already
-accepts an `entityRef`; make it required for todos that should appear on
-catalog entity pages, and normalize it before writing:
+When the backend creates a TODO, make `entityRef` required. Look up the entity
+in the Catalog and use `stringifyEntityRef` before saving it. This ensures that
+every TODO stores the reference in the same format:
 
 ```diff title="plugins/todo-backend/src/router.ts"
  const todoSchema = z.object({
@@ -212,7 +218,7 @@ async listTodosForEntity(request: {
 }
 ```
 
-Keep the ref in lowercase, fully-qualified form (`kind:namespace/name`) so lookups are exact. If your plugin discovers todos from somewhere else — a tracker, a code scan, a checklist file — map each one onto the entity it concerns at ingest time, not at read time.
+Keep every reference in the same lowercase `kind:namespace/name` format so that exact database matches work. If TODOs also come from a tracker, code scan, or checklist file, add the Component reference when each TODO is first saved.
 
 **What you should see after this step:** every todo your plugin creates or returns now carries a `forEntityRef`. If you `console.log` a todo, or query your store directly, the record should look like:
 
@@ -230,11 +236,14 @@ If `forEntityRef` is missing, `undefined`, or capitalized differently per row, f
 
 ### Step 2: Expose a "todos for this entity" route
 
-The entity page needs a single call that returns the todos for a given ref. Follow the same `:kind/:namespace/:name` shape the catalog itself uses for its routes — it keeps URLs predictable and avoids escaping the `:` in `kind:namespace/name`. The handler does three things:
+The Component page needs one backend call that returns its TODOs. Put the
+entity's `kind`, `namespace`, and `name` in separate parts of the URL. The
+route:
 
-1. Reads `kind`, `namespace`, and `name` from the URL.
-2. Looks the entity up through the catalog service from `@backstage/plugin-catalog-node`, which routes through the [permissions framework](../../../permissions/overview.md) to confirm the caller is allowed to see it.
-3. Asks your store for the todos that match the normalized ref.
+1. Reads those three values from the URL.
+2. Confirms that the Component exists in the Catalog.
+3. Formats its entity reference consistently.
+4. Returns TODOs whose `forEntityRef` matches it.
 
 First add the catalog service to your plugin setup:
 
@@ -304,9 +313,14 @@ export async function createRouter({
 }
 ```
 
-Looking the entity up through the catalog before querying your own store does two things: it enforces the catalog's [permission model](../../../permissions/overview.md) (the caller can only see todos for entities they can see), and it normalizes the ref so that `component:petstore` and `Component:default/petstore` resolve to the same record. The catalog is the index here, not the database — it tells you _which_ entity the caller is asking about, and your plugin owns the data behind it.
+The Catalog lookup confirms that the Component exists. It also turns shortened
+or differently capitalized input into one consistent reference, such as
+`component:default/petstore`. The Catalog still stores only the Component; the
+todo database stores the matching TODOs.
 
-**What you should see after this step:** with `yarn start` running, hit the route directly and you should get a JSON list back. For an entity that has todos:
+**What you should see after this step:** with `yarn start` running, call the new
+route. The command below signs in as the local guest user, gets a Backstage
+token, and uses that token to request the TODOs:
 
 ```shell
 curl http://localhost:7007/api/todo/todos/by-entity/component/default/petstore \
@@ -329,11 +343,11 @@ The output is similar to this:
 }
 ```
 
-For an entity that exists but has no todos you should get `{"items":[]}`, and for a ref that doesn't resolve you should get `404 Entity not found`. If you get a `403`, the calling identity doesn't have permission to read that entity — that's the catalog doing its job, not a bug in your route.
+For a Component with no TODOs, the response is `{"items":[]}`. For a Component that does not exist, the response is `404 Entity not found`. A `403` response means the signed-in user may not read that Component.
 
 ### Step 3: Render the todos on the entity page
 
-On the frontend, pull the current entity out of context with [`useEntity`](https://backstage.io/api/stable/functions/_backstage_plugin-catalog-react.index.useEntity.html) from `@backstage/plugin-catalog-react`, stringify its ref, and call the new route. Wrap it in whatever your plugin uses for empty and error states:
+On the frontend, `useEntity` provides the Component page the user is viewing. Format that Component's reference and call the new todo route. The component below shows progress while loading, an error if the request fails, an empty message when there are no TODOs, or the TODO list:
 
 ```tsx
 // plugins/todo/src/components/EntityTodoContent.tsx
@@ -385,12 +399,9 @@ export const EntityTodoContent = () => {
 };
 ```
 
-With the component in place, register it as a tab on the entity page. The wiring depends on which frontend system the app uses:
-
-- **New frontend system:** export an [`EntityContentBlueprint`](../../../frontend-system/building-plugins/03-common-extension-blueprints.md#entity-content) from `@backstage/plugin-catalog-react/alpha` and register it in your plugin module.
-- **Legacy system:** add an `EntityLayout.Route` for `/todos` inside the app's `EntityPage`. See [catalog customization (legacy)](../../../features/software-catalog/catalog-customization--old.md) for the surrounding shape.
-
-For the new frontend system, add the entity content extension to your plugin:
+With the component in place, export an
+[`EntityContentBlueprint`](../../../frontend-system/building-plugins/03-common-extension-blueprints.md)
+and register it in your plugin:
 
 ```diff title="plugins/todo/src/plugin.tsx"
 +import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
@@ -424,12 +435,17 @@ For the new frontend system, add the entity content extension to your plugin:
 - On an entity that has none, it shows "No todos for this entity" rather than an error or a blank page.
 - Switching to another entity should load the todos for that entity.
 
-If the tab is missing entirely, the `EntityContentBlueprint`/`EntityLayout.Route` isn't being registered. If the tab is there but always empty, your todos probably aren't matching on `forEntityRef` — go back and check the values on the todo records against the ref the catalog page is using (you can read it from the URL).
+If the tab is missing, confirm that `todoEntityContent` is included in the plugin's `extensions` array. If the tab is present but empty, compare `forEntityRef` on the TODO records with the Component reference shown in the Catalog URL.
 
-### Going further
+### Further reading
 
-The join key above — an entity ref carried on each todo record — is all most plugins need. When you want adopters to do something on the catalog side to integrate with your plugin, lean on the catalog's existing extension surfaces rather than inventing your own:
+This guide keeps TODOs in the todo plugin and stores only the Catalog entity
+reference on each TODO. Some plugins need deeper Catalog customization. Read
+the following specialized guides when you need them:
 
-- To attach plugin-specific configuration to an existing entity, use an [annotation](../../../features/software-catalog/descriptor-format.md#annotations-optional) on the entity's [`catalog-info.yaml`](../../../features/software-catalog/descriptor-format.md). See [well-known annotations](../../../features/software-catalog/well-known-annotations.md) for examples of how other plugins do this, and validate values during ingestion with a [custom processor](../../../features/software-catalog/external-integrations.md#custom-processors) if a bad value should fail the refresh rather than your plugin at runtime.
-- To model todos (or any other concept) as first-class catalog citizens with their own kind, [relations](../../../features/software-catalog/well-known-relations.md), and spec, follow [Extending the model](../../../features/software-catalog/extending-the-model.md) to add a new entity kind, and use an [entity provider](../../../features/software-catalog/external-integrations.md#custom-entity-providers) to feed instances of that kind into the catalog.
-- For background on how an entity moves from descriptor to queryable record (and where in that flow each of these extension points runs), read [Life of an entity](../../../features/software-catalog/life-of-an-entity.md).
+- [Annotations](../../../features/software-catalog/descriptor-format.md#annotations-optional)
+  add plugin-specific information to an existing Catalog entity.
+- [Custom processors](../../../features/software-catalog/external-integrations.md#custom-processors)
+  check or change entity data as the Catalog reads it.
+- [Extending the model](../../../features/software-catalog/extending-the-model.md)
+  adds a new kind of Catalog entity.
