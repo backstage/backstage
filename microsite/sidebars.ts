@@ -89,46 +89,47 @@ export default {
     ...(process.env.GOLDEN_PATH
       ? [
           sidebarElementWithIndex({ label: 'Golden Paths' }, [
-            sidebarElementWithIndex({ label: '000 - Adoption' }, [
-              'golden-path/adoption/getting-started',
-              'golden-path/adoption/leadership-buy-in',
-              'golden-path/adoption/setting-up-a-poc',
-              'golden-path/adoption/first-stakeholder-feedback',
-              'golden-path/adoption/customizing-your-instance',
-              'golden-path/adoption/preparing-for-ga',
-            ]),
-            sidebarElementWithIndex({ label: '001 - Create an App' }, [
-              'golden-path/create-app/index',
-              'golden-path/create-app/npx-create-app',
-              'golden-path/create-app/local-development',
-              'golden-path/create-app/installing-plugins',
-              'golden-path/create-app/logging-in',
-              'golden-path/create-app/custom-theme',
-              'golden-path/create-app/keeping-backstage-updated',
-            ]),
-            sidebarElementWithIndex({ label: '002 - Plugins' }, [
-              'golden-path/plugins/index',
-              'golden-path/plugins/why-build-plugins',
-              'golden-path/plugins/sustainable-plugin-development',
-              sidebarElementWithIndex({ label: 'Backend Plugins' }, [
-                'golden-path/plugins/backend/first-steps',
-                'golden-path/plugins/backend/poking-around',
-                'golden-path/plugins/backend/persistence',
-                'golden-path/plugins/backend/reading-from-source',
-                'golden-path/plugins/backend/testing',
+            sidebarElementWithIndex({ label: 'Build Backstage' }, [
+              sidebarElementWithIndex({ label: '001 - Create an App' }, [
+                'golden-path/create-app/index',
+                'golden-path/create-app/npx-create-app',
+                'golden-path/create-app/local-development',
+                'golden-path/create-app/installing-plugins',
+                'golden-path/create-app/logging-in',
+                'golden-path/create-app/custom-theme',
+                'golden-path/create-app/keeping-backstage-updated',
               ]),
-              sidebarElementWithIndex({ label: 'Frontend Plugins' }, [
-                'golden-path/plugins/frontend/first-steps',
-                'golden-path/plugins/frontend/poking-around',
-                'golden-path/plugins/frontend/dynamic-config',
-                'golden-path/plugins/frontend/http-client',
-                'golden-path/plugins/frontend/testing',
+              sidebarElementWithIndex({ label: '002 - Plugins' }, [
+                'golden-path/plugins/index',
+                'golden-path/plugins/why-build-plugins',
+                'golden-path/plugins/sustainable-plugin-development',
+                sidebarElementWithIndex({ label: 'Backend Plugins' }, [
+                  'golden-path/plugins/backend/first-steps',
+                  'golden-path/plugins/backend/poking-around',
+                  'golden-path/plugins/backend/persistence',
+                  'golden-path/plugins/backend/reading-from-source',
+                  'golden-path/plugins/backend/testing',
+                ]),
+                sidebarElementWithIndex({ label: 'Frontend Plugins' }, [
+                  'golden-path/plugins/frontend/first-steps',
+                  'golden-path/plugins/frontend/poking-around',
+                  'golden-path/plugins/frontend/dynamic-config',
+                  'golden-path/plugins/frontend/http-client',
+                  'golden-path/plugins/frontend/testing',
+                ]),
+              ]),
+              sidebarElementWithIndex({ label: '003 - Deployment' }, [
+                'golden-path/deployment/index',
+                'golden-path/deployment/docker',
+                'golden-path/deployment/database',
+                'golden-path/deployment/authentication',
+                'golden-path/deployment/deploying',
+                'golden-path/deployment/config-first',
+                'golden-path/deployment/monitoring',
+                'golden-path/deployment/scaling',
               ]),
             ]),
-            sidebarElementWithIndex({ label: '003 - Deployment' }, [
-              'golden-path/deployment/index',
-            ]),
-            sidebarElementWithIndex({ label: '004 - Adoption' }, [
+            sidebarElementWithIndex({ label: 'Adopt Backstage' }, [
               'golden-path/adoption/getting-started',
               'golden-path/adoption/leadership-buy-in',
               'golden-path/adoption/setting-up-a-poc',
