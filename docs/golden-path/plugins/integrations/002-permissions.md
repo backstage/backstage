@@ -45,6 +45,8 @@ records for one Component.
 The example also assumes that the app has a permission backend and a policy
 module as described in [Getting started with permissions](../../../permissions/getting-started.md).
 
+### What to expect
+
 You will:
 
 1. Give the read operation the name `todo.read`.
@@ -423,6 +425,15 @@ Use a component whose `ownedBy` relation points to a known Group.
 
 The last check confirms that creating a TODO does not grant permanent access.
 Current Catalog ownership controls both reads and creation.
+
+### What you did
+
+You taught the permission framework what `todo.read` means for the todo plugin.
+Every route now applies the same rule to TODO lists and individual TODOs, and
+the Catalog's current ownership decides who may read or create them.
+
+Creating a TODO does not grant permanent access. When a Component moves to
+another owning Group, access moves with it.
 
 ## Next step
 
