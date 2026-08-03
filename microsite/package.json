@@ -17,7 +17,7 @@
     "rename-version": "docusaurus-rename-version",
     "start": "docusaurus start",
     "swizzle": "docusaurus swizzle",
-    "test:plugin-directory": "tsx --test",
+    "test:plugin-directory": "tsx --test 'src/**/*.test.{ts,tsx}' 'scripts/**/*.test.{ts,tsx}'",
     "verify:sidebars": "node ./scripts/verify-sidebars",
     "version": "docusaurus-version",
     "write-translations": "docusaurus-write-translations"
