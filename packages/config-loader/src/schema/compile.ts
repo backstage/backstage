@@ -27,6 +27,7 @@ import {
 } from './types';
 import { SchemaObject } from 'json-schema-traverse';
 import { normalizeAjvPath } from './utils';
+import { cloneDeep } from 'lodash';
 
 // Used to keep track of the internal deepVisibility inherited through the schema.
 const inheritedVisibility = Symbol('inherited-visibility');
@@ -129,7 +130,27 @@ export function compileConfigSchemas(
     }
   }
 
-  const merged = mergeConfigSchemas(schemas.map(_ => _.value));
+  const merged = mergeConfigSchemas(
+    schemas.map(_ => {
+      const copy = cloneDeep(_.value as JSONSchema);
+      traverse(copy, s => {
+        // We convert `additionalProperties: {}` to `additionalProperties: true`
+        // because `mergeAllOf` drops `additionalProperties: {}` during merging.
+        // According to JSON Schema, these two forms are equivalent. Without this
+        // conversion, the dropped value is treated as unset, which causes
+        // `noUndeclaredProperties` to incorrectly add `additionalProperties: false`
+        // and reject valid configuration.
+        if (
+          typeof s.additionalProperties === 'object' &&
+          s.additionalProperties !== null &&
+          Object.keys(s.additionalProperties).length === 0
+        ) {
+          s.additionalProperties = true;
+        }
+      });
+      return copy;
+    }),
+  );
 
   traverse(
     merged,
@@ -170,7 +191,13 @@ export function compileConfigSchemas(
          * The `additionalProperties` key can only be applied to `type: object` in the JSON
          *  schema.
          */
-        if (schema?.type === 'object') {
+        if (
+          schema?.type === 'object' &&
+          // Only restrict schemas that have properties otherwise we're left
+          // with `{type: object, additionalProperties: false}` which never
+          // makes sense.
+          ('properties' in schema || 'patternProperties' in schema)
+        ) {
           schema.additionalProperties ||= false;
         }
       }
