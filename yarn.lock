@@ -2999,7 +2999,7 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     react-router-dom-beta: "npm:react-router-dom@6.0.0-beta.0"
     react-router-dom-stable: "npm:react-router-dom@^6.3.0"
-    react-router-stable: "npm:react-router@^6.3.0"
+    react-router-stable: "npm:react-router@^8.0.0"
     react-use: "npm:^17.2.4"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
@@ -25057,6 +25057,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie-es@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "cookie-es@npm:3.1.1"
+  checksum: 10/e40083c42d0e3a4b3caa271775858f8e6cdd31f24b9c445ff08d7a8f4dc01069fc82012bdf1602d5a03fa1d75aba51a3dd33cd8a5db639db2ed17bcfd650f4bc
+  languageName: node
+  linkType: hard
+
 "cookie-parser@npm:^1.4.5, cookie-parser@npm:^1.4.6":
   version: 1.4.7
   resolution: "cookie-parser@npm:1.4.7"
@@ -40780,14 +40787,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-stable@npm:react-router@^6.3.0, react-router@npm:6.8.1":
-  version: 6.8.1
-  resolution: "react-router@npm:6.8.1"
+"react-router-stable@npm:react-router@^8.0.0":
+  version: 8.3.0
+  resolution: "react-router@npm:8.3.0"
   dependencies:
-    "@remix-run/router": "npm:1.3.2"
+    cookie-es: "npm:^3.1.1"
   peerDependencies:
-    react: ">=16.8"
-  checksum: 10/8895f3300019d61ecbd3acf941794cc3d13ad4808285eb5e876cd0c839d686fc98f8ea40f0fb3400d040ed0338a4003bd18afd9edc6bd1a983e5ea2cde970762
+    react: ">=19.2.7"
+    react-dom: ">=19.2.7"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+  checksum: 10/6ef9ee17910356e7a7c1d262d3c3a943a25e36bf871a199628438d1436d1a16828091da30a5df7c318030dff434c5b3f003c16f82c7ffca9cf37545316f6525c
   languageName: node
   linkType: hard
 
@@ -40799,6 +40810,17 @@ __metadata:
   peerDependencies:
     react: ">=16.8"
   checksum: 10/1a51bdcc42b8d7979228dea8b5c44a28a4add9b681781f75b74f5f920d20058a92ffe5f1d0ba0621f03abe1384b36025b53b402515ecb35f27a6a2f2f25d6fbe
+  languageName: node
+  linkType: hard
+
+"react-router@npm:6.8.1":
+  version: 6.8.1
+  resolution: "react-router@npm:6.8.1"
+  dependencies:
+    "@remix-run/router": "npm:1.3.2"
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 10/8895f3300019d61ecbd3acf941794cc3d13ad4808285eb5e876cd0c839d686fc98f8ea40f0fb3400d040ed0338a4003bd18afd9edc6bd1a983e5ea2cde970762
   languageName: node
   linkType: hard
 
