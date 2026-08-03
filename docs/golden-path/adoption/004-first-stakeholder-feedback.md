@@ -5,14 +5,48 @@ title: First round of stakeholder feedback
 description: How to gather and incorporate stakeholder feedback on your Backstage PoC
 ---
 
-Now that you have a PoC running, let's walk through how to get good feedback. You likely aren't the first person to hear about Backstage or maybe not even the first person to set up a PoC. There may be common pitfalls unique to your company that are worth knowing about - political, organizational or otherwise.
+Now that you have a PoC, use stakeholder feedback to decide what deserves further investment. The goal is not to collect a feature wish list. It is to understand whether the initial problem matters, where the proposed experience breaks down, and which change would create the most value next.
 
-## Who to look for?
+## Choose participants
 
-This depends pretty significantly on your organizational structure. If you have a dedicated platform organization or platform team, start with them. They will either be the technical owners of this application from the go, or will eventually take over ownership. Be kind to them. If you aren't from that organization, we recommend finding your technical partner from somewhere in that organization.
+Include people who experience the problem from different positions. Start with developers from the PoC cohort, then include adjacent teams, platform owners, and people who were not eager to participate. Early champions explain what creates enthusiasm; skeptical or infrequent users reveal barriers that champions may overlook.
 
-## What to listen for
+If you have a platform or developer experience organization, involve it early. That team may eventually own the product or depend on it to deliver wider platform goals. A technical partner can also help translate feedback into realistic options without turning every interview into a design review.
 
-1. IT slowness. Does your organization run on tickets? Are there specific tasks that feel like they should be automated but aren't?
-2. User toil. Your developers are super aware of what's slowing them down, they'll tell you the annoying manual parts of their job that they're hoping you can fix.
-3. Data sprawl. What services are your users struggling to remember? What vendors are critical but most users only touch once a month?
+## Listen for evidence
+
+Ask participants to describe recent work rather than speculate about features. Useful areas to explore include:
+
+1. **Approval and handoff delays.** Which tasks depend on tickets, specialist teams, or undocumented contacts?
+2. **User toil.** Which repetitive or error-prone steps slow developers down?
+3. **Information sprawl.** Which services, owners, documents, or tools are difficult to find?
+4. **Workarounds.** What have teams already built or documented to compensate for the problem?
+5. **Adoption barriers.** What would prevent this person or team from changing its current workflow?
+
+When possible, watch someone perform the task. Observed work often exposes missing context and cultural constraints that a feature request does not.
+
+## Turn feedback into decisions
+
+Group the findings into patterns, then compare them with the outcome and measures agreed with leadership. Prioritize changes that remove a repeated barrier or strengthen the evidence for the next adoption stage. Avoid prioritizing an isolated request simply because it came from the most senior participant.
+
+Close the feedback loop. Tell participants what you learned, what the team will change, and what it will not pursue yet. Keep a visible channel for follow-up and invite a small group of champions to test the next iteration. This demonstrates that participation affects the product and makes later adoption conversations more credible.
+
+## Learn from adopters
+
+<!-- vale off -->
+
+### [Countercultural: Backstage for consultants](https://www.youtube.com/watch?v=RTYVmMbkdNA)
+
+<!-- vale on -->
+
+_BackstageCon North America, 2024 · 9:36 video_
+
+- Treat resistance as evidence about organizational culture, not merely as a technical adoption problem.
+- Use existing communities to recruit varied perspectives, alpha testers, and champions, then reinforce participation through recognition and visible support.
+
+### [Harmonizing strategy and engineering](https://www.youtube.com/watch?v=2t_Pdiu3B1E)
+
+_KubeCon + CloudNativeCon North America, 2025 · 16:49 video_
+
+- Keep product strategy and engineering decisions connected as feedback reveals different user groups.
+- Evolve from the initial use case only when research shows how the next audience's needs differ.
