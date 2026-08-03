@@ -9965,6 +9965,7 @@ __metadata:
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
     react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
