@@ -84,6 +84,14 @@ package yet, create it before copying the snippets below, and add it as a
 dependency of the todo frontend, todo backend, and search backend module
 packages.
 
+You'll do this in five steps:
+
+1. Define the document type.
+2. Build the collator factory.
+3. Register the collator with the search backend.
+4. Respect permissions during indexing.
+5. Render todo results on the frontend.
+
 Install the search packages used by the snippets:
 
 ```shell
@@ -92,7 +100,7 @@ yarn workspace @internal/plugin-search-backend-module-todo add @backstage/plugin
 yarn workspace @internal/plugin-todo add @backstage/plugin-search-react @internal/plugin-todo-common
 ```
 
-### Define the document type
+### Step 1: Define the document type
 
 A collator emits documents that implement `IndexableDocument`. The base type
 already includes `title`, `text`, and `location`; extend it with the fields
@@ -118,7 +126,7 @@ sharing it through `todo-common` prevents drift.
 export * from './TodoSearchDocument';
 ```
 
-### Build the collator factory
+### Step 2: Build the collator factory
 
 Implement `DocumentCollatorFactory`. The `type` field is the document type
 the engine indexes against; `getCollator` returns a `Readable` stream of your
@@ -209,7 +217,7 @@ permissions, expose a dedicated read route for backend-to-backend indexing or
 allow service credentials for this endpoint and enforce visibility through the
 search result `authorization` block shown below.
 
-### Register the collator with the search backend
+### Step 3: Register the collator with the search backend
 
 Wire the factory into a `search` backend module, scheduled however often you
 want the index refreshed. Most plugins re-index every 10 minutes in
@@ -253,7 +261,7 @@ export const searchModuleTodoCollator = createBackendModule({
 Adopters install the module the same way they install any other backend
 module — one `backend.add(...)` call in their `packages/backend/src/index.ts`.
 
-### Respect permissions during indexing
+### Step 4: Respect permissions during indexing
 
 If you defined a `todo.read` resource permission in the
 [permissions chapter](003-permissions.md), reuse it here so users only see
@@ -293,7 +301,7 @@ When the search engine returns a hit, the search backend will call your
 permission policy with `todoReadPermission` and the `resourceRef`, dropping
 results the user is not allowed to see before they ever reach the UI.
 
-### Render todo results on the frontend
+### Step 5: Render todo results on the frontend
 
 Finally, register a result item component for the new document type. The
 search result list resolves each hit against the registered components and
