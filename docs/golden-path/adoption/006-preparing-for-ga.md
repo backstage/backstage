@@ -5,7 +5,19 @@ title: Preparing for GA
 description: How to prepare your Backstage instance for a company-wide general availability launch
 ---
 
-We hope at this point that the developers you're working with have read the [golden path on deploying Backstage](../deployment/index.md). Your Backstage instance should be ready for the scale that comes with a full company launch.
+Before planning a company-wide general availability (GA) launch, confirm that the technical team has completed the [golden path for deploying Backstage](../deployment/index.md). Then name the people who will own the launch, support developers, review feedback, and decide what changes after launch.
+
+## Define launch readiness
+
+Agree on a short readiness checklist with the sponsor and participating teams:
+
+- The launch workflows solve a validated problem for their intended audiences.
+- Documentation, support channels, and escalation owners are visible.
+- Baseline measures and a review cadence are in place.
+- Early users can explain the value in their own words.
+- The product team has capacity to respond after the announcement.
+
+GA is a change in operating responsibility, not only a communication milestone. Delay the announcement if nobody is accountable for the experience that follows it.
 
 ## Launch announcements
 
@@ -48,7 +60,7 @@ Invite a developer from the teams that participated in your proof of concept
 talking about their own product.
 :::
 
-## What to expect in the coming months
+## Operate after launch
 
 The period immediately after GA is often slower than you expect. This is normal.
 Developers are busy, habits are hard to change, and adoption takes time to build
@@ -73,6 +85,8 @@ Backstage does not ship with usage analytics by default, but you can integrate
 an analytics provider through the plugin ecosystem, you can find more information on this in the [Analytics](../../plugins/analytics.md) section of the Backstage documentation. Tracking which parts of
 Backstage developers actually use helps you make informed decisions about where
 to invest your time.
+
+Compare these signals with the baseline and outcome you agreed on before the PoC. Usage shows whether developers reached a workflow; completion time, support demand, and direct feedback help determine whether the workflow improved.
 
 Look for patterns: Are developers landing on the catalog but not drilling into
 entity pages? Is the search feature underused? Are Software Templates being
@@ -129,3 +143,19 @@ improved system reliability.
 Share wins, but also be transparent about what is not working and what you plan
 to do about it. Stakeholders who trust your judgment are more likely to continue
 investing in the platform over time.
+
+## Learn from adopters
+
+### [Expedia Group shares Backstage proof-of-value metrics 2.0](https://backstage.io/blog/2023/08/17/expedia-proof-of-value-metrics-2/)
+
+_Backstage blog, 2023_
+
+- Align launch measures to developer jobs and the outcomes your portal is meant to change; usage alone is not the value model.
+- Revisit the measures and roadmap as the portal and developer journey mature instead of freezing the PoC scorecard.
+
+### [How Ericsson scaled developer experience with Backstage](https://www.youtube.com/watch?v=1mDEkiN4NTs)
+
+_BackstageCon North America, 2025 · 25:08 video_
+
+- Study an adopter that connects scale with automation, standardization, and collaboration rather than treating launch as a one-time announcement.
+- Use recurring engagement data as one input to the operating rhythm, alongside evidence of efficiency and developer outcomes.
