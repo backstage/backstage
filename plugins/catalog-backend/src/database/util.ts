@@ -71,6 +71,9 @@ function isDeadlockError(
     return isError(e) && e.code === '40P01';
   }
 
-  // Add more database engine checks here as needed
+  if (knex.client.config.client.includes('mysql')) {
+    return isError(e) && (e as any).errno === 1213;
+  }
+
   return false;
 }

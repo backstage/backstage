@@ -20,6 +20,7 @@ import { randomUUID as uuid } from 'node:crypto';
 import { applyDatabaseMigrations } from './migrations';
 import { DbFinalEntitiesRow, DbRefreshStateRow } from './tables';
 import { createEntitiesCountByKind, queryEntitiesCountByKind } from './metrics';
+import waitForExpect from 'wait-for-expect';
 
 jest.setTimeout(60_000);
 
@@ -111,13 +112,11 @@ describe.each(databases.eachSupportedId())('metrics, %p', databaseId => {
       const cached = await getCount();
       expect(Object.fromEntries(cached)).toEqual({ component: 1 });
 
-      // Poll until the TTL elapses and the cache refreshes.
-      let refreshed;
-      do {
-        await new Promise(resolve => setTimeout(resolve, 50));
-        refreshed = await getCount();
-      } while (refreshed.get('component') === 1);
-      expect(Object.fromEntries(refreshed)).toEqual({ component: 2 });
+      // After the TTL elapses the next call hits the database again.
+      await waitForExpect(async () => {
+        const refreshed = await getCount();
+        expect(Object.fromEntries(refreshed)).toEqual({ component: 2 });
+      });
     });
 
     it('coalesces overlapping callers into a single underlying query', async () => {

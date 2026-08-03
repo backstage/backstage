@@ -38,6 +38,7 @@ import {
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
 import { EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
+import { retryOnDeadlock } from '../database/util';
 import { LoggerService, SchedulerService } from '@backstage/backend-plugin-api';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
@@ -291,25 +292,29 @@ export class DefaultCatalogProcessingEngine {
 
             result.completedEntity.metadata.uid = id;
             let oldRelationSources: Map<string, string>;
-            await this.processingDatabase.transaction(async tx => {
-              const { previous } =
-                await this.processingDatabase.updateProcessedEntity(tx, {
-                  id,
-                  processedEntity: result.completedEntity,
-                  resultHash,
-                  errors: errorsString,
-                  relations: result.relations,
-                  deferredEntities: result.deferredEntities,
-                  locationKey,
-                  refreshKeys: result.refreshKeys,
-                });
-              oldRelationSources = new Map(
-                previous.relations.map(r => [
-                  `${r.source_entity_ref}:${r.type}->${r.target_entity_ref}`,
-                  r.source_entity_ref,
-                ]),
-              );
-            });
+            await retryOnDeadlock(
+              () =>
+                this.processingDatabase.transaction(async tx => {
+                  const { previous } =
+                    await this.processingDatabase.updateProcessedEntity(tx, {
+                      id,
+                      processedEntity: result.completedEntity,
+                      resultHash,
+                      errors: errorsString,
+                      relations: result.relations,
+                      deferredEntities: result.deferredEntities,
+                      locationKey,
+                      refreshKeys: result.refreshKeys,
+                    });
+                  oldRelationSources = new Map(
+                    previous.relations.map(r => [
+                      `${r.source_entity_ref}:${r.type}->${r.target_entity_ref}`,
+                      r.source_entity_ref,
+                    ]),
+                  );
+                }),
+              this.knex,
+            );
 
             const newRelationSources = new Map<string, string>(
               result.relations.map(relation => {
