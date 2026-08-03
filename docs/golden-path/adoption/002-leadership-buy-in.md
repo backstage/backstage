@@ -42,9 +42,9 @@ _BackstageCon North America, 2024 · 32:01 video_
 - Frame the portal in terms of strategic alignment and value delivery, not only platform-team efficiency.
 - Bring executive sponsors questions that the catalog can help answer, then connect continued funding to those outcomes.
 
-### [Five common traits of successful Backstage adopters](https://backstage.io/blog/2023/07/28/frontside-adopter-post/)
+### [The journey of deploying Backstage in a large organization](https://www.youtube.com/watch?v=l7OQdrUkoVI)
 
-_Backstage blog, 2023_
+_KubeCon + CloudNativeCon North America, 2025 · 31:32 video_
 
-- Treat Backstage as a product with researched problems, a roadmap, and adoption milestones rather than as a software installation.
-- Secure leadership alignment around the wider platform journey and give a dedicated team enough capacity to lead adoption.
+- Follow an adopter from initial sponsorship and financing through implementation and organization-wide adoption.
+- Position the portal as a response to developer cognitive load, then give the product team time to change how developers deliver and manage software.

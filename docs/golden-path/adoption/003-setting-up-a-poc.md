@@ -31,12 +31,12 @@ Review the evidence with the cohort and sponsor. Continue only when you can expl
 
 ## Learn from adopters
 
-### [How Chicago Trading Company saved 18 months of developer effort with Backstage](https://backstage.io/blog/2023/09/29/chicago-traiding-company-adopter-spotlight/)
+### [Growing pains: Taming the post-startup stage with Backstage](https://www.youtube.com/watch?v=T1NSkvus6Mc)
 
-_Backstage blog, 2023_
+_BackstageCon North America, 2025 · 23:55 video_
 
-- Start with one concrete source of onboarding friction and a small special-interest group instead of proving every Backstage feature.
-- Pair with a representative developer early, then define evidence such as support demand, onboarding time, or effort saved before broadening the rollout.
+- Make catalog quality the first objective instead of starting with themes, custom plugins, or a broad integration program.
+- Use Software Templates to make the initial standard explicit and accessible, then decompose the workflow so subject-matter experts can own their part.
 
 ### [Backstage adoption deep dive: Navigating the pitfalls](https://www.youtube.com/watch?v=FACtDHQvNf0)
 

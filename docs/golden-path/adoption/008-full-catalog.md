@@ -61,9 +61,9 @@ _Roadie, 2024_
 - Define completeness against the software that matters, such as active repositories or production deployments, instead of pursuing a noisy 100 percent inventory.
 - Choose centralized, distributed, or mixed onboarding based on your source-of-truth landscape and the ownership behavior you want to create.
 
-### [The adoption journey: Initiatives and strategies](https://roadie.io/blog/the-adoption-journey-initiatives-and-strategies/)
+### [Growing pains: Taming the post-startup stage with Backstage](https://www.youtube.com/watch?v=T1NSkvus6Mc)
 
-_Roadie, 2024_
+_BackstageCon North America, 2025 · 23:55 video_
 
-- Set a specific catalog goal and intermediate milestones before choosing voluntary, incentive-based, or mandated tactics.
-- When a mandate is justified, tie it to a wider outcome, obtain senior backing, reduce onboarding work, and inspect progress on a regular cadence.
+- Expect voluntary catalog onboarding to plateau; use targeted manual work to establish ownership, then automate the steady state.
+- SpotOn archives repositories that fall out of compliance and provides a reversible, self-service path that restores the repository and registers it in the catalog.
