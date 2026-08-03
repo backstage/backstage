@@ -111,12 +111,21 @@ Add the field to the `TodoItem` interface introduced in [Persistence](../backend
  }
 ```
 
-Add a matching column to the database and the row mapping so writes and reads stay in sync. A new migration is the cleanest place for the column:
+Add a matching column to the database. Earlier chapters may already have
+created TODOs, so use your test Component as the default when the migration
+fills those existing rows. Replace `component:default/petstore` with the entity
+reference you are using:
 
 ```js title="plugins/todo-backend/migrations/<timestamp>_add_for_entity_ref.js"
+const existingTodoEntityRef = 'component:default/petstore';
+
 exports.up = async knex => {
   await knex.schema.alterTable('todo', table => {
-    table.string('for_entity_ref').notNullable().index();
+    table
+      .string('for_entity_ref')
+      .notNullable()
+      .defaultTo(existingTodoEntityRef)
+      .index();
   });
 };
 
@@ -126,6 +135,10 @@ exports.down = async knex => {
   });
 };
 ```
+
+The default gives older rows a valid reference on both SQLite and PostgreSQL.
+The create route below always supplies `for_entity_ref` explicitly for new
+TODOs.
 
 Update the row type and the mappers in `TodoListService` to carry the new field:
 

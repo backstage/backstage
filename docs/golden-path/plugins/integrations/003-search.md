@@ -43,7 +43,6 @@ signed-in user may read that TODO.
 Before starting:
 
 - Complete [Permissions](002-permissions.md).
-- Install the Search backend and frontend in the example app.
 - Have at least one owner-visible TODO with a distinctive title.
 
 ### What to expect
