@@ -88,7 +88,7 @@ is offered by each integration.
 To ingest entities from an existing system already tracking software, you can
 also write a _custom processor_ to convert between the existing system and
 Backstage's descriptor format. This is documented in
-[External Integrations](external-integrations.md).
+[External Integrations](external-integrations/index.md).
 
 ### Processor configuration
 
