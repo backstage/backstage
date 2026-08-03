@@ -1,35 +1,44 @@
 ---
 id: index
 sidebar_label: Backstage Plugins!
-title: How to create plugins with Backstage
-description: A guided walkthrough for building frontend and backend plugins in Backstage
+title: Backstage plugins
+description: Learn why and how to build frontend and backend plugins in Backstage
 ---
 
-### Prerequisites
+## Prerequisites
 
-- We expect that you have finished the create-app golden path.
+Complete the [Create App Golden Path](../create-app/index.md) before starting
+this guide.
 
-### Scenario
+## Scenario
 
-You have an awesome idea to create a todo list tracker in your Backstage instance at an upcoming company hackathon. Backstage is supposed to unify all of our information after all, it should track future tasks to complete as well!
+You have an idea for a todo list tracker to build in your Backstage instance at
+an upcoming company hackathon. Backstage unifies the information developers
+need, so it should be able to track future tasks too.
 
-Many of the great Backstage plugins started in a similar way, a developer noticed that others on their team or in the company were:
+Many Backstage plugins started in a similar way: a developer noticed that other
+teams were manually compiling error-prone data, searching across disconnected
+tools, or repeating work that interrupted their development flow. They created
+a shared plugin to solve that problem.
 
-- Wasting time manually compiling spreadsheets filled with error-prone data
-- Spending hours every week trying to find that one specific link from that one site
-- A million other problems that impact developer flow or are just toil
+## Why build plugins?
 
-  And they decided to create a shared plugin in Backstage to solve that problem.
+Backstage plugins bring external data and workflows into the developer portal.
+Build one when a shared experience can reduce context switching, automate
+organization-specific work, or help teams follow consistent practices.
 
-This guide will teach you how to deliver high-quality Backstage plugins with confidence. Both so you can impress everyone at the hackathon and set yourself up for success when you inevitably are asked to make your plugin production-ready.
+Plugins also let teams reuse consistent user experiences and platform APIs
+while keeping capabilities modular. When a use case is useful beyond your
+organization, contributing the plugin can expand the Backstage ecosystem.
 
-### Structure
+## Build the example plugin
 
-To start, this guide will walk through creating a backend plugin. You'll get your feet wet working with an HTTP API, a database and the Backstage backend system. Then, we'll move to the frontend, where we'll show you how to create a new page that's visible to your Backstage users as well as how to call your API. Finally, we'll walk through some common integrations you may want to consider as you write plugins.
+This guide teaches you how to build a plugin and prepare it to become a
+production-ready part of your developer portal. Start with the backend plugin,
+where you will work with an HTTP API, a database, and the Backstage backend
+system. Then build a frontend page and connect it to the API.
 
-### Next Steps
+Continue with:
 
-- [Why build plugins?](./why-build-plugins.md)
-- [Sustainable plugin development](./sustainable-plugin-development.md)
-- [Golden path: Backend plugins](./backend/001-first-steps.md)
-- [Golden path: Frontend plugins](./frontend/001-first-steps.md)
+- [Backend plugins](./backend/001-first-steps.md).
+- [Frontend plugins](./frontend/001-first-steps.md).

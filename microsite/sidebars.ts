@@ -94,15 +94,11 @@ export default {
                 'golden-path/create-app/index',
                 'golden-path/create-app/npx-create-app',
                 'golden-path/create-app/local-development',
-                'golden-path/create-app/installing-plugins',
-                'golden-path/create-app/logging-in',
-                'golden-path/create-app/custom-theme',
-                'golden-path/create-app/keeping-backstage-updated',
+                'golden-path/create-app/explore-app',
+                'golden-path/create-app/understand-project',
               ]),
               sidebarElementWithIndex({ label: '002 - Plugins' }, [
                 'golden-path/plugins/index',
-                'golden-path/plugins/why-build-plugins',
-                'golden-path/plugins/sustainable-plugin-development',
                 sidebarElementWithIndex({ label: 'Backend Plugins' }, [
                   'golden-path/plugins/backend/first-steps',
                   'golden-path/plugins/backend/poking-around',
@@ -117,6 +113,15 @@ export default {
                   'golden-path/plugins/frontend/http-client',
                   'golden-path/plugins/frontend/testing',
                 ]),
+                sidebarElementWithIndex({ label: 'Integrations' }, [
+                  'golden-path/plugins/integrations/catalog',
+                  'golden-path/plugins/integrations/permissions',
+                  'golden-path/plugins/integrations/search',
+                  'golden-path/plugins/integrations/notifications',
+                  'golden-path/plugins/integrations/scaffolder',
+                  'golden-path/plugins/integrations/mcp',
+                ]),
+                'golden-path/plugins/conclusion',
               ]),
               sidebarElementWithIndex({ label: '003 - Deployment' }, [
                 'golden-path/deployment/index',
