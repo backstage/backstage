@@ -314,6 +314,19 @@ describe('actionsRegistryServiceFactory', () => {
                 },
                 action: async () => ({ output: { ok: true } }),
               });
+              actionsRegistry.register({
+                name: 'read-only',
+                title: 'Read Only',
+                description: 'Read Only',
+                attributes: {
+                  readOnly: true,
+                },
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: { ok: true } }),
+              });
             },
           });
         },
@@ -339,6 +352,14 @@ describe('actionsRegistryServiceFactory', () => {
               readOnly: false,
             },
           },
+          {
+            name: 'read-only',
+            attributes: {
+              destructive: false,
+              idempotent: false,
+              readOnly: true,
+            },
+          },
         ],
       });
     });
@@ -359,6 +380,20 @@ describe('actionsRegistryServiceFactory', () => {
                 attributes: {
                   destructive: false,
                   idempotent: true,
+                  readOnly: false,
+                },
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: { ok: true } }),
+              });
+              actionsRegistry.register({
+                name: 'read-only',
+                title: 'Read Only',
+                description: 'Read Only',
+                attributes: {
+                  destructive: true,
                   readOnly: true,
                 },
                 schema: {
@@ -391,6 +426,14 @@ describe('actionsRegistryServiceFactory', () => {
             attributes: {
               destructive: false,
               idempotent: true,
+              readOnly: false,
+            },
+          },
+          {
+            name: 'read-only',
+            attributes: {
+              destructive: true,
+              idempotent: false,
               readOnly: true,
             },
           },

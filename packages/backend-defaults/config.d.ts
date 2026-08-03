@@ -189,7 +189,8 @@ export interface Config {
           attributes?: {
             /**
              * If specified, only match actions where destructive matches this value.
-             * Actions default to destructive: true if not explicitly set.
+             * Actions default to destructive: false when readOnly is true,
+             * and destructive: true otherwise.
              */
             destructive?: boolean;
 
@@ -234,7 +235,8 @@ export interface Config {
           attributes?: {
             /**
              * If specified, only match actions where destructive matches this value.
-             * Actions default to destructive: true if not explicitly set.
+             * Actions default to destructive: false when readOnly is true,
+             * and destructive: true otherwise.
              */
             destructive?: boolean;
 

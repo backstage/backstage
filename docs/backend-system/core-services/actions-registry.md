@@ -300,10 +300,10 @@ actionsRegistry.register({
 
 ## Action Attributes Reference
 
-| Attribute     | Type    | Default | Description                                                         |
-| ------------- | ------- | ------- | ------------------------------------------------------------------- |
-| `destructive` | boolean | `true`  | Indicates the action modifies or deletes data. Use with caution.    |
-| `idempotent`  | boolean | `false` | Indicates the action can be run multiple times with the same result |
-| `readOnly`    | boolean | `false` | Indicates the action only reads data without making modifications   |
+| Attribute     | Type    | Default                                | Description                                                         |
+| ------------- | ------- | -------------------------------------- | ------------------------------------------------------------------- |
+| `destructive` | boolean | `false` if read-only, otherwise `true` | Indicates the action modifies or deletes data. Use with caution.    |
+| `idempotent`  | boolean | `false`                                | Indicates the action can be run multiple times with the same result |
+| `readOnly`    | boolean | `false`                                | Indicates the action only reads data without making modifications   |
 
 These attributes help consumers of actions understand their behavior and implement appropriate safeguards, retries, or optimizations based on the action's characteristics.
