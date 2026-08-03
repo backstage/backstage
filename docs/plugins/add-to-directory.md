@@ -34,7 +34,7 @@ addedDate: # The date plugin added to directory E.g. '2022-10-01' quotes are req
 You can validate your YAML file is correct by running the following from the root of the repo:
 
 1. First run `yarn install`
-2. Then run `node ./scripts/verify-plugin-directory.js`
+2. Then run `yarn --cwd microsite plugins:verify`
 
 If there are any errors they will be listed and you will need to correct them. We run this same check as part of the CI.
 
