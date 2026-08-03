@@ -76,7 +76,9 @@ We'll create a custom permission policy using `yarn new` to scaffold a new modul
    // permission plugin
    backend.add(import('@backstage/plugin-permission-backend'));
    /* highlight-add-next-line */
-   backend.add(import('<your-generated-package-name>'));
+   backend.add(
+     import('@internal/backstage-plugin-permission-backend-module-custom'),
+   );
    ```
 
 You now have a custom permission policy in place. This will help us test that the permission framework is working in the next section.
