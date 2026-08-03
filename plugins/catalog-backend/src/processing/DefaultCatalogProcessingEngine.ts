@@ -298,7 +298,7 @@ export class DefaultCatalogProcessingEngine {
             await retryOnDeadlock(
               () =>
                 this.processingDatabase.transaction(async tx => {
-                  const result2 =
+                  ({ relationsChange } =
                     await this.processingDatabase.updateProcessedEntity(tx, {
                       id,
                       processedEntity: result.completedEntity,
@@ -308,8 +308,7 @@ export class DefaultCatalogProcessingEngine {
                       deferredEntities: result.deferredEntities,
                       locationKey,
                       refreshKeys: result.refreshKeys,
-                    });
-                  relationsChange = result2.relationsChange;
+                    }));
                 }),
               this.knex,
             );

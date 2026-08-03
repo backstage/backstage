@@ -402,4 +402,25 @@ describe.each(databases.eachSupportedId())('syncRelations, %p', databaseId => {
     expect(rows).toHaveLength(3);
     expect(rows.map(r => r.type).sort()).toEqual(['typeB', 'typeC', 'typeD']);
   });
+
+  it('is idempotent when called twice with the same desired set', async () => {
+    const knex = await createDatabase();
+    const entityId = randomUUID();
+    await insertRefreshState(knex, entityId);
+
+    const desired = [
+      rel(entityId, 'component:default/a', 'dependsOn', 'component:default/b'),
+      rel(entityId, 'component:default/a', 'ownedBy', 'group:default/team'),
+    ];
+
+    const first = await syncRelations(knex, entityId, desired);
+    expect(first.inserted).toHaveLength(2);
+    expect(first.deleted).toHaveLength(0);
+
+    const second = await syncRelations(knex, entityId, desired);
+    expect(second.inserted).toHaveLength(0);
+    expect(second.deleted).toHaveLength(0);
+
+    expect(await allRelations(knex)).toHaveLength(2);
+  });
 });
