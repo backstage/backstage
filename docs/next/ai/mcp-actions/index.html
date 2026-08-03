@@ -32,7 +32,7 @@
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script>
 <script src="https://widget.kapa.ai/kapa-widget.bundle.js" data-website-id="4f3b7b51-4ea6-4a5b-aede-44fbe128c0f2" data-project-name="Backstage" data-project-color="#36baa2" data-project-logo="https://backstage.io/img/favicon.svg" data-launcher-button-image="https://backstage.io/img/favicon.svg" data-button-position-bottom="4rem" data-button-position-right="0.75rem" data-color-scheme-selector="[data-theme=&#39;dark&#39;]" data-example-questions="What is Backstage?,How do I get started?" async></script><link rel="stylesheet" href="/assets/css/styles.a3f04945.css">
-<script src="/assets/js/runtime~main.6764fb55.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.1e0db876.js" defer="defer"></script>
 <script src="/assets/js/main.30317429.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -51,7 +51,7 @@
 <p>For details on filtering actions, see the <a class="" href="/docs/next/backend-system/core-services/actions#filtering-actions">filtering actions documentation</a>.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="action-attributes">Action Attributes<a href="#action-attributes" class="hash-link" aria-label="Direct link to Action Attributes" title="Direct link to Action Attributes" translate="no">​</a></h2>
 <p>When registering an action, set the <code>attributes</code> field to describe the action&#x27;s behavior. This allows clients to make informed decisions, for example: warning users before invoking a destructive action, or allowing a read-only action to run without confirmation.</p>
-<p>The defaults are conservative. When unset, an action is assumed to be destructive, non-idempotent, and not read-only. <strong>Always set these explicitly so clients can correctly represent the action&#x27;s capabilities.</strong>
+<p>The defaults are conservative. When unset, an action is assumed to be non-idempotent and not read-only. <code>destructive</code> defaults to <code>true</code> unless <code>readOnly</code> is <code>true</code>, in which case it defaults to <code>false</code>. <strong>Set these explicitly when the defaults do not represent the action&#x27;s capabilities.</strong>
 See the <a class="" href="/docs/next/backend-system/core-services/actions-registry#action-attributes-reference">Action Attributes Reference</a> for the full attribute definitions and defaults.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="single-mcp-server-name--description">Single MCP Server Name &amp; Description<a href="#single-mcp-server-name--description" class="hash-link" aria-label="Direct link to Single MCP Server Name &amp; Description" title="Direct link to Single MCP Server Name &amp; Description" translate="no">​</a></h2>
 <p>You can configure the name and description of your Backstage MCP server with the following config:</p>
