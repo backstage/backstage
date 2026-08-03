@@ -1,21 +1,8 @@
 import Link from '@docusaurus/Link';
 import { SimpleCard } from '@site/src/components/simpleCard/simpleCard';
+import type { PluginData } from '@site/src/pluginDirectory/manifest';
 import clsx from 'clsx';
 import React from 'react';
-
-export interface IPluginData {
-  author: string;
-  authorUrl: string;
-  category: string;
-  description: string;
-  documentation: string;
-  iconUrl?: string;
-  title: string;
-  addedDate: string;
-  isNew: boolean;
-  order?: number;
-  status: 'active' | 'inactive' | 'archived';
-}
 
 const defaultIconUrl = '/img/logo-gradient-on-dark.svg';
 
@@ -24,11 +11,11 @@ export const PluginCard = ({
   authorUrl,
   category,
   description,
-  documentation,
+  slug,
   iconUrl,
   isNew = false,
   title,
-}: IPluginData) => (
+}: PluginData) => (
   <SimpleCard
     header={
       <>
@@ -48,10 +35,10 @@ export const PluginCard = ({
     body={<p>{description}</p>}
     footer={
       <Link
-        to={documentation}
+        to={`/plugins/${slug}`}
         className="button button--outline button--primary button--block"
       >
-        Explore
+        View details
       </Link>
     }
   />

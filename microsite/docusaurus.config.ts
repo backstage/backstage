@@ -27,6 +27,8 @@ import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
 import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
 
+import pluginDirectoryPlugin from './src/pluginDirectory/plugin';
+
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 
@@ -270,6 +272,7 @@ const config: Config = {
         };
       },
     }),
+    pluginDirectoryPlugin,
     () => ({
       name: 'publish-well-known-docs',
       getPathsToWatch() {
