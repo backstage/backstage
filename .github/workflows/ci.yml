@@ -136,7 +136,7 @@ jobs:
         run: node scripts/verify-links.js
 
       - name: verify plugin directory
-        run: node scripts/verify-plugin-directory.js
+        run: yarn --cwd microsite plugins:verify
       - name: build all packages
         run: yarn backstage-cli repo build --all
 
