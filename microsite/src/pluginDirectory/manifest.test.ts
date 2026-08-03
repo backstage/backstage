@@ -192,6 +192,56 @@ describe('pluginManifestSchema', () => {
     );
   });
 
+  it('rejects duplicate or undeclared required configuration fields', () => {
+    assert.throws(() =>
+      pluginManifestSchema.parse({
+        ...legacyManifest,
+        setup: {
+          config: {
+            schema: {
+              type: 'object',
+              properties: {
+                endpoint: { type: 'string' },
+              },
+              required: ['endpoint', 'endpoint'],
+            },
+          },
+        },
+      }),
+    );
+    assert.throws(() =>
+      pluginManifestSchema.parse({
+        ...legacyManifest,
+        setup: {
+          config: {
+            schema: {
+              type: 'object',
+              properties: {
+                endpoint: { type: 'string' },
+              },
+              required: ['missing'],
+            },
+          },
+        },
+      }),
+    );
+  });
+
+  it('rejects invalid calendar dates in legacy date fields', () => {
+    assert.throws(() =>
+      pluginManifestSchema.parse({
+        ...legacyManifest,
+        addedDate: '2026-99-02',
+      }),
+    );
+    assert.throws(() =>
+      pluginManifestSchema.parse({
+        ...legacyManifest,
+        staleSince: '2026-02-30',
+      }),
+    );
+  });
+
   it('rejects unsupported configuration keywords', () => {
     assert.throws(() =>
       pluginManifestSchema.parse({

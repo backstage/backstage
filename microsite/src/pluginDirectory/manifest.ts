@@ -132,13 +132,38 @@ const configSchema: z.ZodType<ConfigSchema> = z.lazy(() =>
         description: configDescriptionSchema,
         'x-ui': configUiSchema.optional(),
       }),
-      z.strictObject({
-        type: z.literal('object'),
-        properties: z.record(z.string(), configSchema),
-        required: z.array(z.string()).optional(),
-        description: configDescriptionSchema,
-        'x-ui': configUiSchema.optional(),
-      }),
+      z
+        .strictObject({
+          type: z.literal('object'),
+          properties: z.record(z.string(), configSchema),
+          required: z.array(z.string()).optional(),
+          description: configDescriptionSchema,
+          'x-ui': configUiSchema.optional(),
+        })
+        .superRefine((node, context) => {
+          const requiredNames = new Set<string>();
+
+          for (const [index, name] of (node.required ?? []).entries()) {
+            if (requiredNames.has(name)) {
+              context.addIssue({
+                code: 'custom',
+                message: `required field "${name}" is duplicated`,
+                path: ['required', index],
+              });
+            }
+            requiredNames.add(name);
+
+            if (
+              !Object.prototype.hasOwnProperty.call(node.properties, name)
+            ) {
+              context.addIssue({
+                code: 'custom',
+                message: `required field "${name}" is not declared`,
+                path: ['required', index],
+              });
+            }
+          }
+        }),
       z.strictObject({
         type: z.literal('array'),
         items: configSchema,
@@ -171,6 +196,7 @@ const configSchema: z.ZodType<ConfigSchema> = z.lazy(() =>
 );
 
 const timestampSchema = z.string().datetime({ offset: true });
+const calendarDateSchema = z.iso.date();
 const reasonCodeSchema = z
   .string()
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Expected a stable reason code');
@@ -290,13 +316,10 @@ export const pluginManifestSchema = z.strictObject({
   documentation: z.string().url(),
   iconUrl: z.string().min(1).optional(),
   npmPackageName: z.string().min(1),
-  addedDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  addedDate: calendarDateSchema,
   order: z.number().optional(),
   status: z.enum(['active', 'inactive', 'archived']),
-  staleSince: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
+  staleSince: calendarDateSchema.optional(),
   capabilities: z.array(z.enum(capabilities)).optional(),
   setup: setupSchema.optional(),
   snapshot: z
