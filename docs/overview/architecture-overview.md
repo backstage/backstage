@@ -221,7 +221,16 @@ It can sometimes be difficult to decide where to place your plugin code. For exa
 
 Below is a chart to help you decide where to place your code.
 
-![Package decision](../assets/architecture-overview/package-decision.drawio.svg)
+```mermaid
+flowchart TD
+  start["In what plugin package should I put my code?"] --> public{"Is the new addition public API?<br/>i.e. exported from the package"}
+  public -- No --> local["Put it in the package<br/>that uses it"]
+  public -- Yes --> audience{"Is the export supposed<br/>to be used by other plugins or just app/backend packages?"}
+  audience -- "Only app/backend" --> plugin["Put it in the frontend or backend plugin package"]
+  audience -- "Yes, used by other plugins" --> environments{"Should the export be<br/>usable by both Node.js and browser packages?"}
+  environments -- No --> split["Put frontend exports in &lt;plugin&gt;-react, and backend exports in &lt;plugin&gt;-node"]
+  environments -- Yes --> common["Add it to &lt;plugin&gt;-common, but be sure to support both Node.js and web environments"]
+```
 
 ## Cache
 

@@ -214,6 +214,7 @@ const config: Config = {
     ],
   ],
   markdown: {
+    mermaid: true,
     format: 'detect',
     hooks: {
       onBrokenMarkdownLinks: 'log',
@@ -444,7 +445,10 @@ const config: Config = {
       },
     ],
   ],
-  themes: ['docusaurus-theme-openapi-docs'],
+  themes: [
+    'docusaurus-theme-openapi-docs',
+    '@docusaurus/theme-mermaid',
+  ],
   themeConfig: {
     metadata: [
       {
