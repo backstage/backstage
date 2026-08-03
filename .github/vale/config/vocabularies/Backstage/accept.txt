@@ -25,7 +25,6 @@ Atlassian
 autofix
 autologout
 automations
-autoMerge
 autoscaling
 autoselect
 Avro
@@ -121,7 +120,6 @@ dequeue
 dequeueing
 dereferencing
 deserialization
-Destructure
 destructured
 destructuring
 Deutsche
@@ -282,7 +280,6 @@ memcache
 memoization
 memoize
 memoized
-mergeable
 microservice
 microservices
 microsite
