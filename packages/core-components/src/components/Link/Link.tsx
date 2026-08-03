@@ -32,18 +32,19 @@ import {
   ReactElement,
   MouseEvent as ReactMouseEvent,
   ElementType,
+  createContext,
   forwardRef,
   useContext,
+  type ContextType,
 } from 'react';
 import {
-  createPath,
   createRoutesFromChildren,
   Link as RouterLink,
   LinkProps as RouterLinkProps,
   resolvePath,
   Route,
-  UNSAFE_NavigationContext as NavigationContext,
-  UNSAFE_RouteContext as RouteContext,
+  useInRouterContext,
+  UNSAFE_RouteContext,
 } from 'react-router-dom';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
@@ -51,7 +52,19 @@ import {
   shouldNavigateViaFramework,
   shouldResolveViaPageMount,
 } from './absoluteLinkNavigate';
-import { useAppBasePath, useAppHref, usePageMount } from '@internal/frontend';
+// `createPath` comes from here rather than from `react-router-dom` above: the
+// v6 beta this package still supports exports no `createPath`, so calling it
+// would throw the moment a relative target resolved against the page mount.
+// `@internal/frontend` vendors it verbatim for exactly that reason, and
+// `AppRouting.test.tsx` pins the copy against React Router's own. `resolvePath`,
+// which the same branch uses, *is* exported by the beta and stays imported.
+import {
+  createPath,
+  isExternalTarget,
+  useAppBasePath,
+  useAppHref,
+  usePageMount,
+} from '@internal/frontend';
 import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 export function isReactRouterBeta(): boolean {
@@ -91,26 +104,6 @@ const ExternalLinkIcon = () => {
   const classes = useStyles();
   return <Icon className={classes.externalLinkIcon} />;
 };
-
-/**
- * Whether a target points outside the app: an absolute URL
- * (`https://example.com/x`), a protocol-relative URL (`//example.com/x`), or an
- * opaque scheme such as `mailto:` or `tel:`.
- *
- * The scheme grammar follows RFC 3986 — a leading letter followed by letters,
- * digits, `+`, `-` or `.` — and schemes are case-insensitive, so `MAILTO:` and
- * `S3://` are classified exactly like their lower-case forms. Anything that is
- * not a well-formed scheme, such as a first path segment starting with `+`, `-`
- * or `.`, stays app-relative, which is also how a browser reads it.
- *
- * Unlike the framework's own equivalent this does not split off the query and
- * fragment first, because it cannot matter: the pattern is anchored and a
- * scheme can contain neither `?` nor `#`, so a target whose query or fragment
- * carries a URL of its own — say `/search?q=https://example.com` — can never be
- * mistaken for one.
- */
-export const isExternalUri = (uri: string) =>
-  /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(uri) || uri.startsWith('//');
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
 const scriptProtocolPattern =
@@ -176,7 +169,7 @@ export const useResolvedPath = (uri: LinkProps['to']) => {
   let resolvedPath = String(uri);
 
   const basePath = useBasePath();
-  const external = isExternalUri(resolvedPath);
+  const external = isExternalTarget(resolvedPath);
   const startsWithBasePath = resolvedPath.startsWith(basePath);
 
   if (!external && !startsWithBasePath) {
@@ -213,6 +206,34 @@ function isModifiedEvent(event: ReactMouseEvent): boolean {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
 }
 
+// Named rather than written inline below, because the `??` narrows
+// `UNSAFE_RouteContext` to `never` on its right-hand side.
+type RouteContextValue = ContextType<typeof UNSAFE_RouteContext>;
+
+/**
+ * React Router's own route context, or a stand-in for it.
+ *
+ * The `UNSAFE_*` context objects only exist from React Router v6 stable
+ * onwards. The v6 beta this package still supports — see the
+ * `'6.0.0-beta.0 || ^6.3.0'` range the migration CLI writes, and the beta arm
+ * of `Link.test.tsx` — exports no `UNSAFE_` name at all, so the import is
+ * `undefined` there and handing it to `useContext` throws before a single link
+ * can render.
+ *
+ * Resolving the context once, here at import time, keeps `useContext`
+ * unconditional and always called with a real context object. Nothing ever
+ * provides the stand-in, so under beta every read returns its default of no
+ * matches, which is the correct degraded answer: beta cannot report a match
+ * stack at all.
+ */
+const RouteContext =
+  UNSAFE_RouteContext ??
+  createContext<RouteContextValue>({
+    outlet: null,
+    matches: [],
+    isDataRoute: false,
+  });
+
 /**
  * Whether an ambient React Router context has a route of its own to resolve a
  * relative target against.
@@ -235,16 +256,15 @@ function useHasAmbientRouteMatch(): boolean {
  * which throw outside a router, and app chrome is allowed to render without
  * one: `RouterBlueprint` may be swapped for a passthrough, and
  * `createSpecializedApp` without `@backstage/plugin-app` has no router at all.
- * So the very context those hooks assert is read directly instead — its
- * runtime default is `null` rather than a throw, which is how
- * `useInRouterContext` detects a router too. `useContext` is called
- * unconditionally and the branch is on its value, so hook order is stable
- * either way. This is the navigation context rather than the location context
- * because it does not change as the user navigates, so reading it does not
- * re-render every link in the app on every navigation.
+ * `useInRouterContext` is React Router's own probe for exactly that: it returns
+ * `false` instead of throwing, and unlike the `UNSAFE_*` context objects it is
+ * exported by every v6 release including the beta, which is why `RouteTracker`
+ * asks the same way. It reads the location context, so a link re-renders when
+ * the router navigates — which is what React Router's own `Link` already does
+ * through `useHref`.
  */
 function useHasAmbientRouter(): boolean {
-  return Boolean(useContext(NavigationContext));
+  return useInRouterContext();
 }
 
 /**
@@ -276,8 +296,10 @@ const RouterlessLink = forwardRef<
   any,
   LinkProps & { appHistory: AppHistoryApi | undefined }
 >(({ appHistory, ...props }, ref) => {
-  const href = useAppHref(appHistory, props.to);
   const {
+    // Consumed here as the href. `to` is React Router's own prop, so leaving it
+    // in the spread would forward it to the DOM as an unknown attribute.
+    to,
     state,
     replace,
     relative,
@@ -285,13 +307,14 @@ const RouterlessLink = forwardRef<
     reloadDocument,
     ...anchorProps
   } = props;
+  const href = useAppHref(appHistory, to);
 
   if (process.env.NODE_ENV !== 'production') {
     for (const name of ROUTER_ONLY_PROPS) {
       if (props[name] !== undefined) {
         // eslint-disable-next-line no-console
         console.warn(
-          `Link ignored the '${name}' prop for the link to '${props.to}', ` +
+          `Link ignored the '${name}' prop for the link to '${to}', ` +
             'because it is implemented by React Router and this link rendered ' +
             'outside of one, as a plain anchor.',
         );
@@ -315,7 +338,10 @@ const RouterlessLink = forwardRef<
  * - Captures link clicks as analytics events.
  */
 export const UnstyledLink = forwardRef<any, LinkProps>(
-  ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
+  // `to` is destructured out rather than read off `props`, because three of the
+  // four branches below render a plain anchor and spread the rest of the props
+  // onto it — where `to` is not an attribute a browser knows.
+  ({ onClick, noTrack, externalLinkIcon, to: writtenTo, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
     const appHistory = useOptionalAppHistory();
@@ -328,8 +354,8 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
     // do it for beta. The react router version won't change at runtime so it is
     // fine to ignore the rules of hooks.
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const rawTo = isReactRouterBeta() ? useResolvedPath(props.to) : props.to;
-    const external = isExternalUri(rawTo);
+    const rawTo = isReactRouterBeta() ? useResolvedPath(writtenTo) : writtenTo;
+    const external = isExternalTarget(rawTo);
 
     // Inside a page that is not hosted by React Router v6 there is no v6 route
     // match to resolve a relative target against, so React Router would resolve
@@ -350,8 +376,8 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
       : rawTo;
 
     const linkText = getNodeText(props.children) || to;
-    // Case-insensitive for the same reason as `isExternalUri`: `HTTPS:` is the
-    // same scheme as `https:` and has to open the same way.
+    // Case-insensitive for the same reason as `isExternalTarget`: `HTTPS:` is
+    // the same scheme as `https:` and has to open the same way.
     const newWindow = external && !!/^https?:/i.exec(to);
     const navigateViaFramework =
       !external &&

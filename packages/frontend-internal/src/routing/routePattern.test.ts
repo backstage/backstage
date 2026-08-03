@@ -78,6 +78,40 @@ describe('routePattern', () => {
         params: { '*': slashes.slice(1) },
       });
     });
+
+    it('trims a run that follows a line terminator, where react-router keeps it', () => {
+      // react-router trims with `(.)\/+$`, and that `.` does not match a line
+      // terminator, so it leaves the run alone where one precedes it. Scanning
+      // trims either way. Swept over the whole Unicode range these four code
+      // points are the entire difference between the two, which is why they are
+      // pinned here rather than left to be rediscovered.
+      const reactRouterTrim = (path: string) => path.replace(/(.)\/+$/, '$1');
+
+      for (const terminator of ['\n', '\r', '\u2028', '\u2029']) {
+        expect(trimTrailingSlash(`${terminator}/`)).toBe(terminator);
+        expect(trimTrailingSlash(`/x/foo${terminator}///`)).toBe(
+          `/x/foo${terminator}`,
+        );
+        expect(reactRouterTrim(`${terminator}/`)).toBe(`${terminator}/`);
+      }
+
+      // Everything else agrees, the code points either side of the four
+      // included: being a control character or a separator is not what counts.
+      for (const other of ['\t', '\u000b', '\u0085', '\u2027', '\u202a']) {
+        expect(trimTrailingSlash(`/x/foo${other}///`)).toBe(
+          reactRouterTrim(`/x/foo${other}///`),
+        );
+      }
+
+      // Reachable rather than theoretical: `generatePath` only encodes
+      // `[&?#;/]` in a param value, and a `[^/]` param segment matches straight
+      // through a terminator, so one lands inside the raw match.
+      expect(matchPath('/x/:a', '/x/foo\n/', false)).toEqual({
+        matchedPathname: '/x/foo\n',
+        pathnameBase: '/x/foo\n',
+        params: { a: 'foo\n' },
+      });
+    });
   });
 
   describe('compilePath / matchPath', () => {

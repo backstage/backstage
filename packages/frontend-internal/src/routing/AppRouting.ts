@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { useCallback, useContext, type Context } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  type Context,
+  type ContextType,
+} from 'react';
 // React Router v6 specifically, which is why `@internal/frontend` keeps its
 // `react-router-dom` peer dependency at `^6.30.2` while the rest of the new
 // frontend system is router-agnostic. The `UNSAFE_*` context objects below are
@@ -26,12 +32,10 @@ import { useCallback, useContext, type Context } from 'react';
 // Router. Any package that inlines this module therefore has to declare
 // react-router itself.
 import {
-  createPath,
-  parsePath,
   resolvePath,
-  UNSAFE_LocationContext as LocationContext,
-  UNSAFE_NavigationContext as NavigationContext,
-  UNSAFE_RouteContext as RouteContext,
+  UNSAFE_LocationContext,
+  UNSAFE_NavigationContext,
+  UNSAFE_RouteContext,
   type Path,
   type To,
 } from 'react-router-dom';
@@ -96,6 +100,110 @@ export interface AppLocation {
 }
 
 const ROOT_LOCATION: AppLocation = { pathname: '/', search: '', hash: '' };
+
+/*
+ * The v6 context objects React Router's own hooks read, or stand-ins for them.
+ *
+ * The `UNSAFE_*` names only exist from React Router v6 stable onwards. The v6
+ * beta this repo still supports — `AppManager.compat.test.tsx` runs the old
+ * frontend system against both, and the migration CLI writes
+ * `'6.0.0-beta.0 || ^6.3.0'` — exports no `UNSAFE_` name at all, so each import
+ * is `undefined` there, and handing that to `useContext` throws before any hook
+ * below can answer.
+ *
+ * Resolving each context once, here at import time, keeps every `useContext`
+ * call unconditional and always handed a real context object. Nothing ever
+ * provides a stand-in, so under beta every read returns its default — no
+ * router, no matches — which is the answer beta can actually support, and the
+ * one the hooks below already degrade to. That is what the new frontend system
+ * needs from it: chrome rendered with no React Router at all resolves through
+ * the framework authority, which does not read these contexts.
+ *
+ * The value types are hoisted into named aliases because the `??` narrows each
+ * `UNSAFE_*` identifier to `never` on its own right-hand side.
+ */
+type LocationContextValue = ContextType<typeof UNSAFE_LocationContext>;
+type NavigationContextValue = ContextType<typeof UNSAFE_NavigationContext>;
+type RouteContextValue = ContextType<typeof UNSAFE_RouteContext>;
+
+// `null` is React Router's own default for these two, and is what
+// `useRouterContext` below reads as "no router". The types say otherwise
+// because the hooks that read them assert a router before touching them.
+const LocationContext =
+  UNSAFE_LocationContext ?? createContext<LocationContextValue>(null!);
+const NavigationContext =
+  UNSAFE_NavigationContext ?? createContext<NavigationContextValue>(null!);
+const RouteContext =
+  UNSAFE_RouteContext ??
+  createContext<RouteContextValue>({
+    outlet: null,
+    matches: [],
+    isDataRoute: false,
+  });
+
+/**
+ * React Router's `parsePath`, vendored.
+ *
+ * Absent from the v6 beta for the same reason the `UNSAFE_*` contexts are, but
+ * with no React involvement there is nothing to stand in for — it is simply
+ * written out. `resolvePath` *is* exported by the beta, and stays imported.
+ *
+ * The semantics are React Router's exactly, because {@link resolveAgainstRoutes}
+ * branches on them: a target with no pathname of its own (`?tab=readme`,
+ * `#section`) comes back with the `pathname` key absent rather than empty,
+ * which is what makes it resolve against the current location, and a bare `?`
+ * or `#` parses as a search or hash that {@link createPath} drops again. The
+ * hash is taken before the search, so a `?` inside a fragment stays in the
+ * fragment. `AppRouting.test.tsx` pins this against the real implementation.
+ */
+export function parsePath(path: string): Partial<Path> {
+  const parsedPath: Partial<Path> = {};
+  let rest = path;
+
+  if (rest) {
+    const hashIndex = rest.indexOf('#');
+    if (hashIndex >= 0) {
+      parsedPath.hash = rest.substring(hashIndex);
+      rest = rest.substring(0, hashIndex);
+    }
+
+    const searchIndex = rest.indexOf('?');
+    if (searchIndex >= 0) {
+      parsedPath.search = rest.substring(searchIndex);
+      rest = rest.substring(0, searchIndex);
+    }
+
+    if (rest) {
+      parsedPath.pathname = rest;
+    }
+  }
+
+  return parsedPath;
+}
+
+/**
+ * React Router's `createPath`, vendored alongside {@link parsePath} and absent
+ * from the v6 beta for the same reason.
+ *
+ * Again the semantics are React Router's exactly: a missing pathname defaults
+ * to the app root but an explicitly empty one does not, a search or hash that
+ * already carries its prefix keeps the one it was written with, and a bare `?`
+ * or `#` contributes nothing.
+ */
+export function createPath({
+  pathname = '/',
+  search = '',
+  hash = '',
+}: Partial<Path>): string {
+  let path = pathname;
+  if (search && search !== '?') {
+    path += search.charAt(0) === '?' ? search : `?${search}`;
+  }
+  if (hash && hash !== '#') {
+    path += hash.charAt(0) === '#' ? hash : `#${hash}`;
+  }
+  return path;
+}
 
 /**
  * Reads one of React Router's own contexts.
@@ -184,15 +292,21 @@ function resolveAgainstRoutes(
 }
 
 /**
- * Normalises a mount base path into a prefix that is safe to concatenate with
+ * Normalizes a mount base path into a prefix that is safe to concatenate with
  * a `/`-prefixed suffix: no trailing slash, and an empty string at the app
  * root. Unlike a matched pathname, a base path keeps nothing back — `/` and
- * `///` both normalise to the empty prefix.
+ * `///` both normalize to the empty prefix.
  *
  * Scanned rather than matched with a `/\/+$/` pattern: the base path is derived
  * from the pathname, which is whatever a crafted link put in the address bar,
  * and a backtracking matcher retries such a pattern from every position in a
- * long run of slashes, which is quadratic in the length of the run.
+ * long run of slashes, which is quadratic in the length of the run. It is the
+ * pattern being unanchored that makes it quadratic; anchoring a pattern is not
+ * on its own a defense against backtracking, and is not why this scans.
+ *
+ * The scan answers the same as the pattern it replaced for every input — the
+ * pattern had no `.` in it, so it carries none of the line-terminator
+ * divergence that `trimTrailingSlash` documents.
  */
 export function normalizeBasePath(basePath: string | undefined): string {
   if (!basePath) {

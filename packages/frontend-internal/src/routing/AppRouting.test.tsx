@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, ReactNode } from 'react';
+import { default as React, PropsWithChildren, ReactNode } from 'react';
 import {
+  createPath as routerCreatePath,
   MemoryRouter,
   Outlet,
+  parsePath as routerParsePath,
   Route,
   Routes,
   useHref,
@@ -26,6 +28,7 @@ import {
   useResolvedPath,
 } from 'react-router-dom';
 import {
+  default as tlr,
   act,
   fireEvent,
   render,
@@ -37,7 +40,9 @@ import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { TestApiProvider } from '@backstage/test-utils';
 import { PageMountProvider, type PageMount } from './PageMountContext';
 import {
+  createPath,
   normalizeBasePath,
+  parsePath,
   useAppGoBack,
   useAppHref,
   useAppLocation,
@@ -123,6 +128,13 @@ describe('normalizeBasePath', () => {
     expect(normalizeBasePath('/catalog//entities//')).toBe(
       '/catalog//entities',
     );
+    // The character before the run never matters here, so unlike
+    // `trimTrailingSlash` this carries no line-terminator divergence from the
+    // pattern it replaced — that pattern had no `.` in it.
+    expect(normalizeBasePath('/catalog/foo\n//')).toBe('/catalog/foo\n');
+    expect(normalizeBasePath('/catalog/foo\u2028//')).toBe(
+      '/catalog/foo\u2028',
+    );
   });
 
   it('handles a long run of trailing slashes without backtracking over it', () => {
@@ -134,6 +146,72 @@ describe('normalizeBasePath', () => {
     expect(normalizeBasePath(`/catalog${slashes}`)).toBe('/catalog');
     expect(normalizeBasePath(slashes)).toBe('');
     expect(normalizeBasePath(`/a${slashes}b`)).toBe(`/a${slashes}b`);
+  });
+});
+
+describe('the vendored path helpers', () => {
+  // `parsePath` and `createPath` are written out in `AppRouting.ts` because the
+  // React Router v6 beta exports neither, and the rest of that module branches
+  // on their exact quirks. The expectations here are therefore computed from
+  // React Router itself rather than written down, so a divergence in any of
+  // those quirks fails.
+  it('parses paths exactly like React Router', () => {
+    for (const path of [
+      '',
+      '/',
+      '.',
+      './',
+      '..',
+      '/catalog',
+      'catalog/create',
+      '/catalog/',
+      '/catalog?kind=component',
+      '/catalog#frag',
+      '/catalog?kind=component#frag',
+      // The hash is taken first, so a `?` inside a fragment stays in it.
+      '/catalog#frag?kind=component',
+      '?tab=readme',
+      '#section',
+      '/search?query=https://example.com',
+      // Degenerate prefixes: a bare `?` or `#` is a search or hash of its own,
+      // and neither leaves a pathname behind.
+      '?',
+      '#',
+      '?#',
+      '#?',
+    ]) {
+      expect({ path, ...parsePath(path) }).toStrictEqual({
+        path,
+        ...routerParsePath(path),
+      });
+    }
+  });
+
+  it('renders paths exactly like React Router', () => {
+    for (const parts of [
+      {},
+      { pathname: '/catalog' },
+      // A missing pathname defaults to the app root, an empty one does not.
+      { pathname: '' },
+      { pathname: '', search: '?kind=component' },
+      { search: '?kind=component' },
+      { hash: '#frag' },
+      { pathname: '/catalog', search: '?kind=component', hash: '#frag' },
+      // A prefix the caller already wrote is kept rather than doubled, and one
+      // that is missing is added.
+      { pathname: '/catalog', search: 'kind=component' },
+      { pathname: '/catalog', hash: 'frag' },
+      // A bare `?` or `#` contributes nothing.
+      { pathname: '/catalog', search: '?' },
+      { pathname: '/catalog', hash: '#' },
+      { pathname: '/catalog', search: '?', hash: '#' },
+      { pathname: '/catalog', search: '', hash: '' },
+    ]) {
+      expect({ parts, path: createPath(parts) }).toEqual({
+        parts,
+        path: routerCreatePath(parts),
+      });
+    }
   });
 });
 
@@ -167,7 +245,7 @@ describe('without a root React Router', () => {
   });
 
   it('renders app chrome at the app root when there is no app history either', async () => {
-    // Pre-branch behaviour of the deleted useChromePathname: no router and no
+    // Pre-branch behavior of the deleted useChromePathname: no router and no
     // framework means the app root, not a blank app.
     render(<ChromeStandIn to="catalog" />);
 
@@ -296,7 +374,7 @@ const trees: Array<{
     ),
   },
   {
-    name: 'one deep parameterised match',
+    name: 'one deep parameterized match',
     url: '/catalog/default/component/foo/docs',
     wrapper: ({ children }) => (
       <MemoryRouter initialEntries={['/catalog/default/component/foo/docs']}>
@@ -795,5 +873,167 @@ describe('useAppGoBack', () => {
     expect(historyBack).toHaveBeenCalledTimes(1);
 
     historyBack.mockRestore();
+  });
+});
+
+/**
+ * React Router v6 beta is still a supported version — `AppManager.compat.test`
+ * runs the old frontend system against both, and the migration CLI writes
+ * `'6.0.0-beta.0 || ^6.3.0'` — and it exports neither the `UNSAFE_*` context
+ * objects nor `createPath` and `parsePath`. Every one of those used to be
+ * imported straight off the module, so under beta the contexts were `undefined`
+ * when handed to `useContext` and the path helpers `undefined` when called, and
+ * no hook here could answer at all.
+ *
+ * That bites hardest in the configuration the fallbacks above exist for:
+ * `@backstage/core-components`' `Link` renders an internal target with no
+ * ambient router through `useAppHref`, so routerless chrome under beta went
+ * through this module or nowhere. Only running the suite against stable is why
+ * it shipped, so both versions run here.
+ *
+ * The harness mirrors `AppManager.compat.test.tsx` and the beta arm of
+ * `Link.test.tsx`: the module registry is reset so the hooks are re-required
+ * against the mocked router, and React and Testing Library are pinned to the
+ * instances this file already loaded so the re-required hooks still render
+ * through them. The version aliases are the ones `@backstage/core-app-api`
+ * declares. The mock app history is the one imported above, because it is a
+ * plain object and a subscription rather than anything router-versioned.
+ */
+describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
+  beforeAll(() => {
+    jest.resetModules();
+    jest.doMock('react', () => React);
+    jest.doMock('@testing-library/react', () => tlr);
+    jest.doMock('react-router', () =>
+      rrVersion === 'beta'
+        ? jest.requireActual('react-router-beta')
+        : jest.requireActual('react-router-stable'),
+    );
+    jest.doMock('react-router-dom', () =>
+      rrVersion === 'beta'
+        ? jest.requireActual('react-router-dom-beta')
+        : jest.requireActual('react-router-dom-stable'),
+    );
+  });
+
+  afterAll(() => {
+    jest.resetModules();
+  });
+
+  /**
+   * The hooks under test, and the page mount provider they read, both out of
+   * the registry the mocks apply to. The mount context itself is a
+   * `@backstage/version-bridge` global singleton, so the provider is the same
+   * object either registry hands back — requiring it here only keeps the two
+   * halves of the tree consistent.
+   */
+  function requireVersioned() {
+    return {
+      ...(require('./AppRouting') as typeof import('./AppRouting')),
+      ...(require('./PageMountContext') as typeof import('./PageMountContext')),
+    };
+  }
+
+  it('answers every hook from the app root with no router', () => {
+    const versioned = requireVersioned();
+    const historyBack = jest.spyOn(window.history, 'back').mockReturnValue();
+
+    const { result } = renderHook(() => ({
+      location: versioned.useAppLocation(undefined),
+      basePath: versioned.useAppBasePath(),
+      empty: versioned.useAppResolvedPath(undefined, ''),
+      relative: versioned.useAppResolvedPath(undefined, 'catalog/create'),
+      absolute: versioned.useAppResolvedPath(
+        undefined,
+        '/catalog?kind=component',
+      ),
+      href: versioned.useAppHref(undefined, '/catalog'),
+      fragmentHref: versioned.useAppHref(undefined, '#section'),
+      externalHref: versioned.useAppHref(
+        undefined,
+        'mailto:someone@example.com',
+      ),
+      goBack: versioned.useAppGoBack(undefined),
+    }));
+
+    // The same answers on both versions: the stand-in contexts report no
+    // router and no matches under beta, and under stable there is no router
+    // in this tree to report one.
+    expect(result.current.location).toEqual({
+      pathname: '/',
+      search: '',
+      hash: '',
+    });
+    expect(result.current.basePath).toBe('');
+    expect(result.current.empty.pathname).toBe('/');
+    expect(result.current.relative.pathname).toBe('/catalog/create');
+    expect(result.current.absolute).toMatchObject({
+      pathname: '/catalog',
+      search: '?kind=component',
+    });
+    expect(result.current.href).toBe('/catalog');
+    expect(result.current.fragmentHref).toBe('#section');
+    expect(result.current.externalHref).toBe('mailto:someone@example.com');
+
+    result.current.goBack();
+    expect(historyBack).toHaveBeenCalledTimes(1);
+
+    historyBack.mockRestore();
+  });
+
+  it('resolves the framework path against the page it is written in', () => {
+    const versioned = requireVersioned();
+
+    // A page registered at `/catalog`, currently rendering `/catalog/foo`, in
+    // an app deployed under `/backstage`, with no React Router anywhere — the
+    // shape a `RouterBlueprint` passthrough or a `createSpecializedApp` without
+    // `@backstage/plugin-app` leaves behind.
+    const appHistory = createMockAppHistory({
+      initialLocation: '/backstage/catalog/foo',
+      basename: '/backstage',
+    });
+    const mount: PageMount = { basePath: '/catalog', routePattern: '/catalog' };
+    const wrapper = ({ children }: PropsWithChildren<{}>) => (
+      <versioned.PageMountProvider mount={mount}>
+        {children}
+      </versioned.PageMountProvider>
+    );
+
+    const { result } = renderHook(
+      () => ({
+        location: versioned.useAppLocation(appHistory),
+        basePath: versioned.useAppBasePath(),
+      }),
+      { wrapper },
+    );
+    const href = (to: string) =>
+      renderHook(() => versioned.useAppHref(appHistory, to), { wrapper }).result
+        .current;
+
+    expect(result.current.location).toMatchObject({ pathname: '/catalog/foo' });
+    expect(result.current.basePath).toBe('/catalog');
+
+    // The answers the framework authority gives above, unchanged: targets with
+    // no pathname of their own keep the location they were written at,
+    // relative ones resolve against the page's base, `..` climbs off the page,
+    // and the deploy basename is applied on the way out. Rendering any of them
+    // runs the vendored `parsePath` and `createPath`.
+    expect({
+      '#frag': href('#frag'),
+      '?query=x': href('?query=x'),
+      sub: href('sub'),
+      './x': href('./x'),
+      '..': href('..'),
+      '/x': href('/x'),
+      'https://example.com/x': href('https://example.com/x'),
+    }).toEqual({
+      '#frag': '/backstage/catalog/foo#frag',
+      '?query=x': '/backstage/catalog/foo?query=x',
+      sub: '/backstage/catalog/sub',
+      './x': '/backstage/catalog/x',
+      '..': '/backstage/',
+      '/x': '/backstage/x',
+      'https://example.com/x': 'https://example.com/x',
+    });
   });
 });

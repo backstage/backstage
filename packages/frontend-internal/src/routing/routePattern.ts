@@ -202,7 +202,25 @@ export function matchPath(
  * Scanned rather than matched with a `/\/+$/`-shaped pattern: a pathname is
  * whatever a crafted link put in the address bar, and a backtracking matcher
  * retries such a pattern from every position in a long run of slashes, which
- * is quadratic in the length of the run.
+ * is quadratic in the length of the run. The pattern being unanchored is what
+ * makes it quadratic — anchoring one is not on its own a defense against
+ * backtracking, and is not the reason this scans.
+ *
+ * Scanning diverges from react-router's own `(.)\/+$` replace in exactly one
+ * place, because that `.` does not match a line terminator: with one directly
+ * before the run react-router keeps the run and this drops it, so `'\n/'` trims
+ * to `'\n'`. Swept over the whole Unicode range the difference is those four
+ * code points and nothing else — U+000A, U+000D, U+2028 and U+2029 — and it is
+ * reachable rather than theoretical. `location.pathname` percent-encodes them,
+ * but React Router's own memory history reports the pathname it was handed
+ * verbatim, which is what a `MemoryRouter` in a test renders through, and
+ * `generatePath` only encodes `[&?#;/]` in a param value, so a value carrying a
+ * terminator arrives intact and a `[^/]` param segment matches straight through
+ * it.
+ * Dropping the run is the answer to prefer in any case: a trailing slash means
+ * the same thing wherever it sits, and `useAppBasePath` normalizes one away
+ * again a moment later. `normalizeBasePath` has no such divergence for any
+ * input, having replaced a pattern with no `.` in it.
  *
  * @internal
  */

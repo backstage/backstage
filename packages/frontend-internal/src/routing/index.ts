@@ -23,6 +23,7 @@ export {
   type PageMount,
 } from './PageMountContext';
 export {
+  createPath,
   normalizeBasePath,
   useAppBasePath,
   useAppGoBack,

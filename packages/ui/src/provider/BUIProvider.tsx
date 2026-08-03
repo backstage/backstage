@@ -47,6 +47,19 @@ export type BUIProviderProps = {
    * target written inside a page — `#tab`, `?tab=x`, `widgets` — still be
    * resolved against that page, wherever the components rendering it happen to
    * sit in the React Router tree.
+   *
+   * Being the only resolver carries an obligation. The external-link guard BUI
+   * applies for itself is skipped below an injected resolver, so leaving
+   * external targets alone is this function's job. It is called for absolute
+   * (`https://example.com/x`), protocol-relative (`//example.com/x`) and
+   * opaque-scheme (`mailto:`, `tel:`) targets as well as app-relative ones, and
+   * has to return those first three exactly as they were written — a resolver
+   * that applies a basename unconditionally renders an href such as
+   * `/portalhttps://example.com/x`, which goes nowhere. The resolver
+   * `@backstage/plugin-app` installs already guards them.
+   *
+   * Targets a browser would execute rather than navigate to are made inert
+   * before this is called, and stay inert whatever it returns.
    */
   useHref?: (href: string) => string;
   children: ReactNode;

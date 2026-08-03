@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, ComponentType } from 'react';
+import { default as React, PropsWithChildren, ComponentType } from 'react';
 import {
+  default as tlr,
   fireEvent,
   waitFor,
   screen,
@@ -38,8 +39,12 @@ import {
   SubPageBlueprint,
   appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
-import { PageMountProvider, type PageMount } from '@internal/frontend';
-import { isExternalUri, Link, useResolvedPath } from './Link';
+import {
+  isExternalTarget,
+  PageMountProvider,
+  type PageMount,
+} from '@internal/frontend';
+import { Link, useResolvedPath } from './Link';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ConfigReader } from '@backstage/config';
 
@@ -169,7 +174,14 @@ describe('<Link />', () => {
     });
   });
 
-  describe('isExternalUri', () => {
+  // `Link` renders two ways for the same target — React Router's `Link` under a
+  // router, a plain anchor without one — and the second resolves its href
+  // through `useAppHref`, which classifies with the framework's own
+  // `isExternalTarget`. Asking the same question two ways is what let a
+  // backslash target be internal to one path and external to the other, so
+  // `Link` now asks the framework, and this table is the contract it depends
+  // on.
+  describe('the externality rule Link shares with the framework', () => {
     it.each([
       [true, 'http://'],
       [true, 'https://'],
@@ -209,8 +221,27 @@ describe('<Link />', () => {
       [false, '/search?q=https://example.com'],
       [false, '/search#https://example.com'],
       [false, 'search?q=https://example.com'],
+      // A browser folds a backslash into a slash, so any two of them open an
+      // authority and the target leaves the app's origin
+      [true, '\\\\evil.example'],
+      [true, '\\/evil.example'],
+      [true, '/\\evil.example'],
+      // ...but a single leading backslash is only a path separator, so this is
+      // `/evil.example` on the app's own origin
+      [false, '\\evil.example'],
+      // Leading spaces and C0 control characters are trimmed before a browser
+      // parses a target, and tabs and newlines are removed outright, so the
+      // rule has to read what the browser will read rather than what was
+      // written
+      [true, '  https://evil.example'],
+      [true, '\u0001https://evil.example'],
+      // A tab inside a scheme is removed before the browser parses it, so this
+      // is the same `javascript:` URL and must not be handed to the router
+      [true, 'java\tscript:alert(1)'],
+      [false, '  /catalog'],
+      [false, '\u0001/catalog'],
     ])('should be %p when %p', (expected, uri) => {
-      expect(isExternalUri(uri)).toBe(expected);
+      expect(isExternalTarget(uri)).toBe(expected);
     });
   });
 
@@ -550,7 +581,13 @@ describe('<Link />', () => {
   describe('without an ambient React Router', () => {
     // Every shape a chrome target comes in: app-absolute, app-absolute with a
     // query, relative, deeper relative, climbing, fragment-only, query-only and
-    // external.
+    // external — followed by the shapes a crafted link comes in, which a
+    // browser reads differently from how they are written. A backslash opens an
+    // authority just as a slash does, and leading spaces and C0 control
+    // characters are trimmed before anything is parsed, so each of these is a
+    // target the two paths could disagree about — and the router path calling
+    // `\/evil.com` same-origin while the anchor path sent the browser to
+    // `http://evil.com/` is exactly the disagreement that has to stay fixed.
     const targets = [
       '/catalog',
       '/catalog?kind=component',
@@ -560,6 +597,10 @@ describe('<Link />', () => {
       '#section',
       '?tab=readme',
       'https://example.com/docs',
+      '\\/evil.com',
+      '\\\\evil.com',
+      '  /catalog',
+      '\u0001/catalog',
     ];
 
     const ChromeLinks = () => (
@@ -572,10 +613,39 @@ describe('<Link />', () => {
       </>
     );
 
+    const linksIn = (name: string) =>
+      within(screen.getByRole('navigation', { name })).getAllByRole('link');
+
     const hrefsIn = (name: string) =>
-      within(screen.getByRole('navigation', { name }))
-        .getAllByRole('link')
-        .map(link => link.getAttribute('href'));
+      linksIn(name).map(link => link.getAttribute('href'));
+
+    /**
+     * Every attribute each link in a nav carries, with the href reduced to the
+     * URL a browser resolves it to.
+     *
+     * The whole attribute set rather than the href alone, because a prop that
+     * reaches the DOM on one path and not the other is a difference between the
+     * two links just as much as a different destination is — `to` used to be
+     * one, and this is what would catch the next one.
+     *
+     * The href is compared as a browser reads it rather than as it is spelled:
+     * `AppHistory.createHref` normalizes through `URL` where React Router hands
+     * its resolved path straight to the navigator, so a target carrying a space
+     * or a control character comes out percent-encoded on one path and literal
+     * on the other. Both address the same URL, and that is the property that
+     * has to hold.
+     */
+    const linkAttributesIn = (
+      name: string,
+      spelling: (href: string) => string,
+    ) =>
+      linksIn(name).map(link => ({
+        ...Object.fromEntries(
+          Array.from(link.attributes, attr => [attr.name, attr.value]),
+        ),
+        href: new URL(spelling(link.getAttribute('href')!), 'http://localhost/')
+          .href,
+      }));
 
     /**
      * The framework spelling of a React Router href.
@@ -587,10 +657,13 @@ describe('<Link />', () => {
      * same divergence `AppRouting.test.tsx` pins between the two authorities.
      */
     const appRootSpelling = (routerHref: string, basename: string) => {
+      if (!basename || !routerHref.startsWith(basename)) {
+        return routerHref;
+      }
       const rest = routerHref.slice(basename.length);
       const atAppRoot =
         rest === '' || rest.startsWith('?') || rest.startsWith('#');
-      return basename && atAppRoot ? `${basename}/${rest}` : routerHref;
+      return atAppRoot ? `${basename}/${rest}` : routerHref;
     };
 
     it.each([
@@ -606,6 +679,13 @@ describe('<Link />', () => {
           '/catalog/foo#section',
           '/catalog/foo?tab=readme',
           'https://example.com/docs',
+          // Handed back as written, because both paths now read these as
+          // leaving the app rather than one of them rewriting them into
+          // same-origin paths.
+          '\\/evil.com',
+          '\\\\evil.com',
+          '/%20%20/catalog',
+          '/%01/catalog',
         ],
       },
       {
@@ -620,6 +700,10 @@ describe('<Link />', () => {
           '/backstage/catalog/foo#section',
           '/backstage/catalog/foo?tab=readme',
           'https://example.com/docs',
+          '\\/evil.com',
+          '\\\\evil.com',
+          '/backstage/%20%20/catalog',
+          '/backstage/%01/catalog',
         ],
       },
     ])(
@@ -647,11 +731,11 @@ describe('<Link />', () => {
         );
 
         // Rendering an anchor instead of React Router's own Link is only safe
-        // if it addresses the same place, so both are rendered in the same
-        // tree, at the same location, and compared target by target.
-        expect(hrefsIn('without a router')).toEqual(
-          hrefsIn('with a router').map(href =>
-            appRootSpelling(href!, basename),
+        // if it renders the same link, so both are rendered in the same tree,
+        // at the same location, and compared target by target.
+        expect(linkAttributesIn('without a router', href => href)).toEqual(
+          linkAttributesIn('with a router', href =>
+            appRootSpelling(href, basename),
           ),
         );
         // Pinned as literals too, so that both sides going wrong together, or
@@ -727,6 +811,9 @@ describe('<Link />', () => {
 
       const anchor = await screen.findByRole('link', { name: 'Widgets' });
       expect(anchor).toHaveAttribute('href', '/widgets');
+      // `to` is React Router's prop for what this renders as `href`, and is not
+      // an attribute a browser knows.
+      expect(anchor).not.toHaveAttribute('to');
       for (const name of routerOnlyProps) {
         // Dropped rather than forwarded to the DOM, which is what the warning
         // is there to make visible.
@@ -763,5 +850,136 @@ describe('window.open', () => {
     ).toThrowErrorMatchingInlineSnapshot(
       `"Rejected window.open() with a javascript: URL as a security precaution"`,
     );
+  });
+});
+
+/**
+ * React Router v6 beta is still a supported version — `AppManager.compat.test`
+ * runs the old frontend system against both, and the migration CLI writes
+ * `'6.0.0-beta.0 || ^6.3.0'` — and it exports no `UNSAFE_` name at all, so any
+ * context object `Link` reads off the module is `undefined` there and
+ * `useContext` throws before a link can render. Only running the suite against
+ * stable is why that shipped, so both versions render here.
+ *
+ * The harness mirrors `AppManager.compat.test.tsx`: the module registry is
+ * reset so `Link` is re-required against the mocked router, and React and
+ * Testing Library are pinned to the instances this file already loaded so the
+ * re-required tree still renders through them. The version aliases are the ones
+ * `@backstage/core-app-api` declares.
+ */
+describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
+  beforeAll(() => {
+    jest.resetModules();
+    jest.doMock('react', () => React);
+    jest.doMock('@testing-library/react', () => tlr);
+    jest.doMock('react-router', () =>
+      rrVersion === 'beta'
+        ? jest.requireActual('react-router-beta')
+        : jest.requireActual('react-router-stable'),
+    );
+    jest.doMock('react-router-dom', () =>
+      rrVersion === 'beta'
+        ? jest.requireActual('react-router-dom-beta')
+        : jest.requireActual('react-router-dom-stable'),
+    );
+  });
+
+  afterAll(() => {
+    jest.resetModules();
+  });
+
+  /**
+   * The component under test and the router that gives it context, both out of
+   * the registry the mocks apply to. Named one by one rather than spread
+   * together, because `react-router-dom` exports a `Link` of its own.
+   */
+  function requireVersioned() {
+    const { Link: VersionedLink } =
+      require('./Link') as typeof import('./Link');
+    const { MemoryRouter: VersionedMemoryRouter } =
+      require('react-router-dom') as typeof import('react-router-dom');
+    return { VersionedLink, VersionedMemoryRouter };
+  }
+
+  it('renders every kind of target inside a router', async () => {
+    const { VersionedLink, VersionedMemoryRouter } = requireVersioned();
+
+    render(
+      <VersionedMemoryRouter initialEntries={['/catalog/foo']}>
+        <VersionedLink to="/widgets">Absolute</VersionedLink>
+        <VersionedLink to="widgets">Relative</VersionedLink>
+        <VersionedLink to="a/b">Deeper</VersionedLink>
+        <VersionedLink to="https://example.com/docs">Docs</VersionedLink>
+      </VersionedMemoryRouter>,
+    );
+
+    // The same hrefs on both versions. Beta cannot report a route match stack,
+    // and the stand-in context answers "no matches" — which is also what this
+    // router says on stable, because nothing here matched a route, so relative
+    // targets resolve against the app root on both.
+    expect(
+      await screen.findByRole('link', { name: 'Absolute' }),
+    ).toHaveAttribute('href', '/widgets');
+    expect(screen.getByRole('link', { name: 'Relative' })).toHaveAttribute(
+      'href',
+      '/widgets',
+    );
+    expect(screen.getByRole('link', { name: 'Deeper' })).toHaveAttribute(
+      'href',
+      '/a/b',
+    );
+    const docs = screen.getByRole('link', {
+      name: 'Docs, Opens in a new window',
+    });
+    expect(docs).toHaveAttribute('href', 'https://example.com/docs');
+    expect(docs).toHaveAttribute('target', '_blank');
+  });
+
+  /**
+   * The page-mount branch, which the case above never reaches: it needs an app
+   * history, a page mount, no ambient route match and a relative target all at
+   * once. That branch resolves the target itself, and the `createPath` half of
+   * that is another name the beta does not export — hence the vendored copy in
+   * `@internal/frontend`. The mount and API contexts are global singletons
+   * shared via `@backstage/version-bridge`, so the providers imported at the
+   * top of this file still reach the re-required `Link`.
+   */
+  it('resolves a relative target against the page mount, in either version', async () => {
+    const { VersionedLink, VersionedMemoryRouter } = requireVersioned();
+    const navigate = jest.fn();
+    const appHistory = createMockAppHistory({
+      navigate,
+      basename: '/backstage',
+    });
+
+    render(
+      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+        {/* A router with nothing matched is all a page hosted by another
+            routing library leaves in context, and is the one thing beta can
+            report as well as stable. */}
+        <VersionedMemoryRouter initialEntries={['/demo-v7/v7-only']}>
+          <PageMountProvider
+            mount={{
+              basePath: '/demo-v7/v7-only',
+              routePattern: '/demo-v7/v7-only',
+            }}
+          >
+            <VersionedLink to="release/1-42">Child route</VersionedLink>
+            <VersionedLink to="../v6-guest">Sibling tab</VersionedLink>
+          </PageMountProvider>
+        </VersionedMemoryRouter>
+      </TestApiProvider>,
+    );
+
+    expect(
+      await screen.findByRole('link', { name: 'Child route' }),
+    ).toHaveAttribute('href', '/backstage/demo-v7/v7-only/release/1-42');
+    expect(screen.getByRole('link', { name: 'Sibling tab' })).toHaveAttribute(
+      'href',
+      '/backstage/demo-v7/v6-guest',
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: 'Child route' }));
+    expect(navigate).toHaveBeenCalledWith('/demo-v7/v7-only/release/1-42');
   });
 });

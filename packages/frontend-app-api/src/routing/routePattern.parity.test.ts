@@ -148,6 +148,36 @@ describe('react-router parity', () => {
       pathname: '/catalog',
     },
     { name: 'trailing slash', paths: ['/catalog'], pathname: '/catalog/' },
+    // Runs of them, not just one. A single trailing slash is all a non-splat
+    // pattern can ever match — `(?:/|$)` and `/?$` both stop after one — so the
+    // `/catalog/` case above agrees with react-router even if only one slash is
+    // ever trimmed. A splat is the shape whose raw match keeps the whole run,
+    // and so the only one that says whether the trim goes all the way.
+    {
+      name: 'a run of trailing slashes',
+      paths: ['/catalog'],
+      pathname: '/catalog//',
+    },
+    {
+      name: 'a longer run of trailing slashes',
+      paths: ['/catalog'],
+      pathname: '/catalog//////',
+    },
+    {
+      name: 'a run of trailing slashes after a param segment',
+      paths: ['/catalog/:name'],
+      pathname: '/catalog/foo///',
+    },
+    {
+      name: 'a run of trailing slashes under a splat',
+      paths: ['/docs/*'],
+      pathname: '/docs///',
+    },
+    {
+      name: 'a run of trailing slashes below a splat mount',
+      paths: ['/docs/*'],
+      pathname: '/docs/a/b//////',
+    },
     {
       name: 'no partial prefix without separator',
       paths: ['/cat', '/catalog'],
