@@ -380,9 +380,12 @@ describe('createGitLabMergeRequest', () => {
           labels: undefined,
         },
       );
+
+      const fakeIID = 9876;
+
       expect(mockGitlabClient.MergeRequests.merge).toHaveBeenCalledWith(
         'owner/repo',
-        undefined,
+        fakeIID,
         { autoMerge: true },
       );
     });
