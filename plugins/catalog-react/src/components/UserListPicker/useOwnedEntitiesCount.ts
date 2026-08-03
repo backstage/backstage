@@ -109,7 +109,7 @@ function getOwnedCountClaims(
   owners: EntityOwnerFilter | undefined,
   ownershipEntityRefs: string[] | undefined,
 ) {
-  if (ownershipEntityRefs === undefined) {
+  if (!ownershipEntityRefs?.length) {
     return undefined;
   }
   const ownersRefs = owners?.values ?? [];
