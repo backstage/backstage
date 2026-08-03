@@ -25,6 +25,30 @@ describe('createQueryAction', () => {
     child: jest.fn(),
   } as any;
 
+  it('registers as a non-destructive read-only action', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+
+    createQueryAction({
+      engine: { query: jest.fn() } as any,
+      actionsRegistry: mockActionsRegistry,
+      searchIndexService: {
+        getDocumentTypes: jest.fn().mockReturnValue({}),
+      } as any,
+      logger: mockLogger,
+    });
+
+    await expect(mockActionsRegistry.list()).resolves.toMatchObject({
+      actions: [
+        {
+          attributes: {
+            destructive: false,
+            readOnly: true,
+          },
+        },
+      ],
+    });
+  });
+
   it('returns results from the search engine', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockGetDocumentTypes = jest.fn().mockReturnValue({

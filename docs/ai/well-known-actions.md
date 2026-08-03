@@ -37,4 +37,4 @@ This is a (non-exhaustive) list of actions that are known to be part of the Acti
 
 ### Search
 
-- `search.query` (Query Search Engine): Query the Backstage search engine for documents across all or selected document types.
+- `search.query` (Query Search Engine): Performs a read-only, non-destructive query across all or selected document types.

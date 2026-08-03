@@ -64,6 +64,7 @@ Results are returned in a paginated format, along with \`pageCursor\` for naviga
     `,
     attributes: {
       readOnly: true,
+      destructive: false,
     },
     schema: {
       input: z =>
