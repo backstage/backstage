@@ -6834,7 +6834,7 @@ __metadata:
     "@backstage/integration-aws-node": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    "@elastic/elasticsearch": "npm:^8.0.0"
+    "@elastic/elasticsearch": "npm:^8.19.0"
     "@elastic/elasticsearch-mock": "npm:^2.0.0"
     "@opensearch-project/opensearch": "npm:^2.2.1"
     "@short.io/opensearch-mock": "npm:^0.4.0"
@@ -8238,7 +8238,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@elastic/elasticsearch@npm:^8.0.0":
+"@elastic/elasticsearch@npm:^8.19.0":
   version: 8.19.2
   resolution: "@elastic/elasticsearch@npm:8.19.2"
   dependencies:
