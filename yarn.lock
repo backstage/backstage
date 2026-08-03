@@ -2087,8 +2087,8 @@ __metadata:
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -3067,9 +3067,9 @@ __metadata:
     "@dagrejs/dagre": "npm:^1.1.4"
     "@date-io/core": "npm:^1.3.13"
     "@material-table/core": "npm:^3.1.0"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@react-hookz/web": "npm:^24.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
@@ -3209,8 +3209,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/ui": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -3519,8 +3519,8 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@types/react": "npm:^18.0.0"
@@ -3633,9 +3633,9 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@graphiql/react": "npm:0.29.0"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
@@ -3727,7 +3727,7 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@material-ui/core": "npm:^4.9.13"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -3793,9 +3793,9 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@material-ui/core": "npm:^4.9.13"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:^4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@react-hookz/web": "npm:^24.0.0"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
@@ -4313,7 +4313,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@material-ui/core": "npm:^4.9.13"
+    "@mui/material": "npm:^5.0.0"
     "@react-hookz/web": "npm:^24.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -4883,9 +4883,9 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/ui": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
@@ -4932,9 +4932,9 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@octokit/rest": "npm:^19.0.3"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@testing-library/dom": "npm:^10.0.0"
@@ -5013,9 +5013,9 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@react-hookz/web": "npm:^24.0.0"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@testing-library/dom": "npm:^10.0.0"
@@ -5130,9 +5130,9 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@mui/utils": "npm:^5.14.15"
     "@remixicon/react": "npm:^4.6.0"
     "@testing-library/dom": "npm:^10.0.0"
@@ -5175,9 +5175,9 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -5287,7 +5287,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@material-ui/core": "npm:^4.9.13"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -5319,9 +5319,9 @@ __metadata:
     "@backstage/plugin-devtools-common": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/ui": "workspace:^"
-    "@material-ui/core": "npm:^4.9.13"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:^4.0.0-alpha.57"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@types/lodash": "npm:^4.14.151"
     "@types/react": "npm:^18.0.0"
@@ -5558,8 +5558,8 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
+    "@mui/material": "npm:^5.0.0"
     "@rjsf/utils": "npm:5.24.13"
     "@types/react": "npm:^18.0.0"
     "@types/react-grid-layout": "npm:^1.3.2"
@@ -5597,9 +5597,9 @@ __metadata:
     "@backstage/plugin-home-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@rjsf/core": "npm:5.24.13"
     "@rjsf/material-ui": "npm:5.24.13"
     "@rjsf/utils": "npm:5.24.13"
@@ -5687,8 +5687,8 @@ __metadata:
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@kubernetes-models/apimachinery": "npm:^2.0.0"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/node": "npm:^22.13.14"
@@ -5761,9 +5761,9 @@ __metadata:
     "@kubernetes-models/apimachinery": "npm:^2.0.0"
     "@kubernetes-models/base": "npm:^5.0.0"
     "@kubernetes/client-node": "npm:1.4.0"
-    "@material-ui/core": "npm:^4.9.13"
     "@material-ui/icons": "npm:^4.11.3"
     "@material-ui/lab": "npm:^4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -5807,7 +5807,7 @@ __metadata:
     "@backstage/plugin-kubernetes-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -6038,9 +6038,9 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -6082,9 +6082,9 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/ui": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
@@ -6669,9 +6669,9 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@react-hookz/web": "npm:^24.0.0"
     "@remixicon/react": "npm:^4.6.0"
     "@rjsf/core": "npm:5.24.13"
@@ -6753,9 +6753,9 @@ __metadata:
     "@codemirror/language": "npm:^6.0.0"
     "@codemirror/legacy-modes": "npm:^6.1.0"
     "@codemirror/view": "npm:^6.0.0"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@react-hookz/web": "npm:^24.0.0"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@rjsf/core": "npm:5.24.13"
@@ -6986,9 +6986,9 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -7031,8 +7031,8 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -7101,7 +7101,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@material-ui/core": "npm:^4.12.4"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -7132,7 +7132,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@material-ui/core": "npm:^4.12.4"
+    "@mui/material": "npm:^5.0.0"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -7236,8 +7236,8 @@ __metadata:
     "@backstage/plugin-techdocs-addons-test-utils": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
+    "@mui/material": "npm:^5.0.0"
     "@react-hookz/web": "npm:^24.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
@@ -7318,8 +7318,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/styles": "npm:^4.11.0"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -7367,11 +7367,11 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/ui": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
     "@material-ui/styles": "npm:^4.10.0"
     "@microsoft/fetch-event-source": "npm:^2.0.1"
+    "@mui/material": "npm:^5.0.0"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
@@ -7452,9 +7452,9 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/ui": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -7570,8 +7570,8 @@ __metadata:
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@types/jest": "npm:*"
     "@types/react": "npm:^18.0.0"
@@ -10167,8 +10167,8 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -11249,33 +11249,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/core@npm:^4.12.2, @material-ui/core@npm:^4.12.4, @material-ui/core@npm:^4.9.13":
-  version: 4.12.4
-  resolution: "@material-ui/core@npm:4.12.4"
-  dependencies:
-    "@babel/runtime": "npm:^7.4.4"
-    "@material-ui/styles": "npm:^4.11.5"
-    "@material-ui/system": "npm:^4.12.2"
-    "@material-ui/types": "npm:5.1.0"
-    "@material-ui/utils": "npm:^4.11.3"
-    "@types/react-transition-group": "npm:^4.2.0"
-    clsx: "npm:^1.0.4"
-    hoist-non-react-statics: "npm:^3.3.2"
-    popper.js: "npm:1.16.1-lts"
-    prop-types: "npm:^15.7.2"
-    react-is: "npm:^16.8.0 || ^17.0.0"
-    react-transition-group: "npm:^4.4.0"
-  peerDependencies:
-    "@types/react": ^16.8.6 || ^17.0.0
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10/14ae257e9ca44e8ddbccdbdbb92a2e84b604ee32fdf6a18c1612222278dd7540d4a25a8877ed8881f5f2458b10226bfef93c9a4b904c0ef664a1cf0ab53226cb
-  languageName: node
-  linkType: hard
-
 "@material-ui/icons@npm:^4.11.3, @material-ui/icons@npm:^4.9.1":
   version: 4.11.3
   resolution: "@material-ui/icons@npm:4.11.3"
@@ -11354,7 +11327,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/styles@npm:^4.10.0, @material-ui/styles@npm:^4.11.0, @material-ui/styles@npm:^4.11.4, @material-ui/styles@npm:^4.11.5":
+"@material-ui/styles@npm:^4.10.0, @material-ui/styles@npm:^4.11.0, @material-ui/styles@npm:^4.11.4":
   version: 4.11.5
   resolution: "@material-ui/styles@npm:4.11.5"
   dependencies:
@@ -11382,25 +11355,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10/dd6ca6d0a9e82fe098581bcf6d70b6b7e0a7bd21f15c5e66f4ddc4d55d5164b7d979cd0eb8164854b845606f4915210027ceb4dfda4ac1649008539d47d70dc9
-  languageName: node
-  linkType: hard
-
-"@material-ui/system@npm:^4.12.2":
-  version: 4.12.2
-  resolution: "@material-ui/system@npm:4.12.2"
-  dependencies:
-    "@babel/runtime": "npm:^7.4.4"
-    "@material-ui/utils": "npm:^4.11.3"
-    csstype: "npm:^2.5.2"
-    prop-types: "npm:^15.7.2"
-  peerDependencies:
-    "@types/react": ^16.8.6 || ^17.0.0
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10/e4a64e7ab515689053df2f2ba49a8f18f6b4e750446ad5d8f176e853f0a64e26951755424c2daa4277fd454ba395e5e018a98ee55a9b9de2c4492d5f3090385a
   languageName: node
   linkType: hard
 
@@ -11967,7 +11921,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^5.12.2":
+"@mui/material@npm:^5.0.0, @mui/material@npm:^5.12.2":
   version: 5.18.0
   resolution: "@mui/material@npm:5.18.0"
   dependencies:
@@ -20020,7 +19974,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-transition-group@npm:^4.2.0, @types/react-transition-group@npm:^4.4.10":
+"@types/react-transition-group@npm:^4.4.10":
   version: 4.4.10
   resolution: "@types/react-transition-group@npm:4.4.10"
   dependencies:
@@ -28079,9 +28033,9 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/ui": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@octokit/rest": "npm:^19.0.3"
     "@playwright/test": "npm:^1.32.3"
     "@rjsf/utils": "npm:5.24.13"
@@ -28162,9 +28116,9 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/ui": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@mui/material": "npm:^5.0.0"
     "@octokit/rest": "npm:^19.0.3"
     "@playwright/test": "npm:^1.58.2"
     "@testing-library/dom": "npm:^10.0.0"
@@ -38904,13 +38858,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"popper.js@npm:1.16.1-lts":
-  version: 1.16.1-lts
-  resolution: "popper.js@npm:1.16.1-lts"
-  checksum: 10/932c453fce30bd00720413a89e87733b5074359834bd5b3fdc85c8a2e14d44558419ddaa0bf8e32d67899c7a57ab37ee1251588b7eb3a402e77c56edc8c405c8
-  languageName: node
-  linkType: hard
-
 "portfinder@npm:^1.0.32":
   version: 1.0.38
   resolution: "portfinder@npm:1.0.38"
@@ -40894,7 +40841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-transition-group@npm:^4.0.0, react-transition-group@npm:^4.4.0, react-transition-group@npm:^4.4.5":
+"react-transition-group@npm:^4.0.0, react-transition-group@npm:^4.4.5":
   version: 4.4.5
   resolution: "react-transition-group@npm:4.4.5"
   dependencies:
@@ -44445,8 +44392,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/ui": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
+    "@mui/material": "npm:^5.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"

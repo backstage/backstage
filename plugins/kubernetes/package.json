@@ -66,7 +66,7 @@
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/plugin-kubernetes-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
-    "@material-ui/core": "^4.12.2"
+    "@mui/material": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -61,7 +61,7 @@
     "@backstage/plugin-devtools-common": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/ui": "workspace:^",
-    "@material-ui/core": "^4.9.13",
+    "@mui/material": "^5.0.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "lodash": "^4.17.21",

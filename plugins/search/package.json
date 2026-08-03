@@ -68,7 +68,7 @@
     "@backstage/types": "workspace:^",
     "@backstage/ui": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "@material-ui/core": "^4.12.2",
+    "@mui/material": "^5.0.0",
     "@material-ui/icons": "^4.9.1",
     "qs": "^6.15.2",
     "react-use": "^17.2.4",
