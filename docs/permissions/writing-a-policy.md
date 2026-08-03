@@ -10,6 +10,8 @@ The generated policy class looks like this:
 
 ```ts
 export class CustomPolicy implements PermissionPolicy {
+  constructor(private readonly userInfo: UserInfoService) {}
+
   async handle(
     _request: PolicyQuery,
     _user?: PolicyQueryUser,
@@ -122,32 +124,7 @@ export class CustomPolicy implements PermissionPolicy {
 }
 ```
 
-You will also need to update your module to pass the `UserInfoService` to the policy. Add `coreServices.userInfo` as a dependency and pass it to the constructor:
-
-```ts
-import {
-  coreServices,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
-import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
-import { CustomPolicy } from './policy/CustomPolicy';
-
-export const permissionModuleCustom = createBackendModule({
-  pluginId: 'permission',
-  moduleId: 'custom',
-  register({ registerInit }) {
-    registerInit({
-      deps: {
-        policy: policyExtensionPoint,
-        userInfo: coreServices.userInfo,
-      },
-      async init({ policy, userInfo }) {
-        policy.setPolicy(new CustomPolicy(userInfo));
-      },
-    });
-  },
-});
-```
+The `UserInfoService` is already available in your policy class via the constructor — the scaffolded module wires it up automatically.
 
 Let's walk through the new code that we just added.
 

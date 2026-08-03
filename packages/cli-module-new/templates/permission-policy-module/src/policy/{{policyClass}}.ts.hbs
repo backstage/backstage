@@ -1,3 +1,4 @@
+import { UserInfoService } from '@backstage/backend-plugin-api';
 import {
   AuthorizeResult,
   PolicyDecision,
@@ -9,6 +10,8 @@ import {
 } from '@backstage/plugin-permission-node';
 
 export class {{policyClass}} implements PermissionPolicy {
+  constructor(private readonly userInfo: UserInfoService) {}
+
   async handle(
     _request: PolicyQuery,
     _user?: PolicyQueryUser,

@@ -1,9 +1,10 @@
+import { mockServices } from '@backstage/backend-test-utils';
 import { {{policyClass}} } from './{{policyClass}}';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('{{policyClass}}', () => {
   it('should allow all requests by default', async () => {
-    const policy = new {{policyClass}}();
+    const policy = new {{policyClass}}(mockServices.userInfo());
 
     const decision = await policy.handle(
       { permission: { type: 'basic', name: 'test.permission', attributes: {} } },

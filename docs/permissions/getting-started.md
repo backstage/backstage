@@ -47,6 +47,7 @@ We'll create a custom permission policy using `yarn new` to scaffold a new modul
    The scaffolded module contains a policy class in `src/policy/` that allows all requests by default:
 
    ```ts
+   import { UserInfoService } from '@backstage/backend-plugin-api';
    import {
      AuthorizeResult,
      PolicyDecision,
@@ -58,6 +59,8 @@ We'll create a custom permission policy using `yarn new` to scaffold a new modul
    } from '@backstage/plugin-permission-node';
 
    export class CustomPolicy implements PermissionPolicy {
+     constructor(private readonly userInfo: UserInfoService) {}
+
      async handle(
        _request: PolicyQuery,
        _user?: PolicyQueryUser,
