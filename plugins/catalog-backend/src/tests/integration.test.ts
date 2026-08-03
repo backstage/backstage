@@ -1201,6 +1201,11 @@ describe('Catalog Backend Integration', () => {
     // so the provider can add it fresh with original content.
     await harness.setInputEntities([entityA, entityB]);
     await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityB),
+    });
   });
 
   it('should be able to emit entities during processing with custom location keys', async () => {
