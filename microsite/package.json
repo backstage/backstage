@@ -7,7 +7,6 @@
     "build": "docusaurus build",
     "clear": "docusaurus clear",
     "deploy": "docusaurus deploy",
-    "dev": "docusaurus start",
     "docusaurus": "docusaurus",
     "generate-openapi-docs": "yarn docusaurus clean-api-docs all && yarn docusaurus gen-api-docs all",
     "prettier:check": "prettier --check .",
