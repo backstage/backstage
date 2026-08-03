@@ -43,8 +43,6 @@ Before starting:
 
 - Complete [Notifications](004-notifications.md). The owner-based creation check
   from the Permissions chapter must be working.
-- Confirm that `@backstage/plugin-scaffolder-backend` is installed in
-  `packages/backend`.
 - Choose an existing Component with exactly one owning Group. Sign in as a
   member of that Group when you test the template.
 
@@ -234,8 +232,23 @@ spec:
         content: ${{ steps.createTodos.output.ids | join(', ') }}
 ```
 
-Register the template with the Catalog using the normal Software Template
-installation flow.
+Register the template by adding its file to the Catalog locations in
+`app-config.yaml`. Paths for local files are resolved from the backend package,
+so this path points from `packages/backend` to the repository-level
+`templates` directory:
+
+```yaml title="app-config.yaml"
+catalog:
+  locations:
+    - type: file
+      target: ../../templates/todo-onboarding/template.yaml
+      rules:
+        - allow: [Template]
+```
+
+If `catalog.locations` already exists, add only the new list item rather than a
+second `catalog` block. Also replace `group:default/backstage-admins` in the
+template's `spec.owner` with a Group that exists in your Catalog.
 
 ### Step 5: Verify the workflow
 

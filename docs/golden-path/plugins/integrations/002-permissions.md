@@ -62,6 +62,7 @@ Install the permission packages:
 ```shell
 yarn workspace @internal/plugin-todo-common add @backstage/plugin-permission-common
 yarn workspace @internal/plugin-todo-backend add @backstage/plugin-permission-common @backstage/plugin-permission-node
+yarn workspace backend add @backstage/catalog-model @backstage/plugin-catalog-node @internal/plugin-todo-common
 ```
 
 ### Step 1: Define the permission
@@ -257,11 +258,62 @@ async listTodosForEntity(request: {
 }
 ```
 
-Permission conditions can be combined with "and," "or," and "not." Use
-`isAndCriteria`, `isOrCriteria`, and `isNotCriteria` from
-`@backstage/plugin-permission-node` in `applyPermissionFilter` to handle those
-combinations. A single `hasEntityRef` condition becomes `whereIn(filter.key,
-filter.values)`; a negated condition becomes `whereNotIn`.
+Permission conditions can be combined with "and," "or," and "not." Add this
+helper to `TodoListService` so every shape produced by the permission framework
+becomes the equivalent Knex query:
+
+```ts title="plugins/todo-backend/src/services/TodoListService.ts"
+import type { PermissionCriteria } from '@backstage/plugin-permission-common';
+import {
+  isAndCriteria,
+  isNotCriteria,
+  isOrCriteria,
+} from '@backstage/plugin-permission-node';
+import type { Knex } from 'knex';
+import type { TodoQuery } from '../rules';
+
+private applyPermissionFilter(
+  query: Knex.QueryBuilder,
+  filter: PermissionCriteria<TodoQuery>,
+  negate = false,
+): void {
+  if (isNotCriteria(filter)) {
+    this.applyPermissionFilter(query, filter.not, !negate);
+    return;
+  }
+
+  if ('key' in filter) {
+    if (negate) {
+      query.whereNotIn(filter.key, filter.values);
+    } else {
+      query.whereIn(filter.key, filter.values);
+    }
+    return;
+  }
+
+  const applyGroup = (subQuery: Knex.QueryBuilder) => {
+    if (isOrCriteria(filter)) {
+      for (const subFilter of filter.anyOf ?? []) {
+        subQuery.orWhere(innerQuery =>
+          this.applyPermissionFilter(innerQuery, subFilter),
+        );
+      }
+    } else if (isAndCriteria(filter)) {
+      for (const subFilter of filter.allOf ?? []) {
+        subQuery.andWhere(innerQuery =>
+          this.applyPermissionFilter(innerQuery, subFilter),
+        );
+      }
+    }
+  };
+
+  if (negate) {
+    query.andWhereNot(applyGroup);
+  } else {
+    query.andWhere(applyGroup);
+  }
+}
+```
 
 ### Step 5: Resolve ownership in the app policy
 
@@ -410,6 +462,32 @@ identity so this same creation check can protect every entry point.
 ### Step 7: Verify owner-based access
 
 Use a component whose `ownedBy` relation points to a known Group.
+
+Run the checks in two passes with the guest provider. First, make the guest
+resolve to the `guest` User in the Catalog, which belongs to the `guests` Group:
+
+```yaml title="app-config.local.yaml"
+auth:
+  providers:
+    guest:
+      userEntityRef: user:default/guest
+```
+
+Use a Component owned by `group:default/guests` for the owner checks. For the
+non-owner checks, change the same configuration to an identity with no
+ownership references:
+
+```yaml title="app-config.local.yaml"
+auth:
+  providers:
+    guest:
+      userEntityRef: user:development/non-owner
+      ownershipEntityRefs: []
+```
+
+Restart Backstage and sign in again after each configuration change so the new
+identity is used. If your app already has multiple real sign-in identities, use
+an owner and non-owner instead of changing the guest configuration.
 
 1. Sign in as a member of the owning Group and create a TODO with the
    component's ref.
