@@ -93,8 +93,9 @@ jobs:
       - name: validate config
         run: yarn backstage-cli config:check --lax
 
-      - name: backstage-cli cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+      - name: Restore backstage-cli cache
+        id: backstage-cli-cache
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
@@ -114,6 +115,7 @@ jobs:
         run: yarn lint:type-deps
 
       - name: test (and upload coverage)
+        id: test
         run: |
           yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage --success-cache --success-cache-dir .cache/backstage-cli
         env:
@@ -122,6 +124,13 @@ jobs:
           BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres14.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
           BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
+
+      - name: Save backstage-cli cache
+        if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        with:
+          path: .cache/backstage-cli
+          key: ${{ steps.backstage-cli-cache.outputs.cache-primary-key }}
 
       - name: Discord notification
         if: ${{ failure() }}
