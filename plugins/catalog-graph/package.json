@@ -58,7 +58,7 @@
     "@backstage/types": "workspace:^",
     "@backstage/ui": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.9.1",
+    "@mui/icons-material": "^5.0.0",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@remixicon/react": ">=4.6.0 <4.9.0",
     "classnames": "^2.3.1",
