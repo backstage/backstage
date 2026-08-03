@@ -258,7 +258,12 @@ When a user creates a todo on behalf of someone else, that person should
 hear about it. The pattern is the same as the alarm above, just triggered
 from the create handler and with the recipient pulled off the request.
 
-### Send on create
+You'll do this in two steps:
+
+1. Send on create.
+2. Let users opt out.
+
+### Step 1: Send on create
 
 Inside the `POST /todos` handler, after the new todo has been written to the
 database, send a notification to its owner:
@@ -354,7 +359,7 @@ Three things to notice:
 - The `scope` includes the todo id, so re-assigning the same todo updates
   the existing notification instead of stacking duplicates in the inbox.
 
-### Let users opt out
+### Step 2: Let users opt out
 
 Users can mute notifications per topic from their user settings. The
 `topic` field you set on the payload (`todo.assigned`, `todo.alarm`) is the

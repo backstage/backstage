@@ -60,6 +60,14 @@ The snippets below assume the todo common package is available as
 `@internal/plugin-todo-common` and that it is a dependency of the todo backend
 package.
 
+You'll do this in five steps:
+
+1. Define the permission.
+2. Define a permission rule.
+3. Register the resource type.
+4. Enforce the permission in a route handler.
+5. Export condition helpers for policy authors.
+
 Install the permission packages used by the snippets:
 
 ```shell
@@ -67,7 +75,7 @@ yarn workspace @internal/plugin-todo-common add @backstage/plugin-permission-com
 yarn workspace @internal/plugin-todo-backend add @backstage/plugin-permission-common @backstage/plugin-permission-node
 ```
 
-### Define the permission
+### Step 1: Define the permission
 
 In your common package, define a resource permission for reading todos:
 
@@ -94,7 +102,7 @@ export * from './permissions';
 
 The `resourceType` field ties this permission to a specific kind of resource. Exporting the string as a named constant (`TODO_RESOURCE_TYPE`) means you can import it in your backend rules rather than repeating the raw string, which prevents subtle mismatches.
 
-### Define a permission rule
+### Step 2: Define a permission rule
 
 Rules are the conditions that the framework evaluates against a resource. Each rule has two parts: `apply`, which checks an in-memory resource, and `toQuery`, which converts the condition to a filter your database can use.
 
@@ -141,7 +149,7 @@ export const rules = { isCreator };
 
 The `apply` and `toQuery` functions must always have logically identical outcomes. If they diverge, users will see inconsistent results depending on whether the framework checks the database or a loaded resource.
 
-### Register the resource type
+### Step 3: Register the resource type
 
 In your plugin setup, register the resource type alongside its rules:
 
@@ -201,7 +209,7 @@ export const todoPlugin = createBackendPlugin({
 
 `getResources` is called by the framework when it needs to load a resource to evaluate a conditional decision. Return `undefined` for any ref that doesn't exist.
 
-### Enforce the permission in a route handler
+### Step 4: Enforce the permission in a route handler
 
 In your route handler, use `authorizeConditional` for resource permissions. Unlike `authorize`, this can return a conditional decision that you apply as a filter rather than a hard stop:
 
@@ -289,7 +297,7 @@ At minimum, the service signature needs to accept the transformed criteria:
  }
 ```
 
-### Export condition helpers for policy authors
+### Step 5: Export condition helpers for policy authors
 
 Adopters who write their own permission policy need to be able to express conditions using your rules. Export helpers from your backend package:
 
@@ -348,7 +356,13 @@ This gives adopters a typed, discoverable API for customizing your plugin's acce
 
 Restricting who can create todos is simpler. There is no resource involved yet, so this is a basic permission. The policy returns a definitive ALLOW or DENY.
 
-### Define the create permission
+You'll do this in three steps:
+
+1. Define the create permission.
+2. Register the permission with the framework.
+3. Enforce the permission in the create handler.
+
+### Step 1: Define the create permission
 
 Add a create permission to your common package:
 
@@ -362,7 +376,7 @@ export const todoCreatePermission = createPermission({
 export const todoPermissions = [todoReadPermission, todoCreatePermission];
 ```
 
-### Register the permission with the framework
+### Step 2: Register the permission with the framework
 
 In your plugin setup, register basic permissions with `addPermissions` rather than `addResourceType`:
 
@@ -370,7 +384,7 @@ In your plugin setup, register basic permissions with `addPermissions` rather th
 permissionsRegistry.addPermissions([todoCreatePermission]);
 ```
 
-### Enforce the permission in the create handler
+### Step 3: Enforce the permission in the create handler
 
 For basic permissions, use `authorize` instead of `authorizeConditional`. The result is always definitive:
 
