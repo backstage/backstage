@@ -2,368 +2,316 @@
 id: notifications
 sidebar_label: 004 - Notifications
 title: Integrating with Notifications
-description: How to integrate your plugin with Backstage Notifications
+description: Send TODO reminders to a Component's current owners
 ---
 
 ## Notifications
 
 ### What are Backstage Notifications?
 
-[Backstage Notifications](../../../notifications/index.md) is the shared
-mechanism for telling a user that something happened. A plugin emits a
-notification, the notifications backend stores it and surfaces it in the
-in-app inbox, and optional processors fan the same notification out to
-external channels like email or Slack. The end user sees a single, unified
-inbox no matter which plugin sent the message.
+[Backstage Notifications](../../../notifications/index.md#about-notifications)
+gives each user an in-app inbox. A backend plugin can ask the Notifications
+system to place a message in that inbox.
 
-The flow looks like this:
+The plugin chooses the message and its
+[recipients](../../../notifications/index.md#about-notifications). A recipient
+can be one person or a Group from the Software Catalog. When a plugin sends a
+notification to a Group, the Notifications system delivers it to the users who
+belong to that Group.
 
-1. Your plugin calls `notificationService.send` with a payload and a set of
-   recipients (user entity refs, or `broadcast` for everyone).
-2. The notifications backend runs the payload through any registered
-   `processOptions` hooks, resolves entity refs into individual users, runs
-   the per-recipient `preProcess` hooks, and writes the notification to the
-   database.
-3. The user sees the notification in the Backstage UI; in parallel,
-   `postProcess` hooks deliver it to email, Slack, or whatever else the
-   adopter has wired up.
+In this guide, the todo plugin sends a reminder when a TODO reaches its due
+time. It finds the Component named by `todo.forEntityRef`, reads which Groups
+own that Component, and sends the reminder to those Groups:
 
-Your plugin's job is to send the notification well. How it is delivered is up
-to the adopter and the modules they install.
+```text
+TODO reaches its due time
+  -> find the related Component
+  -> find the Groups that own the Component
+  -> send the reminder to those Groups
+```
 
-### Common integration points
+The TODO stores the Component reference, but it does not store the Component's
+owner or the Group's members. The todo plugin looks up that information when it
+sends the reminder. If ownership changes, the next reminder goes to the new
+owning Group.
 
-Most plugins only ever touch one part of the system:
-
-**Sending notifications** from your backend by depending on
-`notificationService` and calling `send` when something interesting happens.
-This is the integration point for plugins that produce events.
-
-A smaller number of plugins ship a **notification processor** through
-`notificationsProcessingExtensionPoint`. That is for plugins that _deliver_
-notifications somewhere (a new channel), not for plugins that produce them.
-If your plugin sends todos and reminders, you want the sending path, not a
-processor.
-
-## TODO with an alarm
-
-The goal is to let users set a due time on a todo and receive a notification
-when the alarm fires. The alarm is just a timestamp; the scheduler service
-fires us up to look for due todos, and the notifications service delivers
-the message.
+## Sending owner-group reminders
 
 ### Prerequisites
 
-Before starting this guide, you should have:
+Before starting:
 
-- A todo backend plugin with database persistence from [Persistence](../backend/003-persistence.md).
-- A `plugins/todo-backend/src/plugin.ts` file where backend services are wired
-  into the plugin.
-- A `plugins/todo-backend/src/router.ts` file that handles `POST /todos`.
-- A `plugins/todo-backend/src/services/TodoListService.ts` file where todo
-  fields are mapped to database rows.
-- The notifications backend and frontend installed in the app where you test
-  notifications.
+- Complete [Search](003-search.md).
+- Have a component with an `ownedBy` relation to a Group.
+- Install the notifications backend and frontend in the example app.
 
-### Mental model
+You will:
 
-Your todo plugin does not deliver notifications itself. It sends a notification
-request to the notifications service. The notifications backend stores the
-message, resolves entity recipients to users, and handles delivery through the
-channels installed by the adopter.
+1. Add a due time and a "reminder sent" time to each TODO.
+2. Let users choose a due time when they create a TODO.
+3. Run a [scheduled task](../../../backend-system/core-services/scheduler.md) that finds TODOs whose reminders are due.
+4. Ask the Catalog which Groups currently own each TODO's Component.
+5. Send a notification to those Groups.
+6. Check the reminder in the Backstage inbox.
 
-For alarms, the todo plugin needs one scheduled task. That task finds todos
-whose alarm time has passed, sends one notification for each, and marks each
-alarm as fired. The `alarm_fired_at` column is what makes the task safe to run
-again without sending the same reminder repeatedly.
-
-You'll do this in three steps:
-
-1. Persist the alarm.
-2. Add the notification service to the plugin.
-3. Send the notification when an alarm is due.
-
-Install the notifications service package in your backend plugin:
+Install the Notifications service package:
 
 ```shell
 yarn workspace @internal/plugin-todo-backend add @backstage/plugin-notifications-node
 ```
 
-### Step 1: Persist the alarm
+### Step 1: Persist reminder state
 
-Store the alarm time on the todo and the user who should be notified:
+Add a due time and the time at which the reminder was sent:
 
-```js
-// plugins/todo-backend/migrations/20260520000000_todo_alarms.js
-/**
- * @param {import('knex').Knex} knex
- */
+```js title="plugins/todo-backend/migrations/<timestamp>_todo_reminders.js"
 exports.up = async knex => {
   await knex.schema.alterTable('todo', table => {
-    table.timestamp('alarm_at').nullable();
-    table.string('alarm_user_ref').nullable();
-    table.timestamp('alarm_fired_at').nullable();
+    table.timestamp('due_at').nullable().index();
+    table.timestamp('reminder_sent_at').nullable();
   });
 };
 
-/**
- * @param {import('knex').Knex} knex
- */
 exports.down = async knex => {
   await knex.schema.alterTable('todo', table => {
-    table.dropColumn('alarm_at');
-    table.dropColumn('alarm_user_ref');
-    table.dropColumn('alarm_fired_at');
+    table.dropColumn('due_at');
+    table.dropColumn('reminder_sent_at');
   });
 };
 ```
 
-`alarm_fired_at` is what stops you from sending the same notification twice
-when the scheduled task runs again. Compare against it in your query rather
-than tracking state in memory.
-
-Carry the same fields through your service type and row mapping:
+Carry the fields through the service and database row types:
 
 ```diff title="plugins/todo-backend/src/services/TodoListService.ts"
  export interface TodoItem {
-   title: string;
    id: string;
+   title: string;
    createdBy: string;
-+  alarmAt?: string;
-+  alarmUserRef?: string;
-+  alarmFiredAt?: string;
+   forEntityRef: string;
++  dueAt?: string;
++  reminderSentAt?: string;
    createdAt: string;
  }
 
- export interface TodoDatabaseRow {
-   title: string;
+ interface TodoDatabaseRow {
    id: string;
+   title: string;
    created_by: string;
-+  alarm_at: string | null;
-+  alarm_user_ref: string | null;
-+  alarm_fired_at: string | null;
+   for_entity_ref: string;
++  due_at: string | null;
++  reminder_sent_at: string | null;
    created_at: string;
  }
 ```
 
-Update `toDatabaseRow` and `fromDatabaseRow` in the same file so
-`alarmAt`, `alarmUserRef`, and `alarmFiredAt` are written to and read from the
-new columns.
+Update `toDatabaseRow` and `fromDatabaseRow` in the same file. Convert database
+`null` values to `undefined` in `TodoItem`.
 
-Add service methods for the scheduled task:
+`reminderSentAt` prevents duplicate reminders. It stays empty until
+Notifications accepts the reminder, then records when it was sent.
+
+### Step 2: Accept a due time
+
+Extend the create request and service input:
+
+```diff title="plugins/todo-backend/src/router.ts"
+ const todoSchema = z.object({
+   title: z.string(),
+   entityRef: z.string(),
++  dueAt: z.string().datetime().optional(),
+ });
+```
+
+```diff title="plugins/todo-backend/src/services/TodoListService.ts"
+ async createTodo(
+   input: {
+     title: string;
+     entityRef: string;
++    dueAt?: string;
+   },
+   // ...
+ ) {
+   // ...
+   const newTodo = {
+     id,
+     title,
+     createdBy,
+     forEntityRef,
++    dueAt: input.dueAt,
+     createdAt: new Date().toISOString(),
+   };
+```
+
+Add a date and time field to the existing TODO form. Send the selected value in
+`dueAt` using the ISO 8601 date-time format, such as
+`2026-08-03T15:30:00.000Z`. Show the selected time in `TodoList` so the user can
+confirm it before waiting for the reminder.
+
+Add the queries used by the scheduled task:
 
 ```ts title="plugins/todo-backend/src/services/TodoListService.ts"
-async findDueAlarms(options: { now: Date }): Promise<TodoItem[]> {
-  const rows = await this.#database('todo')
-    .whereNotNull('alarm_at')
-    .whereNull('alarm_fired_at')
-    .where('alarm_at', '<=', options.now.toISOString())
+async findDueReminders(options: { now: Date }): Promise<TodoItem[]> {
+  const rows = await this.#database<TodoDatabaseRow>('todo')
+    .whereNotNull('due_at')
+    .whereNull('reminder_sent_at')
+    .where('due_at', '<=', options.now.toISOString())
     .select();
 
   return rows.map(row => this.fromDatabaseRow(row));
 }
 
-async markAlarmFired(request: { id: string }): Promise<void> {
-  await this.#database('todo')
+async markReminderSent(request: { id: string; sentAt: Date }): Promise<void> {
+  await this.#database<TodoDatabaseRow>('todo')
     .where({ id: request.id })
-    .update({ alarm_fired_at: new Date().toISOString() });
+    .update({ reminder_sent_at: request.sentAt.toISOString() });
 }
 ```
 
-### Step 2: Add the notification service to the plugin
+### Step 3: Add the scheduled task
 
-Depend on `notificationService` from `@backstage/plugin-notifications-node`
-alongside your other services:
+Depend on the services needed to find current ownership and send the reminder:
 
-```ts
-// plugins/todo-backend/src/plugin.ts
+```ts title="plugins/todo-backend/src/plugin.ts"
 import { notificationService } from '@backstage/plugin-notifications-node';
-import { fireDueTodoAlarms } from './alarms/fireDueTodoAlarms';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { fireDueTodoReminders } from './reminders/fireDueTodoReminders';
 
-env.registerInit({
-  deps: {
-    scheduler: coreServices.scheduler,
-    notifications: notificationService,
-    todoList: todoListServiceRef,
-  },
-  async init({ scheduler, notifications, todoList }) {
-    await scheduler.scheduleTask({
-      id: 'todo-alarm-fanout',
-      frequency: { minutes: 1 },
-      timeout: { minutes: 1 },
-      fn: () => fireDueTodoAlarms({ notifications, todoList }),
-    });
+// Inside env.registerInit:
+deps: {
+  auth: coreServices.auth,
+  catalog: catalogServiceRef,
+  logger: coreServices.logger,
+  notifications: notificationService,
+  scheduler: coreServices.scheduler,
+  todoList: todoListServiceRef,
+  // ...existing dependencies
+},
+async init({ auth, catalog, logger, notifications, scheduler, todoList }) {
+  await scheduler.scheduleTask({
+    id: 'todo-owner-reminders',
+    frequency: { minutes: 1 },
+    timeout: { minutes: 1 },
+    fn: () =>
+      fireDueTodoReminders({
+        auth,
+        catalog,
+        logger,
+        notifications,
+        todoList,
+      }),
+  });
 
-    // ...register the rest of the plugin
-  },
-});
+  // ...register the router
+}
 ```
 
-A one-minute cadence is fine here; the worst case is a one-minute lag on a
-user-set alarm, which is well below what users perceive as missed.
+The one-minute interval makes the walkthrough quick to test. A production app
+can run the task less often if reminders do not need to arrive immediately.
 
-### Step 3: Send the notification when an alarm is due
+### Step 4: Resolve owners and send
 
-The task itself queries for todos whose alarm has passed but has not yet
-been delivered, sends a notification per todo, and marks them as fired:
+Create the scheduled task implementation:
 
-```ts
-// plugins/todo-backend/src/alarms/fireDueTodoAlarms.ts
+```ts title="plugins/todo-backend/src/reminders/fireDueTodoReminders.ts"
+import type { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import { parseEntityRef, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import type { CatalogService } from '@backstage/plugin-catalog-node';
 import type { NotificationService } from '@backstage/plugin-notifications-node';
 import type { todoListServiceRef } from '../services/TodoListService';
 
-export async function fireDueTodoAlarms(opts: {
+export async function fireDueTodoReminders(options: {
+  auth: AuthService;
+  catalog: CatalogService;
+  logger: LoggerService;
   notifications: NotificationService;
   todoList: typeof todoListServiceRef.T;
 }) {
-  const due = await opts.todoList.findDueAlarms({ now: new Date() });
+  const due = await options.todoList.findDueReminders({ now: new Date() });
+  const credentials = await options.auth.getOwnServiceCredentials();
 
   for (const todo of due) {
-    if (!todo.alarmUserRef) {
+    const entity = await options.catalog.getEntityByRef(todo.forEntityRef, {
+      credentials,
+    });
+    if (!entity) {
+      options.logger.warn(
+        `Skipping TODO reminder because ${todo.forEntityRef} was not found`,
+      );
       continue;
     }
 
-    await opts.notifications.send({
-      recipients: { type: 'entity', entityRef: todo.alarmUserRef },
+    const ownerGroupRefs = (entity.relations ?? [])
+      .filter(relation => relation.type === RELATION_OWNED_BY)
+      .map(relation => relation.targetRef)
+      .filter(
+        ref => parseEntityRef(ref).kind.toLocaleLowerCase('en-US') === 'group',
+      );
+
+    if (ownerGroupRefs.length === 0) {
+      options.logger.warn(
+        `Skipping TODO reminder because ${todo.forEntityRef} has no Group owner`,
+      );
+      continue;
+    }
+
+    const { kind, namespace, name } = parseEntityRef(todo.forEntityRef);
+    await options.notifications.send({
+      recipients: {
+        type: 'entity',
+        entityRef: ownerGroupRefs,
+      },
       payload: {
-        title: `Reminder: ${todo.title}`,
-        description: `Created by ${todo.createdBy}`,
-        link: `/todo`,
+        title: `TODO reminder: ${todo.title}`,
+        description: `Due for ${todo.forEntityRef}`,
+        link: `/catalog/${namespace}/${kind}/${name}/todos`,
         severity: 'normal',
-        topic: 'todo.alarm',
-        scope: `todo.alarm:${todo.id}`,
-        icon: 'clock',
+        topic: 'todo.reminder',
+        scope: `todo.reminder:${todo.id}`,
       },
     });
 
-    await opts.todoList.markAlarmFired({ id: todo.id });
+    await options.todoList.markReminderSent({
+      id: todo.id,
+      sentAt: new Date(),
+    });
   }
 }
 ```
 
-Two payload fields deserve attention. `topic` groups related notifications
-together so users can mute the whole class — "Todo alarms" — without muting
-your whole plugin. `scope`, combined with the same `origin`, causes a
-repeated send for the same key to update the existing notification rather
-than create a new one; this is what saves a user's inbox when an alarm fires
-on a flapping condition.
+Add `logger: coreServices.logger` to the plugin dependencies and pass it to
+`fireDueTodoReminders` along with the other services.
 
-Wrap the send in a try/catch only if you want the loop to continue on
-individual failures. Logging the error and moving on is usually the right
-call — a one-minute retry is already built in by the scheduler.
+Send the owning Group references directly to Notifications. The todo plugin
+does not need to look up each person in those Groups; Notifications does that
+work. If several owning Groups contain the same person, that person still
+receives the notification only once.
 
-## Create TODOs for other people and notify them
+The `scope` value gives this reminder a stable identity. If the scheduled task
+tries to send the same reminder again, Notifications updates the existing
+notification instead of adding a duplicate to the inbox.
 
-When a user creates a todo on behalf of someone else, that person should
-hear about it. The pattern is the same as the alarm above, just triggered
-from the create handler and with the recipient pulled off the request.
+### Step 5: Verify the reminder
 
-You'll do this in two steps:
+1. Sign in as a member of the Group that owns your test component.
+2. Create a TODO for that component with a due time one or two minutes in the
+   future.
+3. Confirm the TODO appears on the component's **Todos** tab and in Search.
+4. Wait for the scheduled task, then open the Notifications inbox.
+5. Confirm one reminder appears and links back to the component's **Todos** tab.
+6. Wait through another scheduled run and confirm no duplicate appears.
+7. Sign in as a non-owner and confirm the TODO is not visible through its link.
 
-1. Send on create.
-2. Let users opt out.
+To verify current ownership, change the component's owner in its descriptor and
+refresh the Catalog before creating another due TODO. The next reminder should
+go to the new owning Group because no owner ref is stored on the TODO.
 
-### Step 1: Send on create
+## Further reading
 
-Inside the `POST /todos` handler, after the new todo has been written to the
-database, send a notification to its owner:
+This guide covers the common case: sending an in-app notification from a
+backend plugin. For email or Slack delivery, notification preferences, and
+messages sent by systems outside Backstage, continue with the specialized
+[Notifications usage](../../../notifications/usage.md) and
+[processor](../../../notifications/processors.md) guides.
 
-Pass the notification service into the router where your create handler lives:
-
-```diff title="plugins/todo-backend/src/plugin.ts"
- await createRouter({
-   httpAuth,
-+  notifications,
-   todoList,
- })
-```
-
-```diff title="plugins/todo-backend/src/router.ts"
-+import type { NotificationService } from '@backstage/plugin-notifications-node';
-
- export async function createRouter({
-   httpAuth,
-+  notifications,
-   todoList,
- }: {
-   httpAuth: HttpAuthService;
-+  notifications: NotificationService;
-   todoList: typeof todoListServiceRef.T;
- }): Promise<express.Router> {
-```
-
-Add an optional `owner` field to the create request schema, `TodoItem`,
-`TodoDatabaseRow`, and the row mappers. Store it as `owner` in the API shape
-and database row, or adjust the names below to match your plugin.
-
-```diff title="plugins/todo-backend/src/router.ts"
- const todoSchema = z.object({
-   title: z.string(),
-   entityRef: z.string().optional(),
-+  owner: z.string().optional(),
- });
-```
-
-```diff title="plugins/todo-backend/src/services/TodoListService.ts"
- export interface TodoItem {
-   title: string;
-   id: string;
-   createdBy: string;
-+  owner?: string;
-   createdAt: string;
- }
-```
-
-Add a nullable `owner` column in a migration and include it in
-`TodoDatabaseRow`, `toDatabaseRow`, and `fromDatabaseRow` before using
-`todo.owner` in the handler below.
-
-```ts
-// plugins/todo-backend/src/router.ts
-router.post('/todos', async (req, res) => {
-  const credentials = await httpAuth.credentials(req, { allow: ['user'] });
-  const userRef = credentials.principal.userEntityRef;
-  const todo = await todoList.createTodo(parsed.data, { credentials });
-
-  if (todo.owner && todo.owner !== userRef) {
-    await notifications.send({
-      recipients: {
-        type: 'entity',
-        entityRef: todo.owner,
-        excludeEntityRef: userRef,
-      },
-      payload: {
-        title: `${userRef} assigned you a todo`,
-        description: todo.title,
-        link: `/todo`,
-        severity: 'normal',
-        topic: 'todo.assigned',
-        scope: `todo.assigned:${todo.id}`,
-      },
-    });
-  }
-
-  res.status(201).json(todo);
-});
-```
-
-Three things to notice:
-
-- The recipient is an entity ref, not a user. If `todo.owner` is a `Group`,
-  the notifications backend resolves it to the underlying user members for
-  you — you do not need to walk the catalog yourself.
-- `excludeEntityRef` keeps a user from notifying themselves when they create
-  a todo with themselves as the owner. It is also the right place to pass
-  the requesting user when the recipient is a group that the requester is a
-  member of.
-- The `scope` includes the todo id, so re-assigning the same todo updates
-  the existing notification instead of stacking duplicates in the inbox.
-
-### Step 2: Let users opt out
-
-Users can mute notifications per topic from their user settings. The
-`topic` field you set on the payload (`todo.assigned`, `todo.alarm`) is the
-key they see in that UI, so pick names that read well to a human, and
-document them in your plugin's README. There is nothing else to wire up;
-the notifications backend honors the user setting before persisting or
-fanning out.
+Continue to [Scaffolder](005-scaffolder.md) to seed owner-visible onboarding
+TODOs from a Software Template.
