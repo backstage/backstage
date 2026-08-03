@@ -78,7 +78,7 @@ jobs:
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: .cache/package-docs
           key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
@@ -96,7 +96,7 @@ jobs:
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
       - name: save package-docs cache
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
         if: always()
         with:
           path: .cache/package-docs
@@ -148,7 +148,7 @@ jobs:
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: .cache/package-docs
           key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-${{ github.run_id }}
@@ -166,7 +166,7 @@ jobs:
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
       - name: save package-docs cache
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
         if: always()
         with:
           path: .cache/package-docs
