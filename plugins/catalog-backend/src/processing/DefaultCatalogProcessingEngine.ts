@@ -291,9 +291,9 @@ export class DefaultCatalogProcessingEngine {
             }
 
             result.completedEntity.metadata.uid = id;
-            let relationsChange: {
-              deleted: { source_entity_ref: string }[];
-              inserted: { source_entity_ref: string }[];
+            let relationsChange = {
+              deleted: [] as { source_entity_ref: string }[],
+              inserted: [] as { source_entity_ref: string }[],
             };
             await retryOnDeadlock(
               () =>
@@ -319,10 +319,10 @@ export class DefaultCatalogProcessingEngine {
             const setOfThingsToStitch = new Set<string>([
               stringifyEntityRef(result.completedEntity),
             ]);
-            for (const r of relationsChange!.deleted) {
+            for (const r of relationsChange.deleted) {
               setOfThingsToStitch.add(r.source_entity_ref);
             }
-            for (const r of relationsChange!.inserted) {
+            for (const r of relationsChange.inserted) {
               setOfThingsToStitch.add(r.source_entity_ref);
             }
 

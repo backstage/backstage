@@ -180,7 +180,7 @@ async function syncSimple(
 ): Promise<SyncRelationsResult> {
   const existing = await knex<DbRelationsRow>('relations')
     .where({ originating_entity_id: originatingEntityId })
-    .select('source_entity_ref', 'type', 'target_entity_ref');
+    .select<RelationKey[]>('source_entity_ref', 'type', 'target_entity_ref');
 
   const existingSet = new Map(existing.map(r => [relationKey(r), r]));
   const desiredSet = new Map(desired.map(r => [relationKey(r), r]));
