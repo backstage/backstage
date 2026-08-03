@@ -1,7 +1,7 @@
 ---
 id: plugin-ownership
-sidebar_label: 007 - Plugin Ownership
-title: Plugin Ownership
+sidebar_label: 007 - Plugin ownership
+title: Plugin ownership
 description: How to establish and manage plugin ownership across your organization
 ---
 
@@ -10,6 +10,20 @@ You're now well on your way to a healthy Backstage instance! It's been launched 
 ## Inner source
 
 Accepting internal contributions from other teams is a good sign that you are on the road to a developer portal tailored for your developers. This is a well-paved path with many upsides, but a few downsides as well. As your Backstage instance grows in size and age, those same developers may be difficult to find and your team may start to experience more friction updating Backstage.
+
+### Set the operating model
+
+Distributed contribution does not mean distributed accountability. Keep one team accountable for Backstage as a coherent internal product. That team should own the deployment, upgrades, shared experience, contribution process, and final decision about what becomes part of the portal.
+
+The contributing team should own the problem, implementation, support, and maintenance of its plugin. Agree on those responsibilities before development begins, including:
+
+- who reviews and releases changes;
+- how users report problems;
+- how security and dependency updates are handled;
+- what happens when the owning team reorganizes or no longer needs the plugin;
+- when the central team can deprecate or remove the plugin.
+
+Write down a lightweight intake and review process. Contributors should be able to understand the path without relying on a personal relationship with the central team.
 
 ### Readiness before you start
 
@@ -84,3 +98,21 @@ spec:
   dependsOn:
     - component:my-backend-api
 ```
+
+Ownership metadata is useful only when it stays current. Review plugins whose owners have changed or whose dependencies are no longer maintained. A retirement path protects users from abandoned experiences and makes accepting new contributions less risky.
+
+## Learn from adopters
+
+### [Divide and collaborate](https://www.youtube.com/watch?v=zJehyAxDhV8)
+
+_BackstageCon Europe, 2026 · 26:08 video_
+
+- Scale innovation through community contribution without allowing the portal to fragment into unrelated features.
+- Define governance that protects the product vision while letting more teams participate.
+
+### [Building a healthy Backstage plugins ecosystem](https://www.youtube.com/watch?v=67fFjQMRKyM)
+
+_BackstageCon Europe, 2026 · 34:04 video_
+
+- Make sustainability and maintenance ownership part of the contribution decision, not an afterthought after a plugin ships.
+- Balance contributor access with explicit quality and governance expectations as the ecosystem grows.
