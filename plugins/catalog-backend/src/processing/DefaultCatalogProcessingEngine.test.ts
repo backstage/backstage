@@ -676,9 +676,9 @@ describe('DefaultCatalogProcessingEngine', () => {
     await waitForExpect(() => {
       expect(markForStitching).toHaveBeenCalledTimes(1);
     });
-    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual(
-      expect.arrayContaining(['k:ns/me']),
-    );
+    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual([
+      'k:ns/me',
+    ]);
     await engine.stop();
   });
 
