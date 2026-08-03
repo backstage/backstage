@@ -1,0 +1,1 @@
+import{$ as n}from"./useControlledState-B2mYurZ2.js";import{ca as S}from"./iframe-Bep9_wBM.js";function s(e={}){let{isReadOnly:l}=e,[t,c]=n(e.isSelected,e.defaultSelected||!1,e.onChange),[a]=S.useState(t);function d(i){l||c(i)}function f(){l||c(!t)}return{isSelected:t,defaultSelected:e.defaultSelected??a,setSelected:d,toggle:f}}export{s as $};
