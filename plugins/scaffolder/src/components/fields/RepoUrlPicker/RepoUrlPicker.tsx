@@ -242,6 +242,8 @@ export const RepoUrlPicker = (
           onChange={updateLocalState}
           isDisabled={isDisabled}
           accessToken={accessToken}
+          ownerLabel={ownerLabel}
+          ownerDescription={ownerDescription}
         />
       )}
       {hostType === 'azure' && (
@@ -252,6 +254,8 @@ export const RepoUrlPicker = (
           state={state}
           isDisabled={isDisabled}
           onChange={updateLocalState}
+          ownerLabel={ownerLabel}
+          ownerDescription={ownerDescription}
         />
       )}
       {hostType === 'gerrit' && (
@@ -260,6 +264,8 @@ export const RepoUrlPicker = (
           state={state}
           onChange={updateLocalState}
           isDisabled={isDisabled}
+          ownerLabel={ownerLabel}
+          ownerDescription={ownerDescription}
         />
       )}
       <RepoUrlPickerRepoName

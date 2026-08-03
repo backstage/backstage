@@ -435,9 +435,9 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
   {
     ownerLabel?: string | undefined;
     allowedOrganizations?: string[] | undefined;
+    ownerDescription?: string | undefined;
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
-    ownerDescription?: string | undefined;
     disableRepoAutocomplete?: boolean | undefined;
     allowedRepos?: string[] | undefined;
     repoLabel?: string | undefined;
@@ -467,9 +467,9 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
   {
     ownerLabel?: string | undefined;
     allowedOrganizations?: string[] | undefined;
+    ownerDescription?: string | undefined;
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
-    ownerDescription?: string | undefined;
     disableRepoAutocomplete?: boolean | undefined;
     allowedRepos?: string[] | undefined;
     repoLabel?: string | undefined;
