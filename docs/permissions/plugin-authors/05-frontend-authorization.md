@@ -83,7 +83,7 @@ Here we are using the [`usePermission` hook](https://backstage.io/api/stable/fun
 
 It's really that simple! Let's change our policy to test the disabled button:
 
-```ts title="packages/backend/src/plugins/permission.ts"
+```ts
 if (isPermission(request.permission, todoListCreatePermission)) {
   return {
     /* highlight-remove-next-line */

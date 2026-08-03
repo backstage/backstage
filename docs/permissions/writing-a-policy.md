@@ -4,36 +4,39 @@ title: Writing a permission policy
 description: How to write your own permission policy as a Backstage integrator
 ---
 
-In the [previous section](./getting-started.md), we were able to set up the permission framework and make a simple change to our `TestPermissionPolicy` to confirm that policy is indeed wired up correctly.
+In the [previous section](./getting-started.md), we used `yarn new` to scaffold a permission policy module and confirmed that the policy is wired up correctly.
 
-That policy looked like this:
+The generated policy class looks like this:
 
-```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
-class TestPermissionPolicy implements PermissionPolicy {
-  async handle(): Promise<PolicyDecision> {
+```ts
+export class CustomPolicy implements PermissionPolicy {
+  async handle(
+    _request: PolicyQuery,
+    _user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
     return { result: AuthorizeResult.ALLOW };
   }
 }
 ```
 
-That is a very simple example and it's not really doing anything helpful, let's expand this a little more.
+That is a very simple example and it's not really doing anything helpful. Let's expand it by adding a check for a specific permission. Update your policy class to the following:
 
-First, let's rename this from `TestPermissionPolicy` to `CustomPermissionPolicy` as you'll build on adding to it as your permissions needs require. Then we'll add a check for a permission. Here's what the full `permissionsPolicyExtension.ts` will look like:
-
-```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
-import { createBackendModule } from '@backstage/backend-plugin-api';
+```ts
 import {
-  PolicyDecision,
   AuthorizeResult,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
   PermissionPolicy,
   PolicyQuery,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
-import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 
-class CustomPermissionPolicy implements PermissionPolicy {
-  async handle(request: PolicyQuery): Promise<PolicyDecision> {
+export class CustomPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    _user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
     if (request.permission.name === 'catalog.entity.delete') {
       return {
         result: AuthorizeResult.DENY,
@@ -43,22 +46,9 @@ class CustomPermissionPolicy implements PermissionPolicy {
     return { result: AuthorizeResult.ALLOW };
   }
 }
-
-export default createBackendModule({
-  pluginId: 'permission',
-  moduleId: 'permission-policy',
-  register(reg) {
-    reg.registerInit({
-      deps: { policy: policyExtensionPoint },
-      async init({ policy }) {
-        policy.setPolicy(new CustomPermissionPolicy());
-      },
-    });
-  },
-});
 ```
 
-Now with this policy in place the ability to delete entities in the Catalog is not allowed for anyone. The following sections will expand on the concepts used here.
+Now with this policy in place, the ability to delete entities in the Catalog is not allowed for anyone. The following sections will expand on the concepts used here.
 
 ## What's in a policy?
 
@@ -91,20 +81,15 @@ import {
 import {
   PermissionPolicy,
   PolicyQuery,
-  /* highlight-add-next-line */
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 
 
-class CustomPermissionPolicy implements PermissionPolicy {
-  /* highlight-remove-next-line */
-  async handle(request: PolicyQuery): Promise<PolicyDecision> {
-  /* highlight-add-start */
+export class CustomPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
     user?: PolicyQueryUser,
-   ): Promise<PolicyDecision> {
-  /* highlight-add-end */
+  ): Promise<PolicyDecision> {
     /* highlight-remove-next-line */
     if (request.permission.name === 'catalog.entity.delete') {
     /* highlight-add-next-line */
@@ -123,7 +108,7 @@ class CustomPermissionPolicy implements PermissionPolicy {
       );
       /* highlight-add-end */
     }
-     return { result: AuthorizeResult.ALLOW };
+    return { result: AuthorizeResult.ALLOW };
   }
 }
 ```
@@ -164,7 +149,7 @@ import {
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 
-class CustomPermissionPolicy implements PermissionPolicy {
+export class CustomPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
     user?: PolicyQueryUser,

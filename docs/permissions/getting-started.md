@@ -22,11 +22,11 @@ Like many other parts of Backstage, the permissions framework relies on informat
 
 [The IdentityResolver docs](../auth/identity-resolver.md) describe the process for resolving group membership on sign in.
 
-## Test Permission Policy
+## Create a custom permission policy
 
-To help validate the permission framework is setup we'll create a Test Permission Policy:
+We'll create a custom permission policy using `yarn new` to scaffold a new module and validate the framework is set up correctly:
 
-1. Backstage ships with a default Allow All Policy, we want to remove that as it would override our Test Permission Policy. To do this remove the following line:
+1. Backstage ships with a default allow-all policy. We want to remove that so our custom policy takes effect. Remove the following line from your backend:
 
    ```ts title="packages/backend/src/index.ts"
    // permission plugin
@@ -38,59 +38,49 @@ To help validate the permission framework is setup we'll create a Test Permissio
    /* highlight-remove-end */
    ```
 
-2. Now we need to add the `@backstage/backend-plugin-api` package:
+2. From your Backstage root directory, scaffold a new permission policy module. When prompted, enter `custom` as the module ID:
 
    ```bash title="from your Backstage root directory"
-   yarn --cwd packages/backend add @backstage/backend-plugin-api
+   yarn new --select permission-policy-module
    ```
 
-3. Next we will create an `extensions` folder under `packages/backend/src`
-4. In this new `extensions` folder we will add a new file called: `permissionsPolicyExtension.ts`
-5. Copy the following into the new `permissionsPolicyExtension.ts` file:
+   The scaffolded module contains a policy class in `src/policy/` that allows all requests by default:
 
-   ```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
-   import { createBackendModule } from '@backstage/backend-plugin-api';
+   ```ts
    import {
-     PolicyDecision,
      AuthorizeResult,
+     PolicyDecision,
    } from '@backstage/plugin-permission-common';
-   import { PermissionPolicy } from '@backstage/plugin-permission-node';
-   import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
+   import {
+     PermissionPolicy,
+     PolicyQuery,
+     PolicyQueryUser,
+   } from '@backstage/plugin-permission-node';
 
-   class TestPermissionPolicy implements PermissionPolicy {
-     async handle(): Promise<PolicyDecision> {
+   export class CustomPolicy implements PermissionPolicy {
+     async handle(
+       _request: PolicyQuery,
+       _user?: PolicyQueryUser,
+     ): Promise<PolicyDecision> {
        return { result: AuthorizeResult.ALLOW };
      }
    }
-
-   export default createBackendModule({
-     pluginId: 'permission',
-     moduleId: 'permission-policy',
-     register(reg) {
-       reg.registerInit({
-         deps: { policy: policyExtensionPoint },
-         async init({ policy }) {
-           policy.setPolicy(new TestPermissionPolicy());
-         },
-       });
-     },
-   });
    ```
 
-6. We now need to register this in the backend. We will do this by adding the follow line:
+3. The template automatically registers the new module in your backend. Verify that `packages/backend/src/index.ts` now includes a line like the following:
 
    ```ts title="packages/backend/src/index.ts"
    // permission plugin
    backend.add(import('@backstage/plugin-permission-backend'));
    /* highlight-add-next-line */
-   backend.add(import('./extensions/permissionsPolicyExtension'));
+   backend.add(import('<your-generated-package-name>'));
    ```
 
-You now have a Test Permission Policy in place, this will help us test that the permission framework is working in the next section.
+You now have a custom permission policy in place. This will help us test that the permission framework is working in the next section.
 
 ## Enable and test the permissions system
 
-Now lets test end to end that the permissions framework is setup and configured properly we will use the Test Permission Policy we create above as is, then modify it do deny access which will confirm everything is working as expected. Here's how to do that:
+Now let's test that the permissions framework is working. We'll use the custom permission policy as is, then modify it to deny access:
 
 1. Set the property `permission.enabled` to `true` in `app-config.yaml`.
 
@@ -99,11 +89,11 @@ Now lets test end to end that the permissions framework is setup and configured 
      enabled: true
    ```
 
-2. Now run `yarn start`, Backstage should load up in your browser
-3. You should see that you have entities in your Catalog, pretty simple
-4. Let's change this line in our Test Permission Policy `return { result: AuthorizeResult.ALLOW };` to be `return { result: AuthorizeResult.DENY };`
-5. Run `yarn start` once again, Backstage should load up in your browser
-6. This time you should not see any entities in your Catalog, if you do then something went wrong along the way and you'll need to review the steps above
-7. Revert the change we made in step 4 so that the line looks like this: `return { result: AuthorizeResult.ALLOW };`
+2. Now run `yarn start`. Backstage should load up in your browser.
+3. You should see that you have entities in your Catalog.
+4. In the policy class, change `return { result: AuthorizeResult.ALLOW };` to `return { result: AuthorizeResult.DENY };`.
+5. Run `yarn start` once again. Backstage should load up in your browser.
+6. This time you should not see any entities in your Catalog. If you do, then something went wrong along the way and you'll need to review the steps above.
+7. Revert the change we made in step 4 so that the line reads `return { result: AuthorizeResult.ALLOW };`.
 
 Congratulations! Now that the framework is fully configured, you can craft a permission policy that works best for your organization by [writing your own policy](./writing-a-policy.md)!
