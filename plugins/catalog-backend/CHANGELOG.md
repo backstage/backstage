@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend
 
+## 3.8.2-next.1
+
+### Patch Changes
+
+- ee40136: Fixed a missing promise return in a database migration rollback function.
+- b7650ad: Simplified internal router setup by removing unnecessary conditional guards around route registrations.
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+
 ## 3.8.2-next.0
 
 ### Patch Changes

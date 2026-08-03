@@ -94,12 +94,6 @@ npx @backstage/create-app@latest
 
 This may take a few minutes to fully install everything. Don't stress if the loading seems to be spinning nonstop, there's a lot going on in the background.
 
-:::note
-
-If this fails on the `yarn install` step, it's likely that you will need to install some additional dependencies which are used to configure `isolated-vm`. You can find out more in their [requirements section](https://github.com/laverdet/isolated-vm#requirements), and then run `yarn install` manually again after you've completed those steps.
-
-:::
-
 ## Structure of your app
 
 ### General folder structure

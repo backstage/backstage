@@ -307,14 +307,6 @@ export default async ({ args, info }: CliCommandContext) => {
     process.env.TZ = 'UTC';
   }
 
-  // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
-  //  on Node LTS.
-  if (!process.env.NODE_OPTIONS?.includes('--node-snapshot')) {
-    process.env.NODE_OPTIONS = `${
-      process.env.NODE_OPTIONS ? `${process.env.NODE_OPTIONS} ` : ''
-    }--no-node-snapshot`;
-  }
-
   if (opts.jestHelp) {
     args.push('--help');
   }

@@ -31,6 +31,7 @@ Backstage comes with many common authentication providers in the core library:
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)
 - [Google IAP](google/gcp-iap-auth.md)
+- [Keycloak](keycloak/provider.md) (community-maintained)
 - [Okta](okta/provider.md)
 - [OAuth 2 Custom Proxy](oauth2-proxy/provider.md)
 - [OneLogin](onelogin/provider.md)

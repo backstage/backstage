@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs
 
+## 1.18.0-next.1
+
+### Patch Changes
+
+- e06a951: chore(deps): bump `dompurify` from 3.4.11 to 3.4.12
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.1
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/integration-react@1.2.21-next.0
+
 ## 1.18.0-next.0
 
 ### Minor Changes

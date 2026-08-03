@@ -107,7 +107,7 @@ describe('matchAuth', () => {
     expect((connection?.auth as { appId: number }).appId).toBe(3);
   });
 
-  it('does not return an app scoped to a different org when the requested org has no app', async () => {
+  it('falls back to a single app when the requested org does not match', async () => {
     const service = DefaultConnectionsService.create({
       logger: mockServices.logger.mock(),
       config: mockServices.rootConfig({
@@ -132,13 +132,13 @@ describe('matchAuth', () => {
       }),
     });
 
-    await expect(
-      service.forPlugin('catalog').find({
-        type: 'github',
-        url: 'https://matchauth.example.com/acme/repo',
-        authMethods: ['app'],
-      }),
-    ).rejects.toThrow(/Connection not found for type "github"/);
+    const connection = await service.forPlugin('catalog').find({
+      type: 'github',
+      url: 'https://matchauth.example.com/acme/repo',
+      authMethods: ['app'],
+    });
+
+    expect((connection.auth as { appId: number }).appId).toBe(2);
   });
 
   it('matchAuth returns undefined when trying to fetch a token that doesnt exist', async () => {

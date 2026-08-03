@@ -41,5 +41,5 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  return knex.schema.raw(`DROP VIEW location_update_log_latest;`);
+  await knex.schema.raw(`DROP VIEW IF EXISTS location_update_log_latest;`);
 };

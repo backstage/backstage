@@ -913,8 +913,10 @@ spec:
 ```
 
 Afterwards, if you are using the builtin templating action, you can start using
-the variables in your code. You can use also any other templating functions from
-[Nunjucks](https://mozilla.github.io/nunjucks/templating.html#tags) as well.
+the variables in your code. You can also use the template tags and functions
+supported by [Nunjitsu](https://github.com/Rugvip/nunjitsu). Check the
+[Nunjitsu compatibility guide](https://github.com/Rugvip/nunjitsu/blob/main/docs/compatibility.md)
+before using syntax from the Nunjucks documentation.
 
 ```bash
 #!/bin/bash
@@ -934,9 +936,12 @@ code part of the `JSONSchema`, or you can read more about our
 ### More about expressions
 
 The `${{ }}` constructs in your template are evaluated using the
-powerful [Nunjucks templating engine](https://mozilla.github.io/nunjucks/).
-To learn more about basic Nunjucks templating please see
-[templating documentation](https://mozilla.github.io/nunjucks/templating.html).
+[Nunjitsu template engine](https://github.com/Rugvip/nunjitsu), which supports a
+focused subset of Nunjucks syntax. Use the
+[Nunjucks templating documentation](https://mozilla.github.io/nunjucks/templating.html)
+as a general syntax reference, and check the
+[Nunjitsu compatibility guide](https://github.com/Rugvip/nunjitsu/blob/main/docs/compatibility.md)
+for the supported features.
 
 Information about Backstage's built-in templating extensions, as well as how to
 create your own customizations, may be found at

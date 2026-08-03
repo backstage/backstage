@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog
 
+## 2.0.8-next.1
+
+### Patch Changes
+
+- 1d026b0: Added explicit type annotations to `FilterContainer` and `EntityListContainer` re-exports for forward-compatibility with TypeScript 7.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.1
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/integration-react@1.2.21-next.0
+  - @backstage/plugin-scaffolder-common@2.2.2-next.0
+
 ## 2.0.8-next.0
 
 ### Patch Changes

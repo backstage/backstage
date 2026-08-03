@@ -1300,6 +1300,36 @@ describe('OidcService', () => {
           expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
             clientId: cimdClientId,
             validatedUrl: expect.any(URL),
+            skipSsrfCheck: false,
+          });
+        });
+
+        it('should skip SSRF check for exact (non-wildcard) client_id patterns', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: [cimdClientId],
+                  allowedRedirectUriPatterns: ['*'],
+                },
+              },
+            },
+          });
+
+          await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            scope: 'openid',
+            ...pkceParams,
+          });
+
+          expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
+            clientId: cimdClientId,
+            validatedUrl: expect.any(URL),
+            skipSsrfCheck: true,
           });
         });
 
@@ -1869,6 +1899,7 @@ describe('OidcService', () => {
           expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
             clientId: cimdClientId,
             validatedUrl: expect.any(URL),
+            skipSsrfCheck: false,
           });
         });
       });

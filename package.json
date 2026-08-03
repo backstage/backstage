@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.54.0-next.0",
+  "version": "1.54.0-next.1",
   "backstage": {
     "cli": {
       "new": {
@@ -60,9 +60,9 @@
     "sync-issue-templates": "node ./.github/ISSUE_TEMPLATE/sync.js",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "test": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test",
-    "test:all": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test --coverage",
-    "test:e2e": "NODE_OPTIONS=--no-node-snapshot playwright test",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' backstage-cli repo test",
+    "test:all": "NODE_OPTIONS='--experimental-vm-modules' backstage-cli repo test --coverage",
+    "test:e2e": "playwright test",
     "tsc": "NODE_OPTIONS='--max-old-space-size=8192' tsc",
     "tsc:full": "backstage-cli repo clean && NODE_OPTIONS='--max-old-space-size=8192' tsc --skipLibCheck false --incremental false"
   },

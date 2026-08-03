@@ -135,6 +135,10 @@ class PluginConnectionsService implements ConnectionsService {
       );
     }
 
+    this.logger.debug(
+      `Selected connection of type "${type}" for host "${host}" using auth method "${selected.method}"`,
+    );
+
     return {
       ...connection,
       auth: selected,
@@ -174,6 +178,14 @@ export class DefaultConnectionsService {
 
     const fromConfig = this.#validateConfig(
       (rawConnections as JsonObject[] | undefined) ?? [],
+    );
+
+    this.logger.debug(
+      `Connections configuration resolved ${legacy.length} connection${
+        legacy.length === 1 ? '' : 's'
+      } from legacy integrations and ${fromConfig.length} explicit connection${
+        fromConfig.length === 1 ? '' : 's'
+      }`,
     );
 
     if (legacy.length === 0 && fromConfig.length === 0) {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v4';
 import { JSX } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
@@ -30,6 +29,7 @@ import { BreadcrumbEntry } from '../breadcrumbs';
 import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
 import { RouteResolutionApi } from '../apis/definitions/RouteResolutionApi';
+import { optionalStringSchema } from '../schema/optionalStringSchema';
 
 function resolveTitleLink(
   routeResolutionApi: RouteResolutionApi,
@@ -71,8 +71,8 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.icon.optional(),
   ],
   configSchema: {
-    path: z.string().optional(),
-    title: z.string().optional(),
+    path: optionalStringSchema,
+    title: optionalStringSchema,
   },
   *factory(
     params: {

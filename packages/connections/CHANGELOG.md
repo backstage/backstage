@@ -1,5 +1,11 @@
 # @backstage/connections
 
+## 0.3.0-next.1
+
+### Patch Changes
+
+- b9e11d2: Updated GitHub authentication selection to prefer an organization-specific App, then an unrestricted App, and finally the only configured App before falling back to token or anonymous authentication.
+
 ## 0.3.0-next.0
 
 ### Minor Changes

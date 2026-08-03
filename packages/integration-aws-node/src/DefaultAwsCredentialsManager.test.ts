@@ -15,8 +15,6 @@
  */
 
 import { DefaultAwsCredentialsManager } from './DefaultAwsCredentialsManager';
-import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
-import 'aws-sdk-client-mock-jest';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { Config, ConfigReader } from '@backstage/config';
 import {
@@ -29,7 +27,9 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 
 const env = process.env;
-let stsMock: AwsClientStub<STSClient>;
+const stsSendMock = jest.fn();
+let stsSendShouldReject = false;
+let stsSendRejectMessage: string | undefined;
 let config: Config;
 let tmpDir: string;
 
@@ -46,9 +46,23 @@ jest.mock('@aws-sdk/credential-providers', () => {
 describe('DefaultAwsCredentialsManager', () => {
   beforeEach(() => {
     process.env = { ...env };
+    jest.restoreAllMocks();
     jest.resetAllMocks();
 
-    stsMock = mockClient(STSClient);
+    stsSendShouldReject = false;
+    stsSendRejectMessage = undefined;
+    jest.spyOn(STSClient.prototype, 'send').mockImplementation(stsSendMock);
+    stsSendMock.mockImplementation(async command => {
+      if (command instanceof GetCallerIdentityCommand) {
+        if (stsSendShouldReject) {
+          throw new Error(stsSendRejectMessage ?? 'No credentials found');
+        }
+        return {
+          Account: '123456789012',
+        };
+      }
+      throw new Error(`No mock for ${command.constructor.name}`);
+    });
 
     config = new ConfigReader({
       aws: {
@@ -90,23 +104,6 @@ describe('DefaultAwsCredentialsManager', () => {
         },
       },
     });
-
-    stsMock.on(GetCallerIdentityCommand).resolvesOnce({
-      Account: '123456789012',
-    });
-
-    stsMock
-      .on(GetCallerIdentityCommand)
-      .callsFake(async (_input, getClient) => {
-        const client = getClient();
-        const region = await client.config.region();
-        if (!region) {
-          throw new Error('Region is missing');
-        }
-        return {
-          Account: '123456789012',
-        };
-      });
 
     // Mock fromTemporaryCredentials to return credential providers
     // based on the RoleArn, instead of mocking internal nested STS clients.
@@ -173,6 +170,7 @@ describe('DefaultAwsCredentialsManager', () => {
 
   afterEach(() => {
     process.env = env;
+    jest.restoreAllMocks();
     if (tmpDir) {
       rmSync(tmpDir, { recursive: true, force: true });
     }
@@ -325,7 +323,10 @@ describe('DefaultAwsCredentialsManager', () => {
       });
 
       expect(awsCredentialProvider1).toBe(awsCredentialProvider2);
-      expect(stsMock).toHaveReceivedCommandTimes(GetCallerIdentityCommand, 1);
+      expect(stsSendMock).toHaveBeenCalledTimes(1);
+      expect(stsSendMock.mock.calls[0][0]).toBeInstanceOf(
+        GetCallerIdentityCommand,
+      );
     });
 
     it('retrieves the ini provider chain for the given account ID', async () => {
@@ -489,7 +490,8 @@ describe('DefaultAwsCredentialsManager', () => {
     });
 
     it('rejects main account that has invalid credentials', async () => {
-      stsMock.on(GetCallerIdentityCommand).rejects('No credentials found');
+      stsSendShouldReject = true;
+      stsSendRejectMessage = 'No credentials found';
       const minConfig = new ConfigReader({});
       const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
       await expect(
@@ -554,7 +556,9 @@ describe('DefaultAwsCredentialsManager', () => {
         DefaultAwsCredentialsManager.fromConfig(configWithRegion);
       await provider.getCredentialProvider({ accountId: '123456789012' });
 
-      expect(await stsMock.call(0).thisValue.config.region()).toEqual(region);
+      expect(stsSendMock).toHaveBeenCalledTimes(1);
+      const stsClient = stsSendMock.mock.contexts[0] as STSClient;
+      expect(await stsClient.config.region()).toEqual(region);
     });
 
     it('uses fromTokenFile when webIdentityTokenFile is set per-account with a roleName', async () => {

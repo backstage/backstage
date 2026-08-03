@@ -1,5 +1,11 @@
 # @backstage/frontend-dynamic-feature-loader
 
+## 0.1.15-next.0
+
+### Patch Changes
+
+- 6ea4a2d: Updated documentation link to point to the new per-module CLI command pages.
+
 ## 0.1.14
 
 ### Patch Changes

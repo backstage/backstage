@@ -51,6 +51,7 @@ import {
 } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
+import { entityFilterToFilterPredicate } from './request/entityFilterToFilterPredicate';
 import { processRawEntitiesResult } from './response';
 
 const DEFAULT_LIMIT = 200;
@@ -363,10 +364,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         query = query.whereIn('final_entities.entity_ref', chunk);
       }
 
-      if (request?.filter || request?.query) {
+      if (request?.filter) {
         query = applyEntityFilterToQuery({
           filter: request.filter,
-          query: request.query,
           targetQuery: query,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
@@ -422,10 +422,17 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       q: Knex.QueryBuilder,
       options?: { searchInScope?: boolean },
     ) => {
-      if (cursor.filter || cursor.query) {
+      if (cursor.filter) {
         applyEntityFilterToQuery({
-          filter: cursor.filter,
-          query: cursor.query,
+          filter: entityFilterToFilterPredicate(cursor.filter),
+          targetQuery: q,
+          onEntityIdField: 'final_entities.entity_id',
+          knex: this.database,
+        });
+      }
+      if (cursor.query) {
+        applyEntityFilterToQuery({
+          filter: cursor.query,
           targetQuery: q,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
@@ -813,7 +820,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .groupBy(['search.key', 'search.original_value'])
       .orderBy(['search.key', 'search.original_value']);
 
-    if (request.filter || request.query) {
+    if (request.filter) {
       // Build a subquery that finds matching entity IDs via
       // final_entities, so that the EXISTS-based filters correlate
       // against one-row-per-entity rather than the much larger search
@@ -825,7 +832,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
       applyEntityFilterToQuery({
         filter: request.filter,
-        query: request.query,
         targetQuery: entityIdSubquery,
         onEntityIdField: 'final_entities.entity_id',
         knex: this.database,
@@ -867,14 +873,12 @@ function parseCursorFromRequest(
   if (isQueryEntitiesInitialRequest(request)) {
     const {
       filter,
-      query,
       orderFields: sortFields = [],
       fullTextFilter,
       totalItems: totalItemsMode = 'include',
     } = request;
     return {
-      filter,
-      query,
+      query: filter,
       orderFields: sortFields,
       fullTextFilter,
       totalItemsMode,

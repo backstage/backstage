@@ -26,7 +26,10 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './template.examples';
-import { createTemplateActionHandler } from './templateActionHandler';
+import {
+  collectActionTemplateCapabilities,
+  createTemplateActionHandler,
+} from './templateActionHandler';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -41,6 +44,8 @@ export function createFetchTemplateAction(options: {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
+  const templateCapabilities = collectActionTemplateCapabilities(options);
+
   return createTemplateAction({
     id: 'fetch:template',
     description:
@@ -145,6 +150,7 @@ export function createFetchTemplateAction(options: {
           return templateDir;
         },
         ...options,
+        templateCapabilities,
       }),
   });
 }

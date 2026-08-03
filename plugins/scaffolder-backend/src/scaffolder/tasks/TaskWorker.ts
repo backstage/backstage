@@ -32,6 +32,7 @@ import { WorkflowRunner } from './types';
 import { setTimeout } from 'node:timers/promises';
 import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
+import { collectTemplateCapabilities } from '../../util/templating';
 
 const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
 
@@ -134,8 +135,10 @@ export class TaskWorker {
       logger,
       auditor,
       workingDirectory,
-      additionalTemplateFilters,
-      additionalTemplateGlobals,
+      templateCapabilities: collectTemplateCapabilities({
+        filters: additionalTemplateFilters,
+        globals: additionalTemplateGlobals,
+      }),
       permissions,
       config,
       metrics,

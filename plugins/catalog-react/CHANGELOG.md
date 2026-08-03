@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-react
 
+## 3.2.1-next.1
+
+### Patch Changes
+
+- ed462ad: Fixed `EntityOwnerPicker` in `owners-only` mode to display human-readable entity titles (from `metadata.title` or `spec.profile.displayName`) instead of opaque internal names, both in the dropdown list and in the selected owner chips. The owner list is now virtualized, keeping the picker responsive for catalogs with large numbers of owner entities.
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/integration-react@1.2.21-next.0
+
 ## 3.2.1-next.0
 
 ### Patch Changes

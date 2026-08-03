@@ -735,6 +735,7 @@ describe('DefaultConnectionsService', () => {
                 clientId: 'client',
                 clientSecret: 'secret',
                 orgs: ['other-org'],
+                match: { plugins: ['other-plugin'] },
               },
             ],
           },

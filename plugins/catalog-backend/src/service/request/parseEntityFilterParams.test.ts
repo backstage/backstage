@@ -27,7 +27,7 @@ describe('parseEntityFilterParams', () => {
 
   it('supports single-string format', () => {
     const result = parseEntityFilterParams({ filter: 'a=1' })!;
-    expect(result).toEqual({ key: 'a', values: ['1'] });
+    expect(result).toEqual({ a: '1' });
   });
 
   it('supports array-of-strings format', () => {
@@ -35,10 +35,7 @@ describe('parseEntityFilterParams', () => {
       filter: ['a=1', 'b=2'],
     });
     expect(result).toEqual({
-      anyOf: [
-        { key: 'a', values: ['1'] },
-        { key: 'b', values: ['2'] },
-      ],
+      $any: [{ a: '1' }, { b: '2' }],
     });
   });
 
@@ -47,13 +44,10 @@ describe('parseEntityFilterParams', () => {
       filter: ['a=1', 'b=2,b=3,c=4'],
     });
     expect(result).toEqual({
-      anyOf: [
-        { key: 'a', values: ['1'] },
+      $any: [
+        { a: '1' },
         {
-          allOf: [
-            { key: 'b', values: ['2', '3'] },
-            { key: 'c', values: ['4'] },
-          ],
+          $all: [{ b: { $in: ['2', '3'] } }, { c: '4' }],
         },
       ],
     });

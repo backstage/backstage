@@ -212,14 +212,16 @@ async function readCappedResponseBody(response: Response): Promise<string> {
 export async function fetchCimdMetadata(opts: {
   clientId: string;
   validatedUrl?: URL;
+  skipSsrfCheck?: boolean;
 }): Promise<CimdClientInfo> {
   const url = opts.validatedUrl ?? validateCimdUrl(opts.clientId);
 
-  // Skip SSRF validation for localhost in development only
+  // Skip SSRF validation for localhost in development, or when the caller
+  // has determined the client_id matched an exact (non-wildcard) pattern.
   const isLocalhostDev =
     (url.hostname === 'localhost' || url.hostname === '127.0.0.1') &&
     process.env.NODE_ENV === 'development';
-  if (!isLocalhostDev) {
+  if (!isLocalhostDev && !opts.skipSsrfCheck) {
     await validateHostNotPrivate(url.hostname);
   }
 
