@@ -64,23 +64,28 @@ Since we defined the rule in the permission policy module's `src/` directory, we
 import { isInSystem } from '../permissionRules';
 
 export class CustomPolicy implements PermissionPolicy {
+  constructor(private readonly userInfo: UserInfoService) {}
+
   async handle(
     request: PolicyQuery,
     user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     if (isResourcePermission(request.permission, 'catalog-entity')) {
+      const ownershipRefs = user
+        ? (await this.userInfo.getUserInfo(user.credentials)).ownershipEntityRefs
+        : [];
       return createCatalogConditionalDecision(
         request.permission,
         /* highlight-remove-start */
         catalogConditions.isEntityOwner({
-          claims: user?.info.ownershipEntityRefs ?? [],
+          claims: ownershipRefs,
         }),
         /* highlight-remove-end */
         /* highlight-add-start */
         {
           anyOf: [
             catalogConditions.isEntityOwner({
-              claims: user?.info.ownershipEntityRefs ?? [],
+              claims: ownershipRefs,
             }),
             isInSystem({ systemRef: 'interviewing' }),
           ],

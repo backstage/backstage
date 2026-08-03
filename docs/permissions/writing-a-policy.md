@@ -83,9 +83,15 @@ import {
   PolicyQuery,
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
+/* highlight-add-next-line */
+import { UserInfoService } from '@backstage/backend-plugin-api';
 
 
 export class CustomPolicy implements PermissionPolicy {
+  /* highlight-add-start */
+  constructor(private readonly userInfo: UserInfoService) {}
+
+  /* highlight-add-end */
   async handle(
     request: PolicyQuery,
     user?: PolicyQueryUser,
@@ -100,10 +106,13 @@ export class CustomPolicy implements PermissionPolicy {
       };
       /* highlight-remove-end */
       /* highlight-add-start */
+      const ownershipRefs = user
+        ? (await this.userInfo.getUserInfo(user.credentials)).ownershipEntityRefs
+        : [];
       return createCatalogConditionalDecision(
         request.permission,
         catalogConditions.isEntityOwner({
-          claims: user?.info.ownershipEntityRefs ?? [],
+          claims: ownershipRefs,
         }),
       );
       /* highlight-add-end */
@@ -113,11 +122,38 @@ export class CustomPolicy implements PermissionPolicy {
 }
 ```
 
+You will also need to update your module to pass the `UserInfoService` to the policy. Add `coreServices.userInfo` as a dependency and pass it to the constructor:
+
+```ts
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
+import { CustomPolicy } from './policy/CustomPolicy';
+
+export const permissionModuleCustom = createBackendModule({
+  pluginId: 'permission',
+  moduleId: 'custom',
+  register({ registerInit }) {
+    registerInit({
+      deps: {
+        policy: policyExtensionPoint,
+        userInfo: coreServices.userInfo,
+      },
+      async init({ policy, userInfo }) {
+        policy.setPolicy(new CustomPolicy(userInfo));
+      },
+    });
+  },
+});
+```
+
 Let's walk through the new code that we just added.
 
-Instead of returning an Definitive Policy Decision, we use factory methods to construct a [Conditional Policy Decision](https://backstage.io/api/stable/types/_backstage_plugin-permission-common.ConditionalPolicyDecision.html) (See the [Concepts page](./concepts.md) for more details). Since the policy doesn't have enough information to determine if `user` is the entity owner, this criteria is encapsulated within the conditional decision. However, `createCatalogConditionalDecision` will not compile unless `request.permission` is a catalog entity [`ResourcePermission`](https://backstage.io/api/stable/types/_backstage_plugin-permission-common.ResourcePermission.html). This type constraint ensures that policies return conditional decisions that are compatible with the requested permission. To address this, we use [`isPermission`](https://backstage.io/api/stable/functions/_backstage_plugin-permission-common.isPermission.html) to ["narrow"](https://www.typescriptlang.org/docs/handbook/2/narrowing.html) the type of `request.permission` to `ResourcePermission<'catalog-entity'>`. This matches the runtime behavior that was in place before, but you'll notice that the type of `request.permission` has changed within the scope of that `if` statement.
+Instead of returning a Definitive Policy Decision, we use factory methods to construct a [Conditional Policy Decision](https://backstage.io/api/stable/types/_backstage_plugin-permission-common.ConditionalPolicyDecision.html) (See the [Concepts page](./concepts.md) for more details). Since the policy doesn't have enough information to determine if `user` is the entity owner, this criteria is encapsulated within the conditional decision. However, `createCatalogConditionalDecision` will not compile unless `request.permission` is a catalog entity [`ResourcePermission`](https://backstage.io/api/stable/types/_backstage_plugin-permission-common.ResourcePermission.html). This type constraint ensures that policies return conditional decisions that are compatible with the requested permission. To address this, we use [`isPermission`](https://backstage.io/api/stable/functions/_backstage_plugin-permission-common.isPermission.html) to ["narrow"](https://www.typescriptlang.org/docs/handbook/2/narrowing.html) the type of `request.permission` to `ResourcePermission<'catalog-entity'>`. This matches the runtime behavior that was in place before, but you'll notice that the type of `request.permission` has changed within the scope of that `if` statement.
 
-The `catalogConditions` object contains all of the rules defined by the catalog plugin. These rules can be combined to form a [`PermissionCriteria`](https://backstage.io/api/stable/types/_backstage_plugin-permission-common.PermissionCriteria.html) object, but for this case we only need to use the `isEntityOwner` rule. This rule accepts a list of entity refs that represent User identity and Group membership used to determine ownership. The second argument to `PermissionPolicy#handle` provides us with a `PolicyQueryUser` object, from which we can grab the user's `ownershipEntityRefs`. We provide an empty array as a fallback since the user may be anonymous.
+The `catalogConditions` object contains all of the rules defined by the catalog plugin. These rules can be combined to form a [`PermissionCriteria`](https://backstage.io/api/stable/types/_backstage_plugin-permission-common.PermissionCriteria.html) object, but for this case we only need to use the `isEntityOwner` rule. This rule accepts a list of entity refs that represent User identity and Group membership used to determine ownership. We use the `UserInfoService` to look up the user's `ownershipEntityRefs` from their credentials. We provide an empty array as a fallback since the user may be anonymous.
 
 You should now be able to see in your Backstage app that the unregister entity button is enabled for entities that you own, but disabled for all other entities!
 
@@ -148,8 +184,11 @@ import {
   PolicyQuery,
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 
 export class CustomPolicy implements PermissionPolicy {
+  constructor(private readonly userInfo: UserInfoService) {}
+
   async handle(
     request: PolicyQuery,
     user?: PolicyQueryUser,
@@ -158,10 +197,13 @@ export class CustomPolicy implements PermissionPolicy {
     if (isPermission(request.permission, catalogEntityDeletePermission)) {
     /* highlight-add-next-line */
     if (isResourcePermission(request.permission, 'catalog-entity')) {
+      const ownershipRefs = user
+        ? (await this.userInfo.getUserInfo(user.credentials)).ownershipEntityRefs
+        : [];
       return createCatalogConditionalDecision(
         request.permission,
         catalogConditions.isEntityOwner({
-          claims: user?.info.ownershipEntityRefs ?? [],
+          claims: ownershipRefs,
         }),
       );
     }

@@ -260,6 +260,7 @@ import {
   PolicyDecision,
   isPermission,
 } from '@backstage/plugin-permission-common';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 /* highlight-remove-next-line */
 import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 /* highlight-add-start */
@@ -274,6 +275,8 @@ import {
 /* highlight-add-end */
 
 export class CustomPolicy implements PermissionPolicy {
+  constructor(private readonly userInfo: UserInfoService) {}
+
   async handle(
     request: PolicyQuery,
     /* highlight-remove-next-line */
@@ -288,10 +291,13 @@ export class CustomPolicy implements PermissionPolicy {
     }
     /* highlight-add-start */
     if (isPermission(request.permission, todoListUpdatePermission)) {
+      const userEntityRef = user
+        ? (await this.userInfo.getUserInfo(user.credentials)).userEntityRef
+        : '';
       return createTodoListConditionalDecision(
         request.permission,
         todoListConditions.isOwner({
-          userId: user?.info.userEntityRef ?? '',
+          userId: userEntityRef,
         }),
       );
     }
