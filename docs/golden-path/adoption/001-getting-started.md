@@ -5,69 +5,63 @@ title: Getting started with Backstage
 description: An introduction to the Backstage adoption journey and what to expect
 ---
 
-The adoption journey is a bit different than the other Golden Paths. The goal of this guide is to prepare you for a successful implementation of Backstage in your organization. A technical understanding of Backstage is not needed for this Golden Path, just a desire to help the technical team that will be owning your Backstage instance.
+This guide prepares you to lead the organizational side of adopting Backstage. You do not need a technical understanding of Backstage, but you should work with the team that will own your Backstage instance.
 
-:::info
+## Start with an organizational problem
 
-I'd highly recommend poking around <https://demo.backstage.io/> before continuing with this guide. It's a test instance of Backstage that provides a good foundation for what to expect from the tool as a user.
+Backstage is a framework for building developer portals. It can centralize software ownership and documentation, provide one entry point to development tools, and offer reusable paths through common tasks. Those capabilities are useful only when they address a problem that developers and leaders recognize.
 
-:::
+Start by writing down the problem you want to explore. For example:
 
-## What is Backstage?
+- Developers cannot reliably find who owns a service or where its documentation lives.
+- Creating a service or environment requires handoffs across several teams and tools.
+- Platform teams repeatedly help developers through the same error-prone process.
+- Teams struggle to discover and reuse the tools or practices that already exist.
 
-At a high level, Backstage is a framework for building developer portals. When implemented successfully, it can reduce toil for your developers by centralizing information like docs and ownership, reducing cognitive overhead due to tool fragmentation and simplify setting up new codebases or integrating with existing ones.
+Describe the behavior or outcome you want to change, not the Backstage feature you want to install. "Reduce the time needed to create a production-ready service" is a stronger starting point than "launch Software Templates".
 
-A few examples,
+## Form an initial coalition
 
-> My company tracks everything with spreadsheets. We have a list of all GitHub repos and who owns them, but it's becoming more and more of an issue to keep up to date. Teams aren't proactively updating it when new projects are created and it quickly falls out of date with reorgs and team charter changes.
+Bring together a small group that can test the problem from different perspectives:
 
-Backstage can help! We provide a core plugin called Software Catalog that automates this process. Teams are asked to maintain a file in their repo with this ownership information and it gets automatically ingested into Backstage where you can view all projects in a single location.
+- a technical partner who can evaluate and configure Backstage;
+- developers who experience the problem in their regular work;
+- the team that would own Backstage as an internal product;
+- a leader who can connect the work to wider platform goals and remove organizational blockers.
 
-> My developers have been complaining recently about having to use a growing number of different websites and tools in their day to day. It's getting hard to keep track of all of the tools and for those that we don't use frequently, we lose X minutes trying to remember how to access them.
+This is not yet a company-wide steering group. It is the smallest group that can decide whether the problem is real, whether Backstage is a credible response, and what evidence would justify further investment.
 
-Tool fragmentation is a real issue and Backstage can also help here! You can create plugins tailored for your company that talk to these external services. These plugins can be standalone or integrated with the Software Catalog for better context. Imagine all of your [CI/CD workflows visible directly](https://backstage.io/plugins/) on the page for your team's projects.
+## Test your hypothesis in the demo
 
-It's important to note that Backstage shouldn't be fully replacing these tools, we don't want to reinvent the wheel. The goal is to have all of the really important information in one place. The tool should still be where teams go to do more advanced or in depth work.
+Explore the [Backstage demo site](https://demo.backstage.io/) with your problem in mind. Use the Software Catalog to see how ownership, documentation, dependencies, and integrations can be organized around a software component. See the [Software Catalog system model](../../features/software-catalog/system-model.md) if you want more background.
 
-> We have been struggling recently with getting teams to use a standard template for new services. There's no standard set of libraries these services are using or standard infra management. It's increasingly difficult as a platform team to manage everything.
+Then visit [Software Templates in the demo](https://demo.backstage.io/create). Instead of reviewing every feature, walk through one scenario that is difficult in your organization today. Ask your coalition what would need to be integrated, automated, or governed for that scenario to become meaningfully easier.
 
-Backstage can help here too! The Scaffolder provides a templating framework that you can plug a Golden Path implementation to. Similar to GitHub template repos, this can provide a standard base for teams to create based off of.
+## Understand the adoption journey
 
-> Our platform teams have been getting more and more support requests to help debug onboarding steps. We've documented these areas really well and there are plenty of examples in Git, but teams keep running into the same issues. It's always either a bad copy paste or they forget to update a template variable. We've started looking into a custom templating solution for this.
+A durable adoption usually progresses through these decisions:
 
-Backstage can help! With the Scaffolder, you can create a template that lets users fill in data through a form and uses that data to create a customized template output. This output is usually in the form of PRs to your various source control systems. Imagine you have a repo for traffic configuration, another for infrastructure management and a third for k8s manifests - with the Scaffolder, you can hide all of this complexity. You may still need to get reviews on the output PRs, but no more copy paste issues!
+1. Agree on the problem and the outcome you want to change.
+2. Secure a sponsor and an accountable product team.
+3. Run a focused proof of concept (PoC) with representative users.
+4. Use stakeholder feedback to choose what to invest in.
+5. Launch with communication, support, and measures in place.
+6. Establish contribution, ownership, and catalog governance as adoption grows.
 
-## What does adopting Backstage look like?
+The rest of this guide follows that sequence. The goal is not to make Backstage available as quickly as possible. It is to build an internal product that developers choose to use and that leaders can continue to support.
 
-a.k.a "what am I signing myself up for?"
+## Learn from adopters
 
-Successfully adopting Backstage usually looks something like this,
+### [Backstage: From Spreadsheet to Standard](https://www.youtube.com/watch?v=gJHYTlO0VwA)
 
-1. Setting up a PoC.
-2. Getting leadership buy-in.
-3. Identify a group of key stakeholders for the project and iterate with them aggressively.
-4. Launch to the larger organization.
-5. Drive Catalog adoption to 100%.
-6. Your Backstage implementation starts to receive plugins from developers outside of your team.
+_CNCF, 2026 · 28:01 video_
 
-A truly successful Backstage implementation bridges delivering value to customers (developers), demonstrating returns to leadership, and fostering an inner source model. It's a long process but has huge dividends for those that achieve it!
+- See how a portal built for Spotify's internal scaling problem became a shared framework rather than a fixed product.
+- Use the adopter and practitioner perspectives to identify which parts of the Backstage story resemble your organization's problem.
 
-## Getting started
+### [What do cars, clothes, wardrobes, and MRI machines have in common?](https://www.youtube.com/watch?v=h6BgF9dQDNo)
 
-Now that you know what to expect, let's walk through how to get started.
+_BackstageCon Europe, 2025 · 39:58 video_
 
-:::note
-
-If you're non-technical, it is highly recommended to find a technical partner for help setting up a proof-of-concept for feedback.
-
-:::
-
-### Software Catalog
-
-Let's go to <https://demo.backstage.io/> together. When you first navigate to the page, you will be brought to the Software Catalog page. This is a view of all projects currently registered with the (Demo) Backstage instance. There are a series of filters that you can play around with. If you're _really_ interested, we recommend reading through [the software catalog system model](../../features/software-catalog/system-model.md).
-
-Let's click into a Component, say "artist-lookup". This will bring you to a specialized view for that Component. Across the top, you can see tabs for "CI/CD", "API", "Dependencies", "Docs" and "TODOs". For your company, you can change this as you see fit. The important takeaway is that all of these tabs are automatically filtered for this Component which makes it easy to see how this could start to replace many navigation to other tools.
-
-### Scaffolder
-
-Let's go to <https://demo.backstage.io/create> now. This is the Scaffolder, a place to store reusable templates. Click the "Choose" button in the "Demo template". This will bring you to a form with some information to input. You don't need to fill this out. The main takeaway here is that this form is generated from YAML and doesn't require a frontend team to implement a custom form for each template you want to create.
+- Compare why organizations outside software-first industries invested in developer portals.
+- Listen for the legacy, organizational, and developer experience constraints that shaped each adopter's starting point.
