@@ -10,3 +10,160 @@ npmPackageName: '@backstage/plugin-kubernetes'
 order: 4
 addedDate: '2021-03-29'
 status: active
+capabilities:
+  - entity-content
+setup:
+  packages:
+    - name: '@backstage/plugin-kubernetes'
+      role: frontend
+    - name: '@backstage/plugin-kubernetes-backend'
+      role: backend
+  frontend:
+    routes:
+      - name: kubernetes
+        type: provided
+        description: Links the Kubernetes entity content to its routable page.
+    extensions:
+      - id: entity-content:kubernetes/kubernetes
+        kind: entity-content
+        description: Adds a Kubernetes tab to catalog entities with Kubernetes resources.
+        enabledByDefault: true
+      - id: api:kubernetes
+        kind: api
+        description: Provides the Kubernetes client API.
+        enabledByDefault: true
+      - id: api:kubernetes/proxy
+        kind: api
+        description: Provides the Kubernetes proxy API.
+        enabledByDefault: true
+      - id: api:kubernetes/auth-providers
+        kind: api
+        description: Provides the built-in Kubernetes authentication providers.
+        enabledByDefault: true
+      - id: api:kubernetes/cluster-link-formatter
+        kind: api
+        description: Formats links to Kubernetes cluster dashboards.
+        enabledByDefault: true
+  integration:
+    - title: Register the backend plugin
+      explanation: Add the Kubernetes backend to packages/backend/src/index.ts before starting the backend.
+      language: ts
+      source: |
+        backend.add(import('@backstage/plugin-kubernetes-backend'));
+    - title: Annotate catalog entities
+      explanation: Add the Kubernetes ID annotation to each catalog entity that should show Kubernetes resources.
+      language: yaml
+      source: |
+        metadata:
+          annotations:
+            backstage.io/kubernetes-id: dice-roller
+  config:
+    schema:
+      type: object
+      properties:
+        kubernetes:
+          type: object
+          description: Configure how the backend locates and connects to Kubernetes clusters.
+          x-ui:
+            label: Kubernetes
+          properties:
+            serviceLocatorMethod:
+              type: object
+              description: Choose how catalog entities are matched to clusters.
+              x-ui:
+                label: Service locator
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - multiTenant
+                    - singleTenant
+                    - catalogRelation
+                  default: multiTenant
+                  description: Determines which configured clusters are queried for each entity.
+                  x-ui:
+                    label: Locator type
+              required:
+                - type
+            clusterLocatorMethods:
+              type: array
+              description: Add clusters that are declared directly in app-config.yaml.
+              x-ui:
+                label: Cluster locator methods
+              items:
+                type: object
+                x-ui:
+                  label: Config locator
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - config
+                    default: config
+                    description: Reads cluster connection details from app-config.yaml.
+                    x-ui:
+                      label: Locator type
+                  clusters:
+                    type: array
+                    description: Configure one or more Kubernetes API servers.
+                    x-ui:
+                      label: Clusters
+                    items:
+                      type: object
+                      x-ui:
+                        label: Cluster
+                      properties:
+                        name:
+                          type: string
+                          description: Unique name shown to Backstage users.
+                          x-ui:
+                            label: Cluster name
+                        url:
+                          type: string
+                          description: Base URL of the Kubernetes control plane.
+                          x-ui:
+                            label: API server URL
+                        authProvider:
+                          type: string
+                          enum:
+                            - serviceAccount
+                            - oidc
+                            - aws
+                            - azure
+                            - google
+                            - googleServiceAccount
+                            - aks
+                          default: serviceAccount
+                          description: Authentication strategy used for this cluster.
+                          x-ui:
+                            label: Authentication provider
+                        serviceAccountToken:
+                          type: string
+                          description: Read from the declared environment variable; no secret value is entered here.
+                          x-ui:
+                            label: Service account token
+                            secretEnv: K8S_SERVICE_ACCOUNT_TOKEN
+                        skipTLSVerify:
+                          type: boolean
+                          default: false
+                          description: Skip API server certificate verification.
+                          x-ui:
+                            label: Skip TLS verification
+                        skipMetricsLookup:
+                          type: boolean
+                          default: false
+                          description: Skip pod CPU and memory metrics lookup.
+                          x-ui:
+                            label: Skip metrics lookup
+                      required:
+                        - name
+                        - url
+                        - authProvider
+                required:
+                  - type
+                  - clusters
+          required:
+            - serviceLocatorMethod
+            - clusterLocatorMethods
+      required:
+        - kubernetes

@@ -19,6 +19,7 @@ import Layout from '@theme/Layout';
 import React from 'react';
 
 import { HealthSummary } from './HealthSummary';
+import { SetupGuide } from './SetupGuide';
 import styles from './pluginDirectory.module.scss';
 
 interface PluginDetailPageProps {
@@ -63,6 +64,7 @@ export default function PluginDetailPage({ plugin }: PluginDetailPageProps) {
           <p className={styles.description}>{plugin.description}</p>
 
           <HealthSummary plugin={plugin} />
+          <SetupGuide plugin={plugin} />
 
           <section
             className={styles.resources}
