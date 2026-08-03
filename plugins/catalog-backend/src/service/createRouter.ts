@@ -220,9 +220,7 @@ export async function createRouter(
     })
     .post('/entities/by-query', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      const { fields: rawFields, ...parsed } = parseEntityQuery(
-        req.body ?? {},
-      );
+      const { fields: rawFields, ...parsed } = parseEntityQuery(req.body ?? {});
       const fields = rawFields?.length
         ? parseEntityTransformParams({ fields: rawFields })
         : undefined;
