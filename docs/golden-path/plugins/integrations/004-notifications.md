@@ -43,14 +43,13 @@ Before starting:
 
 - Complete [Search](003-search.md).
 - Have a component with an `ownedBy` relation to a Group.
-- Install the notifications backend and frontend in the example app.
 
 ### What to expect
 
 You will:
 
 1. Add a due time and a "reminder sent" time to each TODO.
-2. Let users choose a due time when they create a TODO.
+2. Allow callers to provide a due time when they create a TODO.
 3. Run a [scheduled task](../../../backend-system/core-services/scheduler.md) that finds TODOs whose reminders are due.
 4. Ask the Catalog which Groups currently own each TODO's Component.
 5. Send a notification to those Groups.
@@ -106,8 +105,33 @@ Carry the fields through the service and database row types:
  }
 ```
 
-Update `toDatabaseRow` and `fromDatabaseRow` in the same file. Convert database
-`null` values to `undefined` in `TodoItem`.
+Update the row mappers in the same file so writes and reads carry both fields:
+
+```diff title="plugins/todo-backend/src/services/TodoListService.ts"
+ private toDatabaseRow(todo: TodoItem): TodoDatabaseRow {
+   return {
+     id: todo.id,
+     title: todo.title,
+     created_by: todo.createdBy,
+     for_entity_ref: todo.forEntityRef,
++    due_at: todo.dueAt ?? null,
++    reminder_sent_at: todo.reminderSentAt ?? null,
+     created_at: todo.createdAt,
+   };
+ }
+
+ private fromDatabaseRow(row: TodoDatabaseRow): TodoItem {
+   return {
+     id: row.id,
+     title: row.title,
+     createdBy: row.created_by,
+     forEntityRef: row.for_entity_ref,
++    dueAt: row.due_at ?? undefined,
++    reminderSentAt: row.reminder_sent_at ?? undefined,
+     createdAt: row.created_at,
+   };
+ }
+```
 
 `reminderSentAt` prevents duplicate reminders. It stays empty until
 Notifications accepts the reminder, then records when it was sent.
@@ -144,10 +168,9 @@ Extend the create request and service input:
    };
 ```
 
-Add a date and time field to the existing TODO form. Send the selected value in
-`dueAt` using the ISO 8601 date-time format, such as
-`2026-08-03T15:30:00.000Z`. Show the selected time in `TodoList` so the user can
-confirm it before waiting for the reminder.
+The TODO frontend remains read-only in this walkthrough. You will send `dueAt`
+to the existing create route from the terminal during verification. Scaffolder
+will become a second caller in the next guide.
 
 Add the queries used by the scheduled task:
 
@@ -294,14 +317,33 @@ notification instead of adding a duplicate to the inbox.
 
 ### Step 5: Verify the reminder
 
-1. Sign in as a member of the Group that owns your test component.
-2. Create a TODO for that component with a due time one or two minutes in the
-   future.
-3. Confirm the TODO appears on the component's **Todos** tab and in Search.
+1. Configure the owner identity from the Permissions guide and restart
+   Backstage.
+2. Choose a Component owned by that identity, then create a TODO that is due in
+   two minutes:
+
+   ```shell
+   ENTITY_REF=component:default/example-website
+   DUE_AT=$(node -e 'console.log(new Date(Date.now() + 120000).toISOString())')
+   BACKSTAGE_TOKEN=$(curl -s http://localhost:7007/api/auth/guest/refresh | jq -r '.backstageIdentity.token')
+
+   curl http://localhost:7007/api/todo/todos \
+     -H "Authorization: Bearer $BACKSTAGE_TOKEN" \
+     -H "Content-Type: application/json" \
+     --data "$(jq -n \
+       --arg entityRef "$ENTITY_REF" \
+       --arg dueAt "$DUE_AT" \
+       '{title: "Review onboarding docs", entityRef: $entityRef, dueAt: $dueAt}')"
+   ```
+
+   Replace `ENTITY_REF` with the Component you chose.
+
+3. Confirm the TODO appears on the Component's **Todos** tab and in Search.
 4. Wait for the scheduled task, then open the Notifications inbox.
-5. Confirm one reminder appears and links back to the component's **Todos** tab.
+5. Confirm one reminder appears and links back to the Component's **Todos** tab.
 6. Wait through another scheduled run and confirm no duplicate appears.
-7. Sign in as a non-owner and confirm the TODO is not visible through its link.
+7. Switch to the non-owner identity from the Permissions guide and confirm the
+   TODO is not visible through its link.
 
 To verify current ownership, change the component's owner in its descriptor and
 refresh the Catalog before creating another due TODO. The next reminder should
