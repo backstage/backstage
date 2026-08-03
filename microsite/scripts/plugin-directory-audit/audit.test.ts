@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
@@ -384,6 +384,49 @@ describe('runAuditCommand', () => {
               event.value === 'Total plugins updated: 3',
           ),
         );
+        const statusTables = events.filter(event => event.method === 'table');
+        assert.equal(statusTables.length, 2);
+        const statusRows = statusTables[1].value as Array<{
+          oldStatus: PluginManifest['status'];
+          newStatus: PluginManifest['status'];
+          oldStaleSince?: string;
+          newStaleSince?: string;
+        }>;
+        assert.deepEqual(
+          statusRows.map(
+            ({
+              oldStatus,
+              newStatus,
+              oldStaleSince,
+              newStaleSince,
+            }) => ({
+              oldStatus,
+              newStatus,
+              oldStaleSince,
+              newStaleSince,
+            }),
+          ),
+          [
+            {
+              oldStatus: 'active',
+              newStatus: 'inactive',
+              oldStaleSince: undefined,
+              newStaleSince: '2026-08-03',
+            },
+            {
+              oldStatus: 'archived',
+              newStatus: 'active',
+              oldStaleSince: '2024-02-20',
+              newStaleSince: undefined,
+            },
+            {
+              oldStatus: 'inactive',
+              newStatus: 'archived',
+              oldStaleSince: '2025-04-12',
+              newStaleSince: '2025-04-12',
+            },
+          ],
+        );
       },
     );
   });
@@ -419,5 +462,119 @@ describe('runAuditCommand', () => {
         ),
       );
     });
+  });
+
+  it('writes refreshed snapshots without reporting a status transition', async () => {
+    const previousAttemptAt = '2026-08-01T12:00:00.000Z';
+    const refreshed = manifest('active', {
+      snapshot: {
+        npm: {
+          ...freshNpm('2026-07-01T00:00:00.000Z'),
+          lastAttemptAt: previousAttemptAt,
+          checkedAt: previousAttemptAt,
+        },
+        backstage: {
+          ...freshBackstage(),
+          lastAttemptAt: previousAttemptAt,
+          checkedAt: previousAttemptAt,
+        },
+      },
+    });
+
+    await withManifestDirectory({ 'refreshed.yaml': refreshed }, async directory => {
+      const events: OutputEvent[] = [];
+      const result = await runAuditCommand(['--audit'], {
+        directory,
+        dependencies: dependencies(
+          freshNpm('2026-07-01T00:00:00.000Z'),
+        ),
+        output: captureOutput(events),
+      });
+
+      const [written] = await readManifestFiles(directory);
+      assert.equal(result.changedFiles, 1);
+      assert.equal(result.writtenFiles, 1);
+      assert.equal(written.manifest.snapshot?.npm.checkedAt, attemptAt);
+      assert.equal(written.manifest.snapshot?.backstage.checkedAt, attemptAt);
+      assert.equal(
+        events.filter(event => event.method === 'table').length,
+        1,
+      );
+      assert.ok(
+        events.some(
+          event =>
+            event.method === 'log' &&
+            event.value === 'No plugins required updates.',
+        ),
+      );
+    });
+  });
+
+  it('finishes auditing and reporting before aggregating write failures', async () => {
+    const first = manifest('active', {
+      title: 'Write Failure',
+      npmPackageName: '@example/plugin-write-failure',
+    });
+    const later = manifest('active', {
+      title: 'Later Warning',
+      npmPackageName: '@example/plugin-later-warning',
+    });
+
+    await withManifestDirectory(
+      {
+        'a-write-failure.yaml': first,
+        'b-later-warning.yaml': later,
+      },
+      async directory => {
+        const failedPath = join(directory, 'a-write-failure.yaml');
+        const laterPath = join(directory, 'b-later-warning.yaml');
+        const fetched: string[] = [];
+        const events: OutputEvent[] = [];
+
+        const rejection = await runAuditCommand(['--audit'], {
+          directory,
+          dependencies: {
+            fetchNpm: async packageName => {
+              fetched.push(packageName);
+              if (packageName === '@example/plugin-later-warning') {
+                throw new Error('registry unavailable');
+              }
+              await rm(failedPath);
+              await mkdir(failedPath);
+              return freshNpm('2025-07-01T00:00:00.000Z');
+            },
+            github: {
+              fetchBackstageSnapshot: async () => freshBackstage(),
+            } as GitHubSnapshotClient,
+            now: () => auditTime,
+          },
+          output: captureOutput(events),
+        }).then(
+          () => undefined,
+          error => error,
+        );
+
+        assert.deepEqual(fetched, [
+          '@example/plugin-write-failure',
+          '@example/plugin-later-warning',
+        ]);
+        assert.ok(
+          events.some(
+            event =>
+              event.method === 'warn' &&
+              String(event.value).includes('Later Warning'),
+          ),
+        );
+        assert.ok(events.some(event => event.method === 'table'));
+        assert.match(
+          await readFile(laterPath, 'utf8'),
+          /npm:\n\s+status: unavailable/,
+        );
+        assert.ok(rejection instanceof AggregateError);
+        assert.equal(rejection.errors.length, 1);
+        assert.match(rejection.message, /1 plugin manifest/);
+        assert.match(String(rejection.errors[0]), /a-write-failure\.yaml/);
+      },
+    );
   });
 });

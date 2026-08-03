@@ -60,6 +60,8 @@ interface UpdatedPluginRow {
   plugin: string;
   oldStatus: PluginManifest['status'];
   newStatus: PluginManifest['status'];
+  oldStaleSince?: string;
+  newStaleSince?: string;
   age?: number;
 }
 
@@ -77,6 +79,7 @@ export async function runAuditCommand(
   const auditMode = args[0] === '--audit';
   const files = await readManifestFiles(options.directory);
   const tableRows: AuditTableRow[] = [];
+  const changedFiles: ManifestFile[] = [];
   const updatedRows: UpdatedPluginRow[] = [];
   const warnings: string[] = [];
 
@@ -110,20 +113,22 @@ export async function runAuditCommand(
     });
 
     if (result.changed) {
+      changedFiles.push({
+        ...file,
+        manifest: result.manifest,
+      });
+    }
+
+    if (file.manifest.status !== result.manifest.status) {
       updatedRows.push({
         file: file.filename,
         plugin: result.manifest.title,
         oldStatus: file.manifest.status,
         newStatus: result.manifest.status,
+        oldStaleSince: file.manifest.staleSince,
+        newStaleSince: result.manifest.staleSince,
         age,
       });
-      if (auditMode) {
-        const updatedFile: ManifestFile = {
-          ...file,
-          manifest: result.manifest,
-        };
-        await writeManifestFile(updatedFile);
-      }
     }
   }
 
@@ -141,9 +146,34 @@ export async function runAuditCommand(
     options.output.warn(warning);
   }
 
+  let writtenFiles = 0;
+  const writeFailures: Error[] = [];
+  if (auditMode) {
+    for (const file of changedFiles) {
+      try {
+        await writeManifestFile(file);
+        writtenFiles += 1;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        writeFailures.push(
+          new Error(`Failed to write ${file.filename}: ${message}`),
+        );
+      }
+    }
+  }
+
+  if (writeFailures.length > 0) {
+    throw new AggregateError(
+      writeFailures,
+      `Failed to write ${writeFailures.length} plugin manifest${
+        writeFailures.length === 1 ? '' : 's'
+      }.`,
+    );
+  }
+
   return {
-    changedFiles: updatedRows.length,
-    writtenFiles: auditMode ? updatedRows.length : 0,
+    changedFiles: changedFiles.length,
+    writtenFiles,
     warnings,
   };
 }
