@@ -146,12 +146,12 @@ investing in the platform over time.
 
 ## Learn from adopters
 
-### [Expedia Group shares Backstage proof-of-value metrics 2.0](https://backstage.io/blog/2023/08/17/expedia-proof-of-value-metrics-2/)
+### [Lego bricks for developers: Turning insights into golden paths at Neo4j](https://www.youtube.com/watch?v=IdLXeK8motg)
 
-_Backstage blog, 2023_
+_BackstageCon North America, 2025 · 27:54 video_
 
-- Align launch measures to developer jobs and the outcomes your portal is meant to change; usage alone is not the value model.
-- Revisit the measures and roadmap as the portal and developer journey mature instead of freezing the PoC scorecard.
+- Combine page analytics with qualitative feedback to learn what developers use and what they still need.
+- Preserve the parts users value while turning broad guidance into focused, team-owned paths that can improve independently.
 
 ### [How Ericsson scaled developer experience with Backstage](https://www.youtube.com/watch?v=1mDEkiN4NTs)
 
