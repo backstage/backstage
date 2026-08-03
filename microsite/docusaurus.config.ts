@@ -131,7 +131,6 @@ const config: Config = {
     'https://unpkg.com/medium-zoom@1.0.6/dist/medium-zoom.min.js',
     '/js/medium-zoom.js',
     '/js/dismissable-banner.js',
-    '/js/scroll-nav-to-view-in-docs.js',
     {
       src: 'https://widget.kapa.ai/kapa-widget.bundle.js',
       'data-website-id': '4f3b7b51-4ea6-4a5b-aede-44fbe128c0f2',
