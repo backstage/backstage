@@ -45,6 +45,8 @@ Before starting:
 - Have a component with an `ownedBy` relation to a Group.
 - Install the notifications backend and frontend in the example app.
 
+### What to expect
+
 You will:
 
 1. Add a due time and a "reminder sent" time to each TODO.
@@ -304,6 +306,16 @@ notification instead of adding a duplicate to the inbox.
 To verify current ownership, change the component's owner in its descriptor and
 refresh the Catalog before creating another due TODO. The next reminder should
 go to the new owning Group because no owner ref is stored on the TODO.
+
+### What you did
+
+You added due times to TODOs and a scheduled task that finds reminders when they
+become due. Before sending a reminder, the task asks the Catalog which Groups
+currently own the Component, then sends one inbox notification that links back
+to the Component's **Todos** tab.
+
+Future reminders follow Catalog ownership changes, and repeated runs do not
+create duplicate notifications.
 
 ## Further reading
 
