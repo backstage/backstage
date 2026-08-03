@@ -5,27 +5,46 @@ title: Getting leadership buy-in
 description: How to build a case for Backstage adoption and secure leadership support
 ---
 
-## Summary
+Leadership buy-in is more than permission to run Backstage. A durable commitment connects a recognized organizational problem to an accountable team, an executive sponsor, and evidence that will guide future investment.
 
-In this section, we'll be going over what leadership needs to hear to buy in to your pitch for a developer portal. We expect that you have a good idea of the problem that you want Backstage to solve at your company. If not, we recommend you start small. Look for something that is consistently frustrating developers you work with (this can include you). User interviews are a great way to better understand what needs to improve. It may be IT blocking the creation of new GitHub repos or databases. It might be 5 hours per week of manual toil that your whole organization has to do. It might be a slow time to production for new services or slow provisioning of test environments. Every company will be different. There is no one size fits all answer we can give you - and if we could, it wouldn't be well-tailored for _your_ leadership team.
+## Make the case for an outcome
 
-## Milestones
+Start with the problem identified in the previous section. Explain its current cost and who experiences it. That cost might appear as:
 
-Every Backstage adoption journey has well-known milestones.
+- time needed for a new engineer to make a first production change;
+- lead time for creating a service, repository, database, or environment;
+- repeated support work performed by a platform team;
+- time spent finding ownership, documentation, or operational context;
+- avoidable variation in common engineering workflows.
 
-1. You set up a PoC.
-2. You get some users.
-3. A group of users _really_ gets the value in the portal and jumps on it. They may even create their own plugins - great!
-4. You start to plateau with catalog adoption or daily active users.
-5. Leadership starts to get nosy about continued value.
-6. You hit a crossroads. Your team either starts to think about building something themselves or going for another off the shelf option or they sit down and do the work to get out of the plateau.
-7. If your organization made it this far, you likely now have blocking checks for catalog entries and Backstage is a weekly if not daily portal for your developers - congrats!
+Choose measures that fit the problem. Daily active users may show reach, but they do not prove that the portal reduced onboarding time or removed toil. Establish a baseline before the PoC so that you can compare the result with the current experience.
 
-Step 4 and 5 are painful moments. Successful Backstage adoptions can lose steam quickly. That's the nature of these things, the excitement will eventually run out and people will go back to their day jobs. Another YAML file or cataloging tool is just overhead and extra toil, regardless of the problem you're solving. Getting leadership on the same page about the value of Backstage is the first step to a very successful adoption story.
+Bring something concrete to the discussion. This can be a focused PoC, a walkthrough of the [Backstage demo site](https://demo.backstage.io/), or a mapped developer journey that shows where the proposed portal would intervene.
 
-### Recommendations
+## Ask for commitment
 
-1. Bring something real to your leadership team. This can either be a true proof of concept or [the demo site](https://demo.backstage.io).
-2. Define metrics around what you're looking to drive up/down. That may be time to onboarding a new engineer, time to production for a new service, time to mitigate incidents, etc. As we say above, this is the meaty problem that is unique to your company that solving will really move the needle.
-3. Lower the barrier to adoption. Many people see yet another YAML file as overhead. If you have an existing cataloging solution, use that to simplify the onboarding process. If you don't, this might be a good opportunity to do that work.
-4. Knowledge silos. Every team has preferences on how to do things. Centralizing that data into a single interface while letting teams continue to do things how they want to is a powerful goal and something that Backstage can make happen.
+Before expanding the work, align with leadership on:
+
+1. **The initial outcome.** Name the behavior or result the team is expected to change.
+2. **An accountable sponsor.** Identify the leader who will connect the portal to wider platform priorities and resolve cross-team blockers.
+3. **A product team.** Backstage is a framework used to build an internal product. Assign a team with enough capacity to research, build, operate, and lead adoption.
+4. **The evidence for the next investment.** Agree on the measures and stakeholder feedback that will determine whether the work expands, changes direction, or stops.
+5. **The organizational cost.** Be explicit about the time required from the platform team, participating developers, communication partners, and contributing teams.
+
+This agreement matters after the initial excitement fades. Adoption commonly grows with early champions and then plateaus when the remaining teams see migration work but not enough value. A sponsor who understands that pattern can help the product team remove barriers, reinforce priorities, and judge progress against outcomes rather than novelty.
+
+## Learn from adopters
+
+### [Backstage in the board room](https://www.youtube.com/watch?v=kb3F98fKvaQ)
+
+_BackstageCon North America, 2024 · 32:01 video_
+
+- Frame the portal in terms of strategic alignment and value delivery, not only platform-team efficiency.
+- Bring executive sponsors questions that the catalog can help answer, then connect continued funding to those outcomes.
+
+### [Five common traits of successful Backstage adopters](https://backstage.io/blog/2023/07/28/frontside-adopter-post/)
+
+_Backstage blog, 2023_
+
+- Treat Backstage as a product with researched problems, a roadmap, and adoption milestones rather than as a software installation.
+- Secure leadership alignment around the wider platform journey and give a dedicated team enough capacity to lead adoption.
