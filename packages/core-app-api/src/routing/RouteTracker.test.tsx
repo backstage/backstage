@@ -16,7 +16,7 @@
 
 import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { BackstageRouteObject } from './types';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { RouteTracker } from './RouteTracker';
 import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
 import {
@@ -203,6 +203,20 @@ describe('RouteTracker', () => {
       subject: '/not-routable-extension',
       value: undefined,
     });
+  });
+
+  it('should render the surrounding chrome and track nothing without a router', async () => {
+    // An app that supplies a passthrough `Router` component leaves the tracker
+    // with no ambient React Router, and there is no location to report there.
+    render(
+      <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
+        <h1>Backstage</h1>
+        <RouteTracker routeObjects={routeObjects} />
+      </TestApiProvider>,
+    );
+
+    expect(await screen.findByRole('heading')).toHaveTextContent('Backstage');
+    expect(mockedAnalytics.captureEvent).not.toHaveBeenCalled();
   });
 
   it('should return parent route context on navigating to a sub-route', async () => {

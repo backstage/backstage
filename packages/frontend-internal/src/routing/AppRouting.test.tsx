@@ -108,10 +108,32 @@ function ChromeStandIn(props: { to: string }) {
 describe('normalizeBasePath', () => {
   it('strips trailing slashes and collapses the app root to an empty prefix', () => {
     expect(normalizeBasePath(undefined)).toBe('');
+    expect(normalizeBasePath('')).toBe('');
     expect(normalizeBasePath('/')).toBe('');
+    expect(normalizeBasePath('//')).toBe('');
     expect(normalizeBasePath('///')).toBe('');
     expect(normalizeBasePath('/catalog')).toBe('/catalog');
     expect(normalizeBasePath('/catalog/')).toBe('/catalog');
+    expect(normalizeBasePath('/catalog//')).toBe('/catalog');
+    expect(normalizeBasePath('/catalog/entities///')).toBe('/catalog/entities');
+    expect(normalizeBasePath('catalog')).toBe('catalog');
+    expect(normalizeBasePath('catalog/')).toBe('catalog');
+    // Only the trailing run goes; separators inside the prefix are untouched
+    expect(normalizeBasePath('//catalog')).toBe('//catalog');
+    expect(normalizeBasePath('/catalog//entities//')).toBe(
+      '/catalog//entities',
+    );
+  });
+
+  it('handles a long run of trailing slashes without backtracking over it', () => {
+    // A mount base path is derived from the pathname, which a crafted link
+    // controls, so the cost has to follow its length and nothing else. The
+    // expensive shape is a long run of slashes that is *not* at the end, which
+    // a backtracking matcher retries from every position in the run.
+    const slashes = '/'.repeat(5000);
+    expect(normalizeBasePath(`/catalog${slashes}`)).toBe('/catalog');
+    expect(normalizeBasePath(slashes)).toBe('');
+    expect(normalizeBasePath(`/a${slashes}b`)).toBe(`/a${slashes}b`);
   });
 });
 

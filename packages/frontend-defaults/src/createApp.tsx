@@ -34,6 +34,8 @@ import {
   PreparedSpecializedApp,
   FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import type { CreateSpecializedAppInternalOptions } from '../../frontend-app-api/src/wiring/createSpecializedApp';
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
 import { resolveAsyncFeatures } from './resolution';
@@ -120,15 +122,25 @@ export function createApp(options?: CreateAppOptions): {
       features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
     });
 
+    // Handed over synchronously while the app is being prepared, so it is
+    // already the real teardown by the time anything renders.
+    let disposeApp: () => void = () => {};
     const preparedApp = prepareSpecializedApp({
       features: [appPlugin, ...loadedFeatures],
       config,
       bindRoutes: options?.bindRoutes,
       advanced: options?.advanced,
-    });
+      __internal: {
+        onDispose: dispose => {
+          disposeApp = dispose;
+        },
+      },
+    } as CreateSpecializedAppInternalOptions);
 
     return {
-      default: () => <PreparedAppRoot preparedApp={preparedApp} />,
+      default: () => (
+        <PreparedAppRoot preparedApp={preparedApp} dispose={disposeApp} />
+      ),
     };
   }
 
@@ -147,7 +159,9 @@ export function createApp(options?: CreateAppOptions): {
 
 function PreparedAppRoot(props: {
   preparedApp: PreparedSpecializedApp;
+  dispose: () => void;
 }): JSX.Element {
+  const { dispose } = props;
   const bootstrapApp = props.preparedApp.getBootstrapApp();
   const [finalizedApp, setFinalizedApp] = useState<
     FinalizedSpecializedApp | undefined
@@ -157,6 +171,15 @@ function PreparedAppRoot(props: {
     () => props.preparedApp.onFinalized(setFinalizedApp),
     [props.preparedApp],
   );
+
+  // The app owns browser resources for as long as it is mounted, most notably
+  // the `popstate` listener behind app navigation, so unmounting the React root
+  // releases them.
+  //
+  // Known residue: re-running `createApp` under a hot reload builds a new app
+  // without unmounting the old one, so this cleanup never runs for the previous
+  // instance and its listener stays attached until the page is reloaded.
+  useEffect(() => dispose, [dispose]);
 
   if (!finalizedApp) {
     return bootstrapApp.element;

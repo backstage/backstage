@@ -27,6 +27,7 @@ import {
   createPath,
 } from 'react-router-dom';
 import { isExternalLink, sanitizeHref } from '../../utils/linkUtils';
+import { useHasInjectedHrefResolver } from '../useResolvedHref';
 import type {
   ComponentConfig,
   UseDefinitionOptions,
@@ -59,10 +60,21 @@ export function useDefinition<
     hrefResolvedProps = { ...props, href } as P;
   }
 
+  // A target is resolved by one authority, never two. When the host app has
+  // injected a resolver into `BUIProvider`, react-aria calls it at each
+  // anchor's own position and it is the one that decides the rendered href, so
+  // the target is handed on as it was written. Resolving it here first would
+  // settle it against react-router's ambient context — for page chrome, the app
+  // root — and turn `#tab` or `widgets` into a root-relative target that the
+  // injected resolver can no longer trace back to the page it was written in.
+  const hasInjectedResolver = useHasInjectedHrefResolver();
   const hasRouter = useInRouterContext();
   if (hasRouter) {
+    // Called whether or not its result is used, so that the hook count only
+    // ever depends on the router context, which does not change during a
+    // component's lifetime.
     const resolved = useResolvedPath(href ?? '');
-    if (href !== undefined && !isExternalLink(href)) {
+    if (!hasInjectedResolver && href !== undefined && !isExternalLink(href)) {
       hrefResolvedProps = { ...props, href: createPath(resolved) } as P;
     }
   }

@@ -29,14 +29,12 @@ const desiredLocalVersionsOfDependencies = {
   '@types/react': '^18.0.0',
   react: '^18.0.2',
   'react-dom': '^18.0.2',
-  'react-router-dom': '^6.30.2',
 };
 
 const peerDependencies = {
   '@types/react': '^17.0.0 || ^18.0.0',
   react: '^17.0.0 || ^18.0.0',
   'react-dom': '^17.0.0 || ^18.0.0',
-  'react-router-dom': '^6.30.2',
 };
 
 // Packages that have dropped React 17 support and only support React 18+
@@ -44,7 +42,6 @@ const peerDependenciesReact18Only = {
   '@types/react': '^18.0.0',
   react: '^18.0.0',
   'react-dom': '^18.0.0',
-  'react-router-dom': '^6.30.2',
 };
 
 const react18OnlyPackages = new Set(['@backstage/ui']);

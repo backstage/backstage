@@ -15,6 +15,16 @@
  */
 
 import { useCallback, useContext, type Context } from 'react';
+// React Router v6 specifically, which is why `@internal/frontend` keeps its
+// `react-router-dom` peer dependency at `^6.30.2` while the rest of the new
+// frontend system is router-agnostic. The `UNSAFE_*` context objects below are
+// v6 internals, and reading them is a legacy-compatibility dependency rather
+// than a new-frontend-system one. Two things need it: the old frontend system,
+// where React Router v6 is the router, is permanent, and is never migrated; and
+// the ambient route-match base under the residual root projection that
+// `AppRoot` still renders for chrome that resolves relative links through React
+// Router. Any package that inlines this module therefore has to declare
+// react-router itself.
 import {
   createPath,
   parsePath,
@@ -176,10 +186,23 @@ function resolveAgainstRoutes(
 /**
  * Normalises a mount base path into a prefix that is safe to concatenate with
  * a `/`-prefixed suffix: no trailing slash, and an empty string at the app
- * root.
+ * root. Unlike a matched pathname, a base path keeps nothing back — `/` and
+ * `///` both normalise to the empty prefix.
+ *
+ * Scanned rather than matched with a `/\/+$/` pattern: the base path is derived
+ * from the pathname, which is whatever a crafted link put in the address bar,
+ * and a backtracking matcher retries such a pattern from every position in a
+ * long run of slashes, which is quadratic in the length of the run.
  */
 export function normalizeBasePath(basePath: string | undefined): string {
-  return basePath?.replace(/\/+$/, '') ?? '';
+  if (!basePath) {
+    return '';
+  }
+  let end = basePath.length;
+  while (end > 0 && basePath[end - 1] === '/') {
+    end -= 1;
+  }
+  return basePath.slice(0, end);
 }
 
 /**

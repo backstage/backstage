@@ -21,6 +21,7 @@ import {
   screen,
   renderHook,
   render,
+  within,
 } from '@testing-library/react';
 import {
   mockApis,
@@ -543,6 +544,213 @@ describe('<Link />', () => {
       expect(
         screen.getByRole('link', { name: 'Up one route' }),
       ).toHaveAttribute('href', '/up');
+    });
+  });
+
+  describe('without an ambient React Router', () => {
+    // Every shape a chrome target comes in: app-absolute, app-absolute with a
+    // query, relative, deeper relative, climbing, fragment-only, query-only and
+    // external.
+    const targets = [
+      '/catalog',
+      '/catalog?kind=component',
+      'widgets',
+      'a/b',
+      '..',
+      '#section',
+      '?tab=readme',
+      'https://example.com/docs',
+    ];
+
+    const ChromeLinks = () => (
+      <>
+        {targets.map(to => (
+          <Link key={to} to={to}>
+            {to}
+          </Link>
+        ))}
+      </>
+    );
+
+    const hrefsIn = (name: string) =>
+      within(screen.getByRole('navigation', { name }))
+        .getAllByRole('link')
+        .map(link => link.getAttribute('href'));
+
+    /**
+     * The framework spelling of a React Router href.
+     *
+     * `AppHistory.createHref` normalizes every target through `URL`, so a
+     * target that lands on the app root renders as `${basename}/` where React
+     * Router renders it as `${basename}`. Both address the app root, and only
+     * a deploy basename makes the two spellings distinguishable at all — the
+     * same divergence `AppRouting.test.tsx` pins between the two authorities.
+     */
+    const appRootSpelling = (routerHref: string, basename: string) => {
+      const rest = routerHref.slice(basename.length);
+      const atAppRoot =
+        rest === '' || rest.startsWith('?') || rest.startsWith('#');
+      return basename && atAppRoot ? `${basename}/${rest}` : routerHref;
+    };
+
+    it.each([
+      {
+        name: 'at the app root',
+        basename: '',
+        expected: [
+          '/catalog',
+          '/catalog?kind=component',
+          '/widgets',
+          '/a/b',
+          '/',
+          '/catalog/foo#section',
+          '/catalog/foo?tab=readme',
+          'https://example.com/docs',
+        ],
+      },
+      {
+        name: 'under a deploy basename',
+        basename: '/backstage',
+        expected: [
+          '/backstage/catalog',
+          '/backstage/catalog?kind=component',
+          '/backstage/widgets',
+          '/backstage/a/b',
+          '/backstage/',
+          '/backstage/catalog/foo#section',
+          '/backstage/catalog/foo?tab=readme',
+          'https://example.com/docs',
+        ],
+      },
+    ])(
+      'renders the hrefs React Router renders, without one ($name)',
+      ({ basename, expected }) => {
+        const appHistory = createMockAppHistory({
+          initialLocation: `${basename}/catalog/foo`,
+          basename,
+        });
+
+        render(
+          <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+            <nav aria-label="with a router">
+              <MemoryRouter
+                basename={basename || undefined}
+                initialEntries={[`${basename}/catalog/foo`]}
+              >
+                <ChromeLinks />
+              </MemoryRouter>
+            </nav>
+            <nav aria-label="without a router">
+              <ChromeLinks />
+            </nav>
+          </TestApiProvider>,
+        );
+
+        // Rendering an anchor instead of React Router's own Link is only safe
+        // if it addresses the same place, so both are rendered in the same
+        // tree, at the same location, and compared target by target.
+        expect(hrefsIn('without a router')).toEqual(
+          hrefsIn('with a router').map(href =>
+            appRootSpelling(href!, basename),
+          ),
+        );
+        // Pinned as literals too, so that both sides going wrong together, or
+        // rendering nothing at all, still fails.
+        expect(hrefsIn('without a router')).toEqual(expected);
+        expect(hrefsIn('with a router')).toHaveLength(targets.length);
+      },
+    );
+
+    it('hands the target back as written when there is no app history either', async () => {
+      const analyticsApi = mockApis.analytics();
+
+      // An old frontend system app whose `components.Router` is a passthrough:
+      // no router to resolve against, and no deploy basename to apply.
+      render(
+        <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
+          <Link to="/catalog">Catalog</Link>
+          <Link to="widgets">Widgets</Link>
+          <Link to="#section">Section</Link>
+        </TestApiProvider>,
+      );
+
+      expect(
+        await screen.findByRole('link', { name: 'Catalog' }),
+      ).toHaveAttribute('href', '/catalog');
+      expect(screen.getByRole('link', { name: 'Widgets' })).toHaveAttribute(
+        'href',
+        'widgets',
+      );
+      expect(screen.getByRole('link', { name: 'Section' })).toHaveAttribute(
+        'href',
+        '#section',
+      );
+
+      fireEvent.click(screen.getByRole('link', { name: 'Section' }));
+      expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'click',
+          subject: 'Section',
+          attributes: { to: '#section' },
+        }),
+      );
+    });
+
+    it('warns about each router-only prop it drops, outside production builds', async () => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const appHistory = createMockAppHistory({
+        initialLocation: '/catalog/foo',
+      });
+      const routerOnlyProps = [
+        'state',
+        'replace',
+        'relative',
+        'preventScrollReset',
+        'reloadDocument',
+      ];
+      const link = (
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+          <Link
+            to="widgets"
+            state={{ from: 'chrome' }}
+            replace
+            relative="path"
+            preventScrollReset
+            reloadDocument
+          >
+            Widgets
+          </Link>
+        </TestApiProvider>
+      );
+
+      const { unmount } = render(link);
+
+      const anchor = await screen.findByRole('link', { name: 'Widgets' });
+      expect(anchor).toHaveAttribute('href', '/widgets');
+      for (const name of routerOnlyProps) {
+        // Dropped rather than forwarded to the DOM, which is what the warning
+        // is there to make visible.
+        expect(anchor).not.toHaveAttribute(name);
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining(`'${name}'`));
+      }
+
+      unmount();
+      warn.mockClear();
+      // Typed read-only, but the warning is gated on it at runtime and that is
+      // what needs exercising: a production build must stay silent.
+      const env = process.env as { NODE_ENV?: string };
+      const nodeEnv = env.NODE_ENV;
+      env.NODE_ENV = 'production';
+      try {
+        render(link);
+        expect(
+          await screen.findByRole('link', { name: 'Widgets' }),
+        ).toHaveAttribute('href', '/widgets');
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        env.NODE_ENV = nodeEnv;
+        warn.mockRestore();
+      }
     });
   });
 });

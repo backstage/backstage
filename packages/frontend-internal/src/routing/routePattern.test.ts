@@ -19,6 +19,7 @@ import {
   matchPath,
   routePriority,
   substitutePathParams,
+  trimTrailingSlash,
 } from './routePattern';
 
 describe('routePattern', () => {
@@ -42,6 +43,40 @@ describe('routePattern', () => {
       expect(routePriority('/catalog/*')).toBeGreaterThan(routePriority('/'));
       expect(routePriority('/')).toBeGreaterThan(routePriority(''));
       expect(routePriority('')).toBeGreaterThan(routePriority('*'));
+    });
+  });
+
+  describe('trimTrailingSlash', () => {
+    it('drops every trailing slash but never the last character', () => {
+      expect(trimTrailingSlash('')).toBe('');
+      expect(trimTrailingSlash('/')).toBe('/');
+      expect(trimTrailingSlash('//')).toBe('/');
+      expect(trimTrailingSlash('///')).toBe('/');
+      expect(trimTrailingSlash('/a')).toBe('/a');
+      expect(trimTrailingSlash('/a/')).toBe('/a');
+      expect(trimTrailingSlash('/a//')).toBe('/a');
+      expect(trimTrailingSlash('/a/b///')).toBe('/a/b');
+      expect(trimTrailingSlash('a')).toBe('a');
+      expect(trimTrailingSlash('a/')).toBe('a');
+      // Only the trailing run goes; separators inside the path are untouched
+      expect(trimTrailingSlash('//a')).toBe('//a');
+      expect(trimTrailingSlash('/a//b//')).toBe('/a//b');
+    });
+
+    it('handles a long run of slashes without backtracking over it', () => {
+      // A pathname reaches this from a link anyone can craft, so the cost of
+      // trimming one has to follow its length and nothing else. The expensive
+      // shape is a long run of slashes that is *not* at the end, which a
+      // backtracking matcher retries from every position in the run.
+      const slashes = '/'.repeat(5000);
+      expect(trimTrailingSlash(`/catalog${slashes}`)).toBe('/catalog');
+      expect(trimTrailingSlash(slashes)).toBe('/');
+      expect(trimTrailingSlash(`/a${slashes}b`)).toBe(`/a${slashes}b`);
+      expect(matchPath('/docs/*', `/docs${slashes}`, false)).toEqual({
+        matchedPathname: '/docs',
+        pathnameBase: '/docs',
+        params: { '*': slashes.slice(1) },
+      });
     });
   });
 

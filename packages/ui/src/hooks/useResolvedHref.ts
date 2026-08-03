@@ -14,8 +14,35 @@
  * limitations under the License.
  */
 
+import { createContext, useContext } from 'react';
 import { useHref, useInRouterContext } from 'react-router-dom';
 import { isExternalLink, sanitizeHref } from '../utils/linkUtils';
+
+/**
+ * Whether a resolver the host app injected into `BUIProvider` is the authority
+ * for every href rendered below it.
+ *
+ * A target is resolved once, and this is what says by whom. react-aria calls
+ * the injected resolver at each anchor's own position, where it can still tell
+ * which page the target was written in and can apply the app's deploy
+ * basename. react-router resolves against the context it is asked from, which
+ * for page chrome is the app root rather than the page. Only one of them may
+ * run: a fragment-only or relative target react-router has already resolved
+ * against the root has lost the page, and nothing downstream can put it back.
+ *
+ * @internal
+ */
+export const InjectedHrefResolverContext = createContext(false);
+
+/**
+ * Whether the surrounding `BUIProvider` was given a `useHref` that governs the
+ * rendered href — see {@link InjectedHrefResolverContext}.
+ *
+ * @internal
+ */
+export function useHasInjectedHrefResolver(): boolean {
+  return useContext(InjectedHrefResolverContext);
+}
 
 /**
  * Resolves an href for rendering. External URLs are returned unchanged;

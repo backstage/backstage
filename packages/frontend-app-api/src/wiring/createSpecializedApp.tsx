@@ -98,18 +98,20 @@ export type CreateSpecializedAppOptions = {
 export function createSpecializedApp(
   options?: CreateSpecializedAppOptions,
 ): FinalizedSpecializedApp {
+  const internalOptions = options as
+    | CreateSpecializedAppInternalOptions
+    | undefined;
   const sessionState = options?.advanced?.apis
     ? createSessionStateFromApis(options.advanced.apis)
     : undefined;
 
-  // Known limitation, deliberately not fixed here: the prepared app is
-  // discarded after finalization, so its internal teardown hand-off — which
-  // releases the app history's window `popstate` listener — is unreachable, and
-  // the listener stays attached for the life of the process. Fixing it would
-  // mean returning a disposer from this deprecated entry point, i.e. new public
-  // API on the API that already has a supported replacement. Callers who need
-  // teardown (repeated app creation in one process, hot reload) should use
-  // `prepareSpecializedApp` instead, which hands disposal to its caller.
+  // The prepared app is discarded once it has been finalized, so the internal
+  // options are forwarded rather than dropped: `onDispose` is the only handle
+  // left on the app history's window `popstate` listener, which otherwise stays
+  // attached for the life of the process. This stays off the public options
+  // type — a caller reaching for teardown from this deprecated entry point
+  // opts in the same way the test renderers do, and the supported way to own an
+  // app's lifetime is `prepareSpecializedApp`.
   return prepareSpecializedApp({
     features: options?.features,
     config: options?.config,
@@ -118,5 +120,6 @@ export function createSpecializedApp(
       ...options?.advanced,
       sessionState,
     },
-  }).finalize();
+    __internal: internalOptions?.__internal,
+  } as CreateSpecializedAppInternalOptions).finalize();
 }

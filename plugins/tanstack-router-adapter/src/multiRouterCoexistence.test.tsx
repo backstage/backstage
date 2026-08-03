@@ -58,7 +58,7 @@ function useAppLocation() {
  * peer pages and with a TanStack sub-page nested under a default-v6 parent
  * page — the case that only became possible once the framework started
  * handing sub-pages over as data, and the one that would notice a TanStack
- * page mis-scoping itself to its parent's prefix.
+ * page scoping itself to its parent's prefix by mistake.
  */
 describe('TanStack + RR v6 coexistence', () => {
   const catalogRouteRef = createRouteRef();

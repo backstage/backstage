@@ -42,14 +42,16 @@ import {
   LinkProps as RouterLinkProps,
   resolvePath,
   Route,
+  UNSAFE_NavigationContext as NavigationContext,
   UNSAFE_RouteContext as RouteContext,
 } from 'react-router-dom';
 import OpenInNew from '@material-ui/icons/OpenInNew';
+import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import {
   shouldNavigateViaFramework,
   shouldResolveViaPageMount,
 } from './absoluteLinkNavigate';
-import { useAppBasePath, usePageMount } from '@internal/frontend';
+import { useAppBasePath, useAppHref, usePageMount } from '@internal/frontend';
 import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 export function isReactRouterBeta(): boolean {
@@ -227,6 +229,84 @@ function useHasAmbientRouteMatch(): boolean {
 }
 
 /**
+ * Whether there is an ambient React Router at all.
+ *
+ * React Router's `Link` renders through `useHref` and `useNavigate`, both of
+ * which throw outside a router, and app chrome is allowed to render without
+ * one: `RouterBlueprint` may be swapped for a passthrough, and
+ * `createSpecializedApp` without `@backstage/plugin-app` has no router at all.
+ * So the very context those hooks assert is read directly instead — its
+ * runtime default is `null` rather than a throw, which is how
+ * `useInRouterContext` detects a router too. `useContext` is called
+ * unconditionally and the branch is on its value, so hook order is stable
+ * either way. This is the navigation context rather than the location context
+ * because it does not change as the user navigates, so reading it does not
+ * re-render every link in the app on every navigation.
+ */
+function useHasAmbientRouter(): boolean {
+  return Boolean(useContext(NavigationContext));
+}
+
+/**
+ * Props that only React Router's `Link` implements, and that a plain anchor
+ * therefore has to drop.
+ */
+const ROUTER_ONLY_PROPS = [
+  'state',
+  'replace',
+  'relative',
+  'preventScrollReset',
+  'reloadDocument',
+] as const;
+
+/**
+ * Renders an internal target with no ambient React Router to hand it to.
+ *
+ * The href is resolved through the same authority the rest of app chrome uses,
+ * so the app's deploy basename is applied where there is an app history to
+ * apply it, and the target is handed back as written where there is neither
+ * authority. Split into its own component so that the hooks it needs only run
+ * on the path that needs them, leaving the React Router path untouched.
+ *
+ * The props React Router implements on top of an anchor cannot be honoured
+ * here, so each one that was passed is named in a development-only warning
+ * rather than silently dropped.
+ */
+const RouterlessLink = forwardRef<
+  any,
+  LinkProps & { appHistory: AppHistoryApi | undefined }
+>(({ appHistory, ...props }, ref) => {
+  const href = useAppHref(appHistory, props.to);
+  const {
+    state,
+    replace,
+    relative,
+    preventScrollReset,
+    reloadDocument,
+    ...anchorProps
+  } = props;
+
+  if (process.env.NODE_ENV !== 'production') {
+    for (const name of ROUTER_ONLY_PROPS) {
+      if (props[name] !== undefined) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Link ignored the '${name}' prop for the link to '${props.to}', ` +
+            'because it is implemented by React Router and this link rendered ' +
+            'outside of one, as a plain anchor.',
+        );
+      }
+    }
+  }
+
+  return (
+    <a {...anchorProps} ref={ref} href={href}>
+      {props.children}
+    </a>
+  );
+});
+
+/**
  * Unstyled link primitive which...
  * - Uses react-router for internal links.
  * - Under the new frontend system, routes absolute / cross-plugin targets, and
@@ -242,6 +322,7 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
     const pageMount = usePageMount();
     const basePath = useAppBasePath();
     const hasAmbientRouteMatch = useHasAmbientRouteMatch();
+    const hasAmbientRouter = useHasAmbientRouter();
 
     // Adding the base path to URLs breaks react-router v6 stable, so we only
     // do it for beta. The react router version won't change at runtime so it is
@@ -341,6 +422,21 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
         >
           {props.children}
         </a>
+      );
+    }
+
+    if (!hasAmbientRouter) {
+      // Nothing left to hand the target to: React Router's `Link` would throw
+      // here, and everything above has already been ruled out. Chrome that
+      // renders with no router at all still gets a working anchor.
+      return (
+        <RouterlessLink
+          {...props}
+          ref={ref}
+          to={to}
+          onClick={handleClick}
+          appHistory={appHistory}
+        />
       );
     }
 

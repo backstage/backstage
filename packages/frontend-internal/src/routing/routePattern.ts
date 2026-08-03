@@ -198,9 +198,20 @@ export function matchPath(
 /**
  * Drops trailing slashes while keeping the leading one, so `/catalog/` becomes
  * `/catalog` and the root `/` is left as it is.
+ *
+ * Scanned rather than matched with a `/\/+$/`-shaped pattern: a pathname is
+ * whatever a crafted link put in the address bar, and a backtracking matcher
+ * retries such a pattern from every position in a long run of slashes, which
+ * is quadratic in the length of the run.
+ *
+ * @internal
  */
-function trimTrailingSlash(pathname: string): string {
-  return pathname.replace(/(.)\/+$/, '$1');
+export function trimTrailingSlash(pathname: string): string {
+  let end = pathname.length;
+  while (end > 1 && pathname[end - 1] === '/') {
+    end -= 1;
+  }
+  return pathname.slice(0, end);
 }
 
 /**

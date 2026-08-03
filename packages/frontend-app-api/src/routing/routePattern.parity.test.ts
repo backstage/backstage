@@ -66,9 +66,18 @@ function toReactRouterRoutes(paths: string[]): RouteObject[] {
  * Our matched pathnames never end in a slash, where react-router keeps one it
  * matched. react-router already normalizes its `pathnameBase` this way, so only
  * the full matched pathname needs it.
+ *
+ * Deliberately a second implementation rather than an import of the one under
+ * test: this normalizes the *expected* side, so sharing the function with the
+ * actual side would cancel out any error in it and leave the parity assertion
+ * proving nothing.
  */
 function stripTrailingSlash(pathname: string): string {
-  return pathname.replace(/(.)\/+$/, '$1');
+  let stripped = pathname;
+  while (stripped.length > 1 && stripped.endsWith('/')) {
+    stripped = stripped.slice(0, -1);
+  }
+  return stripped;
 }
 
 /** What react-router itself resolves the registered pattern and mount base to. */

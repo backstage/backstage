@@ -118,6 +118,64 @@ describe('createApp', () => {
     await expect(screen.findByText('Derp')).resolves.toBeInTheDocument();
   });
 
+  it('should release the app history listener when the app root unmounts', async () => {
+    window.history.replaceState(null, '', '/');
+    const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    const popstateListeners = (spy: jest.SpyInstance) =>
+      spy.mock.calls
+        .filter(([type]) => type === 'popstate')
+        .map(([, listener]) => listener);
+
+    try {
+      const app = createApp({
+        advanced: {
+          configLoader: async () => ({ config: mockApis.config() }),
+        },
+        features: [
+          appPlugin,
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              PageBlueprint.make({
+                params: {
+                  path: '/',
+                  loader: async () => <div>Disposable Page</div>,
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      const rendered = await renderWithEffects(app.createRoot());
+      await expect(
+        screen.findByText('Disposable Page'),
+      ).resolves.toBeInTheDocument();
+
+      const attached = popstateListeners(addEventListenerSpy);
+      expect(attached).toHaveLength(1);
+      // Still attached across the bootstrap -> finalized re-render, so the app
+      // keeps working while it is mounted.
+      expect(popstateListeners(removeEventListenerSpy)).toHaveLength(0);
+
+      rendered.unmount();
+
+      // Asserted at the window level rather than through emissions, because
+      // clearing the app history's own subscribers would silence it without
+      // releasing the listener that keeps the app alive.
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'popstate',
+        attached[0],
+      );
+      expect(popstateListeners(removeEventListenerSpy)).toHaveLength(1);
+      expect(popstateListeners(addEventListenerSpy)).toHaveLength(1);
+    } finally {
+      addEventListenerSpy.mockRestore();
+      removeEventListenerSpy.mockRestore();
+    }
+  });
+
   it('should provide app APIs to sign-in pages before finalization', async () => {
     const signInApiRef = createApiRef<{ value: string }>({
       id: 'test.sign-in-api',

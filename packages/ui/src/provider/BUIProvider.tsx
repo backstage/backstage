@@ -19,7 +19,10 @@ import { RouterProvider } from 'react-aria-components';
 import { useInRouterContext, useNavigate } from 'react-router-dom';
 import { createVersionedValueMap } from '@backstage/version-bridge';
 import { BUIContext } from '../analytics/useAnalytics';
-import { useResolvedHref } from '../hooks/useResolvedHref';
+import {
+  InjectedHrefResolverContext,
+  useResolvedHref,
+} from '../hooks/useResolvedHref';
 import type { UseAnalyticsFn } from '../analytics/types';
 
 /** @public */
@@ -37,6 +40,13 @@ export type BUIProviderProps = {
    * Resolves an href for the react-aria router context, paired with
    * {@link BUIProviderProps.navigate}. Defaults to returning `href`
    * unchanged. Ignored when `navigate` is not set.
+   *
+   * When set, it is the only thing that resolves a link target: descendant
+   * components hand their target over as it was written, rather than resolving
+   * it against the surrounding React Router context first. That is what lets a
+   * target written inside a page — `#tab`, `?tab=x`, `widgets` — still be
+   * resolved against that page, wherever the components rendering it happen to
+   * sit in the React Router tree.
    */
   useHref?: (href: string) => string;
   children: ReactNode;
@@ -81,9 +91,14 @@ export function BUIProvider(props: BUIProviderProps) {
 
   if (navigate) {
     return (
-      <RouterProvider navigate={navigate} useHref={useHref ?? identityHref}>
-        {content}
-      </RouterProvider>
+      // Announced only here, where the injected resolver is actually installed
+      // as the react-aria router's `useHref`. With `navigate` alone there is
+      // nothing to defer to, and react-router stays the authority it is today.
+      <InjectedHrefResolverContext.Provider value={Boolean(useHref)}>
+        <RouterProvider navigate={navigate} useHref={useHref ?? identityHref}>
+          {content}
+        </RouterProvider>
+      </InjectedHrefResolverContext.Provider>
     );
   }
 
