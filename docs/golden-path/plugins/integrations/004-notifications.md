@@ -77,13 +77,19 @@ whose alarm time has passed, sends one notification for each, and marks each
 alarm as fired. The `alarm_fired_at` column is what makes the task safe to run
 again without sending the same reminder repeatedly.
 
+You'll do this in three steps:
+
+1. Persist the alarm.
+2. Add the notification service to the plugin.
+3. Send the notification when an alarm is due.
+
 Install the notifications service package in your backend plugin:
 
 ```shell
 yarn workspace @internal/plugin-todo-backend add @backstage/plugin-notifications-node
 ```
 
-### Persist the alarm
+### Step 1: Persist the alarm
 
 Store the alarm time on the todo and the user who should be notified:
 
@@ -164,7 +170,7 @@ async markAlarmFired(request: { id: string }): Promise<void> {
 }
 ```
 
-### Add the notification service to the plugin
+### Step 2: Add the notification service to the plugin
 
 Depend on `notificationService` from `@backstage/plugin-notifications-node`
 alongside your other services:
@@ -196,7 +202,7 @@ env.registerInit({
 A one-minute cadence is fine here; the worst case is a one-minute lag on a
 user-set alarm, which is well below what users perceive as missed.
 
-### Send the notification when an alarm is due
+### Step 3: Send the notification when an alarm is due
 
 The task itself queries for todos whose alarm has passed but has not yet
 been delivered, sends a notification per todo, and marks them as fired:
