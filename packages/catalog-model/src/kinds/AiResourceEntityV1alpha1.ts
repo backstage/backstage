@@ -18,7 +18,7 @@ import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
 import { entityKindSchemaValidator } from '../validation';
 import type { KindValidator } from './types';
-import type { JsonObject, JsonValue } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 import defaultJsonSchema from '../schema/kinds/AiResource.v1alpha1.schema.json';
 import skillJsonSchema from '../schema/kinds/AiResource.v1alpha1.skill.schema.json';
 import ruleJsonSchema from '../schema/kinds/AiResource.v1alpha1.rule.schema.json';
@@ -90,32 +90,34 @@ export type CursorActivationV1 = {
 };
 
 /**
- * Resolves the activation entry type for a given harness. Known harnesses
- * resolve to their strict native shape; unknown harnesses fall back to an
- * open shape that only requires the `harness` discriminator.
- *
- * @remarks
- *
- * The strict branches only apply when the harness is known at compile time,
- * e.g. in code that constructs activation entries:
- *
- * ```ts
- * const entry: ActivationConstraint<'claude'> = {
- *   harness: 'claude',
- *   paths: ['src/**'],
- * };
- * ```
- *
- * When reading entities from the catalog the harness is only known at
- * runtime, so `ActivationConstraint<string>` resolves to the open fallback.
+ * Activation entry for the Codex harness.
  *
  * @alpha
  */
-export type ActivationConstraint<T extends string> = T extends 'claude'
-  ? ClaudeActivationV1
-  : T extends 'cursor'
-  ? CursorActivationV1
-  : { harness: T } & { [key: string]: JsonValue };
+export type CodexActivationV1 = {
+  harness: 'codex';
+};
+
+/**
+ * A single activation entry for an AiResource rule, describing how the rule
+ * is activated in a specific agent harness.
+ *
+ * @remarks
+ *
+ * The union is discriminated by the `harness` field and is closed: each
+ * supported harness has its own typed variant, and entries for other
+ * harnesses are rejected at validation. Support for a new harness is added
+ * as a new variant of this union.
+ *
+ * All fields other than `harness` are optional. A bare entry such as
+ * `{ harness: 'claude' }` means the rule is always active in that harness.
+ *
+ * @alpha
+ */
+export type AiResourceActivationEntry =
+  | ClaudeActivationV1
+  | CursorActivationV1
+  | CodexActivationV1;
 
 /**
  * AiResource entity with spec.type 'rule'. Represents a governance rule
@@ -133,7 +135,7 @@ export interface RuleAiResourceEntityV1alpha1
     disciplines?: string[];
     category: string;
     rationale: string;
-    activation?: Array<ActivationConstraint<string>>;
+    activation?: AiResourceActivationEntry[];
   };
 }
 

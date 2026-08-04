@@ -81,19 +81,74 @@
             },
             "activation": {
               "type": "array",
-              "description": "Describes how the rule is activated in agent harnesses. Each entry targets a specific harness and carries its native activation fields.",
+              "description": "Describes how the rule is activated in agent harnesses. Each entry targets a supported harness and carries its native activation fields.",
               "minItems": 1,
               "items": {
-                "type": "object",
-                "required": ["harness"],
-                "properties": {
-                  "harness": {
-                    "type": "string",
-                    "description": "The agent harness type (e.g. claude, cursor, codex).",
-                    "minLength": 1
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "required": ["harness"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "harness": {
+                        "const": "claude",
+                        "description": "Activation for the Claude Code harness."
+                      },
+                      "paths": {
+                        "type": "array",
+                        "description": "File globs that activate the rule in Claude Code.",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Describes when Claude Code should apply the rule.",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "required": ["harness"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "harness": {
+                        "const": "cursor",
+                        "description": "Activation for the Cursor harness."
+                      },
+                      "alwaysApply": {
+                        "type": "boolean",
+                        "description": "Whether Cursor should always apply the rule."
+                      },
+                      "globs": {
+                        "type": "array",
+                        "description": "File globs that activate the rule in Cursor.",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Describes when Cursor should apply the rule.",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "required": ["harness"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "harness": {
+                        "const": "codex",
+                        "description": "Activation for the Codex harness."
+                      }
+                    }
                   }
-                },
-                "additionalProperties": true
+                ]
               }
             }
           }

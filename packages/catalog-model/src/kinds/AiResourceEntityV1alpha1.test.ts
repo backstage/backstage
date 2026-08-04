@@ -311,6 +311,53 @@ describe('AiResourceV1alpha1 rule validator', () => {
     (entity as any).spec.activation = 'not-an-array';
     await expect(ruleValidator.check(entity)).rejects.toThrow(/activation/);
   });
+
+  it('accepts known-harness entries with only the harness field', async () => {
+    (entity as any).spec.activation = [
+      { harness: 'claude' },
+      { harness: 'cursor' },
+    ];
+    await expect(ruleValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects entries with fields not defined for the harness', async () => {
+    (entity as any).spec.activation = [
+      { harness: 'claude', globs: ['src/**'] },
+    ];
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/activation/);
+  });
+
+  it('rejects claude activation with wrong paths type', async () => {
+    (entity as any).spec.activation = [{ harness: 'claude', paths: 42 }];
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/paths/);
+  });
+
+  it('rejects claude activation with empty path globs', async () => {
+    (entity as any).spec.activation = [{ harness: 'claude', paths: [''] }];
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/paths/);
+  });
+
+  it('rejects cursor activation with wrong alwaysApply type', async () => {
+    (entity as any).spec.activation = [
+      { harness: 'cursor', alwaysApply: 'yes' },
+    ];
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/alwaysApply/);
+  });
+
+  it('rejects cursor activation with wrong globs type', async () => {
+    (entity as any).spec.activation = [{ harness: 'cursor', globs: 'src/**' }];
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/globs/);
+  });
+
+  it('rejects unsupported harnesses', async () => {
+    (entity as any).spec.activation = [{ harness: 'windsurf' }];
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/activation/);
+  });
+
+  it('rejects codex activation with extra fields', async () => {
+    (entity as any).spec.activation = [{ harness: 'codex', paths: ['src/**'] }];
+    await expect(ruleValidator.check(entity)).rejects.toThrow(/activation/);
+  });
 });
 
 describe('isAiResourceEntity', () => {
