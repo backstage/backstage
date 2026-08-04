@@ -652,10 +652,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     }
 
     if (
-      this.config.excludeGroups?.some(
-        group =>
-          project.path_with_namespace === group ||
-          project.path_with_namespace?.startsWith(`${group}/`),
+      this.config.excludeGroups?.some(excludedGroup =>
+        project.path_with_namespace?.startsWith(`${excludedGroup}/`),
       )
     ) {
       this.logger.debug(
