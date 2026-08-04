@@ -13,10 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { PluginData } from '../../pluginDirectory/manifest';
+import type { PackageSnapshot, PluginData } from '../../pluginDirectory/manifest';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ResourceIcons } from './ResourceIcons';
+
+const basePackageSnapshot: PackageSnapshot = {
+  npmPackageName: '@example/plugin-example',
+  npm: {
+    status: 'fresh',
+    checkedAt: '2026-08-03T10:00:00.000Z',
+    lastAttemptAt: '2026-08-03T10:00:00.000Z',
+    latestVersion: '2.4.0',
+    lastPublishedAt: '2026-07-22T12:00:00.000Z',
+  },
+  configSchema: {
+    status: 'unavailable',
+    lastAttemptAt: '2026-08-03T10:00:00.000Z',
+    reason: 'npm-data-unavailable',
+  },
+};
 
 const basePlugin: PluginData = {
   title: 'Example Plugin',
@@ -36,23 +52,7 @@ const basePlugin: PluginData = {
       lastAttemptAt: '2026-08-03T10:00:00.000Z',
       reason: 'source-not-found',
     },
-    packages: [
-      {
-        npmPackageName: '@example/plugin-example',
-        npm: {
-          status: 'fresh',
-          checkedAt: '2026-08-03T10:00:00.000Z',
-          lastAttemptAt: '2026-08-03T10:00:00.000Z',
-          latestVersion: '2.4.0',
-          lastPublishedAt: '2026-07-22T12:00:00.000Z',
-        },
-        configSchema: {
-          status: 'unavailable',
-          lastAttemptAt: '2026-08-03T10:00:00.000Z',
-          reason: 'npm-data-unavailable',
-        },
-      },
-    ],
+    packages: [basePackageSnapshot],
   },
 };
 
@@ -82,9 +82,13 @@ describe('ResourceIcons', () => {
             ...basePlugin.snapshot,
             packages: [
               {
-                ...basePlugin.snapshot!.packages[0],
+                ...basePackageSnapshot,
                 npm: {
-                  ...basePlugin.snapshot!.packages[0].npm,
+                  status: 'fresh',
+                  checkedAt: '2026-08-03T10:00:00.000Z',
+                  lastAttemptAt: '2026-08-03T10:00:00.000Z',
+                  latestVersion: '2.4.0',
+                  lastPublishedAt: '2026-07-22T12:00:00.000Z',
                   repository: {
                     url: 'https://github.com/example/plugin-example',
                   },
@@ -111,7 +115,7 @@ describe('ResourceIcons', () => {
             ...basePlugin.snapshot,
             packages: [
               {
-                ...basePlugin.snapshot!.packages[0],
+                ...basePackageSnapshot,
                 npm: {
                   status: 'unavailable',
                   lastAttemptAt: '2026-08-03T10:00:00.000Z',

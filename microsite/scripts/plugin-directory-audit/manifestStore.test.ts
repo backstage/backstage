@@ -118,8 +118,8 @@ npmPackageName: '@example/plugin-example'
 addedDate: '2024-01-01'
 status: active
 capabilities:
-  - search
-  - catalog
+  - search-result
+  - catalog-provider
 snapshot:
   backstage:
     status: fresh

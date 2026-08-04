@@ -31,14 +31,6 @@ const plugin: PluginData = {
   slug: 'catalog-insights',
   isNew: false,
   snapshot: {
-    npm: {
-      status: 'fresh',
-      checkedAt: '2026-08-03T10:00:00.000Z',
-      lastAttemptAt: '2026-08-03T10:00:00.000Z',
-      latestVersion: '2.4.0',
-      lastPublishedAt: '2026-07-22T12:00:00.000Z',
-      repository: { url: 'https://github.com/example/catalog-insights' },
-    },
     backstage: {
       status: 'fresh',
       checkedAt: '2026-08-03T10:00:00.000Z',

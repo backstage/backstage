@@ -16,7 +16,7 @@
 import { closeTestDom } from './testDom';
 import assert from 'node:assert/strict';
 import { after, afterEach, describe, it } from 'node:test';
-import type { PluginData } from '../../pluginDirectory/manifest';
+import type { PackageSnapshot, PluginData } from '../../pluginDirectory/manifest';
 import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import { HealthSummary } from './HealthSummary';
@@ -24,7 +24,7 @@ import { formatReleaseAge } from './healthPresentation';
 
 const fixedNow = new Date('2026-08-03T12:00:00.000Z');
 
-const freshPackageSnapshot = {
+const freshPackageSnapshot: PackageSnapshot = {
   npmPackageName: '@example/backstage-plugin-catalog-insights',
   npm: {
     status: 'fresh',
@@ -74,19 +74,28 @@ const stalePlugin: PluginData = {
   ...freshPlugin,
   snapshot: {
     backstage: {
-      ...freshPlugin.snapshot!.backstage,
       status: 'stale',
       checkedAt: '2026-07-20T10:00:00.000Z',
       reason: 'github-timeout',
+      version: '1.50.0',
+      sourceUrl:
+        'https://github.com/example/catalog-insights/blob/main/package.json',
+      sourcePath: 'package.json',
+      lastAttemptAt: '2026-08-03T10:00:00.000Z',
     },
     packages: [
       {
         ...freshPackageSnapshot,
         npm: {
-          ...freshPackageSnapshot.npm,
           status: 'stale',
           checkedAt: '2026-07-20T10:00:00.000Z',
           reason: 'npm-timeout',
+          latestVersion: '2.4.0',
+          lastPublishedAt: '2026-07-22T12:00:00.000Z',
+          repository: {
+            url: 'https://github.com/example/catalog-insights',
+          },
+          lastAttemptAt: '2026-08-03T10:00:00.000Z',
         },
       },
     ],
