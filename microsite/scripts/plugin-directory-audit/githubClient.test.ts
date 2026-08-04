@@ -142,6 +142,38 @@ describe('GitHubSnapshotClient', () => {
     assert.ok(requests.every(request => !request.url.includes('github-token')));
   });
 
+  it('uses the canonical Backstage workspace version for Backstage packages', async () => {
+    const fetchImpl = (async (input: string | URL | Request) => {
+      const url = input.toString();
+      if (url === 'https://api.github.com/repos/backstage/backstage') {
+        return jsonResponse({ default_branch: 'master' });
+      }
+      if (url.includes('/git/trees/master')) {
+        return jsonResponse({
+          tree: [{ path: 'workspaces/ui/backstage.json', type: 'blob' }],
+        });
+      }
+      if (url.includes('/contents/workspaces/ui/backstage.json')) {
+        return jsonResponse({ version: '1.50.0' });
+      }
+      return jsonResponse({}, 404);
+    }) as typeof fetch;
+
+    const snapshot = await new GitHubSnapshotClient({
+      fetchImpl,
+    }).fetchBackstageSnapshot({
+      owner: 'backstage',
+      repository: 'backstage',
+      directory: 'plugins/kubernetes',
+    });
+
+    assert.equal(snapshot.status, 'fresh');
+    if (snapshot.status === 'fresh') {
+      assert.equal(snapshot.version, '1.50.0');
+      assert.equal(snapshot.sourcePath, 'workspaces/ui/backstage.json');
+    }
+  });
+
   it('normalizes leading dot segments and rejects parent directory segments', async () => {
     let requestCount = 0;
     const fetchImpl = (async (input: string | URL | Request) => {

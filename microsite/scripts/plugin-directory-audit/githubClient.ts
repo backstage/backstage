@@ -30,6 +30,22 @@ type UnavailableReason = Extract<
   { status: 'unavailable' }
 >['reason'];
 
+const repositoryBackstageJsonPaths: Readonly<Record<string, string>> = {
+  'backstage/backstage': 'workspaces/ui/backstage.json',
+};
+
+function selectRepositoryBackstageJsonPath(
+  treePaths: readonly string[],
+  repository: RepositoryLocation,
+): string | undefined {
+  const path =
+    repositoryBackstageJsonPaths[
+      `${repository.owner}/${repository.repository}`.toLowerCase()
+    ];
+  return path && treePaths.includes(path) ? path : undefined;
+}
+
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -128,10 +144,9 @@ export class GitHubSnapshotClient {
       return unavailable(lastAttemptAt, 'github-invalid-response');
     }
 
-    const sourcePath = selectBackstageJsonPath(
-      treePaths,
-      packageDirectory || undefined,
-    );
+    const sourcePath =
+      selectBackstageJsonPath(treePaths, packageDirectory || undefined) ??
+      selectRepositoryBackstageJsonPath(treePaths, repository);
     if (!sourcePath) {
       return unavailable(lastAttemptAt, 'backstage-json-not-found');
     }
