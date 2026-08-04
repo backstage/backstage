@@ -2432,6 +2432,7 @@ __metadata:
     "@backstage/cli-module-actions": "workspace:^"
     "@backstage/cli-module-auth": "workspace:^"
     "@backstage/cli-module-build": "workspace:^"
+    "@backstage/cli-module-catalog": "workspace:^"
     "@backstage/cli-module-config": "workspace:^"
     "@backstage/cli-module-github": "workspace:^"
     "@backstage/cli-module-info": "workspace:^"
@@ -2439,6 +2440,8 @@ __metadata:
     "@backstage/cli-module-maintenance": "workspace:^"
     "@backstage/cli-module-migrate": "workspace:^"
     "@backstage/cli-module-new": "workspace:^"
+    "@backstage/cli-module-scaffolder": "workspace:^"
+    "@backstage/cli-module-search": "workspace:^"
     "@backstage/cli-module-test-jest": "workspace:^"
     "@backstage/cli-module-translations": "workspace:^"
   languageName: unknown
@@ -2571,7 +2574,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-catalog@workspace:packages/cli-module-catalog":
+"@backstage/cli-module-catalog@workspace:^, @backstage/cli-module-catalog@workspace:packages/cli-module-catalog":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-catalog@workspace:packages/cli-module-catalog"
   dependencies:
@@ -2741,7 +2744,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-scaffolder@workspace:packages/cli-module-scaffolder":
+"@backstage/cli-module-scaffolder@workspace:^, @backstage/cli-module-scaffolder@workspace:packages/cli-module-scaffolder":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-scaffolder@workspace:packages/cli-module-scaffolder"
   dependencies:
@@ -2755,7 +2758,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-search@workspace:packages/cli-module-search":
+"@backstage/cli-module-search@workspace:^, @backstage/cli-module-search@workspace:packages/cli-module-search":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-search@workspace:packages/cli-module-search"
   dependencies:

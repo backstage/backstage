@@ -33,6 +33,7 @@
     "@backstage/cli-module-actions": "workspace:^",
     "@backstage/cli-module-auth": "workspace:^",
     "@backstage/cli-module-build": "workspace:^",
+    "@backstage/cli-module-catalog": "workspace:^",
     "@backstage/cli-module-config": "workspace:^",
     "@backstage/cli-module-github": "workspace:^",
     "@backstage/cli-module-info": "workspace:^",
@@ -40,6 +41,8 @@
     "@backstage/cli-module-maintenance": "workspace:^",
     "@backstage/cli-module-migrate": "workspace:^",
     "@backstage/cli-module-new": "workspace:^",
+    "@backstage/cli-module-scaffolder": "workspace:^",
+    "@backstage/cli-module-search": "workspace:^",
     "@backstage/cli-module-test-jest": "workspace:^",
     "@backstage/cli-module-translations": "workspace:^"
   },
