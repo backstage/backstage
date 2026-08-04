@@ -50,6 +50,13 @@ const npmSnapshotValuesSchema = {
   latestVersion: z.string().min(1),
   lastPublishedAt: timestampSchema,
   repository: repositorySchema.optional(),
+  // The `backstage.role` field declared in the published package.json
+  // (e.g. `frontend-plugin`, `backend-plugin`), read from the npm registry.
+  backstageRole: z.string().min(1).optional(),
+  // npm package names this package directly depends on, read from its
+  // published package.json `dependencies` via the npm registry. Used to
+  // determine internalDependencies below.
+  dependencyNames: z.array(z.string().min(1)).optional(),
 };
 
 const npmSnapshotSchema = z.discriminatedUnion('status', [
@@ -131,6 +138,10 @@ const packageSnapshotSchema = z.strictObject({
   functionality: z.string().min(1).optional(),
   npmPackageName: z.string().min(1),
   sourcePath: z.string().min(1).optional(),
+  // Subset of this package's npm dependencyNames that are other packages of
+  // this same plugin's snapshot.packages, used to group related packages'
+  // config schemas together in the UI.
+  internalDependencies: z.array(z.string().min(1)).optional(),
   npm: npmSnapshotSchema,
   configSchema: configSchemaSnapshotSchema,
 });

@@ -36,91 +36,11 @@ describe('pluginManifestSchema', () => {
     assert.equal(pluginManifestSchema.parse(legacyManifest).title, 'Example');
   });
 
-  it('accepts complete frontend setup and fresh source snapshots', () => {
+  it('accepts capabilities and a fresh source snapshot', () => {
     const manifest = pluginManifestSchema.parse({
       ...legacyManifest,
       capabilities: ['standalone-page', 'permissions'],
-      setup: {
-        packages: [
-          {
-            name: '@example/backstage-plugin-example',
-            role: 'frontend',
-          },
-        ],
-        frontend: {
-          routes: [
-            {
-              name: 'ExamplePage',
-              type: 'provided',
-              description: 'Shows the example standalone page.',
-            },
-          ],
-          extensions: [
-            {
-              id: 'example.page',
-              kind: 'page',
-              description: 'Adds the example page extension.',
-              enabledByDefault: true,
-            },
-          ],
-        },
-        integration: [
-          {
-            title: 'Install the frontend plugin',
-            explanation: 'Register the plugin with the frontend app.',
-            language: 'ts',
-            source: "import examplePlugin from '@example/backstage-plugin-example';",
-          },
-        ],
-        config: {
-          schema: {
-            type: 'object',
-            properties: {
-              example: {
-                type: 'object',
-                properties: {
-                  endpoint: {
-                    type: 'string',
-                    default: 'https://example.com/api',
-                    description: 'Example service URL.',
-                    'x-ui': { label: 'Service URL' },
-                  },
-                  retries: {
-                    type: 'integer',
-                    enum: [1, 3, 5],
-                    default: 3,
-                  },
-                  token: {
-                    type: 'string',
-                    'x-ui': { secretEnv: 'EXAMPLE_TOKEN' },
-                  },
-                  tags: {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                      enum: ['primary', 'secondary'],
-                    },
-                  },
-                },
-                required: ['endpoint', 'token'],
-              },
-            },
-            required: ['example'],
-          },
-        },
-      },
       snapshot: {
-        npm: {
-          status: 'fresh',
-          lastAttemptAt: checkedAt,
-          checkedAt,
-          latestVersion: '1.2.3',
-          lastPublishedAt: '2026-08-02T08:30:00.000Z',
-          repository: {
-            url: 'https://github.com/example/backstage-plugin-example',
-            directory: 'plugins/example',
-          },
-        },
         backstage: {
           status: 'fresh',
           lastAttemptAt: checkedAt,
@@ -130,13 +50,32 @@ describe('pluginManifestSchema', () => {
             'https://github.com/example/backstage-plugin-example/blob/main/backstage.json',
           sourcePath: 'backstage.json',
         },
+        packages: [
+          {
+            npmPackageName: '@example/plugin-example',
+            npm: {
+              status: 'fresh',
+              lastAttemptAt: checkedAt,
+              checkedAt,
+              latestVersion: '1.2.3',
+              lastPublishedAt: '2026-08-02T08:30:00.000Z',
+              repository: {
+                url: 'https://github.com/example/backstage-plugin-example',
+                directory: 'plugins/example',
+              },
+            },
+            configSchema: {
+              status: 'unavailable',
+              lastAttemptAt: checkedAt,
+              reason: 'config-schema-not-declared',
+            },
+          },
+        ],
       },
     });
 
-    assert.equal(manifest.setup?.frontend?.routes[0].type, 'provided');
-    assert.equal(manifest.setup?.frontend?.extensions[0].id, 'example.page');
-    assert.equal(manifest.setup?.integration[0].language, 'ts');
-    assert.equal(manifest.snapshot?.npm.status, 'fresh');
+    assert.deepEqual(manifest.capabilities, ['standalone-page', 'permissions']);
+    assert.equal(manifest.snapshot?.packages[0].npm.status, 'fresh');
     assert.equal(manifest.snapshot?.backstage.status, 'fresh');
   });
 
@@ -144,47 +83,67 @@ describe('pluginManifestSchema', () => {
     const fresh = pluginManifestSchema.parse({
       ...legacyManifest,
       snapshot: {
-        npm: {
-          status: 'fresh',
-          lastAttemptAt: checkedAt,
-          checkedAt,
-          latestVersion: '0.3.3',
-          lastPublishedAt: '2023-05-07T14:51:25.719Z',
-        },
         backstage: {
           status: 'unavailable',
           lastAttemptAt: checkedAt,
           reason: 'repository-unsupported',
         },
+        packages: [
+          {
+            npmPackageName: '@example/plugin-example',
+            npm: {
+              status: 'fresh',
+              lastAttemptAt: checkedAt,
+              checkedAt,
+              latestVersion: '0.3.3',
+              lastPublishedAt: '2023-05-07T14:51:25.719Z',
+            },
+            configSchema: {
+              status: 'unavailable',
+              lastAttemptAt: checkedAt,
+              reason: 'config-schema-not-declared',
+            },
+          },
+        ],
       },
     });
     const stale = pluginManifestSchema.parse({
       ...legacyManifest,
       snapshot: {
-        npm: {
-          status: 'stale',
-          lastAttemptAt: checkedAt,
-          reason: 'npm-invalid-response',
-          checkedAt: '2026-08-01T08:30:00.000Z',
-          latestVersion: '0.3.3',
-          lastPublishedAt: '2023-05-07T14:51:25.719Z',
-        },
         backstage: {
           status: 'unavailable',
           lastAttemptAt: checkedAt,
           reason: 'repository-unsupported',
         },
+        packages: [
+          {
+            npmPackageName: '@example/plugin-example',
+            npm: {
+              status: 'stale',
+              lastAttemptAt: checkedAt,
+              reason: 'npm-invalid-response',
+              checkedAt: '2026-08-01T08:30:00.000Z',
+              latestVersion: '0.3.3',
+              lastPublishedAt: '2023-05-07T14:51:25.719Z',
+            },
+            configSchema: {
+              status: 'unavailable',
+              lastAttemptAt: checkedAt,
+              reason: 'config-schema-not-declared',
+            },
+          },
+        ],
       },
     });
 
-    assert.equal(fresh.snapshot?.npm.status, 'fresh');
-    assert.equal(stale.snapshot?.npm.status, 'stale');
+    assert.equal(fresh.snapshot?.packages[0].npm.status, 'fresh');
+    assert.equal(stale.snapshot?.packages[0].npm.status, 'stale');
     assert.equal(
-      Object.hasOwn(fresh.snapshot?.npm ?? {}, 'repository'),
+      Object.hasOwn(fresh.snapshot?.packages[0].npm ?? {}, 'repository'),
       false,
     );
     assert.equal(
-      Object.hasOwn(stale.snapshot?.npm ?? {}, 'repository'),
+      Object.hasOwn(stale.snapshot?.packages[0].npm ?? {}, 'repository'),
       false,
     );
   });
@@ -198,80 +157,11 @@ describe('pluginManifestSchema', () => {
     );
   });
 
-  it('rejects a secret default', () => {
+  it('rejects a manually authored setup field', () => {
     assert.throws(() =>
       pluginManifestSchema.parse({
         ...legacyManifest,
-        setup: {
-          config: {
-            schema: {
-              type: 'object',
-              properties: {
-                token: {
-                  type: 'string',
-                  default: 'real-secret',
-                  'x-ui': { secretEnv: 'EXAMPLE_TOKEN' },
-                },
-              },
-            },
-          },
-        },
-      }),
-    );
-  });
-
-  it('rejects secret metadata on non-string fields', () => {
-    assert.throws(() =>
-      pluginManifestSchema.parse({
-        ...legacyManifest,
-        setup: {
-          config: {
-            schema: {
-              type: 'object',
-              properties: {
-                token: {
-                  type: 'number',
-                  'x-ui': { secretEnv: 'EXAMPLE_TOKEN' },
-                },
-              },
-            },
-          },
-        },
-      }),
-    );
-  });
-
-  it('rejects duplicate or undeclared required configuration fields', () => {
-    assert.throws(() =>
-      pluginManifestSchema.parse({
-        ...legacyManifest,
-        setup: {
-          config: {
-            schema: {
-              type: 'object',
-              properties: {
-                endpoint: { type: 'string' },
-              },
-              required: ['endpoint', 'endpoint'],
-            },
-          },
-        },
-      }),
-    );
-    assert.throws(() =>
-      pluginManifestSchema.parse({
-        ...legacyManifest,
-        setup: {
-          config: {
-            schema: {
-              type: 'object',
-              properties: {
-                endpoint: { type: 'string' },
-              },
-              required: ['missing'],
-            },
-          },
-        },
+        setup: { packages: [] },
       }),
     );
   });
@@ -291,24 +181,45 @@ describe('pluginManifestSchema', () => {
     );
   });
 
-  it('rejects unsupported configuration keywords', () => {
-    assert.throws(() =>
-      pluginManifestSchema.parse({
-        ...legacyManifest,
-        setup: {
-          config: {
-            schema: {
-              type: 'object',
-              properties: {
-                services: {
-                  type: 'object',
-                  patternProperties: {},
-                },
-              },
+  it('accepts dependencyNames on npm snapshots and internalDependencies on packages', () => {
+    const manifest = pluginManifestSchema.parse({
+      ...legacyManifest,
+      snapshot: {
+        backstage: {
+          status: 'unavailable',
+          lastAttemptAt: checkedAt,
+          reason: 'repository-unsupported',
+        },
+        packages: [
+          {
+            npmPackageName: '@example/plugin-example-backend',
+            functionality: 'backend',
+            internalDependencies: ['@example/plugin-example-common'],
+            npm: {
+              status: 'fresh',
+              lastAttemptAt: checkedAt,
+              checkedAt,
+              latestVersion: '1.2.3',
+              lastPublishedAt: '2026-08-02T08:30:00.000Z',
+              dependencyNames: ['@example/plugin-example-common', 'zod'],
+            },
+            configSchema: {
+              status: 'unavailable',
+              lastAttemptAt: checkedAt,
+              reason: 'config-schema-not-declared',
             },
           },
-        },
-      }),
-    );
+        ],
+      },
+    });
+
+    const [backendPackage] = manifest.snapshot!.packages;
+    assert.deepEqual(backendPackage.internalDependencies, [
+      '@example/plugin-example-common',
+    ]);
+    assert.deepEqual(backendPackage.npm.status === 'fresh' && backendPackage.npm.dependencyNames, [
+      '@example/plugin-example-common',
+      'zod',
+    ]);
   });
 });
