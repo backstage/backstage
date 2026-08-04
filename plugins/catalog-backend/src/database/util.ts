@@ -62,7 +62,7 @@ export async function retryOnDeadlock<T>(
 /**
  * Checks if the given error is a deadlock error for the database engine in use.
  */
-function isDeadlockError(
+export function isDeadlockError(
   knex: Knex | Knex.Transaction,
   e: unknown,
 ): e is ErrorLike {
