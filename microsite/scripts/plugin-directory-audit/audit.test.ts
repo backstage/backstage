@@ -21,6 +21,7 @@ import { describe, it } from 'node:test';
 import { dump } from 'js-yaml';
 import type {
   BackstageSnapshot,
+  ConfigSchemaSnapshot,
   NpmSnapshot,
   PluginManifest,
 } from '../../src/pluginDirectory/manifest';
@@ -67,6 +68,14 @@ function freshNpm(lastPublishedAt: string): NpmSnapshot {
   };
 }
 
+function unavailableConfigSchema(): ConfigSchemaSnapshot {
+  return {
+    status: 'unavailable',
+    lastAttemptAt: attemptAt,
+    reason: 'config-schema-not-fetched-in-test',
+  };
+}
+
 function freshBackstage(): BackstageSnapshot {
   return {
     status: 'fresh',
@@ -79,18 +88,88 @@ function freshBackstage(): BackstageSnapshot {
   };
 }
 
+function packagesFor(
+  npm: NpmSnapshot,
+  npmPackageName = '@example/plugin-example',
+): NonNullable<PluginManifest['snapshot']>['packages'] {
+  return [{ npmPackageName, npm, configSchema: unavailableConfigSchema() }];
+}
+
+function primaryPackage(manifest: PluginManifest) {
+  return manifest.snapshot?.packages.find(
+    packageSnapshot => packageSnapshot.npmPackageName === manifest.npmPackageName,
+  );
+}
+
 function dependencies(
   npm: NpmSnapshot,
   backstage: BackstageSnapshot = freshBackstage(),
 ): AuditDependencies {
   return {
     fetchNpm: async () => npm,
+    fetchConfigSchema: async () => unavailableConfigSchema(),
     github: {
       fetchBackstageSnapshot: async () => backstage,
+      discoverCanonicalPackages: async () => undefined,
     } as GitHubSnapshotClient,
     now: () => auditTime,
   };
 }
+
+function multiPackageDependencies(
+  npmByPackageName: Record<string, NpmSnapshot>,
+): AuditDependencies {
+  return {
+    fetchNpm: async (packageName: string) => npmByPackageName[packageName],
+    fetchConfigSchema: async () => unavailableConfigSchema(),
+    github: {
+      fetchBackstageSnapshot: async () => freshBackstage(),
+      discoverCanonicalPackages: async () => [
+        {
+          functionality: 'backend',
+          npmPackageName: '@example/plugin-example-backend',
+          sourcePath: 'plugins/example-backend/package.json',
+        },
+        {
+          functionality: 'common',
+          npmPackageName: '@example/plugin-example-common',
+          sourcePath: 'plugins/example-common/package.json',
+        },
+      ],
+    } as GitHubSnapshotClient,
+    now: () => auditTime,
+  };
+}
+
+describe('auditManifest internalDependencies', () => {
+  it("filters a package's npm dependencies down to other packages of the same plugin", async () => {
+    const backendNpm: NpmSnapshot = {
+      ...freshNpm('2026-08-01T00:00:00.000Z'),
+      dependencyNames: ['@example/plugin-example-common', 'zod'],
+    };
+    const commonNpm: NpmSnapshot = freshNpm('2026-08-01T00:00:00.000Z');
+
+    const result = await auditManifest(
+      manifest('active', { npmPackageName: '@example/plugin-example-backend' }),
+      multiPackageDependencies({
+        '@example/plugin-example-backend': backendNpm,
+        '@example/plugin-example-common': commonNpm,
+      }),
+    );
+
+    const backendPackage = result.manifest.snapshot?.packages.find(
+      p => p.npmPackageName === '@example/plugin-example-backend',
+    );
+    const commonPackage = result.manifest.snapshot?.packages.find(
+      p => p.npmPackageName === '@example/plugin-example-common',
+    );
+
+    assert.deepEqual(backendPackage?.internalDependencies, [
+      '@example/plugin-example-common',
+    ]);
+    assert.equal(commonPackage?.internalDependencies, undefined);
+  });
+});
 
 describe('auditManifest status transitions', () => {
   it('marks an active plugin inactive using the latest release timestamp', async () => {
@@ -101,7 +180,7 @@ describe('auditManifest status transitions', () => {
 
     assert.equal(result.manifest.status, 'inactive');
     assert.equal(result.manifest.staleSince, '2026-08-03');
-    assert.equal(result.manifest.snapshot?.npm.status, 'fresh');
+    assert.equal(primaryPackage(result.manifest)?.npm.status, 'fresh');
     assert.equal(result.changed, true);
   });
 
@@ -163,7 +242,10 @@ describe('auditManifest snapshot failures', () => {
     } satisfies BackstageSnapshot;
     let githubCalled = false;
     const input = manifest('active', {
-      snapshot: { npm: previousNpm, backstage: previousBackstage },
+      snapshot: {
+        backstage: previousBackstage,
+        packages: packagesFor(previousNpm),
+      },
     });
 
     const result = await auditManifest(input, {
@@ -172,16 +254,18 @@ describe('auditManifest snapshot failures', () => {
         lastAttemptAt: attemptAt,
         reason: 'npm-invalid-response',
       }),
+      fetchConfigSchema: async () => unavailableConfigSchema(),
       github: {
         fetchBackstageSnapshot: async () => {
           githubCalled = true;
           return freshBackstage();
         },
+        discoverCanonicalPackages: async () => undefined,
       } as GitHubSnapshotClient,
       now: () => auditTime,
     });
 
-    assert.deepEqual(result.manifest.snapshot?.npm, {
+    assert.deepEqual(primaryPackage(result.manifest)?.npm, {
       status: 'stale',
       lastAttemptAt: attemptAt,
       reason: 'npm-invalid-response',
@@ -213,17 +297,19 @@ describe('auditManifest snapshot failures', () => {
       }),
       {
         fetchNpm: async () => npm,
+        fetchConfigSchema: async () => unavailableConfigSchema(),
         github: {
           fetchBackstageSnapshot: async () => {
             githubCalled = true;
             return freshBackstage();
           },
+          discoverCanonicalPackages: async () => undefined,
         } as GitHubSnapshotClient,
         now: () => auditTime,
       },
     );
 
-    assert.deepEqual(result.manifest.snapshot?.npm, npm);
+    assert.deepEqual(primaryPackage(result.manifest)?.npm, npm);
     assert.deepEqual(result.manifest.snapshot?.backstage, {
       status: 'unavailable',
       lastAttemptAt: attemptAt,
@@ -247,7 +333,10 @@ describe('auditManifest snapshot failures', () => {
     } satisfies NpmSnapshot;
     const input = manifest('inactive', {
       staleSince: '2025-04-12',
-      snapshot: { npm: previousNpm, backstage: freshBackstage() },
+      snapshot: {
+        backstage: freshBackstage(),
+        packages: packagesFor(previousNpm),
+      },
     });
 
     const result = await auditManifest(
@@ -259,7 +348,7 @@ describe('auditManifest snapshot failures', () => {
       }),
     );
 
-    assert.deepEqual(result.manifest.snapshot?.npm, {
+    assert.deepEqual(primaryPackage(result.manifest)?.npm, {
       status: 'stale',
       lastAttemptAt: attemptAt,
       reason: 'npm-invalid-response',
@@ -268,7 +357,7 @@ describe('auditManifest snapshot failures', () => {
       lastPublishedAt: '2023-05-07T14:51:25.719Z',
     });
     assert.equal(
-      Object.hasOwn(result.manifest.snapshot?.npm ?? {}, 'repository'),
+      Object.hasOwn(primaryPackage(result.manifest)?.npm ?? {}, 'repository'),
       false,
     );
   });
@@ -283,7 +372,7 @@ describe('auditManifest snapshot failures', () => {
       }),
     );
 
-    assert.equal(result.manifest.snapshot?.npm.status, 'fresh');
+    assert.equal(primaryPackage(result.manifest)?.npm.status, 'fresh');
     assert.deepEqual(result.manifest.snapshot?.backstage, {
       status: 'unavailable',
       lastAttemptAt: attemptAt,
@@ -297,18 +386,106 @@ describe('auditManifest snapshot failures', () => {
       fetchNpm: async () => {
         throw new Error('registry unavailable');
       },
+      fetchConfigSchema: async () => unavailableConfigSchema(),
       github: {
         fetchBackstageSnapshot: async () => freshBackstage(),
+        discoverCanonicalPackages: async () => undefined,
       } as GitHubSnapshotClient,
       now: () => auditTime,
     });
 
-    assert.deepEqual(result.manifest.snapshot?.npm, {
+    assert.deepEqual(primaryPackage(result.manifest)?.npm, {
       status: 'unavailable',
       lastAttemptAt: attemptAt,
       reason: 'npm-request-failed',
     });
     assert.equal(result.manifest.status, 'active');
+  });
+
+  it('assembles a package snapshot per sibling, falling back to stale npm data on failure', async () => {
+    const previousBackendNpm = {
+      status: 'fresh',
+      lastAttemptAt: '2026-07-01T00:00:00.000Z',
+      checkedAt: '2026-07-01T00:00:00.000Z',
+      latestVersion: '1.1.0',
+      lastPublishedAt: '2026-06-01T00:00:00.000Z',
+    } satisfies NpmSnapshot;
+    const input = manifest('active', {
+      npmPackageName: '@backstage/plugin-catalog',
+      snapshot: {
+        backstage: freshBackstage(),
+        packages: [
+          {
+            functionality: 'frontend',
+            npmPackageName: '@backstage/plugin-catalog',
+            sourcePath: 'plugins/catalog/package.json',
+            npm: freshNpm('2026-07-01T00:00:00.000Z'),
+            configSchema: unavailableConfigSchema(),
+          },
+          {
+            functionality: 'backend',
+            npmPackageName: '@backstage/plugin-catalog-backend',
+            sourcePath: 'plugins/catalog-backend/package.json',
+            npm: previousBackendNpm,
+            configSchema: unavailableConfigSchema(),
+          },
+        ],
+      },
+    });
+
+    const result = await auditManifest(input, {
+      fetchNpm: async (packageName: string) => {
+        if (packageName === '@backstage/plugin-catalog-backend') {
+          throw new Error('registry unavailable');
+        }
+        return freshNpm('2026-07-01T00:00:00.000Z');
+      },
+      fetchConfigSchema: async () => unavailableConfigSchema(),
+      github: {
+        fetchBackstageSnapshot: async () => freshBackstage(),
+        discoverCanonicalPackages: async () => [
+          {
+            functionality: 'frontend',
+            npmPackageName: '@backstage/plugin-catalog',
+            sourcePath: 'plugins/catalog/package.json',
+          },
+          {
+            functionality: 'backend',
+            npmPackageName: '@backstage/plugin-catalog-backend',
+            sourcePath: 'plugins/catalog-backend/package.json',
+          },
+        ],
+      } as GitHubSnapshotClient,
+      now: () => auditTime,
+    });
+
+    assert.deepEqual(result.manifest.snapshot?.packages, [
+      {
+        functionality: 'frontend',
+        npmPackageName: '@backstage/plugin-catalog',
+        sourcePath: 'plugins/catalog/package.json',
+        npm: freshNpm('2026-07-01T00:00:00.000Z'),
+        configSchema: unavailableConfigSchema(),
+      },
+      {
+        functionality: 'backend',
+        npmPackageName: '@backstage/plugin-catalog-backend',
+        sourcePath: 'plugins/catalog-backend/package.json',
+        npm: {
+          status: 'stale',
+          lastAttemptAt: attemptAt,
+          reason: 'npm-request-failed',
+          checkedAt: previousBackendNpm.checkedAt,
+          latestVersion: previousBackendNpm.latestVersion,
+          lastPublishedAt: previousBackendNpm.lastPublishedAt,
+        },
+        configSchema: unavailableConfigSchema(),
+      },
+    ]);
+    assert.match(
+      result.warnings.join('\n'),
+      /npm snapshot unavailable for @backstage\/plugin-catalog-backend/,
+    );
   });
 });
 
@@ -358,8 +535,13 @@ describe('runAuditCommand', () => {
     await withManifestDirectory(
       { 'failed.yaml': failed, 'later.yaml': later },
       async directory => {
-        const paths = [join(directory, 'failed.yaml'), join(directory, 'later.yaml')];
-        const before = await Promise.all(paths.map(path => readFile(path, 'utf8')));
+        const paths = [
+          join(directory, 'failed.yaml'),
+          join(directory, 'later.yaml'),
+        ];
+        const before = await Promise.all(
+          paths.map(path => readFile(path, 'utf8')),
+        );
         const fetched: string[] = [];
         const events: OutputEvent[] = [];
 
@@ -373,8 +555,10 @@ describe('runAuditCommand', () => {
               }
               return freshNpm('2025-07-01T00:00:00.000Z');
             },
+            fetchConfigSchema: async () => unavailableConfigSchema(),
             github: {
               fetchBackstageSnapshot: async () => freshBackstage(),
+              discoverCanonicalPackages: async () => undefined,
             } as GitHubSnapshotClient,
             now: () => auditTime,
           },
@@ -429,8 +613,10 @@ describe('runAuditCommand', () => {
                   ? '2026-07-01T00:00:00.000Z'
                   : '2025-07-01T00:00:00.000Z',
               ),
+            fetchConfigSchema: async () => unavailableConfigSchema(),
             github: {
               fetchBackstageSnapshot: async () => freshBackstage(),
+              discoverCanonicalPackages: async () => undefined,
             } as GitHubSnapshotClient,
             now: () => auditTime,
           },
@@ -481,12 +667,7 @@ describe('runAuditCommand', () => {
         }>;
         assert.deepEqual(
           statusRows.map(
-            ({
-              oldStatus,
-              newStatus,
-              oldStaleSince,
-              newStaleSince,
-            }) => ({
+            ({ oldStatus, newStatus, oldStaleSince, newStaleSince }) => ({
               oldStatus,
               newStatus,
               oldStaleSince,
@@ -521,80 +702,82 @@ describe('runAuditCommand', () => {
   it('reports when audit mode has no semantic updates', async () => {
     const unchanged = manifest('active', {
       snapshot: {
-        npm: freshNpm('2026-07-01T00:00:00.000Z'),
         backstage: freshBackstage(),
+        packages: packagesFor(freshNpm('2026-07-01T00:00:00.000Z')),
       },
     });
 
-    await withManifestDirectory({ 'unchanged.yaml': unchanged }, async directory => {
-      const path = join(directory, 'unchanged.yaml');
-      const before = await readFile(path, 'utf8');
-      const events: OutputEvent[] = [];
-      const result = await runAuditCommand(['--audit'], {
-        directory,
-        dependencies: dependencies(
-          freshNpm('2026-07-01T00:00:00.000Z'),
-        ),
-        output: captureOutput(events),
-      });
+    await withManifestDirectory(
+      { 'unchanged.yaml': unchanged },
+      async directory => {
+        const path = join(directory, 'unchanged.yaml');
+        const before = await readFile(path, 'utf8');
+        const events: OutputEvent[] = [];
+        const result = await runAuditCommand(['--audit'], {
+          directory,
+          dependencies: dependencies(freshNpm('2026-07-01T00:00:00.000Z')),
+          output: captureOutput(events),
+        });
 
-      assert.equal(result.changedFiles, 0);
-      assert.equal(result.writtenFiles, 0);
-      assert.equal(await readFile(path, 'utf8'), before);
-      assert.ok(
-        events.some(
-          event =>
-            event.method === 'log' &&
-            event.value === 'No plugins required updates.',
-        ),
-      );
-    });
+        assert.equal(result.changedFiles, 0);
+        assert.equal(result.writtenFiles, 0);
+        assert.equal(await readFile(path, 'utf8'), before);
+        assert.ok(
+          events.some(
+            event =>
+              event.method === 'log' &&
+              event.value === 'No plugins required updates.',
+          ),
+        );
+      },
+    );
   });
 
   it('writes refreshed snapshots without reporting a status transition', async () => {
     const previousAttemptAt = '2026-08-01T12:00:00.000Z';
     const refreshed = manifest('active', {
       snapshot: {
-        npm: {
-          ...freshNpm('2026-07-01T00:00:00.000Z'),
-          lastAttemptAt: previousAttemptAt,
-          checkedAt: previousAttemptAt,
-        },
         backstage: {
           ...freshBackstage(),
           lastAttemptAt: previousAttemptAt,
           checkedAt: previousAttemptAt,
         },
+        packages: packagesFor({
+          ...freshNpm('2026-07-01T00:00:00.000Z'),
+          lastAttemptAt: previousAttemptAt,
+          checkedAt: previousAttemptAt,
+        }),
       },
     });
 
-    await withManifestDirectory({ 'refreshed.yaml': refreshed }, async directory => {
-      const events: OutputEvent[] = [];
-      const result = await runAuditCommand(['--audit'], {
-        directory,
-        dependencies: dependencies(
-          freshNpm('2026-07-01T00:00:00.000Z'),
-        ),
-        output: captureOutput(events),
-      });
+    await withManifestDirectory(
+      { 'refreshed.yaml': refreshed },
+      async directory => {
+        const events: OutputEvent[] = [];
+        const result = await runAuditCommand(['--audit'], {
+          directory,
+          dependencies: dependencies(freshNpm('2026-07-01T00:00:00.000Z')),
+          output: captureOutput(events),
+        });
 
-      const [written] = await readManifestFiles(directory);
-      assert.equal(result.changedFiles, 1);
-      assert.equal(result.writtenFiles, 1);
-      assert.equal(written.manifest.snapshot?.npm.checkedAt, attemptAt);
-      assert.equal(written.manifest.snapshot?.backstage.checkedAt, attemptAt);
-      assert.equal(
-        events.filter(event => event.method === 'table').length,
-        1,
-      );
-      assert.ok(
-        events.some(
-          event =>
-            event.method === 'log' &&
-            event.value === 'No plugins required updates.',
-        ),
-      );
-    });
+        const [written] = await readManifestFiles(directory);
+        assert.equal(result.changedFiles, 1);
+        assert.equal(result.writtenFiles, 1);
+        assert.equal(primaryPackage(written.manifest)?.npm.checkedAt, attemptAt);
+        assert.equal(written.manifest.snapshot?.backstage.checkedAt, attemptAt);
+        assert.equal(
+          events.filter(event => event.method === 'table').length,
+          1,
+        );
+        assert.ok(
+          events.some(
+            event =>
+              event.method === 'log' &&
+              event.value === 'No plugins required updates.',
+          ),
+        );
+      },
+    );
   });
 
   it('finishes auditing and reporting before aggregating write failures', async () => {
@@ -630,8 +813,10 @@ describe('runAuditCommand', () => {
               await mkdir(failedPath);
               return freshNpm('2025-07-01T00:00:00.000Z');
             },
+            fetchConfigSchema: async () => unavailableConfigSchema(),
             github: {
               fetchBackstageSnapshot: async () => freshBackstage(),
+              discoverCanonicalPackages: async () => undefined,
             } as GitHubSnapshotClient,
             now: () => auditTime,
           },

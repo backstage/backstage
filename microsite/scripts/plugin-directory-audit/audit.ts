@@ -16,10 +16,14 @@
 import { isDeepStrictEqual } from 'node:util';
 import type {
   BackstageSnapshot,
+  ConfigSchemaSnapshot,
   NpmSnapshot,
+  PackageSnapshot,
   PluginManifest,
 } from '../../src/pluginDirectory/manifest';
+import type { fetchConfigSchemaSnapshot } from './configSchemaClient';
 import type {
+  CanonicalPackage,
   GitHubSnapshotClient,
   RepositoryLocation,
 } from './githubClient';
@@ -27,6 +31,7 @@ import { fetchNpmSnapshot } from './npmClient';
 
 export interface AuditDependencies {
   fetchNpm: typeof fetchNpmSnapshot;
+  fetchConfigSchema: typeof fetchConfigSchemaSnapshot;
   github: GitHubSnapshotClient;
   now: () => Date;
 }
@@ -53,6 +58,12 @@ function staleNpmSnapshot(
     latestVersion: previous.latestVersion,
     lastPublishedAt: previous.lastPublishedAt,
     ...(previous.repository ? { repository: previous.repository } : {}),
+    ...(previous.backstageRole
+      ? { backstageRole: previous.backstageRole }
+      : {}),
+    ...(previous.dependencyNames
+      ? { dependencyNames: previous.dependencyNames }
+      : {}),
   };
 }
 
@@ -73,6 +84,30 @@ function staleBackstageSnapshot(
     sourceUrl: previous.sourceUrl,
     sourcePath: previous.sourcePath,
   };
+}
+
+function staleConfigSchemaSnapshot(
+  previous: ConfigSchemaSnapshot | undefined,
+  unavailable: Extract<ConfigSchemaSnapshot, { status: 'unavailable' }>,
+): ConfigSchemaSnapshot {
+  if (!previous || previous.status === 'unavailable') {
+    return unavailable;
+  }
+
+  return {
+    status: 'stale',
+    lastAttemptAt: unavailable.lastAttemptAt,
+    reason: unavailable.reason,
+    checkedAt: previous.checkedAt,
+    schema: previous.schema,
+  };
+}
+
+function findPreviousPackage(
+  previous: readonly PackageSnapshot[] | undefined,
+  npmPackageName: string,
+): PackageSnapshot | undefined {
+  return previous?.find(entry => entry.npmPackageName === npmPackageName);
 }
 
 function repositoryLocation(
@@ -139,6 +174,149 @@ function transitionStatus(
   return manifest;
 }
 
+async function resolvePackageConfigSchema(
+  npmPackageName: string,
+  npm: NpmSnapshot,
+  previousPackage: PackageSnapshot | undefined,
+  dependencies: AuditDependencies,
+  lastAttemptAt: string,
+  warnings: string[],
+  title: string,
+): Promise<ConfigSchemaSnapshot> {
+  if (npm.status === 'unavailable') {
+    return (
+      previousPackage?.configSchema ?? {
+        status: 'unavailable',
+        lastAttemptAt,
+        reason: 'npm-data-unavailable',
+      }
+    );
+  }
+
+  let fetchedConfigSchema: ConfigSchemaSnapshot;
+  try {
+    fetchedConfigSchema = await dependencies.fetchConfigSchema(
+      npmPackageName,
+      npm.latestVersion,
+    );
+  } catch {
+    fetchedConfigSchema = {
+      status: 'unavailable',
+      lastAttemptAt,
+      reason: 'config-schema-request-failed',
+    };
+  }
+
+  if (fetchedConfigSchema.status === 'unavailable') {
+    if (fetchedConfigSchema.reason !== 'config-schema-not-declared') {
+      warnings.push(
+        `${title}: config schema unavailable for ${npmPackageName} (${fetchedConfigSchema.reason})`,
+      );
+    }
+    return staleConfigSchemaSnapshot(
+      previousPackage?.configSchema,
+      fetchedConfigSchema,
+    );
+  }
+
+  return fetchedConfigSchema;
+}
+
+async function collectPackageSnapshots(
+  manifest: PluginManifest,
+  primaryNpm: NpmSnapshot,
+  location: RepositoryLocation | undefined,
+  previousPackages: readonly PackageSnapshot[] | undefined,
+  dependencies: AuditDependencies,
+  lastAttemptAt: string,
+  warnings: string[],
+): Promise<PackageSnapshot[]> {
+  let siblings: CanonicalPackage[] = [];
+  if (location) {
+    try {
+      siblings =
+        (await dependencies.github.discoverCanonicalPackages(location)) ?? [];
+    } catch {
+      siblings = [];
+    }
+  }
+
+  const members: CanonicalPackage[] =
+    siblings.length > 0
+      ? siblings
+      : [{ functionality: '', npmPackageName: manifest.npmPackageName, sourcePath: '' }];
+  const memberNames = new Set(members.map(member => member.npmPackageName));
+
+  const packageSnapshots: PackageSnapshot[] = [];
+  for (const member of members) {
+    const isPrimary = member.npmPackageName === manifest.npmPackageName;
+    const previousPackage = findPreviousPackage(
+      previousPackages,
+      member.npmPackageName,
+    );
+
+    let fetchedNpm: NpmSnapshot;
+    if (isPrimary) {
+      fetchedNpm = primaryNpm;
+    } else {
+      try {
+        fetchedNpm = await dependencies.fetchNpm(member.npmPackageName);
+      } catch {
+        fetchedNpm = {
+          status: 'unavailable',
+          lastAttemptAt,
+          reason: 'npm-request-failed',
+        };
+      }
+    }
+
+    const npm =
+      fetchedNpm.status === 'unavailable'
+        ? staleNpmSnapshot(previousPackage?.npm, fetchedNpm)
+        : fetchedNpm;
+
+    if (fetchedNpm.status === 'unavailable' && !isPrimary) {
+      warnings.push(
+        `${manifest.title}: npm snapshot unavailable for ${member.npmPackageName} (${fetchedNpm.reason})`,
+      );
+    }
+
+    const configSchema = await resolvePackageConfigSchema(
+      member.npmPackageName,
+      npm,
+      previousPackage,
+      dependencies,
+      lastAttemptAt,
+      warnings,
+      manifest.title,
+    );
+
+    const functionality =
+      (npm.status !== 'unavailable' ? npm.backstageRole : undefined) ??
+      member.functionality;
+
+    const internalDependencies =
+      npm.status !== 'unavailable' && npm.dependencyNames
+        ? npm.dependencyNames.filter(
+            name => name !== member.npmPackageName && memberNames.has(name),
+          )
+        : undefined;
+
+    packageSnapshots.push({
+      ...(functionality ? { functionality } : {}),
+      npmPackageName: member.npmPackageName,
+      ...(member.sourcePath ? { sourcePath: member.sourcePath } : {}),
+      ...(internalDependencies && internalDependencies.length > 0
+        ? { internalDependencies }
+        : {}),
+      npm,
+      configSchema,
+    });
+  }
+
+  return packageSnapshots;
+}
+
 export async function auditManifest(
   manifest: PluginManifest,
   dependencies: AuditDependencies,
@@ -159,9 +337,13 @@ export async function auditManifest(
   }
 
   const previousSnapshot = manifest.snapshot;
+  const previousPrimaryPackage = findPreviousPackage(
+    previousSnapshot?.packages,
+    manifest.npmPackageName,
+  );
   const npm =
     fetchedNpm.status === 'unavailable'
-      ? staleNpmSnapshot(previousSnapshot?.npm, fetchedNpm)
+      ? staleNpmSnapshot(previousPrimaryPackage?.npm, fetchedNpm)
       : fetchedNpm;
 
   if (fetchedNpm.status === 'unavailable') {
@@ -171,6 +353,7 @@ export async function auditManifest(
   }
 
   let backstage: BackstageSnapshot;
+  let location: RepositoryLocation | undefined;
   if (fetchedNpm.status === 'unavailable') {
     backstage =
       previousSnapshot?.backstage ??
@@ -180,7 +363,7 @@ export async function auditManifest(
         reason: 'npm-data-unavailable',
       } satisfies BackstageSnapshot);
   } else {
-    const location = repositoryLocation(fetchedNpm);
+    location = repositoryLocation(fetchedNpm);
     let fetchedBackstage: BackstageSnapshot;
     if (!location) {
       fetchedBackstage = {
@@ -213,9 +396,19 @@ export async function auditManifest(
     }
   }
 
+  const packages = await collectPackageSnapshots(
+    manifest,
+    npm,
+    location,
+    previousSnapshot?.packages,
+    dependencies,
+    lastAttemptAt,
+    warnings,
+  );
+
   const withSnapshot: PluginManifest = {
     ...manifest,
-    snapshot: { npm, backstage },
+    snapshot: { backstage, packages },
   };
   const auditedManifest =
     fetchedNpm.status === 'fresh'
