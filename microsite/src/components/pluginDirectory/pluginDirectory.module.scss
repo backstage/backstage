@@ -180,6 +180,27 @@
   white-space: nowrap;
 }
 
+.resourceIcons {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ifm-spacing-horizontal);
+}
+
+.resourceIcon {
+  align-items: center;
+  color: var(--ifm-color-content-secondary);
+  display: inline-flex;
+  font-size: var(--ifm-h5-font-size);
+  font-weight: var(--ifm-font-weight-semibold);
+  gap: calc(var(--ifm-spacing-horizontal) / 4);
+  text-decoration: none;
+
+  svg {
+    flex: 0 0 auto;
+  }
+}
+
 .healthValue {
   font-size: var(--ifm-h3-font-size);
   font-weight: var(--ifm-font-weight-bold);
