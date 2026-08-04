@@ -127,12 +127,6 @@ setup:
                           type: string
                           enum:
                             - serviceAccount
-                            - oidc
-                            - aws
-                            - azure
-                            - google
-                            - googleServiceAccount
-                            - aks
                           default: serviceAccount
                           description: Authentication strategy used for this cluster.
                           x-ui:

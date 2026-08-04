@@ -298,6 +298,19 @@
   }
 }
 
+.codeBlock {
+  min-width: 0;
+}
+
+.snippetLanguage {
+  color: var(--ifm-color-content-secondary);
+  display: block;
+  font-size: var(--ifm-h5-font-size);
+  font-weight: var(--ifm-font-weight-bold);
+  margin-bottom: calc(var(--ifm-spacing-vertical) / 4);
+  text-transform: uppercase;
+}
+
 .copyButton {
   align-self: start;
 }

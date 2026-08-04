@@ -15,11 +15,14 @@
  */
 import { closeTestDom } from './testDom';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { after, afterEach, beforeEach, describe, it } from 'node:test';
 import type { PluginData } from '../../pluginDirectory/manifest';
+import { pluginManifestSchema } from '../../pluginDirectory/manifest';
 import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { load } from 'js-yaml';
 import { SetupGuide } from './SetupGuide';
 
 const plugin: PluginData = {
@@ -146,6 +149,16 @@ const plugin: PluginData = {
   },
 };
 
+
+const kubernetesPlugin = pluginManifestSchema.parse(
+  load(
+    readFileSync(
+      new URL('../../../data/plugins/backstage-kubernetes.yaml', import.meta.url),
+      'utf8',
+    ),
+  ),
+);
+
 let copiedValues: string[];
 
 beforeEach(() => {
@@ -175,6 +188,17 @@ describe('SetupGuide', () => {
         "backend.add(import('@example/plugin-example-backend'));",
       ),
     );
+    assert.ok(screen.getByText('ts'));
+    assert.equal(screen.getByLabelText('Language: ts').textContent, 'ts');
+    const authoredCode = screen
+      .getByText("backend.add(import('@example/plugin-example-backend'));")
+      .closest('code');
+    assert.ok(authoredCode);
+    assert.equal(
+      authoredCode.textContent,
+      "backend.add(import('@example/plugin-example-backend'));\n",
+    );
+    assert.equal(authoredCode.classList.contains('language-ts'), true);
   });
 
   it('copies package commands and authored snippets and announces clipboard results', async () => {
@@ -313,6 +337,258 @@ describe('SetupGuide', () => {
         '  enabled: true\n' +
         '  apiToken: ${EXAMPLE_TOKEN}\n' +
         '  clusters: []\n',
+    );
+  });
+
+  it('emits backend-valid service-account Kubernetes authentication only', async () => {
+    const user = userEvent.setup({ document });
+    render(<SetupGuide plugin={kubernetesPlugin} />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Add Config locator' }),
+    );
+    await user.click(screen.getByRole('button', { name: 'Add Cluster' }));
+
+    const authProvider = screen.getByLabelText('Authentication provider');
+    assert.equal(authProvider.tagName, 'SELECT');
+    assert.equal(
+      screen.queryByRole('option', { name: 'oidc' }),
+      null,
+    );
+    assert.deepEqual(
+      Array.from((authProvider as HTMLSelectElement).options).map(
+        option => option.value,
+      ),
+      ['', 'serviceAccount'],
+    );
+
+    await user.type(screen.getByLabelText('Cluster name'), 'production');
+    await user.type(
+      screen.getByLabelText('API server URL'),
+      'https://kubernetes.example.com',
+    );
+
+    const yaml = screen.getByLabelText('Generated app-config.yaml').textContent;
+    assert.equal(
+      yaml,
+      'kubernetes:\n' +
+        '  serviceLocatorMethod:\n' +
+        '    type: multiTenant\n' +
+        '  clusterLocatorMethods:\n' +
+        '    - type: config\n' +
+        '      clusters:\n' +
+        '        - name: production\n' +
+        '          url: https://kubernetes.example.com\n' +
+        '          authProvider: serviceAccount\n' +
+        '          serviceAccountToken: ${K8S_SERVICE_ACCOUNT_TOKEN}\n' +
+        '          skipTLSVerify: false\n' +
+        '          skipMetricsLookup: false\n',
+    );
+    assert.equal(yaml?.includes('oidc'), false);
+  });
+
+  it('keeps required Boolean controls explicitly valid without requiring them to be checked', async () => {
+    const user = userEvent.setup({ document });
+    const booleanPlugin: PluginData = {
+      ...plugin,
+      setup: {
+        ...plugin.setup,
+        config: {
+          schema: {
+            type: 'object',
+      properties: {
+        requiredWithoutDefault: {
+          type: 'boolean',
+          'x-ui': { label: 'Required without default' },
+        },
+        requiredWithFalseDefault: {
+          type: 'boolean',
+          default: false,
+          'x-ui': { label: 'Required with false default' },
+        },
+        requiredWithDefault: {
+          type: 'boolean',
+          default: true,
+          'x-ui': { label: 'Required with default' },
+        },
+        flags: {
+          type: 'array',
+          'x-ui': { label: 'Flags' },
+          items: {
+            type: 'boolean',
+            'x-ui': { label: 'Feature flag' },
+          },
+        },
+      },
+      required: [
+        'requiredWithoutDefault',
+        'requiredWithFalseDefault',
+        'requiredWithDefault',
+        'flags',
+      ],
+          },
+        },
+      },
+    };
+    render(<SetupGuide plugin={booleanPlugin} />);
+
+    const falseCheckbox = screen.getByLabelText('Required without default');
+    const defaultFalseCheckbox = screen.getByLabelText(
+      'Required with false default',
+    );
+    const trueCheckbox = screen.getByLabelText('Required with default');
+    assert.equal((falseCheckbox as HTMLInputElement).checked, false);
+    assert.equal((defaultFalseCheckbox as HTMLInputElement).checked, false);
+    assert.equal((trueCheckbox as HTMLInputElement).checked, true);
+    assert.equal(falseCheckbox.hasAttribute('required'), false);
+    assert.equal(defaultFalseCheckbox.hasAttribute('required'), false);
+    assert.equal((falseCheckbox as HTMLInputElement).checkValidity(), true);
+    assert.equal(
+      (defaultFalseCheckbox as HTMLInputElement).checkValidity(),
+      true,
+    );
+    assert.equal((trueCheckbox as HTMLInputElement).checkValidity(), true);
+
+    await user.click(screen.getByRole('button', { name: 'Add Feature flag' }));
+    const arrayCheckbox = screen.getByLabelText('Feature flag 1');
+    assert.equal((arrayCheckbox as HTMLInputElement).checked, false);
+    assert.equal(arrayCheckbox.hasAttribute('required'), false);
+    assert.equal((arrayCheckbox as HTMLInputElement).checkValidity(), true);
+    assert.equal(
+      screen
+        .getByRole('form', { name: 'Plugin configuration' })
+        .checkValidity(),
+      true,
+    );
+    assert.equal(
+      screen.getByRole('button', { name: 'Copy generated YAML' }).hasAttribute(
+        'disabled',
+      ),
+      false,
+    );
+    assert.equal(
+      screen.getByLabelText('Generated app-config.yaml').textContent,
+      'requiredWithoutDefault: false\n' +
+        'requiredWithFalseDefault: false\n' +
+        'requiredWithDefault: true\n' +
+        'flags:\n' +
+        '  - false\n',
+    );
+  });
+
+  it('uses unique associations and preserves array item control IDs after removal', async () => {
+    const user = userEvent.setup({ document });
+    const identityPlugin: PluginData = {
+      ...plugin,
+      setup: {
+        ...plugin.setup,
+        config: {
+          schema: {
+            type: 'object',
+      description: 'Root configuration help.',
+      properties: {
+        'a.b': {
+          type: 'string',
+          description: 'Help for dotted property.',
+          'x-ui': { label: 'Dotted property' },
+        },
+        'a-b': {
+          type: 'string',
+          description: 'Help for dashed property.',
+          'x-ui': { label: 'Dashed property' },
+        },
+        root: {
+          type: 'string',
+          description: 'Help for root property.',
+          'x-ui': { label: 'Root property' },
+        },
+        rows: {
+          type: 'array',
+          'x-ui': { label: 'Rows' },
+          items: {
+            type: 'object',
+            'x-ui': { label: 'Row' },
+            properties: {
+              value: {
+                type: 'string',
+                description: 'Value for this row.',
+                'x-ui': { label: 'Row value' },
+              },
+            },
+            required: ['value'],
+          },
+        },
+      },
+      required: ['a.b', 'a-b', 'root', 'rows'],
+          },
+        },
+      },
+    };
+    render(<SetupGuide plugin={identityPlugin} />);
+
+    const rootGroup = screen.getByRole('group', {
+      name: 'Configuration fields',
+    });
+    const rootDescriptionId = rootGroup.getAttribute('aria-describedby');
+    assert.ok(rootDescriptionId);
+    assert.equal(
+      document.querySelectorAll(`[id="${rootDescriptionId}"]`).length,
+      1,
+    );
+
+    const associatedText = (control: HTMLElement) =>
+      (control.getAttribute('aria-describedby') ?? '')
+        .split(' ')
+        .map(id => document.getElementById(id)?.textContent);
+    const collidingControls = [
+      screen.getByLabelText('Dotted property'),
+      screen.getByLabelText('Dashed property'),
+      screen.getByLabelText('Root property'),
+    ];
+    assert.equal(
+      new Set(collidingControls.map(control => control.id)).size,
+      collidingControls.length,
+    );
+    assert.deepEqual(associatedText(collidingControls[0]), [
+      'Help for dotted property.',
+      'Required',
+    ]);
+    assert.deepEqual(associatedText(collidingControls[1]), [
+      'Help for dashed property.',
+      'Required',
+    ]);
+    assert.deepEqual(associatedText(collidingControls[2]), [
+      'Help for root property.',
+      'Required',
+    ]);
+
+    await user.click(screen.getByRole('button', { name: 'Add Row' }));
+    await user.click(screen.getByRole('button', { name: 'Add Row' }));
+    const rowControls = screen.getAllByLabelText('Row value');
+    await user.type(rowControls[0], 'first');
+    const survivingControlId = rowControls[1].id;
+    const survivingDescribedBy = rowControls[1].getAttribute(
+      'aria-describedby',
+    );
+    assert.deepEqual(associatedText(rowControls[1]), [
+      'Value for this row.',
+      'Required',
+    ]);
+
+    await user.click(screen.getByRole('button', { name: 'Remove Row 1' }));
+    const remainingControl = screen.getByLabelText('Row value');
+    assert.equal(remainingControl.id, survivingControlId);
+    assert.equal(
+      remainingControl.getAttribute('aria-describedby'),
+      survivingDescribedBy,
+    );
+    assert.deepEqual(associatedText(remainingControl), [
+      'Value for this row.',
+      'Required',
+    ]);
+    assert.equal(
+      screen.getByText('Row value', { selector: 'label' }).getAttribute('for'),
+      survivingControlId,
     );
   });
 

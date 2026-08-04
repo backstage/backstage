@@ -156,9 +156,19 @@ export function SetupGuide({ plugin }: SetupGuideProps) {
                 </p>
                 <p>{snippet.explanation}</p>
                 <div className={styles.codeRow}>
-                  <pre data-language={snippet.language}>
-                    <code>{snippet.source}</code>
-                  </pre>
+                  <div className={styles.codeBlock}>
+                    <span
+                      className={styles.snippetLanguage}
+                      aria-label={`Language: ${snippet.language}`}
+                    >
+                      {snippet.language}
+                    </span>
+                    <pre data-language={snippet.language}>
+                      <code className={`language-${snippet.language}`}>
+                        {snippet.source}
+                      </code>
+                    </pre>
+                  </div>
                   <CopyButton
                     value={snippet.source}
                     label={`${snippet.title} snippet`}

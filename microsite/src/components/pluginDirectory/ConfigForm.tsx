@@ -19,7 +19,7 @@ import type {
 } from '../../pluginDirectory/config';
 import { createInitialConfig } from '../../pluginDirectory/config';
 import type { ConfigSchema } from '../../pluginDirectory/manifest';
-import React, { useId } from 'react';
+import React, { useId, useRef } from 'react';
 
 import styles from './pluginDirectory.module.scss';
 
@@ -31,12 +31,12 @@ interface ConfigFormProps {
 }
 
 interface ConfigFieldProps extends ConfigFormProps {
-  idPrefix: string;
   name: string;
   path: string[];
   required: boolean;
   itemIndex?: number;
 }
+
 
 function isConfigObject(
   value: ConfigValue,
@@ -50,7 +50,6 @@ function ConfigField({
   value,
   errors,
   onChange,
-  idPrefix,
   name,
   path,
   required,
@@ -59,10 +58,9 @@ function ConfigField({
   const baseLabel = schema['x-ui']?.label ?? name;
   const label =
     itemIndex === undefined ? baseLabel : `${baseLabel} ${itemIndex + 1}`;
-  const pathSegment = (path.length === 0 ? ['root'] : path)
-    .join('-')
-    .replace(/[^a-zA-Z0-9_-]/g, '-');
-  const id = `${idPrefix}-${pathSegment}`;
+  const id = useId();
+  const arrayItemKeys = useRef<string[]>([]);
+  const nextArrayItemKey = useRef(0);
   const descriptionId = schema.description ? `${id}-description` : undefined;
   const error = errors.find(
     candidate =>
@@ -131,7 +129,6 @@ function ConfigField({
               onChange={childValue =>
                 onChange({ ...objectValue, [key]: childValue })
               }
-              idPrefix={idPrefix}
               name={key}
               path={[...path, key]}
               required={requiredProperties.has(key)}
@@ -145,6 +142,13 @@ function ConfigField({
   if (schema.type === 'array') {
     const items = Array.isArray(value) ? value : [];
     const itemName = schema.items['x-ui']?.label ?? 'Item';
+    while (arrayItemKeys.current.length < items.length) {
+      arrayItemKeys.current.push(`${id}-item-${nextArrayItemKey.current}`);
+      nextArrayItemKey.current += 1;
+    }
+    if (arrayItemKeys.current.length > items.length) {
+      arrayItemKeys.current.length = items.length;
+    }
     return (
       <fieldset className={styles.fieldGroup} aria-describedby={describedBy}>
         <legend>{label}</legend>
@@ -160,7 +164,7 @@ function ConfigField({
         )}
         <div className={styles.arrayItems}>
           {items.map((item, index) => (
-            <div className={styles.arrayItem} key={index}>
+            <div className={styles.arrayItem} key={arrayItemKeys.current[index]}>
               <ConfigField
                 schema={schema.items}
                 value={item}
@@ -172,7 +176,6 @@ function ConfigField({
                     ),
                   )
                 }
-                idPrefix={idPrefix}
                 name={itemName}
                 path={[...path, String(index)]}
                 required
@@ -181,9 +184,15 @@ function ConfigField({
               <button
                 type="button"
                 className="button button--outline button--secondary button--sm"
-                onClick={() =>
-                  onChange(items.filter((_item, itemIndexToKeep) => itemIndexToKeep !== index))
-                }
+                onClick={() => {
+                  arrayItemKeys.current.splice(index, 1);
+                  onChange(
+                    items.filter(
+                      (_item, itemIndexToKeep) =>
+                        itemIndexToKeep !== index,
+                    ),
+                  );
+                }}
               >
                 Remove {itemName} {index + 1}
               </button>
@@ -193,7 +202,12 @@ function ConfigField({
         <button
           type="button"
           className="button button--outline button--primary button--sm"
-          onClick={() => onChange([...items, createInitialConfig(schema.items)])}
+          onClick={() =>
+            onChange([
+              ...items,
+              createInitialConfig(schema.items, { required: true }),
+            ])
+          }
         >
           Add {itemName}
         </button>
@@ -207,7 +221,6 @@ function ConfigField({
     'aria-label': label,
     'aria-describedby': describedBy,
     'aria-invalid': error ? true : undefined,
-    required,
   };
 
   let control: React.ReactNode;
@@ -224,6 +237,7 @@ function ConfigField({
     control = (
       <select
         {...commonControlProps}
+        required={required}
         value={value === undefined ? '' : String(value)}
         onChange={event => {
           if (event.currentTarget.value === '') {
@@ -247,6 +261,7 @@ function ConfigField({
     control = (
       <input
         {...commonControlProps}
+        required={required}
         type="text"
         value={typeof value === 'string' ? value : ''}
         onChange={event => onChange(event.currentTarget.value)}
@@ -256,6 +271,7 @@ function ConfigField({
     control = (
       <input
         {...commonControlProps}
+        required={required}
         type="number"
         step={schema.type === 'integer' ? 1 : 'any'}
         value={typeof value === 'number' ? value : ''}
@@ -301,15 +317,12 @@ export function ConfigForm({
   errors,
   onChange,
 }: ConfigFormProps) {
-  const idPrefix = useId().replace(/:/g, 'config');
-
   return (
     <ConfigField
       schema={schema}
       value={value}
       errors={errors}
       onChange={onChange}
-      idPrefix={idPrefix}
       name="Configuration fields"
       path={[]}
       required

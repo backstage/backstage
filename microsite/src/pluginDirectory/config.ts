@@ -40,7 +40,10 @@ interface InitializedConfig {
   populated: boolean;
 }
 
-function initializeConfig(schema: ConfigSchema): InitializedConfig {
+function initializeConfig(
+  schema: ConfigSchema,
+  isRequired: boolean,
+): InitializedConfig {
   const secretEnv = schema['x-ui']?.secretEnv;
   if (secretEnv) {
     return { value: `\${${secretEnv}}`, populated: true };
@@ -50,23 +53,35 @@ function initializeConfig(schema: ConfigSchema): InitializedConfig {
     case 'string':
     case 'number':
     case 'integer':
-    case 'boolean':
       return schema.default === undefined
         ? { value: undefined, populated: false }
         : { value: schema.default, populated: true };
+    case 'boolean':
+      if (schema.default !== undefined) {
+        return { value: schema.default, populated: true };
+      }
+      return isRequired
+        ? { value: false, populated: true }
+        : { value: undefined, populated: false };
     case 'array':
       return { value: undefined, populated: false };
     case 'object': {
       const initialValue: Record<string, ConfigValue> = {};
-      const required = new Set(schema.required);
+      const requiredProperties = new Set(schema.required);
       let populated = false;
 
       for (const [key, childSchema] of Object.entries(schema.properties)) {
-        const child = initializeConfig(childSchema);
+        const child = initializeConfig(
+          childSchema,
+          requiredProperties.has(key),
+        );
         if (child.populated) {
           initialValue[key] = child.value;
           populated = true;
-        } else if (childSchema.type === 'object' && required.has(key)) {
+        } else if (
+          childSchema.type === 'object' &&
+          requiredProperties.has(key)
+        ) {
           initialValue[key] = child.value;
         }
       }
@@ -93,8 +108,11 @@ function isEmptyConfigBranch(value: ConfigValue): boolean {
   );
 }
 
-export function createInitialConfig(schema: ConfigSchema): ConfigValue {
-  return initializeConfig(schema).value;
+export function createInitialConfig(
+  schema: ConfigSchema,
+  options: { required?: boolean } = {},
+): ConfigValue {
+  return initializeConfig(schema, options.required ?? false).value;
 }
 
 function validateNode(

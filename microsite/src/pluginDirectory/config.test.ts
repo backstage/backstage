@@ -99,6 +99,27 @@ describe('createInitialConfig', () => {
       ],
     );
   });
+
+  it('gives required Booleans an explicit false state without populating optional Booleans', () => {
+    const booleanSchema = {
+      type: 'object',
+      properties: {
+        requiredWithoutDefault: { type: 'boolean' },
+        requiredWithDefault: { type: 'boolean', default: true },
+        optionalWithoutDefault: { type: 'boolean' },
+      },
+      required: ['requiredWithoutDefault', 'requiredWithDefault'],
+    } satisfies ConfigSchema;
+
+    assert.deepEqual(createInitialConfig(booleanSchema), {
+      requiredWithoutDefault: false,
+      requiredWithDefault: true,
+    });
+    assert.equal(
+      createInitialConfig({ type: 'boolean' }, { required: true }),
+      false,
+    );
+  });
 });
 
 describe('validateConfig', () => {
