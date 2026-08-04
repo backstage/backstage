@@ -1124,6 +1124,18 @@ export const all_projects_response: GitLabProject[] = [
     web_url: 'https://example.com/group1/subgroup1/test-repo9',
     path_with_namespace: 'group1/subgroup1/test-repo9',
   },
+  // project in a nested sub-subgroup (descendant of group1/subgroup1)
+  {
+    id: 10,
+    description: 'Project Ten Description',
+    name: 'test-repo10',
+    default_branch: 'main',
+    path: 'test-repo10',
+    archived: false,
+    last_activity_at: new Date().toString(),
+    web_url: 'https://example.com/group1/subgroup1/nested/test-repo10',
+    path_with_namespace: 'group1/subgroup1/nested/test-repo10',
+  },
 ];
 
 export const all_users_response: GitLabUser[] = [
