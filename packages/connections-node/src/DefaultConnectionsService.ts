@@ -22,9 +22,12 @@ import type {
   ConnectionAuthMethodKey,
   ConnectionsService,
   ConnectionTypeKey,
+  LookupStrategy,
+  LookupStrategyDefinition,
   LookupStrategyParams,
   LookupConnectionType,
 } from '@backstage/connections';
+import { lookupStrategies } from '@backstage/connections';
 import { getConnectionType, isConnectionTypeKey } from './lookup';
 import type { RootConnection } from './types';
 import { JsonObject } from '@backstage/types';
@@ -52,29 +55,23 @@ function describeError(error: unknown): string {
   return e.message;
 }
 
-const strategyIdentityField: Record<string, string> = {
-  host: 'host',
-  aws: 'accountId',
-};
+function getLookupStrategy<K extends LookupStrategy>(
+  name: K,
+): LookupStrategyDefinition<K> {
+  return lookupStrategies[name];
+}
 
-function extractIdentity(
-  strategy: string,
-  params: Record<string, unknown>,
+// The identity field name is only known at runtime, so the typed connection
+// object cannot be indexed directly; this helper contains the erased read.
+function connectionIdentityOf(
+  strategy: { identityField?: string },
+  connection: object,
 ): string | undefined {
-  if (strategy === 'host') {
-    const url = params.url as string;
-    try {
-      return new URL(url).host;
-    } catch {
-      throw new InputError(
-        `Invalid url "${url}" passed to ConnectionsService.find`,
-      );
-    }
+  if (!strategy.identityField) {
+    return undefined;
   }
-  if (strategy === 'aws') {
-    return params.accountId as string | undefined;
-  }
-  throw new InputError(`Unknown lookup strategy "${strategy}"`);
+  const value = (connection as Record<string, unknown>)[strategy.identityField];
+  return typeof value === 'string' ? value : undefined;
 }
 
 class PluginConnectionsService implements ConnectionsService {
@@ -116,25 +113,19 @@ class PluginConnectionsService implements ConnectionsService {
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod> | undefined> {
     const connectionType = getConnectionType(type);
-    const { lookupStrategy } = connectionType;
-    const identityField = strategyIdentityField[lookupStrategy];
-    const identity = extractIdentity(
-      lookupStrategy,
-      params as Record<string, unknown>,
-    );
+    const strategy = getLookupStrategy(connectionType.lookupStrategy);
+    const identity = strategy.identityFromParams(params);
 
     this.logger.debug(
       `Finding connection of type "${type}"${
-        identity ? ` matching ${identityField} "${identity}"` : ''
+        identity ? ` matching ${strategy.identityField} "${identity}"` : ''
       }`,
     );
 
     let connection: Connection<TType> | undefined;
     if (identity !== undefined) {
       connection = this.connections.find(
-        c =>
-          c.type === type &&
-          (c as unknown as Record<string, unknown>)[identityField] === identity,
+        c => c.type === type && connectionIdentityOf(strategy, c) === identity,
       ) as Connection<TType> | undefined;
     } else {
       connection = this.connections.find(c => c.type === type) as
@@ -149,7 +140,7 @@ class PluginConnectionsService implements ConnectionsService {
     if (connection.auth.length === 0) {
       throw new NotAllowedError(
         `Connection of type "${type}"${
-          identity ? ` for ${identityField} "${identity}"` : ''
+          identity ? ` for ${strategy.identityField} "${identity}"` : ''
         } has no auth method available to this plugin`,
       );
     }
@@ -174,7 +165,7 @@ class PluginConnectionsService implements ConnectionsService {
 
     this.logger.debug(
       `Selected connection of type "${type}"${
-        identity ? ` for ${identityField} "${identity}"` : ''
+        identity ? ` for ${strategy.identityField} "${identity}"` : ''
       } using auth method "${selected.method}"`,
     );
 
@@ -238,15 +229,14 @@ export class DefaultConnectionsService {
     const seen = new Set<string>();
     for (const c of this.connections) {
       const connectionType = getConnectionType(c.type as ConnectionTypeKey);
-      const identityField =
-        strategyIdentityField[connectionType.lookupStrategy];
-      const identity = (c as unknown as Record<string, unknown>)[
-        identityField
-      ] as string | undefined;
+      const strategy = getLookupStrategy(connectionType.lookupStrategy);
+      const identity = connectionIdentityOf(strategy, c);
       const key = `${c.type} ${identity ?? ''}`;
       if (seen.has(key)) {
         throw new InputError(
-          `Duplicate connection of type "${c.type}" for ${identityField} "${identity}"`,
+          identity !== undefined
+            ? `Duplicate connection of type "${c.type}" for ${strategy.identityField} "${identity}"`
+            : `Duplicate connection of type "${c.type}"`,
         );
       }
       seen.add(key);
@@ -358,11 +348,10 @@ export class DefaultConnectionsService {
         const type = c.type as ConnectionTypeKey;
         const connectionType = getConnectionType(type);
         const displayName = connectionType.title;
-        const identityField =
-          strategyIdentityField[connectionType.lookupStrategy];
-        const identity = (c as unknown as Record<string, unknown>)[
-          identityField
-        ] as string | undefined;
+        const identity = connectionIdentityOf(
+          getLookupStrategy(connectionType.lookupStrategy),
+          c,
+        );
         (c as { title?: string }).title =
           typeCounts.get(type)! > 1 && identity
             ? `${displayName} (${identity})`

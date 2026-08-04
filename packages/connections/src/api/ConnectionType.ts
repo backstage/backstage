@@ -23,7 +23,7 @@ export type LookupStrategy = 'host' | 'aws';
 /** @public */
 export type LookupStrategyParams = {
   host: { url: string };
-  aws: { accountId?: string };
+  aws: { accountId?: string; arn?: string };
 };
 
 // Field names the framework owns at the connection level. Connection-type

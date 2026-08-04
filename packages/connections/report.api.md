@@ -454,8 +454,21 @@ export const connectionTypes: {
 export type LookupConnectionType<T extends ConnectionTypeKey | ConnectionType> =
   T extends ConnectionTypeKey ? (typeof connectionTypes)[T] : T;
 
+// @public
+export const lookupStrategies: {
+  [K in LookupStrategy]: LookupStrategyDefinition<K>;
+};
+
 // @public (undocumented)
 export type LookupStrategy = 'host' | 'aws';
+
+// @public
+export type LookupStrategyDefinition<
+  K extends LookupStrategy = LookupStrategy,
+> = {
+  identityField?: string;
+  identityFromParams(params: LookupStrategyParams[K]): string | undefined;
+};
 
 // @public (undocumented)
 export type LookupStrategyParams = {
@@ -464,6 +477,7 @@ export type LookupStrategyParams = {
   };
   aws: {
     accountId?: string;
+    arn?: string;
   };
 };
 

@@ -25,6 +25,8 @@ export type {
   RootConnectionAuth,
   PortableSchema,
 } from './api/ConnectionType';
+export { lookupStrategies } from './system/lookupStrategies';
+export type { LookupStrategyDefinition } from './system/lookupStrategies';
 export { connectionTypes } from './definitions/types';
 export type {
   ConnectionTypeKey,
