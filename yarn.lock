@@ -9127,14 +9127,14 @@ __metadata:
   linkType: hard
 
 "@google-cloud/cloud-sql-connector@npm:^1.4.0":
-  version: 1.11.0
-  resolution: "@google-cloud/cloud-sql-connector@npm:1.11.0"
+  version: 1.11.3
+  resolution: "@google-cloud/cloud-sql-connector@npm:1.11.3"
   dependencies:
-    "@googleapis/sqladmin": "npm:^35.2.0"
+    "@googleapis/sqladmin": "npm:^37.0.0"
     gaxios: "npm:^7.1.4"
     google-auth-library: "npm:^10.6.2"
-    p-throttle: "npm:^7.0.0"
-  checksum: 10/d89da34337fe1b9baeecb830f53276bd28155c8cfa41a21b15069f579dc1cedb47975e5f591facd59f1c4f8e755a6580d93ea10e6df368d1340e011d606a95d5
+    p-throttle: "npm:^8.1.0"
+  checksum: 10/7d04fa731dc5a5b582c022b132cc8351d76d2cdc9b78f5d141d2fd37eaed685605c0d4ed82f1ab603a45ada20f2eeb4a650e389119c142bba4959a4d75c9a329
   languageName: node
   linkType: hard
 
@@ -9236,12 +9236,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@googleapis/sqladmin@npm:^35.2.0":
-  version: 35.2.0
-  resolution: "@googleapis/sqladmin@npm:35.2.0"
+"@googleapis/sqladmin@npm:^37.0.0":
+  version: 37.0.0
+  resolution: "@googleapis/sqladmin@npm:37.0.0"
   dependencies:
     googleapis-common: "npm:^8.0.0"
-  checksum: 10/f5931b91626a29173732381ffa7ec3c674397d3192b30da8f4b3639fef3cd88bfa3b21f7e5aa084cab1d4f90bef6860617d2d1f68e1c3692fa1c5835fc89c25a
+  checksum: 10/bd44393b086d692f7b9c88f817d034b32f2cdea208f02130ad55da1c364a601d6b80761dc92ec191c63716c43d8e997bece419137809040d0b98222804d6f46b
   languageName: node
   linkType: hard
 
@@ -37864,10 +37864,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-throttle@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "p-throttle@npm:7.0.0"
-  checksum: 10/ede8b1444bcb9200ebb95415c5eb2fba301ab12de4a9cffe3b8f383ca640e6d52aed417ee0df6705217a8e5aa8faadc5169fc56be7e99d32d34b9a74727d1d4d
+"p-throttle@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "p-throttle@npm:8.1.0"
+  checksum: 10/a22e5580fc9f816af831b6a7aaa0323cb83c266146e833cd3af2abfe1390b0576701366e53ad598cb7f05d6e182f243b3fa3c64e6f68e6d6a900d4629d8e239a
   languageName: node
   linkType: hard
 
