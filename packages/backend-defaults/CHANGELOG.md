@@ -1,5 +1,16 @@
 # @backstage/backend-defaults
 
+## 0.17.7-next.2
+
+### Patch Changes
+
+- b1b6c80: Read-only actions now default to non-destructive when the destructive attribute is omitted.
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: TypeScript configuration schema warnings discovered while setting up secret redaction are now reported through the Backstage logger.
+- Updated dependencies
+  - @backstage/config-loader@1.11.2-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
 ## 0.17.6-next.1
 
 ### Patch Changes

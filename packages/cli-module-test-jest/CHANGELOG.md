@@ -1,5 +1,11 @@
 # @backstage/cli-module-test-jest
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+
 ## 0.1.4
 
 ### Patch Changes
