@@ -15,7 +15,7 @@
  */
 import type { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { NotFoundError } from '@backstage/errors';
+import { ConflictError, InputError } from '@backstage/errors';
 import type { CatalogService } from '@backstage/plugin-catalog-node';
 
 export const createRefreshCatalogEntityAction = ({
@@ -33,11 +33,11 @@ export const createRefreshCatalogEntityAction = ({
       readOnly: false,
       idempotent: true,
     },
-    description: `Triggers a refresh of a single entity in the Backstage software catalog, requeuing it for processing.
-
-This is useful immediately after creating or updating an entity (for example, via a scaffolder template invoked by an MCP client) when the new data must be visible in the catalog before subsequent actions can read it.
-
-Each entity is identified by its kind, namespace, and name. The default kind is "Component" and the default namespace is "default".`,
+    description: `
+This allows you to trigger a refresh of a single entity in the software catalog, requeuing it for processing.
+This is useful immediately after creating or updating an entity (for example via a scaffolder template invoked by an MCP client) so the new data becomes visible before subsequent actions read it.
+Each entity in the software catalog has a unique name, kind, and namespace. If the name alone matches multiple entities, provide the kind (and namespace) to disambiguate.
+    `,
     schema: {
       input: z =>
         z.object({
@@ -45,14 +45,14 @@ Each entity is identified by its kind, namespace, and name. The default kind is 
             .string()
             .min(1)
             .describe(
-              `The kind of the entity to refresh, e.g. "Component", "API", "System". Defaults to "Component" if omitted.`,
+              'The kind of the entity to refresh, e.g. "Component", "API", "System". If the kind is unknown it can be omitted.',
             )
             .optional(),
           namespace: z
             .string()
             .min(1)
             .describe(
-              `The namespace of the entity to refresh. Defaults to "default" if omitted.`,
+              'The namespace of the entity to refresh. If the namespace is unknown it can be omitted.',
             )
             .optional(),
           name: z
@@ -69,16 +69,36 @@ Each entity is identified by its kind, namespace, and name. The default kind is 
         }),
     },
     action: async ({ input, credentials }) => {
-      const entityRef = stringifyEntityRef({
-        kind: input.kind ?? 'Component',
-        namespace: input.namespace ?? 'default',
-        name: input.name,
-      });
+      const filter: Record<string, string> = { 'metadata.name': input.name };
 
-      const entity = await catalog.getEntityByRef(entityRef, { credentials });
-      if (!entity) {
-        throw new NotFoundError(`Entity '${entityRef}' not found`);
+      if (input.kind) {
+        filter.kind = input.kind;
       }
+
+      if (input.namespace) {
+        filter['metadata.namespace'] = input.namespace;
+      }
+
+      const { items } = await catalog.queryEntities(
+        { filter },
+        { credentials },
+      );
+
+      if (items.length === 0) {
+        throw new InputError(`No entity found with name "${input.name}"`);
+      }
+
+      if (items.length > 1) {
+        throw new ConflictError(
+          `Multiple entities found with name "${
+            input.name
+          }", please provide more specific filters. Entities found: ${items
+            .map(item => `"${stringifyEntityRef(item)}"`)
+            .join(', ')}`,
+        );
+      }
+
+      const entityRef = stringifyEntityRef(items[0]);
 
       await catalog.refreshEntity(entityRef, { credentials });
 

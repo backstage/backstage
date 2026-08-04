@@ -18,18 +18,79 @@ import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 
 describe('createRefreshCatalogEntityAction', () => {
-  const mockEntity = {
+  const componentEntity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
-    metadata: { name: 'example-website', namespace: 'default' },
+    metadata: { name: 'orders-api', namespace: 'default' },
+    spec: { type: 'service' },
   };
 
-  it('refreshes an entity using explicit kind, namespace, and name', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-    const mockCatalog = catalogServiceMock();
+  const apiEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'API',
+    metadata: { name: 'orders-api', namespace: 'default' },
+  };
 
-    mockCatalog.getEntityByRef = jest.fn().mockResolvedValue(mockEntity);
-    mockCatalog.refreshEntity = jest.fn().mockResolvedValue(undefined);
+  const paymentsApiEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'API',
+    metadata: { name: 'orders-api', namespace: 'payments' },
+  };
+
+  it('resolves an entity by name alone (single match) and refreshes it', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockCatalog = catalogServiceMock({ entities: [componentEntity] });
+    const refreshSpy = jest.spyOn(mockCatalog, 'refreshEntity');
+
+    createRefreshCatalogEntityAction({
+      catalog: mockCatalog,
+      actionsRegistry: mockActionsRegistry,
+    });
+
+    const result = await mockActionsRegistry.invoke({
+      id: 'test:refresh-catalog-entity',
+      input: { name: 'orders-api' },
+    });
+
+    expect(result.output).toEqual({
+      entityRef: 'component:default/orders-api',
+    });
+    expect(refreshSpy).toHaveBeenCalledWith(
+      'component:default/orders-api',
+      expect.objectContaining({ credentials: expect.any(Object) }),
+    );
+  });
+
+  it('disambiguates via kind when multiple entities share a name', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockCatalog = catalogServiceMock({
+      entities: [componentEntity, apiEntity],
+    });
+    const refreshSpy = jest.spyOn(mockCatalog, 'refreshEntity');
+
+    createRefreshCatalogEntityAction({
+      catalog: mockCatalog,
+      actionsRegistry: mockActionsRegistry,
+    });
+
+    const result = await mockActionsRegistry.invoke({
+      id: 'test:refresh-catalog-entity',
+      input: { kind: 'API', name: 'orders-api' },
+    });
+
+    expect(result.output).toEqual({ entityRef: 'api:default/orders-api' });
+    expect(refreshSpy).toHaveBeenCalledWith(
+      'api:default/orders-api',
+      expect.objectContaining({ credentials: expect.any(Object) }),
+    );
+  });
+
+  it('disambiguates via kind + namespace when multiple entities share a name', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockCatalog = catalogServiceMock({
+      entities: [apiEntity, paymentsApiEntity],
+    });
+    const refreshSpy = jest.spyOn(mockCatalog, 'refreshEntity');
 
     createRefreshCatalogEntityAction({
       catalog: mockCatalog,
@@ -41,53 +102,17 @@ describe('createRefreshCatalogEntityAction', () => {
       input: { kind: 'API', namespace: 'payments', name: 'orders-api' },
     });
 
-    const expectedRef = 'api:payments/orders-api';
-    expect(result.output).toEqual({ entityRef: expectedRef });
-    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(
-      expectedRef,
-      expect.objectContaining({ credentials: expect.any(Object) }),
-    );
-    expect(mockCatalog.refreshEntity).toHaveBeenCalledWith(
-      expectedRef,
+    expect(result.output).toEqual({ entityRef: 'api:payments/orders-api' });
+    expect(refreshSpy).toHaveBeenCalledWith(
+      'api:payments/orders-api',
       expect.objectContaining({ credentials: expect.any(Object) }),
     );
   });
 
-  it('defaults kind to "Component" and namespace to "default" when omitted', async () => {
+  it('throws when no entity matches the name', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
-    const mockCatalog = catalogServiceMock();
-
-    mockCatalog.getEntityByRef = jest.fn().mockResolvedValue(mockEntity);
-    mockCatalog.refreshEntity = jest.fn().mockResolvedValue(undefined);
-
-    createRefreshCatalogEntityAction({
-      catalog: mockCatalog,
-      actionsRegistry: mockActionsRegistry,
-    });
-
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:refresh-catalog-entity',
-      input: { name: 'example-website' },
-    });
-
-    const expectedRef = 'component:default/example-website';
-    expect(result.output).toEqual({ entityRef: expectedRef });
-    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(
-      expectedRef,
-      expect.objectContaining({ credentials: expect.any(Object) }),
-    );
-    expect(mockCatalog.refreshEntity).toHaveBeenCalledWith(
-      expectedRef,
-      expect.objectContaining({ credentials: expect.any(Object) }),
-    );
-  });
-
-  it('throws NotFoundError when the entity does not exist', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-    const mockCatalog = catalogServiceMock();
-
-    mockCatalog.getEntityByRef = jest.fn().mockResolvedValue(undefined);
-    mockCatalog.refreshEntity = jest.fn();
+    const mockCatalog = catalogServiceMock({ entities: [] });
+    const refreshSpy = jest.spyOn(mockCatalog, 'refreshEntity');
 
     createRefreshCatalogEntityAction({
       catalog: mockCatalog,
@@ -99,21 +124,40 @@ describe('createRefreshCatalogEntityAction', () => {
         id: 'test:refresh-catalog-entity',
         input: { name: 'missing-entity' },
       }),
-    ).rejects.toMatchObject({
-      name: 'NotFoundError',
-      message: `Entity 'component:default/missing-entity' not found`,
+    ).rejects.toThrow(`No entity found with name "missing-entity"`);
+
+    expect(refreshSpy).not.toHaveBeenCalled();
+  });
+
+  it('throws when a name matches multiple entities, listing the candidates', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockCatalog = catalogServiceMock({
+      entities: [componentEntity, apiEntity],
+    });
+    const refreshSpy = jest.spyOn(mockCatalog, 'refreshEntity');
+
+    createRefreshCatalogEntityAction({
+      catalog: mockCatalog,
+      actionsRegistry: mockActionsRegistry,
     });
 
-    expect(mockCatalog.refreshEntity).not.toHaveBeenCalled();
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:refresh-catalog-entity',
+        input: { name: 'orders-api' },
+      }),
+    ).rejects.toThrow(
+      `Multiple entities found with name "orders-api", please provide more specific filters. Entities found: "component:default/orders-api", "api:default/orders-api"`,
+    );
+
+    expect(refreshSpy).not.toHaveBeenCalled();
   });
 
   it('surfaces errors from catalog.refreshEntity to the caller', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
-    const mockCatalog = catalogServiceMock();
-
-    mockCatalog.getEntityByRef = jest.fn().mockResolvedValue(mockEntity);
-    mockCatalog.refreshEntity = jest
-      .fn()
+    const mockCatalog = catalogServiceMock({ entities: [componentEntity] });
+    jest
+      .spyOn(mockCatalog, 'refreshEntity')
       .mockRejectedValue(new Error('processor unavailable'));
 
     createRefreshCatalogEntityAction({
@@ -124,7 +168,7 @@ describe('createRefreshCatalogEntityAction', () => {
     await expect(
       mockActionsRegistry.invoke({
         id: 'test:refresh-catalog-entity',
-        input: { name: 'example-website' },
+        input: { name: 'orders-api' },
       }),
     ).rejects.toThrow('processor unavailable');
   });
