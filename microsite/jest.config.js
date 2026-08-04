@@ -24,6 +24,7 @@ module.exports = {
   testEnvironment: '@backstage/cli-module-test-jest/config/jest-environment-jsdom',
   testMatch: ['<rootDir>/src/**/*.spec.tsx'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  transformIgnorePatterns: ['/node_modules/(?!(@rjsf|@x0k)/)'],
   transform: {
     '\\.[jt]sx?$': [
       '@swc/jest',
