@@ -106,6 +106,7 @@ function transitionStatus(
     (now.getTime() - new Date(lastPublishedAt).getTime()) /
       (1000 * 60 * 60 * 24),
   );
+  const auditDate = now.toISOString().slice(0, 10);
   if (Number.isNaN(ageInDays)) {
     return manifest;
   }
@@ -115,7 +116,11 @@ function transitionStatus(
     return { ...activeManifest, status: 'active' };
   }
 
-  if (ageInDays > 365 && manifest.status === 'inactive') {
+  if (
+    ageInDays > 365 &&
+    manifest.status === 'inactive' &&
+    manifest.staleSince !== auditDate
+  ) {
     return { ...manifest, status: 'archived' };
   }
 
@@ -123,7 +128,7 @@ function transitionStatus(
     return {
       ...manifest,
       status: 'inactive',
-      staleSince: now.toISOString().slice(0, 10),
+      staleSince: auditDate,
     };
   }
 

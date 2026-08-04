@@ -105,6 +105,16 @@ describe('auditManifest status transitions', () => {
     assert.equal(result.changed, true);
   });
 
+  it('keeps a plugin inactive when rerun on its transition date', async () => {
+    const result = await auditManifest(
+      manifest('inactive', { staleSince: '2026-08-03' }),
+      dependencies(freshNpm('2025-07-01T00:00:00.000Z')),
+    );
+
+    assert.equal(result.manifest.status, 'inactive');
+    assert.equal(result.manifest.staleSince, '2026-08-03');
+  });
+
   it('archives an old inactive plugin without replacing its stale date', async () => {
     const result = await auditManifest(
       manifest('inactive', { staleSince: '2025-04-12' }),
