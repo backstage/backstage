@@ -28,9 +28,13 @@ import styles from './pluginDirectory.module.scss';
 
 interface PluginDetailPageProps {
   plugin: PluginData;
+  latestBackstageVersion: string | null;
 }
 
-export default function PluginDetailPage({ plugin }: PluginDetailPageProps) {
+export default function PluginDetailPage({
+  plugin,
+  latestBackstageVersion,
+}: PluginDetailPageProps) {
   return (
     <Layout title={plugin.title} description={plugin.description}>
       <main className={`container padding-vert--lg ${styles.detailPage}`}>
@@ -50,7 +54,10 @@ export default function PluginDetailPage({ plugin }: PluginDetailPageProps) {
         </nav>
 
         <article className={styles.detailArticle}>
-          <PluginHeader plugin={plugin} />
+          <PluginHeader
+            plugin={plugin}
+            latestBackstageVersion={latestBackstageVersion}
+          />
 
           <Tabs>
             <TabItem value="overview" label="Overview">

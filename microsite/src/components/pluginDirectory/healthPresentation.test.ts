@@ -17,7 +17,7 @@ import './testDom';
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import type { PluginData } from '../../pluginDirectory/manifest';
-import { getNpmPackageUrl } from './healthPresentation';
+import { countMinorVersionsBehind, getNpmPackageUrl } from './healthPresentation';
 
 const plugin: PluginData = {
   title: 'Example Plugin',
@@ -39,5 +39,23 @@ describe('getNpmPackageUrl', () => {
       getNpmPackageUrl(plugin),
       'https://www.npmjs.com/package/@example/plugin-example',
     );
+  });
+});
+
+describe('countMinorVersionsBehind', () => {
+  it('counts minor releases between two versions with the same major', () => {
+    assert.equal(countMinorVersionsBehind('1.50.0', '1.53.1'), 3);
+  });
+
+  it('returns 0 when already on the latest version', () => {
+    assert.equal(countMinorVersionsBehind('1.53.1', '1.53.1'), 0);
+  });
+
+  it('clamps to 0 instead of going negative when ahead of the latest version', () => {
+    assert.equal(countMinorVersionsBehind('1.54.0', '1.53.1'), 0);
+  });
+
+  it('returns undefined for unparseable versions', () => {
+    assert.equal(countMinorVersionsBehind('not-a-version', '1.53.1'), undefined);
   });
 });

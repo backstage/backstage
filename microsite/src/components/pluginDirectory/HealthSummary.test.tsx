@@ -108,9 +108,9 @@ describe('HealthSummary', () => {
     );
     assert.ok(screen.getByText('Released 12 days ago'));
     assert.equal(
-      screen.getByRole('link', { name: 'Source repository' }).getAttribute(
-        'href',
-      ),
+      screen
+        .getByRole('link', { name: 'Source repository' })
+        .getAttribute('href'),
       'https://github.com/example/catalog-insights',
     );
 
@@ -174,10 +174,7 @@ describe('HealthSummary', () => {
     render(<HealthSummary plugin={stalePlugin} now={fixedNow} />);
 
     assert.equal(screen.getAllByText('Stale').length, 2);
-    assert.equal(
-      screen.getAllByText('Last verified July 20, 2026').length,
-      2,
-    );
+    assert.equal(screen.getAllByText('Last verified July 20, 2026').length, 2);
     assert.ok(
       screen.getByText(
         (_content, element) =>

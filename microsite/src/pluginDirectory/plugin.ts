@@ -15,6 +15,7 @@
  */
 import { join } from 'node:path';
 import type { LoadContext, Plugin } from '@docusaurus/types';
+import { loadLatestBackstageVersion } from './latestBackstageVersion';
 import { loadPluginManifests } from './load';
 import type { PluginData } from './manifest';
 
@@ -25,16 +26,29 @@ export default function pluginDirectoryPlugin({
   siteDir,
 }: LoadContext): Plugin<PluginData[]> {
   const manifestDirectory = join(siteDir, 'data', 'plugins');
+  const latestBackstageVersionPath = join(
+    siteDir,
+    'data',
+    'latest-backstage-version.yaml',
+  );
 
   return {
     name: 'plugin-directory',
     getPathsToWatch() {
-      return [join(manifestDirectory, '*.yaml')];
+      return [join(manifestDirectory, '*.yaml'), latestBackstageVersionPath];
     },
     loadContent() {
       return loadPluginManifests(manifestDirectory);
     },
     async contentLoaded({ content, actions }) {
+      const latestBackstageVersion = await loadLatestBackstageVersion(
+        latestBackstageVersionPath,
+      );
+      const latestBackstageVersionPathData = await actions.createData(
+        'latest-backstage-version.json',
+        JSON.stringify(latestBackstageVersion?.version ?? null),
+      );
+
       for (const plugin of [...content].sort((a, b) =>
         a.slug.localeCompare(b.slug),
       )) {
@@ -46,7 +60,10 @@ export default function pluginDirectoryPlugin({
           path: `/plugins/${plugin.slug}`,
           exact: true,
           component: detailPageComponent,
-          modules: { plugin: dataPath },
+          modules: {
+            plugin: dataPath,
+            latestBackstageVersion: latestBackstageVersionPathData,
+          },
         });
       }
     },

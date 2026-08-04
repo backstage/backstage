@@ -17,31 +17,56 @@ import Link from '@docusaurus/Link';
 import type { PluginData } from '@site/src/pluginDirectory/manifest';
 import React from 'react';
 
-import { CompatibilityBadges } from './CompatibilityBadges';
+import { countMinorVersionsBehind } from './healthPresentation';
 import { ResourceIcons } from './ResourceIcons';
 import styles from './pluginDirectory.module.scss';
 
 interface PluginHeaderProps {
   plugin: PluginData;
-  now?: Date;
+  latestBackstageVersion?: string | null;
 }
 
-export function PluginHeader({ plugin, now = new Date() }: PluginHeaderProps) {
+export function PluginHeader({
+  plugin,
+  latestBackstageVersion,
+}: PluginHeaderProps) {
+  const backstageSnapshot = plugin.snapshot?.backstage;
+  const builtWithVersion =
+    backstageSnapshot && backstageSnapshot.status !== 'unavailable'
+      ? backstageSnapshot.version
+      : undefined;
+  const versionsBehind =
+    builtWithVersion && latestBackstageVersion
+      ? countMinorVersionsBehind(builtWithVersion, latestBackstageVersion)
+      : undefined;
+
   return (
     <header className={styles.detailHeader}>
       <div className={styles.headerTop}>
         <div>
-          <h1>{plugin.title}</h1>
+          <h1>
+            {plugin.title}
+            {builtWithVersion && (
+              <span className={styles.builtWithVersion}>
+                built with Backstage v{builtWithVersion}
+              </span>
+            )}
+          </h1>
           <p className={styles.byline}>
             by <Link to={plugin.authorUrl}>{plugin.author}</Link>
+            {!!versionsBehind && (
+              <span className={styles.versionsBehind}>
+                {' '}
+                · {versionsBehind} version{versionsBehind === 1 ? '' : 's'}{' '}
+                behind
+              </span>
+            )}
           </p>
         </div>
         <ResourceIcons plugin={plugin} />
       </div>
 
       <p className={styles.description}>{plugin.description}</p>
-
-      <CompatibilityBadges plugin={plugin} now={now} />
     </header>
   );
 }

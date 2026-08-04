@@ -18,8 +18,6 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { PluginHeader } from './PluginHeader';
 
-const fixedNow = new Date('2026-08-03T12:00:00.000Z');
-
 const plugin: PluginData = {
   title: 'Catalog Insights',
   author: 'Example Maintainers',
@@ -50,25 +48,39 @@ const plugin: PluginData = {
         'https://github.com/example/catalog-insights/blob/main/package.json',
       sourcePath: 'package.json',
     },
+    packages: [
+      {
+        npmPackageName: '@example/backstage-plugin-catalog-insights',
+        npm: {
+          status: 'fresh',
+          checkedAt: '2026-08-03T10:00:00.000Z',
+          lastAttemptAt: '2026-08-03T10:00:00.000Z',
+          latestVersion: '2.4.0',
+          lastPublishedAt: '2026-07-22T12:00:00.000Z',
+          repository: { url: 'https://github.com/example/catalog-insights' },
+        },
+        configSchema: {
+          status: 'unavailable',
+          lastAttemptAt: '2026-08-03T10:00:00.000Z',
+          reason: 'npm-data-unavailable',
+        },
+      },
+    ],
   },
 };
 
 describe('PluginHeader', () => {
-  it('renders identity, description, compatibility badges, and resource links', () => {
-    render(<PluginHeader plugin={plugin} now={fixedNow} />);
+  it('renders identity, description, built-with version, and resource links', () => {
+    render(<PluginHeader plugin={plugin} latestBackstageVersion={null} />);
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Catalog Insights',
-    );
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toHaveTextContent('Catalog Insights');
+    expect(heading).toHaveTextContent('built with Backstage v1.50.0');
     expect(
       screen.getByRole('link', { name: 'Example Maintainers' }),
     ).toHaveAttribute('href', 'https://example.com');
     expect(
       screen.getByText('Adds operational context to catalog entities.'),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'npm 2.4.0' })).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: 'Backstage 1.50.0' }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: /Documentation/ }),
@@ -79,5 +91,12 @@ describe('PluginHeader', () => {
     expect(
       screen.getByRole('link', { name: /Repository/ }),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/versions? behind/)).not.toBeInTheDocument();
+  });
+
+  it('shows how many minor versions behind the plugin is when a later Backstage release exists', () => {
+    render(<PluginHeader plugin={plugin} latestBackstageVersion="1.53.1" />);
+
+    expect(screen.getByText('· 3 versions behind')).toBeInTheDocument();
   });
 });

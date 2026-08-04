@@ -18,6 +18,7 @@ import React, { useId } from 'react';
 import {
   formatReleaseAge,
   getNpmPackageUrl,
+  getPrimaryPackageSnapshot,
   statusPresentations,
 } from './healthPresentation';
 import type {
@@ -80,7 +81,8 @@ export function HealthSummary({
   plugin,
   now = new Date(),
 }: HealthSummaryProps) {
-  const npmSnapshot: NpmSnapshot | undefined = plugin.snapshot?.npm;
+  const npmSnapshot: NpmSnapshot | undefined =
+    getPrimaryPackageSnapshot(plugin)?.npm;
   const backstageSnapshot: BackstageSnapshot | undefined =
     plugin.snapshot?.backstage;
   const npmStatus = npmSnapshot?.status ?? 'unavailable';

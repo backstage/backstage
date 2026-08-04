@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { PluginData, SnapshotStatus } from '../../pluginDirectory/manifest';
+import type {
+  PackageSnapshot,
+  PluginData,
+  SnapshotStatus,
+} from '../../pluginDirectory/manifest';
 import styles from './pluginDirectory.module.scss';
 
 const millisecondsPerDay = 24 * 60 * 60 * 1000;
@@ -75,4 +79,34 @@ export function formatReleaseAge(isoDate: string, now = new Date()): string {
 
 export function getNpmPackageUrl(plugin: PluginData): string {
   return `https://www.npmjs.com/package/${plugin.npmPackageName}`;
+}
+
+const backstageVersionPattern = /^(\d+)\.(\d+)\.\d+/;
+
+/**
+ * Counts how many minor Backstage releases `version` is behind
+ * `latestVersion`, e.g. 1.50.0 vs 1.53.1 is 3 minor releases behind. Returns
+ * undefined if either version doesn't parse as a Backstage release version.
+ */
+export function countMinorVersionsBehind(
+  version: string,
+  latestVersion: string,
+): number | undefined {
+  const current = backstageVersionPattern.exec(version);
+  const latest = backstageVersionPattern.exec(latestVersion);
+  if (!current || !latest) {
+    return undefined;
+  }
+
+  const currentOrdinal = Number(current[1]) * 1000 + Number(current[2]);
+  const latestOrdinal = Number(latest[1]) * 1000 + Number(latest[2]);
+  return Math.max(0, latestOrdinal - currentOrdinal);
+}
+
+export function getPrimaryPackageSnapshot(
+  plugin: PluginData,
+): PackageSnapshot | undefined {
+  return plugin.snapshot?.packages.find(
+    packageSnapshot => packageSnapshot.npmPackageName === plugin.npmPackageName,
+  );
 }

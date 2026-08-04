@@ -17,14 +17,32 @@ import React from 'react';
 
 import styles from './pluginDirectory.module.scss';
 
-export function SetupFallback() {
+export interface PackageSelectOption {
+  value: string;
+  label: string;
+}
+
+interface PackageSelectProps {
+  value: string;
+  options: readonly PackageSelectOption[];
+  onChange: (value: string) => void;
+}
+
+export function PackageSelect({ value, options, onChange }: PackageSelectProps) {
   return (
-    <section className={styles.setupFallback} aria-label="Setup guide">
-      <strong>Setup guide not provided</strong>
-      <p>
-        Use the documentation and package resources below for installation
-        instructions.
-      </p>
-    </section>
+    <label className={styles.packageSelectLabel}>
+      Package
+      <select
+        className={styles.packageSelect}
+        value={value}
+        onChange={event => onChange(event.target.value)}
+      >
+        {options.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

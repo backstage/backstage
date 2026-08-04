@@ -15,7 +15,7 @@
  */
 import React from 'react';
 
-import { getNpmPackageUrl } from './healthPresentation';
+import { getNpmPackageUrl, getPrimaryPackageSnapshot } from './healthPresentation';
 import type { PluginData } from '../../pluginDirectory/manifest';
 import styles from './pluginDirectory.module.scss';
 
@@ -57,7 +57,7 @@ function RepositoryIcon() {
 }
 
 export function ResourceIcons({ plugin }: ResourceIconsProps) {
-  const npmSnapshot = plugin.snapshot?.npm;
+  const npmSnapshot = getPrimaryPackageSnapshot(plugin)?.npm;
   const repositoryUrl =
     npmSnapshot && npmSnapshot.status !== 'unavailable'
       ? npmSnapshot.repository?.url

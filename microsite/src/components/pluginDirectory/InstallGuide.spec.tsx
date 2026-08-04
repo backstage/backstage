@@ -19,6 +19,22 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InstallGuide } from './InstallGuide';
 
+const unavailableConfigSchema = {
+  status: 'unavailable' as const,
+  lastAttemptAt: '2026-08-03T12:00:00.000Z',
+  reason: 'npm-data-unavailable' as const,
+};
+
+function freshNpm() {
+  return {
+    status: 'fresh' as const,
+    checkedAt: '2026-08-03T12:00:00.000Z',
+    lastAttemptAt: '2026-08-03T12:00:00.000Z',
+    latestVersion: '1.0.0',
+    lastPublishedAt: '2026-07-01T00:00:00.000Z',
+  };
+}
+
 const plugin: PluginData = {
   title: 'Example Plugin',
   author: 'Example Maintainers',
@@ -31,62 +47,65 @@ const plugin: PluginData = {
   status: 'active',
   slug: 'example-plugin',
   isNew: false,
-  setup: {
-    packages: [
-      { name: '@example/plugin-example', role: 'frontend' },
-      { name: '@example/plugin-example-backend', role: 'backend' },
-    ],
-    frontend: {
-      routes: [
-        {
-          name: 'example',
-          type: 'provided',
-          description: 'Provides the example page route.',
-        },
-      ],
-      extensions: [
-        {
-          id: 'entity-content:example/example',
-          kind: 'entity-content',
-          description: 'Adds example content to catalog entities.',
-          enabledByDefault: true,
-        },
-      ],
+  snapshot: {
+    backstage: {
+      status: 'unavailable',
+      lastAttemptAt: '2026-08-03T12:00:00.000Z',
+      reason: 'repository-unsupported',
     },
-    integration: [
+    packages: [
       {
-        title: 'Register the backend',
-        explanation: 'Register the backend plugin before starting Backstage.',
-        language: 'ts',
-        source: "backend.add(import('@example/plugin-example-backend'));\n",
+        functionality: 'frontend',
+        npmPackageName: '@example/plugin-example',
+        npm: freshNpm(),
+        configSchema: unavailableConfigSchema,
+      },
+      {
+        functionality: 'backend',
+        npmPackageName: '@example/plugin-example-backend',
+        npm: freshNpm(),
+        configSchema: unavailableConfigSchema,
       },
     ],
   },
 };
 
 describe('InstallGuide', () => {
-  it('keeps install, route, and extension guidance in the declared order', () => {
+  it('shows the first package selected by default and a picker for the rest', () => {
     render(<InstallGuide plugin={plugin} />);
 
+    expect(screen.getByRole('heading')).toHaveTextContent('Install');
     expect(
-      screen.getAllByRole('heading').map(heading => heading.textContent),
-    ).toEqual(['Install', 'Integrate', 'Routes added', 'Extensions added']);
+      screen.getByText('yarn add @example/plugin-example'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('yarn add @example/plugin-example-backend'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('combobox', { name: 'Package' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('frontend')).toBeInTheDocument();
+  });
 
-    expect(screen.getByText('yarn add @example/plugin-example')).toBeInTheDocument();
+  it('switches the shown install command when a different package is selected', async () => {
+    const user = userEvent.setup();
+    render(<InstallGuide plugin={plugin} />);
+
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Package' }),
+      '@example/plugin-example-backend',
+    );
+
     expect(
       screen.getByText('yarn add @example/plugin-example-backend'),
     ).toBeInTheDocument();
-    expect(screen.getByText('example')).toBeInTheDocument();
     expect(
-      screen.getByText('entity-content:example/example'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("backend.add(import('@example/plugin-example-backend'));"),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText('Language: ts')).toHaveTextContent('ts');
+      screen.queryByText('yarn add @example/plugin-example'),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('backend')).toBeInTheDocument();
   });
 
-  it('copies package commands and authored snippets and announces clipboard results', async () => {
+  it('copies the selected package command and announces clipboard results', async () => {
     const user = userEvent.setup();
     const copiedValues: string[] = [];
     Object.defineProperty(navigator, 'clipboard', {
@@ -106,15 +125,6 @@ describe('InstallGuide', () => {
     expect(
       await screen.findByText('Copied frontend install command.'),
     ).toBeInTheDocument();
-
-    await user.click(
-      screen.getByRole('button', {
-        name: 'Copy Register the backend snippet',
-      }),
-    );
-    expect(copiedValues.at(-1)).toBe(
-      "backend.add(import('@example/plugin-example-backend'));\n",
-    );
   });
 
   it('announces clipboard failures without changing the displayed code', async () => {
@@ -129,6 +139,10 @@ describe('InstallGuide', () => {
     });
     render(<InstallGuide plugin={plugin} />);
 
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Package' }),
+      '@example/plugin-example-backend',
+    );
     await user.click(
       screen.getByRole('button', { name: 'Copy backend install command' }),
     );
@@ -141,10 +155,28 @@ describe('InstallGuide', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders an explicit fallback when setup metadata is absent', () => {
-    render(<InstallGuide plugin={{ ...plugin, setup: undefined }} />);
+  it('derives an install command from the npm package name when no snapshot is available', () => {
+    render(<InstallGuide plugin={{ ...plugin, snapshot: undefined }} />);
 
-    expect(screen.getByText('Setup guide not provided')).toBeInTheDocument();
-    expect(screen.queryByRole('heading')).not.toBeInTheDocument();
+    expect(
+      screen.getByText(`yarn add ${plugin.npmPackageName}`),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('combobox', { name: 'Package' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('infers the backend role for packages with a -backend name segment when the snapshot omits functionality', () => {
+    render(
+      <InstallGuide
+        plugin={{
+          ...plugin,
+          npmPackageName: '@example/plugin-example-backend',
+          snapshot: undefined,
+        }}
+      />,
+    );
+
+    expect(screen.getByText('backend')).toBeInTheDocument();
   });
 });

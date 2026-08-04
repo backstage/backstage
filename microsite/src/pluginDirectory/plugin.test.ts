@@ -82,6 +82,7 @@ describe('pluginDirectoryPlugin', () => {
         );
         assert.deepEqual(plugin.getPathsToWatch?.(), [
           join(siteDir, 'data', 'plugins', '*.yaml'),
+          join(siteDir, 'data', 'latest-backstage-version.yaml'),
         ]);
 
         const routes: RouteConfig[] = [];
@@ -111,18 +112,36 @@ describe('pluginDirectoryPlugin', () => {
         assert.deepEqual(
           routes.map(route => route.modules),
           [
-            { plugin: '/generated/a-plugin.json' },
-            { plugin: '/generated/z-plugin.json' },
+            {
+              plugin: '/generated/a-plugin.json',
+              latestBackstageVersion:
+                '/generated/latest-backstage-version.json',
+            },
+            {
+              plugin: '/generated/z-plugin.json',
+              latestBackstageVersion:
+                '/generated/latest-backstage-version.json',
+            },
           ],
         );
         assert.deepEqual(
           dataModules.map(({ name }) => name),
-          ['a-plugin.json', 'z-plugin.json'],
+          [
+            'latest-backstage-version.json',
+            'a-plugin.json',
+            'z-plugin.json',
+          ],
         );
         assert.deepEqual(
-          dataModules.map(({ data }) =>
-            JSON.parse(typeof data === 'string' ? data : JSON.stringify(data)),
-          ),
+          JSON.parse(String(dataModules[0].data)),
+          null,
+        );
+        assert.deepEqual(
+          dataModules
+            .slice(1)
+            .map(({ data }) =>
+              JSON.parse(typeof data === 'string' ? data : JSON.stringify(data)),
+            ),
           content,
         );
         assert.equal(fetchCalls.length, 0);
