@@ -17,7 +17,7 @@ import preview from '../../../../../.storybook/preview';
 import { ButtonIcon } from './ButtonIcon';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
-import { RiCloudLine } from '@remixicon/react';
+import { RiCloudLine, RiDeleteBinLine } from '@remixicon/react';
 import { useState } from 'react';
 
 const meta = preview.meta({
@@ -30,7 +30,10 @@ const meta = preview.meta({
     },
     variant: {
       control: 'select',
-      options: ['primary', 'secondary'],
+      options: ['primary', 'secondary', 'tertiary'],
+    },
+    destructive: {
+      control: 'boolean',
     },
   },
 });
@@ -45,6 +48,31 @@ export const Variants = meta.story({
       <ButtonIcon icon={<RiCloudLine />} variant="primary" />
       <ButtonIcon icon={<RiCloudLine />} variant="secondary" />
       <ButtonIcon icon={<RiCloudLine />} variant="tertiary" />
+    </Flex>
+  ),
+});
+
+export const Destructive = meta.story({
+  render: () => (
+    <Flex align="center" gap="2">
+      <ButtonIcon
+        aria-label="Delete"
+        destructive
+        icon={<RiDeleteBinLine />}
+        variant="primary"
+      />
+      <ButtonIcon
+        aria-label="Delete"
+        destructive
+        icon={<RiDeleteBinLine />}
+        variant="secondary"
+      />
+      <ButtonIcon
+        aria-label="Delete"
+        destructive
+        icon={<RiDeleteBinLine />}
+        variant="tertiary"
+      />
     </Flex>
   ),
 });
