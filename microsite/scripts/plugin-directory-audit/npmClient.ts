@@ -155,6 +155,8 @@ export async function fetchNpmSnapshot(
   }
 
   const repository = parseRepository(body.repository);
+  const backstageRole = parseBackstageRole(body.versions, latestVersion);
+  const dependencyNames = parseDependencyNames(body.versions, latestVersion);
 
   return {
     status: 'fresh',
@@ -163,5 +165,55 @@ export async function fetchNpmSnapshot(
     latestVersion,
     lastPublishedAt,
     ...(repository ? { repository } : {}),
+    ...(backstageRole ? { backstageRole } : {}),
+    ...(dependencyNames ? { dependencyNames } : {}),
   };
+}
+
+// Backstage packages declare their role (`frontend-plugin`, `backend-plugin`,
+// ...) in the `backstage.role` field of their published package.json, which
+// the npm registry exposes per-version under `versions[<version>]`. This is
+// the source of truth for a package's role, more reliable than guessing from
+// its name.
+function parseBackstageRole(
+  versions: unknown,
+  latestVersion: string,
+): string | undefined {
+  if (!isRecord(versions)) {
+    return undefined;
+  }
+
+  const versionManifest = versions[latestVersion];
+  if (!isRecord(versionManifest)) {
+    return undefined;
+  }
+
+  const backstage = versionManifest.backstage;
+  if (!isRecord(backstage) || typeof backstage.role !== 'string') {
+    return undefined;
+  }
+
+  return backstage.role.length > 0 ? backstage.role : undefined;
+}
+
+function parseDependencyNames(
+  versions: unknown,
+  latestVersion: string,
+): string[] | undefined {
+  if (!isRecord(versions)) {
+    return undefined;
+  }
+
+  const versionManifest = versions[latestVersion];
+  if (!isRecord(versionManifest)) {
+    return undefined;
+  }
+
+  const dependencies = versionManifest.dependencies;
+  if (!isRecord(dependencies)) {
+    return undefined;
+  }
+
+  const names = Object.keys(dependencies);
+  return names.length > 0 ? names : undefined;
 }

@@ -134,6 +134,45 @@ describe('fetchNpmSnapshot', () => {
     });
   });
 
+  it('extracts the backstage.role declared in the latest version\'s package.json', async () => {
+    const snapshot = await fetchNpmSnapshot(
+      '@backstage/plugin-kubernetes-backend',
+      registryFetch({
+        'dist-tags': { latest: '0.21.6' },
+        time: { '0.21.6': '2026-07-14T12:09:23.900Z' },
+        versions: {
+          '0.21.6': {
+            name: '@backstage/plugin-kubernetes-backend',
+            backstage: { role: 'backend-plugin' },
+          },
+        },
+      }),
+    );
+
+    assert.equal(snapshot.status, 'fresh');
+    if (snapshot.status !== 'fresh') {
+      return;
+    }
+    assert.equal(snapshot.backstageRole, 'backend-plugin');
+  });
+
+  it('omits backstageRole when the latest version has no backstage.role', async () => {
+    const snapshot = await fetchNpmSnapshot(
+      'some-plugin',
+      registryFetch({
+        'dist-tags': { latest: '1.0.0' },
+        time: { '1.0.0': '2026-06-30T08:15:00Z' },
+        versions: { '1.0.0': { name: 'some-plugin' } },
+      }),
+    );
+
+    assert.equal(snapshot.status, 'fresh');
+    if (snapshot.status !== 'fresh') {
+      return;
+    }
+    assert.equal(Object.hasOwn(snapshot, 'backstageRole'), false);
+  });
+
   it('reports missing packages with a stable reason', async () => {
     const missing = await fetchNpmSnapshot(
       'missing-package',
@@ -144,5 +183,52 @@ describe('fetchNpmSnapshot', () => {
     if (missing.status === 'unavailable') {
       assert.equal(missing.reason, 'npm-not-found');
     }
+  });
+
+  it('extracts dependency names declared in the latest version\'s package.json', async () => {
+    const snapshot = await fetchNpmSnapshot(
+      '@backstage/plugin-kubernetes-backend',
+      registryFetch({
+        'dist-tags': { latest: '0.21.6' },
+        time: { '0.21.6': '2026-07-14T12:09:23.900Z' },
+        versions: {
+          '0.21.6': {
+            name: '@backstage/plugin-kubernetes-backend',
+            dependencies: {
+              '@backstage/plugin-kubernetes-common': '^0.9.0',
+              '@backstage/plugin-kubernetes-node': '^0.4.0',
+              zod: '^3.22.0',
+            },
+          },
+        },
+      }),
+    );
+
+    assert.equal(snapshot.status, 'fresh');
+    if (snapshot.status !== 'fresh') {
+      return;
+    }
+    assert.deepEqual(snapshot.dependencyNames, [
+      '@backstage/plugin-kubernetes-common',
+      '@backstage/plugin-kubernetes-node',
+      'zod',
+    ]);
+  });
+
+  it('omits dependencyNames when the latest version declares no dependencies', async () => {
+    const snapshot = await fetchNpmSnapshot(
+      'some-plugin',
+      registryFetch({
+        'dist-tags': { latest: '1.0.0' },
+        time: { '1.0.0': '2026-06-30T08:15:00Z' },
+        versions: { '1.0.0': { name: 'some-plugin' } },
+      }),
+    );
+
+    assert.equal(snapshot.status, 'fresh');
+    if (snapshot.status !== 'fresh') {
+      return;
+    }
+    assert.equal(Object.hasOwn(snapshot, 'dependencyNames'), false);
   });
 });
