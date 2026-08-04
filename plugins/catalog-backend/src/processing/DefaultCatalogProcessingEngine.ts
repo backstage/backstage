@@ -291,55 +291,35 @@ export class DefaultCatalogProcessingEngine {
             }
 
             result.completedEntity.metadata.uid = id;
-            let oldRelationSources: Map<string, string>;
-            await retryOnDeadlock(
+            const { relationsChange } = await retryOnDeadlock(
               () =>
-                this.processingDatabase.transaction(async tx => {
-                  const { previous } =
-                    await this.processingDatabase.updateProcessedEntity(tx, {
-                      id,
-                      processedEntity: result.completedEntity,
-                      resultHash,
-                      errors: errorsString,
-                      relations: result.relations,
-                      deferredEntities: result.deferredEntities,
-                      locationKey,
-                      refreshKeys: result.refreshKeys,
-                    });
-                  oldRelationSources = new Map(
-                    previous.relations.map(r => [
-                      `${r.source_entity_ref}:${r.type}->${r.target_entity_ref}`,
-                      r.source_entity_ref,
-                    ]),
-                  );
-                }),
+                this.processingDatabase.transaction(async tx =>
+                  this.processingDatabase.updateProcessedEntity(tx, {
+                    id,
+                    processedEntity: result.completedEntity,
+                    resultHash,
+                    errors: errorsString,
+                    relations: result.relations,
+                    deferredEntities: result.deferredEntities,
+                    locationKey,
+                    refreshKeys: result.refreshKeys,
+                  }),
+                ),
               this.knex,
             );
 
-            const newRelationSources = new Map<string, string>(
-              result.relations.map(relation => {
-                const sourceEntityRef = stringifyEntityRef(relation.source);
-                const targetEntityRef = stringifyEntityRef(relation.target);
-                return [
-                  `${sourceEntityRef}:${relation.type}->${targetEntityRef}`,
-                  sourceEntityRef,
-                ];
-              }),
-            );
-
+            // Only stitch entities whose relations actually changed.
+            // In steady state (no relation changes), this is just the
+            // entity itself — no unnecessary stitching of neighbors.
             const setOfThingsToStitch = new Set<string>([
               stringifyEntityRef(result.completedEntity),
             ]);
-            newRelationSources.forEach((sourceEntityRef, uniqueKey) => {
-              if (!oldRelationSources.has(uniqueKey)) {
-                setOfThingsToStitch.add(sourceEntityRef);
-              }
-            });
-            oldRelationSources!.forEach((sourceEntityRef, uniqueKey) => {
-              if (!newRelationSources.has(uniqueKey)) {
-                setOfThingsToStitch.add(sourceEntityRef);
-              }
-            });
+            for (const r of relationsChange.deleted) {
+              setOfThingsToStitch.add(r.source_entity_ref);
+            }
+            for (const r of relationsChange.inserted) {
+              setOfThingsToStitch.add(r.source_entity_ref);
+            }
 
             await markForStitching({
               knex: this.knex,
