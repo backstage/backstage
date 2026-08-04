@@ -14,10 +14,17 @@ export class {{policyClass}} implements PermissionPolicy {
 
   async handle(
     _request: PolicyQuery,
-    _user?: PolicyQueryUser,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
-    // TODO: Implement your authorization rules here.
+    // Resolve the user's ownership claims for use in policy decisions.
     // See https://backstage.io/docs/permissions/writing-a-policy
+    const _ownershipEntityRefs = user
+      ? (await this.userInfo.getUserInfo(user.credentials))
+          .ownershipEntityRefs
+      : [];
+
+    // TODO: Remove the underscore prefixes from _request and
+    // _ownershipEntityRefs, then use them to implement your authorization rules.
     return { result: AuthorizeResult.ALLOW };
   }
 }

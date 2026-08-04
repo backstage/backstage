@@ -14,14 +14,18 @@ export class CustomPolicy implements PermissionPolicy {
 
   async handle(
     _request: PolicyQuery,
-    _user?: PolicyQueryUser,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
+    const _ownershipEntityRefs = user
+      ? (await this.userInfo.getUserInfo(user.credentials)).ownershipEntityRefs
+      : [];
+
     return { result: AuthorizeResult.ALLOW };
   }
 }
 ```
 
-That is a very simple example and it's not really doing anything helpful. Let's expand it by adding a check for a specific permission. Update your policy class to the following:
+Out of the box it resolves the user's ownership claims but allows all requests regardless. Let's expand it by adding a check for a specific permission. Update your policy class to the following:
 
 ```ts
 import {
