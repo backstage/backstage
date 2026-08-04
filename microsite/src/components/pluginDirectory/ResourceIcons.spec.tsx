@@ -30,6 +30,30 @@ const basePlugin: PluginData = {
   status: 'active',
   slug: 'example-plugin',
   isNew: false,
+  snapshot: {
+    backstage: {
+      status: 'unavailable',
+      lastAttemptAt: '2026-08-03T10:00:00.000Z',
+      reason: 'source-not-found',
+    },
+    packages: [
+      {
+        npmPackageName: '@example/plugin-example',
+        npm: {
+          status: 'fresh',
+          checkedAt: '2026-08-03T10:00:00.000Z',
+          lastAttemptAt: '2026-08-03T10:00:00.000Z',
+          latestVersion: '2.4.0',
+          lastPublishedAt: '2026-07-22T12:00:00.000Z',
+        },
+        configSchema: {
+          status: 'unavailable',
+          lastAttemptAt: '2026-08-03T10:00:00.000Z',
+          reason: 'npm-data-unavailable',
+        },
+      },
+    ],
+  },
 };
 
 describe('ResourceIcons', () => {
@@ -55,19 +79,18 @@ describe('ResourceIcons', () => {
         plugin={{
           ...basePlugin,
           snapshot: {
-            npm: {
-              status: 'fresh',
-              checkedAt: '2026-08-03T10:00:00.000Z',
-              lastAttemptAt: '2026-08-03T10:00:00.000Z',
-              latestVersion: '2.4.0',
-              lastPublishedAt: '2026-07-22T12:00:00.000Z',
-              repository: { url: 'https://github.com/example/plugin-example' },
-            },
-            backstage: {
-              status: 'unavailable',
-              lastAttemptAt: '2026-08-03T10:00:00.000Z',
-              reason: 'source-not-found',
-            },
+            ...basePlugin.snapshot,
+            packages: [
+              {
+                ...basePlugin.snapshot!.packages[0],
+                npm: {
+                  ...basePlugin.snapshot!.packages[0].npm,
+                  repository: {
+                    url: 'https://github.com/example/plugin-example',
+                  },
+                },
+              },
+            ],
           },
         }}
       />,
@@ -85,16 +108,17 @@ describe('ResourceIcons', () => {
         plugin={{
           ...basePlugin,
           snapshot: {
-            npm: {
-              status: 'unavailable',
-              lastAttemptAt: '2026-08-03T10:00:00.000Z',
-              reason: 'package-not-found',
-            },
-            backstage: {
-              status: 'unavailable',
-              lastAttemptAt: '2026-08-03T10:00:00.000Z',
-              reason: 'source-not-found',
-            },
+            ...basePlugin.snapshot,
+            packages: [
+              {
+                ...basePlugin.snapshot!.packages[0],
+                npm: {
+                  status: 'unavailable',
+                  lastAttemptAt: '2026-08-03T10:00:00.000Z',
+                  reason: 'package-not-found',
+                },
+              },
+            ],
           },
         }}
       />,

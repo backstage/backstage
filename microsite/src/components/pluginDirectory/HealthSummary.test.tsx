@@ -24,6 +24,25 @@ import { formatReleaseAge } from './healthPresentation';
 
 const fixedNow = new Date('2026-08-03T12:00:00.000Z');
 
+const freshPackageSnapshot = {
+  npmPackageName: '@example/backstage-plugin-catalog-insights',
+  npm: {
+    status: 'fresh',
+    checkedAt: '2026-08-03T10:00:00.000Z',
+    lastAttemptAt: '2026-08-03T10:00:00.000Z',
+    latestVersion: '2.4.0',
+    lastPublishedAt: '2026-07-22T12:00:00.000Z',
+    repository: {
+      url: 'https://github.com/example/catalog-insights',
+    },
+  },
+  configSchema: {
+    status: 'unavailable',
+    lastAttemptAt: '2026-08-03T10:00:00.000Z',
+    reason: 'npm-data-unavailable',
+  },
+};
+
 const freshPlugin: PluginData = {
   title: 'Catalog Insights',
   author: 'Example Maintainers',
@@ -38,16 +57,6 @@ const freshPlugin: PluginData = {
   slug: 'catalog-insights',
   isNew: false,
   snapshot: {
-    npm: {
-      status: 'fresh',
-      checkedAt: '2026-08-03T10:00:00.000Z',
-      lastAttemptAt: '2026-08-03T10:00:00.000Z',
-      latestVersion: '2.4.0',
-      lastPublishedAt: '2026-07-22T12:00:00.000Z',
-      repository: {
-        url: 'https://github.com/example/catalog-insights',
-      },
-    },
     backstage: {
       status: 'fresh',
       checkedAt: '2026-08-03T10:00:00.000Z',
@@ -57,40 +66,51 @@ const freshPlugin: PluginData = {
         'https://github.com/example/catalog-insights/blob/main/package.json',
       sourcePath: 'package.json',
     },
+    packages: [freshPackageSnapshot],
   },
 };
 
 const stalePlugin: PluginData = {
   ...freshPlugin,
   snapshot: {
-    npm: {
-      ...freshPlugin.snapshot!.npm,
-      status: 'stale',
-      checkedAt: '2026-07-20T10:00:00.000Z',
-      reason: 'npm-timeout',
-    },
     backstage: {
       ...freshPlugin.snapshot!.backstage,
       status: 'stale',
       checkedAt: '2026-07-20T10:00:00.000Z',
       reason: 'github-timeout',
     },
+    packages: [
+      {
+        ...freshPackageSnapshot,
+        npm: {
+          ...freshPackageSnapshot.npm,
+          status: 'stale',
+          checkedAt: '2026-07-20T10:00:00.000Z',
+          reason: 'npm-timeout',
+        },
+      },
+    ],
   },
 };
 
 const unavailablePlugin: PluginData = {
   ...freshPlugin,
   snapshot: {
-    npm: {
-      status: 'unavailable',
-      lastAttemptAt: '2026-08-03T10:00:00.000Z',
-      reason: 'package-not-found',
-    },
     backstage: {
       status: 'unavailable',
       lastAttemptAt: '2026-08-03T10:00:00.000Z',
       reason: 'source-not-found',
     },
+    packages: [
+      {
+        ...freshPackageSnapshot,
+        npm: {
+          status: 'unavailable',
+          lastAttemptAt: '2026-08-03T10:00:00.000Z',
+          reason: 'package-not-found',
+        },
+      },
+    ],
   },
 };
 
@@ -139,18 +159,28 @@ describe('HealthSummary', () => {
       title: 'Tekton Pipelines',
       npmPackageName: '@jquad-group/plugin-tekton-pipelines',
       snapshot: {
-        npm: {
-          status: 'fresh',
-          checkedAt: '2026-08-03T10:00:00.000Z',
-          lastAttemptAt: '2026-08-03T10:00:00.000Z',
-          latestVersion: '0.3.3',
-          lastPublishedAt: '2023-05-07T14:51:25.719Z',
-        },
         backstage: {
           status: 'unavailable',
           lastAttemptAt: '2026-08-03T10:00:00.000Z',
           reason: 'repository-unsupported',
         },
+        packages: [
+          {
+            npmPackageName: '@jquad-group/plugin-tekton-pipelines',
+            npm: {
+              status: 'fresh',
+              checkedAt: '2026-08-03T10:00:00.000Z',
+              lastAttemptAt: '2026-08-03T10:00:00.000Z',
+              latestVersion: '0.3.3',
+              lastPublishedAt: '2023-05-07T14:51:25.719Z',
+            },
+            configSchema: {
+              status: 'unavailable',
+              lastAttemptAt: '2026-08-03T10:00:00.000Z',
+              reason: 'npm-data-unavailable',
+            },
+          },
+        ],
       },
     };
 
