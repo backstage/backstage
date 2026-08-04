@@ -31,22 +31,42 @@ const plugin: PluginData = {
   status: 'active',
   slug: 'example-plugin',
   isNew: false,
-  setup: {
-    config: {
-      schema: {
-        type: 'object',
-        properties: {
-          endpoint: { type: 'string', 'x-ui': { label: 'Endpoint' } },
-        },
-        required: ['endpoint'],
-      },
+  snapshot: {
+    backstage: {
+      status: 'unavailable',
+      lastAttemptAt: '2026-08-03T12:00:00.000Z',
+      reason: 'repository-unsupported',
     },
+    packages: [
+      {
+        npmPackageName: '@example/plugin-example',
+        npm: {
+          status: 'fresh',
+          lastAttemptAt: '2026-08-03T12:00:00.000Z',
+          checkedAt: '2026-08-03T12:00:00.000Z',
+          latestVersion: '1.0.0',
+          lastPublishedAt: '2026-07-01T00:00:00.000Z',
+        },
+        configSchema: {
+          status: 'fresh',
+          lastAttemptAt: '2026-08-03T12:00:00.000Z',
+          checkedAt: '2026-08-03T12:00:00.000Z',
+          schema: {
+            type: 'object',
+            properties: {
+              endpoint: { type: 'string' },
+            },
+            required: ['endpoint'],
+          },
+        },
+      },
+    ],
   },
 };
 
 describe('PluginDetailPage', () => {
   it('renders the header and all three tabs', () => {
-    render(<PluginDetailPage plugin={plugin} />);
+    render(<PluginDetailPage plugin={plugin} latestBackstageVersion={null} />);
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'Example Plugin',
@@ -58,15 +78,15 @@ describe('PluginDetailPage', () => {
 
   it('keeps configuration form values after switching tabs away and back', async () => {
     const user = userEvent.setup();
-    render(<PluginDetailPage plugin={plugin} />);
+    render(<PluginDetailPage plugin={plugin} latestBackstageVersion={null} />);
 
     await user.click(screen.getByRole('tab', { name: 'Configure' }));
-    await user.type(screen.getByLabelText('Endpoint'), 'https://api.example.com');
+    await user.type(screen.getByLabelText(/^endpoint/), 'https://api.example.com');
 
     await user.click(screen.getByRole('tab', { name: 'Overview' }));
     await user.click(screen.getByRole('tab', { name: 'Configure' }));
 
-    expect(screen.getByLabelText('Endpoint')).toHaveValue(
+    expect(screen.getByLabelText(/^endpoint/)).toHaveValue(
       'https://api.example.com',
     );
   });
