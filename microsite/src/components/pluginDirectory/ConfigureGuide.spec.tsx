@@ -152,17 +152,31 @@ describe('ConfigureGuide', () => {
     });
     render(<ConfigureGuide plugin={plugin} />);
 
-    const yamlCopy = screen.getByRole('button', { name: 'Copy @example/plugin-example generated YAML' });
+    const yamlCopy = screen.getByRole('button', {
+      name: 'Copy @example/plugin-example generated YAML',
+    });
     expect(yamlCopy).toBeDisabled();
 
     expect(screen.getByRole('group', { name: 'app' })).toBeInTheDocument();
     expect(screen.getByLabelText(/^endpoint/).tagName).toBe('INPUT');
     expect(screen.getByLabelText(/^mode/).tagName).toBe('SELECT');
-    expect(screen.getByLabelText(/^retryCount/)).toHaveAttribute('type', 'number');
-    expect(screen.getByLabelText(/^sampleRate/)).toHaveAttribute('type', 'number');
-    expect(screen.getByLabelText(/^enabled/)).toHaveAttribute('type', 'checkbox');
+    expect(screen.getByLabelText(/^retryCount/)).toHaveAttribute(
+      'type',
+      'number',
+    );
+    expect(screen.getByLabelText(/^sampleRate/)).toHaveAttribute(
+      'type',
+      'number',
+    );
+    expect(screen.getByLabelText(/^enabled/)).toHaveAttribute(
+      'type',
+      'checkbox',
+    );
 
-    await user.type(screen.getByLabelText(/^endpoint/), 'https://api.example.com');
+    await user.type(
+      screen.getByLabelText(/^endpoint/),
+      'https://api.example.com',
+    );
     await user.selectOptions(screen.getByLabelText(/^mode/), 'staging');
     await user.clear(screen.getByLabelText(/^retryCount/));
     await user.type(screen.getByLabelText(/^retryCount/), '5');
@@ -174,7 +188,9 @@ describe('ConfigureGuide', () => {
     await user.selectOptions(screen.getByLabelText(/^role/), 'secondary');
 
     expect(yamlCopy).toBeEnabled();
-    const yaml = screen.getByLabelText('@example/plugin-example generated YAML').textContent;
+    const yaml = screen.getByLabelText(
+      '@example/plugin-example generated YAML',
+    ).textContent;
     expect(yaml).toContain('endpoint: https://api.example.com');
     expect(yaml).toContain('mode: staging');
     expect(yaml).toContain('retryCount: 5');
@@ -224,10 +240,12 @@ describe('ConfigureGuide', () => {
   it('renders an explicit message when no package snapshot is available', () => {
     render(<ConfigureGuide plugin={{ ...plugin, snapshot: undefined }} />);
 
-    expect(screen.getByText('No configuration schema provided.')).toBeInTheDocument();
+    expect(
+      screen.getByText('No configuration schema provided.'),
+    ).toBeInTheDocument();
   });
 
-  it('merges a frontend package with no schema of its own into its dependency\'s schema', async () => {
+  it("merges a frontend package with no schema of its own into its dependency's schema", async () => {
     render(
       <ConfigureGuide
         plugin={{
@@ -303,7 +321,7 @@ describe('ConfigureGuide', () => {
     );
   });
 
-  it('merges a shared dependency\'s schema into both Frontend and Backend sections', async () => {
+  it("merges a shared dependency's schema into both Frontend and Backend sections", async () => {
     const user = userEvent.setup();
     const npm = plugin.snapshot!.packages[0].npm;
     render(
@@ -378,5 +396,131 @@ describe('ConfigureGuide', () => {
     expect(screen.getByLabelText(/^backendField/)).toBeInTheDocument();
     expect(screen.getByLabelText(/^sharedField/)).toBeInTheDocument();
     expect(screen.queryByLabelText(/^frontendField/)).not.toBeInTheDocument();
+  });
+
+  it('merges a package whose functionality is a raw backstage.role string (e.g. "frontend-plugin") with its dependency\'s schema into a Frontend section', async () => {
+    render(
+      <ConfigureGuide
+        plugin={{
+          ...plugin,
+          snapshot: {
+            ...plugin.snapshot!,
+            packages: [
+              {
+                npmPackageName: '@example/plugin-frontend',
+                functionality: 'frontend-plugin',
+                internalDependencies: ['@example/plugin-react'],
+                npm: plugin.snapshot!.packages[0].npm,
+                configSchema: {
+                  status: 'unavailable',
+                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
+                  reason: 'config-schema-not-declared',
+                },
+              },
+              {
+                npmPackageName: '@example/plugin-react',
+                functionality: 'react',
+                npm: plugin.snapshot!.packages[0].npm,
+                configSchema: {
+                  status: 'fresh',
+                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
+                  checkedAt: '2026-01-01T00:00:00.000Z',
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      featureFlag: { type: 'boolean' },
+                    },
+                    required: ['featureFlag'],
+                  },
+                },
+              },
+            ],
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.queryByRole('option', { name: /plugin-react/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/^featureFlag/)).toHaveAttribute(
+      'type',
+      'checkbox',
+    );
+    // Confirms the merge actually happened under the frontend-role package's
+    // own identity (i.e. `matchesRole` recognized `'frontend-plugin'`),
+    // rather than the dependency's schema merely surviving on its own as an
+    // unmerged fallback entry keyed by `@example/plugin-react`.
+    expect(
+      screen.getByRole('button', {
+        name: 'Copy @example/plugin-frontend generated YAML',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('merges two schemas that share the same top-level object property key with disjoint sub-properties', async () => {
+    const npm = plugin.snapshot!.packages[0].npm;
+    render(
+      <ConfigureGuide
+        plugin={{
+          ...plugin,
+          snapshot: {
+            ...plugin.snapshot!,
+            packages: [
+              {
+                npmPackageName: '@example/kubernetes-backend',
+                functionality: 'backend',
+                internalDependencies: ['@example/kubernetes-react'],
+                npm,
+                configSchema: {
+                  status: 'fresh',
+                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
+                  checkedAt: '2026-01-01T00:00:00.000Z',
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      kubernetes: {
+                        type: 'object',
+                        properties: {
+                          serviceLocatorMethod: { type: 'string' },
+                        },
+                        required: ['serviceLocatorMethod'],
+                      },
+                    },
+                    required: ['kubernetes'],
+                  },
+                },
+              },
+              {
+                npmPackageName: '@example/kubernetes-react',
+                functionality: 'module',
+                npm,
+                configSchema: {
+                  status: 'fresh',
+                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
+                  checkedAt: '2026-01-01T00:00:00.000Z',
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      kubernetes: {
+                        type: 'object',
+                        properties: {
+                          customResources: { type: 'string' },
+                        },
+                        required: ['customResources'],
+                      },
+                    },
+                    required: ['kubernetes'],
+                  },
+                },
+              },
+            ],
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText(/^serviceLocatorMethod/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^customResources/)).toBeInTheDocument();
   });
 });

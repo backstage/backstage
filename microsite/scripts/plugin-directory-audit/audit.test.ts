@@ -97,7 +97,8 @@ function packagesFor(
 
 function primaryPackage(manifest: PluginManifest) {
   return manifest.snapshot?.packages.find(
-    packageSnapshot => packageSnapshot.npmPackageName === manifest.npmPackageName,
+    packageSnapshot =>
+      packageSnapshot.npmPackageName === manifest.npmPackageName,
   );
 }
 
@@ -168,6 +169,120 @@ describe('auditManifest internalDependencies', () => {
       '@example/plugin-example-common',
     ]);
     assert.equal(commonPackage?.internalDependencies, undefined);
+  });
+
+  it("never includes a package's own npmPackageName even if npm dependencyNames self-references it", async () => {
+    const backendNpm: NpmSnapshot = {
+      ...freshNpm('2026-08-01T00:00:00.000Z'),
+      dependencyNames: [
+        '@example/plugin-example-backend',
+        '@example/plugin-example-common',
+      ],
+    };
+    const commonNpm: NpmSnapshot = freshNpm('2026-08-01T00:00:00.000Z');
+
+    const result = await auditManifest(
+      manifest('active', { npmPackageName: '@example/plugin-example-backend' }),
+      multiPackageDependencies({
+        '@example/plugin-example-backend': backendNpm,
+        '@example/plugin-example-common': commonNpm,
+      }),
+    );
+
+    const backendPackage = result.manifest.snapshot?.packages.find(
+      p => p.npmPackageName === '@example/plugin-example-backend',
+    );
+
+    assert.deepEqual(backendPackage?.internalDependencies, [
+      '@example/plugin-example-common',
+    ]);
+  });
+
+  it("preserves internalDependencies (derived from a previous dependencyNames) when a sibling package's fresh npm fetch fails", async () => {
+    const previousBackendNpm = {
+      status: 'fresh',
+      lastAttemptAt: '2026-07-01T00:00:00.000Z',
+      checkedAt: '2026-07-01T00:00:00.000Z',
+      latestVersion: '1.1.0',
+      lastPublishedAt: '2026-06-01T00:00:00.000Z',
+      dependencyNames: ['@backstage/plugin-catalog-common', 'zod'],
+    } satisfies NpmSnapshot;
+    const input = manifest('active', {
+      npmPackageName: '@backstage/plugin-catalog',
+      snapshot: {
+        backstage: freshBackstage(),
+        packages: [
+          {
+            functionality: 'frontend',
+            npmPackageName: '@backstage/plugin-catalog',
+            sourcePath: 'plugins/catalog/package.json',
+            npm: freshNpm('2026-07-01T00:00:00.000Z'),
+            configSchema: unavailableConfigSchema(),
+          },
+          {
+            functionality: 'backend',
+            npmPackageName: '@backstage/plugin-catalog-backend',
+            sourcePath: 'plugins/catalog-backend/package.json',
+            internalDependencies: ['@backstage/plugin-catalog-common'],
+            npm: previousBackendNpm,
+            configSchema: unavailableConfigSchema(),
+          },
+          {
+            functionality: 'common',
+            npmPackageName: '@backstage/plugin-catalog-common',
+            sourcePath: 'plugins/catalog-common/package.json',
+            npm: freshNpm('2026-07-01T00:00:00.000Z'),
+            configSchema: unavailableConfigSchema(),
+          },
+        ],
+      },
+    });
+
+    const result = await auditManifest(input, {
+      fetchNpm: async (packageName: string) => {
+        if (packageName === '@backstage/plugin-catalog-backend') {
+          throw new Error('registry unavailable');
+        }
+        return freshNpm('2026-07-01T00:00:00.000Z');
+      },
+      fetchConfigSchema: async () => unavailableConfigSchema(),
+      github: {
+        fetchBackstageSnapshot: async () => freshBackstage(),
+        discoverCanonicalPackages: async () => [
+          {
+            functionality: 'frontend',
+            npmPackageName: '@backstage/plugin-catalog',
+            sourcePath: 'plugins/catalog/package.json',
+          },
+          {
+            functionality: 'backend',
+            npmPackageName: '@backstage/plugin-catalog-backend',
+            sourcePath: 'plugins/catalog-backend/package.json',
+          },
+          {
+            functionality: 'common',
+            npmPackageName: '@backstage/plugin-catalog-common',
+            sourcePath: 'plugins/catalog-common/package.json',
+          },
+        ],
+      } as GitHubSnapshotClient,
+      now: () => auditTime,
+    });
+
+    const backendPackage = result.manifest.snapshot?.packages.find(
+      p => p.npmPackageName === '@backstage/plugin-catalog-backend',
+    );
+
+    assert.equal(backendPackage?.npm.status, 'stale');
+    assert.deepEqual(
+      backendPackage?.npm.status === 'stale'
+        ? backendPackage.npm.dependencyNames
+        : undefined,
+      ['@backstage/plugin-catalog-common', 'zod'],
+    );
+    assert.deepEqual(backendPackage?.internalDependencies, [
+      '@backstage/plugin-catalog-common',
+    ]);
   });
 });
 
@@ -763,7 +878,10 @@ describe('runAuditCommand', () => {
         const [written] = await readManifestFiles(directory);
         assert.equal(result.changedFiles, 1);
         assert.equal(result.writtenFiles, 1);
-        assert.equal(primaryPackage(written.manifest)?.npm.checkedAt, attemptAt);
+        assert.equal(
+          primaryPackage(written.manifest)?.npm.checkedAt,
+          attemptAt,
+        );
         assert.equal(written.manifest.snapshot?.backstage.checkedAt, attemptAt);
         assert.equal(
           events.filter(event => event.method === 'table').length,
