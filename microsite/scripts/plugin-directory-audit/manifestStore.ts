@@ -41,7 +41,6 @@ const manifestKeyOrder: readonly (keyof PluginManifest)[] = [
   'status',
   'staleSince',
   'capabilities',
-  'setup',
   'snapshot',
 ];
 
