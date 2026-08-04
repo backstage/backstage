@@ -14,318 +14,251 @@
  * limitations under the License.
  */
 import type {
-  ConfigError,
-  ConfigValue,
-} from '../../pluginDirectory/config';
-import { createInitialConfig } from '../../pluginDirectory/config';
-import type { ConfigSchema } from '../../pluginDirectory/manifest';
-import React, { useId, useRef } from 'react';
+  ArrayFieldTemplateProps,
+  FieldErrorProps,
+  FieldTemplateProps,
+  ObjectFieldTemplateProps,
+  RegistryWidgetsType,
+  TemplatesType,
+  WidgetProps,
+} from '@rjsf/utils';
+import React from 'react';
 
 import styles from './pluginDirectory.module.scss';
 
-interface ConfigFormProps {
-  schema: ConfigSchema;
-  value: ConfigValue;
-  errors: ConfigError[];
-  onChange: (value: ConfigValue) => void;
+function itemTitle(schema: ArrayFieldTemplateProps['schema']): string {
+  const items = schema.items;
+  if (items && !Array.isArray(items) && typeof items !== 'boolean') {
+    return items.title ?? 'Item';
+  }
+  return 'Item';
 }
 
-interface ConfigFieldProps extends ConfigFormProps {
-  name: string;
-  path: string[];
-  required: boolean;
-  itemIndex?: number;
-}
+function ConfigFieldTemplate(props: FieldTemplateProps) {
+  const {
+    id,
+    classNames,
+    style,
+    label,
+    help,
+    required,
+    description,
+    errors,
+    children,
+    schema,
+    hidden,
+  } = props;
 
-
-function isConfigObject(
-  value: ConfigValue,
-): value is { [key: string]: ConfigValue | undefined } {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-
-function ConfigField({
-  schema,
-  value,
-  errors,
-  onChange,
-  name,
-  path,
-  required,
-  itemIndex,
-}: ConfigFieldProps) {
-  const baseLabel = schema['x-ui']?.label ?? name;
-  const label =
-    itemIndex === undefined ? baseLabel : `${baseLabel} ${itemIndex + 1}`;
-  const id = useId();
-  const arrayItemKeys = useRef<string[]>([]);
-  const nextArrayItemKey = useRef(0);
-  const descriptionId = schema.description ? `${id}-description` : undefined;
-  const error = errors.find(
-    candidate =>
-      candidate.path.length === path.length &&
-      candidate.path.every((segment, index) => segment === path[index]),
-  );
-  const errorId = error ? `${id}-error` : undefined;
-  const describedBy = [descriptionId, errorId].filter(Boolean).join(' ') || undefined;
-
-  if (schema['x-ui']?.secretEnv) {
-    const placeholder = `\${${schema['x-ui'].secretEnv}}`;
+  if (hidden) {
     return (
-      <div
-        className={styles.formField}
-        role="group"
-        aria-labelledby={`${id}-label`}
-        aria-describedby={describedBy}
-      >
-        <span id={`${id}-label`} className={styles.fieldLabel}>
-          {label}
-          {required && <span aria-hidden="true"> *</span>}
-        </span>
-        {schema.description && (
-          <p id={descriptionId} className={styles.fieldHelp}>
-            {schema.description}
-          </p>
-        )}
-        <code className={styles.secretPlaceholder}>{placeholder}</code>
-        {error && (
-          <p id={errorId} className={styles.fieldError}>
-            {error.message}
-          </p>
-        )}
+      <div className={classNames} style={style}>
+        {children}
       </div>
     );
   }
 
-  if (schema.type === 'object') {
-    const objectValue = isConfigObject(value) ? value : {};
-    const requiredProperties = new Set(schema.required);
+  if (schema.type === 'object' || schema.type === 'array') {
     return (
-      <fieldset
-        className={`${styles.fieldGroup} ${
-          itemIndex === undefined ? '' : styles.arrayObject
-        }`}
-        aria-describedby={describedBy}
-      >
-        <legend>{label}</legend>
-        {schema.description && (
-          <p id={descriptionId} className={styles.fieldHelp}>
-            {schema.description}
-          </p>
-        )}
-        {error && (
-          <p id={errorId} className={styles.fieldError}>
-            {error.message}
-          </p>
-        )}
-        <div className={styles.fieldStack}>
-          {Object.entries(schema.properties).map(([key, childSchema]) => (
-            <ConfigField
-              key={key}
-              schema={childSchema}
-              value={objectValue[key]}
-              errors={errors}
-              onChange={childValue =>
-                onChange({ ...objectValue, [key]: childValue })
-              }
-              name={key}
-              path={[...path, key]}
-              required={requiredProperties.has(key)}
-            />
-          ))}
-        </div>
-      </fieldset>
+      <div className={classNames} style={style}>
+        {children}
+      </div>
     );
   }
 
-  if (schema.type === 'array') {
-    const items = Array.isArray(value) ? value : [];
-    const itemName = schema.items['x-ui']?.label ?? 'Item';
-    while (arrayItemKeys.current.length < items.length) {
-      arrayItemKeys.current.push(`${id}-item-${nextArrayItemKey.current}`);
-      nextArrayItemKey.current += 1;
-    }
-    if (arrayItemKeys.current.length > items.length) {
-      arrayItemKeys.current.length = items.length;
-    }
-    return (
-      <fieldset className={styles.fieldGroup} aria-describedby={describedBy}>
-        <legend>{label}</legend>
-        {schema.description && (
-          <p id={descriptionId} className={styles.fieldHelp}>
-            {schema.description}
-          </p>
-        )}
-        {error && (
-          <p id={errorId} className={styles.fieldError}>
-            {error.message}
-          </p>
-        )}
-        <div className={styles.arrayItems}>
-          {items.map((item, index) => (
-            <div className={styles.arrayItem} key={arrayItemKeys.current[index]}>
-              <ConfigField
-                schema={schema.items}
-                value={item}
-                errors={errors}
-                onChange={itemValue =>
-                  onChange(
-                    items.map((currentItem, currentIndex) =>
-                      currentIndex === index ? itemValue : currentItem,
-                    ),
-                  )
-                }
-                name={itemName}
-                path={[...path, String(index)]}
-                required
-                itemIndex={index}
-              />
-              <button
-                type="button"
-                className="button button--outline button--secondary button--sm"
-                onClick={() => {
-                  arrayItemKeys.current.splice(index, 1);
-                  onChange(
-                    items.filter(
-                      (_item, itemIndexToKeep) =>
-                        itemIndexToKeep !== index,
-                    ),
-                  );
-                }}
-              >
-                Remove {itemName} {index + 1}
-              </button>
-            </div>
-          ))}
-        </div>
-        <button
-          type="button"
-          className="button button--outline button--primary button--sm"
-          onClick={() =>
-            onChange([
-              ...items,
-              createInitialConfig(schema.items, { required: true }),
-            ])
-          }
-        >
-          Add {itemName}
-        </button>
-      </fieldset>
-    );
-  }
-
-  const commonControlProps = {
-    id,
-    name: path.join('.'),
-    'aria-label': label,
-    'aria-describedby': describedBy,
-    'aria-invalid': error ? true : undefined,
-  };
-
-  let control: React.ReactNode;
-  if (schema.type === 'boolean') {
-    control = (
-      <input
-        {...commonControlProps}
-        type="checkbox"
-        checked={typeof value === 'boolean' ? value : false}
-        onChange={event => onChange(event.currentTarget.checked)}
-      />
-    );
-  } else if (schema.enum) {
-    control = (
-      <select
-        {...commonControlProps}
-        required={required}
-        value={value === undefined ? '' : String(value)}
-        onChange={event => {
-          if (event.currentTarget.value === '') {
-            onChange(undefined);
-          } else if (schema.type === 'string') {
-            onChange(event.currentTarget.value);
-          } else {
-            onChange(Number(event.currentTarget.value));
-          }
-        }}
-      >
-        <option value="">Select {label}</option>
-        {schema.enum.map(option => (
-          <option key={String(option)} value={String(option)}>
-            {String(option)}
-          </option>
-        ))}
-      </select>
-    );
-  } else if (schema.type === 'string') {
-    control = (
-      <input
-        {...commonControlProps}
-        required={required}
-        type="text"
-        value={typeof value === 'string' ? value : ''}
-        onChange={event => onChange(event.currentTarget.value)}
-      />
-    );
-  } else {
-    control = (
-      <input
-        {...commonControlProps}
-        required={required}
-        type="number"
-        step={schema.type === 'integer' ? 1 : 'any'}
-        value={typeof value === 'number' ? value : ''}
-        onChange={event =>
-          onChange(
-            event.currentTarget.value === ''
-              ? undefined
-              : Number(event.currentTarget.value),
-          )
-        }
-      />
-    );
-  }
+  const isCheckbox = schema.type === 'boolean';
+  const fieldLabel = (
+    <label htmlFor={id} className={styles.fieldLabel}>
+      {label}
+      {required && <span aria-hidden="true"> *</span>}
+    </label>
+  );
 
   return (
     <div
-      className={`${styles.formField} ${
-        schema.type === 'boolean' ? styles.checkboxField : ''
+      className={`${classNames} ${styles.formField} ${
+        isCheckbox ? styles.checkboxField : ''
       }`}
+      style={style}
     >
-      <label htmlFor={id} className={styles.fieldLabel}>
-        {label}
-        {required && <span aria-hidden="true"> *</span>}
-      </label>
-      {schema.description && (
-        <p id={descriptionId} className={styles.fieldHelp}>
-          {schema.description}
-        </p>
+      {isCheckbox ? (
+        <>
+          {children}
+          {fieldLabel}
+        </>
+      ) : (
+        <>
+          {fieldLabel}
+          {children}
+        </>
       )}
-      {control}
-      {error && (
-        <p id={errorId} className={styles.fieldError}>
-          {error.message}
-        </p>
-      )}
+      {description}
+      {errors}
+      {help}
     </div>
   );
 }
 
-export function ConfigForm({
-  schema,
-  value,
-  errors,
-  onChange,
-}: ConfigFormProps) {
+function ConfigFieldErrorTemplate({ errors }: FieldErrorProps) {
+  if (!errors || errors.length === 0) {
+    return null;
+  }
   return (
-    <ConfigField
-      schema={schema}
-      value={value}
-      errors={errors}
-      onChange={onChange}
-      name="Configuration fields"
-      path={[]}
-      required
+    <p className={styles.fieldError}>
+      {errors.map((error, index) => (
+        <React.Fragment key={index}>
+          {index > 0 && ', '}
+          {error}
+        </React.Fragment>
+      ))}
+    </p>
+  );
+}
+
+function ConfigErrorListTemplate() {
+  return null;
+}
+
+function ConfigObjectFieldTemplate(props: ObjectFieldTemplateProps) {
+  const { title, description, properties, fieldPathId } = props;
+  const isRoot = fieldPathId.path.length === 0;
+
+  return (
+    <fieldset className={styles.fieldGroup}>
+      <legend>{isRoot ? 'Configuration fields' : title}</legend>
+      {description}
+      <div className={styles.fieldStack}>
+        {properties.map(property => (
+          <React.Fragment key={property.name}>
+            {property.content}
+          </React.Fragment>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function ConfigArrayFieldTemplate(props: ArrayFieldTemplateProps) {
+  const { title, items, canAdd, onAddClick, schema } = props;
+  const name = itemTitle(schema);
+
+  return (
+    <fieldset className={styles.fieldGroup}>
+      <legend>{title}</legend>
+      <div className={styles.arrayItems}>
+        {items.map((item, index) => (
+          <div className={styles.arrayItem} key={index}>
+            {item}
+          </div>
+        ))}
+      </div>
+      {canAdd && (
+        <button
+          type="button"
+          className="button button--outline button--primary button--sm"
+          onClick={onAddClick}
+        >
+          Add {name}
+        </button>
+      )}
+    </fieldset>
+  );
+}
+
+export const configFormTemplates: Partial<TemplatesType> = {
+  FieldTemplate: ConfigFieldTemplate,
+  FieldErrorTemplate: ConfigFieldErrorTemplate,
+  ErrorListTemplate: ConfigErrorListTemplate,
+  ObjectFieldTemplate: ConfigObjectFieldTemplate,
+  ArrayFieldTemplate: ConfigArrayFieldTemplate,
+};
+
+function ConfigTextWidget({
+  id,
+  value,
+  required,
+  disabled,
+  readonly,
+  schema,
+  onChange,
+}: WidgetProps) {
+  const isNumeric = schema.type === 'integer' || schema.type === 'number';
+  return (
+    <input
+      id={id}
+      type={isNumeric ? 'number' : 'text'}
+      step={schema.type === 'integer' ? 1 : 'any'}
+      required={required}
+      disabled={disabled || readonly}
+      value={value === undefined ? '' : value}
+      onChange={event => {
+        const raw = event.currentTarget.value;
+        if (!isNumeric) {
+          onChange(raw);
+          return;
+        }
+        onChange(raw === '' ? undefined : Number(raw));
+      }}
     />
   );
 }
+
+function ConfigCheckboxWidget({
+  id,
+  value,
+  disabled,
+  readonly,
+  onChange,
+}: WidgetProps) {
+  return (
+    <input
+      id={id}
+      type="checkbox"
+      checked={typeof value === 'boolean' ? value : false}
+      disabled={disabled || readonly}
+      onChange={event => onChange(event.currentTarget.checked)}
+    />
+  );
+}
+
+function ConfigSelectWidget({
+  id,
+  value,
+  required,
+  disabled,
+  readonly,
+  onChange,
+  options,
+}: WidgetProps) {
+  const enumOptions = options.enumOptions ?? [];
+  return (
+    <select
+      id={id}
+      required={required}
+      disabled={disabled || readonly}
+      value={value === undefined ? '' : String(value)}
+      onChange={event => {
+        if (event.currentTarget.value === '') {
+          onChange(undefined);
+          return;
+        }
+        const selected = enumOptions.find(
+          option => String(option.value) === event.currentTarget.value,
+        );
+        onChange(selected ? selected.value : event.currentTarget.value);
+      }}
+    >
+      <option value="" />
+      {enumOptions.map(option => (
+        <option key={String(option.value)} value={String(option.value)}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+export const configFormWidgets: RegistryWidgetsType = {
+  TextWidget: ConfigTextWidget,
+  CheckboxWidget: ConfigCheckboxWidget,
+  SelectWidget: ConfigSelectWidget,
+};
