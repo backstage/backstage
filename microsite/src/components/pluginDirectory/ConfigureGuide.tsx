@@ -25,6 +25,33 @@ import { CopyButton } from './CopyButton';
 import { PackageSelect } from './PackageSelect';
 import styles from './pluginDirectory.module.scss';
 
+// Config schemas come from the audit pipeline as unvalidated `unknown` data
+// (see ConfigSchemaSnapshot in pluginDirectory/manifest.ts), so a malformed
+// schema from any plugin can throw inside RJSF/ajv during render or
+// validation. This boundary keeps that failure scoped to the Configure tab
+// instead of taking down the whole plugin detail page.
+class ConfigureFormErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError(): { hasError: boolean } {
+    return { hasError: true };
+  }
+
+  render(): React.ReactNode {
+    if (this.state.hasError) {
+      return (
+        <p role="alert">
+          This plugin&apos;s configuration schema could not be rendered.
+        </p>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 interface ConfigureGuideProps {
   plugin: PluginData;
 }
@@ -62,6 +89,11 @@ function InteractiveConfigureForm({
   const [formData, setFormData] = useState<Record<string, unknown> | undefined>(
     undefined,
   );
+  // Deliberately re-validate here instead of trusting RJSF's own onChange
+  // errors: RJSF's initial onChange fires before the user has interacted
+  // with the form, so relying on its errors let an empty/untouched form
+  // report itself as valid. Re-running validateFormData against the latest
+  // formData keeps "hasErrors" accurate independent of that timing quirk.
   const hasErrors =
     formData === undefined ||
     validator.validateFormData(formData, schema).errors.length > 0;
@@ -159,12 +191,13 @@ export function ConfigureGuide({ plugin }: ConfigureGuideProps) {
               onChange={setSelectedPackageName}
             />
           )}
-          <InteractiveConfigureForm
-            key={selectedEntry.npmPackageName}
-            formLabel={`${selectedEntry.npmPackageName} configuration`}
-            yamlLabel={`${selectedEntry.npmPackageName} generated YAML`}
-            schema={selectedEntry.schema}
-          />
+          <ConfigureFormErrorBoundary key={selectedEntry.npmPackageName}>
+            <InteractiveConfigureForm
+              formLabel={`${selectedEntry.npmPackageName} configuration`}
+              yamlLabel={`${selectedEntry.npmPackageName} generated YAML`}
+              schema={selectedEntry.schema}
+            />
+          </ConfigureFormErrorBoundary>
         </>
       ) : (
         <p>No configuration schema provided.</p>
