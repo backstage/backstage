@@ -244,7 +244,13 @@ async function collectPackageSnapshots(
   const members: CanonicalPackage[] =
     siblings.length > 0
       ? siblings
-      : [{ functionality: '', npmPackageName: manifest.npmPackageName, sourcePath: '' }];
+      : [
+          {
+            functionality: '',
+            npmPackageName: manifest.npmPackageName,
+            sourcePath: '',
+          },
+        ];
   const memberNames = new Set(members.map(member => member.npmPackageName));
 
   const packageSnapshots: PackageSnapshot[] = [];
@@ -373,8 +379,9 @@ export async function auditManifest(
       };
     } else {
       try {
-        fetchedBackstage =
-          await dependencies.github.fetchBackstageSnapshot(location);
+        fetchedBackstage = await dependencies.github.fetchBackstageSnapshot(
+          location,
+        );
       } catch {
         fetchedBackstage = {
           status: 'unavailable',

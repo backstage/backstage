@@ -217,9 +217,10 @@ describe('pluginManifestSchema', () => {
     assert.deepEqual(backendPackage.internalDependencies, [
       '@example/plugin-example-common',
     ]);
-    assert.deepEqual(backendPackage.npm.status === 'fresh' && backendPackage.npm.dependencyNames, [
-      '@example/plugin-example-common',
-      'zod',
-    ]);
+    assert.deepEqual(
+      backendPackage.npm.status === 'fresh' &&
+        backendPackage.npm.dependencyNames,
+      ['@example/plugin-example-common', 'zod'],
+    );
   });
 });
