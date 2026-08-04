@@ -20,18 +20,18 @@ import { DbRelationsRow } from '../../tables';
 
 const BATCH_SIZE = 50;
 
-type RelationKey = {
+export type RelationTriplet = {
   source_entity_ref: string;
   type: string;
   target_entity_ref: string;
 };
 
 export type SyncRelationsResult = {
-  deleted: RelationKey[];
-  inserted: RelationKey[];
+  deleted: RelationTriplet[];
+  inserted: RelationTriplet[];
 };
 
-function relationKey(r: RelationKey): string {
+function tripletKey(r: RelationTriplet): string {
   return `${r.source_entity_ref}\0${r.type}\0${r.target_entity_ref}`;
 }
 
@@ -53,24 +53,12 @@ export async function syncRelations(
   desired: DbRelationsRow[],
 ): Promise<SyncRelationsResult> {
   const client = knex.client.config.client;
-  const deduped = deduplicateRelations(desired);
+  const deduped = lodash.uniqBy(desired, tripletKey);
 
   if (client === 'pg') {
     return syncPostgres(knex, originatingEntityId, deduped);
   }
   return syncSimple(knex, originatingEntityId, deduped);
-}
-
-function deduplicateRelations(rows: DbRelationsRow[]): DbRelationsRow[] {
-  const seen = new Set<string>();
-  return rows.filter(r => {
-    const key = relationKey(r);
-    if (seen.has(key)) {
-      return false;
-    }
-    seen.add(key);
-    return true;
-  });
 }
 
 // ---------------------------------------------------------------------------
@@ -89,7 +77,7 @@ async function syncPostgres(
   desired: DbRelationsRow[],
 ): Promise<SyncRelationsResult> {
   if (desired.length === 0) {
-    const { rows: deleted } = await knex.raw<{ rows: RelationKey[] }>(
+    const { rows: deleted } = await knex.raw<{ rows: RelationTriplet[] }>(
       `DELETE FROM relations
        WHERE originating_entity_id = ?
        RETURNING source_entity_ref, type, target_entity_ref`,
@@ -108,7 +96,9 @@ async function syncPostgres(
     targets.push(r.target_entity_ref);
   }
 
-  const { rows } = await knex.raw<{ rows: (RelationKey & { op: string })[] }>(
+  const { rows } = await knex.raw<{
+    rows: (RelationTriplet & { op: string })[];
+  }>(
     `
     WITH desired AS (
       SELECT * FROM unnest(?::text[], ?::text[], ?::text[])
@@ -152,18 +142,18 @@ async function syncPostgres(
     ],
   );
 
-  const deleted: RelationKey[] = [];
-  const inserted: RelationKey[] = [];
+  const deleted: RelationTriplet[] = [];
+  const inserted: RelationTriplet[] = [];
   for (const row of rows) {
-    const key = {
+    const triplet = {
       source_entity_ref: row.source_entity_ref,
       type: row.type,
       target_entity_ref: row.target_entity_ref,
     };
     if (row.op === 'd') {
-      deleted.push(key);
+      deleted.push(triplet);
     } else {
-      inserted.push(key);
+      inserted.push(triplet);
     }
   }
 
@@ -180,10 +170,14 @@ async function syncSimple(
 ): Promise<SyncRelationsResult> {
   const existing = await knex<DbRelationsRow>('relations')
     .where({ originating_entity_id: originatingEntityId })
-    .select<RelationKey[]>('source_entity_ref', 'type', 'target_entity_ref');
+    .select<RelationTriplet[]>(
+      'source_entity_ref',
+      'type',
+      'target_entity_ref',
+    );
 
-  const existingSet = new Map(existing.map(r => [relationKey(r), r]));
-  const desiredSet = new Map(desired.map(r => [relationKey(r), r]));
+  const existingSet = new Map(existing.map(r => [tripletKey(r), r]));
+  const desiredSet = new Map(desired.map(r => [tripletKey(r), r]));
 
   const toDelete = [...existingSet.entries()]
     .filter(([key]) => !desiredSet.has(key))
