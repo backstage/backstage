@@ -17205,17 +17205,16 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-runtime@npm:^1.1.2":
-  version: 1.1.5
-  resolution: "@stoplight/spectral-runtime@npm:1.1.5"
+  version: 1.1.6
+  resolution: "@stoplight/spectral-runtime@npm:1.1.6"
   dependencies:
     "@stoplight/json": "npm:^3.20.1"
     "@stoplight/path": "npm:^1.3.2"
     "@stoplight/types": "npm:^13.6.0"
-    abort-controller: "npm:^3.0.0"
     lodash: "npm:^4.18.1"
     node-fetch: "npm:^2.7.0"
     tslib: "npm:^2.8.1"
-  checksum: 10/67a7a2afa2d60b04c78274365f365de10d75c612a8beedf3a81a95feb966bf0d32fe2d658e1ca27dc5b79142d0dd13152946ea4dd1aad35f51a489e79f166d43
+  checksum: 10/e1e73b467c2e86b91cc91ea1f6829f34d58d189fec1fcc309882eb04f609a489985bbf576c6e51723c7f0d21c52f4ff5ad5b0911e3a489ace61c1431bc408f3b
   languageName: node
   linkType: hard
 
